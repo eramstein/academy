@@ -1,6 +1,7 @@
 <script lang="ts">
   import { gs } from '@/lib/_state/main.svelte';
-  import { dayNames } from '@/lib/sim/schedule';
+
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 </script>
 
 <div class="time-display">

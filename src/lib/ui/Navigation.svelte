@@ -3,7 +3,6 @@
   import { uiState } from '../_state';
   import { gs, resetBattleState } from '../_state/main.svelte';
   import { endBattle } from '../battle/win';
-  import { resetMemoriesDB } from '../llm/memories-db';
 
   const navItems = [
     { view: UiView.Battle, label: 'Game', icon: '🎮' },
@@ -14,26 +13,8 @@
   const stopBattle = () => {
     endBattle(true);
     resetBattleState();
-    if (gs.activity.tournament) {
-      uiState.currentView = UiView.Tournament;
-    } else {
-      uiState.currentView = UiView.CurrentPlace;
-    }
+    uiState.currentView = UiView.CurrentPlace;
     uiState.navigationVisible = false;
-  };
-
-  const handleResetIndexDB = async () => {
-    const proceed = confirm(
-      'This will erase all IndexedDB data (memories, saves, etc.). Continue?'
-    );
-    if (!proceed) return;
-    try {
-      await resetMemoriesDB();
-      alert('IndexedDB has been reset successfully!');
-    } catch (error) {
-      console.error('Failed to reset IndexedDB:', error);
-      alert('Failed to reset IndexedDB. Check console for details.');
-    }
   };
 </script>
 
@@ -62,10 +43,6 @@
 
     <div class="admin-section">
       <div class="admin-divider"></div>
-      <button class="nav-item admin-item" onclick={handleResetIndexDB}>
-        <span class="icon">🗑️</span>
-        <span class="label">Reset Memories</span>
-      </button>
       <button class="nav-item admin-item" onclick={() => (uiState.saveManagerModal.visible = true)}>
         <span class="icon">💾</span>
         <span class="label">Save / Load</span>

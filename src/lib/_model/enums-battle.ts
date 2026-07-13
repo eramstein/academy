@@ -4,18 +4,6 @@ export enum CardType {
   Land = 'land',
 }
 
-export enum CardRarity {
-  Common = 'common',
-  Uncommon = 'uncommon',
-  Rare = 'rare',
-  Legendary = 'legendary',
-  Shop = 'shop',
-}
-
-export enum CardSet {
-  Alpha = 'alpha',
-}
-
 export enum CardColor {
   Red = 'red',
   Blue = 'blue',

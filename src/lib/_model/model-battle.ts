@@ -3,8 +3,6 @@ import {
   AiTurnGoal,
   AiTurnStrategy,
   CardColor,
-  CardRarity,
-  CardSet,
   CardType,
   CounterType,
   TargetType,
@@ -19,7 +17,6 @@ export interface BattleState {
   players: Player[];
   units: UnitDeployed[];
   aiState: AiState;
-  shop: Shop;
 }
 
 export interface Player {
@@ -28,7 +25,6 @@ export interface Player {
   name: string;
   mana: number;
   maxMana: number;
-  gold: number;
   life: number;
   hand: Card[];
   deck: Card[];
@@ -38,16 +34,10 @@ export interface Player {
   abilityUsed: boolean;
 }
 
-export interface Shop {
-  cards: { cost: number; template: CardTemplate }[];
-}
-
 // CARD TEMPLATE INTERFACES (before the game started, the card itself)
 export interface BaseCardTemplate {
   id: string;
   name: string;
-  rarity: CardRarity;
-  cardSet: CardSet;
   type: CardType;
   cost: number;
   colors: { color: CardColor; count: number }[];

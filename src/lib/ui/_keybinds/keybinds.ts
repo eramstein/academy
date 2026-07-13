@@ -1,4 +1,3 @@
-import { PLACES } from '@/data/places/places';
 import {
   gs,
   loadGameStateFromLocalStorage,
@@ -33,8 +32,6 @@ export function handleKeybinds(event: KeyboardEvent) {
     event.preventDefault();
     resetBattleState();
     console.log('Battle state reset');
-  } else if (event.key === 't') {
-    gs.places = PLACES;
   } else if (event.key === 'Escape') {
     event.preventDefault();
     uiState.navigationVisible = !uiState.navigationVisible;

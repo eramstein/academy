@@ -1,11 +1,10 @@
 import { cards, lands } from '@/data';
-import { BASE_DECK } from '@/data/base-deck';
+import { BASE_DECK, BASE_DECK2 } from '@/data/base-deck';
 import { config } from '../_config';
 import { AiTurnStrategy, type BattleState, type Card, type Deck, type Land } from '../_model';
 import { bs, gs } from '../_state';
 import { drawCard, shuffleDeck } from './deck';
 import { initColorsFromLands } from './land';
-import { rollShopCards } from './shop';
 
 export const defaultBattleState: BattleState = {
   turn: 0,
@@ -18,15 +17,12 @@ export const defaultBattleState: BattleState = {
     goals: [],
     dismissedCards: {},
   },
-  shop: {
-    cards: [],
-  },
 };
 
 export const initBattle = (
   foeKey: string = 'the-dude',
   playerDeck: Deck = BASE_DECK,
-  foeDeck: Deck = BASE_DECK
+  foeDeck: Deck = BASE_DECK2
 ) => {
   bs.turn = 1;
   bs.players = [
@@ -36,7 +32,6 @@ export const initBattle = (
       isPlayer: true,
       mana: config.initialMana,
       maxMana: config.initialMana,
-      gold: 0,
       life: config.initialLife,
       hand: [],
       deck: shuffleDeck(loadDeckCards(playerDeck, 0)),
@@ -51,7 +46,6 @@ export const initBattle = (
       isPlayer: false,
       mana: config.initialMana,
       maxMana: config.initialMana,
-      gold: 0,
       life: config.initialLife,
       hand: [],
       deck: shuffleDeck(loadDeckCards(foeDeck, 1)),
@@ -68,8 +62,6 @@ export const initBattle = (
   bs.players[0].hand.sort((a, b) => a.cost - b.cost);
   initColorsFromLands(bs.players[0]);
   initColorsFromLands(bs.players[1]);
-
-  rollShopCards();
   console.log('initBattle - battle initialized successfully');
 };
 

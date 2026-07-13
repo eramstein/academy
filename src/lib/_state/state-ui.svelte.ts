@@ -1,11 +1,8 @@
-import type { Npc } from '../_model/model-game';
 import { UiView, type UiState } from '../_model/model-ui';
-import { initPlayerChat } from '../llm/chat';
 
 export const uiState: UiState = $state({
   currentView: UiView.CurrentPlace,
   navigationVisible: false,
-  selectedCharacterKey: null,
   battle: {
     selectedUnit: null,
     validTargets: null,
@@ -31,9 +28,6 @@ export const uiState: UiState = $state({
     displayChat: false,
     draggingCard: null,
   },
-  collection: {
-    editedDeckKey: null,
-  },
   modal: {
     visible: false,
     title: '',
@@ -54,59 +48,23 @@ export const uiState: UiState = $state({
     onConfirm: undefined,
     onCancel: undefined,
   },
-  deckSelectionModal: {
-    visible: false,
-    foeKey: null,
-  },
-  shopModal: {
-    visible: false,
-    placeKey: null,
-  },
-  boosterModal: {
-    visible: false,
-    cards: null,
-  },
-  chat: {
-    isStreaming: false,
-    streamingContent: '',
-  },
   saveManagerModal: {
     visible: false,
   },
-  tradingWith: null,
-  rollResults: [],
   toast: {
     visible: false,
     message: '',
     type: 'info' as const,
   },
-  cardEditor: {
-    card: null,
-  },
-  activeGiftCharacterKey: null,
-  activeInvitationCharacterKey: null,
   consoleCommand: {
     visible: false,
   },
   isHeadless: false,
   suppressAnimations: false,
+  cardEditor: {
+    card: null,
+  },
 });
-
-export function addRollResult(result: {
-  success: boolean;
-  isCritical: boolean;
-  roll: number;
-  attribute: string;
-  difficulty: number;
-}) {
-  uiState.rollResults.push(result);
-}
-
-export async function initTrade(partner: Npc) {
-  uiState.tradingWith = partner.key;
-  await initPlayerChat([partner]);
-  uiState.currentView = UiView.Trade;
-}
 
 export function showToast(
   message: string,

@@ -2,59 +2,15 @@
   import { UiView } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
   import { uiState } from '@/lib/_state/state-ui.svelte';
-  import CharacterInteraction from './characters/CharacterInteraction.svelte';
-  import Characters from './characters/Characters.svelte';
-  import Collection from './Collection.svelte';
-  import DeckEditor from './decks/DeckEditor.svelte';
-  import Decks from './decks/Decks.svelte';
-  import DeckSelectionModal from './decks/DeckSelectionModal.svelte';
-  import Inventory from './Inventory.svelte';
-  import Menu from './Menu.svelte';
   import Place from './Place.svelte';
-  import Player from './Player.svelte';
-  import Schedule from './Schedule.svelte';
-  import Tournament from './Tournament.svelte';
-  import TournamentLogs from './TournamentLogs.svelte';
-  import Trade from './Trade.svelte';
 </script>
 
 <div class="sim-container">
-  {#if uiState.currentView !== UiView.DeckEditor}
-    <Menu />
-  {/if}
-
   <div class="current-view">
     {#if uiState.currentView === UiView.CurrentPlace}
-      <Place place={gs.places[gs.player.place]} />
-    {:else if uiState.currentView === UiView.Collection}
-      <Collection />
-    {:else if uiState.currentView === UiView.Decks}
-      <Decks />
-    {:else if uiState.currentView === UiView.Inventory}
-      <Inventory />
-    {:else if uiState.currentView === UiView.Characters}
-      <Characters />
-    {:else if uiState.currentView === UiView.Schedule}
-      <Schedule />
-    {:else if uiState.currentView === UiView.Player}
-      <Player />
-    {:else if uiState.currentView === UiView.DeckEditor}
-      <DeckEditor />
-    {:else if uiState.currentView === UiView.Chat}
-      <CharacterInteraction />
-    {:else if uiState.currentView === UiView.Trade}
-      <Trade />
-    {:else if uiState.currentView === UiView.Tournament}
-      {#if gs.activity.tournament}
-        <Tournament tournament={gs.activity.tournament} />
-      {/if}
-    {:else if uiState.currentView === UiView.TournamentLogs}
-      <TournamentLogs />
+      <Place place={gs.places[0]} />
     {/if}
   </div>
-
-  <!-- Deck Selection Modal -->
-  <DeckSelectionModal />
 </div>
 
 <style>

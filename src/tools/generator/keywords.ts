@@ -1,4 +1,4 @@
-import { CardRarity, type CardColor, type UnitCard, type UnitKeywords } from '../../lib/_model';
+import { type CardColor, type UnitCard, type UnitKeywords } from '../../lib/_model';
 import { getRandomWeighted } from '../../lib/_utils/random';
 import { getDominantColor } from './_utils';
 import { keywordColorPreferences } from './color-pie';
@@ -147,10 +147,7 @@ function selectKeyword(
   return { keyword, usedBudget, value };
 }
 
-export function getKeywordSuggestion(
-  color: CardColor,
-  rarity: CardRarity
-): keyof UnitKeywords | null {
+export function getKeywordSuggestion(color: CardColor): keyof UnitKeywords | null {
   // Create weighted keyword options based on base prevalence and color preferences
   const keywordOptions = Object.entries(keywordPrevalence).map(([key, basePrevalence]) => {
     const keywordKey = key as keyof UnitKeywords;
@@ -168,9 +165,6 @@ export function getKeywordSuggestion(
       weight: option.weight,
     }))
   );
-  if (rarity === CardRarity.Common && Math.random() < 0.25) {
-    return null;
-  }
   return selected;
 }
 

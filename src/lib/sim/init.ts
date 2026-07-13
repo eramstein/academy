@@ -1,99 +1,28 @@
-import { CHARACTER_DECKS } from '@/data/base-deck';
-import { CHARACTERS, CHARACTERS_CARD_UNLOCKS } from '@/data/characters/main';
-import { CHARACTER_PLAYER } from '@/data/characters/player';
-import { loadBaseDeck } from '@/data/loader';
-import { PLACES } from '@/data/places/places';
-import type { GameState } from '../_model';
-import { CardSet } from '../_model/enums-battle';
-import { ActivityType, DayPeriod, ItemType } from '../_model/enums-sim';
-import { gs } from '../_state/main.svelte';
-import { openBoosterForCharacter } from './booster';
-import { getCollectionFromDeck, getFullCollection } from './collection';
-import { fillDefaultActivities } from './schedule';
+import { DayPeriod, type GameState } from '../_model';
 
 export const defaultGameState: GameState = {
   time: {
     day: 0,
     period: DayPeriod.Afternoon,
   },
-  characters: CHARACTERS,
+  characters: {
+    dude: {
+      key: 'the-dude',
+      name: 'The Dude',
+    },
+  },
   player: {
-    ...CHARACTER_PLAYER,
-    collection: getFullCollection(),
-    decks: [],
-    cash: 0,
-    items: [],
-    studyPoints: 0,
-    attributes: {
-      intelligence: 7,
-      charisma: 5,
-      vitality: 3,
-      dexterity: 5,
-    },
-    period: {
-      improvedRelations: false,
-    },
+    key: 'player',
+    name: 'Player',
   },
-  places: PLACES,
-  activity: {
-    activityType: ActivityType.Chill,
-    participants: [],
-  },
-  activityPlans: [],
-  chat: null,
-  ongoingBattle: null,
-  tournamentLogs: [],
+  places: [
+    {
+      key: 'cave',
+      name: 'Cave',
+    },
+  ],
 };
 
 export const initSim = async () => {
   console.log('initSim');
-  // DECKS
-  for (const character of Object.values(gs.characters)) {
-    character.decks.push(await loadBaseDeck(CHARACTER_DECKS[character.key]));
-  }
-
-  // CARD COLLECTIONS
-  for (const character of Object.values(gs.characters)) {
-    character.collection = getCollectionFromDeck(character.decks[0]);
-    openBoosterForCharacter(character, CardSet.Alpha);
-    openBoosterForCharacter(character, CardSet.Alpha);
-    openBoosterForCharacter(character, CardSet.Alpha);
-    character.unlocks.cards = CHARACTERS_CARD_UNLOCKS[character.key] || [];
-  }
-
-  // SHOPS
-  const goblinCave = gs.places.find((p) => p.key === 'goblin_counter');
-  goblinCave!.shopInventory = [
-    {
-      key: 'booster_alpha',
-      name: 'Booster',
-      type: ItemType.Booster,
-      price: 10,
-      variant: CardSet.Alpha,
-    },
-    {
-      key: 'starter_alpha',
-      name: 'Starter',
-      type: ItemType.StarterDeck,
-      price: 40,
-      variant: CardSet.Alpha,
-    },
-  ];
-  gs.player.cash = 100;
-
-  // CHAT INITIATION
-  const dude = gs.characters['the-dude'];
-  dude!.chatInitiation = `The Dude: whoa, it's the master of ceremonies himself, ${gs.player.name}! You should try this new game I have in store. It's called Hordes, and it's good stuff, man.`;
-
-  // ACTIVITIES
-  gs.player.place = goblinCave!.index;
-  const othersAtCave = Object.values(gs.characters).filter(
-    (c) => c.key !== gs.player.key && c.place === goblinCave!.index
-  );
-  // we start gaming at the Cave
-  gs.activity = {
-    activityType: ActivityType.Gaming,
-    participants: [gs.player.key, ...othersAtCave.map((c) => c.key)],
-  };
-  fillDefaultActivities(9);
 };

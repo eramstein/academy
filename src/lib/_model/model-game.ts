@@ -1,15 +1,4 @@
-import type { CardColor } from './enums-battle';
-import type {
-  ActionType,
-  ActivityType,
-  DayPeriod,
-  ItemType,
-  NpcPerk,
-  RelationTag,
-  TournamentFormat,
-  TournamentStatus,
-  TournamentType,
-} from './enums-sim';
+import type { DayPeriod } from './enums-sim';
 
 export interface GameState {
   time: {
@@ -19,253 +8,28 @@ export interface GameState {
   characters: Record<string, Npc>;
   player: Player;
   places: Place[];
-  activity: Activity; // current activity
-  activityPlans: ActivityPlan[][]; // plan for future activityPlans by days in future and day period
-  chat: ChatState | null;
-  ongoingBattle: OngoingBattle | null;
-  tournamentLogs: TournamentLog[];
 }
 
 export interface Character {
   key: string;
   name: string;
-  bio: string;
-  personality: string;
-  place: number;
-  collection: CardTuple[];
-  decks: Deck[];
-  cash: number;
-  items: Item[];
 }
 
-export interface Player extends Character {
-  attributes: CharacterAttributes;
-  studyPoints: number;
-  period: {
-    improvedRelations: boolean; // did use the imporve relations action already
-  };
-}
+export interface Player extends Character {}
 
-export interface Npc extends Character {
-  relationSummary: string;
-  relationValues: RelationValues;
-  relationTags: RelationTag[];
-  chatInitiation?: string; // the NPC has something to say
-  period: {
-    interactionsSummary: string;
-    trades: number; // how many cards the NPC has traded with the player this period
-  };
-  perks: Record<NpcPerk, number>;
-  unlocks: {
-    lastUnlock: number; // day of the last unlock
-    cards: string[]; // keys of unique cards the NPC can gift
-  };
-  gifting: {
-    cards: string[];
-  };
-  ambitions: Ambition[];
-  invitation: ActivityPlan | null;
-}
-
-export interface Ambition {
-  summary: string;
-  currentState: string;
-  latestDevelopments: string;
-  lastUpdatedOn: number;
-}
-
-export interface RelationValues {
-  friendship: number;
-  love: number;
-  respect: number;
-}
-
-export interface CharacterAttributes {
-  intelligence: number; // 0 to 10
-  charisma: number; // 0 to 10
-  vitality: number; // 0 to 10
-  dexterity: number; // 0 to 10
-}
-
-export interface CardTuple {
-  cardTemplateId: string;
-  count: number;
-}
+export interface Npc extends Character {}
 
 export interface Place {
-  index: number;
   key: string;
   name: string;
-  description: string;
-  shopInventory?: ItemDefinition[];
 }
 
 export interface Deck {
   key: string;
   name: string;
-  cards: CardTuple[];
+  cards: {
+    cardTemplateId: string;
+    count: number;
+  }[];
   lands: string[];
-  record: {
-    wins: number;
-    losses: number;
-    cardResults: Record<string, number>; // card key to win record
-  };
-}
-
-export interface ItemDefinition {
-  key: string;
-  name: string;
-  type: ItemType;
-  variant: any;
-  price: number;
-}
-
-export interface Item extends ItemDefinition {
-  instanceId: string;
-  ownerId: string; // Character key
-}
-
-export interface Activity {
-  activityType: ActivityType;
-  participants: string[]; // Character keys
-  tournament?: Tournament;
-  event?: Event; // An event happening during current activity
-}
-
-export interface Event {
-  title: string;
-  description: string;
-  participants: string[]; // Character keys
-  options: EventOption[];
-  history: string[];
-  outcome?: EventOutcome;
-  relatedAmbition?: { npc: string; index: number };
-}
-
-export interface EventOption {
-  description: string;
-  stopPoint: boolean; // if this option is chosen, the event chain stops there
-  onSuccess?: {
-    relation?: Record<string, number>;
-    cardGift?: boolean;
-    cashGift?: boolean;
-  };
-  onFailure?: {
-    relation?: Record<string, number>;
-    cashLoss?: boolean;
-  };
-  difficulty?: string;
-  relatedAttribute?: keyof CharacterAttributes;
-  schedulesActivity?: ActivityPlan;
-  createsChallenge?: any; // TODO
-}
-
-export interface EventOutcome {
-  description: string;
-  relationValuesByCharacter: Record<string, RelationValues>; // character keys
-  tagConfirmationByCharacter: Record<string, RelationTag>; // character keys
-}
-
-export interface ActivityPlan {
-  day: number;
-  dayPeriod: DayPeriod;
-  activity: Activity;
-  place: number; // Place index
-  resolved?: boolean;
-}
-
-export interface ChatState {
-  characters: Npc[];
-  history: ChatMessage[];
-  summary: string;
-  lastSummaryMessageIndex: number;
-  attemptedActionsResults: string;
-}
-
-export interface ChatMessage {
-  role: string;
-  content: string;
-  displayLabel?: string; // just the raw message, without additional info intended for the LLM
-  fromEngine?: boolean; // distinguishes auto generated messages from player messages
-}
-
-export interface GroupActivityLog {
-  id: string;
-  activityType: ActivityType;
-  participants: string[];
-  location: string;
-  day: number;
-  summary: string;
-  embedding: number[];
-}
-
-export interface WorldFact {
-  id: string;
-  description: string;
-  place?: string; // place key
-  embedding: number[];
-}
-
-export interface RelationshipSummaryUpdate {
-  id: string;
-  npc: string;
-  description: string;
-  day: number;
-}
-
-export interface ActionTypeDefinition {
-  onSuccess?: (args: any, isCritical?: boolean) => void;
-  onFailure?: (args: any, isCritical?: boolean) => void;
-  checkSuccess: (args: any) => {
-    success: boolean;
-    isCritical: boolean;
-    descriptionSuccess: string;
-    descriptionFailure: string;
-  };
-  getLabel: (args: any) => string;
-  description: string;
-}
-
-export interface ActionAttempt {
-  actionType: ActionType;
-  args: Record<string, any>;
-}
-
-export interface Tournament {
-  players: string[]; // character keys
-  winner?: string;
-  status: TournamentStatus;
-  tournamentType: TournamentType;
-  format: TournamentFormat;
-  draftState?: DraftState;
-  rounds?: number; // for swiss tournament, how many rounds will be played
-  playedRounds: number; // for swiss tournament, how many rounds have been played
-  rankings: Record<string, number>; // character key to current points
-  wonAgainst: Record<string, string[]>; // character key to array of character keys it has won against - used for breaking ties
-  tiebreakers: Record<string, number>; // character key to current tiebreaker points
-  pairings: Record<string, string>; // character keys, who plays who in current round
-  remainingMatches: Record<string, string[]>; // for round robin tournament, who the player still has to play with
-}
-
-export interface OngoingBattle {
-  opponentKey: string;
-  deckNames: {
-    player: string;
-    opponent: string;
-  };
-}
-
-export interface TournamentLog {
-  day: number;
-  place: number;
-  type: TournamentType;
-  winner: string;
-}
-
-export interface DraftState {
-  packNumber: number; // 0, 1, 2
-  direction: 1 | -1; // 1 (left), -1 (right)
-  activeBoosters: Record<string, string[]>; // playerKey -> cardIds in the current pack they are holding
-  draftedCards: Record<string, string[]>; // playerKey -> cardIds drafted so far
-  botsColors: Record<string, CardColor[]>; // assigned colors for AI players
 }

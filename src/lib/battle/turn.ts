@@ -7,7 +7,6 @@ import { autoAttack } from './combat';
 import { drawCard } from './deck';
 import { onTurnStart } from './listeners';
 import { gainGold } from './player';
-import { rollShopCards } from './shop';
 import { soundManager } from './sound';
 import { removeTemporaryEffects } from './temporary-effects';
 import { damageUnit, healUnit } from './unit';
@@ -25,8 +24,6 @@ export function nextTurn() {
   if (!bs.isPlayersTurn) {
     if (!uiState.isHeadless) soundManager.playSound('button');
     playAiTurn();
-  } else {
-    if (!uiState.isHeadless) rollShopCards();
   }
 }
 

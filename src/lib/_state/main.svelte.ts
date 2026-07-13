@@ -4,8 +4,8 @@ import { defaultGameState, initSim } from '../sim/init';
 import { getGame, getLatestGame, saveGame, type SaveGame } from './save-games';
 import { uiState } from './state-ui.svelte';
 
-const LOCAL_STORAGE_KEY_BATTLE = 'artimineBattleState';
-const LOCAL_STORAGE_KEY_UI = 'artimineUiState';
+const LOCAL_STORAGE_KEY_BATTLE = 'academyBattleState';
+const LOCAL_STORAGE_KEY_UI = 'academyUiState';
 
 export const gs: GameState = $state(defaultGameState);
 export const bs: BattleState = $state(defaultBattleState);

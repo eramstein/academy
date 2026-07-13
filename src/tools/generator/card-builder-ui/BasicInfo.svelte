@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { CardColor, CardRarity, CardType } from '../../../lib/_model';
+  import { CardColor, CardType } from '../../../lib/_model';
 
   export let state: {
     name: string;
-    rarity: CardRarity;
     type: CardType;
     cost: number;
     power: number;
@@ -21,7 +20,6 @@
   ) => void;
 
   // Available options
-  const rarityOptions = Object.values(CardRarity);
   const colorOptions = Object.values(CardColor);
   const cardTypeOptions = Object.values(CardType);
 </script>
@@ -65,15 +63,6 @@
       <label for="landRetaliate">Retaliate:</label>
       <input id="landRetaliate" type="number" bind:value={state.retaliate} min="0" max="10" />
     </div>
-  </div>
-
-  <div class="form-group">
-    <label for="rarity">Rarity:</label>
-    <select id="rarity" bind:value={state.rarity}>
-      {#each rarityOptions as rarity}
-        <option value={rarity}>{rarity}</option>
-      {/each}
-    </select>
   </div>
 
   {#if state.type !== CardType.Land}

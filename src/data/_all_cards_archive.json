@@ -1,0 +1,8900 @@
+[
+  {
+    "id": "accumulator_cannon",
+    "name": "Accumulator Cannon",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 5,
+    "power": 2,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["construct"],
+    "keywords": {
+      "ranged": true,
+      "armor": 1
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "energy",
+                "counterValue": 3
+              }
+            }
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "useEnergy",
+              "args": {
+                "effectTemplate": "damageUnit",
+                "energyUsedForArgs": "damage"
+              }
+            },
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "agent_of_chaos",
+    "name": "Agent of Chaos",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 9,
+    "power": 6,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      }
+    ],
+    "keywords": {
+      "retaliate": 3
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Static",
+          "staticRecompute": ["On Deploy", "On Death"]
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "agentOfChaosLance",
+                "keyword": "lance",
+                "range": {
+                  "all": true
+                },
+                "reset": "false"
+              }
+            }
+          },
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "agentOfChaosCleave",
+                "keyword": "cleave",
+                "range": {
+                  "all": true
+                },
+                "reset": "false"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "alahmar_djinn",
+    "name": "Al-ahmar Djinn",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 5,
+    "power": 6,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["spirit"],
+    "keywords": {
+      "ranged": true,
+      "retaliate": 2,
+      "resist": 1
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damagePlayer",
+              "args": {
+                "damage": 1,
+                "opposingPlayer": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "aladin",
+    "name": "Aladin",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 7,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      },
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "summon",
+              "args": {
+                "isRespawn": false,
+                "randomPositions": 1
+              }
+            }
+          }
+        ],
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "albatros",
+    "name": "Albatros",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "flying": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "ali_baba",
+    "name": "Ali Baba",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Death"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "gainGold",
+              "args": {
+                "goldCount": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alpha_male",
+    "name": "Alpha Male",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 7,
+    "power": 5,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "fight",
+              "args": {
+                "targetInFront": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ammunition_cart",
+    "name": "Ammunition Cart",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 1,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["construct"],
+    "keywords": {
+      "retaliate": 1
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "temporaryEffect",
+              "args": {
+                "effect": {
+                  "power": 2
+                },
+                "range": {
+                  "allies": true,
+                  "adjacent": true,
+                  "hasKeyword": "ranged"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "angry_lizard",
+    "name": "Angry Lizard",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["beast"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 2
+              }
+            },
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "angry_mob",
+    "name": "Angry Mob",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 2,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "black",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "retaliate": 3
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Death",
+          "range": {
+            "unitType": "human"
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 1,
+                "range": {
+                  "sameRow": true,
+                  "ennemies": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "arc_lightning_specialist",
+    "name": "Arc Lightning Specialist",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 1,
+                "range": {
+                  "adjacent": true
+                }
+              }
+            },
+            "targets": [
+              {
+                "type": "cell_empty",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "cost": 3,
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "arcane_sniper",
+    "name": "Arcane Sniper",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 2,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true,
+      "moveAndAttack": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "artificial_plague",
+    "name": "Artificial Plague",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "addCounters",
+          "args": {
+            "counterType": "decay",
+            "counterValue": 1,
+            "range": {
+              "ennemies": true
+            }
+          }
+        }
+      }
+    ],
+    "aiHints": ["Reset"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "assassin",
+    "name": "Assassin",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 7,
+    "power": 2,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "black",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "destroyUnit",
+              "args": {}
+            },
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "baba_yaga",
+    "name": "Baba Yaga",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 9,
+    "power": 3,
+    "maxHealth": 9,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["demon"],
+    "keywords": {
+      "resist": 2,
+      "poisonous": 2
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Before Moving"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "mezz",
+                "duration": 2,
+                "range": {
+                  "ennemies": true,
+                  "sameRow": true
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "root",
+                "duration": 2,
+                "range": {
+                  "sameRow": true,
+                  "ennemies": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "ballista",
+    "name": "Ballista",
+    "rarity": "uncommon",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 4,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["building"],
+    "keywords": {
+      "ranged": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "ballista",
+                "keyword": "armor",
+                "keyWordValue": -2,
+                "fromTriggerParam": "defender"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "banshee",
+    "name": "Banshee",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 5,
+    "power": 3,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["monster"],
+    "keywords": {
+      "retaliate": 3,
+      "resist": 2
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Reach",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "daze",
+                "duration": 1,
+                "range": {
+                  "ennemies": true,
+                  "unitType": "human"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "basic_research",
+    "name": "Basic Research",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "drawCard",
+          "args": {
+            "cardCount": 2
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "battery",
+    "name": "Battery",
+    "rarity": "common",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 1,
+    "power": 0,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["construct"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "energy",
+                "counterValue": 1,
+                "range": {
+                  "self": true
+                },
+                "valueIsMultiplier": 0
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bear_minimum",
+    "name": "Bear Minimum",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 5,
+    "power": 5,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "retaliate": 2
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "bear_riders",
+    "name": "Bear Riders",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 7,
+    "power": 7,
+    "maxHealth": 7,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human", "beast"],
+    "keywords": {
+      "moveAndAttack": true,
+      "trample": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "benevolent_druid",
+    "name": "Benevolent Druid",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Death",
+          "range": {
+            "ennemies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damagePlayer",
+              "args": {
+                "damage": -1,
+                "opposingPlayer": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "benevolent_monk",
+    "name": "Benevolent Monk",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Static",
+          "staticRecompute": ["On Death", "On Deploy"]
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "monkProtecs",
+                "keyword": "resist",
+                "keyWordValue": 2,
+                "range": {
+                  "allies": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "big_bertha",
+    "name": "Big Bertha",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 7,
+    "power": 4,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "black",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true,
+      "cleave": true,
+      "lance": true,
+      "retaliate": 1
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "big_mammas_inn",
+    "name": "Big Mamma's Inn",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "health": 8,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1,
+                "range": {
+                  "sameRow": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bison",
+    "name": "Bison",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 7,
+    "power": 8,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "trample": true,
+      "retaliate": 3
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "blacksmith",
+    "name": "Blacksmith",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 5,
+    "power": 3,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "retaliate": 2,
+      "armor": 2
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "blacksmithArmor",
+                "keyword": "armor",
+                "keyWordValue": 1,
+                "reset": "false"
+              }
+            },
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "bob_the_blob",
+    "name": "Bob the Blob",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 4,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["elemental"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "decay",
+                "counterValue": 1
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "boring_boar",
+    "name": "Boring Boar",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 3,
+    "maxHealth": 3,
+    "unitTypes": ["beast"],
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "born_from_magic",
+    "name": "Born From Magic",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 5,
+    "power": 0,
+    "maxHealth": 0,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["spirit"],
+    "keywords": {
+      "flying": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1,
+                "dynamicValue": "units with status"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "buffoon",
+    "name": "Buffoon",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "rage",
+                "counterValue": 3
+              }
+            },
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "cost": 1,
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "busy_forge",
+    "name": "Busy Forge",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 2,
+    "power": 0,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["building"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "allies": true,
+            "adjacent": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "power": 1,
+                "maxHealth": 1,
+                "fromTriggerParam": "mover"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "caring_druidess",
+    "name": "Caring Druidess",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 7,
+    "power": 1,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ],
+            "effect": {
+              "name": "healUnit",
+              "args": {
+                "health": 99
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "Activated"
+        },
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "carnival_of_miracles",
+    "name": "Carnival of Miracles",
+    "rarity": "rare",
+    "type": "spell",
+    "cost": 9,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      },
+      {
+        "color": "black",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "fortifyLand",
+          "args": {
+            "amount": 9
+          }
+        },
+        "targets": [
+          {
+            "type": "land",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "effect": {
+          "name": "addCounters",
+          "args": {
+            "counterType": "decay",
+            "counterValue": 9
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "effect": {
+          "name": "addCounters",
+          "args": {
+            "counterType": "energy",
+            "counterValue": 9
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "charge",
+    "name": "Charge!",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 6,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "temporaryEffect",
+          "args": {
+            "effect": {
+              "power": 2
+            },
+            "range": {
+              "allies": true,
+              "unitType": "human"
+            }
+          }
+        }
+      },
+      {
+        "effect": {
+          "name": "temporaryEffect",
+          "args": {
+            "effect": {
+              "lance": true
+            },
+            "range": {
+              "allies": true,
+              "unitType": "human"
+            }
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "city",
+    "name": "City",
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "health": 10,
+    "cost": 0,
+    "type": "land",
+    "rarity": "common",
+    "cardSet": "alpha"
+  },
+  {
+    "id": "city_guard",
+    "name": "City Guard",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 4,
+    "power": 2,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "lance": true,
+      "retaliate": 1
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "clunky_golem",
+    "name": "Clunky Golem",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 2,
+    "power": 2,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["construct"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 1,
+                "range": {
+                  "self": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "clunky_helicopter",
+    "name": "Clunky Helicopter",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 5,
+    "power": 4,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["construct"],
+    "keywords": {
+      "armor": 1
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "energy",
+                "counterValue": 3,
+                "range": {
+                  "self": true
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "useEnergy",
+              "args": {
+                "effectTemplate": "temporaryEffect",
+                "energyCost": 3,
+                "otherArgs": {
+                  "effect": {
+                    "flying": true
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "coal_demon",
+    "name": "Coal Demon",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 8,
+    "power": 4,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["elemental", "demon"],
+    "keywords": {
+      "retaliate": 3
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Death",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "summon",
+              "args": {
+                "randomPositions": 2,
+                "summonedUnit": {
+                  "id": "coal_demon_shard",
+                  "name": "Coal Demon Shard",
+                  "type": "unit",
+                  "rarity": "common",
+                  "unitTypes": ["demon"],
+                  "cost": 1,
+                  "power": 2,
+                  "maxHealth": 3,
+                  "colors": [
+                    {
+                      "color": "black",
+                      "count": 1
+                    }
+                  ],
+                  "keywords": {
+                    "retaliate": 1
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "council_envoy",
+    "name": "Council Envoy",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 5,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "armor": 1
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "useGold",
+              "args": {
+                "effectTemplate": "forceMoveUnit",
+                "goldCost": 1
+              }
+            },
+            "targets": [
+              {
+                "type": "unit_ennemies",
+                "count": 1
+              },
+              {
+                "type": "cell_enemy",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cowardly_mage",
+    "name": "Cowardly Mage",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "cursed_artist",
+    "name": "Cursed Artist",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "decay",
+                "counterValue": 1,
+                "dynamicValue": "units with status"
+              }
+            },
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "cost": 3,
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "dark_remedy",
+    "name": "Dark Remedy",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 1,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "darkRitual",
+          "args": {
+            "effect": "heal"
+          }
+        },
+        "targets": [
+          {
+            "type": "unit_allies",
+            "count": 1
+          },
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "effect": {
+          "name": "drawCard",
+          "args": {
+            "cardCount": 1
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "dark_ritual",
+    "name": "Dark Ritual",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "darkRitual",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "unit_allies",
+            "count": 1
+          },
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "dazing_spirit",
+    "name": "Dazing Spirit",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 2,
+    "power": 0,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["spirit"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "daze",
+                "duration": 1,
+                "range": {
+                  "inFrontOf": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "decaying_ray",
+    "name": "Decaying Ray",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "addCounters",
+          "args": {
+            "counterType": "decay",
+            "counterValue": 2,
+            "range": {
+              "sameRow": true
+            }
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "deer",
+    "name": "Deer",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 4,
+    "power": 4,
+    "maxHealth": 5,
+    "unitTypes": ["beast"],
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "desert_sorcerer",
+    "name": "Desert Sorcerer",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 6,
+    "power": 1,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 3,
+                "range": {
+                  "adjacent": true
+                }
+              }
+            },
+            "targets": [
+              {
+                "type": "cell_empty",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "cost": 1,
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "desert_storm",
+    "name": "Desert Storm",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 8,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "combine",
+          "args": {
+            "effectTemplates": [
+              {
+                "name": "applyUnitStatus",
+                "args": {
+                  "statusType": "stun",
+                  "duration": 1,
+                  "range": {
+                    "sameColumn": true
+                  }
+                }
+              },
+              {
+                "name": "damageUnit",
+                "args": {
+                  "damage": 1,
+                  "range": {
+                    "sameColumn": true
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "donatello",
+    "name": "Donatello",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 4,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "useGold",
+              "args": {
+                "effectTemplate": "drawCard",
+                "goldCost": 3
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "drake",
+    "name": "Drake",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 7,
+    "power": 5,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "keywords": {
+      "lance": true,
+      "flying": true,
+      "retaliate": 3
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "dryad",
+    "name": "Dryad",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 5,
+    "power": 3,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["spirit"],
+    "keywords": {
+      "regeneration": 4
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "dudes_arms_stash",
+    "name": "Dude's Arms Stash",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [],
+    "health": 10,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "allies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "power": 1,
+                "maxHealth": 1,
+                "fromTriggerParam": "unit"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dunyazad",
+    "name": "Dunyazad",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 4,
+    "power": 2,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "moveAndAttack": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "bounceUnit",
+              "args": {
+                "range": {
+                  "sameRow": true,
+                  "allies": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dwarf_berserker",
+    "name": "Dwarf Berserker",
+    "type": "unit",
+    "cost": 2,
+    "power": 3,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "rarity": "common",
+    "unitTypes": ["dwarf"],
+    "keywords": {
+      "zerk": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "dwarf_cadencer",
+    "name": "Dwarf Cadencer",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 5,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      }
+    ],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "refreshUnit",
+              "args": {
+                "range": {
+                  "allies": true,
+                  "adjacent": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "dwarven_punisher",
+    "name": "Dwarven Punisher",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 7,
+    "power": 6,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["dwarf"],
+    "keywords": {
+      "haste": true,
+      "trample": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "transferCounters",
+              "args": {
+                "counterType": "rage"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "eagle_mounted_archers",
+    "name": "Eagle Mounted Archers",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 6,
+    "power": 5,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "keywords": {
+      "ranged": true,
+      "flying": true,
+      "retaliate": 1
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "earthquake",
+    "name": "Earthquake",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageUnit",
+          "args": {
+            "damage": 3,
+            "range": {
+              "all": true
+            }
+          }
+        }
+      }
+    ],
+    "aiHints": ["Reset"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "ebonheart",
+    "name": "Ebonheart",
+    "type": "unit",
+    "cost": 3,
+    "power": 2,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      },
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "rarity": "uncommon",
+    "abilities": [
+      {
+        "actions": [
+          {
+            "targets": [
+              {
+                "type": "cell_ally",
+                "count": 1
+              }
+            ],
+            "effect": {
+              "name": "summon",
+              "args": {
+                "summonedUnit": {
+                  "id": "shroomy_shooty",
+                  "name": "Shroomy Shooty",
+                  "type": "unit",
+                  "rarity": "common",
+                  "unitTypes": ["mushroom"],
+                  "cost": 1,
+                  "power": 1,
+                  "maxHealth": 1,
+                  "colors": [
+                    {
+                      "color": "green",
+                      "count": 1
+                    }
+                  ],
+                  "keywords": {
+                    "ranged": true
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "cost": 1,
+        "trigger": {
+          "type": "Activated"
+        },
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "elite_crossbowmen",
+    "name": "Elite Crossbowmen",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 6,
+    "power": 5,
+    "maxHealth": 7,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true,
+      "retaliate": 2
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "emergency_repairs",
+    "name": "Emergency Repairs",
+    "rarity": "uncommon",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "healUnit",
+          "args": {
+            "health": 99,
+            "range": {
+              "allies": true,
+              "unitType": "building"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "emmas_dark_tower",
+    "name": "Emma's Dark Tower",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [],
+    "health": 10,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damagePlayer",
+              "args": {
+                "damage": 1,
+                "opposingPlayer": "true"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "energy_monster",
+    "name": "Energy Monster",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 5,
+    "power": 3,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["monster"],
+    "keywords": {
+      "retaliate": 3
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "energy",
+                "counterValue": 3
+              }
+            }
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "useEnergy",
+              "args": {
+                "effectTemplate": "addCounters",
+                "energyCost": 1,
+                "otherArgs": {
+                  "counterType": "growth"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "energyze",
+    "name": "Energyze",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "untapPlayer",
+          "args": {}
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "enraged_goblin",
+    "name": "Enraged Goblin",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 4,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["monster"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "ent",
+    "name": "Ent",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 8,
+    "power": 7,
+    "maxHealth": 7,
+    "colors": [
+      {
+        "color": "green",
+        "count": 4
+      }
+    ],
+    "unitTypes": ["spirit"],
+    "keywords": {
+      "retaliate": 3,
+      "armor": 4
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "entangling_roots",
+    "name": "Entangling Roots",
+    "rarity": "uncommon",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["plant"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "ennemies": true,
+            "sameRow": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "root",
+                "duration": 2,
+                "fromTriggerParam": "attacker"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "entrench",
+    "name": "Entrench",
+    "rarity": "uncommon",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "combine",
+          "args": {
+            "effectTemplates": [
+              {
+                "name": "staticKeyword",
+                "args": {
+                  "abilityName": "entrench",
+                  "keyword": "immobile"
+                }
+              },
+              {
+                "name": "staticStats",
+                "args": {
+                  "power": 3,
+                  "maxHealth": 3
+                }
+              }
+            ]
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "execution",
+    "name": "Execution",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 6,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "destroyUnit",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "aiHints": ["Remove Unit"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "expendable_recruit",
+    "name": "Expendable Recruit",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 2,
+    "power": 0,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "drawCard",
+              "args": {
+                "cardCount": 1
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "explosive_trap",
+    "name": "Explosive Trap",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 2,
+    "power": 0,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["building"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Death",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 3,
+                "range": {
+                  "ennemies": true,
+                  "sameRow": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "fair_trader",
+    "name": "Fair Trader",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "moveAndAttack": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Reach"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "cycleCards",
+              "args": {}
+            },
+            "targets": [
+              {
+                "type": "hand_card",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "fancy_courtesan",
+    "name": "Fancy Courtesan",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 6,
+    "power": 3,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "retaliate": 2
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "mezz",
+                "duration": 2,
+                "range": {
+                  "excludeSelf": true,
+                  "unitType": "human",
+                  "sameRow": true
+                }
+              }
+            }
+          }
+        ],
+        "cost": 5
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "fat_pigeon",
+    "name": "Fat Pigeon",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 4,
+    "power": 2,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "flying": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "ferocious_badger",
+    "name": "Ferocious Badger",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 5,
+    "power": 4,
+    "maxHealth": 5,
+    "unitTypes": ["beast"],
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "keywords": {
+      "retaliate": 5
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "fight",
+    "name": "Fight!",
+    "rarity": "common",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "fight",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fire_elemental",
+    "name": "Fire Elemental",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 6,
+    "power": 6,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["elemental"],
+    "keywords": {
+      "retaliate": 3
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 1,
+                "range": {
+                  "all": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "fireball",
+    "name": "Fireball",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageUnit",
+          "args": {
+            "damage": 4,
+            "range": {
+              "addSelf": true,
+              "adjacent": true
+            }
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "aiHints": ["Remove Unit"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "fishermans_ifrit",
+    "name": "Fisherman's Ifrit",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 4,
+    "power": 5,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["spirit"],
+    "keywords": {
+      "retaliate": 3
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "power": 1,
+                "maxHealth": 1,
+                "range": {
+                  "ennemies": true,
+                  "sameRow": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "flammen_werfer",
+    "name": "Flammen Werfer",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 5,
+    "power": 6,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "lance": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "flying_carpet",
+    "name": "Flying Carpet",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 0,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "keywords": {
+      "flying": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Static",
+          "staticRecompute": ["On Death", "On Deploy", "After Moving"]
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "flyingCarpet",
+                "keyword": "flying",
+                "range": {
+                  "sameRow": true,
+                  "allies": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "forest",
+    "name": "Forest",
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "health": 10,
+    "cost": 0,
+    "type": "land",
+    "rarity": "common",
+    "cardSet": "alpha"
+  },
+  {
+    "id": "fortify",
+    "name": "Fortify",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "fortifyLand",
+          "args": {
+            "amount": 8
+          }
+        },
+        "targets": [
+          {
+            "type": "land",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "frankish_castle",
+    "name": "Frankish Castle",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 5,
+    "power": 0,
+    "maxHealth": 10,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["building"],
+    "keywords": {
+      "retaliate": 5,
+      "immobile": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Static"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "frankishCastle",
+                "keyword": "ranged",
+                "range": {
+                  "allies": true,
+                  "adjacent": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "franz",
+    "name": "Franz",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 7,
+    "power": 3,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "armor": 2
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Gold Gained",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "fight",
+              "args": {
+                "mutual": "false",
+                "targetInFront": "true"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "frenzied_shaman",
+    "name": "Frenzied Shaman",
+    "type": "unit",
+    "cost": 5,
+    "power": 2,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "rarity": "common",
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "rage",
+                "counterValue": 1
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "On Death",
+          "range": {
+            "allies": true
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "gas_station",
+    "name": "Gas Station",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "health": 5,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "energy",
+                "counterValue": 1,
+                "range": {
+                  "sameRow": true,
+                  "unitType": "construct"
+                }
+              }
+            },
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "gate_keepers",
+    "name": "Gate Keepers",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 5,
+    "power": 3,
+    "maxHealth": 7,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "retaliate": 4
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "gaul_brawler",
+    "name": "Gaul Brawler",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 6,
+    "power": 5,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "cleave": true,
+      "retaliate": 1
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "giant_growth",
+    "name": "Giant Growth",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "addCounters",
+          "args": {
+            "counterType": "growth",
+            "counterValue": 3
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "giant_spider",
+    "name": "Giant Spider",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 4,
+    "power": 2,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "keywords": {
+      "retaliate": 1,
+      "poisonous": 2
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "gifted_apprentice",
+    "name": "Gifted Apprentice",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 3,
+    "power": 3,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Reach",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "gifted1",
+                "keyword": "moveAndAttack"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "glacial_guard",
+    "name": "Glacial Guard",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 4,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "gnome_engineer",
+    "name": "Gnome Engineer",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 1,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "healUnit",
+              "args": {
+                "health": 10,
+                "range": {
+                  "adjacent": true,
+                  "allies": true,
+                  "unitType": "construct"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "gnome_mechanic",
+    "name": "Gnome Mechanic",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 1,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["halfing"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1,
+                "range": {
+                  "unitType": "construct"
+                }
+              }
+            }
+          }
+        ],
+        "cost": 3
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "goblin_engineer",
+    "name": "Goblin Engineer",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 2,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "energy",
+                "counterValue": 3,
+                "range": {
+                  "allies": true,
+                  "adjacent": true,
+                  "unitType": "construct"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "golgoth",
+    "name": "Golgoth",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 8,
+    "power": 5,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "retaliate": 3,
+      "armor": 1
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Before Damage",
+          "range": {
+            "addSelf": true,
+            "allies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "power": 1,
+                "maxHealth": 1
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "greedy_bear",
+    "name": "Greedy Bear",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 6,
+    "power": 6,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "trample": true,
+      "retaliate": 3
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "transferCounters",
+              "args": {
+                "counterType": "growth"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "grenadier",
+    "name": "Grenadier",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 5,
+    "power": 2,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true,
+      "cleave": true,
+      "retaliate": 1
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "grim_guard",
+    "name": "Grim Guard",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 2,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "guinea_pig",
+    "name": "Guinea Pig",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "transferCounters",
+          "args": {
+            "counterType": "decay"
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "hans_is_back",
+    "name": "Hans is Back",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 5,
+    "power": 0,
+    "maxHealth": 0,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "cleave": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterValue": 1,
+                "dynamicValue": "units in graveyards"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "harpy_huntress",
+    "name": "Harpy Huntress",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 6,
+    "power": 5,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["monster"],
+    "keywords": {
+      "flying": true,
+      "retaliate": 3
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "havrhell",
+    "name": "Havrhell",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 8,
+    "power": 4,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      },
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["dwarf"],
+    "keywords": {
+      "moveAndAttack": true,
+      "cleave": true,
+      "retaliate": 4,
+      "resist": 2
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1,
+                "dynamicValue": 0
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "heal",
+    "name": "Heal",
+    "rarity": "shop",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 0,
+    "colors": [],
+    "actions": [
+      {
+        "effect": {
+          "name": "damagePlayer",
+          "args": {
+            "damage": -10,
+            "opposingPlayer": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "healing_salve",
+    "name": "Healing Salve",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "healUnit",
+          "args": {
+            "health": "8"
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "henrys_cemetary",
+    "name": "Henry's Cemetary",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [],
+    "health": 10,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "reanimate",
+              "args": {}
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "hill_troll",
+    "name": "Hill Troll",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 4,
+    "power": 5,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["monster"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "hobbit_gardener",
+    "name": "Hobbit Gardener",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["halfing"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "summon",
+              "args": {
+                "summonedUnit": {
+                  "id": "shrubbery",
+                  "name": "Shrubbery",
+                  "rarity": "common",
+                  "type": "unit",
+                  "cost": 1,
+                  "power": 0,
+                  "maxHealth": 1,
+                  "colors": [
+                    {
+                      "color": "green",
+                      "count": 1
+                    }
+                  ],
+                  "unitTypes": ["plant"]
+                },
+                "isRespawn": true
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "Before Moving",
+          "range": {
+            "self": true
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "hobbit_villager",
+    "name": "Hobbit Villager",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 2,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["halfing"],
+    "keywords": {
+      "retaliate": 1,
+      "regeneration": 1
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "hold_the_line",
+    "name": "Hold the Line",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "staticKeyword",
+          "args": {
+            "abilityName": "holdTheLine",
+            "keyword": "regeneration",
+            "keyWordValue": 2,
+            "range": {
+              "sameColumn": true
+            }
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "hungry_hermit",
+    "name": "Hungry Hermit",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Reach",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1,
+                "dynamicValue": 0
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "hungry_wolf",
+    "name": "Hungry Wolf",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 3,
+    "maxHealth": 2,
+    "keywords": {
+      "retaliate": 2
+    },
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["beast"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "hype_goblin",
+    "name": "Hype Goblin",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 1,
+    "power": 0,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["monster"],
+    "keywords": {
+      "haste": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "rage",
+                "counterValue": 1,
+                "range": {
+                  "self": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "improve_engine",
+    "name": "Improve Engine",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "staticKeyword",
+          "args": {
+            "abilityName": "improveEngine",
+            "keyword": "moveAndAttack"
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "iron_golem",
+    "name": "Iron Golem",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 5,
+    "power": 2,
+    "maxHealth": 5,
+    "unitTypes": ["construct"],
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "keywords": {
+      "retaliate": 3,
+      "armor": 3
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "irresistible_allure",
+    "name": "Irresistible Allure",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 8,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "controlUnit",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          },
+          {
+            "type": "cell_empty",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "island",
+    "name": "Island",
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "health": 10,
+    "cost": 0,
+    "type": "land",
+    "rarity": "common",
+    "cardSet": "alpha"
+  },
+  {
+    "id": "jumping_hare",
+    "name": "Jumping Hare",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "keywords": {
+      "haste": true,
+      "moveAndAttack": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "kobold",
+    "name": "Kobold",
+    "rarity": "common",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 2,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "keywords": {
+      "moveAndAttack": true
+    }
+  },
+  {
+    "id": "kobold_slinger",
+    "name": "Kobold Slinger",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 4,
+    "power": 4,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["monster"],
+    "keywords": {
+      "ranged": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "kobold_undercity",
+    "name": "Kobold Undercity",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "health": 12,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "summon",
+              "args": {
+                "summonedUnit": {
+                  "id": "kobold_youngling",
+                  "name": "Kobold Youngling",
+                  "rarity": "common",
+                  "cardSet": "alpha",
+                  "type": "unit",
+                  "cost": 0,
+                  "power": 0,
+                  "maxHealth": 1,
+                  "colors": [
+                    {
+                      "color": "red",
+                      "count": 1
+                    }
+                  ]
+                },
+                "isRespawn": false,
+                "randomPositions": "true"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "kolossal_mistake",
+    "name": "Kolossal Mistake",
+    "rarity": "rare",
+    "type": "spell",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "black",
+        "count": 5
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "destroyUnit",
+          "args": {
+            "range": {
+              "all": true
+            }
+          }
+        }
+      }
+    ],
+    "aiHints": ["Reset"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "leonardo_borgio",
+    "name": "Leonardo Borgio",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 8,
+    "power": 1,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      },
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "allies": true,
+            "sameRow": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "leo1",
+                "keyword": "armor",
+                "keyWordValue": 1,
+                "fromTriggerParam": "attacker"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "power": 1,
+                "maxHealth": 1,
+                "range": {
+                  "sameColumn": true,
+                  "unitType": "construct"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "lightning_bolt",
+    "name": "Lightning Bolt",
+    "type": "spell",
+    "rarity": "common",
+    "cost": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageUnit",
+          "args": {
+            "damage": 3
+          }
+        },
+        "targets": [
+          {
+            "type": "unit"
+          }
+        ]
+      }
+    ],
+    "aiHints": ["Remove Unit"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "lightning_explosion",
+    "name": "Lightning Explosion",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageUnit",
+          "args": {
+            "damage": 5,
+            "range": {
+              "adjacent": true
+            }
+          }
+        },
+        "targets": [
+          {
+            "type": "cell_empty",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "aiHints": ["Remove Unit"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "lunging_cougar",
+    "name": "Lunging Cougar",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 3,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "haste": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "luring_enchantress",
+    "name": "Luring Enchantress",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 1,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "forceMoveUnit",
+              "args": {}
+            },
+            "targets": [
+              {
+                "type": "unit_ennemies",
+                "count": 1
+              },
+              {
+                "type": "cell_enemy",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "luxurious_growth",
+    "name": "Luxurious Growth",
+    "type": "spell",
+    "rarity": "common",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "incrementColor",
+          "args": {
+            "color": "blue"
+          }
+        }
+      },
+      {
+        "effect": {
+          "name": "incrementColor",
+          "args": {
+            "color": "red"
+          }
+        }
+      },
+      {
+        "effect": {
+          "name": "incrementColor",
+          "args": {
+            "color": "black"
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "mad_ballooner",
+    "name": "Mad Ballooner",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "madBallooner",
+                "keyword": "flying",
+                "range": {
+                  "self": true
+                }
+              }
+            }
+          }
+        ],
+        "cost": 1
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "magic_weapons",
+    "name": "Magic Weapons",
+    "rarity": "uncommon",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "staticKeyword",
+          "args": {
+            "abilityName": "magicWeapons",
+            "keyword": "armorPiercing",
+            "range": {
+              "sameColumn": true
+            }
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "effect": {
+          "name": "drawCard",
+          "args": {
+            "cardCount": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "malevolent_druid",
+    "name": "Malevolent Druid",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 6,
+    "power": 2,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "allies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damagePlayer",
+              "args": {
+                "damage": 1,
+                "opposingPlayer": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "market",
+    "name": "Market",
+    "colors": [],
+    "health": 10,
+    "cost": 0,
+    "type": "land",
+    "rarity": "common",
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "drawCard",
+              "args": {
+                "count": 1
+              }
+            }
+          }
+        ],
+        "cost": 1,
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "market_beggar",
+    "name": "Market Beggar",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "retaliate": 1
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "mason_guilder",
+    "name": "Mason Guilder",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 5,
+    "power": 3,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "retaliate": 3
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "fortifyLand",
+              "args": {
+                "amount": 2
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "mass_enrage",
+    "name": "Mass Enrage",
+    "rarity": "rare",
+    "type": "spell",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "temporaryEffect",
+          "args": {
+            "effect": {
+              "zerk": true
+            },
+            "range": {
+              "all": true
+            }
+          }
+        }
+      },
+      {
+        "effect": {
+          "name": "drawCard",
+          "args": {
+            "cardCount": 1
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "mass_root",
+    "name": "Mass Root",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "applyUnitStatus",
+          "args": {
+            "statusType": "root",
+            "duration": 1,
+            "range": {
+              "ennemies": true
+            }
+          }
+        }
+      },
+      {
+        "effect": {
+          "name": "drawCard",
+          "args": {
+            "cardCount": 1
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "mass_sleep",
+    "name": "Mass Sleep",
+    "rarity": "rare",
+    "type": "spell",
+    "cost": 7,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "applyUnitStatus",
+          "args": {
+            "statusType": "mezz",
+            "duration": 1,
+            "range": {
+              "ennemies": true
+            }
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "master_of_chains",
+    "name": "Master of Chains",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 5,
+    "power": 4,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "retaliate": 1
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "ennemies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 1,
+                "fromTriggerParam": "mover"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "mega_moss_monster",
+    "name": "Mega Moss Monster",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 9,
+    "power": 12,
+    "maxHealth": 12,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["plant"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "melting_spree",
+    "name": "Melting Spree",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "staticKeyword",
+          "args": {
+            "abilityName": "meltingSpree",
+            "keyword": "armor",
+            "keyWordValue": -5,
+            "range": {
+              "hasKeyword": "armor"
+            }
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "mentalist",
+    "name": "Mentalist",
+    "rarity": "uncommon",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 5,
+    "power": 4,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true,
+      "retaliate": 3
+    }
+  },
+  {
+    "id": "modis_benediction",
+    "name": "Modi's Benediction",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "combine",
+          "args": {
+            "effectTemplates": [
+              {
+                "name": "staticKeyword",
+                "args": {
+                  "abilityName": "modisBenediction",
+                  "keyword": "zerk"
+                }
+              },
+              {
+                "name": "addCounters",
+                "args": {
+                  "counterType": "growth",
+                  "counterValue": 3,
+                  "dynamicValue": "ennemies"
+                }
+              }
+            ]
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "modis_chosen",
+    "name": "Modi's Chosen",
+    "type": "unit",
+    "cost": 3,
+    "power": 2,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "rarity": "common",
+    "keywords": {
+      "haste": true,
+      "zerk": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "mollys_oasis",
+    "name": "Molly's Oasis",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [],
+    "health": 10,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addMana",
+              "args": {
+                "amount": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "mosquito",
+    "name": "Mosquito",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "rarity": "common",
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "decay",
+                "counterValue": 1,
+                "range": {
+                  "sameRow": true,
+                  "ennemies": true
+                }
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "mountain",
+    "name": "Mountain",
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "health": 10,
+    "cost": 0,
+    "type": "land",
+    "rarity": "common",
+    "cardSet": "alpha"
+  },
+  {
+    "id": "mountain_giant",
+    "name": "Mountain Giant",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 6,
+    "power": 7,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "keywords": {
+      "retaliate": 3
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "mycosed_bear",
+    "name": "Mycosed Bear",
+    "type": "unit",
+    "cost": 3,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "rarity": "common",
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "summon",
+              "args": {
+                "summonedUnit": {
+                  "id": "shroomy_shooty",
+                  "name": "Shroomy Shooty",
+                  "type": "unit",
+                  "rarity": "common",
+                  "unitTypes": ["mushroom"],
+                  "cost": 1,
+                  "power": 1,
+                  "maxHealth": 1,
+                  "colors": [
+                    {
+                      "color": "green",
+                      "count": 1
+                    }
+                  ],
+                  "keywords": {
+                    "ranged": true
+                  }
+                },
+                "isRespawn": true
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "On Death",
+          "range": {
+            "self": true
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "natures_reconquest",
+    "name": "Nature's Reconquest",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      },
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "destroyUnit",
+          "args": {
+            "range": {
+              "unitType": "building"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "necessary_sacrifice",
+    "name": "Necessary Sacrifice",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "destroyUnit",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "unit_allies",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "effect": {
+          "name": "drawCard",
+          "args": {
+            "cardCount": 3
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "neutralize",
+    "name": "Neutralize",
+    "rarity": "shop",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 0,
+    "colors": [],
+    "actions": [
+      {
+        "effect": {
+          "name": "applyUnitStatus",
+          "args": {
+            "statusType": "daze",
+            "duration": 2
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "northern_challenger",
+    "name": "Northern Challenger",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 5,
+    "power": 3,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "retaliate": 4
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "rage",
+                "counterValue": 1,
+                "dynamicValue": "ennemies"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "not_a_fox",
+    "name": "Not a Fox",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 6,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "resist": 5
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damagePlayer",
+              "args": {
+                "damage": 1,
+                "opposingPlayer": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "not_so_little_pig",
+    "name": "Not So Little Pig",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 2,
+    "power": 0,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["beast"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "allies": true,
+            "adjacent": true
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "odins_chosen",
+    "name": "Odin's Chosen",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 7,
+    "power": 3,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "haste": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "combine",
+              "args": {
+                "effectTemplates": [
+                  {
+                    "name": "addCounters",
+                    "args": {
+                      "counterType": "growth",
+                      "counterValue": 1,
+                      "dynamicValue": "ennemies"
+                    }
+                  },
+                  {
+                    "name": "damageUnit",
+                    "args": {
+                      "damage": 1
+                    }
+                  }
+                ]
+              }
+            },
+            "targets": [
+              {
+                "type": "unit_allies",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "ogre_brawler",
+    "name": "Ogre Brawler",
+    "rarity": "common",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 5,
+    "power": 4,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "fight",
+              "args": {}
+            },
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "opera_singer",
+    "name": "Opera Singer",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 6,
+    "power": 5,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "retaliate": 4
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "daze",
+                "duration": 1,
+                "range": {
+                  "inFrontOf": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "orc_miner",
+    "name": "Orc Miner",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 2,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["monster"],
+    "keywords": {
+      "retaliate": 1,
+      "armor": 1
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "ourssaf",
+    "name": "Ourssaf",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 6,
+    "power": 6,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "black",
+        "count": 6
+      }
+    ],
+    "unitTypes": ["demon"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "gainGold",
+              "args": {
+                "steal": 666,
+                "goldCount": 0
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ousmanes_summoning_circle",
+    "name": "Ousmane's Summoning Circle",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [],
+    "health": 10,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "summon",
+              "args": {
+                "isRespawn": false,
+                "randomPositions": 1,
+                "randomManaCost": 2
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pandy_panda",
+    "name": "Pandy Panda",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 5,
+    "power": 3,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "regeneration": 3
+    },
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "panicked_student",
+    "name": "Panicked Student",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "cycleCards",
+              "args": {}
+            },
+            "targets": [
+              {
+                "type": "hand_card",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "peaceful_faerie",
+    "name": "Peaceful Faerie",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 0,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "keywords": {
+      "ranged": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "mezz",
+                "duration": 2,
+                "fromTriggerParam": "defender"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "peasants_be_gone",
+    "name": "Peasants be gone!",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "bounceUnit",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 2
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "plague_lands",
+    "name": "Plague Lands",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [],
+    "health": 10,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "decay",
+                "counterValue": 1
+              }
+            },
+            "targets": [
+              {
+                "type": "unit_allies",
+                "count": 1
+              },
+              {
+                "type": "unit_ennemies",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "plague_spreader",
+    "name": "Plague Spreader",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 9,
+    "power": 1,
+    "maxHealth": 13,
+    "colors": [
+      {
+        "color": "black",
+        "count": 4
+      }
+    ],
+    "unitTypes": ["human", "demon"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Death"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "decay",
+                "counterValue": 1,
+                "range": {
+                  "all": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "plains",
+    "name": "Plains",
+    "colors": [],
+    "health": 20,
+    "cost": 0,
+    "type": "land",
+    "rarity": "common",
+    "cardSet": "alpha"
+  },
+  {
+    "id": "professore",
+    "name": "Professore",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "incrementColor",
+              "args": {
+                "color": "blue"
+              }
+            }
+          }
+        ],
+        "cost": 1,
+        "exhausts": true
+      },
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "incrementColor",
+              "args": {
+                "color": "black"
+              }
+            }
+          }
+        ],
+        "cost": 1,
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "promising_prototype",
+    "name": "Promising Prototype",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 9,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["construct"],
+    "keywords": {
+      "moveAndAttack": true,
+      "trample": true,
+      "cleave": true,
+      "lance": true,
+      "flying": true,
+      "retaliate": 5,
+      "armor": 3,
+      "resist": 3
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "rage_elemental",
+    "name": "Rage Elemental",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 5,
+    "power": 5,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["elemental"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Land Destroyed"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 3,
+                "range": {
+                  "all": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ragnar_lothbrok",
+    "name": "Ragnar Lothbrok",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 7,
+    "power": 4,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "moveAndAttack": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Land Destroyed"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "gainGold",
+              "args": {
+                "goldCount": 10
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "raise_dead",
+    "name": "Raise Dead",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "reanimate",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "graveyard_card",
+            "count": 1
+          },
+          {
+            "type": "cell_empty",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "rebuild",
+    "name": "Rebuild",
+    "rarity": "shop",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 0,
+    "colors": [],
+    "actions": [
+      {
+        "effect": {
+          "name": "fortifyLand",
+          "args": {
+            "amount": 10
+          }
+        },
+        "targets": [
+          {
+            "type": "land",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "red_dragon",
+    "name": "Red Dragon",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 8,
+    "power": 6,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      }
+    ],
+    "keywords": {
+      "lance": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 2,
+                "range": {
+                  "addSelf": true,
+                  "adjacent": true
+                }
+              }
+            },
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "red_haired_bard",
+    "name": "Red Haired Bard",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 5,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "temporaryEffect",
+              "args": {
+                "effect": {
+                  "moveAndAttack": true
+                },
+                "range": {
+                  "allies": true,
+                  "adjacent": true
+                }
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "rock_drop",
+    "name": "Rock Drop",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageLand",
+          "args": {
+            "damage": 2
+          }
+        },
+        "targets": [
+          {
+            "type": "land",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "rock_elemental",
+    "name": "Rock Elemental",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 3,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["elemental"],
+    "keywords": {
+      "resist": 2
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "royal_castle_builder",
+    "name": "Royal Castle Builder",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 5,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "black",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "power": 3,
+                "maxHealth": 3,
+                "range": {
+                  "adjacent": true,
+                  "allies": true,
+                  "unitType": "building"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "royal_halberdier",
+    "name": "Royal Halberdier",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 7,
+    "power": 5,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "lance": true,
+      "retaliate": 4,
+      "armor": 2
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "lion",
+    "name": "Savannah Lion",
+    "type": "unit",
+    "rarity": "common",
+    "cost": 2,
+    "power": 2,
+    "maxHealth": 2,
+    "keywords": {
+      "retaliate": 1
+    },
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "schnell",
+    "name": "Schnell!",
+    "rarity": "rare",
+    "type": "spell",
+    "cost": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageUnit",
+          "args": {
+            "damage": 1,
+            "range": {
+              "allies": true
+            }
+          }
+        }
+      },
+      {
+        "effect": {
+          "name": "staticKeyword",
+          "args": {
+            "abilityName": "schnell",
+            "keyword": "haste",
+            "keyWordValue": 0,
+            "range": {
+              "allies": true
+            }
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "second_breakfast",
+    "name": "Second Breakfast",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 1,
+    "colors": [
+      {
+        "color": "green",
+        "count": 4
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "addCounters",
+          "args": {
+            "counterType": "growth",
+            "counterValue": 2
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "security_golem",
+    "name": "Security Golem",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 6,
+    "power": 2,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["construct"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Card Drawn",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "energy",
+                "counterValue": 1
+              }
+            }
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "useEnergy",
+              "args": {
+                "effectTemplate": "applyUnitStatus",
+                "energyCost": 3,
+                "otherArgs": {
+                  "statusType": "stun",
+                  "duration": 1
+                }
+              }
+            },
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "useEnergy",
+              "args": {
+                "effectTemplate": "applyUnitStatus",
+                "energyCost": 3,
+                "otherArgs": {
+                  "statusType": "mezz",
+                  "duration": 2
+                }
+              }
+            },
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "self_building_tank",
+    "name": "Self Building Tank",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 7,
+    "power": 3,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["construct"],
+    "keywords": {
+      "ranged": true,
+      "retaliate": 3,
+      "armor": 1
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "energy",
+                "counterValue": 1,
+                "range": {
+                  "self": true
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "type": "Activated"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "useEnergy",
+              "args": {
+                "effectTemplate": "staticKeyword",
+                "energyCost": 3,
+                "otherArgs": {
+                  "abilityName": "selfBuildTank",
+                  "keyword": "armor",
+                  "keyWordValue": 1,
+                  "reset": "false"
+                }
+              }
+            }
+          }
+        ],
+        "cost": 1
+      },
+      {
+        "trigger": {
+          "type": "Activated",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "useEnergy",
+              "args": {
+                "effectTemplate": "addCounters",
+                "energyCost": 2,
+                "otherArgs": {
+                  "counterType": "growth",
+                  "counterValue": 1
+                }
+              }
+            }
+          }
+        ],
+        "cost": 1
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "sewer_rat",
+    "name": "Sewer Rat",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 1,
+    "power": 0,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["beast"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Death",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "poison",
+                "duration": 1,
+                "range": {
+                  "sameRow": true,
+                  "ennemies": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "sewers",
+    "name": "Sewers",
+    "rarity": "rare",
+    "type": "land",
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "health": 1,
+    "cost": 0,
+    "ruinsAbilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "sameRow": true,
+            "ennemies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "poison",
+                "duration": 1,
+                "range": {
+                  "sameRow": true,
+                  "ennemies": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "shameless_imitator",
+    "name": "Shameless Imitator",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 1,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Reach",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "drawCard",
+              "args": {
+                "cardCount": 1
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "sherazad",
+    "name": "Sherazad",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 9,
+    "power": 1,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true,
+      "resist": 3
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damagePlayer",
+              "args": {
+                "damage": -99,
+                "opposingPlayer": false
+              }
+            }
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "type": "On Death",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "putToDeckBottom",
+              "args": {}
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "shield_maiden",
+    "name": "Shield Maiden",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 1,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "stun",
+                "duration": 1,
+                "fromTriggerParam": "defender"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "shroomy",
+    "name": "Shroomy",
+    "type": "unit",
+    "unitTypes": ["mushroom"],
+    "cost": 1,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "rarity": "common",
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "shroomy_protecs",
+    "name": "Shroomy Protecs",
+    "type": "unit",
+    "cost": 1,
+    "power": 0,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "rarity": "common",
+    "unitTypes": ["mushroom"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "shroomy_protecs_resist",
+                "keyword": "resist",
+                "keyWordValue": 1,
+                "reset": true,
+                "range": {
+                  "adjacent": true
+                }
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "Static"
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "snek",
+    "name": "Snek",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "keywords": {
+      "poisonous": 2
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "snow_hare",
+    "name": "Snow Hare",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 1,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["beast"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "forceMoveUnit",
+              "args": {}
+            },
+            "targets": [
+              {
+                "type": "unit_ennemies",
+                "count": 1
+              },
+              {
+                "type": "cell_enemy",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "snow_storm",
+    "name": "Snow storm",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 6,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "applyUnitStatus",
+          "args": {
+            "statusType": "daze",
+            "duration": 1,
+            "range": {
+              "sameColumn": true
+            }
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "snow_troll",
+    "name": "Snow Troll",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 5,
+    "power": 4,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["monster"],
+    "keywords": {
+      "retaliate": 2,
+      "regeneration": 2
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "sortie_specialists",
+    "name": "Sortie Specialists",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 7,
+    "power": 1,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "haste": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "power": 3,
+                "dynamicValue": "buildings"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "spirit_of_speed_and_fury",
+    "name": "Spirit of Speed and Fury",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 3
+      }
+    ],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "allies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "rage",
+                "counterValue": 1,
+                "fromTriggerParam": "mover"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "spirited_train",
+    "name": "Spirited Train",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 8,
+    "power": 5,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["construct", "demon"],
+    "keywords": {
+      "moveAndAttack": true,
+      "retaliate": 2,
+      "armor": 3,
+      "resist": 3
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "stampede",
+    "name": "Stampede",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 7,
+    "colors": [
+      {
+        "color": "green",
+        "count": 4
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "addCounters",
+          "args": {
+            "counterType": "growth",
+            "counterValue": 3,
+            "range": {
+              "allies": true,
+              "unitType": "beast"
+            }
+          }
+        }
+      },
+      {
+        "effect": {
+          "name": "staticKeyword",
+          "args": {
+            "abilityName": "stampede",
+            "keyword": "trample",
+            "range": {
+              "allies": true,
+              "unitType": "beast"
+            }
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "steam_wall",
+    "name": "Steam Wall",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 1,
+    "power": 0,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["building"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "sameRow": true,
+            "allies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "bounceUnit",
+              "args": {
+                "range": {
+                  "self": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "stone_skin",
+    "name": "Stone Skin",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "combine",
+          "args": {
+            "effectTemplates": [
+              {
+                "name": "addCounters",
+                "args": {
+                  "counterType": "decay",
+                  "counterValue": 2
+                }
+              },
+              {
+                "name": "staticKeyword",
+                "args": {
+                  "abilityName": "stoneSkin",
+                  "keyword": "armor",
+                  "keyWordValue": 2
+                }
+              }
+            ]
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "street_slinger",
+    "name": "Street Slinger",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "rarity": "common",
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "stroke_of_genius",
+    "name": "Stroke of Genius",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "tutorCard",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "deck_card",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "sucker_punch",
+    "name": "Sucker Punch",
+    "rarity": "uncommon",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "fight",
+          "args": {
+            "mutual": false
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "swift_drakkar",
+    "name": "Swift Drakkar",
+    "rarity": "common",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 3,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["construct"],
+    "keywords": {
+      "haste": true,
+      "retaliate": 1
+    }
+  },
+  {
+    "id": "taiga_rangers",
+    "name": "Taiga Rangers",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "ranged": true,
+      "poisonous": 1
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "teleport",
+    "name": "Teleport",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "forceMoveUnit",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "unit_ennemies",
+            "count": 1
+          },
+          {
+            "type": "cell_enemy",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "effect": {
+          "name": "drawCard",
+          "args": {
+            "cardCount": 1
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "tesla_tower",
+    "name": "Tesla Tower",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 7,
+    "power": 0,
+    "maxHealth": 0,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["construct"],
+    "keywords": {
+      "ranged": true,
+      "armor": 1
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "power": 1,
+                "maxHealth": 1,
+                "dynamicValue": "energy counters"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "teutonic_knight",
+    "name": "Teutonic Knight",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "lance": true,
+      "retaliate": 2,
+      "armor": 2
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "the_arena",
+    "name": "The Arena",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "health": 8,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "rage",
+                "counterValue": 1,
+                "range": {
+                  "sameRow": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "the_beast",
+    "name": "The Beast",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 6,
+    "power": 6,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "green",
+        "count": 6
+      }
+    ],
+    "unitTypes": ["beast", "demon"],
+    "keywords": {
+      "trample": true,
+      "retaliate": 6
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "the_black_knight",
+    "name": "The Black Knight",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 7,
+    "power": 5,
+    "maxHealth": 7,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human", "demon"],
+    "keywords": {
+      "retaliate": 2,
+      "regeneration": 5
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Before Damage",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "blackKnight",
+                "keyword": "trample"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "the_great_reset",
+    "name": "The Great Reset",
+    "rarity": "shop",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 0,
+    "colors": [],
+    "actions": [
+      {
+        "effect": {
+          "name": "destroyUnit",
+          "args": {
+            "range": {
+              "all": true
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "tim",
+    "name": "Tim",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "rarity": "common",
+    "abilities": [
+      {
+        "actions": [
+          {
+            "targets": [
+              {
+                "type": "unit",
+                "count": 1
+              }
+            ],
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 1
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "Activated"
+        },
+        "exhausts": true
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "time_elemental",
+    "name": "Time Elemental",
+    "rarity": "legendary",
+    "type": "unit",
+    "cost": 1,
+    "power": 0,
+    "maxHealth": 0,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["elemental"],
+    "keywords": {
+      "moveAndAttack": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1,
+                "dynamicValue": "turns"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "to_the_gates",
+    "name": "To the gates!",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "staticKeyword",
+          "args": {
+            "abilityName": "toTheGates",
+            "keyword": "retaliate",
+            "keyWordValue": 2,
+            "range": {
+              "unitType": "human",
+              "allies": true
+            },
+            "reset": "false"
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "todorat",
+    "name": "Todorat",
+    "rarity": "legendary",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 8,
+    "power": 1,
+    "maxHealth": 9,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["demon", "beast", "human"],
+    "keywords": {
+      "armor": 1,
+      "resist": 3
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "destroyUnit",
+              "args": {
+                "range": {
+                  "sameRow": true,
+                  "ennemies": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "transfer_energy",
+    "name": "Transfer Energy",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "transferCounters",
+          "args": {
+            "counterType": "energy"
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "effect": {
+          "name": "drawCard",
+          "args": {
+            "cardCount": 1
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "trap_road",
+    "name": "Trap Road",
+    "rarity": "common",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [],
+    "health": 10,
+    "retaliate": 1
+  },
+  {
+    "id": "trebuchet",
+    "name": "Trebuchet",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 0,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["construct"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damagePlayer",
+              "args": {
+                "damage": 1,
+                "opposingPlayer": "true"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "tricky_move",
+    "name": "Tricky Move",
+    "rarity": "uncommon",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "swapUnits",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "trident",
+    "name": "Trident",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageUnit",
+          "args": {
+            "damage": 3
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 3
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "try_again",
+    "name": "Try Again",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "bounceUnit",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "effect": {
+          "name": "drawCard",
+          "args": {
+            "cardCount": 1
+          }
+        }
+      }
+    ],
+    "aiHints": ["Remove Unit"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "tsunami",
+    "name": "Tsunami",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageUnit",
+          "args": {
+            "damage": 4,
+            "range": {
+              "sameColumn": true
+            }
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "aiHints": ["Remove Unit"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "tundra_wolf",
+    "name": "Tundra Wolf",
+    "rarity": "common",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 3,
+    "power": 3,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "resist": 1
+    }
+  },
+  {
+    "id": "uncle_bobo",
+    "name": "Uncle Bobo",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "unit",
+    "cost": 2,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["halfing"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1,
+                "range": {
+                  "allies": true,
+                  "adjacent": true,
+                  "unitType": "plant"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unicorn",
+    "name": "Unicorn",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 6,
+    "power": 4,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "trample": true,
+      "retaliate": 3,
+      "resist": 2
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "unstable_bridge",
+    "name": "Unstable Bridge",
+    "rarity": "uncommon",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "bounceUnit",
+          "args": {
+            "range": {
+              "sameRow": true
+            }
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unstable_lab",
+    "name": "Unstable Lab",
+    "rarity": "uncommon",
+    "cardSet": "alpha",
+    "type": "land",
+    "cost": 0,
+    "colors": [],
+    "health": 10,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Land Destroyed",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "destroyUnit",
+              "args": {
+                "range": {
+                  "sameRow": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "vengeful_crusader",
+    "name": "Vengeful Crusader",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 3,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "armor": 1
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Reach",
+          "range": {
+            "ennemies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "rage",
+                "counterValue": 1,
+                "dynamicValue": 0
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "vigilant_knight",
+    "name": "Vigilant Knight",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 4,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Static"
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "vigilantKnight",
+                "keyword": "armor",
+                "keyWordValue": 2,
+                "range": {
+                  "allies": true,
+                  "adjacent": true
+                },
+                "reset": "true"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "viking_banner",
+    "name": "Viking Banner",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 6,
+    "power": 4,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "keywords": {
+      "retaliate": 2
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "rage",
+                "counterValue": 1,
+                "range": {
+                  "allies": true,
+                  "unitType": "human",
+                  "excludeSelf": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "wall_of_brambles",
+    "name": "Wall of brambles",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 2,
+    "power": 0,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["plant"],
+    "keywords": {
+      "retaliate": 2
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "watch_tower",
+    "name": "Watch Tower",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 2,
+    "maxHealth": 3,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["building"],
+    "keywords": {
+      "immobile": true,
+      "ranged": true,
+      "retaliate": 1
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "what_doesnt_kill",
+    "name": "What doesn't kill",
+    "rarity": "rare",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "transformCounters",
+          "args": {
+            "fromCounterType": "decay",
+            "toCounterType": "growth",
+            "range": {
+              "all": true
+            }
+          }
+        }
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "where_there_is_a_whip",
+    "name": "Where there is a Whip",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "refreshUnit",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "whirling_dervishes",
+    "name": "Whirling Dervishes",
+    "rarity": "uncommon",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Card Drawn",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "power": 1,
+                "maxHealth": 1
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "who_is_fat",
+    "name": "Who is fat ???",
+    "rarity": "common",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "staticKeyword",
+          "args": {
+            "abilityName": "whoFat",
+            "keyword": "cleave"
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "wisdom_of_old",
+    "name": "Wisdom of Old",
+    "rarity": "uncommon",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "regrowCard",
+          "args": {}
+        },
+        "targets": [
+          {
+            "type": "graveyard_card",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "wolf",
+    "name": "Wolf",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 4,
+    "power": 4,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "keywords": {
+      "retaliate": 1
+    },
+    "cardSet": "alpha"
+  },
+  {
+    "id": "wooden_barricade",
+    "name": "Wooden Barricade",
+    "rarity": "shop",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 0,
+    "colors": [],
+    "actions": [
+      {
+        "effect": {
+          "name": "summon",
+          "args": {
+            "summonedUnit": {
+              "id": "wall_of_brambles",
+              "name": "Wall of brambles",
+              "rarity": "common",
+              "type": "unit",
+              "cost": 2,
+              "power": 0,
+              "maxHealth": 4,
+              "colors": [
+                {
+                  "color": "green",
+                  "count": 1
+                }
+              ],
+              "unitTypes": ["plant"],
+              "keywords": {
+                "retaliate": 2
+              },
+              "cardSet": "alpha"
+            },
+            "isRespawn": false
+          }
+        },
+        "targets": [
+          {
+            "type": "cell_ally",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "young_hobbit",
+    "name": "Young Hobbit",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 2,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["hobbit"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "young_viking",
+    "name": "Young Viking",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 3,
+    "power": 4,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 1
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["human"],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "zeppelin",
+    "name": "Zeppelin",
+    "rarity": "rare",
+    "type": "unit",
+    "cost": 7,
+    "power": 7,
+    "maxHealth": 7,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["construct"],
+    "keywords": {
+      "flying": true,
+      "retaliate": 4
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Death",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 4,
+                "range": {
+                  "adjacent": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "cardSet": "alpha"
+  },
+  {
+    "id": "zizany",
+    "name": "Zizany",
+    "rarity": "rare",
+    "cardSet": "alpha",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "red",
+        "count": 2
+      },
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "fight",
+          "args": {
+            "mutual": "true",
+            "sameSidePossible": "true"
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "zombie",
+    "name": "Zombie",
+    "rarity": "common",
+    "type": "unit",
+    "cost": 2,
+    "power": 2,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["monster"],
+    "cardSet": "alpha"
+  }
+]

@@ -18,14 +18,7 @@
     UnitCardTemplate,
     UnitKeywords,
   } from '../../../lib/_model';
-  import {
-    CardColor,
-    CardRarity,
-    CardSet,
-    CardType,
-    TriggerType,
-    UnitType,
-  } from '../../../lib/_model';
+  import { CardColor, CardType, TriggerType, UnitType } from '../../../lib/_model';
   import type { UnitFilterArgs } from '../../../lib/battle/effects';
   import { baseStatsCost, getActionsBudget, getBudgetForSpell, getBudgetForUnit } from '../budgets';
   import { costPerKeywordForUnit } from '../keywords';
@@ -67,7 +60,6 @@
   // Form state
   type BuilderState = {
     name: string;
-    rarity: CardRarity;
     type: CardType;
     cost: number;
     power: number;
@@ -82,7 +74,6 @@
 
   const initialState: BuilderState = {
     name: '',
-    rarity: CardRarity.Common,
     type: CardType.Unit,
     cost: 1,
     power: 1,
@@ -118,7 +109,6 @@
       const card = uiState.cardEditor.card;
 
       state.name = card.name || '';
-      state.rarity = card.rarity || CardRarity.Common;
       state.type = card.type || CardType.Unit;
       state.cost = card.cost || 0;
       state.colors = card.colors ? [...card.colors] : [{ color: CardColor.Red, count: 1 }];
@@ -307,8 +297,6 @@
       const cardData: UnitCardTemplate = {
         id: derivedId,
         name: state.name,
-        rarity: state.rarity,
-        cardSet: CardSet.Alpha,
         type: state.type,
         cost: state.cost,
         power: state.power,
@@ -323,8 +311,6 @@
       const cardData: SpellCardTemplate = {
         id: derivedId,
         name: state.name,
-        rarity: state.rarity,
-        cardSet: CardSet.Alpha,
         type: state.type,
         cost: state.cost,
         colors: state.colors,
@@ -335,8 +321,6 @@
       const cardData: LandTemplate = {
         id: derivedId,
         name: state.name,
-        rarity: state.rarity,
-        cardSet: CardSet.Alpha,
         type: state.type,
         cost: 0,
         colors: state.colors,
@@ -419,7 +403,6 @@
   // Reset form function
   function resetForm() {
     state.name = '';
-    state.rarity = CardRarity.Common;
     state.type = CardType.Unit;
     state.cost = 1;
     state.power = 1;

@@ -22,5 +22,4 @@ export interface Filters {
   cardType?: string;
   colorCombination?: string;
   cost?: number;
-  rarity?: string;
 }

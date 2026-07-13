@@ -1,253 +1,45 @@
 <script lang="ts">
   import { UiView, type Npc, type Place } from '@/lib/_model';
-  import { uiState } from '@/lib/_state';
+  import { initBattle } from '@/lib/battle/init';
   import { gs } from '@/lib/_state/main.svelte';
-  import { initPlayerChat } from '@/lib/llm/chat';
-  import { createEventForCurrentActivity } from '@/lib/sim/event';
+  import { uiState } from '@/lib/_state/state-ui.svelte';
+  import { getPlaceImagePath } from '@/lib/_utils/asset-paths';
   import CharacterPortrait from './characters/CharacterPortrait.svelte';
-  import Event from './Event.svelte';
-  import Gift from './Gift.svelte';
-  import InvitationReceived from './InvitationReceived.svelte';
-  import ShopModal from './ShopModal.svelte';
-  import SocialAction from './SocialAction.svelte';
 
   let { place }: { place: Place } = $props();
 
-  // Map place names to image filenames
-  function getPlaceImagePath(placeName: string): string {
-    const imageName = place.key || 'bedroom'; // default fallback
-    return `/assets/images/places/${imageName}.jpg`;
-  }
+  const imagePath = $derived(getPlaceImagePath(place.key));
+  const npcs = $derived(Object.values(gs.characters));
 
-  let imagePath = $derived(getPlaceImagePath(place.name));
-
-  // Get all characters in this place
-  let charactersInPlace = $derived(
-    Object.values(gs.characters).filter((char) => char.place === place.index)
-  );
-
-  // Menu state
-  let selectedCharacters = $state<Npc[]>([]);
-  let menuPosition = $state({ x: 0, y: 0 });
-  let showMenu = $derived(selectedCharacters.length > 0);
-
-  // Handle character portrait click
-  function handleCharacterClick(event: MouseEvent, character: Npc) {
-    event.stopPropagation();
-
-    if (character.chatInitiation) {
-      initPlayerChat([character]);
-      uiState.currentView = UiView.Chat;
-      return;
-    }
-
-    // Toggle character selection
-    const isSelected = selectedCharacters.some((c) => c.key === character.key);
-    if (isSelected) {
-      // Remove from selection
-      selectedCharacters = selectedCharacters.filter((c) => c.key !== character.key);
-    } else {
-      // Add to selection
-      selectedCharacters = [...selectedCharacters, character];
-    }
-
-    // Calculate menu position relative to the clicked portrait
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    menuPosition = {
-      x: rect.left + rect.width / 2,
-      y: window.innerHeight - rect.top + 20, // Position above the portrait using bottom positioning
-    };
-  }
-
-  // Close menu when clicking outside
-  function handleBackgroundClick() {
-    selectedCharacters = [];
-  }
-
-  // Handle shop button click
-  function handleShopClick() {
-    uiState.shopModal.placeKey = place.key;
-    uiState.shopModal.visible = true;
-  }
-
-  function handleGiftClick(event: MouseEvent, character: Npc) {
-    event.stopPropagation();
-    uiState.activeGiftCharacterKey = character.key;
-  }
-
-  function handleInvitationClick(event: MouseEvent, character: Npc) {
-    event.stopPropagation();
-    uiState.activeInvitationCharacterKey = character.key;
+  function handlePortraitClick(character: Npc) {
+    initBattle(character.key);
+    uiState.currentView = UiView.Battle;
   }
 </script>
 
-<div
-  class="main-layout"
-  class:has-event={!!gs.activity.event ||
-    !!uiState.activeGiftCharacterKey ||
-    !!uiState.activeInvitationCharacterKey}
->
-  <div
-    class="place-container"
-    style="--bg-image: url('{imagePath}')"
-    onclick={handleBackgroundClick}
-  >
-    <div class="top-left-controls">
-      {#if place.shopInventory && place.shopInventory.length > 0}
-        <button class="shop-button" onclick={handleShopClick}>
-          <span class="shop-icon">🛒</span>
-          <span class="shop-label">Shop | {gs.player.cash}$</span>
-        </button>
-      {/if}
-
-      <button class="event-button" onclick={() => createEventForCurrentActivity()}>
-        <span class="event-icon">✨</span>
-        <span class="event-label">Generate Event</span>
-      </button>
-    </div>
-
-    <div class="characters-overlay">
-      {#each charactersInPlace as character (character.key)}
-        <div
-          class="character-portrait-container"
-          class:selected={selectedCharacters.some((c) => c.key === character.key)}
-          onclick={(e) => handleCharacterClick(e, character)}
-        >
-          <CharacterPortrait {character} />
-          {#if character.chatInitiation}
-            <div class="chat-icon">💬</div>
-          {/if}
-          {#if character.gifting?.cards.length > 0}
-            <div class="gift-icon" onclick={(e) => handleGiftClick(e, character)}>🎁</div>
-          {/if}
-          {#if character.invitation}
-            <div class="invitation-icon" onclick={(e) => handleInvitationClick(e, character)}>
-              📅
-            </div>
-          {/if}
-        </div>
-      {/each}
-    </div>
-
-    <!-- Shop Modal -->
-    <ShopModal />
-
-    {#if showMenu}
-      <div
-        class="social-modal"
-        style={`left: 50%; bottom: ${menuPosition.y}px; margin-left: -600px;`}
-        onclick={(e) => e.stopPropagation()}
+<div class="place-container" style="--bg-image: url('{imagePath}')">
+  <div class="characters-overlay">
+    {#each npcs as character (character.key)}
+      <button
+        type="button"
+        class="character-portrait-container"
+        onclick={() => handlePortraitClick(character)}
       >
-        <div class="modal-body">
-          <SocialAction characters={selectedCharacters} />
-        </div>
-      </div>
-    {/if}
+        <CharacterPortrait {character} />
+      </button>
+    {/each}
   </div>
-
-  {#if gs.activity.event}
-    <div class="event-pane">
-      <Event />
-    </div>
-  {:else if uiState.activeGiftCharacterKey}
-    <div class="event-pane">
-      <Gift />
-    </div>
-  {:else if uiState.activeInvitationCharacterKey}
-    <div class="event-pane">
-      <InvitationReceived />
-    </div>
-  {/if}
 </div>
 
 <style>
-  .main-layout {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
   .place-container {
     position: relative;
-    flex: 1;
+    width: 100%;
     height: 100%;
     background-image: var(--bg-image);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    transition: flex 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .has-event .place-container {
-    flex: 0 0 50%;
-  }
-
-  .event-pane {
-    flex: 0 0 50%;
-    height: 100%;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-    z-index: 20;
-    overflow: hidden;
-  }
-
-  /* Control Buttons Styles (Shop and Event) */
-  .top-left-controls {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    z-index: 10;
-  }
-
-  .shop-button,
-  .event-button {
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(8px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    padding: 12px 16px;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow:
-      0 4px 12px rgba(0, 0, 0, 0.4),
-      0 2px 6px rgba(0, 0, 0, 0.2);
-    text-align: left;
-    width: fit-content;
-  }
-
-  .shop-button:hover,
-  .event-button:hover {
-    background: rgba(0, 0, 0, 0.9);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow:
-      0 6px 16px rgba(0, 0, 0, 0.5),
-      0 3px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .shop-button:active,
-  .event-button:active {
-    transform: translateY(0);
-  }
-
-  .shop-icon,
-  .event-icon {
-    font-size: 16px;
-  }
-
-  .shop-label,
-  .event-label {
-    white-space: nowrap;
   }
 
   .characters-overlay {
@@ -257,23 +49,17 @@
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    justify-content: flex-start;
     gap: 16px;
-    z-index: 5;
     max-height: calc(100% - 80px);
     overflow: hidden;
-  }
-
-  .has-event .characters-overlay {
-    bottom: 20px;
-    left: 20px;
-    gap: 12px;
   }
 
   .character-portrait-container {
     width: 280px;
     height: 280px;
+    padding: 0;
     border-radius: 12px;
+    cursor: pointer;
     box-shadow:
       0 8px 24px rgba(0, 0, 0, 0.6),
       0 4px 12px rgba(0, 0, 0, 0.4),
@@ -281,107 +67,10 @@
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(6px);
     border: 3px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-    position: relative;
-    cursor: pointer;
-  }
-
-  .has-event .character-portrait-container {
-    width: 220px;
-    height: 220px;
+    overflow: hidden;
   }
 
   .character-portrait-container:hover {
-    box-shadow:
-      0 12px 32px rgba(0, 0, 0, 0.7),
-      0 6px 16px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-
-  .character-portrait-container.selected {
-    border-color: #4ade80;
-    box-shadow:
-      0 8px 24px rgba(74, 222, 128, 0.4),
-      0 4px 12px rgba(74, 222, 128, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  }
-
-  .chat-icon,
-  .invitation-icon {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(4px);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    animation: chatPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes chatPulse {
-    0%,
-    100% {
-      transform: scale(1);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    }
-    50% {
-      transform: scale(1.1);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-    }
-  }
-
-  .gift-icon {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(4px);
-    border: 2px solid #fbbf24;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    animation: giftPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes giftPulse {
-    0%,
-    100% {
-      transform: scale(1);
-      box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
-    }
-    50% {
-      transform: scale(1.1);
-      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.6);
-    }
-  }
-
-  /* Social Action Modal */
-  .social-modal {
-    position: fixed;
-    width: 1200px;
-    z-index: 1300;
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-  }
-
-  .modal-body {
-    flex: 1 1 auto;
-    padding: 12px;
+    border-color: rgba(255, 255, 255, 0.35);
   }
 </style>

@@ -29,10 +29,6 @@
       filtered = filtered.filter((card) => card.cost === filters.cost);
     }
 
-    if (filters.rarity) {
-      filtered = filtered.filter((card) => card.rarity === filters.rarity);
-    }
-
     return filtered;
   });
 
@@ -46,10 +42,6 @@
 
     if (filters.cost !== undefined) {
       filtered = filtered.filter((card) => card.cost === filters.cost);
-    }
-
-    if (filters.rarity) {
-      filtered = filtered.filter((card) => card.rarity === filters.rarity);
     }
 
     return filtered;
@@ -71,10 +63,6 @@
           .join('-');
         return cardColors === filters.colorCombination;
       });
-    }
-
-    if (filters.rarity) {
-      filtered = filtered.filter((card) => card.rarity === filters.rarity);
     }
 
     return filtered;
@@ -221,14 +209,6 @@
     }
   }
 
-  function handleRarityClick(rarity: string) {
-    if (filters.rarity === rarity) {
-      onFiltersChange({ rarity: undefined });
-    } else {
-      onFiltersChange({ rarity });
-    }
-  }
-
   function getMaxCount(items: Array<{ count: number }>) {
     return Math.max(...items.map((item) => item.count));
   }
@@ -304,31 +284,6 @@
             <div
               class="bar"
               style="width: {(item.count / getMaxCount(costDistribution)) * 100}%"
-            ></div>
-          </div>
-          <span class="bar-count">{item.count}</span>
-        </div>
-      {/each}
-    </div>
-  </section>
-
-  <!-- Rarity Distribution -->
-  <section class="filter-section">
-    <h4>Rarity Distribution</h4>
-    <div class="chart-container">
-      {#each rarityDistribution as item}
-        <div
-          class="bar-item"
-          class:active={filters.rarity === item.rarity}
-          onclick={() => handleRarityClick(item.rarity)}
-        >
-          <div class="bar-label">
-            {item.rarity?.charAt(0).toUpperCase() + item.rarity?.slice(1)}
-          </div>
-          <div class="bar-container">
-            <div
-              class="bar"
-              style="width: {(item.count / getMaxCount(rarityDistribution)) * 100}%"
             ></div>
           </div>
           <span class="bar-count">{item.count}</span>

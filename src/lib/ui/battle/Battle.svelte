@@ -7,17 +7,14 @@
   import { fade, scale } from 'svelte/transition';
   import CardFull from '../cards/CardFull.svelte';
   import ModalHost from '../ModalHost.svelte';
-  import Chat from '../sim/Chat.svelte';
   import Board from './Board.svelte';
   import ConfirmPopover from './ConfirmPopover.svelte';
   import DeckModal from './DeckModal.svelte';
   import DragPreview from './DragPreview.svelte';
   import GameWonModal from './GameWonModal.svelte';
-  import GoldCost from './GoldCost.svelte';
   import GraveyardModal from './GraveyardModal.svelte';
   import Hand from './Hand.svelte';
   import Player from './Player.svelte';
-  import Shop from './Shop.svelte';
   import SpellDimOverlay from './SpellDimOverlay.svelte';
   import SpellTargetArrows from './SpellTargetArrows.svelte';
   import TargetPrompt from './TargetPrompt.svelte';
@@ -44,11 +41,7 @@
   <div class="bottom-section">
     <div class="hands-container">
       <Hand player={bs.players[0]} />
-      {#if !uiState.battle.displayChat}
-        <Hand player={bs.players[1]} />
-      {:else}
-        <div class="hand-placeholder"></div>
-      {/if}
+      <Hand player={bs.players[1]} />
     </div>
 
     <div class="turn-slider-bar">
@@ -68,46 +61,6 @@
 
 <TargetPrompt />
 <DragPreview />
-
-<!-- Chat component positioned in bottom right -->
-{#if uiState.battle.displayChat}
-  <div class="battle-chat-container">
-    <Chat />
-  </div>
-{/if}
-
-<!-- Floating chat bubble toggle -->
-<button
-  class="chat-fab"
-  onclick={() => (uiState.battle.displayChat = !uiState.battle.displayChat)}
-  aria-label={uiState.battle.displayChat ? 'Hide Chat' : 'Show Chat'}
-  title={uiState.battle.displayChat ? 'Hide Chat' : 'Show Chat'}
->
-  💬
-</button>
-
-<!-- Shop button and gold displays positioned in top center -->
-<div class="shop-gold-container">
-  <GoldCost value={bs.players[0]?.gold || 0} size="md" />
-  <button
-    class="shop-btn"
-    aria-label="Shop"
-    title="Shop"
-    onclick={() => {
-      uiState.modal.custom = {
-        component: Shop,
-        props: {},
-        width: Math.min(window.innerWidth * 0.8, 1200),
-        height: Math.min(window.innerHeight * 0.8, 800),
-        overlayOpacity: 0,
-      };
-      uiState.modal.visible = true;
-    }}
-  >
-    <img src="/assets/images/shop.png" alt="Shop" />
-  </button>
-  <GoldCost value={bs.players[1]?.gold || 0} size="md" />
-</div>
 
 {#if gameWon && winningPlayer}
   <GameWonModal {winningPlayer} />
@@ -214,35 +167,6 @@
     pointer-events: none;
   }
 
-  /* Reverted shop button to use original image styling */
-  .shop-btn {
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    padding: 0px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-  }
-
-  .shop-btn:hover {
-    transform: translateY(-2px);
-  }
-
-  .shop-btn:active {
-    transform: translateY(0);
-  }
-
-  .shop-btn img {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    pointer-events: none;
-    display: block;
-  }
-
   .end-turn-btn {
     width: 72px;
     height: 72px;
@@ -290,44 +214,6 @@
     text-shadow: none;
   }
 
-  .chat-fab {
-    position: fixed;
-    top: 8%;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid var(--color-golden);
-    background: rgba(20, 20, 20, 0.9);
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-    z-index: 1001;
-    transition:
-      transform 0.15s ease,
-      background 0.2s ease;
-  }
-
-  .chat-fab:hover {
-    background: rgba(40, 40, 40, 0.95);
-    transform: scale(1.06);
-  }
-
-  .shop-gold-container {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    z-index: 1001;
-  }
-
   .bottom-section {
     display: flex;
     flex-direction: column;
@@ -342,11 +228,6 @@
     align-items: center;
     width: 100%;
     padding: 0 2rem;
-  }
-
-  .hand-placeholder {
-    width: 550px;
-    height: 220px;
   }
 
   .turn-slider-bar {
@@ -406,16 +287,6 @@
   .close-button:hover {
     background: #555;
     transform: scale(1.1);
-  }
-
-  .battle-chat-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 820px;
-    height: 430px;
-    z-index: 1000;
-    pointer-events: auto;
   }
 
   /* Played spell flash */

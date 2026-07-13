@@ -48,10 +48,6 @@
       filtered = filtered.filter((card) => card.cost === filters.cost);
     }
 
-    if (filters.rarity) {
-      filtered = filtered.filter((card) => card.rarity === filters.rarity);
-    }
-
     filteredCards = filtered;
   }
 </script>

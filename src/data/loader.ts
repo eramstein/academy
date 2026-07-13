@@ -1,7 +1,6 @@
 import {
   CardType,
   type CardTemplate,
-  type Deck,
   type LandTemplate,
   type UnitCardTemplate,
 } from '@/lib/_model';
@@ -33,15 +32,4 @@ export function getRandomUnitCardFromAll(manaCost?: number): UnitCardTemplate {
       (card) => card.type === CardType.Unit && (manaCost ? card.cost === manaCost : true)
     ) as UnitCardTemplate[]
   );
-}
-
-export async function loadBaseDeck(deckName: string): Promise<Deck> {
-  const deckData = await import(`./decks/${deckName}.json`);
-  const deck = deckData.default as Deck;
-  deck.record = {
-    wins: 0,
-    losses: 0,
-    cardResults: {},
-  };
-  return deck;
 }

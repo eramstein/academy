@@ -6,7 +6,6 @@ import {
   type TargetDefinition,
 } from '../_model';
 import { bs, uiState } from '../_state';
-import { chatOnLargeCardPlayed } from './chat';
 import { isPayable } from './cost';
 import { DataEffectTemplates } from './effects/effect-templates';
 import { discard } from './hand';
@@ -21,11 +20,6 @@ export function playSpell(spell: SpellCard, targets: EffectTargets[][]) {
   if (!isPayable(spell) || paySpellCost(spell) === false) {
     console.log('failed to pay spell cost');
     return;
-  }
-
-  // Hint to LLM that a unit was deployed
-  if (spell.cost >= 7) {
-    chatOnLargeCardPlayed(spell);
   }
 
   // Do effects after a short time to play the animation

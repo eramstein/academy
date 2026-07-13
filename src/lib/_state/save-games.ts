@@ -8,7 +8,7 @@ export interface SaveGame {
   gameState: GameState;
 }
 
-const savedGames: Table<SaveGame> = db.table('savedGames');
+const savedGames: Table<SaveGame> = db.table('savedGamesAcademy');
 
 // Save a game to the database
 export async function saveGame(game: SaveGame): Promise<number> {

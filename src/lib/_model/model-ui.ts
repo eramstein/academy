@@ -13,7 +13,6 @@ import type {
 export type UiState = {
   currentView: UiView;
   navigationVisible: boolean;
-  selectedCharacterKey: string | null;
   battle: {
     selectedUnit: UnitDeployed | null;
     validTargets: {
@@ -45,9 +44,6 @@ export type UiState = {
     displayChat: boolean;
     draggingCard: Card | null;
   };
-  collection: {
-    editedDeckKey: string | null;
-  };
   modal: {
     visible: boolean;
     title: string;
@@ -75,64 +71,27 @@ export type UiState = {
     onConfirm?: () => void;
     onCancel?: () => void;
   };
-  deckSelectionModal: {
-    visible: boolean;
-    foeKey: string | null;
-  };
-  shopModal: {
-    visible: boolean;
-    placeKey: string | null;
-  };
-  boosterModal: {
-    visible: boolean;
-    cards: CardTemplate[] | null;
-  };
-  chat: {
-    isStreaming: boolean;
-    streamingContent: string;
-  };
   saveManagerModal: {
     visible: boolean;
   };
-  tradingWith: string | null;
-  rollResults: {
-    success: boolean;
-    isCritical: boolean;
-    roll: number;
-    attribute: string;
-    difficulty: number;
-  }[];
   toast: {
     visible: boolean;
     message: string;
     type: 'info' | 'success' | 'warning' | 'error';
   };
-  cardEditor: {
-    card: CardTemplate | null;
-  };
-  activeGiftCharacterKey: string | null;
-  activeInvitationCharacterKey: string | null;
   consoleCommand: {
     visible: boolean;
   };
   isHeadless?: boolean;
   suppressAnimations?: boolean;
+  cardEditor: {
+    card: CardTemplate | null;
+  };
 };
 
 export enum UiView {
   CurrentPlace = 'CurrentPlace',
-  Battle = 'Battle',
-  CardBuilder = 'CardBuilder',
   Analytics = 'Analytics',
-  Collection = 'Collection',
-  Decks = 'Decks',
-  DeckEditor = 'DeckEditor',
-  Inventory = 'Inventory',
-  Schedule = 'Schedule',
-  Player = 'Player',
-  Characters = 'Characters',
-  Chat = 'Chat',
-  Trade = 'Trade',
-  Tournament = 'Tournament',
-  TournamentLogs = 'TournamentLogs',
+  CardBuilder = 'CardBuilder',
+  Battle = 'Battle',
 }

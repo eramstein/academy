@@ -1,3 +1,0 @@
-Quests in battle -> sim advantages (relation, cash, loot, LLM manip (e.g. auto succeed next event, create your own option, etc...))
-
-Conversely, quests in Sim -> advantage in AI manip during battle (e.g. distract)

@@ -4,7 +4,6 @@ import { bs } from '../_state';
 import { uiState } from '../_state/state-ui.svelte';
 import { clearUnitStaticAbilities } from './ability-static';
 import { isCellFree, isOnPlayersSide } from './boards';
-import { chatOnLargeCardPlayed } from './chat';
 import { isPayable, payCost } from './cost';
 import { onDamageUnit, onDeployUnit, onUnitDeath } from './listeners';
 import { soundManager } from './sound';
@@ -25,10 +24,6 @@ export function deployUnit(unit: UnitCard, position: Position) {
   if (!uiState.isHeadless) {
     // Play deploy sound
     soundManager.playDeploySound();
-    // Hint to LLM that a unit was deployed
-    if (unit.cost >= 7) {
-      chatOnLargeCardPlayed(unit);
-    }
   }
 
   // Trigger activated abilities

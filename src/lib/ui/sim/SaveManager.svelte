@@ -45,7 +45,6 @@
       errorMessage = null;
       await loadGameStateFromLocalStorage(id);
       uiState.saveManagerModal.visible = false;
-      uiState.navigationVisible = false;
     } catch (err) {
       console.error(err);
       errorMessage = 'Failed to load game.';
