@@ -1,10 +1,4 @@
-import { cards } from '@/data';
-import type {
-  Land,
-  UnitCardTemplate,
-  UnitDeployed,
-  UnitKeywordDefinition,
-} from '@/lib/_model/model-battle';
+import type { Land, UnitDeployed, UnitKeywordDefinition } from '@/lib/_model/model-battle';
 import { bs } from '../_state';
 
 // removes static abilities originating from a unit
@@ -42,7 +36,7 @@ export function removeStaticKeyword(
         (targetUnit.keywords[key] as number) -= value;
       } else {
         let hadItAlready = false;
-        if ((cards[targetUnit.instanceId] as UnitCardTemplate)?.keywords?.[key]) {
+        if (targetUnit.initialKeywords?.[key]) {
           hadItAlready = true;
         } else {
           targetUnit.staticModifiers.forEach((sm) => {
@@ -71,7 +65,7 @@ export function addStaticKeyword(
   effectName: string,
   sourcePermanent?: UnitDeployed | Land
 ) {
-  // don't add it if it had it already
+  // if it had it already, keep track of it so that we can restore it if the temporary effect ends
   if (
     targetUnit.staticModifiers.filter(
       (sm) =>
@@ -79,7 +73,7 @@ export function addStaticKeyword(
         sm.source.effectName === effectName
     ).length > 0
   ) {
-    console.log('had it already');
+    (targetUnit.initialKeywords as Record<string, boolean | number>)[keyword.key] = keyword.value;
     return false;
   }
   if (!targetUnit.keywords) {

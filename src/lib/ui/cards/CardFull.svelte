@@ -20,7 +20,7 @@
   }
 
   // Create the background image path using the card id
-  let cardImagePath = $derived(getCardImagePath(card.id));
+  let cardImagePath = $derived(getCardImagePath(card.imageFileName));
 
   // Calculate font size based on name length
   let nameFontSize = $derived(() => {

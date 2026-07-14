@@ -38,6 +38,7 @@ export interface Player {
 export interface BaseCardTemplate {
   id: string;
   name: string;
+  imageFileName: string;
   type: CardType;
   cost: number;
   colors: { color: CardColor; count: number }[];
@@ -97,6 +98,7 @@ export interface UnitDeployed extends UnitCard, BaseCardDeployed {
     keyword?: UnitKeywordDefinition;
     attack?: number;
   }[];
+  initialKeywords: UnitKeywords; // used to restore keywords if the temporary effect ends
   counters: Partial<Record<CounterType, number>>;
   isDying?: boolean;
 }

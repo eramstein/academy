@@ -72,39 +72,4 @@ export const DataEffectPrimers: Record<
       );
     },
   }),
-  useGold: ({
-    effectTemplate,
-    goldUsedForArgs,
-    goldCost,
-    otherArgs,
-  }: {
-    effectTemplate: keyof typeof DataEffectTemplates;
-    goldUsedForArgs: any;
-    goldCost?: number;
-    otherArgs: any;
-  }) => ({
-    fn: ({ unit, player, targets, triggerParams }) => {
-      if (goldCost && player.gold < goldCost) {
-        console.log('not enough gold');
-        return;
-      }
-      DataEffectTemplates[effectTemplate]({ [goldUsedForArgs]: goldCost, ...otherArgs }).fn({
-        unit,
-        player,
-        targets,
-        triggerParams,
-      });
-      player.gold -= goldCost ?? 0;
-    },
-    label: (targets: TargetDefinition[]) => {
-      const costLabel = goldCost ? `${goldCost} gold: ` : 'All gold: ';
-      return (
-        costLabel +
-        DataEffectTemplates[effectTemplate]({
-          [goldUsedForArgs]: goldCost ? ` equal to ${goldCost}` : ' equal to its gold',
-          ...otherArgs,
-        }).label(targets)
-      );
-    },
-  }),
 };

@@ -95,7 +95,7 @@
   });
 </script>
 
-{#if uiState.battle.playedSpellId}
+{#if uiState.battle.playedSpell}
   <svg
     class="spell-dim"
     width="100%"

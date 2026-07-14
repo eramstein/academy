@@ -6,7 +6,6 @@ import { playAiTurn } from './ai/ai';
 import { autoAttack } from './combat';
 import { drawCard } from './deck';
 import { onTurnStart } from './listeners';
-import { gainGold } from './player';
 import { soundManager } from './sound';
 import { removeTemporaryEffects } from './temporary-effects';
 import { damageUnit, healUnit } from './unit';
@@ -14,7 +13,6 @@ import { damageUnit, healUnit } from './unit';
 export function nextTurn() {
   if (!uiState.isHeadless) clearSelections();
   const previousPlayer = bs.isPlayersTurn ? bs.players[0] : bs.players[1];
-  updateGold(previousPlayer);
   updateStatuses(previousPlayer);
   bs.turn++;
   bs.isPlayersTurn = !bs.isPlayersTurn;
@@ -33,14 +31,6 @@ function initPlayerTurn(player: Player) {
   player.abilityUsed = false;
   updateUnits(player);
   drawCard(player);
-}
-
-// if some mana wasn't used, get 1 gold
-function updateGold(player: Player) {
-  if (player.mana > 0) {
-    gainGold(player, 1);
-    player.mana = 0;
-  }
 }
 
 function updateStatuses(player: Player) {

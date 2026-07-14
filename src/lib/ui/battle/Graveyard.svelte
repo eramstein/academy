@@ -15,7 +15,7 @@
   );
 
   // Create the background image path using the card id
-  let cardImagePath = $derived(topCard ? getCardImagePath(topCard.id) : '');
+  let cardImagePath = $derived(topCard ? getCardImagePath(topCard.imageFileName) : '');
 
   function handleGraveyardClick() {
     uiState.battle.graveyardModal.visible = true;

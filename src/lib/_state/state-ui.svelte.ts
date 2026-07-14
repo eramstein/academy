@@ -13,7 +13,7 @@ export const uiState: UiState = $state({
     currentTargetIndex: 0,
     targetBeingSelected: null,
     attackingUnitId: null,
-    playedSpellId: null,
+    playedSpell: null,
     playedSpellTargets: null,
     colorBeingIncremented: null,
     graveyardModal: {

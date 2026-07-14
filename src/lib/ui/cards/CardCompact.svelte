@@ -13,7 +13,7 @@
   let { card }: { card: CardTemplate } = $props();
 
   // Create the background image path using the card id
-  let cardImagePath = $derived(getCardImagePath(card.id));
+  let cardImagePath = $derived(getCardImagePath(card.imageFileName));
 
   // Calculate font size based on name length
   let nameFontSize = $derived(() => {
@@ -44,9 +44,6 @@
 
   // Handle right-click to show CardFull
   function handleContextMenu(event: MouseEvent) {
-    if (uiState.collection.editedDeckKey) {
-      return;
-    }
     event.preventDefault();
     uiState.cardFullOverlay.visible = true;
     uiState.cardFullOverlay.card = card;

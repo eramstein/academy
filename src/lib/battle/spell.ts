@@ -26,10 +26,10 @@ export function playSpell(spell: SpellCard, targets: EffectTargets[][]) {
   const aiNextActionBuffer = bs.isPlayersTurn ? 0 : 250;
   const spellDelay = bs.isPlayersTurn ? 0 : 250;
   const animationDuration = bs.isPlayersTurn ? 0 : config.aiActionInterval - spellDelay;
-  uiState.battle.playedSpellId = spell.id;
+  uiState.battle.playedSpell = spell;
   uiState.battle.playedSpellTargets = targets;
   setTimeout(() => {
-    uiState.battle.playedSpellId = null;
+    uiState.battle.playedSpell = null;
     uiState.battle.playedSpellTargets = null;
   }, animationDuration);
   setTimeout(

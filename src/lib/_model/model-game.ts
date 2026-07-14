@@ -1,4 +1,5 @@
 import type { DayPeriod } from './enums-sim';
+import type { CardTemplate, LandTemplate } from './model-battle';
 
 export interface GameState {
   time: {
@@ -27,9 +28,6 @@ export interface Place {
 export interface Deck {
   key: string;
   name: string;
-  cards: {
-    cardTemplateId: string;
-    count: number;
-  }[];
-  lands: string[];
+  cards: CardTemplate[];
+  lands: LandTemplate[];
 }

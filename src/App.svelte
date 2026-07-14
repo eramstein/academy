@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
-  import { loadGameData } from './data/loader';
   import { UiView } from './lib/_model';
   import { loadGameStateFromLocalStorage, uiState } from './lib/_state';
   import { handleKeybinds } from './lib/ui/_keybinds/keybinds';
@@ -14,7 +13,6 @@
 
   onMount(async () => {
     window.addEventListener('keydown', handleKeybinds);
-    await loadGameData();
     try {
       await loadGameStateFromLocalStorage('quicksave');
     } catch (error) {

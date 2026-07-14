@@ -179,7 +179,3 @@ export function onCardDrawn(player: Player, card: Card) {
 export function onLandDestroyed(land: Land) {
   triggerAbilities(TriggerType.OnLandDestroyed, { land });
 }
-
-export function onGoldGained(player: Player, amount: number) {
-  triggerAbilities(TriggerType.OnGoldGained, { player, amount });
-}

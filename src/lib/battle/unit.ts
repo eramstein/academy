@@ -55,6 +55,7 @@ export function makeDeployedUnit(unit: UnitCard, position: Position) {
     untilEndOfTurn: {},
     staticModifiers: [],
     counters: {},
+    initialKeywords: unit.keywords || {},
     isDying: false,
   };
 }

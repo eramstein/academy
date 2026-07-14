@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { cards } from '@/data/loader';
   import { bs } from '@lib/_state';
   import { uiState } from '@lib/_state/state-ui.svelte';
   import { getTableImagePath } from '@lib/_utils/asset-paths';
@@ -23,18 +22,23 @@
   let gameWon = $derived(bs.playerIdWon !== null);
   let winningPlayer = $derived(gameWon ? bs.players[bs.playerIdWon!] : null);
 
-  // Currently played spell (shown briefly when a spell is cast)
-  let playedSpellCard = $derived(
-    uiState.battle.playedSpellId ? cards[uiState.battle.playedSpellId] : null
-  );
-
   // ref to measure the floating card center for arrows
   let playedCardEl: HTMLElement | null = $state(null);
 </script>
 
 <div class="battle" style="background-image: url('{getTableImagePath()}');">
   <div class="top-section">
-    <Player player={bs.players[0]} />
+    <div class="player-turn-area">
+      <button
+        class="chip-btn end-turn-btn"
+        class:disabled={!bs.isPlayersTurn}
+        onclick={handleEndTurn}
+        disabled={!bs.isPlayersTurn}
+      >
+        <span>End<br />Turn</span>
+      </button>
+      <Player player={bs.players[0]} />
+    </div>
     <Board />
     <Player player={bs.players[1]} />
   </div>
@@ -42,18 +46,6 @@
     <div class="hands-container">
       <Hand player={bs.players[0]} />
       <Hand player={bs.players[1]} />
-    </div>
-
-    <div class="turn-slider-bar">
-      <button
-        class="chip-btn end-turn-btn slider-button"
-        class:is-p2={!bs.isPlayersTurn}
-        class:disabled={!bs.isPlayersTurn}
-        onclick={handleEndTurn}
-        disabled={!bs.isPlayersTurn}
-      >
-        <span>End<br />Turn</span>
-      </button>
     </div>
   </div>
   <ConfirmPopover />
@@ -71,7 +63,7 @@
 <ModalHost />
 
 <!-- Briefly show the played spell card -->
-{#if playedSpellCard}
+{#if uiState.battle.playedSpell}
   <div
     class="played-spell-flash"
     aria-live="polite"
@@ -85,12 +77,12 @@
       out:scale={{ duration: 120, start: 1.0 }}
       bind:this={playedCardEl}
     >
-      <CardFull card={playedSpellCard} />
+      <CardFull card={uiState.battle.playedSpell} />
     </div>
   </div>
 {/if}
 
-{#if uiState.battle.playedSpellId}
+{#if uiState.battle.playedSpell}
   <SpellDimOverlay sourceEl={playedCardEl} />
   <SpellTargetArrows sourceEl={playedCardEl} />
 {/if}
@@ -127,6 +119,12 @@
     gap: 2rem;
     width: 100%;
     margin-bottom: 1rem;
+  }
+
+  .player-turn-area {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
   .chip-btn {
@@ -175,37 +173,23 @@
     letter-spacing: 0.5px;
   }
 
-  .slider-button {
-    pointer-events: auto;
-    position: absolute;
-    left: 25%;
-    transform: translateX(-50%);
-    transition:
-      left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
-      filter 0.2s ease,
-      box-shadow 0.2s ease;
-    z-index: 10;
-  }
-
-  .slider-button.is-p2 {
-    left: 75%;
-  }
-
-  .chip-btn:hover {
+  .chip-btn:not(:disabled):hover {
     filter: brightness(1.1);
     box-shadow:
       0 6px 0px #3a221f,
       0 10px 15px rgba(0, 0, 0, 0.4);
   }
 
-  .chip-btn:active {
-    transform: translateX(-50%) translateY(2px);
+  .chip-btn:not(:disabled):active {
+    transform: translateY(4px);
+    box-shadow:
+      0 0px 0px #3a221f,
+      0 2px 6px rgba(0, 0, 0, 0.4);
   }
 
   .chip-btn.disabled,
   .chip-btn:disabled {
     cursor: not-allowed;
-    transform: translateY(0);
     filter: grayscale(80%) brightness(0.8);
     box-shadow:
       0 2px 0px #1a1a1a,
@@ -228,18 +212,6 @@
     align-items: center;
     width: 100%;
     padding: 0 2rem;
-  }
-
-  .turn-slider-bar {
-    width: 100%;
-    max-width: 1200px;
-    height: 30px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    margin-top: 40px;
   }
 
   .card-full-overlay {

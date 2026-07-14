@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { cards, lands } from '@data/loader';
   import type { Land } from '@lib/_model';
   import { TargetType } from '@lib/_model';
   import { bs, uiState } from '@lib/_state';
@@ -12,7 +11,7 @@
 
   let { land }: { land: Land } = $props();
 
-  let imagePath = $derived(getLandImagePath(land.id));
+  let imagePath = $derived(getLandImagePath(land.imageFileName));
   let isValidTarget = $derived(uiState.battle.validTargets?.lands?.[land.instanceId] === true);
 
   // Check if this land should show the color increment animation
@@ -67,17 +66,10 @@
     }
   }
 
-  function getCardTemplate(cardTemplateId: string) {
-    return cards[cardTemplateId] || lands[cardTemplateId];
-  }
-
   function handleContextMenu(event: MouseEvent) {
     event.preventDefault();
-    const cardTemplate = getCardTemplate(land.id);
-    if (cardTemplate) {
-      uiState.cardFullOverlay.visible = true;
-      uiState.cardFullOverlay.card = cardTemplate;
-    }
+    uiState.cardFullOverlay.visible = true;
+    uiState.cardFullOverlay.card = land;
   }
 </script>
 

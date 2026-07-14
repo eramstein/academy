@@ -6,6 +6,7 @@ import type {
   EffectTargets,
   Land,
   SpellCard,
+  SpellCardTemplate,
   TargetDefinition,
   UnitDeployed,
 } from './model-battle';
@@ -30,7 +31,7 @@ export type UiState = {
     currentTargetIndex: number;
     targetBeingSelected: TargetDefinition | null;
     attackingUnitId: string | null;
-    playedSpellId: string | null;
+    playedSpell: SpellCardTemplate | null;
     playedSpellTargets: EffectTargets[][] | null;
     colorBeingIncremented: CardColor | null;
     graveyardModal: {

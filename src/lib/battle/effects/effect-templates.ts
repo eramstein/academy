@@ -1,4 +1,3 @@
-import { getRandomUnitCardFromAll } from '@/data';
 import { CardType, CounterType, StatusType } from '@/lib/_model';
 import type {
   Card,
@@ -28,7 +27,6 @@ import {
   destroyUnit,
   discard,
   drawCard,
-  gainGold,
   getClosestEnnemyInRow,
   getEmptyCells,
   getOpposingPlayer,
@@ -359,7 +357,7 @@ export const DataEffectTemplates: Record<
     randomManaCost?: number;
   }) => ({
     fn: ({ targets, player, unit }) => {
-      const unitTemplate = summonedUnit ?? getRandomUnitCardFromAll(randomManaCost);
+      const unitTemplate = summonedUnit as UnitCardTemplate;
       const createdUnit = makeUnit(player.id, unitTemplate);
       if (isRespawn && unit) {
         summonUnit(createdUnit, unit.position);
@@ -455,19 +453,6 @@ export const DataEffectTemplates: Record<
       }
     },
     label: () => `Draw ${cardCount} card${cardCount !== 1 ? 's' : ''}.`,
-  }),
-  gainGold: ({ goldCount = 1, steal = 0 }) => ({
-    fn: ({ player }) => {
-      gainGold(player, goldCount, steal);
-    },
-    label: () => {
-      const parts = [];
-      if (goldCount > 0) parts.push(`Gain ${goldCount} gold${goldCount !== 1 ? 's' : ''}`);
-      if (steal > 0) parts.push(`Steal ${steal} gold${steal !== 1 ? 's' : ''}`);
-      if (parts.length === 0) return 'Gain 0 gold.';
-      if (parts.length === 1) return parts[0] + '.';
-      return `${parts[0]} and ${parts[1].toLowerCase()}.`;
-    },
   }),
   destroyUnit: ({ range }: { range?: UnitFilterArgs }) => ({
     fn: ({ targets, unit, land, player }) => {

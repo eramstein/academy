@@ -13,11 +13,7 @@
 
   const closeModal = () => {
     resetBattleState();
-    if (gs.activity.tournament) {
-      uiState.currentView = UiView.Tournament;
-    } else {
-      uiState.currentView = UiView.CurrentPlace;
-    }
+    uiState.currentView = UiView.CurrentPlace;
   };
 </script>
 

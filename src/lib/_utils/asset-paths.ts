@@ -11,12 +11,12 @@ export function getAssetPath(path: string): string {
 }
 
 // Specific asset path helpers
-export function getCardImagePath(cardId: string): string {
-  return getAssetPath(`images/cards/${cardId}.jpg`);
+export function getCardImagePath(imageFileName: string): string {
+  return getAssetPath(`images/cards/${imageFileName}.jpg`);
 }
 
-export function getLandImagePath(landId: string): string {
-  return getAssetPath(`images/cards/${landId}.jpg`);
+export function getLandImagePath(imageFileName: string): string {
+  return getAssetPath(`images/cards/${imageFileName}.jpg`);
 }
 
 export function getCharacterImagePath(characterName: string): string {

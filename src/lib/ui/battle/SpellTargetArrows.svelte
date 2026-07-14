@@ -102,7 +102,7 @@
   });
 </script>
 
-{#if uiState.battle.playedSpellId && flatTargets().length > 0}
+{#if uiState.battle.playedSpell && flatTargets().length > 0}
   <svg
     class="spell-arrows"
     width="100%"

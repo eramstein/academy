@@ -19,7 +19,7 @@
   }: { card: Card; displayKeywords?: boolean; inHand?: boolean } = $props();
 
   // Create the background image path using the card id
-  let cardImagePath = $derived(getCardImagePath(card.id));
+  let cardImagePath = $derived(getCardImagePath(card.imageFileName));
 
   // Check if this card is the currently pending spell
   let isPendingSpell = $derived(

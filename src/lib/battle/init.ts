@@ -1,4 +1,3 @@
-import { cards, lands } from '@/data';
 import { BASE_DECK, BASE_DECK2 } from '@/data/base-deck';
 import { config } from '../_config';
 import { AiTurnStrategy, type BattleState, type Card, type Deck, type Land } from '../_model';
@@ -68,14 +67,11 @@ export const initBattle = (
 function loadDeckCards(deck: Deck, ownerPlayerId: number): Card[] {
   const deckCards: Card[] = [];
   for (const card of deck.cards) {
-    for (let i = 0; i < card.count; i++) {
-      const cardTemplate = cards[card.cardTemplateId];
-      deckCards.push({
-        ...cardTemplate,
-        ownerPlayerId: ownerPlayerId,
-        instanceId: crypto.randomUUID(),
-      } as Card);
-    }
+    deckCards.push({
+      ...card,
+      ownerPlayerId: ownerPlayerId,
+      instanceId: crypto.randomUUID(),
+    } as Card);
   }
   return deckCards;
 }
@@ -84,7 +80,7 @@ function loadDeckLands(deck: Deck, ownerPlayerId: number): Land[] {
   const deckLands: Land[] = [];
   for (const [index, land] of deck.lands.entries()) {
     deckLands.push({
-      ...lands[land],
+      ...land,
       ownerPlayerId: ownerPlayerId,
       instanceId: crypto.randomUUID(),
       position: index,

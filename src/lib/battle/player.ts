@@ -1,7 +1,6 @@
 import { config } from '../_config';
 import type { CardColor, Player } from '../_model';
 import { bs, uiState } from '../_state';
-import { onGoldGained } from './listeners';
 import { soundManager } from './sound';
 import { checkIfPlayerLost } from './win';
 
@@ -56,16 +55,4 @@ export function usePlayerColorAbility(player: Player, color: CardColor) {
 
 export function addMana(player: Player, amount: number) {
   player.mana += amount;
-}
-
-export function gainGold(player: Player, amount: number, steal = 0) {
-  player.gold += amount;
-  if (steal) {
-    const targetPlayer = getOpposingPlayer(player.id);
-    const stolenAmount = Math.min(targetPlayer.gold, steal);
-    targetPlayer.gold -= stolenAmount;
-    player.gold += stolenAmount;
-  }
-  if (!uiState.isHeadless) soundManager.playGoldSound();
-  onGoldGained(player, amount);
 }
