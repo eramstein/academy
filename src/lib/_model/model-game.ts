@@ -9,11 +9,19 @@ export interface GameState {
   characters: Record<string, Npc>;
   player: Player;
   places: Place[];
+  scene: Scene;
+}
+
+export interface Scene {
+  narration: string[];
 }
 
 export interface Character {
   key: string;
   name: string;
+  gold: number;
+  placeKey: string;
+  attributes: Attributes;
 }
 
 export interface Player extends Character {}
@@ -30,4 +38,12 @@ export interface Deck {
   name: string;
   cards: CardTemplate[];
   lands: LandTemplate[];
+}
+
+export interface Attributes {
+  dexterity: number;
+  intelligence: number;
+  vitality: number;
+  charisma: number;
+  aura: number;
 }

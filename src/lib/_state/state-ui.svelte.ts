@@ -1,7 +1,7 @@
 import { UiView, type UiState } from '../_model/model-ui';
 
-export const uiState: UiState = $state({
-  currentView: UiView.CurrentPlace,
+export const defaultUiState: UiState = {
+  currentView: UiView.Scene,
   navigationVisible: false,
   battle: {
     selectedUnit: null,
@@ -64,7 +64,13 @@ export const uiState: UiState = $state({
   cardEditor: {
     card: null,
   },
-});
+};
+
+export const uiState: UiState = $state(defaultUiState);
+
+export const resetUiState = (): void => {
+  Object.assign(uiState, structuredClone(defaultUiState));
+};
 
 export function showToast(
   message: string,

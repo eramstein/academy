@@ -1,14 +1,13 @@
 <script lang="ts">
   import { UiView } from '@/lib/_model';
-  import { gs } from '@/lib/_state/main.svelte';
   import { uiState } from '@/lib/_state/state-ui.svelte';
-  import Place from './Place.svelte';
+  import Scene from './Scene.svelte';
 </script>
 
 <div class="sim-container">
   <div class="current-view">
-    {#if uiState.currentView === UiView.CurrentPlace}
-      <Place place={gs.places[0]} />
+    {#if uiState.currentView === UiView.Scene}
+      <Scene />
     {/if}
   </div>
 </div>

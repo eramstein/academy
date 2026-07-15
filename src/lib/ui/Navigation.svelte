@@ -1,8 +1,9 @@
 <script lang="ts">
   import { UiView } from '../_model';
-  import { uiState } from '../_state';
-  import { gs, resetBattleState } from '../_state/main.svelte';
+  import { resetUiState, uiState } from '../_state';
+  import { resetBattleState } from '../_state/main.svelte';
   import { endBattle } from '../battle/win';
+  import { initSim } from '../sim/init';
 
   const navItems = [
     { view: UiView.Battle, label: 'Game', icon: '🎮' },
@@ -13,8 +14,13 @@
   const stopBattle = () => {
     endBattle(true);
     resetBattleState();
-    uiState.currentView = UiView.CurrentPlace;
+    uiState.currentView = UiView.Scene;
     uiState.navigationVisible = false;
+  };
+
+  const resetSim = async () => {
+    await initSim();
+    resetUiState();
   };
 </script>
 
@@ -46,6 +52,10 @@
       <button class="nav-item admin-item" onclick={() => (uiState.saveManagerModal.visible = true)}>
         <span class="icon">💾</span>
         <span class="label">Save / Load</span>
+      </button>
+      <button class="nav-item admin-item" onclick={resetSim}>
+        <span class="icon">🔄</span>
+        <span class="label">Reset</span>
       </button>
     </div>
   </nav>

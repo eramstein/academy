@@ -91,7 +91,7 @@ export type UiState = {
 };
 
 export enum UiView {
-  CurrentPlace = 'CurrentPlace',
+  Scene = 'Scene',
   Analytics = 'Analytics',
   CardBuilder = 'CardBuilder',
   Battle = 'Battle',
