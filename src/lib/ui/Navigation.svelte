@@ -2,6 +2,7 @@
   import { UiView } from '../_model';
   import { resetUiState, uiState } from '../_state';
   import { resetBattleState } from '../_state/main.svelte';
+  import { initBattle } from '../battle/init';
   import { endBattle } from '../battle/win';
   import { initSim } from '../sim/init';
 
@@ -15,6 +16,12 @@
     endBattle(true);
     resetBattleState();
     uiState.currentView = UiView.Scene;
+    uiState.navigationVisible = false;
+  };
+
+  const startBattle = () => {
+    initBattle();
+    uiState.currentView = UiView.Battle;
     uiState.navigationVisible = false;
   };
 
@@ -49,6 +56,10 @@
 
     <div class="admin-section">
       <div class="admin-divider"></div>
+      <button class="nav-item admin-item" onclick={startBattle}>
+        <span class="icon">⚔️</span>
+        <span class="label">Init Battle</span>
+      </button>
       <button class="nav-item admin-item" onclick={() => (uiState.saveManagerModal.visible = true)}>
         <span class="icon">💾</span>
         <span class="label">Save / Load</span>

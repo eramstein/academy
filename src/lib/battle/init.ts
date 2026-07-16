@@ -4,6 +4,7 @@ import { AiTurnStrategy, type BattleState, type Card, type Deck, type Land } fro
 import { bs, gs } from '../_state';
 import { drawCard, shuffleDeck } from './deck';
 import { initColorsFromLands } from './land';
+import { playAiTurn } from './ai/ai';
 
 export const defaultBattleState: BattleState = {
   turn: 0,
@@ -19,11 +20,12 @@ export const defaultBattleState: BattleState = {
 };
 
 export const initBattle = (
-  foeKey: string = 'the-dude',
+  foeKey: string = 'administrator',
   playerDeck: Deck = BASE_DECK,
   foeDeck: Deck = BASE_DECK2
 ) => {
   bs.turn = 1;
+  bs.isPlayersTurn = Math.random() > 0.5;
   bs.players = [
     {
       id: 0,
@@ -61,8 +63,25 @@ export const initBattle = (
   bs.players[0].hand.sort((a, b) => a.cost - b.cost);
   initColorsFromLands(bs.players[0]);
   initColorsFromLands(bs.players[1]);
-  console.log('initBattle - battle initialized successfully');
+  // playersStartWithSameMana();
+  if (!bs.isPlayersTurn) {
+    playAiTurn();
+  }
 };
+
+function playersStartWithSameMana() {
+  if (bs.isPlayersTurn) {
+    bs.players[0].mana = config.initialMana;
+    bs.players[0].maxMana = config.initialMana;
+    bs.players[1].mana = config.initialMana - 1;
+    bs.players[1].maxMana = config.initialMana - 1;
+  } else {
+    bs.players[1].mana = config.initialMana;
+    bs.players[1].maxMana = config.initialMana;
+    bs.players[0].mana = config.initialMana - 1;
+    bs.players[0].maxMana = config.initialMana - 1;
+  }
+}
 
 function loadDeckCards(deck: Deck, ownerPlayerId: number): Card[] {
   const deckCards: Card[] = [];

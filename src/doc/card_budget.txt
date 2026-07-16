@@ -1,0 +1,72 @@
+Typical vanilla:
+0: 0/1
+1: 1/1
+2: 2/2
+   3/1 -4 | CC
+   1/2 +4 | ret 2 + ranged
+3: 2/5
+   3/3
+   2/4 +2 | ranged | ret 2
+   3/2 +2
+   1/7
+   4/2 -6 | CCC
+4: 3/5
+   4/3
+   4/4 -2 | CCC
+   5/5 -8 | CCCC
+5: 4/5
+   3/7
+   5/3
+6: 5/5
+   4/7
+   3/9
+   6/3
+7: 5/7
+   6/5
+   7/3
+8: 6/7
+   5/9
+9: 7/7
+   5/11
+
+Points per mana:
+
+{
+  0: 4,
+  1: 8,
+  2: 12,
+  3: 18,
+  4: 22,
+  5: 26,
+  6: 30,
+  7: 34,
+  8: 38,
+  9: 42,
+}
+
+Color bonus:
+if color count >= mana cost: +4 points
+if color count > 2: +2 per color between 3 and 5, +1 after that
+
+e.g.
+1 CC +4
+1 CCC +6
+2 CC +4
+2 CCC +6
+3 CCC +6
+3 CCCC +8
+4 CCC +2
+4 CCCC +8
+
+
+Costs:
+
+{
+  power: 4,
+  hp: 2,
+  ret: 1,
+  ranged: ceil(power / 2) * 2,
+}
+
+Modifiers:
+if power > cost : +4
