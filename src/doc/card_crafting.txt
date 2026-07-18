@@ -1,0 +1,6 @@
+Top down attributes: defines the card's flavor and lore identity
+- name
+- illustration
+- color (not counts, just which color(s) the card is initially)
+
+Bottom up attributes: mechanics

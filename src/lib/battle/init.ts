@@ -1,4 +1,4 @@
-import { BASE_DECK, BASE_DECK2 } from '@/data/base-deck';
+import { BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
 import { config } from '../_config';
 import { AiTurnStrategy, type BattleState, type Card, type Deck, type Land } from '../_model';
 import { bs, gs } from '../_state';
@@ -21,8 +21,8 @@ export const defaultBattleState: BattleState = {
 
 export const initBattle = (
   foeKey: string = 'administrator',
-  playerDeck: Deck = BASE_DECK,
-  foeDeck: Deck = BASE_DECK2
+  playerDeck: Deck = BASE_DECK_GREEN,
+  foeDeck: Deck = BASE_DECK_RED
 ) => {
   bs.turn = 1;
   bs.isPlayersTurn = Math.random() > 0.5;
