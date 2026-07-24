@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { performAction } from '@/lib/sim/actions';
   import { gs } from '@/lib/_state/main.svelte';
 
   const narration = $derived(gs.scene.narration);
+  const actions = $derived(gs.scene.actions);
 </script>
 
 <div class="scene">
@@ -13,6 +15,16 @@
       <p class="prompt">What do you do?</p>
     </div>
   </article>
+
+  {#if actions.length > 0}
+    <div class="actions">
+      {#each actions as action (action.label)}
+        <button type="button" class="action-btn" onclick={() => performAction(action)}
+          >{action.label}</button
+        >
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -20,8 +32,10 @@
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 32px;
     padding: 32px;
     box-sizing: border-box;
     overflow: auto;
@@ -58,5 +72,35 @@
     margin: 0.75em 0 0;
     font-style: italic;
     color: #4a3f32;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 640px;
+    margin-top: auto;
+  }
+
+  .action-btn {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    color: #e8dcc4;
+    background: #3d3429;
+    border: 1px solid #5a4b3c;
+    border-radius: 4px;
+    padding: 10px 24px;
+    cursor: pointer;
+  }
+
+  .action-btn:hover {
+    background: #4a3f32;
+    border-color: #7a6b5c;
+  }
+
+  .action-btn:active {
+    background: #2c251d;
   }
 </style>

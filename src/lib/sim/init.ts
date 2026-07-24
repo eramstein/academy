@@ -1,6 +1,7 @@
 import { npcs } from '@/data/npcs';
-import { DayPeriod, type GameState } from '../_model';
+import { DayPeriod, SubscriptionType, type GameState } from '../_model';
 import { gs } from '../_state';
+import { EVENTS } from '@/data/sim/events';
 
 export const defaultGameState: GameState = {
   time: {
@@ -20,6 +21,11 @@ export const defaultGameState: GameState = {
       charisma: 5,
       aura: 5,
     },
+    subscriptions: {
+      academy: 0,
+      library: 0,
+      inn: 0,
+    },
   },
   places: [
     {
@@ -28,13 +34,14 @@ export const defaultGameState: GameState = {
     },
   ],
   scene: {
-    narration: [
-      'You arrive at the academy and meet the administrator. He asks you for tuition fees.',
-    ],
+    narration: [],
+    actions: [],
   },
 };
 
 export const initSim = async () => {
   console.log('initSim');
   Object.assign(gs, defaultGameState);
+  gs.scene.narration = [EVENTS['first-day'].narration];
+  gs.scene.actions = EVENTS['first-day'].actions;
 };

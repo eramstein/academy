@@ -3,3 +3,19 @@ export enum DayPeriod {
   Afternoon = 'afternoon',
   Evening = 'evening',
 }
+
+export enum ActionType {
+  Transaction = 'transaction',
+  Negotiate = 'negotiate',
+}
+
+export enum SubscriptionType {
+  Academy = 'academy',
+  Library = 'library',
+  Inn = 'inn',
+}
+
+export enum TransactionType {
+  Subscription = 'subscription',
+  Purchase = 'purchase',
+}

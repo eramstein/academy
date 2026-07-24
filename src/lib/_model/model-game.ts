@@ -1,4 +1,4 @@
-import type { DayPeriod } from './enums-sim';
+import type { ActionType, DayPeriod, SubscriptionType } from './enums-sim';
 import type { CardTemplate, LandTemplate } from './model-battle';
 
 export interface GameState {
@@ -14,6 +14,13 @@ export interface GameState {
 
 export interface Scene {
   narration: string[];
+  actions: Action[];
+}
+
+export interface Action {
+  label: string;
+  actionType: ActionType;
+  actionParameters: Record<string, any>;
 }
 
 export interface Character {
@@ -22,6 +29,7 @@ export interface Character {
   gold: number;
   placeKey: string;
   attributes: Attributes;
+  subscriptions: Partial<Record<SubscriptionType, number>>;
 }
 
 export interface Player extends Character {}
