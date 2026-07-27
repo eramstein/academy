@@ -13,6 +13,7 @@ export const defaultGameState: GameState = {
     key: 'player',
     name: 'Player',
     gold: 1000,
+    focus: 0,
     placeKey: 'admin-office',
     attributes: {
       dexterity: 5,

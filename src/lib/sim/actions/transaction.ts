@@ -6,14 +6,14 @@ export interface TransactionParameters {
   transactionType: TransactionType;
 }
 
-interface TransactionSubscriptionParameters extends TransactionParameters {
+export interface TransactionSubscriptionParameters extends TransactionParameters {
   subscriptionType: SubscriptionType;
   duration: number;
 }
 
 export function transaction(parameters: TransactionParameters): string {
   if (parameters.cost > gs.player.gold) {
-    return 'You do not have enough gold to pay the cost.';
+    return 'You only have ' + gs.player.gold + ' gold, but the cost is ' + parameters.cost + '.';
   }
   gs.player.gold -= parameters.cost;
   if (parameters.transactionType === TransactionType.Subscription) {
@@ -22,10 +22,10 @@ export function transaction(parameters: TransactionParameters): string {
   return 'The transaction was successful.';
 }
 
-function subscribe(parameters: TransactionSubscriptionParameters): string {
+export function subscribe(parameters: TransactionSubscriptionParameters): string {
   if (!gs.player.subscriptions[parameters.subscriptionType]) {
     gs.player.subscriptions[parameters.subscriptionType] = 0;
   }
   gs.player.subscriptions[parameters.subscriptionType]! += parameters.duration;
-  return `You have subscribed to the ${parameters.subscriptionType} for ${parameters.duration} days.`;
+  return `You paid ${parameters.cost} gold and have subscribed to the ${parameters.subscriptionType} for ${parameters.duration} days.`;
 }

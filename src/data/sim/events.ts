@@ -1,24 +1,28 @@
-import { ActionType, SubscriptionType, TransactionType } from '@/lib/_model/enums-sim';
-import type { Action } from '@/lib/_model/model-game';
+import {
+  ActionType,
+  NarrationType,
+  SubscriptionType,
+  TransactionType,
+} from '@/lib/_model/enums-sim';
+import type { Action, Narration } from '@/lib/_model/model-game';
+import { npcs } from '../npcs';
 
-export const EVENTS: Record<string, { narration: string; actions: Action[] }> = {
+export const EVENTS: Record<string, { narration: Narration; actions: Action[] }> = {
   'first-day': {
-    narration:
-      'After a long journey, you finally arrive at the academy. A clerk directs you to the administration office. The administrator asks you for tuition fees.',
+    narration: {
+      text: 'After a long journey, you finally arrive at the academy. A clerk directs you to the administration office. The administrator asks you for tuition fees.',
+      type: NarrationType.Text,
+    },
     actions: [
       {
         label: 'Negotiate',
         actionType: ActionType.Negotiate,
         actionParameters: {
-          success: {
-            description: 'The administrator agrees to reduce the tuition fees.',
-            rewards: [
-              {
-                type: 'gold',
-                amount: 100,
-              },
-            ],
-          },
+          cost: 1000,
+          transactionType: TransactionType.Subscription,
+          subscriptionType: SubscriptionType.Academy,
+          duration: 365,
+          partner: npcs.administrator.key,
         },
       },
       {
@@ -27,7 +31,7 @@ export const EVENTS: Record<string, { narration: string; actions: Action[] }> = 
         actionParameters: {
           cost: 1000,
           transactionType: TransactionType.Subscription,
-          acquisition: SubscriptionType.Academy,
+          subscriptionType: SubscriptionType.Academy,
           duration: 365,
         },
       },

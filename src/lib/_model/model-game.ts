@@ -1,4 +1,4 @@
-import type { ActionType, DayPeriod, SubscriptionType } from './enums-sim';
+import type { ActionType, DayPeriod, NarrationType, SubscriptionType } from './enums-sim';
 import type { CardTemplate, LandTemplate } from './model-battle';
 
 export interface GameState {
@@ -13,8 +13,23 @@ export interface GameState {
 }
 
 export interface Scene {
-  narration: string[];
+  narration: Narration[];
   actions: Action[];
+}
+
+export interface Narration {
+  text: string;
+  type: NarrationType;
+  attributeCheck?: AttributeCheck;
+}
+
+export interface AttributeCheck {
+  success: boolean;
+  critical: boolean;
+  roll: number;
+  attribute: string;
+  difficulty: string;
+  target: number;
 }
 
 export interface Action {
@@ -32,7 +47,9 @@ export interface Character {
   subscriptions: Partial<Record<SubscriptionType, number>>;
 }
 
-export interface Player extends Character {}
+export interface Player extends Character {
+  focus: number;
+}
 
 export interface Npc extends Character {}
 

@@ -19,3 +19,8 @@ export enum TransactionType {
   Subscription = 'subscription',
   Purchase = 'purchase',
 }
+
+export enum NarrationType {
+  Text = 'text',
+  AttributeCheck = 'attribute_check',
+}
