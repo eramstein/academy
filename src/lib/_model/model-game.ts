@@ -1,15 +1,23 @@
-import type { ActionType, DayPeriod, NarrationType, SubscriptionType } from './enums-sim';
+import type {
+  ActionType,
+  ActivityType,
+  ClassType,
+  NarrationType,
+  SubscriptionType,
+} from './enums-sim';
 import type { CardTemplate, LandTemplate } from './model-battle';
 
 export interface GameState {
   time: {
     day: number;
-    period: DayPeriod;
+    hour: number;
+    minute: number;
   };
   characters: Record<string, Npc>;
   player: Player;
-  places: Place[];
+  places: Record<string, Place>;
   scene: Scene;
+  scheduledActivities: ScheduledActivity[];
 }
 
 export interface Scene {
@@ -21,6 +29,20 @@ export interface Narration {
   text: string;
   type: NarrationType;
   attributeCheck?: AttributeCheck;
+}
+
+export interface ScheduledActivity {
+  type: ActivityType;
+  participants: string[];
+  placeKey: string;
+  day: number;
+  hour: number;
+  minute: number;
+  duration: number; // in minutes
+}
+
+export interface ClassActivity extends ScheduledActivity {
+  classType: ClassType;
 }
 
 export interface AttributeCheck {
@@ -36,6 +58,7 @@ export interface Action {
   label: string;
   actionType: ActionType;
   actionParameters: Record<string, any>;
+  duration: number;
 }
 
 export interface Character {

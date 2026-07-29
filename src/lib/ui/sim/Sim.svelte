@@ -28,16 +28,19 @@
   }
 
   .current-view {
-    flex: 1 1 auto;
+    flex: 1 1 50%;
     position: relative;
-    width: 100%;
+    width: 50%;
     z-index: 1;
+    min-width: 0;
     min-height: 0;
     overflow: hidden;
   }
 
   .sim-data-panel {
-    flex: 0 0 240px;
+    flex: 1 1 50%;
+    width: 50%;
+    min-width: 0;
     min-height: 0;
     overflow: hidden;
   }

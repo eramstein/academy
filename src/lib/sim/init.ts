@@ -1,12 +1,14 @@
 import { npcs } from '@/data/npcs';
-import { DayPeriod, SubscriptionType, type GameState } from '../_model';
+import { type GameState } from '../_model';
 import { gs } from '../_state';
 import { EVENTS } from '@/data/sim/events';
+import { setPossibleActions } from './actions';
 
 export const defaultGameState: GameState = {
   time: {
-    day: 0,
-    period: DayPeriod.Afternoon,
+    day: 1,
+    hour: 9,
+    minute: 0,
   },
   characters: npcs,
   player: {
@@ -28,21 +30,22 @@ export const defaultGameState: GameState = {
       inn: 0,
     },
   },
-  places: [
-    {
+  places: {
+    ['admin-office']: {
       key: 'admin-office',
       name: 'Administration Office',
     },
-  ],
+  },
   scene: {
     narration: [],
     actions: [],
   },
+  scheduledActivities: [],
 };
 
 export const initSim = async () => {
   console.log('initSim');
   Object.assign(gs, defaultGameState);
   gs.scene.narration = [EVENTS['first-day'].narration];
-  gs.scene.actions = EVENTS['first-day'].actions;
+  setPossibleActions();
 };
