@@ -16,6 +16,7 @@ export interface GameState {
   characters: Record<string, Npc>;
   player: Player;
   places: Record<string, Place>;
+  regions: Record<string, Region>;
   scene: Scene;
   scheduledActivities: ScheduledActivity[];
 }
@@ -79,6 +80,14 @@ export interface Npc extends Character {}
 export interface Place {
   key: string;
   name: string;
+  description: string;
+}
+
+export interface Region {
+  key: string;
+  name: string;
+  description: string;
+  placeKeys: string[];
 }
 
 export interface Deck {

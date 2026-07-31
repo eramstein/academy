@@ -3,6 +3,7 @@ import { type GameState } from '../_model';
 import { gs } from '../_state';
 import { EVENTS } from '@/data/sim/events';
 import { setPossibleActions } from './actions';
+import { PLACES, REGIONS } from '@/data/sim/places';
 
 export const defaultGameState: GameState = {
   time: {
@@ -31,10 +32,10 @@ export const defaultGameState: GameState = {
     },
   },
   places: {
-    ['admin-office']: {
-      key: 'admin-office',
-      name: 'Administration Office',
-    },
+    ...PLACES,
+  },
+  regions: {
+    ...REGIONS,
   },
   scene: {
     narration: [],
