@@ -6,7 +6,7 @@
 
 <div class="time-display">
   <span class="day">{dayNames[gs.time.day % 7]}</span>
-  <span class="period">{gs.time.hour}:{gs.time.minute}</span>
+  <span class="period">{gs.time.period}</span>
 </div>
 
 <style>

@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { ActivityType, type ClassActivity, type ScheduledActivity } from '@/lib/_model';
+  import { ActivityType, DayPeriod, type ClassActivity, type ScheduledActivity } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
 
   const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const periods = [DayPeriod.Morning, DayPeriod.Afternoon, DayPeriod.Evening];
 
   /** Weeks relative to the current game week's Monday. */
   let weekOffset = $state(0);
@@ -11,15 +12,6 @@
   function mondayOfWeek(day: number): number {
     const dow = ((day % 7) + 7) % 7; // 0=Sun, 1=Mon, … 6=Sat
     return dow === 0 ? day - 6 : day - (dow - 1);
-  }
-
-  function formatTime(hour: number, minute: number): string {
-    return `${hour}:${minute.toString().padStart(2, '0')}`;
-  }
-
-  function formatEndTime(activity: ScheduledActivity): string {
-    const total = activity.hour * 60 + activity.minute + activity.duration;
-    return formatTime(Math.floor(total / 60) % 24, total % 60);
   }
 
   function activityLabel(activity: ScheduledActivity): string {
@@ -38,12 +30,11 @@
   const weekDays = $derived(Array.from({ length: 7 }, (_, i) => weekStart + i));
   const canGoPrev = $derived(weekStart - 7 >= 0);
 
-  const activitiesByDay = $derived(
-    weekDays.map((day) =>
-      gs.scheduledActivities
-        .filter((a) => a.day === day)
-        .slice()
-        .sort((a, b) => a.hour * 60 + a.minute - (b.hour * 60 + b.minute)),
+  const activityGrid = $derived(
+    periods.map((period) =>
+      weekDays.map((day) =>
+        gs.scheduledActivities.filter((a) => a.day === day && a.period === period),
+      ),
     ),
   );
 </script>
@@ -60,27 +51,32 @@
   </div>
 
   <div class="week-grid">
+    <div class="corner"></div>
     {#each weekDays as day, i (day)}
-      <div class="day-column" class:today={day === gs.time.day}>
-        <div class="day-header">
-          <span class="day-label">{dayLabels[i]}</span>
-          <span class="day-number">Day {day}</span>
-        </div>
-        <ul class="activity-list">
-          {#each activitiesByDay[i] as activity (activity.day + '-' + activity.hour + '-' + activity.minute + '-' + activity.type + '-' + activity.placeKey)}
-            <li class="activity" data-type={activity.type}>
-              <span class="activity-time">
-                {formatTime(activity.hour, activity.minute)}
-                <span class="activity-end">– {formatEndTime(activity)}</span>
-              </span>
+      <div class="day-header" class:today={day === gs.time.day}>
+        <span class="day-label">{dayLabels[i]}</span>
+        <span class="day-number">Day {day}</span>
+      </div>
+    {/each}
+
+    {#each periods as period, pi (period)}
+      <div class="period-header">{period}</div>
+      {#each weekDays as day, di (day)}
+        <div
+          class="cell"
+          class:today={day === gs.time.day}
+          class:current={day === gs.time.day && period === gs.time.period}
+        >
+          {#each activityGrid[pi][di] as activity (activity.type + '-' + activity.placeKey)}
+            <div class="activity" data-type={activity.type}>
               <span class="activity-name">{activityLabel(activity)}</span>
               <span class="activity-place">{placeName(activity.placeKey)}</span>
-            </li>
+            </div>
           {:else}
-            <li class="empty">—</li>
+            <span class="empty">—</span>
           {/each}
-        </ul>
-      </div>
+        </div>
+      {/each}
     {/each}
   </div>
 </div>
@@ -136,33 +132,29 @@
 
   .week-grid {
     display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-columns: auto repeat(7, minmax(0, 1fr));
     gap: 0.35rem;
     min-height: 0;
   }
 
-  .day-column {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+  .corner {
     min-width: 0;
-    padding: 0.4rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.03);
-  }
-
-  .day-column.today {
-    border-color: rgba(191, 161, 74, 0.45);
-    background: rgba(191, 161, 74, 0.08);
   }
 
   .day-header {
     display: flex;
     flex-direction: column;
     gap: 0.1rem;
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    text-align: center;
+  }
+
+  .day-header.today {
+    border-color: rgba(191, 161, 74, 0.45);
+    background: rgba(191, 161, 74, 0.08);
   }
 
   .day-label {
@@ -173,7 +165,7 @@
     color: #cccccc;
   }
 
-  .day-column.today .day-label {
+  .day-header.today .day-label {
     color: var(--color-golden);
   }
 
@@ -183,13 +175,38 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .activity-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  .period-header {
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0.6rem 0.4rem 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: capitalize;
+    color: #cccccc;
+    white-space: nowrap;
+  }
+
+  .cell {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
+    min-width: 0;
+    min-height: 2.5rem;
+    padding: 0.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .cell.today {
+    border-color: rgba(191, 161, 74, 0.25);
+    background: rgba(191, 161, 74, 0.04);
+  }
+
+  .cell.current {
+    border-color: rgba(191, 161, 74, 0.45);
+    background: rgba(191, 161, 74, 0.08);
   }
 
   .activity {
@@ -198,15 +215,6 @@
     gap: 0.1rem;
     font-size: 0.8rem;
     line-height: 1.25;
-  }
-
-  .activity-time {
-    color: #aaaaaa;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .activity-end {
-    color: #666666;
   }
 
   .activity-name {

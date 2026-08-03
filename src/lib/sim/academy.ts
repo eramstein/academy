@@ -2,24 +2,26 @@ import {
   ActivityType,
   type ClassActivity,
   ClassType,
+  DayPeriod,
   SubscriptionType,
   TransactionType,
 } from '../_model';
 import { gs } from '../_state';
-import type { TransactionSubscriptionParameters } from './actions/transaction';
+import type { NegotiateParameters } from './actions/negotiation';
 import { scheduleActivity } from './schedule';
 import { getWeekDay } from './time';
 
 // this can be used to create a transaction action for the enrollment
 // it is for the current term, which is 84 days (12 weeks)
 // the first term starts on day 1
-export function getEnrollmentTransactionParameters(): TransactionSubscriptionParameters {
+export function getEnrollmentTransactionParameters(): NegotiateParameters {
   const remainingDays = 84 - (gs.time.day % 84);
   return {
     cost: 1000,
     transactionType: TransactionType.Subscription,
     subscriptionType: SubscriptionType.Academy,
     duration: remainingDays,
+    partner: 'administrator',
   };
 }
 
@@ -36,21 +38,17 @@ export function scheduleClassesForCurrentTerm() {
     const artificeryActivity: ClassActivity = {
       type: ActivityType.Class,
       participants: [gs.player.key],
-      placeKey: 'academy',
+      placeKey: 'artificery-room',
       day: gs.time.day + i,
-      hour: 8,
-      minute: 0,
-      duration: 240, // 4 hours
+      period: DayPeriod.Morning,
       classType: ClassType.Artificery,
     };
     const enchantingActivity: ClassActivity = {
       type: ActivityType.Class,
       participants: [gs.player.key],
-      placeKey: 'academy',
+      placeKey: 'enchanting-room',
       day: gs.time.day + i,
-      hour: 14,
-      minute: 0,
-      duration: 240, // 4 hours
+      period: DayPeriod.Afternoon,
       classType: ClassType.Enchanting,
     };
     scheduleActivity(artificeryActivity);

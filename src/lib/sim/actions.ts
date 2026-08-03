@@ -1,33 +1,41 @@
-import { ActionType, SubscriptionType } from '../_model';
+import { ActionDuration, ActionType, SubscriptionType } from '../_model';
 import type { Action } from '../_model/model-game';
 import { transaction, type TransactionParameters } from './actions/transaction';
 import { negotiate, type NegotiateParameters } from './actions/negotiation';
 import { narrateText } from './narration';
 import { gs } from '../_state';
-import { passTime } from './time';
 import { getEnrollmentTransactionParameters } from './academy';
+import { move, type MoveParameters } from './actions/move';
 
 export function getPossibleActions(): Action[] {
+  const actions: Action[] = [];
   if (
     gs.player.subscriptions[SubscriptionType.Academy] === 0 &&
     gs.player.placeKey === 'admin-office'
   ) {
-    return [
+    actions.push(
       {
         label: 'Negotiate',
         actionType: ActionType.Negotiate,
-        duration: 15,
+        duration: ActionDuration.Short,
         actionParameters: getEnrollmentTransactionParameters(),
       },
       {
         label: 'Pay',
         actionType: ActionType.Transaction,
-        duration: 0,
+        duration: ActionDuration.Short,
         actionParameters: getEnrollmentTransactionParameters(),
-      },
-    ];
+      }
+    );
   }
-  return [];
+  actions.push({
+    label: 'Move',
+    actionType: ActionType.Move,
+    duration: ActionDuration.Short,
+    //TODO: dynamic action parameters or chosen by player from a list (fn => param values)
+    actionParameters: [],
+  });
+  return actions;
 }
 
 const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => string> = {
@@ -35,12 +43,13 @@ const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => s
     transaction(parameters as TransactionParameters),
   [ActionType.Negotiate]: (parameters: Record<string, any>) =>
     negotiate(parameters as NegotiateParameters),
+  [ActionType.Move]: (parameters: Record<string, any>) => move(parameters as MoveParameters),
 };
 
 export function performAction(action: Action) {
   const result = actionFunctions[action.actionType](action.actionParameters);
   narrateText(result);
-  passTime(action.duration);
+  gs.time.usedActions[action.duration] += 1;
   gs.scene.actions = getPossibleActions();
 }
 

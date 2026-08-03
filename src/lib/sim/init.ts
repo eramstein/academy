@@ -1,5 +1,5 @@
 import { npcs } from '@/data/npcs';
-import { type GameState } from '../_model';
+import { ActionDuration, DayPeriod, type GameState } from '../_model';
 import { gs } from '../_state';
 import { EVENTS } from '@/data/sim/events';
 import { setPossibleActions } from './actions';
@@ -8,8 +8,12 @@ import { PLACES, REGIONS } from '@/data/sim/places';
 export const defaultGameState: GameState = {
   time: {
     day: 1,
-    hour: 9,
-    minute: 0,
+    period: DayPeriod.Morning,
+    usedActions: {
+      [ActionDuration.Instant]: 0,
+      [ActionDuration.Short]: 0,
+      [ActionDuration.Long]: 0,
+    },
   },
   characters: npcs,
   player: {

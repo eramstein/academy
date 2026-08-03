@@ -1,6 +1,19 @@
+export enum DayPeriod {
+  Morning = 'morning',
+  Afternoon = 'afternoon',
+  Evening = 'evening',
+}
+
 export enum ActionType {
+  Move = 'move',
   Transaction = 'transaction',
   Negotiate = 'negotiate',
+}
+
+export enum ActionDuration {
+  Instant = 'instant',
+  Short = 'short',
+  Long = 'long',
 }
 
 export enum SubscriptionType {
