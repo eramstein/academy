@@ -1,15 +1,17 @@
 <script lang="ts">
   import Inventory from './sim-data/Inventory.svelte';
   import Schedule from './sim-data/Schedule.svelte';
+  import SceneData from './SceneData.svelte';
 
-  type SimDataTab = 'inventory' | 'schedule';
+  type SimDataTab = 'scene' | 'inventory' | 'schedule';
 
   const tabs: { id: SimDataTab; label: string }[] = [
+    { id: 'scene', label: 'Scene' },
     { id: 'inventory', label: 'Inventory' },
     { id: 'schedule', label: 'Schedule' },
   ];
 
-  let selected = $state<SimDataTab>('inventory');
+  let selected = $state<SimDataTab>('scene');
 </script>
 
 <div class="sim-data">
@@ -26,8 +28,10 @@
     {/each}
   </nav>
 
-  <div class="content">
-    {#if selected === 'inventory'}
+  <div class="content" class:flush={selected === 'scene'}>
+    {#if selected === 'scene'}
+      <SceneData />
+    {:else if selected === 'inventory'}
       <Inventory />
     {:else if selected === 'schedule'}
       <Schedule />
@@ -80,5 +84,10 @@
     min-height: 0;
     overflow-y: auto;
     padding: 1rem 0.75rem;
+  }
+
+  .content.flush {
+    padding: 0;
+    overflow: hidden;
   }
 </style>
