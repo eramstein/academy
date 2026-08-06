@@ -29,6 +29,7 @@ export interface Scene {
 }
 
 export interface Narration {
+  id: string;
   text: string;
   type: NarrationType;
   attributeCheck?: AttributeCheck;

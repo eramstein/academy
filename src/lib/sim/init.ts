@@ -51,6 +51,6 @@ export const defaultGameState: GameState = {
 export const initSim = async () => {
   console.log('initSim');
   Object.assign(gs, defaultGameState);
-  gs.scene.narration = [EVENTS['first-day'].narration];
+  gs.scene.narration = [{ ...EVENTS['first-day'].narration, id: crypto.randomUUID() }];
   setPossibleActions();
 };

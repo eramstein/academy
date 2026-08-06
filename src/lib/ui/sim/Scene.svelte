@@ -1,57 +1,160 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { performAction } from '@/lib/sim/actions';
   import { gs } from '@/lib/_state/main.svelte';
   import { NarrationType } from '@/lib/_model/enums-sim';
-  import type { Narration } from '@/lib/_model/model-game';
+  import TypedText from './TypedText.svelte';
+  import AttributeCheckEntry from './AttributeCheckEntry.svelte';
 
   const narration = $derived(gs.scene.narration);
   const actions = $derived(gs.scene.actions);
 
+  let bookEl: HTMLElement | undefined = $state();
   let pageEl: HTMLDivElement | undefined = $state();
+  let contentEl: HTMLDivElement | undefined = $state();
+  let completedIds = $state<string[]>([]);
+  let bookHeight = $state<number | undefined>(undefined);
+  let heightTransition = $state(false);
+  let scrollable = $state(false);
+
+  const completedSet = $derived(new Set(completedIds));
+  const activeEntry = $derived(narration.find((entry) => !completedSet.has(entry.id)));
+  const narrationDone = $derived(narration.length > 0 && completedIds.length >= narration.length);
+  const reduceMotion =
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   $effect(() => {
-    narration.length;
-    queueMicrotask(() => {
-      pageEl?.scrollTo({ top: pageEl.scrollHeight, behavior: 'smooth' });
-    });
+    const ids = new Set(narration.map((entry) => entry.id));
+    const next = completedIds.filter((id) => ids.has(id));
+    if (next.length !== completedIds.length) {
+      completedIds = next;
+    }
   });
 
-  function checkOutcomeLabel(entry: Narration): string {
-    const check = entry.attributeCheck;
-    if (!check) return '';
-    const result = check.success ? 'Success' : 'Failure';
-    return check.critical ? `Critical ${result}` : result;
+  $effect(() => {
+    if (!bookEl || !pageEl || !contentEl) return;
+
+    const syncHeight = () => {
+      if (!bookEl || !pageEl || !contentEl) return;
+      const pageStyles = getComputedStyle(pageEl);
+      const chromeY =
+        parseFloat(pageStyles.paddingTop) +
+        parseFloat(pageStyles.paddingBottom) +
+        parseFloat(pageStyles.borderTopWidth) +
+        parseFloat(pageStyles.borderBottomWidth);
+      const maxHeight = getMaxBookHeight();
+      const natural = Math.ceil(contentEl.scrollHeight + chromeY);
+      const next = Math.min(natural, maxHeight);
+      const nowScrollable = natural > maxHeight + 0.5;
+      const current = untrack(() => bookHeight);
+
+      scrollable = nowScrollable;
+
+      if (!nowScrollable && pageEl.scrollTop !== 0) {
+        pageEl.scrollTop = 0;
+      }
+
+      if (current === undefined) {
+        bookHeight = next;
+        return;
+      }
+
+      if (next === current) return;
+
+      const delta = Math.abs(next - current);
+      // Small changes (line wraps while typing) follow instantly; larger jumps ease.
+      if (reduceMotion || delta < 48) {
+        const wasTransitioning = untrack(() => heightTransition);
+        if (wasTransitioning) heightTransition = false;
+        bookHeight = next;
+        if (wasTransitioning && !reduceMotion) {
+          requestAnimationFrame(() => {
+            heightTransition = true;
+          });
+        }
+      } else {
+        if (!untrack(() => heightTransition) && !reduceMotion) {
+          heightTransition = true;
+        }
+        bookHeight = next;
+      }
+    };
+
+    const ro = new ResizeObserver(syncHeight);
+    ro.observe(contentEl);
+    if (bookEl.parentElement) ro.observe(bookEl.parentElement);
+    syncHeight();
+
+    return () => ro.disconnect();
+  });
+
+  function getMaxBookHeight(): number {
+    const scene = bookEl?.parentElement;
+    if (!scene) return Number.POSITIVE_INFINITY;
+    const styles = getComputedStyle(scene);
+    const padY = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
+    const gap = parseFloat(styles.gap) || 0;
+    const actionsEl = scene.querySelector('.actions') as HTMLElement | null;
+    const actionsH = actionsEl?.offsetHeight ?? 0;
+    return Math.max(0, scene.clientHeight - padY - actionsH - (actionsEl ? gap : 0));
+  }
+
+  function scrollPageToBottom(behavior: ScrollBehavior = 'smooth') {
+    if (!untrack(() => scrollable)) return;
+    queueMicrotask(() => {
+      pageEl?.scrollTo({ top: pageEl.scrollHeight, behavior });
+    });
+  }
+
+  function completeEntry(id: string) {
+    if (completedSet.has(id)) return;
+    completedIds = [...completedIds, id];
+    scrollPageToBottom('smooth');
   }
 </script>
 
 <div class="scene">
-  <article class="book">
-    <div class="page" bind:this={pageEl}>
-      {#each narration as entry, index (index)}
-        {#if entry.type === NarrationType.Text}
-          <p class="narration">{entry.text}</p>
-        {:else if entry.type === NarrationType.AttributeCheck && entry.attributeCheck}
-          {@const check = entry.attributeCheck}
-          <div
-            class="attribute-check"
-            class:success={check.success}
-            class:failure={!check.success}
-            class:critical={check.critical}
-          >
-            <p class="check-label">{check.attribute} check — {check.difficulty}</p>
-            <p class="check-roll">
-              <span class="d20"><span class="d20-face">{check.roll}</span></span>
-              <span class="vs">vs {check.target}</span>
-            </p>
-            <p class="check-outcome">{checkOutcomeLabel(entry)}</p>
-          </div>
+  <article
+    class="book"
+    class:height-transition={heightTransition && !reduceMotion}
+    bind:this={bookEl}
+    style:height={bookHeight !== undefined ? `${bookHeight}px` : undefined}
+  >
+    <div class="page" class:scrollable bind:this={pageEl}>
+      <div class="page-content" bind:this={contentEl}>
+        {#each narration as entry (entry.id)}
+          {#if completedSet.has(entry.id)}
+            {#if entry.type === NarrationType.Text}
+              <p class="narration">{entry.text}</p>
+            {:else if entry.type === NarrationType.AttributeCheck && entry.attributeCheck}
+              {@const check = entry.attributeCheck}
+              <AttributeCheckEntry check={check} animate={false} />
+            {/if}
+          {:else if activeEntry?.id === entry.id}
+            {#if entry.type === NarrationType.Text}
+              <TypedText
+                class="narration"
+                text={entry.text}
+                onProgress={() => scrollPageToBottom('auto')}
+                onDone={() => completeEntry(entry.id)}
+              />
+            {:else if entry.type === NarrationType.AttributeCheck && entry.attributeCheck}
+              <AttributeCheckEntry
+                check={entry.attributeCheck}
+                onProgress={() => scrollPageToBottom('auto')}
+                onDone={() => completeEntry(entry.id)}
+              />
+            {/if}
+          {/if}
+        {/each}
+        {#if narrationDone}
+          <p class="prompt">What do you do?</p>
         {/if}
-      {/each}
-      <p class="prompt">What do you do?</p>
+      </div>
     </div>
   </article>
 
-  {#if actions.length > 0}
+  {#if narrationDone && actions.length > 0}
     <div class="actions">
       {#each actions as action (action.label)}
         <button type="button" class="action-btn" onclick={() => performAction(action)}
@@ -69,7 +172,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 32px;
     padding: 32px;
     box-sizing: border-box;
@@ -83,6 +186,7 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     box-shadow:
       0 12px 32px rgba(0, 0, 0, 0.5),
       inset -8px 0 16px rgba(0, 0, 0, 0.08);
@@ -90,11 +194,15 @@
     border-left: 6px solid #5a4b3c;
   }
 
+  .book.height-transition {
+    transition: height 0.3s ease-out;
+  }
+
   .page {
     flex: 1 1 auto;
     min-height: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
+    height: 100%;
+    overflow: hidden;
     background: #e8dcc4 url('/assets/images/parchment.png') center/cover;
     background-blend-mode: multiply;
     color: #2c251d;
@@ -105,111 +213,52 @@
     font-size: 1.05rem;
     line-height: 1.7;
     box-shadow: inset 0 0 40px rgba(90, 75, 60, 0.15);
+    box-sizing: border-box;
+  }
+
+  .page.scrollable {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .page-content {
+    min-height: min-content;
   }
 
   /* Chrome 121+ prefers scrollbar-* over ::-webkit-*, which brings OS arrows back */
   @supports not selector(::-webkit-scrollbar) {
-    .page {
+    .page.scrollable {
       scrollbar-width: thin;
       scrollbar-color: rgba(90, 75, 60, 0.45) transparent;
     }
   }
 
-  .page::-webkit-scrollbar {
+  .page.scrollable::-webkit-scrollbar {
     width: 6px;
   }
 
-  .page::-webkit-scrollbar-button {
+  .page.scrollable::-webkit-scrollbar-button {
     display: none;
     width: 0;
     height: 0;
   }
 
-  .page::-webkit-scrollbar-track {
+  .page.scrollable::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  .page::-webkit-scrollbar-thumb {
+  .page.scrollable::-webkit-scrollbar-thumb {
     background: rgba(90, 75, 60, 0.45);
     border-radius: 3px;
   }
 
-  .page::-webkit-scrollbar-thumb:hover {
+  .page.scrollable::-webkit-scrollbar-thumb:hover {
     background: rgba(90, 75, 60, 0.65);
   }
 
-  .narration {
+  .narration,
+  .page :global(.narration) {
     margin: 0 0 1.25em;
-  }
-
-  .attribute-check {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25em;
-    margin: 0 0 1.25em;
-    padding: 1em 0;
-    border-top: 1px solid rgba(90, 75, 60, 0.35);
-    border-bottom: 1px solid rgba(90, 75, 60, 0.35);
-    text-align: center;
-  }
-
-  .check-label {
-    margin: 0;
-    font-size: 0.85rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #4a3f32;
-  }
-
-  .check-roll {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    margin: 0.15em 0;
-    font-size: 1.15rem;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .d20 {
-    width: 2.75rem;
-    height: 2.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
-    background: #3d3429;
-    color: #e8dcc4;
-  }
-
-  .d20-face {
-    font-size: 1.15rem;
-    font-weight: bold;
-    line-height: 1;
-    transform: translateY(-0.12em);
-  }
-
-  .vs {
-    color: #4a3f32;
-  }
-
-  .check-outcome {
-    margin: 0;
-    font-size: 1.05rem;
-    font-weight: bold;
-  }
-
-  .attribute-check.success .check-outcome {
-    color: #2d5a27;
-  }
-
-  .attribute-check.failure .check-outcome {
-    color: #7a2e22;
-  }
-
-  .attribute-check.critical .check-outcome {
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
   }
 
   .prompt {

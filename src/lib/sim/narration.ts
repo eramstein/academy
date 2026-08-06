@@ -7,6 +7,7 @@ export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
     (narration) => narration.type !== NarrationType.AttributeCheck
   );
   gs.scene.narration.push({
+    id: crypto.randomUUID(),
     text: `You roll a ${attributeCheck.roll} on a ${attributeCheck.difficulty} difficulty check for ${attributeCheck.attribute}.`,
     type: NarrationType.AttributeCheck,
     attributeCheck,
@@ -15,6 +16,7 @@ export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
 
 export function narrateText(text: string) {
   gs.scene.narration.push({
+    id: crypto.randomUUID(),
     text,
     type: NarrationType.Text,
   });
