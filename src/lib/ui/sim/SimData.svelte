@@ -1,14 +1,16 @@
 <script lang="ts">
   import Inventory from './sim-data/Inventory.svelte';
+  import Places from './sim-data/Places.svelte';
   import Schedule from './sim-data/Schedule.svelte';
-  import SceneData from './SceneData.svelte';
+  import SceneData from './sim-data/SceneData.svelte';
 
-  type SimDataTab = 'scene' | 'inventory' | 'schedule';
+  type SimDataTab = 'scene' | 'inventory' | 'schedule' | 'places';
 
   const tabs: { id: SimDataTab; label: string }[] = [
     { id: 'scene', label: 'Scene' },
     { id: 'inventory', label: 'Inventory' },
     { id: 'schedule', label: 'Schedule' },
+    { id: 'places', label: 'Places' },
   ];
 
   let selected = $state<SimDataTab>('scene');
@@ -35,6 +37,8 @@
       <Inventory />
     {:else if selected === 'schedule'}
       <Schedule />
+    {:else if selected === 'places'}
+      <Places />
     {/if}
   </div>
 </div>

@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { Character as CharacterModel } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
-  import Character from './Character.svelte';
-  import CharacterPortrait from './characters/CharacterPortrait.svelte';
-  import Location from './Location.svelte';
+  import Character from '../Character.svelte';
+  import CharacterPortrait from '../characters/CharacterPortrait.svelte';
+  import Location from '../Location.svelte';
 
   let selectedCharacter: CharacterModel | null = $state(null);
 
