@@ -1,26 +1,35 @@
-// convert-png-to-jpg.js
-// Recursively converts PNG files to JPEG format, resizes to 512x512
-// Only processes images that are either not JPG or are too large (> 150KB)
+// convert-images.js
+// Recursively converts images to JPEG, with per-folder resize/size settings
+// Only processes images that are either not JPG or are too large
 // Optionally overwrites the original PNGs
 
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 
-// Settings
-const rootDirs = [
-  './public/assets/images/cards', // cards folder
-]; // starting folders
 const overwriteOriginals = true; // true = replace PNGs with JPGs
-const targetWidth = 512; // desired width
-const targetHeight = 512; // desired height
-const maxFileSizeKB = 150; // maximum file size in KB before processing
 
-async function processImage(inputPath) {
+const targets = [
+  {
+    dir: './public/assets/images/cards',
+    width: 512,
+    height: 512,
+    maxFileSizeKB: 150,
+    quality: 90,
+  },
+  {
+    dir: './public/assets/images/places',
+    width: 1024,
+    height: 1024,
+    maxFileSizeKB: 300,
+    quality: 90,
+  },
+];
+
+async function processImage(inputPath, { width, height, maxFileSizeKB, quality }) {
   const ext = path.extname(inputPath).toLowerCase();
   if (!['.png', '.jpg', '.jpeg'].includes(ext)) return;
 
-  // Get file stats to check size
   const stats = fs.statSync(inputPath);
   const fileSizeKB = stats.size / 1024;
 
@@ -30,13 +39,10 @@ async function processImage(inputPath) {
     return;
   }
 
-  // Process ALL PNG files regardless of size
-
   console.log(`🔄 Processing: ${inputPath} (${fileSizeKB.toFixed(1)}KB)`);
 
   let outputPath;
   if (overwriteOriginals) {
-    // Use a temporary file to avoid "same file" error
     outputPath = inputPath + '.tmp.jpg';
   } else {
     outputPath = inputPath.replace(/\.(png|jpg|jpeg)$/i, '.jpg');
@@ -44,25 +50,23 @@ async function processImage(inputPath) {
 
   try {
     await sharp(inputPath)
-      .resize(targetWidth, targetHeight, {
+      .resize(width, height, {
         fit: 'cover',
         position: 'centre',
       })
-      .jpeg({ quality: 90 })
+      .jpeg({ quality })
       .toFile(outputPath);
 
     if (overwriteOriginals) {
       const finalOutputPath = inputPath.replace(/\.(png|jpg|jpeg)$/i, '.jpg');
       fs.renameSync(outputPath, finalOutputPath);
 
-      // Delete the original PNG file after successful conversion
       if (ext === '.png') {
         fs.unlinkSync(inputPath);
         console.log(`🗑️ Deleted original PNG: ${inputPath}`);
       }
     }
 
-    // Get the size of the new file
     const newStats = fs.statSync(
       overwriteOriginals ? inputPath.replace(/\.(png|jpg|jpeg)$/i, '.jpg') : outputPath
     );
@@ -72,28 +76,27 @@ async function processImage(inputPath) {
   } catch (err) {
     console.error(`❌ Error processing ${inputPath}:`, err);
     if (fs.existsSync(outputPath) && overwriteOriginals) {
-      fs.unlinkSync(outputPath); // cleanup failed temp file
+      fs.unlinkSync(outputPath);
     }
   }
 }
 
-function walkDir(dir) {
+function walkDir(dir, settings) {
   fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      walkDir(fullPath);
+      walkDir(fullPath, settings);
     } else {
-      processImage(fullPath);
+      processImage(fullPath, settings);
     }
   });
 }
 
-// Process each directory
-rootDirs.forEach((dir) => {
-  console.log(`\n🔄 Processing directory: ${dir}`);
-  if (fs.existsSync(dir)) {
-    walkDir(dir);
+for (const target of targets) {
+  console.log(`\n🔄 Processing directory: ${target.dir}`);
+  if (fs.existsSync(target.dir)) {
+    walkDir(target.dir, target);
   } else {
-    console.log(`⚠️ Directory not found: ${dir}`);
+    console.log(`⚠️ Directory not found: ${target.dir}`);
   }
-});
+}
