@@ -13,20 +13,19 @@
   .time-display {
     display: flex;
     flex-direction: column;
-    font-family: 'Arial', sans-serif;
-    padding-left: 30px;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    line-height: 1.2;
   }
 
   .day {
-    font-size: 18px;
+    font-size: 0.9rem;
     font-weight: bold;
     color: #ffd700;
   }
 
   .period {
-    font-size: 14px;
+    font-size: 0.75rem;
     color: #cccccc;
     text-transform: capitalize;
   }

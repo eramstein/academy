@@ -7,6 +7,7 @@ export interface MoveParameters {
 }
 
 export function move(parameters: MoveParameters): string {
+  if (!parameters.placeKey) return 'Where do you want to move?';
   const startingPlace = gs.places[gs.player.placeKey];
   const endingPlace = gs.places[parameters.placeKey];
   gs.player.placeKey = parameters.placeKey;

@@ -4,19 +4,30 @@ import { transaction, type TransactionParameters } from './actions/transaction';
 import { negotiate, type NegotiateParameters } from './actions/negotiation';
 import { narrateText } from './narration';
 import { gs } from '../_state';
-import { getEnrollmentTransactionParameters } from './academy';
 import { move, type MoveParameters } from './actions/move';
+import { config } from '../_config/config';
+import { nextScene } from './scene';
+import { wait } from './actions/wait';
 
 export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
   actions.push({
-    label: 'Move',
-    actionType: ActionType.Move,
+    label: 'Wait',
+    actionType: ActionType.Wait,
     duration: ActionDuration.Short,
-    //TODO: dynamic action parameters or chosen by player from a list (fn => param values)
-    actionParameters: [],
+    actionParameters: {},
   });
-  return actions;
+  return filterActionsForAvailableTime(actions);
+}
+
+function filterActionsForAvailableTime(actions: Action[]): Action[] {
+  return actions.filter((action) => {
+    if (action.duration === ActionDuration.Short) {
+      return gs.time.usedActions[ActionDuration.Short] < config.shortActionsPerScene;
+    } else {
+      return gs.time.usedActions[ActionDuration.Long] < config.longActionsPerScene;
+    }
+  });
 }
 
 const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => string> = {
@@ -25,14 +36,21 @@ const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => s
   [ActionType.Negotiate]: (parameters: Record<string, any>) =>
     negotiate(parameters as NegotiateParameters),
   [ActionType.Move]: (parameters: Record<string, any>) => move(parameters as MoveParameters),
+  [ActionType.Wait]: () => wait(),
 };
 
 export function performAction(action: Action) {
   const result = actionFunctions[action.actionType](action.actionParameters);
   narrateText(result);
   gs.time.usedActions[action.duration] += 1;
+  setPossibleActions();
 }
 
 export function setPossibleActions() {
   gs.scene.actions = getPossibleActions();
+  console.log('setPossibleActions', gs.scene.actions);
+  // if no actions are available, end the scene
+  if (gs.scene.actions.length === 0) {
+    nextScene();
+  }
 }

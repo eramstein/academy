@@ -1,5 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
+  import { config } from '@/lib/_config';
+  import { ActionDuration } from '@/lib/_model';
   import { performAction } from '@/lib/sim/actions';
   import { selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state/main.svelte';
@@ -10,6 +12,8 @@
   const narration = $derived(gs.scene.narration);
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
+  const shortUsed = $derived(gs.time.usedActions[ActionDuration.Short]);
+  const longUsed = $derived(gs.time.usedActions[ActionDuration.Long]);
 
   let bookEl: HTMLElement | undefined = $state();
   let pageEl: HTMLDivElement | undefined = $state();
@@ -166,23 +170,31 @@
   </article>
 
   {#if narrationDone}
-    {#if event}
-      <div class="actions">
-        {#each event.options as option, i (i)}
-          <button type="button" class="action-btn" onclick={() => selectOption(option)}
-            >{option.text}</button
-          >
-        {/each}
+    <div class="actions">
+      <div class="action-budget">
+        <span class="action-count">
+          Short <strong>{shortUsed}/{config.shortActionsPerScene}</strong>
+        </span>
+        <span class="action-count">
+          Long <strong>{longUsed}/{config.longActionsPerScene}</strong>
+        </span>
       </div>
-    {:else if actions.length > 0}
-      <div class="actions">
-        {#each actions as action (action.label)}
-          <button type="button" class="action-btn" onclick={() => performAction(action)}
-            >{action.label}</button
-          >
-        {/each}
+      <div class="action-buttons">
+        {#if event}
+          {#each event.options as option, i (i)}
+            <button type="button" class="action-btn" onclick={() => selectOption(option)}
+              >{option.text}</button
+            >
+          {/each}
+        {:else}
+          {#each actions as action (action.label)}
+            <button type="button" class="action-btn" onclick={() => performAction(action)}
+              >{action.label}</button
+            >
+          {/each}
+        {/if}
       </div>
-    {/if}
+    </div>
   {/if}
 </div>
 
@@ -291,12 +303,36 @@
   .actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 16px;
     flex-shrink: 0;
     width: 100%;
     max-width: 640px;
     margin-top: auto;
+  }
+
+  .action-budget {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.85rem;
+    color: #a89880;
+    line-height: 1.2;
+  }
+
+  .action-count strong {
+    font-variant-numeric: tabular-nums;
+    color: #e8dcc4;
+    font-weight: 600;
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
   }
 
   .action-btn {

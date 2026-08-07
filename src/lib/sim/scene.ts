@@ -10,6 +10,8 @@ import { gs } from '../_state';
 import { getEnrollmentTransactionParameters } from './academy';
 import { performAction, setPossibleActions } from './actions';
 import { narrateText } from './narration';
+import { getCurrentScheduledActivity } from './schedule';
+import { nextPeriod } from './time';
 
 /* 
 The scene first loops events until it runs out. Player has to react to each event by chosing an option.
@@ -19,16 +21,28 @@ Once the events are done (no new events are set), the player can get proactive a
 export function setSceneEvents() {
   gs.scene.event = undefined;
   initialEnrollmentEvent();
-}
-
-export function selectOption(option: SceneEventOption) {
-  if (option.outcome.type === EventOutcomeType.Action && option.outcome.action) {
-    performAction(option.outcome.action);
-  }
-  setSceneEvents();
+  console.log('setSceneEvents', gs.scene.event);
   if (gs.scene.event === undefined) {
     setPossibleActions();
   }
+}
+
+export function selectOption(option: SceneEventOption) {
+  // perform option outcome
+  if (option.outcome.type === EventOutcomeType.Action && option.outcome.action) {
+    performAction(option.outcome.action);
+  }
+  // set next event, if none then set possible actions
+  setSceneEvents();
+}
+
+export function nextScene() {
+  nextPeriod();
+  const currentScheduledActivity = getCurrentScheduledActivity();
+  if (currentScheduledActivity) {
+    gs.player.placeKey = currentScheduledActivity.placeKey;
+  }
+  setSceneEvents();
 }
 
 function setEvent(event: SceneEvent) {

@@ -3,6 +3,7 @@
   import Places from './sim-data/Places.svelte';
   import Schedule from './sim-data/Schedule.svelte';
   import SceneData from './sim-data/SceneData.svelte';
+  import TimeDisplay from './TimeDisplay.svelte';
 
   type SimDataTab = 'scene' | 'inventory' | 'schedule' | 'places';
 
@@ -18,16 +19,19 @@
 
 <div class="sim-data">
   <nav class="menu">
-    {#each tabs as tab (tab.id)}
-      <button
-        type="button"
-        class="menu-item"
-        class:active={selected === tab.id}
-        onclick={() => (selected = tab.id)}
-      >
-        {tab.label}
-      </button>
-    {/each}
+    <div class="tabs">
+      {#each tabs as tab (tab.id)}
+        <button
+          type="button"
+          class="menu-item"
+          class:active={selected === tab.id}
+          onclick={() => (selected = tab.id)}
+        >
+          {tab.label}
+        </button>
+      {/each}
+    </div>
+    <TimeDisplay />
   </nav>
 
   <div class="content" class:flush={selected === 'scene'}>
@@ -57,9 +61,17 @@
   .menu {
     display: flex;
     flex-shrink: 0;
-    gap: 0.25rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
     padding: 0.5rem 0.75rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0.25rem;
+    min-width: 0;
   }
 
   .menu-item {

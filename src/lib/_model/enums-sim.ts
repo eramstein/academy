@@ -13,6 +13,7 @@ export enum ActionType {
   Move = 'move',
   Transaction = 'transaction',
   Negotiate = 'negotiate',
+  Wait = 'wait',
 }
 
 export enum ActionDuration {
