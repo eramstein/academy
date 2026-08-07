@@ -28,6 +28,7 @@ export interface Scene {
   narration: Narration[];
   event: SceneEvent | undefined; // current event the player has to react to
   actions: Action[]; // list of proactive actions the player can do currently
+  selectingNextPlace?: boolean; // whether the player is selecting a next place
 }
 
 export interface SceneEvent {

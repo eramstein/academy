@@ -3,7 +3,7 @@
   import { config } from '@/lib/_config';
   import { ActionDuration } from '@/lib/_model';
   import { performAction } from '@/lib/sim/actions';
-  import { selectOption } from '@/lib/sim/scene';
+  import { selectNextScene, selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state/main.svelte';
   import { NarrationType } from '@/lib/_model/enums-sim';
   import TypedText from './TypedText.svelte';
@@ -12,8 +12,15 @@
   const narration = $derived(gs.scene.narration);
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
+  const selectingNextPlace = $derived(gs.scene.selectingNextPlace);
   const shortUsed = $derived(gs.time.usedActions[ActionDuration.Short]);
   const longUsed = $derived(gs.time.usedActions[ActionDuration.Long]);
+  const regionsWithPlaces = $derived(
+    Object.values(gs.regions).map((region) => ({
+      region,
+      places: Object.values(gs.places).filter((place) => place.regionKey === region.key),
+    })),
+  );
 
   let bookEl: HTMLElement | undefined = $state();
   let pageEl: HTMLDivElement | undefined = $state();
@@ -109,9 +116,9 @@
     const styles = getComputedStyle(scene);
     const padY = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
     const gap = parseFloat(styles.gap) || 0;
-    const actionsEl = scene.querySelector('.actions') as HTMLElement | null;
-    const actionsH = actionsEl?.offsetHeight ?? 0;
-    return Math.max(0, scene.clientHeight - padY - actionsH - (actionsEl ? gap : 0));
+    const bottomEl = scene.querySelector('.actions, .place-picker') as HTMLElement | null;
+    const bottomH = bottomEl?.offsetHeight ?? 0;
+    return Math.max(0, scene.clientHeight - padY - bottomH - (bottomEl ? gap : 0));
   }
 
   function scrollPageToBottom(behavior: ScrollBehavior = 'smooth') {
@@ -162,14 +169,31 @@
             {/if}
           {/if}
         {/each}
-        {#if narrationDone}
+        {#if selectingNextPlace}
+          <p class="prompt">Where do you go?</p>
+        {:else if narrationDone}
           <p class="prompt">What do you do?</p>
         {/if}
       </div>
     </div>
   </article>
 
-  {#if narrationDone}
+  {#if selectingNextPlace}
+    <div class="place-picker">
+      {#each regionsWithPlaces as { region, places } (region.key)}
+        <section class="place-region">
+          <h3 class="place-region-title">{region.name}</h3>
+          <div class="place-buttons">
+            {#each places as place (place.key)}
+              <button type="button" class="action-btn" onclick={() => selectNextScene(place.key)}
+                >{place.name}</button
+              >
+            {/each}
+          </div>
+        </section>
+      {/each}
+    </div>
+  {:else if narrationDone}
     <div class="actions">
       <div class="action-budget">
         <span class="action-count">
@@ -329,6 +353,42 @@
   }
 
   .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .place-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 640px;
+    margin-top: auto;
+    max-height: 45%;
+    overflow-y: auto;
+  }
+
+  .place-region {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .place-region-title {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #a89880;
+    text-align: center;
+  }
+
+  .place-buttons {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;

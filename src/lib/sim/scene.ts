@@ -16,6 +16,7 @@ import { nextPeriod } from './time';
 /* 
 The scene first loops events until it runs out. Player has to react to each event by chosing an option.
 Once the events are done (no new events are set), the player can get proactive and choose actions while there is still time left.
+Once there are no actions available, the scene ends and the next scene is set, based either on the next scheduled activity or the player's choice of next place.
 */
 
 export function setSceneEvents() {
@@ -41,7 +42,15 @@ export function nextScene() {
   const currentScheduledActivity = getCurrentScheduledActivity();
   if (currentScheduledActivity) {
     gs.player.placeKey = currentScheduledActivity.placeKey;
+    setSceneEvents();
+  } else {
+    gs.scene.selectingNextPlace = true;
   }
+}
+
+export function selectNextScene(placeKey: string) {
+  gs.player.placeKey = placeKey;
+  gs.scene.selectingNextPlace = false;
   setSceneEvents();
 }
 
