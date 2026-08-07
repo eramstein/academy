@@ -9,25 +9,6 @@ import { move, type MoveParameters } from './actions/move';
 
 export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
-  if (
-    gs.player.subscriptions[SubscriptionType.Academy] === 0 &&
-    gs.player.placeKey === 'admin-office'
-  ) {
-    actions.push(
-      {
-        label: 'Negotiate',
-        actionType: ActionType.Negotiate,
-        duration: ActionDuration.Short,
-        actionParameters: getEnrollmentTransactionParameters(),
-      },
-      {
-        label: 'Pay',
-        actionType: ActionType.Transaction,
-        duration: ActionDuration.Short,
-        actionParameters: getEnrollmentTransactionParameters(),
-      }
-    );
-  }
   actions.push({
     label: 'Move',
     actionType: ActionType.Move,
@@ -50,7 +31,6 @@ export function performAction(action: Action) {
   const result = actionFunctions[action.actionType](action.actionParameters);
   narrateText(result);
   gs.time.usedActions[action.duration] += 1;
-  gs.scene.actions = getPossibleActions();
 }
 
 export function setPossibleActions() {

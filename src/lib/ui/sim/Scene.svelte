@@ -1,12 +1,14 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { performAction } from '@/lib/sim/actions';
+  import { selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state/main.svelte';
   import { NarrationType } from '@/lib/_model/enums-sim';
   import TypedText from './TypedText.svelte';
   import AttributeCheckEntry from './AttributeCheckEntry.svelte';
 
   const narration = $derived(gs.scene.narration);
+  const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
 
   let bookEl: HTMLElement | undefined = $state();
@@ -22,6 +24,15 @@
   const narrationDone = $derived(narration.length > 0 && completedIds.length >= narration.length);
   const reduceMotion =
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // When scene is replaced (save load / init), show existing narration instantly.
+  // Live pushes keep the same scene object, so new entries still animate.
+  $effect.pre(() => {
+    const scene = gs.scene;
+    untrack(() => {
+      completedIds = scene.narration.map((entry) => entry.id);
+    });
+  });
 
   $effect(() => {
     const ids = new Set(narration.map((entry) => entry.id));
@@ -154,14 +165,24 @@
     </div>
   </article>
 
-  {#if narrationDone && actions.length > 0}
-    <div class="actions">
-      {#each actions as action (action.label)}
-        <button type="button" class="action-btn" onclick={() => performAction(action)}
-          >{action.label}</button
-        >
-      {/each}
-    </div>
+  {#if narrationDone}
+    {#if event}
+      <div class="actions">
+        {#each event.options as option, i (i)}
+          <button type="button" class="action-btn" onclick={() => selectOption(option)}
+            >{option.text}</button
+          >
+        {/each}
+      </div>
+    {:else if actions.length > 0}
+      <div class="actions">
+        {#each actions as action (action.label)}
+          <button type="button" class="action-btn" onclick={() => performAction(action)}
+            >{action.label}</button
+          >
+        {/each}
+      </div>
+    {/if}
   {/if}
 </div>
 

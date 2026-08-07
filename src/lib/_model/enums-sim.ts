@@ -4,6 +4,11 @@ export enum DayPeriod {
   Evening = 'evening',
 }
 
+export enum EventOutcomeType {
+  Decision = 'decision',
+  Action = 'action',
+}
+
 export enum ActionType {
   Move = 'move',
   Transaction = 'transaction',

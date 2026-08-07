@@ -1,9 +1,8 @@
 import { npcs } from '@/data/npcs';
 import { ActionDuration, DayPeriod, type GameState } from '../_model';
 import { gs } from '../_state';
-import { EVENTS } from '@/data/sim/events';
-import { setPossibleActions } from './actions';
 import { PLACES, REGIONS } from '@/data/sim/places';
+import { setSceneEvents } from './scene';
 
 export const defaultGameState: GameState = {
   time: {
@@ -43,6 +42,7 @@ export const defaultGameState: GameState = {
   },
   scene: {
     narration: [],
+    event: undefined,
     actions: [],
   },
   scheduledActivities: [],
@@ -51,6 +51,5 @@ export const defaultGameState: GameState = {
 export const initSim = async () => {
   console.log('initSim');
   Object.assign(gs, defaultGameState);
-  gs.scene.narration = [{ ...EVENTS['first-day'].narration, id: crypto.randomUUID() }];
-  setPossibleActions();
+  setSceneEvents();
 };

@@ -6,6 +6,7 @@ import type {
   SubscriptionType,
   DayPeriod,
   ActionDuration,
+  EventOutcomeType,
 } from './enums-sim';
 import type { CardTemplate, LandTemplate } from './model-battle';
 
@@ -25,7 +26,23 @@ export interface GameState {
 
 export interface Scene {
   narration: Narration[];
-  actions: Action[];
+  event: SceneEvent | undefined; // current event the player has to react to
+  actions: Action[]; // list of proactive actions the player can do currently
+}
+
+export interface SceneEvent {
+  text: string;
+  options: SceneEventOption[];
+}
+
+export interface SceneEventOption {
+  text: string;
+  outcome: EventOutcome;
+}
+
+export interface EventOutcome {
+  type: EventOutcomeType;
+  action?: Action;
 }
 
 export interface Narration {
@@ -57,7 +74,7 @@ export interface AttributeCheck {
 }
 
 export interface Action {
-  label: string;
+  label?: string;
   actionType: ActionType;
   actionParameters: Record<string, any>;
   duration: ActionDuration;
