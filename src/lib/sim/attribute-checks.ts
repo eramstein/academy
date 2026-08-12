@@ -64,10 +64,13 @@ export function attributeCheck(
   roll: number;
   success: boolean;
   critical: boolean;
+  outcomeText: string;
 } {
   const roll = Math.floor(Math.random() * 20) + 1;
   const success = roll <= attribute - difficulty;
   const critical = roll === 20 || roll === 1;
+  const outcomeText = success ? 'Success!' : 'Failure!';
+  const criticalText = critical ? 'Critical!' : '';
   narrateAttributeCheck({
     success,
     critical,
@@ -80,5 +83,6 @@ export function attributeCheck(
     roll,
     success,
     critical,
+    outcomeText: `${outcomeText} ${criticalText}`,
   };
 }

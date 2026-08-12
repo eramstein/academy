@@ -4,9 +4,9 @@ import {
   ClassType,
   DayPeriod,
   SubscriptionType,
-  TransactionType,
 } from '../_model';
 import { gs } from '../_state';
+import { TransactionType } from './actions/transaction';
 import type { NegotiateParameters } from './actions/negotiation';
 import { scheduleActivity } from './schedule';
 import { getWeekDay } from './time';
@@ -17,7 +17,7 @@ import { getWeekDay } from './time';
 export function getEnrollmentTransactionParameters(): NegotiateParameters {
   const remainingDays = 84 - (gs.time.day % 84);
   return {
-    cost: 1000,
+    cost: 900,
     transactionType: TransactionType.Subscription,
     subscriptionType: SubscriptionType.Academy,
     duration: remainingDays,

@@ -14,23 +14,13 @@ export enum ActionType {
   Transaction = 'transaction',
   Negotiate = 'negotiate',
   Wait = 'wait',
+  Socialize = 'socialize',
 }
 
 export enum ActionDuration {
   Instant = 'instant',
   Short = 'short',
   Long = 'long',
-}
-
-export enum SubscriptionType {
-  Academy = 'academy',
-  Library = 'library',
-  Inn = 'inn',
-}
-
-export enum TransactionType {
-  Subscription = 'subscription',
-  Purchase = 'purchase',
 }
 
 export enum NarrationType {
@@ -47,4 +37,10 @@ export enum ActivityType {
 export enum ClassType {
   Artificery = 'artificery',
   Enchanting = 'enchanting',
+}
+
+export enum SubscriptionType {
+  Academy = 'academy',
+  Library = 'library',
+  Inn = 'inn',
 }

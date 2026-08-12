@@ -3,10 +3,10 @@ import type {
   ActivityType,
   ClassType,
   NarrationType,
-  SubscriptionType,
   DayPeriod,
   ActionDuration,
   EventOutcomeType,
+  SubscriptionType,
 } from './enums-sim';
 import type { CardTemplate, LandTemplate } from './model-battle';
 
@@ -78,6 +78,7 @@ export interface Action {
   label?: string;
   actionType: ActionType;
   actionParameters: Record<string, any>;
+  missingParameters?: Record<string, Array<string | [string, string]> | number>;
   duration: ActionDuration;
 }
 

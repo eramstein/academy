@@ -21,7 +21,9 @@ Once there are no actions available, the scene ends and the next scene is set, b
 
 export function setSceneEvents() {
   gs.scene.event = undefined;
+  // test which events trigger based on context
   initialEnrollmentEvent();
+  // ... all others. TODO: more elegant way to do this.
   console.log('setSceneEvents', gs.scene.event);
   if (gs.scene.event === undefined) {
     setPossibleActions();
@@ -70,7 +72,7 @@ function initialEnrollmentEvent() {
         {
           text: 'Negotiate',
           outcome: {
-            type: EventOutcomeType.Decision,
+            type: EventOutcomeType.Action,
             action: {
               actionType: ActionType.Negotiate,
               duration: ActionDuration.Short,

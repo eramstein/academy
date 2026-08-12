@@ -1,6 +1,11 @@
-import { SubscriptionType, TransactionType } from '@/lib/_model/enums-sim';
+import { SubscriptionType } from '@/lib/_model/enums-sim';
 import { gs } from '@/lib/_state';
 import { scheduleClassesForCurrentTerm } from '../academy';
+
+export enum TransactionType {
+  Subscription = 'subscription',
+  Purchase = 'purchase',
+}
 
 export interface TransactionParameters {
   cost: number;
