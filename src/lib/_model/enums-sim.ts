@@ -44,3 +44,14 @@ export enum SubscriptionType {
   Library = 'library',
   Inn = 'inn',
 }
+
+export enum CharacterTrait {
+  Grumpy = 'grumpy',
+  Friendly = 'friendly',
+}
+
+export enum CharacterGender {
+  Male = 'male',
+  Female = 'female',
+  Other = 'other',
+}

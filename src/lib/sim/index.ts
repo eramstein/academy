@@ -5,3 +5,5 @@ export * from './actions';
 export * from './narration';
 export * from './time';
 export * from './action-types';
+export * from './attribute-checks';
+export * from './characters';

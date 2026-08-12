@@ -7,6 +7,8 @@ import type {
   ActionDuration,
   EventOutcomeType,
   SubscriptionType,
+  CharacterTrait,
+  CharacterGender,
 } from './enums-sim';
 import type { CardTemplate, LandTemplate } from './model-battle';
 
@@ -95,7 +97,10 @@ export interface Player extends Character {
   focus: number;
 }
 
-export interface Npc extends Character {}
+export interface Npc extends Character {
+  gender: CharacterGender;
+  traits: Partial<Record<CharacterTrait, boolean>>;
+}
 
 export interface Place {
   key: string;

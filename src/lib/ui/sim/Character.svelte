@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Attributes, Character as CharacterModel, Player } from '@/lib/_model';
+  import type { Attributes, Character as CharacterModel, Npc } from '@/lib/_model';
   import { SubscriptionType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
   import CharacterPortrait from './characters/CharacterPortrait.svelte';
@@ -17,7 +17,6 @@
 
   const place = $derived(gs.places[character.placeKey]);
   const region = $derived(place ? gs.regions[place.regionKey] : undefined);
-  const focus = $derived('focus' in character ? (character as Player).focus : null);
 
   const attributeRows = $derived(
     ATTR_ORDER.map((key) => ({
@@ -25,6 +24,14 @@
       value: character.attributes[key],
       pct: Math.min(100, Math.max(0, (character.attributes[key] / ATTR_MAX) * 100)),
     })),
+  );
+
+  const traits = $derived(
+    'traits' in character
+      ? Object.entries((character as Npc).traits)
+          .filter(([, active]) => active)
+          .map(([trait]) => trait)
+      : [],
   );
 
   const subscriptions = $derived(
@@ -57,12 +64,6 @@
           <dt>Gold</dt>
           <dd class="gold">{character.gold}</dd>
         </div>
-        {#if focus !== null}
-          <div class="meta-row">
-            <dt>Focus</dt>
-            <dd>{focus}</dd>
-          </div>
-        {/if}
       </dl>
     </div>
   </header>
@@ -81,6 +82,17 @@
       {/each}
     </ul>
   </section>
+
+  {#if traits.length > 0}
+    <section class="section">
+      <h3 class="section-title">Traits</h3>
+      <ul class="trait-list">
+        {#each traits as trait (trait)}
+          <li class="trait-item">{trait}</li>
+        {/each}
+      </ul>
+    </section>
+  {/if}
 
   <section class="section">
     <h3 class="section-title">Subscriptions</h3>
@@ -199,6 +211,25 @@
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+  }
+
+  .trait-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .trait-item {
+    font-size: 0.85rem;
+    text-transform: capitalize;
+    color: #e8e8e8;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.06);
   }
 
   .attr-row {

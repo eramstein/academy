@@ -1,4 +1,4 @@
-import type { Npc } from '@/lib/_model';
+import { CharacterGender, CharacterTrait, type Npc } from '@/lib/_model';
 
 export const npcs: Record<string, Npc> = {
   administrator: {
@@ -8,6 +8,8 @@ export const npcs: Record<string, Npc> = {
     placeKey: 'admin-office',
     attributes: { dexterity: 4, intelligence: 19, vitality: 5, charisma: 8, aura: 15 },
     subscriptions: {},
+    traits: { [CharacterTrait.Grumpy]: true },
+    gender: CharacterGender.Male,
   },
   molly: {
     key: 'molly',
@@ -16,5 +18,7 @@ export const npcs: Record<string, Npc> = {
     placeKey: 'admin-office',
     attributes: { dexterity: 11, intelligence: 8, vitality: 14, charisma: 18, aura: 9 },
     subscriptions: {},
+    traits: { [CharacterTrait.Friendly]: true },
+    gender: CharacterGender.Female,
   },
 };
