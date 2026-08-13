@@ -9,6 +9,7 @@ import type {
   SubscriptionType,
   CharacterTrait,
   CharacterGender,
+  EventEffectType,
 } from './enums-sim';
 import type { CardTemplate, LandTemplate } from './model-battle';
 
@@ -46,6 +47,12 @@ export interface SceneEventOption {
 export interface EventOutcome {
   type: EventOutcomeType;
   action?: Action;
+  effects?: EventEffect[];
+}
+
+export interface EventEffect {
+  type: EventEffectType;
+  parameters: Record<string, any>;
 }
 
 export interface Narration {
@@ -95,6 +102,7 @@ export interface Character {
 
 export interface Player extends Character {
   focus: number;
+  decks: Deck[];
 }
 
 export interface Npc extends Character {

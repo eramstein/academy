@@ -9,9 +9,11 @@ import {
 import { gs } from '../_state';
 import { getEnrollmentTransactionParameters } from './academy';
 import { performAction, setPossibleActions } from './actions';
+import { applyEffect } from './effects';
 import { narrateText } from './narration';
 import { getCurrentScheduledActivity } from './schedule';
 import { nextPeriod } from './time';
+import { initialLessonEvent } from './lessons';
 
 /* 
 The scene first loops events until it runs out. Player has to react to each event by chosing an option.
@@ -23,6 +25,7 @@ export function setSceneEvents() {
   gs.scene.event = undefined;
   // test which events trigger based on context
   initialEnrollmentEvent();
+  initialLessonEvent();
   // ... all others. TODO: more elegant way to do this.
   console.log('setSceneEvents', gs.scene.event);
   if (gs.scene.event === undefined) {
@@ -34,6 +37,11 @@ export function selectOption(option: SceneEventOption) {
   // perform option outcome
   if (option.outcome.type === EventOutcomeType.Action && option.outcome.action) {
     performAction(option.outcome.action);
+  }
+  if (option.outcome.effects) {
+    option.outcome.effects.forEach((effect) => {
+      applyEffect(effect);
+    });
   }
   // set next event, if none then set possible actions
   setSceneEvents();
@@ -56,7 +64,7 @@ export function selectNextScene(placeKey: string) {
   setSceneEvents();
 }
 
-function setEvent(event: SceneEvent) {
+export function setEvent(event: SceneEvent) {
   narrateText(event.text);
   gs.scene.event = event;
 }

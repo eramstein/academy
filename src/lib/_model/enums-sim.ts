@@ -9,6 +9,11 @@ export enum EventOutcomeType {
   Action = 'action',
 }
 
+export enum EventEffectType {
+  GetDeck = 'get_deck',
+  Subscribe = 'subscribe',
+}
+
 export enum ActionType {
   Move = 'move',
   Transaction = 'transaction',
