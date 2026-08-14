@@ -3,6 +3,7 @@ import { ActionDuration, DayPeriod, type GameState } from '../_model';
 import { gs } from '../_state';
 import { PLACES, REGIONS } from '@/data/sim/places';
 import { setSceneEvents } from './scene';
+import { newLeagueSeason } from './league';
 
 export const defaultGameState: GameState = {
   time: {
@@ -17,7 +18,7 @@ export const defaultGameState: GameState = {
   characters: npcs,
   player: {
     key: 'player',
-    name: 'Player',
+    name: 'Antonio Fibonacci',
     gold: 1000,
     focus: 0,
     decks: [],
@@ -47,10 +48,15 @@ export const defaultGameState: GameState = {
     actions: [],
   },
   scheduledActivities: [],
+  league: {
+    season: 0,
+    rankings: [],
+  },
 };
 
 export const initSim = async () => {
   console.log('initSim');
   Object.assign(gs, defaultGameState);
   setSceneEvents();
+  newLeagueSeason();
 };

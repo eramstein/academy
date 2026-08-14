@@ -1,4 +1,4 @@
-import { CharacterGender, CharacterTrait, type Npc } from '@/lib/_model';
+import { CharacterGender, CharacterTrait, SchoolName, type Npc } from '@/lib/_model';
 
 export const npcs: Record<string, Npc> = {
   administrator: {
@@ -20,5 +20,28 @@ export const npcs: Record<string, Npc> = {
     subscriptions: {},
     traits: { [CharacterTrait.Friendly]: true },
     gender: CharacterGender.Female,
+    school: SchoolName.Academy,
+  },
+  elsa: {
+    key: 'elsa',
+    name: 'Elsa Falkenstein',
+    gold: 0,
+    placeKey: 'admin-office',
+    attributes: { dexterity: 11, intelligence: 8, vitality: 14, charisma: 18, aura: 9 },
+    subscriptions: {},
+    traits: { [CharacterTrait.Friendly]: true },
+    gender: CharacterGender.Female,
+    school: SchoolName.Academy,
+  },
+  ousmane: {
+    key: 'ousmane',
+    name: 'Ousmane Tempeli',
+    gold: 0,
+    placeKey: 'admin-office',
+    attributes: { dexterity: 18, intelligence: 18, vitality: 14, charisma: 8, aura: 9 },
+    subscriptions: {},
+    traits: { [CharacterTrait.Friendly]: true },
+    gender: CharacterGender.Male,
+    school: SchoolName.Academy,
   },
 };

@@ -10,6 +10,7 @@ import type {
   CharacterTrait,
   CharacterGender,
   EventEffectType,
+  SchoolName,
 } from './enums-sim';
 import type { CardTemplate, LandTemplate } from './model-battle';
 
@@ -25,6 +26,12 @@ export interface GameState {
   regions: Record<string, Region>;
   scene: Scene;
   scheduledActivities: ScheduledActivity[];
+  league: League;
+}
+
+export interface League {
+  season: number;
+  rankings: { characterKey: string; points: number }[];
 }
 
 export interface Scene {
@@ -108,6 +115,7 @@ export interface Player extends Character {
 export interface Npc extends Character {
   gender: CharacterGender;
   traits: Partial<Record<CharacterTrait, boolean>>;
+  school?: SchoolName;
 }
 
 export interface Place {

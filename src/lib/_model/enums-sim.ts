@@ -60,3 +60,8 @@ export enum CharacterGender {
   Female = 'female',
   Other = 'other',
 }
+
+export enum SchoolName {
+  Academy = 'academy',
+  Kartekar = 'kartekar',
+}

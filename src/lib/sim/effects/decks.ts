@@ -19,5 +19,5 @@ export function getDeck(parameters: GetDeckParameters): string {
     return `Invalid deck key: ${parameters.deckKey}.`;
   }
   gs.player.decks.push(deck);
-  return `You have received the deck: ${parameters.deckKey}.`;
+  return `You have received your first deck. Go and try it out!`;
 }
