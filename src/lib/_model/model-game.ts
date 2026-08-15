@@ -19,6 +19,7 @@ export interface GameState {
     day: number;
     period: DayPeriod;
     usedActions: Record<ActionDuration, number>;
+    playedLeagueMatch: boolean;
   };
   characters: Record<string, Npc>;
   player: Player;
@@ -27,11 +28,19 @@ export interface GameState {
   scene: Scene;
   scheduledActivities: ScheduledActivity[];
   league: League;
+  ongoingBattle: OngoingBattle | null;
+}
+
+export interface OngoingBattle {
+  playerDeck: Deck;
+  opponentDeck: Deck;
+  opponentKey: string;
 }
 
 export interface League {
   season: number;
   rankings: { characterKey: string; points: number }[];
+  records: Record<string, { opponentKey: string; won: boolean }[]>;
 }
 
 export interface Scene {
@@ -105,11 +114,11 @@ export interface Character {
   placeKey: string;
   attributes: Attributes;
   subscriptions: Partial<Record<SubscriptionType, number>>;
+  decks: Deck[];
 }
 
 export interface Player extends Character {
   focus: number;
-  decks: Deck[];
 }
 
 export interface Npc extends Character {

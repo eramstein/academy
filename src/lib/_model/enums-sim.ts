@@ -20,6 +20,7 @@ export enum ActionType {
   Negotiate = 'negotiate',
   Wait = 'wait',
   Socialize = 'socialize',
+  StartMatch = 'start_match',
 }
 
 export enum ActionDuration {

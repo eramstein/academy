@@ -19,6 +19,8 @@
     characterKey: 'Who?',
     placeKey: 'Where?',
     socializeType: 'How?',
+    playerDeckKey: 'Choose your deck',
+    opponentKey: 'Against who?',
   };
 
   function formatParameterKey(key: string): string {

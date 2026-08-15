@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { UiView } from '../_model';
-  import { bs, uiState } from '../_state';
+  import { bs, gs } from '../_state';
   import Battle from './battle/Battle.svelte';
   import ConsoleCommand from './ConsoleCommand.svelte';
   import ModalHost from './ModalHost.svelte';
@@ -11,7 +10,7 @@
 <ModalHost />
 <div class="main">
   <div class="scene-container">
-    {#if uiState.currentView === UiView.Battle && bs.turn > 0}
+    {#if gs.ongoingBattle && bs.turn > 0}
       <Battle />
     {:else}
       <Sim />

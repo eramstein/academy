@@ -14,6 +14,7 @@ import { narrateText } from './narration';
 import { getCurrentScheduledActivity } from './schedule';
 import { nextPeriod } from './time';
 import { initialLessonEvent } from './lessons';
+import { updateNpcLocations } from './npc';
 
 /* 
 The scene first loops events until it runs out. Player has to react to each event by chosing an option.
@@ -49,6 +50,7 @@ export function selectOption(option: SceneEventOption) {
 
 export function nextScene() {
   nextPeriod();
+  updateNpcLocations();
   const currentScheduledActivity = getCurrentScheduledActivity();
   if (currentScheduledActivity) {
     gs.player.placeKey = currentScheduledActivity.placeKey;

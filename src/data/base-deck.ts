@@ -232,7 +232,7 @@ const vigilant_knight = {
 const expensive_mercenary = {
   id: 'expensive_mercenary',
   name: 'Expensive Mercenary',
-  imageFileName: 'expensive_mercenary',
+  imageFileName: 'franz',
   type: CardType.Unit,
   cost: 8,
   colors: [{ color: CardColor.Black, count: 1 }],

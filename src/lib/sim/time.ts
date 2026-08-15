@@ -25,3 +25,7 @@ export function nextPeriod() {
   };
   narrateText('It is now ' + WEEK_DAYS[getWeekDay(gs.time.day) - 1] + ' ' + gs.time.period + '.');
 }
+
+export function isWeekDay(day: number): boolean {
+  return getWeekDay(day) < 6;
+}

@@ -9,6 +9,7 @@ import { config } from '../_config/config';
 import { nextScene } from './scene';
 import { wait } from './actions/wait';
 import { getSocializeActions, socialize, type SocializeParameters } from './actions/socialize';
+import { getLeagueMatchActions, startMatch, type StartMatchParameters } from './actions/match';
 
 export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
@@ -20,6 +21,7 @@ export function getPossibleActions(): Action[] {
     missingParameters: {},
   });
   actions.push(...getSocializeActions());
+  actions.push(...getLeagueMatchActions());
   return filterActionsForAvailableTime(actions);
 }
 
@@ -60,4 +62,5 @@ const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => s
   [ActionType.Move]: (parameters) => move(parameters as MoveParameters),
   [ActionType.Wait]: () => wait(),
   [ActionType.Socialize]: (parameters) => socialize(parameters as SocializeParameters),
+  [ActionType.StartMatch]: (parameters) => startMatch(parameters as StartMatchParameters),
 };

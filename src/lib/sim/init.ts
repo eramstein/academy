@@ -14,6 +14,7 @@ export const defaultGameState: GameState = {
       [ActionDuration.Short]: 0,
       [ActionDuration.Long]: 0,
     },
+    playedLeagueMatch: false,
   },
   characters: npcs,
   player: {
@@ -51,7 +52,9 @@ export const defaultGameState: GameState = {
   league: {
     season: 0,
     rankings: [],
+    records: {},
   },
+  ongoingBattle: null,
 };
 
 export const initSim = async () => {
