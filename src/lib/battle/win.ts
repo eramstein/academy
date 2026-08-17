@@ -1,6 +1,6 @@
 import type { Player } from '../_model';
 import { bs } from '../_state';
-import { getAiPlayer, getHumanPlayer } from './player';
+import { getAiPlayer } from './player';
 
 export function checkIfPlayerLost(player: Player) {
   if (player.life <= 0) {

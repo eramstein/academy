@@ -1,8 +1,8 @@
 import { ActionDuration, ActionType, DayPeriod, type Action, type Deck } from '@/lib/_model';
 import { gs } from '@/lib/_state';
-import { initBattle } from '@/lib/battle';
 import { getPossibleLeagueOpponents } from '../league';
 import { isWeekDay } from '../time';
+import { initOngoingBattle, pickNpcDeck } from '../ongoing-battle';
 
 export interface StartMatchParameters {
   playerDeckKey: string;
@@ -11,16 +11,11 @@ export interface StartMatchParameters {
 
 export function startMatch(parameters: StartMatchParameters): string {
   const playerDeck = gs.player.decks.find((deck) => deck.key === parameters.playerDeckKey);
-  const opponentDeck = gs.characters[parameters.opponentKey].decks[0];
+  const opponentDeck = pickNpcDeck(parameters.opponentKey);
   if (!playerDeck || !opponentDeck) {
     return 'Missing deck.';
   }
-  gs.ongoingBattle = {
-    playerDeck: playerDeck,
-    opponentDeck: opponentDeck,
-    opponentKey: parameters.opponentKey,
-  };
-  initBattle(parameters.opponentKey, playerDeck, opponentDeck);
+  initOngoingBattle(gs.characters[parameters.opponentKey], playerDeck, opponentDeck, true);
   return `You have started a match with ${gs.characters[parameters.opponentKey].name}.`;
 }
 

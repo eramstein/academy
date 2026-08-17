@@ -1,10 +1,11 @@
 <script lang="ts">
   import { UiView } from '../_model';
   import { resetUiState, uiState } from '../_state';
-  import { resetBattleState } from '../_state/main.svelte';
+  import { gs, resetBattleState } from '../_state/main.svelte';
   import { initBattle } from '../battle/init';
   import { endBattle } from '../battle/win';
   import { initSim } from '../sim/init';
+  import { recordBattleResult } from '../sim/ongoing-battle';
 
   const navItems = [
     { view: UiView.Battle, label: 'Game', icon: '🎮' },
@@ -13,6 +14,7 @@
   ];
 
   const stopBattle = () => {
+    recordBattleResult(false);
     endBattle(true);
     resetBattleState();
     uiState.currentView = UiView.Scene;
@@ -47,7 +49,7 @@
       </button>
     {/each}
 
-    {#if uiState.currentView === UiView.Battle}
+    {#if gs.ongoingBattle}
       <button class="nav-item stop-battle" onclick={stopBattle}>
         <span class="icon">⏹️</span>
         <span class="label">Concede Match</span>

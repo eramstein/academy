@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
+  import { tick, untrack } from 'svelte';
   import { selectNextScene } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state/main.svelte';
   import { NarrationType } from '@/lib/_model/enums-sim';
@@ -102,6 +102,17 @@
     syncHeight();
 
     return () => ro.disconnect();
+  });
+
+  // After first layout, jump to the latest entries (e.g. remounting the scene view).
+  let didOpenScroll = false;
+  $effect(() => {
+    if (didOpenScroll || !pageEl || !scrollable) return;
+    didOpenScroll = true;
+    const el = pageEl;
+    void tick().then(() => {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'auto' });
+    });
   });
 
   function getMaxBookHeight(): number {

@@ -35,6 +35,7 @@ export interface OngoingBattle {
   playerDeck: Deck;
   opponentDeck: Deck;
   opponentKey: string;
+  isLeagueMatch: boolean;
 }
 
 export interface League {
