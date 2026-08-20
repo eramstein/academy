@@ -1,7 +1,4 @@
 export const config = {
-  // sim
-  shortActionsPerScene: 2,
-  longActionsPerScene: 1,
   // battle
   initialMana: 2,
   initialHandSize: 7,

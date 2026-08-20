@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { config } from '@/lib/_config';
-  import { ActionDuration } from '@/lib/_model';
   import type { Action } from '@/lib/_model/model-game';
   import { performAction } from '@/lib/sim/actions';
   import { selectOption } from '@/lib/sim/scene';
@@ -8,10 +6,6 @@
 
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
-  // Depend on the usedActions object identity (reassigned in performAction)
-  const usedActions = $derived(gs.time.usedActions);
-  const shortUsed = $derived(usedActions[ActionDuration.Short]);
-  const longUsed = $derived(usedActions[ActionDuration.Long]);
 
   let pendingAction = $state<Action | null>(null);
 
@@ -97,14 +91,6 @@
 </script>
 
 <div class="actions">
-  <div class="action-budget">
-    <span class="action-count">
-      Short <strong>{shortUsed}/{config.shortActionsPerScene}</strong>
-    </span>
-    <span class="action-count">
-      Long <strong>{longUsed}/{config.longActionsPerScene}</strong>
-    </span>
-  </div>
   <div class="action-buttons-wrap">
     {#if pendingAction && currentParameterKey}
       <p class="parameter-prompt">{parameterPrompt}</p>
@@ -121,6 +107,7 @@
           <button
             type="button"
             class="action-btn"
+            class:long={pendingAction.isLongAction}
             onclick={() => pickParameter(optionValue(option))}>{optionLabel(option)}</button
           >
         {/each}
@@ -128,8 +115,11 @@
         >
       {:else}
         {#each actions as action (action.label)}
-          <button type="button" class="action-btn" onclick={() => onActionClick(action)}
-            >{action.label}</button
+          <button
+            type="button"
+            class="action-btn"
+            class:long={action.isLongAction}
+            onclick={() => onActionClick(action)}>{action.label}</button
           >
         {/each}
       {/if}
@@ -148,22 +138,6 @@
     width: 100%;
     max-width: 640px;
     margin-top: auto;
-  }
-
-  .action-budget {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 0.85rem;
-    color: #a89880;
-    line-height: 1.2;
-  }
-
-  .action-count strong {
-    font-variant-numeric: tabular-nums;
-    color: #e8dcc4;
-    font-weight: 600;
   }
 
   .action-buttons-wrap {
@@ -209,6 +183,16 @@
 
   .action-btn:active {
     background: #2c251d;
+  }
+
+  .action-btn.long {
+    color: #f0e6c8;
+    border-color: var(--color-golden);
+  }
+
+  .action-btn.long:hover {
+    background: #4a3f32;
+    border-color: #d4b85c;
   }
 
   .action-btn.cancel {

@@ -1,11 +1,10 @@
-import { ActionDuration, ActionType } from '../_model';
+import { ActionType } from '../_model';
 import type { Action } from '../_model/model-game';
 import { transaction, type TransactionParameters } from './actions/transaction';
 import { negotiate, type NegotiateParameters } from './actions/negotiation';
 import { narrateText } from './narration';
 import { gs } from '../_state';
 import { move, type MoveParameters } from './actions/move';
-import { config } from '../_config/config';
 import { nextScene } from './scene';
 import { wait } from './actions/wait';
 import { getSocializeActions, socialize, type SocializeParameters } from './actions/socialize';
@@ -13,38 +12,32 @@ import { getLeagueMatchActions, startMatch, type StartMatchParameters } from './
 
 export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
-  actions.push({
-    label: 'Wait',
-    actionType: ActionType.Wait,
-    duration: ActionDuration.Instant,
-    actionParameters: {},
-    missingParameters: {},
-  });
   actions.push(...getSocializeActions());
-  actions.push(...getLeagueMatchActions());
-  return filterActionsForAvailableTime(actions);
-}
 
-function filterActionsForAvailableTime(actions: Action[]): Action[] {
-  const shortLeft = gs.time.usedActions[ActionDuration.Short] < config.shortActionsPerScene;
-  const longLeft = gs.time.usedActions[ActionDuration.Long] < config.longActionsPerScene;
-  return actions.filter((action) => {
-    if (action.duration === ActionDuration.Instant) return shortLeft || longLeft;
-    if (action.duration === ActionDuration.Short) return shortLeft;
-    return longLeft;
-  });
+  // league matches are mandatory, can't skip scene if there is one
+  const leagueActions = getLeagueMatchActions();
+  if (leagueActions.length > 0) {
+    actions.push(...leagueActions);
+  } else {
+    actions.push({
+      label: 'Wait',
+      actionType: ActionType.Wait,
+      isLongAction: true,
+      actionParameters: {},
+      missingParameters: {},
+    });
+  }
+
+  return actions;
 }
 
 export function performAction(action: Action) {
   const result = actionFunctions[action.actionType](action.actionParameters);
-  // Reassign usedActions so nested $derived subscribers update (in-place += does not).
-  if (action.duration !== ActionDuration.Instant) {
-    gs.time.usedActions = {
-      ...gs.time.usedActions,
-      [action.duration]: gs.time.usedActions[action.duration] + 1,
-    };
-  }
   narrateText(result);
+  if (action.isLongAction) {
+    nextScene();
+    return;
+  }
   setPossibleActions();
 }
 

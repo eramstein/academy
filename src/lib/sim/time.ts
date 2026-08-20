@@ -1,4 +1,4 @@
-import { ActionDuration, DayPeriod } from '../_model';
+import { DayPeriod } from '../_model';
 import { gs } from '../_state';
 import { narrateText } from './narration';
 
@@ -15,14 +15,10 @@ export function nextPeriod() {
   if (index === PERIODS.length - 1) {
     gs.time.period = DayPeriod.Morning;
     gs.time.day += 1;
+    gs.league.playedToday = false;
   } else {
     gs.time.period = PERIODS[index + 1];
   }
-  gs.time.usedActions = {
-    [ActionDuration.Short]: 0,
-    [ActionDuration.Long]: 0,
-    [ActionDuration.Instant]: 0,
-  };
   narrateText('It is now ' + WEEK_DAYS[getWeekDay(gs.time.day) - 1] + ' ' + gs.time.period + '.');
 }
 

@@ -1,5 +1,5 @@
 import { npcs } from '@/data/npcs';
-import { ActionDuration, DayPeriod, type GameState } from '../_model';
+import { DayPeriod, type GameState } from '../_model';
 import { gs } from '../_state';
 import { PLACES, REGIONS } from '@/data/sim/places';
 import { setSceneEvents } from './scene';
@@ -9,11 +9,6 @@ export const defaultGameState: GameState = {
   time: {
     day: 1,
     period: DayPeriod.Morning,
-    usedActions: {
-      [ActionDuration.Instant]: 0,
-      [ActionDuration.Short]: 0,
-      [ActionDuration.Long]: 0,
-    },
     playedLeagueMatch: false,
   },
   characters: npcs,
@@ -53,6 +48,7 @@ export const defaultGameState: GameState = {
     season: 0,
     rankings: [],
     records: {},
+    playedToday: false,
   },
   ongoingBattle: null,
 };

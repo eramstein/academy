@@ -1,5 +1,4 @@
 import {
-  ActionDuration,
   ActionType,
   EventOutcomeType,
   SubscriptionType,
@@ -18,8 +17,8 @@ import { updateNpcLocations } from './npc';
 
 /* 
 The scene first loops events until it runs out. Player has to react to each event by chosing an option.
-Once the events are done (no new events are set), the player can get proactive and choose actions while there is still time left.
-Once there are no actions available, the scene ends and the next scene is set, based either on the next scheduled activity or the player's choice of next place.
+Once the events are done (no new events are set), the player can get proactive and choose actions.
+A long action advances the period and ends the scene; the next scene is set based either on the next scheduled activity or the player's choice of next place.
 */
 
 export function setSceneEvents() {
@@ -85,7 +84,7 @@ function initialEnrollmentEvent() {
             type: EventOutcomeType.Action,
             action: {
               actionType: ActionType.Negotiate,
-              duration: ActionDuration.Short,
+              isLongAction: false,
               actionParameters: getEnrollmentTransactionParameters() as Record<string, any>,
             },
           },
@@ -96,7 +95,7 @@ function initialEnrollmentEvent() {
             type: EventOutcomeType.Action,
             action: {
               actionType: ActionType.Transaction,
-              duration: ActionDuration.Short,
+              isLongAction: false,
               actionParameters: getEnrollmentTransactionParameters() as Record<string, any>,
             },
           },

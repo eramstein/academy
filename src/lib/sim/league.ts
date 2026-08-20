@@ -29,6 +29,7 @@ export function recordLeagueMatchResult(won: boolean) {
   }
   recordPlayedMatch(PLAYER_KEY, gs.ongoingBattle.opponentKey, won);
   autoPlayOtherLeagueMatches();
+  gs.league.playedToday = true;
 }
 
 function autoPlayOtherLeagueMatches() {

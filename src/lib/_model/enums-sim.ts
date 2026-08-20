@@ -23,12 +23,6 @@ export enum ActionType {
   StartMatch = 'start_match',
 }
 
-export enum ActionDuration {
-  Instant = 'instant',
-  Short = 'short',
-  Long = 'long',
-}
-
 export enum NarrationType {
   Text = 'text',
   AttributeCheck = 'attribute_check',

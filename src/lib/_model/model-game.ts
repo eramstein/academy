@@ -4,7 +4,6 @@ import type {
   ClassType,
   NarrationType,
   DayPeriod,
-  ActionDuration,
   EventOutcomeType,
   SubscriptionType,
   CharacterTrait,
@@ -18,7 +17,6 @@ export interface GameState {
   time: {
     day: number;
     period: DayPeriod;
-    usedActions: Record<ActionDuration, number>;
     playedLeagueMatch: boolean;
   };
   characters: Record<string, Npc>;
@@ -42,6 +40,7 @@ export interface League {
   season: number;
   rankings: { characterKey: string; points: number }[];
   records: Record<string, { opponentKey: string; won: boolean }[]>;
+  playedToday: boolean;
 }
 
 export interface Scene {
@@ -105,7 +104,7 @@ export interface Action {
   actionType: ActionType;
   actionParameters: Record<string, any>;
   missingParameters?: Record<string, Array<string | [string, string]> | number>;
-  duration: ActionDuration;
+  isLongAction: boolean;
 }
 
 export interface Character {

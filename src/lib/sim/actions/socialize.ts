@@ -1,5 +1,5 @@
 import { gs } from '@/lib/_state';
-import { ActionDuration, ActionType, CharacterTrait } from '@/lib/_model/enums-sim';
+import { ActionType, CharacterTrait } from '@/lib/_model/enums-sim';
 import type { Action } from '@/lib/_model';
 import {
   skillCheckDifficulty,
@@ -57,7 +57,7 @@ export function getSocializeActions(): Action[] {
     {
       label: 'Socialize',
       actionType: ActionType.Socialize,
-      duration: ActionDuration.Short,
+      isLongAction: false,
       actionParameters: {},
       missingParameters: {
         characterKey: presentCharacters.map((c) => [c.key, c.name]),

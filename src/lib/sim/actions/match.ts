@@ -1,4 +1,4 @@
-import { ActionDuration, ActionType, DayPeriod, type Action, type Deck } from '@/lib/_model';
+import { ActionType, DayPeriod, type Action } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getPossibleLeagueOpponents } from '../league';
 import { isWeekDay } from '../time';
@@ -20,6 +20,9 @@ export function startMatch(parameters: StartMatchParameters): string {
 }
 
 export function getLeagueMatchActions(): Action[] {
+  if (gs.league.playedToday) {
+    return [];
+  }
   // matches after class
   if (!(gs.time.period === DayPeriod.Afternoon) || !isWeekDay(gs.time.day)) {
     return [];
@@ -32,7 +35,7 @@ export function getLeagueMatchActions(): Action[] {
     {
       label: 'Play League Match',
       actionType: ActionType.StartMatch,
-      duration: ActionDuration.Instant,
+      isLongAction: false,
       actionParameters: {},
       missingParameters: {
         opponentKey: opponents.map((c) => [c.key, c.name]),
