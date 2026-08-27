@@ -18,6 +18,7 @@ export interface GameState {
     day: number;
     period: DayPeriod;
     playedLeagueMatch: boolean;
+    usedActions: Partial<Record<ActionType, number>>;
   };
   characters: Record<string, Npc>;
   player: Player;

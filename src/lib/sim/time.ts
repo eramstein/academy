@@ -19,6 +19,7 @@ export function nextPeriod() {
   } else {
     gs.time.period = PERIODS[index + 1];
   }
+  gs.time.usedActions = {};
   narrateText('It is now ' + WEEK_DAYS[getWeekDay(gs.time.day) - 1] + ' ' + gs.time.period + '.');
 }
 

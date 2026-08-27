@@ -9,6 +9,7 @@ import { nextScene } from './scene';
 import { wait } from './actions/wait';
 import { getSocializeActions, socialize, type SocializeParameters } from './actions/socialize';
 import { getLeagueMatchActions, startMatch, type StartMatchParameters } from './actions/match';
+import { ActionsLimitByPeriod } from './action-types';
 
 export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
@@ -28,11 +29,17 @@ export function getPossibleActions(): Action[] {
     });
   }
 
-  return actions;
+  // check if the number of actions is limited by period
+  const filteredActions = actions.filter(action => 
+    !ActionsLimitByPeriod[action.actionType] || 
+    (gs.time.usedActions[action.actionType] ?? 0) < (ActionsLimitByPeriod[action.actionType] ?? 0)); 
+
+  return filteredActions;
 }
 
 export function performAction(action: Action) {
   const result = actionFunctions[action.actionType](action.actionParameters);
+  gs.time.usedActions[action.actionType] = (gs.time.usedActions[action.actionType] ?? 0) + 1;
   narrateText(result);
   if (action.isLongAction) {
     nextScene();

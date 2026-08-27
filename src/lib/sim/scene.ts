@@ -47,7 +47,7 @@ export function selectOption(option: SceneEventOption) {
   setSceneEvents();
 }
 
-export function nextScene() {
+export function nextScene() {  
   nextPeriod();
   updateNpcLocations();
   const currentScheduledActivity = getCurrentScheduledActivity();

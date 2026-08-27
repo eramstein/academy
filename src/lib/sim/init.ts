@@ -10,6 +10,7 @@ export const defaultGameState: GameState = {
     day: 1,
     period: DayPeriod.Morning,
     playedLeagueMatch: false,
+    usedActions: {},
   },
   characters: npcs,
   player: {
