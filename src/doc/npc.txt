@@ -1,0 +1,1 @@
+socialize -> get snippets of lore about the NPC, unlocks quests (tree of lore nodes, include quests)

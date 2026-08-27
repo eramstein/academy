@@ -118,6 +118,7 @@ export interface Character {
 }
 
 export interface Player extends Character {
+  maxFocus: number;
   focus: number;
 }
 

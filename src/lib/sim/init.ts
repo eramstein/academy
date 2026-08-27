@@ -16,7 +16,8 @@ export const defaultGameState: GameState = {
     key: 'player',
     name: 'Antonio Fibonacci',
     gold: 1000,
-    focus: 0,
+    focus: 3,
+    maxFocus: 3,
     decks: [],
     placeKey: 'admin-office',
     attributes: {
