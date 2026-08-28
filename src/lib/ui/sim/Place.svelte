@@ -55,10 +55,10 @@
   }
 
   .character-portrait-container {
-    width: 280px;
-    height: 280px;
+    width: 560px;
+    height: 560px;
     padding: 0;
-    border-radius: 12px;
+    border-radius: 8px;
     cursor: pointer;
     box-shadow:
       0 8px 24px rgba(0, 0, 0, 0.6),
@@ -68,6 +68,10 @@
     backdrop-filter: blur(6px);
     border: 3px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
+  }
+
+  .character-portrait-container :global(.character-portrait) {
+    border-radius: 0;
   }
 
   .character-portrait-container:hover {

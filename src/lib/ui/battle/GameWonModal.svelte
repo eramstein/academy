@@ -13,7 +13,7 @@
 
   const closeModal = () => {
     resetBattleState();
-    uiState.currentView = UiView.CurrentPlace;
+    uiState.currentView = UiView.Scene;
   };
 </script>
 

@@ -109,14 +109,20 @@
   }
 
   .portrait-btn {
-    width: 72px;
-    height: 72px;
+    width: 144px;
+    height: 144px;
     padding: 0;
+    flex-shrink: 0;
     border-radius: 8px;
     border: 2px solid rgba(255, 255, 255, 0.2);
     background: rgba(0, 0, 0, 0.4);
     cursor: pointer;
     overflow: hidden;
+  }
+
+  .portrait-btn :global(.character-portrait) {
+    display: block;
+    border-radius: 0;
   }
 
   .portrait-btn:hover {

@@ -1,4 +1,4 @@
-import { CardColor, CardType, type Deck } from '@/lib/_model';
+import { AiTurnGoal, CardColor, CardType, TargetType, type Deck } from '@/lib/_model';
 
 // GREEN BASE CARDS
 // ---------------------------------------------------------
@@ -80,6 +80,32 @@ const bison = {
   maxHealth: 7,
 };
 
+const giant_growth = {
+  id: 'giant_growth',
+  name: 'Giant Growth',
+  imageFileName: 'giant_growth',
+  type: CardType.Spell,
+  cost: 4,
+  colors: [{ color: CardColor.Green, count: 2 }],
+  "actions": [
+    {
+      effect: {
+        name: 'addCounters',
+        args: {
+          counterType: 'growth',
+          counterValue: 1
+        }
+      },
+      targets: [
+        {
+          type: TargetType.Units,
+          count: 1
+        }
+      ]
+    }
+  ]
+}
+
 // RED BASE CARDS
 // ---------------------------------------------------------
 
@@ -159,6 +185,32 @@ const mountain_giant = {
   power: 7,
   maxHealth: 5,
 };
+
+const lightning_bolt = {
+  id: 'lightning_bolt',
+  name: 'Lightning Bolt',
+  imageFileName: 'lightning_bolt',
+  type: CardType.Spell,
+  cost: 3,
+  colors: [{ color: CardColor.Red, count: 2 }],
+  actions: [
+    {
+      effect: {
+        name: 'damageUnit',
+        args: {
+          damage: 3
+        }
+      },
+      targets: [
+        {
+          type: TargetType.Units,
+          count: 1
+        }
+      ]
+    }
+  ],
+  aiHints: [AiTurnGoal.RemoveUnit],
+}
 
 // BLACK BASE CARDS
 // ---------------------------------------------------------
@@ -240,6 +292,30 @@ const expensive_mercenary = {
   maxHealth: 9,
 };
 
+const execution = {
+  "id": "execution",
+  "name": "Execution",
+  imageFileName: 'execution',
+  type: CardType.Spell,
+  cost: 6,
+  colors: [{ color: CardColor.Black, count: 2 }],
+  actions: [
+    {
+      effect: {
+        name: 'destroyUnit',
+        args: {}
+      },
+      targets: [
+        {
+          type: TargetType.Units,
+          count: 1
+        }
+      ]
+    }
+  ],
+  aiHints: [AiTurnGoal.RemoveUnit],
+}
+
 // BASIC LANDS
 // ---------------------------------------------------------
 
@@ -283,6 +359,45 @@ const city = {
   health: 10,
 };
 
+const plains = {
+  id: 'plains',
+  name: 'Plains',
+  imageFileName: 'plains',
+  type: CardType.Land,
+  cost: 0,
+  colors: [],
+  health: 15,
+};
+
+const market = {
+  id: 'market',
+  name: 'Market',
+  imageFileName: 'market',
+  type: CardType.Land,
+  cost: 0,
+  colors: [],
+  health: 10,
+  abilities: [
+    {
+      'trigger': {
+        "type": "Activated"
+      },
+      "actions": [
+        {
+          "effect": {
+            "name": "drawCard",
+            "args": {
+              "count": 1
+            }
+          }
+        }
+      ],
+      "cost": 1,
+      "exhausts": true
+    }
+  ],
+};
+
 export const BASE_DECK_GREEN: Deck = {
   key: 'base',
   name: 'Base',
@@ -301,8 +416,10 @@ export const BASE_DECK_GREEN: Deck = {
     wolf,
     deer,
     bison,
+    giant_growth,
+    giant_growth,
   ],
-  lands: [forest, forest, forest, forest],
+  lands: [forest, plains, market, plains],
 };
 
 export const BASE_DECK_RED: Deck = {
@@ -325,8 +442,10 @@ export const BASE_DECK_RED: Deck = {
     modis_chosen,
     frenzied_shaman,
     mountain_giant,
+    lightning_bolt,
+    lightning_bolt,
   ],
-  lands: [mountain, mountain, mountain, mountain],
+  lands: [mountain, plains, market, mountain],
 };
 
 export const BASE_DECK_BLACK: Deck = {
@@ -347,6 +466,8 @@ export const BASE_DECK_BLACK: Deck = {
     royal_halberdier,
     vigilant_knight,
     expensive_mercenary,
+    execution,
+    execution,
   ],
-  lands: [city, city, city, city],
+  lands: [city, plains, market, plains],
 };

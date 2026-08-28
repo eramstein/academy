@@ -245,6 +245,8 @@
     bottom: 70px;
     left: 8px;
     z-index: 2;
+    opacity: 0;
+    transition: opacity 0.2s ease;
   }
 
   .abilities-container {
@@ -257,7 +259,8 @@
   }
 
   .unit-deployed:hover .keywords-container,
-  .unit-deployed:hover .abilities-container {
+  .unit-deployed:hover .abilities-container,
+  .unit-deployed:hover .counters-container {
     opacity: 1;
   }
 

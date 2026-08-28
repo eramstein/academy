@@ -51,38 +51,58 @@
     return option.charAt(0).toUpperCase() + option.slice(1);
   }
 
-  function onActionClick(action: Action) {
-    const missingKeys = action.missingParameters ? Object.keys(action.missingParameters) : [];
-    if (missingKeys.length === 0) {
-      performAction(action);
+  function applyParameter(action: Action, key: string, value: string): Action {
+    const next: Action = {
+      ...action,
+      actionParameters: {
+        ...action.actionParameters,
+        [key]: value,
+      },
+      missingParameters: { ...action.missingParameters },
+    };
+    delete next.missingParameters?.[key];
+    return next;
+  }
+
+  function autoFillSingleOptions(action: Action): Action {
+    let next = action;
+    let filled = true;
+    while (filled && next.missingParameters) {
+      filled = false;
+      for (const key of Object.keys(next.missingParameters)) {
+        const value = next.missingParameters[key];
+        if (Array.isArray(value) && value.length === 1) {
+          next = applyParameter(next, key, optionValue(value[0]));
+          filled = true;
+          break;
+        }
+      }
+    }
+    return next;
+  }
+
+  function commitAction(action: Action) {
+    const filled = autoFillSingleOptions(action);
+    const remaining = filled.missingParameters ? Object.keys(filled.missingParameters) : [];
+    if (remaining.length === 0) {
+      pendingAction = null;
+      performAction(filled);
       return;
     }
-    pendingAction = {
+    pendingAction = filled;
+  }
+
+  function onActionClick(action: Action) {
+    commitAction({
       ...action,
       actionParameters: { ...action.actionParameters },
       missingParameters: { ...action.missingParameters },
-    };
+    });
   }
 
   function pickParameter(value: string) {
     if (!pendingAction || !currentParameterKey) return;
-
-    const next: Action = {
-      ...pendingAction,
-      actionParameters: {
-        ...pendingAction.actionParameters,
-        [currentParameterKey]: value,
-      },
-      missingParameters: { ...pendingAction.missingParameters },
-    };
-    delete next.missingParameters?.[currentParameterKey];
-
-    if (next.missingParameters && Object.keys(next.missingParameters).length === 0) {
-      pendingAction = null;
-      performAction(next);
-      return;
-    }
-    pendingAction = next;
+    commitAction(applyParameter(pendingAction, currentParameterKey, value));
   }
 
   function cancelParameterPick() {
