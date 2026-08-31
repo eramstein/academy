@@ -22,6 +22,7 @@ export const defaultGameState: GameState = {
     focus: 3,
     maxFocus: 3,
     decks: [],
+    collection: [],
     placeKey: 'admin-office',
     attributes: {
       dexterity: 5,

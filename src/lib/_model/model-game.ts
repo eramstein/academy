@@ -12,7 +12,7 @@ import type {
   SchoolName,
   EventTriggerType,
 } from './enums-sim';
-import type { CardTemplate, LandTemplate } from './model-battle';
+import type { CardTemplate } from './model-battle';
 
 export interface GameState {
   time: {
@@ -147,6 +147,7 @@ export interface Character {
   attributes: Attributes;
   subscriptions: Partial<Record<SubscriptionType, number>>;
   decks: Deck[];
+  collection: CardTemplate[];
 }
 
 export interface Player extends Character {
@@ -177,7 +178,7 @@ export interface Deck {
   key: string;
   name: string;
   cards: CardTemplate[];
-  lands: LandTemplate[];
+  lands: CardTemplate[];
 }
 
 export interface Attributes {

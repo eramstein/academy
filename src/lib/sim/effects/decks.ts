@@ -1,6 +1,7 @@
 import { BASE_DECK_BLACK, BASE_DECK_RED, BASE_DECK_GREEN } from '@/data/base-deck';
-import type { Deck } from '@/lib/_model';
 import { gs } from '@/lib/_state';
+import { redeemBaseDeck } from '../deck';
+import { type Deck } from '@/lib/_model';
 
 export interface GetDeckParameters {
   deckKey: string;
@@ -18,6 +19,6 @@ export function getDeck(parameters: GetDeckParameters): string {
   if (!deck) {
     return `Invalid deck key: ${parameters.deckKey}.`;
   }
-  gs.player.decks.push(deck);
+  redeemBaseDeck(deck, gs.player);
   return `You have received your first deck. Go and try it out!`;
 }

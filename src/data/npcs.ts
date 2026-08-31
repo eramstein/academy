@@ -11,6 +11,7 @@ export const npcs: Record<string, Npc> = {
     traits: { [CharacterTrait.Grumpy]: true },
     gender: CharacterGender.Male,
     decks: [],
+    collection: [],
   },
   molly: {
     key: 'molly',
@@ -23,6 +24,7 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
     decks: [],
+    collection: [],
   },
   elsa: {
     key: 'elsa',
@@ -35,6 +37,7 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
     decks: [],
+    collection: [],
   },
   ousmane: {
     key: 'ousmane',
@@ -47,5 +50,6 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
     decks: [],
+    collection: [],
   },
 };
