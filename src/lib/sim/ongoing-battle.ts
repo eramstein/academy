@@ -32,8 +32,7 @@ export function recordBattleResult(won: boolean) {
   }
   if (gs.ongoingBattle.isLeagueMatch) {
     recordLeagueMatchResult(won);
-  }
-  gs.ongoingBattle = null;
+  }  
   narrateText(`You have ${won ? 'won' : 'lost'} the match.`);
   setPossibleActions();
 }

@@ -7,3 +7,7 @@ export const db = new Dexie('AcademyDB');
 db.version(1).stores({
   savedGamesAcademy: 'id',
 });
+
+db.version(2).stores({
+  eventTemplates: '++id',
+});

@@ -10,6 +10,7 @@ import type {
   CharacterGender,
   EventEffectType,
   SchoolName,
+  EventTriggerType,
 } from './enums-sim';
 import type { CardTemplate, LandTemplate } from './model-battle';
 
@@ -53,10 +54,10 @@ export interface Scene {
 
 export interface SceneEvent {
   text: string;
-  options: SceneEventOption[];
+  options: EventOption[];
 }
 
-export interface SceneEventOption {
+export interface EventOption {
   text: string;
   outcome: EventOutcome;
 }
@@ -70,6 +71,36 @@ export interface EventOutcome {
 export interface EventEffect {
   type: EventEffectType;
   parameters: Record<string, any>;
+}
+
+// An event template defines when a scene event triggers and how to generate its options
+export interface EventTemplate {
+  text: string;
+  optionTemplates: EventOptionTemplate[];
+  triggers: EventTrigger[];
+  triggersOnce?: boolean;
+}
+
+export interface EventTrigger {
+  triggerType: EventTriggerType;
+  parameters: Record<string, any>;
+}
+
+export interface EventOptionTemplate {
+  text: string;
+  outcomeType: EventOutcomeType;
+  actionTemplate?: ActionTemplate;
+  effectsTemplates?: EventEffectsTemplate;
+}
+
+export interface ActionTemplate {
+  actionTemplate: string;
+  args: Record<string, any>;
+}
+
+export interface EventEffectsTemplate {
+  effectTemplate: string;
+  args: Record<string, any>;
 }
 
 export interface Narration {

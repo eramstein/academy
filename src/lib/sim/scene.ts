@@ -1,19 +1,13 @@
-import {
-  ActionType,
-  EventOutcomeType,
-  SubscriptionType,
-  type SceneEvent,
-  type SceneEventOption,
-} from '../_model';
+import { type SceneEvent, type EventOption, EventOutcomeType } from '../_model';
 import { gs } from '../_state';
-import { getEnrollmentTransactionParameters } from './academy';
+import type { StoredEventTemplate } from '../_state/event-templates';
 import { performAction, setPossibleActions } from './actions';
 import { applyEffect } from './effects';
+import { consumeEventTemplate, getTriggeredSceneEvent } from './events';
 import { narrateText } from './narration';
+import { updateNpcLocations } from './npc';
 import { getCurrentScheduledActivity } from './schedule';
 import { nextPeriod } from './time';
-import { initialLessonEvent } from './lessons';
-import { updateNpcLocations } from './npc';
 
 /* 
 The scene first loops events until it runs out. Player has to react to each event by chosing an option.
@@ -23,17 +17,17 @@ A long action advances the period and ends the scene; the next scene is set base
 
 export function setSceneEvents() {
   gs.scene.event = undefined;
-  // test which events trigger based on context
-  initialEnrollmentEvent();
-  initialLessonEvent();
-  // ... all others. TODO: more elegant way to do this.
+  const triggeredEvent = getTriggeredSceneEvent();
+  if (triggeredEvent) {
+    setEvent(triggeredEvent.event, triggeredEvent.template);
+  }
   console.log('setSceneEvents', gs.scene.event);
   if (gs.scene.event === undefined) {
     setPossibleActions();
   }
 }
 
-export function selectOption(option: SceneEventOption) {
+export function selectOption(option: EventOption) {
   // perform option outcome
   if (option.outcome.type === EventOutcomeType.Action && option.outcome.action) {
     performAction(option.outcome.action);
@@ -65,42 +59,10 @@ export function selectNextScene(placeKey: string) {
   setSceneEvents();
 }
 
-export function setEvent(event: SceneEvent) {
+export function setEvent(event: SceneEvent, template?: StoredEventTemplate) {
   narrateText(event.text);
   gs.scene.event = event;
-}
-
-function initialEnrollmentEvent() {
-  if (
-    gs.player.subscriptions[SubscriptionType.Academy] === 0 &&
-    gs.player.placeKey === 'admin-office'
-  ) {
-    setEvent({
-      text: 'After a long journey, you finally arrive at the academy. A clerk directs you to the administration office. The administrator asks you for tuition fees.',
-      options: [
-        {
-          text: 'Negotiate',
-          outcome: {
-            type: EventOutcomeType.Action,
-            action: {
-              actionType: ActionType.Negotiate,
-              isLongAction: false,
-              actionParameters: getEnrollmentTransactionParameters() as Record<string, any>,
-            },
-          },
-        },
-        {
-          text: 'Pay',
-          outcome: {
-            type: EventOutcomeType.Action,
-            action: {
-              actionType: ActionType.Transaction,
-              isLongAction: false,
-              actionParameters: getEnrollmentTransactionParameters() as Record<string, any>,
-            },
-          },
-        },
-      ],
-    });
+  if (template?.triggersOnce) {
+    consumeEventTemplate(template);
   }
 }

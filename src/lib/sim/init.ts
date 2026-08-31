@@ -4,6 +4,8 @@ import { gs } from '../_state';
 import { PLACES, REGIONS } from '@/data/sim/places';
 import { setSceneEvents } from './scene';
 import { newLeagueSeason } from './league';
+import { initNpcDecks } from './deck';
+import { loadEventTemplates, restoreEventTemplates } from './events';
 
 export const defaultGameState: GameState = {
   time: {
@@ -58,6 +60,9 @@ export const defaultGameState: GameState = {
 export const initSim = async () => {
   console.log('initSim');
   Object.assign(gs, defaultGameState);
+  await restoreEventTemplates();
+  await loadEventTemplates();
   setSceneEvents();
   newLeagueSeason();
+  initNpcDecks();
 };

@@ -1,0 +1,62 @@
+[
+  {
+    "text": "After a long journey, you finally arrive at the academy. A clerk directs you to the administration office. The administrator asks you for tuition fees.",
+    "triggers": [
+      { "triggerType": "day", "parameters": { "day": 1 } },
+      { "triggerType": "period", "parameters": { "period": "morning" } }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Negotiate",
+        "outcomeType": "action",
+        "actionTemplate": {
+          "actionTemplate": "enrollmentTransaction",
+          "args": {}
+        }
+      },
+      {
+        "text": "Pay",
+        "outcomeType": "action",
+        "actionTemplate": {
+          "actionTemplate": "enrollmentPayment",
+          "args": {}
+        }
+      }
+    ],
+    "triggersOnce": true
+  },
+  {
+    "text": "Get a deck, noob!",
+    "triggers": [
+      { "triggerType": "day", "parameters": { "day": 1 } },
+      { "triggerType": "period", "parameters": { "period": "afternoon" } }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Red",
+        "outcomeType": "decision",
+        "effectsTemplates": {
+          "effectTemplate": "getDeck",
+          "args": { "deckKey": "base_red" }
+        }
+      },
+      {
+        "text": "Black",
+        "outcomeType": "decision",
+        "effectsTemplates": {
+          "effectTemplate": "getDeck",
+          "args": { "deckKey": "base_black" }
+        }
+      },
+      {
+        "text": "Green",
+        "outcomeType": "decision",
+        "effectsTemplates": {
+          "effectTemplate": "getDeck",
+          "args": { "deckKey": "base_green" }
+        }
+      }
+    ],
+    "triggersOnce": true
+  }
+]

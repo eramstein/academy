@@ -35,7 +35,7 @@ export const loadGameStateFromLocalStorage = async (id: string) => {
       const parsedState: GameState = savedState.gameState;
       Object.assign(gs, parsedState);
     } else {
-      initSim();
+      await initSim();
     }
 
     // battle state

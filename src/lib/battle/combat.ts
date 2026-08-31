@@ -125,9 +125,6 @@ export function attackLand(unit: UnitDeployed, target: Land) {
   if (excessDamage && unit.keywords?.trample) {
     damagePlayer(bs.players[target.ownerPlayerId], excessDamage);
   }
-  if (unit.keywords?.raid) {
-    bs.players[unit.ownerPlayerId].gold += unit.keywords.raid;
-  }
   onCombatResolution(unit, target);
   onUnitReach(unit);
   recordUnitHasAttacked(unit);

@@ -1,5 +1,6 @@
 import type { Player } from '../_model';
 import { bs } from '../_state';
+import { recordBattleResult } from '../sim/ongoing-battle';
 import { getAiPlayer } from './player';
 
 export function checkIfPlayerLost(player: Player) {
@@ -13,4 +14,5 @@ export function endBattle(concession: boolean = false) {
   if (concession) {
     bs.playerIdWon = getAiPlayer().id;
   }
+  recordBattleResult(bs.playerIdWon === 0);
 }

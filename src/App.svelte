@@ -2,6 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { UiView } from './lib/_model';
   import { loadGameStateFromLocalStorage, uiState } from './lib/_state';
+  import { loadEventTemplates } from './lib/sim/events';
   import { handleKeybinds } from './lib/ui/_keybinds/keybinds';
   import Main from './lib/ui/Main.svelte';
   import Navigation from './lib/ui/Navigation.svelte';
@@ -15,6 +16,7 @@
     window.addEventListener('keydown', handleKeybinds);
     try {
       await loadGameStateFromLocalStorage('quicksave');
+      await loadEventTemplates();
     } catch (error) {
       console.error('Failed to initialize game:', error);
     } finally {

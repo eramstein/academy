@@ -60,3 +60,11 @@ export enum SchoolName {
   Academy = 'academy',
   Kartekar = 'kartekar',
 }
+
+export enum EventTriggerType {
+  Day = 'day',
+  Period = 'period',
+  ActivityType = 'activity_type',
+  Place = 'place',
+  CharacterPresent = 'character_present',
+}
