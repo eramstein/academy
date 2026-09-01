@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type { Action } from '@/lib/_model/model-sim';
+  import type { Action } from '@/lib/_model';
   import { selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state';
   import { performAction } from '@/lib/sim/actions';
+  import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
 
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
@@ -15,6 +16,7 @@
     socializeType: 'How?',
     playerDeckKey: 'Choose your deck',
     opponentKey: 'Against who?',
+    cardId: 'Which card?',
   };
 
   function formatParameterKey(key: string): string {
@@ -49,6 +51,14 @@
   function optionLabel(option: string | [string, string]): string {
     if (Array.isArray(option)) return option[1];
     return option.charAt(0).toUpperCase() + option.slice(1);
+  }
+
+  function optionThumb(option: string | [string, string]): { path: string; portrait: boolean } | undefined {
+    const value = optionValue(option);
+    const card = gs.player.collection.find((c) => c.id === value);
+    if (card) return { path: getCardImagePath(card.imageFileName), portrait: false };
+    const character = gs.characters[value];
+    if (character) return { path: getCharacterImagePath(character.key), portrait: true };
   }
 
   function applyParameter(action: Action, key: string, value: string): Action {
@@ -124,12 +134,24 @@
         {/each}
       {:else if pendingAction && currentParameterKey}
         {#each currentOptions as option (optionValue(option))}
+          {@const thumb = optionThumb(option)}
           <button
             type="button"
             class="action-btn"
             class:long={pendingAction.isLongAction}
-            onclick={() => pickParameter(optionValue(option))}>{optionLabel(option)}</button
+            class:has-thumb={!!thumb}
+            onclick={() => pickParameter(optionValue(option))}
           >
+            {#if thumb}
+              <span
+                class="option-thumb"
+                class:portrait={thumb.portrait}
+                style="background-image: url('{thumb.path}')"
+                aria-hidden="true"
+              ></span>
+            {/if}
+            <span class="option-label">{optionLabel(option)}</span>
+          </button>
         {/each}
         <button type="button" class="action-btn cancel" onclick={cancelParameterPick}>Cancel</button
         >
@@ -186,6 +208,8 @@
   }
 
   .action-btn {
+    display: inline-flex;
+    align-items: center;
     font-family: Georgia, 'Times New Roman', serif;
     font-size: 1rem;
     color: #e8dcc4;
@@ -196,9 +220,37 @@
     cursor: pointer;
   }
 
+  .action-btn.has-thumb {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .option-thumb {
+    flex: 0 0 52px;
+    align-self: stretch;
+    width: 52px;
+    border-right: 1px solid #5a4b3c;
+    background-color: rgba(0, 0, 0, 0.35);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .option-thumb.portrait {
+    background-position: center 18%;
+  }
+
+  .action-btn.has-thumb .option-label {
+    padding: 10px 24px 10px 16px;
+  }
+
   .action-btn:hover {
     background: #4a3f32;
     border-color: #7a6b5c;
+  }
+
+  .action-btn.has-thumb:hover .option-thumb {
+    border-right-color: #7a6b5c;
   }
 
   .action-btn:active {
@@ -208,6 +260,10 @@
   .action-btn.long {
     color: #f0e6c8;
     border-color: var(--color-golden);
+  }
+
+  .action-btn.long.has-thumb .option-thumb {
+    border-right-color: var(--color-golden);
   }
 
   .action-btn.long:hover {
