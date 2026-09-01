@@ -24,6 +24,10 @@ const targets = [
     maxFileSizeKB: 300,
     quality: 90,
   },
+  {
+    dir: './public/assets/images/characters',
+    quality: 90,
+  },
 ];
 
 async function processImage(inputPath, { width, height, maxFileSizeKB, quality }) {
@@ -32,9 +36,11 @@ async function processImage(inputPath, { width, height, maxFileSizeKB, quality }
 
   const stats = fs.statSync(inputPath);
   const fileSizeKB = stats.size / 1024;
+  const alreadyJpg = ['.jpg', '.jpeg'].includes(ext);
+  const underSizeLimit = maxFileSizeKB == null || fileSizeKB <= maxFileSizeKB;
 
-  // Skip if it's already a JPG and under the size limit
-  if (['.jpg', '.jpeg'].includes(ext) && fileSizeKB <= maxFileSizeKB) {
+  // Skip if it's already a JPG and under the size limit (or no size limit)
+  if (alreadyJpg && underSizeLimit) {
     console.log(`⏭️ Skipping (already optimized): ${inputPath} (${fileSizeKB.toFixed(1)}KB)`);
     return;
   }
@@ -49,13 +55,14 @@ async function processImage(inputPath, { width, height, maxFileSizeKB, quality }
   }
 
   try {
-    await sharp(inputPath)
-      .resize(width, height, {
+    let pipeline = sharp(inputPath);
+    if (width && height) {
+      pipeline = pipeline.resize(width, height, {
         fit: 'cover',
         position: 'centre',
-      })
-      .jpeg({ quality })
-      .toFile(outputPath);
+      });
+    }
+    await pipeline.jpeg({ quality }).toFile(outputPath);
 
     if (overwriteOriginals) {
       const finalOutputPath = inputPath.replace(/\.(png|jpg|jpeg)$/i, '.jpg');

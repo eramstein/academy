@@ -1,8 +1,8 @@
 import { type SceneEvent, type EventOption, EventOutcomeType } from '../_model';
 import { gs } from '../_state';
 import type { StoredEventTemplate } from '../_state/event-templates';
-import { performAction, setPossibleActions } from './actions';
-import { applyEffect } from './effects';
+import { performAction, setPossibleActions } from '@/lib/sim/actions';
+import { applyEffect } from '@/lib/sim/effects';
 import { consumeEventTemplate, getTriggeredSceneEvent } from './events';
 import { narrateText } from './narration';
 import { updateNpcLocations } from './npc';

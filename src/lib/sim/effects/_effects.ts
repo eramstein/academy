@@ -1,8 +1,8 @@
-import { EventEffectType, type EventEffect } from '../_model';
-import { subscribe } from './effects/subscribe';
-import { narrateText } from './narration';
-import type { TransactionSubscriptionParameters } from './effects/subscribe';
-import { getDeck, type GetDeckParameters } from './effects/decks';
+import type { EventEffect } from '@/lib/_model';
+import { EventEffectType } from '@/lib/_model/enums-sim';
+import { narrateText } from '../narration';
+import { getDeck, type GetDeckParameters } from './decks';
+import { subscribe, type TransactionSubscriptionParameters } from './subscribe';
 
 export function applyEffect(effect: EventEffect) {
   const result = effectFunctions[effect.type](effect.parameters);

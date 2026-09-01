@@ -1,4 +1,4 @@
-import { ActionType } from '../_model';
+import { ActionType } from '@/lib/_model/enums-sim';
 
 export enum ActionParameterType {
   Number = 'number',

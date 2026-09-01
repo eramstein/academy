@@ -14,9 +14,9 @@ import {
   replaceEventTemplates,
   type StoredEventTemplate,
 } from '../_state/event-templates';
-import { SceneActionTemplates } from './actions/_templates';
+import { SceneActionTemplates } from './actions';
 import { getCharactersAtScene } from './characters';
-import { SceneEffectTemplates } from './effects/_templates';
+import { SceneEffectTemplates } from './effects';
 import { getCurrentScheduledActivity } from './schedule';
 
 let eventTemplates: StoredEventTemplate[] = [];

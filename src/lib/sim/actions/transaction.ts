@@ -1,6 +1,6 @@
 import { gs } from '@/lib/_state';
-import { applyEffect } from '../effects';
-import { EventEffectType } from '@/lib/_model';
+import { EventEffectType } from '@/lib/_model/enums-sim';
+import { applyEffect } from '@/lib/sim/effects';
 
 export enum TransactionType {
   Subscription = 'subscription',

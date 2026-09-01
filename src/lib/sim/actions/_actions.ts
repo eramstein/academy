@@ -1,19 +1,22 @@
-import { ActionType } from '../_model';
-import type { Action } from '../_model/model-game';
-import { transaction, type TransactionParameters } from './actions/transaction';
-import { negotiate, type NegotiateParameters } from './actions/negotiation';
-import { narrateText } from './narration';
-import { gs } from '../_state';
-import { move, type MoveParameters } from './actions/move';
-import { nextScene } from './scene';
-import { wait } from './actions/wait';
-import { getSocializeActions, socialize, type SocializeParameters } from './actions/socialize';
-import { getLeagueMatchActions, startMatch, type StartMatchParameters } from './actions/match';
-import { ActionsLimitByPeriod } from './action-types';
+import type { Action } from '@/lib/_model';
+import { ActionType } from '@/lib/_model/enums-sim';
+import { gs } from '@/lib/_state';
+import { narrateText } from '../narration';
+import { nextScene } from '../scene';
+import { ActionsLimitByPeriod } from './_action-types';
+import { getLeagueMatchActions, startMatch, type StartMatchParameters } from './match';
+import { move, type MoveParameters } from './move';
+import { negotiate, type NegotiateParameters } from './negotiation';
+import { getSocializeActions, socialize, type SocializeParameters } from './socialize';
+import { transaction, type TransactionParameters } from './transaction';
+import { wait } from './wait';
+import { augment, type AugmentParameters } from './enchanting';
+import { getLessonActions } from '../lesson';
 
 export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
   actions.push(...getSocializeActions());
+  actions.push(...getLessonActions());
 
   // league matches are mandatory, can't skip scene if there is one
   const leagueActions = getLeagueMatchActions();
@@ -63,4 +66,5 @@ const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => s
   [ActionType.Wait]: () => wait(),
   [ActionType.Socialize]: (parameters) => socialize(parameters as SocializeParameters),
   [ActionType.StartMatch]: (parameters) => startMatch(parameters as StartMatchParameters),
+  [ActionType.Augment]: (parameters) => augment(parameters as AugmentParameters),
 };

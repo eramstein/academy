@@ -15,6 +15,7 @@ export enum EventEffectType {
 }
 
 export enum ActionType {
+  Augment = 'augment',
   Move = 'move',
   Transaction = 'transaction',
   Negotiate = 'negotiate',

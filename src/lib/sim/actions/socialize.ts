@@ -1,12 +1,8 @@
-import { gs } from '@/lib/_state';
-import { ActionType, CharacterTrait } from '@/lib/_model/enums-sim';
 import type { Action } from '@/lib/_model';
-import {
-  skillCheckDifficulty,
-  getCharactersAtScene,
-  attributeCheck,
-  getCharacterPronoun,
-} from '@/lib/sim';
+import { ActionType, CharacterTrait } from '@/lib/_model/enums-sim';
+import { gs } from '@/lib/_state';
+import { attributeCheck, skillCheckDifficulty } from '../attribute-checks';
+import { getCharacterPronoun, getCharactersAtScene } from '../characters';
 
 export enum SocializeType {
   Befriend = 'befriend',

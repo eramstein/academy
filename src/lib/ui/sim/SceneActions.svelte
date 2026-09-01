@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { Action } from '@/lib/_model/model-game';
-  import { performAction } from '@/lib/sim/actions';
+  import type { Action } from '@/lib/_model/model-sim';
   import { selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state';
+  import { performAction } from '@/lib/sim/actions';
 
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);

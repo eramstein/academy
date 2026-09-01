@@ -1,7 +1,7 @@
 import { gs } from '@/lib/_state';
 import { SubscriptionType } from '@/lib/_model';
 import { scheduleClassesForCurrentTerm } from '../academy';
-import type { TransactionParameters } from '../actions/transaction';
+import type { TransactionParameters } from '../actions';
 
 export interface TransactionSubscriptionParameters extends TransactionParameters {
   subscriptionType: SubscriptionType;

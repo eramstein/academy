@@ -42,3 +42,14 @@ export function generateUniqueId(): string {
 export function getRandomInteger(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+export function getRandomFromObjectWeights(object: Record<string, number>): string {
+  const totalWeight = Object.values(object).reduce((acc, value) => acc + value, 0);
+  const random = Math.random() * totalWeight;
+  let cumulativeWeight = 0;
+  for (const key in object) {
+    cumulativeWeight += object[key];
+    if (random <= cumulativeWeight) return key;
+  }
+  throw new Error('No item found in getRandomFromObjectWeights');
+}

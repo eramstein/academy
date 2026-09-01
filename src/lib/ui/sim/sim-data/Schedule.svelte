@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ActivityType, DayPeriod, type ClassActivity, type ScheduledActivity } from '@/lib/_model';
+  import { DayPeriod, isClassActivity, type ScheduledActivity } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
 
   const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -15,8 +15,8 @@
   }
 
   function activityLabel(activity: ScheduledActivity): string {
-    if (activity.type === ActivityType.Class && 'classType' in activity) {
-      return (activity as ClassActivity).classType;
+    if (isClassActivity(activity)) {
+      return activity.classType;
     }
     return activity.type;
   }

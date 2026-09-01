@@ -1,8 +1,7 @@
 import { SubscriptionType } from '@/lib/_model/enums-sim';
-import { transaction, type TransactionParameters } from './transaction';
 import { confrontNpc } from '../attribute-checks';
 import { narrateText } from '../narration';
-import { TransactionType } from './transaction';
+import { transaction, TransactionType, type TransactionParameters } from './transaction';
 
 export interface NegotiateParameters {
   cost: number;

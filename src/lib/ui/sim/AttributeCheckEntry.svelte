@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { AttributeCheck } from '@/lib/_model/model-game';
+  import type { AttributeCheck } from '@/lib/_model/model-sim';
   import TypedText from './TypedText.svelte';
 
   let {
@@ -61,7 +61,7 @@
   class:critical={check.critical}
 >
   {#if phase === 'label'}
-    <TypedText class="check-label" text={labelText} onProgress={onProgress} onDone={advanceFromLabel} />
+    <TypedText class="check-label" text={labelText} {onProgress} onDone={advanceFromLabel} />
   {:else}
     <p class="check-label">{labelText}</p>
   {/if}
@@ -74,7 +74,7 @@
   {/if}
 
   {#if phase === 'outcome'}
-    <TypedText class="check-outcome" text={outcomeText} onProgress={onProgress} onDone={finish} />
+    <TypedText class="check-outcome" text={outcomeText} {onProgress} onDone={finish} />
   {:else if phase === 'done'}
     <p class="check-outcome">{outcomeText}</p>
   {/if}

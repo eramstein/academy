@@ -6,8 +6,7 @@ import {
   SubscriptionType,
 } from '../_model';
 import { gs } from '../_state';
-import { TransactionType } from './actions/transaction';
-import type { NegotiateParameters } from './actions/negotiation';
+import { TransactionType, type NegotiateParameters } from './actions';
 import { scheduleActivity } from './schedule';
 import { getWeekDay } from './time';
 
