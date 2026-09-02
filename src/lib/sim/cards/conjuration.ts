@@ -1,7 +1,8 @@
 import { CardColor, CardType, UnitType, type UnitCardTemplate, type UnitKeywords } from "@/lib/_model";
-import { getRandomFromArray, getRandomInteger } from "@/lib/_utils/random";
+import { getRandomFromArray, getRandomFromObjectWeights, getRandomInteger, getRandomWeighted } from "@/lib/_utils/random";
 import type { ConjurationParameters } from "../actions";
-import { colorPie } from "./color-pie";
+import { colorPie, type StatsPreference } from "./color-pie";
+import { KEYWORD_KEYS, NUMERIC_KEYWORDS, keywordConfig } from "./keywords";
 
 type UnitIdentityKeys = "id" | "cost" | "name" | "imageFileName";
 export type PartialConjuredUnit = Omit<UnitCardTemplate, UnitIdentityKeys>;
@@ -23,44 +24,63 @@ export function conjureUnitCard(parameters: ConjurationParameters): PartialConju
   return card;
 }
 
-const NUMERIC_KEYWORDS = new Set<keyof UnitKeywords>([
-  "retaliate",
-  "armor",
-  "resist",
-  "poisonous",
-  "regeneration",
-]);
-
-const KEYWORD_KEYS: (keyof UnitKeywords)[] = [
-  "ranged",
-  "haste",
-  "moveAndAttack",
-  "retaliate",
-  "armor",
-  "resist",
-  "poisonous",
-  "regeneration",
-  "trample",
-  "zerk",
-  "cleave",
-  "lance",
-  "flying",
-  "immobile",
-  "armorPiercing",
-];
-
 function getRandomUnitCardTemplate(colors?: CardColor[]): PartialConjuredUnit {
   const cardColors = colors?.length
     ? colors.map((color) => ({ color, count: 1 }))
     : [{ color: getRandomFromArray(Object.values(CardColor)), count: 1 }];
+  const { power, maxHealth, retaliate } = randomCombatStats(
+    cardColors.map((entry) => entry.color)
+  );
+  const keywords: UnitKeywords = {};
+  if (retaliate > 0) {
+    keywords.retaliate = retaliate;
+  }
   return {
     type: CardType.Unit,
     colors: cardColors,
-    power: getRandomInteger(0, 8),
-    maxHealth: getRandomInteger(1, 9),
-    keywords: randomKeywords(),
+    power,
+    maxHealth,
+    keywords: randomKeywords(
+      cardColors.map((entry) => entry.color),
+      keywords
+    ),
     unitTypes: randomUnitTypes(cardColors.map((entry) => entry.color)),
   };
+}
+
+function randomCombatStats(colors: CardColor[]): {
+  power: number;
+  maxHealth: number;
+  retaliate: number;
+} {
+  const preference = combinedStatsPreference(colors);
+  const allocatable = Object.fromEntries(
+    Object.entries(preference).filter(([, weight]) => weight > 0)
+  );
+  const stats: StatsPreference = { power: 0, hp: 0, ret: 0 };
+  const total = getRandomInteger(4, 12);
+  for (let i = 0; i < total; i++) {
+    const key = getRandomFromObjectWeights(allocatable) as keyof StatsPreference;
+    stats[key]++;
+  }
+  return {
+    power: stats.power,
+    maxHealth: Math.max(1, stats.hp),
+    retaliate: stats.ret,
+  };
+}
+
+function combinedStatsPreference(colors: CardColor[]): StatsPreference {
+  return colors.reduce(
+    (acc, color) => {
+      const preference = colorPie[color].statsPreference;
+      acc.power += preference.power;
+      acc.hp += preference.hp;
+      acc.ret += preference.ret;
+      return acc;
+    },
+    { power: 0, hp: 0, ret: 0 }
+  );
 }
 
 function randomUnitTypes(colors: CardColor[]): UnitType[] {
@@ -75,13 +95,38 @@ function allowedUnitTypesForColors(colors: CardColor[]): UnitType[] {
   );
 }
 
-function randomKeywords(): UnitKeywords {
-  const keywords: UnitKeywords = {};
-  const key = getRandomFromArray(KEYWORD_KEYS);
+function randomKeywords(colors: CardColor[], existing: UnitKeywords = {}): UnitKeywords {
+  const keywords: UnitKeywords = { ...existing };
+  const colorBonus = combinedKeywordPreferences(colors);
+  const weightedKeys = KEYWORD_KEYS.filter((key) => keywords[key] === undefined)
+    .map((key) => ({
+      item: key,
+      weight: Math.max(0, keywordConfig[key].prevalence + (colorBonus[key] ?? 0)),
+    }))
+    .filter(({ weight }) => weight > 0);
+  if (weightedKeys.length === 0) {
+    return keywords;
+  }
+  const key = getRandomWeighted(weightedKeys);
   if (NUMERIC_KEYWORDS.has(key)) {
     (keywords[key] as number) = getRandomInteger(1, 3);
   } else {
     (keywords[key] as boolean) = true;
   }
   return keywords;
+}
+
+function combinedKeywordPreferences(
+  colors: CardColor[]
+): Partial<Record<keyof UnitKeywords, number>> {
+  const combined: Partial<Record<keyof UnitKeywords, number>> = {};
+  for (const color of colors) {
+    for (const [key, value] of Object.entries(colorPie[color].keywordsPreferences) as [
+      keyof UnitKeywords,
+      number,
+    ][]) {
+      combined[key] = (combined[key] ?? 0) + value;
+    }
+  }
+  return combined;
 }
