@@ -15,6 +15,7 @@ export enum EventEffectType {
 }
 
 export enum ActionType {
+  Conjure = 'conjure',
   Augment = 'augment',
   Move = 'move',
   Transaction = 'transaction',

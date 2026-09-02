@@ -17,5 +17,4 @@ export const KEYWORD_TOOLTIPS = {
   lance: 'Lance: Attacks both units in the row.',
   flying: 'Flying: Can attack any unit.',
   immobile: 'Immobile: Cannot move.',
-  raid: (value: number) => `Raid ${value}: Gain ${value} gold when attacking lands.`,
 };

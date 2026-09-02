@@ -61,7 +61,7 @@ export function selectNextScene(placeKey: string) {
 
 export function setEvent(event: SceneEvent, template?: StoredEventTemplate) {
   narrateText(event.text);
-  gs.scene.event = event;
+  gs.scene.event = event.options.length > 0 ? event : undefined;
   if (template?.triggersOnce) {
     consumeEventTemplate(template);
   }

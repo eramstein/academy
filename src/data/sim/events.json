@@ -26,7 +26,7 @@
     "triggersOnce": true
   },
   {
-    "text": "Get a deck, noob!",
+    "text": "We'll learn magic crafting by making cards. Today you'll start by familiarizing yourself with the different card types. Get a deck, noob!",
     "triggers": [
       { "triggerType": "day", "parameters": { "day": 1 } },
       { "triggerType": "period", "parameters": { "period": "afternoon" } }
@@ -57,6 +57,15 @@
         }
       }
     ],
+    "triggersOnce": true
+  },
+  {
+    "text": "This is an enchanting class. Here, you'll learn how to modify existing cards. For now, let's start with Augmentation: it makes a card more powerful in exchange for higher mana requirements.",
+    "triggers": [
+      { "triggerType": "day", "parameters": { "day": 2 } },
+      { "triggerType": "period", "parameters": { "period": "afternoon" } }
+    ],
+    "optionTemplates": [],
     "triggersOnce": true
   }
 ]

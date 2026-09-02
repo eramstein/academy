@@ -1,4 +1,8 @@
-import type { CardTemplate, UnitCard } from "@/lib/_model";
+import { CardColor, type UnitKeywords } from "@/lib/_model";
+import { getRandomFromArray } from "@/lib/_utils/random";
+import type { PartialConjuredUnit } from "./conjuration";
+
+type FeatureCostKey = "power" | "maxHealth" | keyof UnitKeywords;
 
 export const cardBudget: Record<number, number> = {
   0: 4,
@@ -13,9 +17,73 @@ export const cardBudget: Record<number, number> = {
   9: 42,
 };
 
-export const featureCosts: Record<string, (card: CardTemplate) => number> = {
+export const featureCosts: Record<FeatureCostKey, (card: PartialConjuredUnit) => number> = {
   power: () => 4,
-  hp: () => 2,
-  ret: () => 1,
-  ranged: (card: CardTemplate) => Math.ceil((card as UnitCard).power / 2) * 2,
+  maxHealth: () => 2,
+  // keywords
+  ranged: (card) => Math.ceil(card .power / 2) * 2,
+  haste: () => 1,
+  moveAndAttack: () => 1,
+  retaliate: () => 1,
+  armor: () => 1,
+  resist: () => 1,
+  poisonous: () => 1,
+  regeneration: () => 1,
+  trample: () => 1,
+  zerk: () => 1,
+  cleave: () => 1,
+  lance: () => 1,
+  flying: () => 1,
+  immobile: () => 1,
+  armorPiercing: () => 1,
 };
+
+export function getCardBudget(card: PartialConjuredUnit): number {
+  let budget = card.power * featureCosts.power(card) + card.maxHealth * featureCosts.maxHealth(card);
+
+  if (card.power >= card.maxHealth) {
+    budget += 4;
+  }
+  for (const [key, value] of Object.entries(card.keywords ?? {}) as [
+    keyof UnitKeywords,
+    boolean | number | undefined,
+  ][]) {
+    if (!value) continue;
+    const cost = featureCosts[key](card);
+    budget += typeof value === "number" ? cost * value : cost;
+  }
+
+  return budget;
+}
+
+export function getCostFromBudget(budget: number, colors: CardColor[]): {
+  cost: number;
+  colors: { color: CardColor; count: number }[];
+  extraHealth: number;
+} {
+  const matchingCosts = Object.entries(cardBudget)
+    .filter(([, value]) => value <= budget)
+    .map(([key]) => Number(key));
+  const cost = matchingCosts.length > 0 ? Math.max(...matchingCosts) : 0;
+  const allocated = matchingCosts.length > 0 ? cardBudget[cost] : 0;
+  let rest = budget - allocated;
+
+  const resultColors = [...new Set(colors)].map((color) => ({ color, count: 1 }));
+  if (resultColors.length === 0) {
+    resultColors.push({ color: getRandomFromArray(Object.values(CardColor)), count: 1 });
+  }
+
+  let grantedOffCurveBonus = false;
+  while (rest > 0) {
+    getRandomFromArray(resultColors).count++;
+    rest -= 2;
+    const totalColorCount = resultColors.reduce((sum, entry) => sum + entry.count, 0);
+    if (!grantedOffCurveBonus && totalColorCount > cost) {
+      rest -= 4;
+      grantedOffCurveBonus = true;
+    }
+  }
+
+  const extraHealth = rest < -1 ? Math.floor(-rest / 2) : 0;
+  return { cost, colors: resultColors, extraHealth };
+}

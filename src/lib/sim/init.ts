@@ -13,6 +13,7 @@ export const defaultGameState: GameState = {
     period: DayPeriod.Morning,
     playedLeagueMatch: false,
     usedActions: {},
+    longActionPerformed: false,
   },
   characters: npcs,
   player: {
@@ -36,6 +37,7 @@ export const defaultGameState: GameState = {
       library: 0,
       inn: 0,
     },
+    cardCrafting: {},
   },
   places: {
     ...PLACES,

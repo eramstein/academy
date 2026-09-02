@@ -1,3 +1,4 @@
+import type { CardColor, CardType } from './enums-battle';
 import type {
   ActionType,
   ActivityType,
@@ -12,13 +13,14 @@ import type {
   SchoolName,
   EventTriggerType,
 } from './enums-sim';
-import type { CardTemplate } from './model-battle';
+import type { CardTemplate, UnitKeywords } from './model-battle';
 
 export interface GameState {
   time: {
     day: number;
     period: DayPeriod;
     playedLeagueMatch: boolean;
+    longActionPerformed: boolean;
     usedActions: Partial<Record<ActionType, number>>;
   };
   characters: Record<string, Npc>;
@@ -153,6 +155,7 @@ export interface Character {
 export interface Player extends Character {
   maxFocus: number;
   focus: number;
+  cardCrafting: CardCraftingSkills;
 }
 
 export interface Npc extends Character {
@@ -187,4 +190,11 @@ export interface Attributes {
   vitality: number;
   charisma: number;
   aura: number;
+}
+
+export interface CardCraftingSkills {
+  colors?: Partial<Record<CardColor, number>>;
+  power?: number;
+  hp?: number;
+  keywords?: Partial<Record<keyof UnitKeywords, number>>;
 }

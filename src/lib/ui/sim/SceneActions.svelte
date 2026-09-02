@@ -126,7 +126,7 @@
       <p class="parameter-prompt">{parameterPrompt}</p>
     {/if}
     <div class="action-buttons">
-      {#if event}
+      {#if event && event.options.length > 0}
         {#each event.options as option, i (i)}
           <button type="button" class="action-btn" onclick={() => selectOption(option)}
             >{option.text}</button

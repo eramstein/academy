@@ -30,7 +30,6 @@ export const keywordColorPreferences: Record<
     moveAndAttack: 6,
     retaliate: 3,
     zerk: 3,
-    raid: 6,
   },
   [CardColor.Blue]: {
     ranged: 9,

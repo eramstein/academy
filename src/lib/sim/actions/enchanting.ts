@@ -25,8 +25,8 @@ export function augment(parameters: AugmentParameters): string {
   if (isUnitCard(card)) {
     const costs: Record<string, number> = {
       power: featureCosts.power(card),
-      hp: featureCosts.hp(card),
-      ret: featureCosts.ret(card),
+      hp: featureCosts.maxHealth(card),
+      ret: featureCosts.retaliate(card),
     };
 
     while (budget > 0) {

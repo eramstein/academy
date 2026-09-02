@@ -138,7 +138,6 @@ export interface UnitKeywords {
   flying?: boolean;
   immobile?: boolean;
   armorPiercing?: boolean;
-  raid?: number;
 }
 
 export type UnitEndOfTurnEffects = UnitKeywords & {

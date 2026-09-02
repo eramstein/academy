@@ -12,18 +12,29 @@ import { transaction, type TransactionParameters } from './transaction';
 import { wait } from './wait';
 import { augment, type AugmentParameters } from './enchanting';
 import { getLessonActions } from '../lesson';
+import { conjureUnit, type ConjurationParameters } from './artificery';
 
 export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
   actions.push(...getSocializeActions());
-  actions.push(...getLessonActions());
+  actions.push(...getLessonActions());  
+
+  // check if the number of actions is limited by period
+  let filteredActions = actions.filter(action => 
+    !ActionsLimitByPeriod[action.actionType] || 
+    (gs.time.usedActions[action.actionType] ?? 0) < (ActionsLimitByPeriod[action.actionType] ?? 0)); 
+  
+  // if a long action has already been performed, filter the other long ones
+  if (gs.time.longActionPerformed) {
+    filteredActions = filteredActions.filter(action => !action.isLongAction);
+  }
 
   // league matches are mandatory, can't skip scene if there is one
-  const leagueActions = getLeagueMatchActions();
+  const leagueActions = getLeagueMatchActions();  
   if (leagueActions.length > 0) {
-    actions.push(...leagueActions);
+    filteredActions.push(...leagueActions);
   } else {
-    actions.push({
+    filteredActions.push({
       label: 'Wait',
       actionType: ActionType.Wait,
       isLongAction: true,
@@ -31,11 +42,6 @@ export function getPossibleActions(): Action[] {
       missingParameters: {},
     });
   }
-
-  // check if the number of actions is limited by period
-  const filteredActions = actions.filter(action => 
-    !ActionsLimitByPeriod[action.actionType] || 
-    (gs.time.usedActions[action.actionType] ?? 0) < (ActionsLimitByPeriod[action.actionType] ?? 0)); 
 
   return filteredActions;
 }
@@ -45,10 +51,13 @@ export function performAction(action: Action) {
   gs.time.usedActions[action.actionType] = (gs.time.usedActions[action.actionType] ?? 0) + 1;
   narrateText(result);
   if (action.isLongAction) {
+    gs.time.longActionPerformed = true;
+  }
+  setPossibleActions();
+  if (action.isLongAction && gs.scene.actions.filter(action => !action.isLongAction).length === 0) {
     nextScene();
     return;
   }
-  setPossibleActions();
 }
 
 export function setPossibleActions() {
@@ -67,4 +76,5 @@ const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => s
   [ActionType.Socialize]: (parameters) => socialize(parameters as SocializeParameters),
   [ActionType.StartMatch]: (parameters) => startMatch(parameters as StartMatchParameters),
   [ActionType.Augment]: (parameters) => augment(parameters as AugmentParameters),
+  [ActionType.Conjure]: (parameters) => conjureUnit(parameters as ConjurationParameters),
 };

@@ -1,4 +1,4 @@
-import { ActionType, ClassType, type Action } from "../_model";
+import { ActionType, CardType, ClassType, type Action } from "../_model";
 import { getCurrentScheduledActivity } from "./schedule";
 import { isClassActivity } from "../_model/type-lookup-sim";
 import { gs } from "../_state";
@@ -14,14 +14,24 @@ export function getLessonActions(): Action[] {
       {
         label: 'Augment',
         actionType: ActionType.Augment,
-        isLongAction: false,
+        isLongAction: true,
         actionParameters: {},
         missingParameters: {
-          cardId: gs.player.collection.map((c) => [c.id, c.name]),
+          cardId: gs.player.collection.filter(c => c.type !== CardType.Land).map((c) => [c.id, c.name]),
         },
       },
     ];
   }
 
+  if (currentActivity.classType === ClassType.Artificery) {
+    return [
+      {
+        label: 'Conjure',
+        actionType: ActionType.Conjure,
+        isLongAction: true,
+        actionParameters: {},
+      },
+    ];
+  }
   return [];
 }

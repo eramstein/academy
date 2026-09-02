@@ -8,3 +8,4 @@ export * from './socialize';
 export * from './transaction';
 export * from './wait';
 export * from './enchanting';
+export * from './artificery';

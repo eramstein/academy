@@ -8,13 +8,21 @@
   } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath, getCardImagePath } from '@/lib/_utils/asset-paths';
+  import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
 
   interface GroupedCard {
     card: CardTemplate;
     count: number;
   }
 
+  let selectedKey: string | null = $state(null);
+
   const collection = $derived(gs.player.collection);
+
+  function toggleCard(card: CardTemplate) {
+    const key = groupKey(card);
+    selectedKey = selectedKey === key ? null : key;
+  }
 
   const lands = $derived(collection.filter(isLandCard));
   const cards = $derived(collection.filter((card) => !isLandCard(card)));
@@ -71,28 +79,7 @@
         <h3 class="section-title">Lands</h3>
         <ul class="card-list">
           {#each groupedLands as { card, count } (groupKey(card))}
-            <li class="card-row">
-              <div
-                class="thumb"
-                style="background-image: url('{getCardImagePath(card.imageFileName)}')"
-              ></div>
-              <div class="card-info">
-                <span class="card-name">{card.name}</span>
-                <span class="card-stats">{cardStats(card)}</span>
-              </div>
-              <div class="colors">
-                {#each card.colors as colorInfo (colorInfo.color)}
-                  {#each Array(colorInfo.count) as _, i (`${colorInfo.color}-${i}`)}
-                    <div
-                      class="color-indicator"
-                      style="background-image: url('{colorPath(colorInfo.color)}')"
-                      title={colorInfo.color}
-                    ></div>
-                  {/each}
-                {/each}
-              </div>
-              <span class="count">×{count}</span>
-            </li>
+            {@render cardRow(card, count, false)}
           {/each}
         </ul>
       </section>
@@ -103,34 +90,46 @@
         <h3 class="section-title">Cards</h3>
         <ul class="card-list">
           {#each groupedCards as { card, count } (groupKey(card))}
-            <li class="card-row">
-              <div
-                class="thumb"
-                style="background-image: url('{getCardImagePath(card.imageFileName)}')"
-              ></div>
-              <div class="card-info">
-                <span class="card-name">{card.name}</span>
-                <span class="card-stats">{card.cost} · {cardStats(card)}</span>
-              </div>
-              <div class="colors">
-                {#each card.colors as colorInfo (colorInfo.color)}
-                  {#each Array(colorInfo.count) as _, i (`${colorInfo.color}-${i}`)}
-                    <div
-                      class="color-indicator"
-                      style="background-image: url('{colorPath(colorInfo.color)}')"
-                      title={colorInfo.color}
-                    ></div>
-                  {/each}
-                {/each}
-              </div>
-              <span class="count">×{count}</span>
-            </li>
+            {@render cardRow(card, count, true)}
           {/each}
         </ul>
       </section>
     {/if}
   {/if}
 </div>
+
+{#snippet cardRow(card: CardTemplate, count: number, showCost: boolean)}
+  {@const selected = selectedKey === groupKey(card)}
+  <li class="card-item">
+    <button type="button" class="card-row" class:selected onclick={() => toggleCard(card)}>
+      <div
+        class="thumb"
+        style="background-image: url('{getCardImagePath(card.imageFileName)}')"
+      ></div>
+      <div class="card-info">
+        <span class="card-name">{card.name}</span>
+        <span class="card-stats">{showCost ? `${card.cost} · ` : ''}{cardStats(card)}</span>
+      </div>
+      <div class="colors">
+        {#each card.colors as colorInfo (colorInfo.color)}
+          {#each Array(colorInfo.count) as _, i (`${colorInfo.color}-${i}`)}
+            <div
+              class="color-indicator"
+              style="background-image: url('{colorPath(colorInfo.color)}')"
+              title={colorInfo.color}
+            ></div>
+          {/each}
+        {/each}
+      </div>
+      <span class="count">×{count}</span>
+    </button>
+    {#if selected}
+      <div class="card-preview">
+        <CardCompact {card} />
+      </div>
+    {/if}
+  </li>
+{/snippet}
 
 <style>
   .collection {
@@ -184,6 +183,26 @@
     align-items: center;
     gap: 0.65rem;
     min-width: 0;
+    width: 100%;
+    padding: 0.25rem 0.35rem;
+    margin: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .card-row:hover,
+  .card-row.selected {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .card-preview {
+    padding: 0.5rem 0.35rem 0.25rem;
   }
 
   .thumb {

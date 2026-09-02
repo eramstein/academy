@@ -4,7 +4,8 @@
   let {
     text,
     class: className = '',
-    msPerChar = 18,
+    // msPerChar = 18,
+    msPerChar = 0,
     onProgress,
     onDone,
   }: {
@@ -45,7 +46,8 @@
 </script>
 
 <p class={className}>
-  {displayed}<span class="caret" class:done={displayed.length >= text.length} aria-hidden="true"></span>
+  {displayed}<span class="caret" class:done={displayed.length >= text.length} aria-hidden="true"
+  ></span>
 </p>
 
 <style>

@@ -1,8 +1,9 @@
-import { CardColor, type CardTemplate } from "@/lib/_model";
+import { CardColor, UnitType, type CardTemplate } from "@/lib/_model";
 import { getRandomFromArray } from "@/lib/_utils/random";
 
 export interface ColorPie {
   statsPreference: Record<string, number>;
+  unitTypes: UnitType[];
 }
 
 export const colorPie: Record<CardColor, ColorPie> = {
@@ -12,6 +13,7 @@ export const colorPie: Record<CardColor, ColorPie> = {
       hp: 1,
       ret: 1,
     },
+    unitTypes: [UnitType.Dwarf, UnitType.Dragon],
   },
   [CardColor.Green]: {
     statsPreference: {
@@ -19,6 +21,7 @@ export const colorPie: Record<CardColor, ColorPie> = {
       hp: 1,
       ret: 0,
     },
+    unitTypes: [UnitType.Mushroom, UnitType.Plant],
   },
   [CardColor.Blue]: {
     statsPreference: {
@@ -26,6 +29,7 @@ export const colorPie: Record<CardColor, ColorPie> = {
       hp: 1,
       ret: 1,
     },
+    unitTypes: [UnitType.Construct],
   },
   [CardColor.Black]: {
     statsPreference: {
@@ -33,6 +37,7 @@ export const colorPie: Record<CardColor, ColorPie> = {
       hp: 3,
       ret: 2,
     },
+    unitTypes: [UnitType.Demon, UnitType.Construct],
   },
 };
 

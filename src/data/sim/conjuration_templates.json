@@ -1,0 +1,2815 @@
+[
+  {
+    "name": "Accumulator Cannon",
+    "imageName": "accumulator_cannon",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "armor"
+    ]
+  },
+  {
+    "name": "Agent of Chaos",
+    "imageName": "agent_of_chaos",
+    "cardType": "unit",
+    "cost": 9,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Al-ahmar Djinn",
+    "imageName": "alahmar_djinn",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate",
+      "resist"
+    ]
+  },
+  {
+    "name": "Aladin",
+    "imageName": "aladin",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Albatros",
+    "imageName": "albatros",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "flying"
+    ]
+  },
+  {
+    "name": "Ali Baba",
+    "imageName": "ali_baba",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Alpha Male",
+    "imageName": "alpha_male",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Ammunition Cart",
+    "imageName": "ammunition_cart",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Angry Lizard",
+    "imageName": "angry_lizard",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Angry Mob",
+    "imageName": "angry_mob",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Arc Lightning Specialist",
+    "imageName": "arc_lightning_specialist",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Arcane Sniper",
+    "imageName": "arcane_sniper",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "moveAndAttack"
+    ]
+  },
+  {
+    "name": "Artificial Plague",
+    "imageName": "artificial_plague",
+    "cardType": "spell",
+    "cost": 3,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Assassin",
+    "imageName": "assassin",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Baba Yaga",
+    "imageName": "baba_yaga",
+    "cardType": "unit",
+    "cost": 9,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "resist",
+      "poisonous"
+    ]
+  },
+  {
+    "name": "Ballista",
+    "imageName": "ballista",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged"
+    ]
+  },
+  {
+    "name": "Banshee",
+    "imageName": "banshee",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "resist"
+    ]
+  },
+  {
+    "name": "Basic Research",
+    "imageName": "basic_research",
+    "cardType": "spell",
+    "cost": 3,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Battery",
+    "imageName": "battery",
+    "cardType": "unit",
+    "cost": 1,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Bear Minimum",
+    "imageName": "bear_minimum",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Bear Riders",
+    "imageName": "bear_riders",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack",
+      "trample"
+    ]
+  },
+  {
+    "name": "Benevolent Druid",
+    "imageName": "benevolent_druid",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Benevolent Monk",
+    "imageName": "benevolent_monk",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Big Bertha",
+    "imageName": "big_bertha",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "cleave",
+      "lance",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Big Mamma's Inn",
+    "imageName": "big_mammas_inn",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Bison",
+    "imageName": "bison",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Blacksmith",
+    "imageName": "blacksmith",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ]
+  },
+  {
+    "name": "Bob the Blob",
+    "imageName": "bob_the_blob",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Boring Boar",
+    "imageName": "boring_boar",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Born From Magic",
+    "imageName": "born_from_magic",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "flying"
+    ]
+  },
+  {
+    "name": "Buffoon",
+    "imageName": "buffoon",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Busy Forge",
+    "imageName": "busy_forge",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Caring Druidess",
+    "imageName": "caring_druidess",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Carnival of Miracles",
+    "imageName": "carnival_of_miracles",
+    "cardType": "spell",
+    "cost": 9,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Charge!",
+    "imageName": "charge",
+    "cardType": "spell",
+    "cost": 6,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "City",
+    "imageName": "city",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "City Guard",
+    "imageName": "city_guard",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "lance",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Clunky Golem",
+    "imageName": "clunky_golem",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Clunky Helicopter",
+    "imageName": "clunky_helicopter",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "armor"
+    ]
+  },
+  {
+    "name": "Coal Demon",
+    "imageName": "coal_demon",
+    "cardType": "unit",
+    "cost": 8,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Council Envoy",
+    "imageName": "council_envoy",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "black",
+      "blue"
+    ],
+    "keywords": [
+      "armor"
+    ]
+  },
+  {
+    "name": "Cowardly Mage",
+    "imageName": "cowardly_mage",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ]
+  },
+  {
+    "name": "Cursed Artist",
+    "imageName": "cursed_artist",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Dark Remedy",
+    "imageName": "dark_remedy",
+    "cardType": "spell",
+    "cost": 1,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Dark Ritual",
+    "imageName": "dark_ritual",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Dazing Spirit",
+    "imageName": "dazing_spirit",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Decaying Ray",
+    "imageName": "decaying_ray",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Deer",
+    "imageName": "deer",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Desert Sorcerer",
+    "imageName": "desert_sorcerer",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ]
+  },
+  {
+    "name": "Desert Storm",
+    "imageName": "desert_storm",
+    "cardType": "spell",
+    "cost": 8,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Donatello",
+    "imageName": "donatello",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Drake",
+    "imageName": "drake",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "lance",
+      "flying",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Dryad",
+    "imageName": "dryad",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "regeneration"
+    ]
+  },
+  {
+    "name": "Dude's Arms Stash",
+    "imageName": "dudes_arms_stash",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Dunyazad",
+    "imageName": "dunyazad",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ]
+  },
+  {
+    "name": "Dwarf Berserker",
+    "imageName": "dwarf_berserker",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "zerk"
+    ]
+  },
+  {
+    "name": "Dwarf Cadencer",
+    "imageName": "dwarf_cadencer",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Dwarven Punisher",
+    "imageName": "dwarven_punisher",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste",
+      "trample"
+    ]
+  },
+  {
+    "name": "Eagle Mounted Archers",
+    "imageName": "eagle_mounted_archers",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "flying",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Earthquake",
+    "imageName": "earthquake",
+    "cardType": "spell",
+    "cost": 4,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Ebonheart",
+    "imageName": "ebonheart",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "black",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Elite Crossbowmen",
+    "imageName": "elite_crossbowmen",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Emergency Repairs",
+    "imageName": "emergency_repairs",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Emma's Dark Tower",
+    "imageName": "emmas_dark_tower",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Energy Monster",
+    "imageName": "energy_monster",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Energyze",
+    "imageName": "energyze",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Enraged Goblin",
+    "imageName": "enraged_goblin",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Ent",
+    "imageName": "ent",
+    "cardType": "unit",
+    "cost": 8,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ]
+  },
+  {
+    "name": "Entangling Roots",
+    "imageName": "entangling_roots",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Entrench",
+    "imageName": "entrench",
+    "cardType": "spell",
+    "cost": 3,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Execution",
+    "imageName": "execution",
+    "cardType": "spell",
+    "cost": 6,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Expendable Recruit",
+    "imageName": "expendable_recruit",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Explosive Trap",
+    "imageName": "explosive_trap",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Fair Trader",
+    "imageName": "fair_trader",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ]
+  },
+  {
+    "name": "Fancy Courtesan",
+    "imageName": "fancy_courtesan",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Fat Pigeon",
+    "imageName": "fat_pigeon",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "flying"
+    ]
+  },
+  {
+    "name": "Ferocious Badger",
+    "imageName": "ferocious_badger",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Fight!",
+    "imageName": "fight",
+    "cardType": "spell",
+    "cost": 1,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Fire Elemental",
+    "imageName": "fire_elemental",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Fireball",
+    "imageName": "fireball",
+    "cardType": "spell",
+    "cost": 5,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Fisherman's Ifrit",
+    "imageName": "fishermans_ifrit",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Flammen Werfer",
+    "imageName": "flammen_werfer",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "lance"
+    ]
+  },
+  {
+    "name": "Flying Carpet",
+    "imageName": "flying_carpet",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "flying"
+    ]
+  },
+  {
+    "name": "Forest",
+    "imageName": "forest",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Fortify",
+    "imageName": "fortify",
+    "cardType": "spell",
+    "cost": 3,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Frankish Castle",
+    "imageName": "frankish_castle",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "immobile"
+    ]
+  },
+  {
+    "name": "Franz",
+    "imageName": "franz",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "armor"
+    ]
+  },
+  {
+    "name": "Frenzied Shaman",
+    "imageName": "frenzied_shaman",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Gas Station",
+    "imageName": "gas_station",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Gate Keepers",
+    "imageName": "gate_keepers",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Gaul Brawler",
+    "imageName": "gaul_brawler",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "cleave",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Giant Growth",
+    "imageName": "giant_growth",
+    "cardType": "spell",
+    "cost": 4,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Giant Spider",
+    "imageName": "giant_spider",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "poisonous"
+    ]
+  },
+  {
+    "name": "Gifted Apprentice",
+    "imageName": "gifted_apprentice",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Glacial Guard",
+    "imageName": "glacial_guard",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "ranged"
+    ]
+  },
+  {
+    "name": "Gnome Engineer",
+    "imageName": "gnome_engineer",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Gnome Mechanic",
+    "imageName": "gnome_mechanic",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Goblin Engineer",
+    "imageName": "goblin_engineer",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Golgoth",
+    "imageName": "golgoth",
+    "cardType": "unit",
+    "cost": 8,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ]
+  },
+  {
+    "name": "Greedy Bear",
+    "imageName": "greedy_bear",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Grenadier",
+    "imageName": "grenadier",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "cleave",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Grim Guard",
+    "imageName": "grim_guard",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged"
+    ]
+  },
+  {
+    "name": "Guinea Pig",
+    "imageName": "guinea_pig",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Hans is Back",
+    "imageName": "hans_is_back",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [
+      "cleave"
+    ]
+  },
+  {
+    "name": "Harpy Huntress",
+    "imageName": "harpy_huntress",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "flying",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Havrhell",
+    "imageName": "havrhell",
+    "cardType": "unit",
+    "cost": 8,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack",
+      "cleave",
+      "retaliate",
+      "resist"
+    ]
+  },
+  {
+    "name": "Heal",
+    "imageName": "heal",
+    "cardType": "spell",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Healing Salve",
+    "imageName": "healing_salve",
+    "cardType": "spell",
+    "cost": 3,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Henry's Cemetary",
+    "imageName": "henrys_cemetary",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Hill Troll",
+    "imageName": "hill_troll",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Hobbit Gardener",
+    "imageName": "hobbit_gardener",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Hobbit Villager",
+    "imageName": "hobbit_villager",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "regeneration"
+    ]
+  },
+  {
+    "name": "Hold the Line",
+    "imageName": "hold_the_line",
+    "cardType": "spell",
+    "cost": 4,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Hungry Hermit",
+    "imageName": "hungry_hermit",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Hungry Wolf",
+    "imageName": "hungry_wolf",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Hype Goblin",
+    "imageName": "hype_goblin",
+    "cardType": "unit",
+    "cost": 1,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste"
+    ]
+  },
+  {
+    "name": "Improve Engine",
+    "imageName": "improve_engine",
+    "cardType": "spell",
+    "cost": 3,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Iron Golem",
+    "imageName": "iron_golem",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ]
+  },
+  {
+    "name": "Irresistible Allure",
+    "imageName": "irresistible_allure",
+    "cardType": "spell",
+    "cost": 8,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Island",
+    "imageName": "island",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Jumping Hare",
+    "imageName": "jumping_hare",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "haste",
+      "moveAndAttack"
+    ]
+  },
+  {
+    "name": "Kobold",
+    "imageName": "kobold",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ]
+  },
+  {
+    "name": "Kobold Slinger",
+    "imageName": "kobold_slinger",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "ranged"
+    ]
+  },
+  {
+    "name": "Kobold Undercity",
+    "imageName": "kobold_undercity",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Kolossal Mistake",
+    "imageName": "kolossal_mistake",
+    "cardType": "spell",
+    "cost": 5,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Leonardo Borgio",
+    "imageName": "leonardo_borgio",
+    "cardType": "unit",
+    "cost": 8,
+    "colors": [
+      "black",
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ]
+  },
+  {
+    "name": "Lightning Bolt",
+    "imageName": "lightning_bolt",
+    "cardType": "spell",
+    "cost": 1,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Lightning Explosion",
+    "imageName": "lightning_explosion",
+    "cardType": "spell",
+    "cost": 5,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Lunging Cougar",
+    "imageName": "lunging_cougar",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste"
+    ]
+  },
+  {
+    "name": "Luring Enchantress",
+    "imageName": "luring_enchantress",
+    "cardType": "unit",
+    "cost": 1,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Luxurious Growth",
+    "imageName": "luxurious_growth",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Mad Ballooner",
+    "imageName": "mad_ballooner",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Magic Weapons",
+    "imageName": "magic_weapons",
+    "cardType": "spell",
+    "cost": 5,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Malevolent Druid",
+    "imageName": "malevolent_druid",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Market",
+    "imageName": "market",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Market Beggar",
+    "imageName": "market_beggar",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Mason Guilder",
+    "imageName": "mason_guilder",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Mass Enrage",
+    "imageName": "mass_enrage",
+    "cardType": "spell",
+    "cost": 4,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Mass Root",
+    "imageName": "mass_root",
+    "cardType": "spell",
+    "cost": 3,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Mass Sleep",
+    "imageName": "mass_sleep",
+    "cardType": "spell",
+    "cost": 7,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Master of Chains",
+    "imageName": "master_of_chains",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Mega Moss Monster",
+    "imageName": "mega_moss_monster",
+    "cardType": "unit",
+    "cost": 9,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Melting Spree",
+    "imageName": "melting_spree",
+    "cardType": "spell",
+    "cost": 4,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Mentalist",
+    "imageName": "mentalist",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Modi's Benediction",
+    "imageName": "modis_benediction",
+    "cardType": "spell",
+    "cost": 4,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Modi's Chosen",
+    "imageName": "modis_chosen",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste",
+      "zerk"
+    ]
+  },
+  {
+    "name": "Molly's Oasis",
+    "imageName": "mollys_oasis",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Mosquito",
+    "imageName": "mosquito",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Mountain",
+    "imageName": "mountain",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Mountain Giant",
+    "imageName": "mountain_giant",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Mycosed Bear",
+    "imageName": "mycosed_bear",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Nature's Reconquest",
+    "imageName": "natures_reconquest",
+    "cardType": "spell",
+    "cost": 4,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Necessary Sacrifice",
+    "imageName": "necessary_sacrifice",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Neutralize",
+    "imageName": "neutralize",
+    "cardType": "spell",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Northern Challenger",
+    "imageName": "northern_challenger",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Not a Fox",
+    "imageName": "not_a_fox",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "black",
+      "green"
+    ],
+    "keywords": [
+      "resist"
+    ]
+  },
+  {
+    "name": "Not So Little Pig",
+    "imageName": "not_so_little_pig",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Odin's Chosen",
+    "imageName": "odins_chosen",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "haste"
+    ]
+  },
+  {
+    "name": "Ogre Brawler",
+    "imageName": "ogre_brawler",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Opera Singer",
+    "imageName": "opera_singer",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Orc Miner",
+    "imageName": "orc_miner",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ]
+  },
+  {
+    "name": "Ourssaf",
+    "imageName": "ourssaf",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Ousmane's Summoning Circle",
+    "imageName": "ousmanes_summoning_circle",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Pandy Panda",
+    "imageName": "pandy_panda",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "regeneration"
+    ]
+  },
+  {
+    "name": "Panicked Student",
+    "imageName": "panicked_student",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Peaceful Faerie",
+    "imageName": "peaceful_faerie",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ]
+  },
+  {
+    "name": "Peasants be gone!",
+    "imageName": "peasants_be_gone",
+    "cardType": "spell",
+    "cost": 5,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Plague Lands",
+    "imageName": "plague_lands",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Plague Spreader",
+    "imageName": "plague_spreader",
+    "cardType": "unit",
+    "cost": 9,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Plains",
+    "imageName": "plains",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Professore",
+    "imageName": "professore",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Promising Prototype",
+    "imageName": "promising_prototype",
+    "cardType": "unit",
+    "cost": 9,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack",
+      "trample",
+      "cleave",
+      "lance",
+      "flying",
+      "retaliate",
+      "armor",
+      "resist"
+    ]
+  },
+  {
+    "name": "Rage Elemental",
+    "imageName": "rage_elemental",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Ragnar Lothbrok",
+    "imageName": "ragnar_lothbrok",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ]
+  },
+  {
+    "name": "Raise Dead",
+    "imageName": "raise_dead",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "black",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Rebuild",
+    "imageName": "rebuild",
+    "cardType": "spell",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Red Dragon",
+    "imageName": "red_dragon",
+    "cardType": "unit",
+    "cost": 8,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "lance"
+    ]
+  },
+  {
+    "name": "Red Haired Bard",
+    "imageName": "red_haired_bard",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Rock Drop",
+    "imageName": "rock_drop",
+    "cardType": "spell",
+    "cost": 3,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Rock Elemental",
+    "imageName": "rock_elemental",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "resist"
+    ]
+  },
+  {
+    "name": "Royal Castle Builder",
+    "imageName": "royal_castle_builder",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Royal Halberdier",
+    "imageName": "royal_halberdier",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "lance",
+      "retaliate",
+      "armor"
+    ]
+  },
+  {
+    "name": "Savannah Lion",
+    "imageName": "lion",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Schnell!",
+    "imageName": "schnell",
+    "cardType": "spell",
+    "cost": 1,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Second Breakfast",
+    "imageName": "second_breakfast",
+    "cardType": "spell",
+    "cost": 1,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Security Golem",
+    "imageName": "security_golem",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Self Building Tank",
+    "imageName": "self_building_tank",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate",
+      "armor"
+    ]
+  },
+  {
+    "name": "Sewer Rat",
+    "imageName": "sewer_rat",
+    "cardType": "unit",
+    "cost": 1,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Sewers",
+    "imageName": "sewers",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Shameless Imitator",
+    "imageName": "shameless_imitator",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Sherazad",
+    "imageName": "sherazad",
+    "cardType": "unit",
+    "cost": 9,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "resist"
+    ]
+  },
+  {
+    "name": "Shield Maiden",
+    "imageName": "shield_maiden",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Shroomy",
+    "imageName": "shroomy",
+    "cardType": "unit",
+    "cost": 1,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Shroomy Protecs",
+    "imageName": "shroomy_protecs",
+    "cardType": "unit",
+    "cost": 1,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Snek",
+    "imageName": "snek",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "poisonous"
+    ]
+  },
+  {
+    "name": "Snow Hare",
+    "imageName": "snow_hare",
+    "cardType": "unit",
+    "cost": 1,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Snow storm",
+    "imageName": "snow_storm",
+    "cardType": "spell",
+    "cost": 6,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Snow Troll",
+    "imageName": "snow_troll",
+    "cardType": "unit",
+    "cost": 5,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "regeneration"
+    ]
+  },
+  {
+    "name": "Sortie Specialists",
+    "imageName": "sortie_specialists",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "haste"
+    ]
+  },
+  {
+    "name": "Spirit of Speed and Fury",
+    "imageName": "spirit_of_speed_and_fury",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Spirited Train",
+    "imageName": "spirited_train",
+    "cardType": "unit",
+    "cost": 8,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack",
+      "retaliate",
+      "armor",
+      "resist"
+    ]
+  },
+  {
+    "name": "Stampede",
+    "imageName": "stampede",
+    "cardType": "spell",
+    "cost": 7,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Steam Wall",
+    "imageName": "steam_wall",
+    "cardType": "unit",
+    "cost": 1,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Stone Skin",
+    "imageName": "stone_skin",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Street Slinger",
+    "imageName": "street_slinger",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged"
+    ]
+  },
+  {
+    "name": "Stroke of Genius",
+    "imageName": "stroke_of_genius",
+    "cardType": "spell",
+    "cost": 4,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Sucker Punch",
+    "imageName": "sucker_punch",
+    "cardType": "spell",
+    "cost": 4,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Swift Drakkar",
+    "imageName": "swift_drakkar",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "haste",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Taiga Rangers",
+    "imageName": "taiga_rangers",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "ranged",
+      "poisonous"
+    ]
+  },
+  {
+    "name": "Teleport",
+    "imageName": "teleport",
+    "cardType": "spell",
+    "cost": 4,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Tesla Tower",
+    "imageName": "tesla_tower",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "armor"
+    ]
+  },
+  {
+    "name": "Teutonic Knight",
+    "imageName": "teutonic_knight",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "lance",
+      "retaliate",
+      "armor"
+    ]
+  },
+  {
+    "name": "The Arena",
+    "imageName": "the_arena",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "The Beast",
+    "imageName": "the_beast",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "The Black Knight",
+    "imageName": "the_black_knight",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "regeneration"
+    ]
+  },
+  {
+    "name": "The Great Reset",
+    "imageName": "the_great_reset",
+    "cardType": "spell",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Tim",
+    "imageName": "tim",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Time Elemental",
+    "imageName": "time_elemental",
+    "cardType": "unit",
+    "cost": 1,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ]
+  },
+  {
+    "name": "To the gates!",
+    "imageName": "to_the_gates",
+    "cardType": "spell",
+    "cost": 3,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Todorat",
+    "imageName": "todorat",
+    "cardType": "unit",
+    "cost": 8,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "armor",
+      "resist"
+    ]
+  },
+  {
+    "name": "Transfer Energy",
+    "imageName": "transfer_energy",
+    "cardType": "spell",
+    "cost": 3,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Trap Road",
+    "imageName": "trap_road",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Trebuchet",
+    "imageName": "trebuchet",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Tricky Move",
+    "imageName": "tricky_move",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Trident",
+    "imageName": "trident",
+    "cardType": "spell",
+    "cost": 5,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Try Again",
+    "imageName": "try_again",
+    "cardType": "spell",
+    "cost": 5,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Tsunami",
+    "imageName": "tsunami",
+    "cardType": "spell",
+    "cost": 5,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Tundra Wolf",
+    "imageName": "tundra_wolf",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "resist"
+    ]
+  },
+  {
+    "name": "Uncle Bobo",
+    "imageName": "uncle_bobo",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Unicorn",
+    "imageName": "unicorn",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate",
+      "resist"
+    ]
+  },
+  {
+    "name": "Unstable Bridge",
+    "imageName": "unstable_bridge",
+    "cardType": "spell",
+    "cost": 4,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Unstable Lab",
+    "imageName": "unstable_lab",
+    "cardType": "land",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Vengeful Crusader",
+    "imageName": "vengeful_crusader",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "armor"
+    ]
+  },
+  {
+    "name": "Vigilant Knight",
+    "imageName": "vigilant_knight",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Viking Banner",
+    "imageName": "viking_banner",
+    "cardType": "unit",
+    "cost": 6,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Wall of brambles",
+    "imageName": "wall_of_brambles",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Watch Tower",
+    "imageName": "watch_tower",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "immobile",
+      "ranged",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "What doesn't kill",
+    "imageName": "what_doesnt_kill",
+    "cardType": "spell",
+    "cost": 3,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Where there is a Whip",
+    "imageName": "where_there_is_a_whip",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Whirling Dervishes",
+    "imageName": "whirling_dervishes",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Who is fat ???",
+    "imageName": "who_is_fat",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Wisdom of Old",
+    "imageName": "wisdom_of_old",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Wolf",
+    "imageName": "wolf",
+    "cardType": "unit",
+    "cost": 4,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Wooden Barricade",
+    "imageName": "wooden_barricade",
+    "cardType": "spell",
+    "cost": 0,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Young Hobbit",
+    "imageName": "young_hobbit",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Young Viking",
+    "imageName": "young_viking",
+    "cardType": "unit",
+    "cost": 3,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Zeppelin",
+    "imageName": "zeppelin",
+    "cardType": "unit",
+    "cost": 7,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "flying",
+      "retaliate"
+    ]
+  },
+  {
+    "name": "Zizany",
+    "imageName": "zizany",
+    "cardType": "spell",
+    "cost": 2,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Zombie",
+    "imageName": "zombie",
+    "cardType": "unit",
+    "cost": 2,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  }
+]

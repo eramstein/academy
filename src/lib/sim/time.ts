@@ -20,6 +20,7 @@ export function nextPeriod() {
     gs.time.period = PERIODS[index + 1];
   }
   gs.time.usedActions = {};
+  gs.time.longActionPerformed = false;
   narrateText('It is now ' + WEEK_DAYS[getWeekDay(gs.time.day) - 1] + ' ' + gs.time.period + '.');
 }
 
