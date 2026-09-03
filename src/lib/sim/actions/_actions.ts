@@ -3,7 +3,7 @@ import { ActionType } from '@/lib/_model/enums-sim';
 import { gs } from '@/lib/_state';
 import { getLessonActions } from '../lesson';
 import { narrateText } from '../narration';
-import { nextScene } from '../scene';
+import { nextScene, setSceneEvents } from '../scene';
 import { ActionsLimitByPeriod } from './_action-types';
 import { createUnit, type CardCreationParameters } from './artificery';
 import { augment, type AugmentParameters } from './enchanting';
@@ -56,7 +56,7 @@ export function performAction(action: Action) {
   if (action.isLongAction) {
     gs.time.longActionPerformed = true;
   }
-  setPossibleActions();
+  setSceneEvents();
   if (
     action.actionType === ActionType.Wait ||
     (action.isLongAction && gs.scene.actions.filter((action) => !action.isLongAction).length === 0)
