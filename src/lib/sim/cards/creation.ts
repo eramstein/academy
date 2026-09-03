@@ -1,13 +1,13 @@
 import { CardColor, CardType, UnitType, type UnitCardTemplate, type UnitKeywords } from "@/lib/_model";
 import { getRandomFromArray, getRandomFromObjectWeights, getRandomInteger, getRandomWeighted } from "@/lib/_utils/random";
-import type { ConjurationParameters } from "../actions";
+import type { CardCreationParameters } from "../actions";
 import { colorPie, type StatsPreference } from "./color-pie";
 import { KEYWORD_KEYS, NUMERIC_KEYWORDS, keywordConfig } from "./keywords";
 
 type UnitIdentityKeys = "id" | "cost" | "name" | "imageFileName";
 export type PartialConjuredUnit = Omit<UnitCardTemplate, UnitIdentityKeys>;
 
-export function conjureUnitCard(parameters: ConjurationParameters): PartialConjuredUnit {
+export function createUnitCard(parameters: CardCreationParameters): PartialConjuredUnit {
   const card = getRandomUnitCardTemplate(parameters.colors);
   if (parameters.keywords) {
     card.keywords = parameters.keywords;

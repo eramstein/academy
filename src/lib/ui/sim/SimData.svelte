@@ -1,18 +1,18 @@
 <script lang="ts">
   import Collection from './sim-data/Collection.svelte';
   import Decks from './sim-data/Decks.svelte';
-  import Inventory from './sim-data/Inventory.svelte';
   import League from './sim-data/League.svelte';
   import Places from './sim-data/Places.svelte';
+  import Player from './sim-data/Player.svelte';
   import Schedule from './sim-data/Schedule.svelte';
   import SceneData from './sim-data/SceneData.svelte';
   import TimeDisplay from './TimeDisplay.svelte';
 
-  type SimDataTab = 'scene' | 'inventory' | 'schedule' | 'places' | 'collection' | 'decks' | 'league';
+  type SimDataTab = 'scene' | 'player' | 'schedule' | 'places' | 'collection' | 'decks' | 'league';
 
   const tabs: { id: SimDataTab; label: string }[] = [
     { id: 'scene', label: 'Scene' },
-    { id: 'inventory', label: 'Inventory' },
+    { id: 'player', label: 'Player' },
     { id: 'schedule', label: 'Schedule' },
     { id: 'places', label: 'Places' },
     { id: 'collection', label: 'Collection' },
@@ -43,8 +43,8 @@
   <div class="content" class:flush={selected === 'scene'}>
     {#if selected === 'scene'}
       <SceneData />
-    {:else if selected === 'inventory'}
-      <Inventory />
+    {:else if selected === 'player'}
+      <Player />
     {:else if selected === 'schedule'}
       <Schedule />
     {:else if selected === 'places'}

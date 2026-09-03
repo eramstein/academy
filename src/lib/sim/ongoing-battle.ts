@@ -1,4 +1,4 @@
-import type { Deck, Npc } from '../_model/model-game';
+import type { Deck, Npc } from '../_model';
 import { gs } from '../_state/main.svelte';
 import { getRandomFromArray } from '../_utils/random';
 import { initBattle } from '../battle/init';
@@ -32,7 +32,7 @@ export function recordBattleResult(won: boolean) {
   }
   if (gs.ongoingBattle.isLeagueMatch) {
     recordLeagueMatchResult(won);
-  }  
+  }
   narrateText(`You have ${won ? 'won' : 'lost'} the match.`);
   setPossibleActions();
 }

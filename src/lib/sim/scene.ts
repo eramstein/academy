@@ -1,8 +1,8 @@
-import { type SceneEvent, type EventOption, EventOutcomeType } from '../_model';
-import { gs } from '../_state';
-import type { StoredEventTemplate } from '../_state/event-templates';
 import { performAction, setPossibleActions } from '@/lib/sim/actions';
 import { applyEffect } from '@/lib/sim/effects';
+import { type EventOption, EventOutcomeType, type SceneEvent } from '../_model';
+import { gs } from '../_state';
+import type { StoredEventTemplate } from '../_state/event-templates';
 import { consumeEventTemplate, getTriggeredSceneEvent } from './events';
 import { narrateText } from './narration';
 import { updateNpcLocations } from './npc';
@@ -23,11 +23,13 @@ export function setSceneEvents() {
   }
   console.log('setSceneEvents', gs.scene.event);
   if (gs.scene.event === undefined) {
+    console.log('no event, setting possible actions');
     setPossibleActions();
   }
 }
 
 export function selectOption(option: EventOption) {
+  console.log('selectOption', option, gs.scene.event);
   // perform option outcome
   if (option.outcome.type === EventOutcomeType.Action && option.outcome.action) {
     performAction(option.outcome.action);
@@ -36,15 +38,15 @@ export function selectOption(option: EventOption) {
     option.outcome.effects.forEach((effect) => {
       applyEffect(effect);
     });
+    setSceneEvents();
   }
-  // set next event, if none then set possible actions
-  setSceneEvents();
 }
 
-export function nextScene() {  
+export function nextScene() {
   nextPeriod();
   updateNpcLocations();
   const currentScheduledActivity = getCurrentScheduledActivity();
+  console.log('nextScene', currentScheduledActivity);
   if (currentScheduledActivity) {
     gs.player.placeKey = currentScheduledActivity.placeKey;
     setSceneEvents();
@@ -56,6 +58,7 @@ export function nextScene() {
 export function selectNextScene(placeKey: string) {
   gs.player.placeKey = placeKey;
   gs.scene.selectingNextPlace = false;
+  console.log('selectNextScene', placeKey, gs.scene.selectingNextPlace);
   setSceneEvents();
 }
 

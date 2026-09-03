@@ -11,6 +11,7 @@ const eventTemplatesTable: Table<StoredEventTemplate> = db.table('eventTemplates
 export async function replaceEventTemplates(templates: EventTemplate[]): Promise<void> {
   await eventTemplatesTable.clear();
   await eventTemplatesTable.bulkAdd(templates);
+  console.log(templates.length);
 }
 
 export async function getAllEventTemplates(): Promise<StoredEventTemplate[]> {

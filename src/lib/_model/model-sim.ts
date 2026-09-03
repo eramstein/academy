@@ -194,7 +194,5 @@ export interface Attributes {
 
 export interface CardCraftingSkills {
   colors?: Partial<Record<CardColor, number>>;
-  power?: number;
-  hp?: number;
   keywords?: Partial<Record<keyof UnitKeywords, number>>;
 }

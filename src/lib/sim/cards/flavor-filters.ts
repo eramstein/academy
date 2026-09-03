@@ -1,17 +1,16 @@
 import type { UnitKeywords } from "@/lib/_model";
-import type { ConjurationParameters } from "../actions";
-import type { ConjurationTemplate } from "./conjuration-templates";
-
+import type { CardCreationParameters } from "../actions";
+import type { FlavorTemplate } from "./flavor-templates";
 
 const COLOR_MATCH_WEIGHT = 3;
 const COST_EXACT_MATCH_WEIGHT = 3;
 const COST_NEAR_MATCH_WEIGHT = 1;
 const DEFAULT_MATCH_WEIGHT = 1;
 
-export function filterConjurationTemplates(templates: ConjurationTemplate[], parameters: ConjurationParameters): ConjurationTemplate[] {
+export function filterFlavorTemplates(templates: FlavorTemplate[], parameters: CardCreationParameters): FlavorTemplate[] {
   let highestScore = 0;
   const scored = templates.map(template => {
-    const score = scoreConjurationTemplate(template, parameters);
+    const score = scoreFlavorTemplate(template, parameters);
     if (score > highestScore) {
       highestScore = score;
     }
@@ -23,7 +22,7 @@ export function filterConjurationTemplates(templates: ConjurationTemplate[], par
     .map(({ template }) => template);
 }
 
-function scoreConjurationTemplate(template: ConjurationTemplate, parameters: ConjurationParameters): number {
+function scoreFlavorTemplate(template: FlavorTemplate, parameters: CardCreationParameters): number {
   let score = 0;
 
   if (parameters.colors) {

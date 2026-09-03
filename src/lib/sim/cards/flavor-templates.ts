@@ -1,7 +1,7 @@
 import conjurationTemplatesData from "@/data/sim/conjuration_templates.json";
 import { CardColor, CardType, isUnitCard, type CardTemplate, type UnitKeywords } from "@/lib/_model";
 
-export interface ConjurationTemplate {
+export interface FlavorTemplate {
   name: string;
   imageName: string;
   cardType: CardType; 
@@ -10,13 +10,13 @@ export interface ConjurationTemplate {
   keywords: (keyof UnitKeywords)[];
 }
 
-const conjurationTemplates = conjurationTemplatesData as ConjurationTemplate[];
+const conjurationTemplates = conjurationTemplatesData as FlavorTemplate[];
 
-export function loadConjurationTemplates(): ConjurationTemplate[] {
+export function loadFlavorTemplates(): FlavorTemplate[] {
   return conjurationTemplates;
 }
 
-export function extractConjurationFromCardTemplate(cardTemplates: CardTemplate[]): ConjurationTemplate[] {
+export function extractConjurationFromCardTemplate(cardTemplates: CardTemplate[]): FlavorTemplate[] {
   return cardTemplates.map(card => ({
     name: card.name,
     imageName: card.imageFileName ?? card.id,
