@@ -75,6 +75,10 @@ export type UiState = {
   saveManagerModal: {
     visible: boolean;
   };
+  deckEditor: {
+    visible: boolean;
+    deckKey: string | null;
+  };
   toast: {
     visible: boolean;
     message: string;

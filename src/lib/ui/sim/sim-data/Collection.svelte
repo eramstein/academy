@@ -1,59 +1,55 @@
 <script lang="ts">
-  import {
-    CardColor,
-    CardType,
-    isLandCard,
-    isUnitCard,
-    type CardTemplate,
-  } from '@/lib/_model';
+  import { CardColor, CardType, isLandCard, type CardTemplate } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
-  import { getAssetPath, getCardImagePath } from '@/lib/_utils/asset-paths';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
 
-  interface GroupedCard {
-    card: CardTemplate;
-    count: number;
+  let {
+    cards: cardsProp,
+    onSelect,
+    selectedIds,
+  }: {
+    cards?: CardTemplate[];
+    onSelect?: (card: CardTemplate) => void;
+    selectedIds?: Set<string>;
+  } = $props();
+
+  const collection = $derived(cardsProp ?? gs.player.collection);
+  const selectable = $derived(!!onSelect);
+
+  let colorFilter = $state<CardColor | null>(null);
+  let costFilter = $state<number | null>(null);
+  let typeFilter = $state<CardType | null>(null);
+
+  const colorOptions = Object.values(CardColor);
+  const typeOptions = Object.values(CardType);
+
+  const costOptions = $derived(
+    [...new Set(collection.map((card) => card.cost))].sort((a, b) => a - b),
+  );
+
+  const filtered = $derived(
+    collection.filter((card) => {
+      if (selectedIds?.has(card.id)) return false;
+      if (colorFilter && !card.colors.some((c) => c.color === colorFilter)) return false;
+      if (costFilter !== null && card.cost !== costFilter) return false;
+      if (typeFilter && card.type !== typeFilter) return false;
+      return true;
+    }),
+  );
+
+  const lands = $derived(sortCards(filtered.filter(isLandCard)));
+  const cards = $derived(sortCards(filtered.filter((card) => !isLandCard(card))));
+  const hasActiveFilters = $derived(colorFilter !== null || costFilter !== null || typeFilter !== null);
+
+  function handleCardClick(card: CardTemplate) {
+    onSelect?.(card);
   }
 
-  let selectedKey: string | null = $state(null);
-
-  const collection = $derived(gs.player.collection);
-
-  function toggleCard(card: CardTemplate) {
-    const key = groupKey(card);
-    selectedKey = selectedKey === key ? null : key;
-  }
-
-  const lands = $derived(collection.filter(isLandCard));
-  const cards = $derived(collection.filter((card) => !isLandCard(card)));
-  const groupedLands = $derived(groupCards(lands));
-  const groupedCards = $derived(groupCards(cards));
-
-  function groupKey(card: CardTemplate): string {
-    const colors = card.colors.map((c) => `${c.color}:${c.count}`).join(',');
-    if (isUnitCard(card)) {
-      return `${card.name}|${card.type}|${card.cost}|${card.power}|${card.maxHealth}|${colors}|${JSON.stringify(card.keywords ?? {})}`;
-    }
-    if (isLandCard(card)) {
-      return `${card.name}|${card.type}|${card.health}|${colors}`;
-    }
-    return `${card.name}|${card.type}|${card.cost}|${colors}`;
-  }
-
-  function groupCards(list: CardTemplate[]): GroupedCard[] {
-    const grouped = new Map<string, GroupedCard>();
-    for (const card of list) {
-      const key = groupKey(card);
-      const existing = grouped.get(key);
-      if (existing) {
-        existing.count += 1;
-      } else {
-        grouped.set(key, { card, count: 1 });
-      }
-    }
-    return [...grouped.values()].sort((a, b) => {
-      if (a.card.cost !== b.card.cost) return a.card.cost - b.card.cost;
-      return a.card.name.localeCompare(b.card.name);
+  function sortCards(list: CardTemplate[]): CardTemplate[] {
+    return [...list].sort((a, b) => {
+      if (a.cost !== b.cost) return a.cost - b.cost;
+      return a.name.localeCompare(b.name);
     });
   }
 
@@ -61,10 +57,20 @@
     return getAssetPath(`images/color_${color}.png`);
   }
 
-  function cardStats(card: CardTemplate): string {
-    if (isUnitCard(card)) return `${card.power}/${card.maxHealth}`;
-    if (card.type === CardType.Land && 'health' in card) return `${card.health} HP`;
-    return card.type;
+  function toggleColor(color: CardColor) {
+    colorFilter = colorFilter === color ? null : color;
+  }
+
+  function toggleCost(cost: number) {
+    costFilter = costFilter === cost ? null : cost;
+  }
+
+  function toggleType(type: CardType) {
+    typeFilter = typeFilter === type ? null : type;
+  }
+
+  function capitalize(value: string): string {
+    return value.charAt(0).toUpperCase() + value.slice(1);
   }
 </script>
 
@@ -72,61 +78,98 @@
   {#if collection.length === 0}
     <p class="empty">Your collection is empty.</p>
   {:else}
-    <p class="meta">{cards.length} cards · {lands.length} lands</p>
+    <div class="filters">
+      <div class="filter-group" role="group" aria-label="Filter by color">
+        <span class="filter-label">Color</span>
+        {#each colorOptions as color (color)}
+          <button
+            type="button"
+            class="color-chip"
+            class:active={colorFilter === color}
+            style="background-image: url('{colorPath(color)}')"
+            title={capitalize(color)}
+            aria-pressed={colorFilter === color}
+            aria-label={capitalize(color)}
+            onclick={() => toggleColor(color)}
+          ></button>
+        {/each}
+      </div>
 
-    {#if groupedLands.length > 0}
-      <section class="section">
-        <h3 class="section-title">Lands</h3>
-        <ul class="card-list">
-          {#each groupedLands as { card, count } (groupKey(card))}
-            {@render cardRow(card, count, false)}
-          {/each}
-        </ul>
-      </section>
-    {/if}
+      <div class="filter-group" role="group" aria-label="Filter by mana cost">
+        <span class="filter-label">Cost</span>
+        {#each costOptions as cost (cost)}
+          <button
+            type="button"
+            class="chip"
+            class:active={costFilter === cost}
+            aria-pressed={costFilter === cost}
+            onclick={() => toggleCost(cost)}
+          >
+            {cost}
+          </button>
+        {/each}
+      </div>
 
-    {#if groupedCards.length > 0}
-      <section class="section">
-        <h3 class="section-title">Cards</h3>
-        <ul class="card-list">
-          {#each groupedCards as { card, count } (groupKey(card))}
-            {@render cardRow(card, count, true)}
-          {/each}
-        </ul>
-      </section>
-    {/if}
+      <div class="filter-group" role="group" aria-label="Filter by card type">
+        <span class="filter-label">Type</span>
+        {#each typeOptions as type (type)}
+          <button
+            type="button"
+            class="chip"
+            class:active={typeFilter === type}
+            aria-pressed={typeFilter === type}
+            onclick={() => toggleType(type)}
+          >
+            {capitalize(type)}
+          </button>
+        {/each}
+      </div>
+    </div>
+
+    <div class="results">
+      {#if lands.length === 0 && cards.length === 0}
+        <p class="empty">
+          {hasActiveFilters
+            ? 'No cards match these filters.'
+            : selectedIds
+              ? 'All cards from your collection are in this deck.'
+              : 'Your collection is empty.'}
+        </p>
+      {:else}
+        {#if lands.length > 0}
+          <section class="section">
+            <h3 class="section-title">Lands</h3>
+            <ul class="card-list">
+              {#each lands as card (card.id)}
+                {@render cardItem(card)}
+              {/each}
+            </ul>
+          </section>
+        {/if}
+
+        {#if cards.length > 0}
+          <section class="section">
+            <h3 class="section-title">Cards</h3>
+            <ul class="card-list">
+              {#each cards as card (card.id)}
+                {@render cardItem(card)}
+              {/each}
+            </ul>
+          </section>
+        {/if}
+      {/if}
+    </div>
   {/if}
 </div>
 
-{#snippet cardRow(card: CardTemplate, count: number, showCost: boolean)}
-  {@const selected = selectedKey === groupKey(card)}
+{#snippet cardItem(card: CardTemplate)}
   <li class="card-item">
-    <button type="button" class="card-row" class:selected onclick={() => toggleCard(card)}>
-      <div
-        class="thumb"
-        style="background-image: url('{getCardImagePath(card.imageFileName)}')"
-      ></div>
-      <div class="card-info">
-        <span class="card-name">{card.name}</span>
-        <span class="card-stats">{showCost ? `${card.cost} · ` : ''}{cardStats(card)}</span>
-      </div>
-      <div class="colors">
-        {#each card.colors as colorInfo (colorInfo.color)}
-          {#each Array(colorInfo.count) as _, i (`${colorInfo.color}-${i}`)}
-            <div
-              class="color-indicator"
-              style="background-image: url('{colorPath(colorInfo.color)}')"
-              title={colorInfo.color}
-            ></div>
-          {/each}
-        {/each}
-      </div>
-      <span class="count">×{count}</span>
-    </button>
-    {#if selected}
-      <div class="card-preview">
+    {#if selectable}
+      <button type="button" class="card-button" onclick={() => handleCardClick(card)}>
         <CardCompact {card} />
-      </div>
+      </button>
+    {:else}
+      <CardCompact {card} />
     {/if}
   </li>
 {/snippet}
@@ -135,27 +178,132 @@
   .collection {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 0.85rem;
+    min-height: 0;
+    height: 100%;
     color: #e8e8e8;
   }
 
-  .empty,
-  .meta {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #aaaaaa;
-    font-variant-numeric: tabular-nums;
+  .filters {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.45rem 0.85rem;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    height: var(--editor-align-bar, auto);
+    min-height: var(--editor-align-bar, 2.5rem);
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .filter-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #888888;
+    margin-right: 0.15rem;
+  }
+
+  .chip {
+    padding: 0.2rem 0.5rem;
+    min-width: 1.7rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+    color: #cccccc;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+  }
+
+  .chip:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: white;
+  }
+
+  .chip.active {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.45);
+    color: white;
+  }
+
+  .color-chip {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+  }
+
+  .color-chip:hover {
+    outline: 2px solid rgba(255, 255, 255, 0.35);
+    outline-offset: 1px;
+  }
+
+  .color-chip.active {
+    outline: 2px solid rgba(255, 255, 255, 0.75);
+    outline-offset: 1px;
+  }
+
+  .results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  }
+
+  .results::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .results::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .results::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .results::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 3px;
+  }
+
+  .results::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.32);
   }
 
   .empty {
-    color: #888888;
+    margin: 0;
     font-size: 0.95rem;
+    color: #888888;
   }
 
   .section {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
   .section-title {
@@ -165,7 +313,7 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: #cccccc;
-    padding-bottom: 0.35rem;
+    padding-bottom: 0.25rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   }
 
@@ -174,91 +322,26 @@
     padding: 0;
     list-style: none;
     display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+    flex-wrap: wrap;
+    gap: 0.45rem;
   }
 
-  .card-row {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    min-width: 0;
-    width: 100%;
-    padding: 0.25rem 0.35rem;
+  .card-item {
+    flex: 0 0 auto;
+  }
+
+  .card-button {
+    display: block;
+    padding: 0;
     margin: 0;
     background: transparent;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    color: inherit;
-    font: inherit;
-    text-align: left;
+    border: none;
     cursor: pointer;
+    border-radius: 12px;
   }
 
-  .card-row:hover,
-  .card-row.selected {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-  }
-
-  .card-preview {
-    padding: 0.5rem 0.35rem 0.25rem;
-  }
-
-  .thumb {
-    flex: 0 0 48px;
-    width: 48px;
-    height: 36px;
-    border-radius: 3px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background-color: rgba(0, 0, 0, 0.35);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-
-  .card-info {
-    flex: 1 1 auto;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.05rem;
-  }
-
-  .card-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #e8e8e8;
-  }
-
-  .card-stats {
-    font-size: 0.8rem;
-    color: #888888;
-    text-transform: capitalize;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .colors {
-    display: flex;
-    flex-shrink: 0;
-    gap: 0.15rem;
-  }
-
-  .color-indicator {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .count {
-    flex-shrink: 0;
-    min-width: 1.75rem;
-    text-align: right;
-    font-size: 0.9rem;
-    color: #aaaaaa;
-    font-variant-numeric: tabular-nums;
+  .card-button:hover {
+    outline: 2px solid rgba(255, 255, 255, 0.35);
+    outline-offset: 2px;
   }
 </style>

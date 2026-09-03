@@ -111,7 +111,32 @@
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
-    padding: 1rem 0.75rem;
+    padding: 0.65rem 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  }
+
+  .content::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .content::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 3px;
+  }
+
+  .content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.32);
   }
 
   .content.flush {

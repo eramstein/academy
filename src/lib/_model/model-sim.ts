@@ -1,17 +1,17 @@
-import type { CardColor, CardType } from './enums-battle';
+import type { CardColor } from './enums-battle';
 import type {
   ActionType,
   ActivityType,
-  ClassType,
-  NarrationType,
-  DayPeriod,
-  EventOutcomeType,
-  SubscriptionType,
-  CharacterTrait,
   CharacterGender,
+  CharacterTrait,
+  ClassType,
+  DayPeriod,
   EventEffectType,
-  SchoolName,
+  EventOutcomeType,
   EventTriggerType,
+  NarrationType,
+  SchoolName,
+  SubscriptionType,
 } from './enums-sim';
 import type { CardTemplate, UnitKeywords } from './model-battle';
 

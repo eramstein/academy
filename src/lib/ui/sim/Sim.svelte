@@ -1,6 +1,7 @@
 <script lang="ts">
   import { UiView } from '@/lib/_model';
   import { uiState } from '@/lib/_state/state-ui.svelte';
+  import DeckEditor from './DeckEditor.svelte';
   import Scene from './Scene.svelte';
   import SimData from './SimData.svelte';
 </script>
@@ -14,6 +15,7 @@
   <aside class="sim-data-panel">
     <SimData />
   </aside>
+  <DeckEditor />
 </div>
 
 <style>

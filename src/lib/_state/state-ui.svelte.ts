@@ -51,6 +51,10 @@ export const defaultUiState: UiState = {
   saveManagerModal: {
     visible: false,
   },
+  deckEditor: {
+    visible: false,
+    deckKey: null,
+  },
   toast: {
     visible: false,
     message: '',

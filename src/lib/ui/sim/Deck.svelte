@@ -1,33 +1,28 @@
 <script lang="ts">
-  import {
-    CardColor,
-    CardType,
-    isUnitCard,
-    type CardTemplate,
-    type Deck as DeckModel,
-  } from '@/lib/_model';
-  import { getAssetPath, getCardImagePath } from '@/lib/_utils/asset-paths';
+  import { CardColor, type CardTemplate, type Deck as DeckModel } from '@/lib/_model';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
 
-  let { deck }: { deck: DeckModel } = $props();
+  let {
+    deck,
+    onCardClick,
+    onNameChange,
+    compact = false,
+    requiredLands,
+    minCards,
+  }: {
+    deck: DeckModel;
+    onCardClick?: (card: CardTemplate) => void;
+    onNameChange?: (name: string) => void;
+    compact?: boolean;
+    requiredLands?: number;
+    minCards?: number;
+  } = $props();
 
-  interface GroupedCard {
-    card: CardTemplate;
-    count: number;
-  }
-
-  function groupCards(cards: CardTemplate[]): GroupedCard[] {
-    const grouped = new Map<string, GroupedCard>();
-    for (const card of cards) {
-      const existing = grouped.get(card.id);
-      if (existing) {
-        existing.count += 1;
-      } else {
-        grouped.set(card.id, { card, count: 1 });
-      }
-    }
-    return [...grouped.values()].sort((a, b) => {
-      if (a.card.cost !== b.card.cost) return a.card.cost - b.card.cost;
-      return a.card.name.localeCompare(b.card.name);
+  function sortCards(cards: CardTemplate[]): CardTemplate[] {
+    return [...cards].sort((a, b) => {
+      if (a.cost !== b.cost) return a.cost - b.cost;
+      return a.name.localeCompare(b.name);
     });
   }
 
@@ -35,85 +30,174 @@
     return getAssetPath(`images/color_${color}.png`);
   }
 
-  function cardStats(card: CardTemplate): string {
-    if (isUnitCard(card)) return `${card.power}/${card.maxHealth}`;
-    if (card.type === CardType.Land && 'health' in card) return `${card.health} HP`;
-    return card.type;
-  }
-
   const colors = $derived(
     [...new Set([...deck.cards, ...deck.lands].flatMap((c) => c.colors.map((col) => col.color)))],
   );
-  const groupedCards = $derived(groupCards(deck.cards));
-  const groupedLands = $derived(groupCards(deck.lands));
+  const sortedCards = $derived(sortCards(deck.cards));
+  const sortedLands = $derived(sortCards(deck.lands));
+  const clickable = $derived(!!onCardClick);
+  const landsOk = $derived(requiredLands === undefined || deck.lands.length === requiredLands);
+  const cardsOk = $derived(minCards === undefined || deck.cards.length >= minCards);
+  const landsCount = $derived(
+    requiredLands !== undefined ? `${deck.lands.length}/${requiredLands}` : String(deck.lands.length),
+  );
+  const cardsCount = $derived(
+    minCards !== undefined ? `${deck.cards.length}/${minCards}+` : String(deck.cards.length),
+  );
 </script>
 
 <div class="deck">
-  <header class="header">
-    <h2 class="name">{deck.name}</h2>
-    <p class="meta">
-      {deck.cards.length} cards · {deck.lands.length} lands
-    </p>
-    {#if colors.length > 0}
-      <div class="colors">
-        {#each colors as color (color)}
-          <div
-            class="color-indicator"
-            style="background-image: url('{colorPath(color)}')"
-            title={color}
-          ></div>
-        {/each}
-      </div>
-    {/if}
-  </header>
+  {#if !compact}
+    <header class="header">
+      <h2 class="name">{deck.name}</h2>
+      <p class="meta">
+        {deck.cards.length} cards · {deck.lands.length} lands
+      </p>
+      {#if colors.length > 0}
+        <div class="colors">
+          {#each colors as color (color)}
+            <div
+              class="color-indicator"
+              style="background-image: url('{colorPath(color)}')"
+              title={color}
+            ></div>
+          {/each}
+        </div>
+      {/if}
+    </header>
+  {:else}
+    <header class="header compact-bar">
+      {#if onNameChange}
+        <input
+          class="name-input"
+          type="text"
+          value={deck.name}
+          maxlength={40}
+          aria-label="Deck name"
+          placeholder="Deck name"
+          oninput={(e) => onNameChange(e.currentTarget.value)}
+        />
+      {:else}
+        <h2 class="name">{deck.name}</h2>
+      {/if}
+    </header>
+  {/if}
 
-  <section class="section">
-    <h3 class="section-title">Lands</h3>
-    <ul class="card-list">
-      {#each groupedLands as { card, count } (card.id)}
-        <li class="card-row">
-          <div class="thumb" style="background-image: url('{getCardImagePath(card.imageFileName)}')"></div>
-          <div class="card-info">
-            <span class="card-name">{card.name}</span>
-            <span class="card-stats">{cardStats(card)}</span>
-          </div>
-          <span class="count">×{count}</span>
-        </li>
-      {/each}
-    </ul>
-  </section>
+  <div class="body">
+    <section class="section">
+      <h3 class="section-title">
+        <span>Lands</span>
+        {#if compact}
+          <span class="count" class:bad={!landsOk}>{landsCount}</span>
+        {/if}
+      </h3>
+      {#if sortedLands.length === 0}
+        <p class="empty-section">No lands yet.</p>
+      {:else}
+        <ul class="card-list">
+          {#each sortedLands as card (card.id)}
+            <li class="card-item">
+              {#if clickable}
+                <button type="button" class="card-button" onclick={() => onCardClick?.(card)}>
+                  <CardCompact {card} />
+                </button>
+              {:else}
+                <CardCompact {card} />
+              {/if}
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </section>
 
-  <section class="section">
-    <h3 class="section-title">Cards</h3>
-    <ul class="card-list">
-      {#each groupedCards as { card, count } (card.id)}
-        <li class="card-row">
-          <div class="thumb" style="background-image: url('{getCardImagePath(card.imageFileName)}')"></div>
-          <div class="card-info">
-            <span class="card-name">{card.name}</span>
-            <span class="card-stats">
-              {card.cost} · {cardStats(card)}
-            </span>
-          </div>
-          <span class="count">×{count}</span>
-        </li>
-      {/each}
-    </ul>
-  </section>
+    <section class="section">
+      <h3 class="section-title">
+        <span>Cards</span>
+        {#if compact}
+          <span class="count" class:bad={!cardsOk}>{cardsCount}</span>
+        {/if}
+      </h3>
+      {#if sortedCards.length === 0}
+        <p class="empty-section">No cards yet.</p>
+      {:else}
+        <ul class="card-list">
+          {#each sortedCards as card (card.id)}
+            <li class="card-item">
+              {#if clickable}
+                <button type="button" class="card-button" onclick={() => onCardClick?.(card)}>
+                  <CardCompact {card} />
+                </button>
+              {:else}
+                <CardCompact {card} />
+              {/if}
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </section>
+  </div>
 </div>
 
 <style>
   .deck {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 0.85rem;
+    min-height: 0;
+    height: 100%;
     color: #e8e8e8;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  }
+
+  .body::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .body::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 3px;
+  }
+
+  .body::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.32);
   }
 
   .header {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
+    flex-shrink: 0;
+  }
+
+  .compact-bar {
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    height: var(--editor-align-bar, 2.5rem);
+    min-height: var(--editor-align-bar, 2.5rem);
+    box-sizing: border-box;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   }
 
   .name {
@@ -124,11 +208,49 @@
     color: white;
   }
 
-  .meta {
+  .compact-bar .name {
+    font-size: 0.95rem;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .name-input {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0.2rem 0.45rem;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: white;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .name-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .name-input::placeholder {
+    color: #888888;
+    font-weight: 500;
+  }
+
+  .meta,
+  .empty-section {
     margin: 0;
     font-size: 0.9rem;
     color: #aaaaaa;
     font-variant-numeric: tabular-nums;
+  }
+
+  .empty-section {
+    color: #888888;
   }
 
   .colors {
@@ -149,18 +271,32 @@
   .section {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
   .section-title {
     margin: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
     font-size: 0.8rem;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: #cccccc;
-    padding-bottom: 0.35rem;
+    padding-bottom: 0.25rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .count {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+    color: #aaaaaa;
+  }
+
+  .count.bad {
+    color: #e74c3c;
   }
 
   .card-list {
@@ -168,54 +304,26 @@
     padding: 0;
     list-style: none;
     display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+    flex-wrap: wrap;
+    gap: 0.45rem;
   }
 
-  .card-row {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    min-width: 0;
+  .card-item {
+    flex: 0 0 auto;
   }
 
-  .thumb {
-    flex: 0 0 48px;
-    width: 48px;
-    height: 36px;
-    border-radius: 3px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background-color: rgba(0, 0, 0, 0.35);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+  .card-button {
+    display: block;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 12px;
   }
 
-  .card-info {
-    flex: 1 1 auto;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.05rem;
-  }
-
-  .card-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #e8e8e8;
-  }
-
-  .card-stats {
-    font-size: 0.8rem;
-    color: #888888;
-    text-transform: capitalize;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .count {
-    flex-shrink: 0;
-    font-size: 0.9rem;
-    color: #aaaaaa;
-    font-variant-numeric: tabular-nums;
+  .card-button:hover {
+    outline: 2px solid rgba(255, 255, 255, 0.35);
+    outline-offset: 2px;
   }
 </style>

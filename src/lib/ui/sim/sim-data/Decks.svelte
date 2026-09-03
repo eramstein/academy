@@ -1,6 +1,7 @@
 <script lang="ts">
   import { type Deck as DeckModel } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
+  import { uiState } from '@/lib/_state/state-ui.svelte';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import Deck from '../Deck.svelte';
 
@@ -10,7 +11,8 @@
 
   $effect(() => {
     if (selected && !decks.includes(selected)) {
-      selected = null;
+      const stillThere = decks.find((deck) => deck.key === selected?.key);
+      selected = stillThere ?? null;
     }
   });
 
@@ -23,38 +25,59 @@
   function colorPath(color: string): string {
     return getAssetPath(`images/color_${color}.png`);
   }
+
+  function openCreate() {
+    uiState.deckEditor.deckKey = null;
+    uiState.deckEditor.visible = true;
+  }
+
+  function openEdit(deck: DeckModel) {
+    uiState.deckEditor.deckKey = deck.key;
+    uiState.deckEditor.visible = true;
+  }
 </script>
 
 <div class="decks">
   {#if selected}
-    <button type="button" class="back-btn" onclick={() => (selected = null)}>Back</button>
+    <div class="detail-actions">
+      <button type="button" class="back-btn" onclick={() => (selected = null)}>Back</button>
+      <button type="button" class="edit-btn" onclick={() => selected && openEdit(selected)}>Edit</button>
+    </div>
     <Deck deck={selected} />
-  {:else if decks.length === 0}
-    <p class="empty">You don't own any decks yet.</p>
   {:else}
-    <ul class="deck-list">
-      {#each decks as deck, i (deck.key + '-' + i)}
-        <li>
-          <button type="button" class="deck-item" onclick={() => (selected = deck)}>
-            <div class="deck-info">
-              <span class="deck-name">{deck.name}</span>
-              <span class="deck-meta">
-                {deck.cards.length} cards · {deck.lands.length} lands
-              </span>
+    <div class="list-header">
+      <button type="button" class="create-btn" onclick={openCreate}>New deck</button>
+    </div>
+    {#if decks.length === 0}
+      <p class="empty">You don't own any decks yet.</p>
+    {:else}
+      <ul class="deck-list">
+        {#each decks as deck, i (deck.key + '-' + i)}
+          <li>
+            <div class="deck-row">
+              <button type="button" class="deck-item" onclick={() => (selected = deck)}>
+                <div class="deck-info">
+                  <span class="deck-name">{deck.name}</span>
+                  <span class="deck-meta">
+                    {deck.cards.length} cards · {deck.lands.length} lands
+                  </span>
+                </div>
+                <div class="colors">
+                  {#each deckColors(deck) as color (color)}
+                    <div
+                      class="color-indicator"
+                      style="background-image: url('{colorPath(color)}')"
+                      title={color}
+                    ></div>
+                  {/each}
+                </div>
+              </button>
+              <button type="button" class="row-edit" onclick={() => openEdit(deck)}>Edit</button>
             </div>
-            <div class="colors">
-              {#each deckColors(deck) as color (color)}
-                <div
-                  class="color-indicator"
-                  style="background-image: url('{colorPath(color)}')"
-                  title={color}
-                ></div>
-              {/each}
-            </div>
-          </button>
-        </li>
-      {/each}
-    </ul>
+          </li>
+        {/each}
+      </ul>
+    {/if}
   {/if}
 </div>
 
@@ -65,14 +88,27 @@
     gap: 0.75rem;
   }
 
+  .list-header,
+  .detail-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .detail-actions {
+    justify-content: space-between;
+  }
+
   .empty {
     margin: 0;
     font-size: 0.95rem;
     color: #888888;
   }
 
-  .back-btn {
-    align-self: flex-start;
+  .back-btn,
+  .edit-btn,
+  .create-btn,
+  .row-edit {
     padding: 0.4rem 0.75rem;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -82,7 +118,16 @@
     cursor: pointer;
   }
 
-  .back-btn:hover {
+  .back-btn:hover,
+  .edit-btn:hover,
+  .create-btn:hover,
+  .row-edit:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+  }
+
+  .create-btn,
+  .edit-btn {
     background: rgba(255, 255, 255, 0.12);
     color: white;
   }
@@ -96,12 +141,19 @@
     gap: 0.35rem;
   }
 
+  .deck-row {
+    display: flex;
+    gap: 0.35rem;
+    align-items: stretch;
+  }
+
   .deck-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
     padding: 0.55rem 0.65rem;
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -114,6 +166,10 @@
   .deck-item:hover {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .row-edit {
+    flex-shrink: 0;
   }
 
   .deck-info {
