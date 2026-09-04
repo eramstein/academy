@@ -5,6 +5,7 @@ import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
 import { createUnitCard } from '../cards/creation';
 import { filterFlavorTemplates } from '../cards/flavor-filters';
 import { loadFlavorTemplates } from '../cards/flavor-templates';
+import { narrateCardConjured } from '../narration';
 
 export interface CardCreationParameters {
   colors?: CardColor[];
@@ -23,11 +24,15 @@ export function createUnit(parameters: CardCreationParameters): string {
     );
   }
   const template = getUnitTemplate(parameters);
-  learnUnitCard(template);
-  return `You created ${template.name}`;
+  const learnt = learnUnitCard(template);
+  const text = learnt ? `You created ${template.name}. ${learnt}` : `You created ${template.name}`;
+  narrateCardConjured(template.id, text);
+  return '';
 }
 
-function learnUnitCard(template: UnitCardTemplate) {
+function learnUnitCard(template: UnitCardTemplate): string {
+  const learntKeywords: string[] = [];
+  const improvedKeywords: string[] = [];
   // add card's keywords to player's known keywords
   if (template.keywords) {
     if (!gs.player.cardCrafting.keywords) {
@@ -35,14 +40,39 @@ function learnUnitCard(template: UnitCardTemplate) {
     }
     const known = gs.player.cardCrafting.keywords;
     for (const keyword of Object.keys(template.keywords) as (keyof UnitKeywords)[]) {
+      const name = formatKeywordName(keyword);
       if (known[keyword] === undefined) {
         known[keyword] = 1;
+        learntKeywords.push(name);
       } else {
         known[keyword] += 1;
+        improvedKeywords.push(`${name} (${known[keyword]})`);
       }
     }
   }
   gs.player.collection.push(template);
+  const parts: string[] = [];
+  if (learntKeywords.length) {
+    parts.push(`You learnt ${joinKeywordNames(learntKeywords)}`);
+  }
+  if (improvedKeywords.length) {
+    parts.push(`You improved ${joinKeywordNames(improvedKeywords)}`);
+  }
+  return parts.length ? `${parts.join('. ')}.` : '';
+}
+
+function formatKeywordName(keyword: string): string {
+  return keyword.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+}
+
+function joinKeywordNames(names: string[]): string {
+  if (names.length === 1) {
+    return names[0];
+  }
+  if (names.length === 2) {
+    return `${names[0]} and ${names[1]}`;
+  }
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
 }
 
 function getUnitTemplate(parameters: CardCreationParameters): UnitCardTemplate {

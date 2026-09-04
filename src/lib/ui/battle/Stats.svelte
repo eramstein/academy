@@ -38,6 +38,7 @@
     border-radius: 4px;
     font-weight: bold;
     font-size: 0.9rem;
+    line-height: 1;
     text-shadow: 0 1px 2px #000;
     width: 23px;
     height: 21px;

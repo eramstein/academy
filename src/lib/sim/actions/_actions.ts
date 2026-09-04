@@ -50,9 +50,11 @@ export function getPossibleActions(): Action[] {
 
 export function performAction(action: Action) {
   console.log('performing action', action, gs.scene.actions);
-  const result = actionFunctions[action.actionType](action.actionParameters);
+  const resultText = actionFunctions[action.actionType](action.actionParameters);
   gs.time.usedActions[action.actionType] = (gs.time.usedActions[action.actionType] ?? 0) + 1;
-  narrateText(result);
+  if (resultText) {
+    narrateText(resultText);
+  }
   if (action.isLongAction) {
     gs.time.longActionPerformed = true;
   }

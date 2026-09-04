@@ -1,5 +1,5 @@
+import type { Attributes } from '../_model/model-sim';
 import { gs } from '../_state';
-import type { Attributes } from '../_model/model-game';
 import { narrateAttributeCheck } from './narration';
 
 export const skillCheckDifficulty = {

@@ -110,6 +110,7 @@ export interface Narration {
   text: string;
   type: NarrationType;
   attributeCheck?: AttributeCheck;
+  cardIds?: string[];
 }
 
 export interface ScheduledActivity {

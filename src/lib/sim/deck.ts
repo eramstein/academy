@@ -1,10 +1,7 @@
-import { gs } from "../_state";
-import { getRandomFromArray } from "../_utils/random";
-import { type Deck } from "../_model";
-import { BASE_DECK_RED } from '@/data/base-deck';
-import { BASE_DECK_BLACK } from '@/data/base-deck';
-import { BASE_DECK_GREEN } from '@/data/base-deck';
-import { type CardTemplate, type Character, SchoolName } from "../_model";
+import { BASE_DECK_BLACK, BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
+import { type CardTemplate, type Character, type Deck, SchoolName } from '../_model';
+import { gs } from '../_state';
+import { getRandomFromArray } from '../_utils/random';
 
 export function redeemBaseDeck(baseDeck: Deck, character: Character) {
   const cardsWithIds = baseDeck.cards.map(makeUniqueId);
@@ -28,6 +25,10 @@ export function initNpcDecks() {
     const deck = getRandomFromArray([BASE_DECK_RED, BASE_DECK_BLACK, BASE_DECK_GREEN]);
     redeemBaseDeck(deck, student);
   });
+}
+
+export function addCardToDeck(deck: Deck, card: CardTemplate) {
+  deck.cards.push(card);
 }
 
 function makeUniqueId(cardTemplate: CardTemplate): CardTemplate {

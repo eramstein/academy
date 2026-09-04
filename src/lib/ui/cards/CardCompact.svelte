@@ -170,6 +170,9 @@
     flex-direction: column;
     position: relative;
     z-index: 1;
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
   }
 
   .content {
@@ -327,6 +330,7 @@
     color: #f5eedf;
     font-weight: 900;
     font-size: 0.95rem;
+    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;

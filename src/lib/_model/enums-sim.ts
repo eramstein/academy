@@ -28,6 +28,7 @@ export enum ActionType {
 export enum NarrationType {
   Text = 'text',
   AttributeCheck = 'attribute_check',
+  ConjuredCard = 'conjured_card',
 }
 
 export enum ActivityType {

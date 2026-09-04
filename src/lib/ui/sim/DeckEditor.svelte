@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
   import { isLandCard, type CardTemplate } from '@/lib/_model';
   import type { Deck as DeckModel } from '@/lib/_model/model-sim';
   import { gs } from '@/lib/_state/main.svelte';
   import { showToast, uiState } from '@/lib/_state/state-ui.svelte';
-  import Collection from './sim-data/Collection.svelte';
+  import { untrack } from 'svelte';
   import DeckView from './Deck.svelte';
+  import Collection from './sim-data/Collection.svelte';
 
   const REQUIRED_LANDS = 4;
   const MIN_CARDS = 16;
@@ -15,7 +15,7 @@
 
   const visible = $derived(uiState.deckEditor.visible);
   const selectedIds = $derived(
-    new Set(draft ? [...draft.cards, ...draft.lands].map((card) => card.id) : []),
+    new Set(draft ? [...draft.cards, ...draft.lands].map((card) => card.id) : [])
   );
   const landsOk = $derived(draft !== null && draft.lands.length === REQUIRED_LANDS);
   const cardsOk = $derived(draft !== null && draft.cards.length >= MIN_CARDS);
@@ -99,11 +99,9 @@
 
     if (isNew) {
       gs.player.decks.push(saved);
-      showToast(`Created deck "${saved.name}".`, 'success');
     } else {
       const index = gs.player.decks.findIndex((deck) => deck.key === saved.key);
       if (index === -1) {
-        showToast('Could not find deck to update.', 'error');
         return;
       }
       gs.player.decks[index] = saved;

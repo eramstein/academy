@@ -1,8 +1,11 @@
 <script lang="ts">
   import { tick, untrack } from 'svelte';
   import { selectNextScene } from '@/lib/sim/scene';
+  import { addCardToDeck } from '@/lib/sim/deck';
   import { gs } from '@/lib/_state/main.svelte';
   import { NarrationType } from '@/lib/_model/enums-sim';
+  import type { CardTemplate, Narration } from '@/lib/_model';
+  import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import TypedText from './TypedText.svelte';
   import AttributeCheckEntry from './AttributeCheckEntry.svelte';
   import SceneActions from './SceneActions.svelte';
@@ -138,6 +141,39 @@
     completedIds = [...completedIds, id];
     scrollPageToBottom('smooth');
   }
+
+  function cardsForEntry(entry: Narration): CardTemplate[] {
+    if (!entry.cardIds?.length) return [];
+    return entry.cardIds
+      .map((id) => gs.player.collection.find((card) => card.id === id))
+      .filter((card): card is CardTemplate => card !== undefined);
+  }
+
+  function firstDeck() {
+    return gs.player.decks[0];
+  }
+
+  function cardsInFirstDeck(entry: Narration): boolean {
+    const deck = firstDeck();
+    const cards = cardsForEntry(entry);
+    if (!deck || cards.length === 0) return false;
+    return cards.every((card) => deck.cards.some((c) => c.id === card.id));
+  }
+
+  function addConjuredCardsToDeck(entry: Narration) {
+    const deck = firstDeck();
+    if (!deck || cardsInFirstDeck(entry)) return;
+    for (const card of cardsForEntry(entry)) {
+      if (!deck.cards.some((c) => c.id === card.id)) {
+        addCardToDeck(deck, card);
+      }
+    }
+  }
+
+  function onTextDone(entry: Narration) {
+    if (entry.attributeCheck) return;
+    completeEntry(entry.id);
+  }
 </script>
 
 <div class="scene">
@@ -151,27 +187,9 @@
       <div class="page-content" bind:this={contentEl}>
         {#each narration as entry (entry.id)}
           {#if completedSet.has(entry.id)}
-            {#if entry.type === NarrationType.Text}
-              <p class="narration">{entry.text}</p>
-            {:else if entry.type === NarrationType.AttributeCheck && entry.attributeCheck}
-              {@const check = entry.attributeCheck}
-              <AttributeCheckEntry check={check} animate={false} />
-            {/if}
+            {@render narrationEntry(entry, false)}
           {:else if activeEntry?.id === entry.id}
-            {#if entry.type === NarrationType.Text}
-              <TypedText
-                class="narration"
-                text={entry.text}
-                onProgress={() => scrollPageToBottom('auto')}
-                onDone={() => completeEntry(entry.id)}
-              />
-            {:else if entry.type === NarrationType.AttributeCheck && entry.attributeCheck}
-              <AttributeCheckEntry
-                check={entry.attributeCheck}
-                onProgress={() => scrollPageToBottom('auto')}
-                onDone={() => completeEntry(entry.id)}
-              />
-            {/if}
+            {@render narrationEntry(entry, true)}
           {/if}
         {/each}
         {#if selectingNextPlace}
@@ -202,6 +220,50 @@
     <SceneActions />
   {/if}
 </div>
+
+{#snippet narrationEntry(entry: Narration, animate: boolean)}
+  {@const cards = cardsForEntry(entry)}
+  {@const inDeck = cardsInFirstDeck(entry)}
+  {@const canAddToDeck =
+    entry.type === NarrationType.ConjuredCard && !!firstDeck() && cards.length > 0 && !inDeck}
+  {#if animate}
+    <TypedText
+      class="narration"
+      text={entry.text}
+      onProgress={() => scrollPageToBottom('auto')}
+      onDone={() => onTextDone(entry)}
+    />
+  {:else}
+    <p class="narration">{entry.text}</p>
+  {/if}
+  {#if cards.length > 0}
+    <div class="narration-cards">
+      {#each cards as card (card.id)}
+        <CardCompact {card} />
+      {/each}
+    </div>
+  {/if}
+  {#if entry.attributeCheck}
+    <AttributeCheckEntry
+      check={entry.attributeCheck}
+      animate={animate}
+      onProgress={() => scrollPageToBottom('auto')}
+      onDone={() => completeEntry(entry.id)}
+    />
+  {/if}
+  {#if entry.type === NarrationType.ConjuredCard}
+    <div class="narration-actions">
+      <button
+        type="button"
+        class="action-btn add-to-deck"
+        disabled={!canAddToDeck}
+        onclick={() => addConjuredCardsToDeck(entry)}
+      >
+        {inDeck ? 'Added to deck' : 'Add to deck'}
+      </button>
+    </div>
+  {/if}
+{/snippet}
 
 <style>
   .scene {
@@ -297,6 +359,31 @@
   .narration,
   .page :global(.narration) {
     margin: 0 0 1.25em;
+  }
+
+  .narration-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 0 1.25em;
+  }
+
+  .narration-actions {
+    display: flex;
+    justify-content: center;
+    margin: 0 0 1.25em;
+  }
+
+  .add-to-deck:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  .add-to-deck:disabled:hover,
+  .add-to-deck:disabled:active {
+    background: #3d3429;
+    border-color: #5a4b3c;
   }
 
   .prompt {

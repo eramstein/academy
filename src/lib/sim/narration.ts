@@ -1,6 +1,6 @@
-import { gs } from '../_state';
-import type { AttributeCheck } from '../_model/model-game';
 import { NarrationType } from '../_model/enums-sim';
+import type { AttributeCheck } from '../_model/model-sim';
+import { gs } from '../_state';
 
 export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
   gs.scene.narration = gs.scene.narration.filter(
@@ -19,5 +19,14 @@ export function narrateText(text: string) {
     id: crypto.randomUUID(),
     text,
     type: NarrationType.Text,
+  });
+}
+
+export function narrateCardConjured(cardId: string, text: string) {
+  gs.scene.narration.push({
+    id: crypto.randomUUID(),
+    text,
+    type: NarrationType.ConjuredCard,
+    cardIds: [cardId],
   });
 }
