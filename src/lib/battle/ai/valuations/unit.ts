@@ -1,10 +1,10 @@
 import { TriggerType, type SpellCard, type UnitDeployed } from '@/lib/_model';
 import { bs } from '@/lib/_state';
-import { getBudgetForUnit } from '@/tools/generator/budgets';
+import { getCardBudget } from '@/lib/sim/cards/card-budget';
 import { simulatedNextTurn } from '../ai';
 
 export function valueUnit(unit: UnitDeployed) {
-  const baseValue = getBudgetForUnit(unit.cost, unit.colors);
+  const baseValue = getCardBudget(unit);
   // damaged units are worth less
   const damageDiscount = (unit.maxHealth - unit.health) / (unit.maxHealth || 1) < 0.5 ? 0.5 : 1;
   // units which already used onDeploy effects are worth less

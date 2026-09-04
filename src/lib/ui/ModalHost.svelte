@@ -10,40 +10,20 @@
     uiState.modal.visible = false;
   }
   function handleOverlayClick() {
-    if (uiState.modal.custom?.closeOnOutsideClick !== false) {
-      uiState.modal.visible = false;
-    }
+    uiState.modal.visible = false;
   }
 </script>
 
 {#if uiState.modal && uiState.modal.visible}
-  <div
-    class="modal-overlay"
-    style="background: rgba(0, 0, 0, {uiState.modal.custom?.overlayOpacity ?? 0.7});"
-    onclick={handleOverlayClick}
-  >
-    {#if uiState.modal.custom}
-      <div
-        class="modal custom"
-        style="width: {uiState.modal.custom.width || 600}px; height: {uiState.modal.custom.height ||
-          400}px;"
-        onclick={(e) => e.stopPropagation()}
-      >
-        <svelte:component
-          this={uiState.modal.custom.component}
-          {...uiState.modal.custom.props || {}}
-        />
+  <div class="modal-overlay" onclick={handleOverlayClick}>
+    <div class="modal" onclick={(e) => e.stopPropagation()}>
+      <div class="modal-title">{uiState.modal.title}</div>
+      <div class="modal-body">{@html uiState.modal.body}</div>
+      <div class="modal-actions">
+        <button class="confirm-btn" onclick={handleConfirm}>Yes</button>
+        <button class="cancel-btn" onclick={handleCancel}>No</button>
       </div>
-    {:else}
-      <div class="modal" onclick={(e) => e.stopPropagation()}>
-        <div class="modal-title">{uiState.modal.title}</div>
-        <div class="modal-body">{@html uiState.modal.body}</div>
-        <div class="modal-actions">
-          <button class="confirm-btn" onclick={handleConfirm}>Yes</button>
-          <button class="cancel-btn" onclick={handleCancel}>No</button>
-        </div>
-      </div>
-    {/if}
+    </div>
   </div>
 {/if}
 
@@ -74,14 +54,6 @@
     left: 0;
     top: 0;
     margin: 0 auto;
-  }
-  .modal.custom {
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    max-width: none;
-    max-height: 90vh;
-    overflow: hidden;
   }
   .modal-title {
     font-size: 1.4rem;

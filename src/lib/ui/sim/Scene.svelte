@@ -236,6 +236,16 @@
   {:else}
     <p class="narration">{entry.text}</p>
   {/if}
+  {#if entry.cardTemplates?.length}
+    <div class="narration-cards">
+      {#each entry.cardTemplates as card, i (`${card.id}-${i}`)}
+        {#if i > 0}
+          <span class="card-arrow" aria-hidden="true">→</span>
+        {/if}
+        <CardCompact {card} />
+      {/each}
+    </div>
+  {/if}
   {#if cards.length > 0}
     <div class="narration-cards">
       {#each cards as card (card.id)}
@@ -251,7 +261,7 @@
       onDone={() => completeEntry(entry.id)}
     />
   {/if}
-  {#if entry.type === NarrationType.ConjuredCard}
+  {#if entry.type === NarrationType.ConjuredCard && cards.length > 0}
     <div class="narration-actions">
       <button
         type="button"
@@ -365,8 +375,16 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
     gap: 12px;
     margin: 0 0 1.25em;
+  }
+
+  .card-arrow {
+    flex-shrink: 0;
+    font-size: 2rem;
+    line-height: 1;
+    color: #4a3f32;
   }
 
   .narration-actions {

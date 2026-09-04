@@ -9,9 +9,7 @@
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
     "lint": "eslint .",
-    "tools:merge-cards": "node src/tools/merge-cards.js",
-    "images": "node src/tools/convert-images.js",
-    "tools:all": "npm run tools:merge-cards && npm run tools:convert-images"
+    "images": "node src/tools/convert-images.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",

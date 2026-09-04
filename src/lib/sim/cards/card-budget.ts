@@ -1,8 +1,8 @@
-import { CardColor, type UnitKeywords } from "@/lib/_model";
-import { getRandomFromArray } from "@/lib/_utils/random";
-import type { PartialConjuredUnit } from "./conjuration";
+import { CardColor, type UnitKeywords } from '@/lib/_model';
+import { getRandomFromArray } from '@/lib/_utils/random';
+import type { PartialConjuredUnit } from './creation';
 
-type FeatureCostKey = "power" | "maxHealth" | keyof UnitKeywords;
+type FeatureCostKey = 'power' | 'maxHealth' | keyof UnitKeywords;
 
 export const cardBudget: Record<number, number> = {
   0: 4,
@@ -39,7 +39,8 @@ export const featureCosts: Record<FeatureCostKey, (card: PartialConjuredUnit) =>
 };
 
 export function getCardBudget(card: PartialConjuredUnit): number {
-  let budget = card.power * featureCosts.power(card) + card.maxHealth * featureCosts.maxHealth(card);
+  let budget =
+    card.power * featureCosts.power(card) + card.maxHealth * featureCosts.maxHealth(card);
 
   if (card.power >= card.maxHealth) {
     budget += 4;
@@ -50,13 +51,16 @@ export function getCardBudget(card: PartialConjuredUnit): number {
   ][]) {
     if (!value) continue;
     const cost = featureCosts[key](card);
-    budget += typeof value === "number" ? cost * value : cost;
+    budget += typeof value === 'number' ? cost * value : cost;
   }
 
   return budget;
 }
 
-export function getCostFromBudget(budget: number, colors: CardColor[]): {
+export function getCostFromBudget(
+  budget: number,
+  colors: CardColor[]
+): {
   cost: number;
   colors: { color: CardColor; count: number }[];
   extraHealth: number;
@@ -86,4 +90,20 @@ export function getCostFromBudget(budget: number, colors: CardColor[]): {
 
   const extraHealth = rest < -1 ? Math.floor(-rest / 2) : 0;
   return { cost, colors: resultColors, extraHealth };
+}
+
+export function getBudgetFromCost(
+  manaCost: number,
+  colors: { color: CardColor; count: number }[]
+): number {
+  const manaBudget = cardBudget[manaCost];
+  const colorsCount = colors.reduce((sum, color) => sum + (color.count ?? 0), 0);
+  let colorsBudget = 0;
+  if (colorsCount >= manaCost) {
+    colorsBudget += 4;
+  }
+  if (colorsCount > 2) {
+    colorsBudget += (colorsCount - 2) * 2;
+  }
+  return manaBudget + colorsBudget;
 }

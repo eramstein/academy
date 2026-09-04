@@ -1,4 +1,4 @@
-import { UiView, type UiState } from '../_model/model-ui';
+import { UiView, type UiState } from '@/lib/_model';
 
 export const defaultUiState: UiState = {
   currentView: UiView.Scene,
@@ -25,7 +25,6 @@ export const defaultUiState: UiState = {
       playerId: null,
     },
     currentEffectIndex: 0,
-    displayChat: false,
     draggingCard: null,
   },
   modal: {
@@ -34,7 +33,6 @@ export const defaultUiState: UiState = {
     body: '',
     onConfirm: undefined,
     onCancel: undefined,
-    custom: null,
   },
   cardFullOverlay: {
     visible: false,
@@ -64,7 +62,6 @@ export const defaultUiState: UiState = {
     visible: false,
   },
   isHeadless: false,
-  suppressAnimations: false,
   cardEditor: {
     card: null,
   },

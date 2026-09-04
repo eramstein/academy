@@ -6,7 +6,7 @@ import { narrateText } from '../narration';
 import { nextScene, setSceneEvents } from '../scene';
 import { ActionsLimitByPeriod } from './_action-types';
 import { createUnit, type CardCreationParameters } from './artificery';
-import { augment, type AugmentParameters } from './enchanting';
+import { augmentUnit, type AugmentParameters } from './enchanting';
 import { getLeagueMatchActions, startMatch, type StartMatchParameters } from './match';
 import { move, type MoveParameters } from './move';
 import { negotiate, type NegotiateParameters } from './negotiation';
@@ -84,6 +84,6 @@ const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => s
   [ActionType.Wait]: () => wait(),
   [ActionType.Socialize]: (parameters) => socialize(parameters as SocializeParameters),
   [ActionType.StartMatch]: (parameters) => startMatch(parameters as StartMatchParameters),
-  [ActionType.Augment]: (parameters) => augment(parameters as AugmentParameters),
+  [ActionType.Augment]: (parameters) => augmentUnit(parameters as AugmentParameters),
   [ActionType.Conjure]: (parameters) => createUnit(parameters as CardCreationParameters),
 };

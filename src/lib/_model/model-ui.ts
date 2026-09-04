@@ -42,7 +42,6 @@ export type UiState = {
       visible: boolean;
       playerId: number | null;
     };
-    displayChat: boolean;
     draggingCard: Card | null;
   };
   modal: {
@@ -51,14 +50,6 @@ export type UiState = {
     body: string;
     onConfirm?: () => void;
     onCancel?: () => void;
-    custom?: {
-      component: any;
-      props?: Record<string, any>;
-      width?: number;
-      height?: number;
-      overlayOpacity?: number; // 0..1, default 0.7
-      closeOnOutsideClick?: boolean;
-    } | null;
   };
   cardFullOverlay: {
     visible: boolean;
@@ -88,7 +79,6 @@ export type UiState = {
     visible: boolean;
   };
   isHeadless?: boolean;
-  suppressAnimations?: boolean;
   cardEditor: {
     card: CardTemplate | null;
   };

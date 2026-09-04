@@ -29,6 +29,7 @@ export enum NarrationType {
   Text = 'text',
   AttributeCheck = 'attribute_check',
   ConjuredCard = 'conjured_card',
+  EncantedCard = 'encanted_card',
 }
 
 export enum ActivityType {

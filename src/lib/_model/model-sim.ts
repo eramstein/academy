@@ -111,6 +111,7 @@ export interface Narration {
   type: NarrationType;
   attributeCheck?: AttributeCheck;
   cardIds?: string[];
+  cardTemplates?: CardTemplate[];
 }
 
 export interface ScheduledActivity {
