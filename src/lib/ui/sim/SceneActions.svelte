@@ -1,14 +1,16 @@
 <script lang="ts">
-  import type { Action } from '@/lib/_model';
+  import { ActionType, type Action } from '@/lib/_model';
   import { selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state';
   import { performAction } from '@/lib/sim/actions';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
+  import Enchantment from './Enchantment.svelte';
 
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
 
   let pendingAction = $state<Action | null>(null);
+  let enchantAction = $state<Action | null>(null);
 
   const parameterPrompts: Record<string, string> = {
     characterKey: 'Who?',
@@ -103,11 +105,16 @@
   }
 
   function onActionClick(action: Action) {
-    commitAction({
+    const next: Action = {
       ...action,
       actionParameters: { ...action.actionParameters },
       missingParameters: { ...action.missingParameters },
-    });
+    };
+    if (next.actionType === ActionType.Augment) {
+      enchantAction = next;
+      return;
+    }
+    commitAction(next);
   }
 
   function pickParameter(value: string) {
@@ -119,6 +126,10 @@
     pendingAction = null;
   }
 </script>
+
+{#if enchantAction}
+  <Enchantment action={enchantAction} onDone={() => (enchantAction = null)} />
+{/if}
 
 <div class="actions">
   <div class="action-buttons-wrap">

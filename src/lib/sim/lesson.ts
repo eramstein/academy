@@ -1,4 +1,4 @@
-import { ActionType, CardType, ClassType, type Action } from "../_model";
+import { ActionType, ClassType, isUnitCard, type Action } from "../_model";
 import { getCurrentScheduledActivity } from "./schedule";
 import { isClassActivity } from "../_model/type-lookup-sim";
 import { gs } from "../_state";
@@ -17,7 +17,9 @@ export function getLessonActions(): Action[] {
         isLongAction: true,
         actionParameters: {},
         missingParameters: {
-          cardId: gs.player.collection.filter(c => c.type !== CardType.Land).map((c) => [c.id, c.name]),
+          cardId: gs.player.collection
+            .filter((c) => isUnitCard(c) && c.cost < 9)
+            .map((c) => [c.id, c.name]),
         },
       },
     ];

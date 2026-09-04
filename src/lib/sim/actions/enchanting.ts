@@ -19,29 +19,75 @@ export interface AugmentParameters {
   keywords?: Partial<Record<keyof UnitKeywords, number>>;
 }
 
-export function augmentUnit(parameters: AugmentParameters): string {
-  const card = gs.player.collection.find((card) => card.id === parameters.cardId);
+export interface AugmentPreview {
+  error: string;
+  card: UnitCardTemplate | null;
+  preview: UnitCardTemplate | null;
+  upgradeBudget: number;
+  spent: number;
+  extraBudget: number;
+}
 
-  // check parameters validity
+export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview {
+  const card = gs.player.collection.find((c) => c.id === parameters.cardId);
+
   if (!card) {
-    return `Card not found: ${parameters.cardId}.`;
+    return emptyPreview(`Card not found: ${parameters.cardId}.`);
   }
   if (!isUnitCard(card)) {
-    return `Card is not a unit: ${parameters.cardId}.`;
+    return emptyPreview(`Card is not a unit: ${parameters.cardId}.`);
+  }
+
+  const costIncrease = parameters.costIncrease || 1;
+  if (card.cost > 9 - costIncrease) {
+    return {
+      error: `Card is already at max cost: ${card.cost}.`,
+      card,
+      preview: null,
+      upgradeBudget: 0,
+      spent: 0,
+      extraBudget: 0,
+    };
+  }
+
+  const upgradeBudget = cardBudget[card.cost + costIncrease] - cardBudget[card.cost];
+  const preview = makeNewCardTemplate(card, { ...parameters, costIncrease });
+  const spent = getCardBudget(preview) - getCardBudget(card);
+  if (spent > upgradeBudget) {
+    return {
+      error: `New card budget is greater than upgrade budget: ${getCardBudget(preview)} > ${upgradeBudget}.`,
+      card,
+      preview,
+      upgradeBudget,
+      spent,
+      extraBudget: 0,
+    };
+  }
+
+  return {
+    error: '',
+    card,
+    preview,
+    upgradeBudget,
+    spent,
+    extraBudget: upgradeBudget - spent,
+  };
+}
+
+export function augmentUnit(parameters: AugmentParameters): string {
+  const result = getAugmentPreview(parameters);
+  if (result.error || !result.card) {
+    return result.error;
   }
   if (!parameters.costIncrease) {
     parameters.costIncrease = 1;
   }
-  if (card.cost > 9 - parameters.costIncrease) {
-    return `Card is already at max cost: ${card.cost}.`;
-  }
+
+  const card = result.card;
   const oldCard: UnitCardTemplate = {
     ...card,
     keywords: card.keywords ? { ...card.keywords } : undefined,
   };
-
-  // update cost and get corresponding budget
-  const upgradeBudget = cardBudget[card.cost + parameters.costIncrease] - cardBudget[card.cost];
 
   const costs: Record<string, number> = {
     power: featureCosts.power(card),
@@ -49,15 +95,7 @@ export function augmentUnit(parameters: AugmentParameters): string {
     ret: featureCosts.retaliate(card),
   };
 
-  // make new card template with updated parameters
-  const newCardTemplate = makeNewCardTemplate(card, parameters);
-  const newBudget = getCardBudget(newCardTemplate);
-  const oldBudget = getCardBudget(card);
-  const budgetDifference = newBudget - oldBudget;
-  if (budgetDifference > upgradeBudget) {
-    return `New card budget is greater than upgrade budget: ${newBudget} > ${upgradeBudget}.`;
-  }
-  let extraBudget = upgradeBudget - budgetDifference;
+  let extraBudget = result.extraBudget;
 
   // mutate card to become newCardTemplate
   makeNewCardTemplate(card, parameters, true);
@@ -142,6 +180,17 @@ function describeKeywordChanges(
 
 function formatKeywordName(keyword: string): string {
   return keyword.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+}
+
+function emptyPreview(error: string): AugmentPreview {
+  return {
+    error,
+    card: null,
+    preview: null,
+    upgradeBudget: 0,
+    spent: 0,
+    extraBudget: 0,
+  };
 }
 
 function getUpgradePreference(
