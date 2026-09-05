@@ -12,6 +12,7 @@ export enum EventOutcomeType {
 export enum EventEffectType {
   GetDeck = 'get_deck',
   Subscribe = 'subscribe',
+  AddResource = 'add_resource',
 }
 
 export enum ActionType {
@@ -72,4 +73,10 @@ export enum EventTriggerType {
   ActivityType = 'activity_type',
   Place = 'place',
   CharacterPresent = 'character_present',
+}
+
+export enum ResourceType {
+  MagicDust = 'magic_dust',
+  Mithril = 'mithril',
+  Moxes = 'moxes',
 }

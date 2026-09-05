@@ -60,12 +60,20 @@
     "triggersOnce": true
   },
   {
-    "text": "This is an enchanting class. Here, you'll learn how to modify existing cards. For now, let's start with Augmentation: it makes a card more powerful in exchange for higher mana requirements.",
+    "text": "This is an enchanting class. Here, you'll learn how to modify existing cards. For now, let's start with Augmentation: it makes a card more powerful in exchange for higher mana requirements. Here is some magic dust, it's an essential component for any magic crafting.",
     "triggers": [
       { "triggerType": "day", "parameters": { "day": 2 } },
       { "triggerType": "period", "parameters": { "period": "afternoon" } }
     ],
-    "optionTemplates": [],
+    "effects": [
+      {
+        "type": "add_resource",
+        "parameters": {
+          "resourceType": "magic_dust",
+          "amount": 10
+        }
+      }
+    ],
     "triggersOnce": true
   }
 ]

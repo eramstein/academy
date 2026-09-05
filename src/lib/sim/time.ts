@@ -1,6 +1,7 @@
 import { DayPeriod } from '../_model';
 import { gs } from '../_state';
 import { narrateText } from './narration';
+import { startScene } from './scene';
 
 const PERIODS = [DayPeriod.Morning, DayPeriod.Afternoon, DayPeriod.Evening];
 const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -26,4 +27,12 @@ export function nextPeriod() {
 
 export function isWeekDay(day: number): boolean {
   return getWeekDay(day) < 6;
+}
+
+export function goToPeriod(day: number, period: DayPeriod) {
+  gs.time.day = day;
+  gs.time.period = period;
+  gs.time.usedActions = {};
+  gs.time.longActionPerformed = false;
+  startScene();
 }

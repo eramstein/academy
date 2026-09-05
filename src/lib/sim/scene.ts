@@ -42,8 +42,7 @@ export function selectOption(option: EventOption) {
   }
 }
 
-export function nextScene() {
-  nextPeriod();
+export function startScene() {
   updateNpcLocations();
   const currentScheduledActivity = getCurrentScheduledActivity();
   console.log('nextScene', currentScheduledActivity);
@@ -53,6 +52,11 @@ export function nextScene() {
   } else {
     gs.scene.selectingNextPlace = true;
   }
+}
+
+export function nextScene() {
+  nextPeriod();
+  startScene();
 }
 
 export function selectNextScene(placeKey: string) {
@@ -67,5 +71,8 @@ export function setEvent(event: SceneEvent, template?: StoredEventTemplate) {
   gs.scene.event = event.options.length > 0 ? event : undefined;
   if (template?.triggersOnce) {
     consumeEventTemplate(template);
+  }
+  if (template?.effects) {
+    template.effects.forEach((effect) => applyEffect(effect));
   }
 }

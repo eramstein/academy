@@ -1,6 +1,6 @@
 import { npcs } from '@/data/npcs';
 import { PLACES, REGIONS } from '@/data/sim/places';
-import { DayPeriod, type GameState } from '../_model';
+import { DayPeriod, ResourceType, type GameState } from '../_model';
 import { gs } from '../_state';
 import { initNpcDecks } from './deck';
 import { loadEventTemplates, restoreEventTemplates } from './events';
@@ -31,6 +31,11 @@ export const defaultGameState: GameState = {
       vitality: 5,
       charisma: 5,
       aura: 5,
+    },
+    resources: {
+      [ResourceType.MagicDust]: 0,
+      [ResourceType.Mithril]: 0,
+      [ResourceType.Moxes]: 0,
     },
     subscriptions: {
       academy: 0,

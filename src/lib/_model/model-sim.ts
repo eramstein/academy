@@ -10,6 +10,7 @@ import type {
   EventOutcomeType,
   EventTriggerType,
   NarrationType,
+  ResourceType,
   SchoolName,
   SubscriptionType,
 } from './enums-sim';
@@ -81,6 +82,7 @@ export interface EventTemplate {
   optionTemplates: EventOptionTemplate[];
   triggers: EventTrigger[];
   triggersOnce?: boolean;
+  effects?: EventEffect[];
 }
 
 export interface EventTrigger {
@@ -165,6 +167,7 @@ export interface Player extends Character {
   maxFocus: number;
   focus: number;
   cardCrafting: CardCraftingSkills;
+  resources: Record<ResourceType, number>;
 }
 
 export interface Npc extends Character {

@@ -42,7 +42,7 @@ export function getTriggeredSceneEvent():
     template,
     event: {
       text: template.text,
-      options: template.optionTemplates.map(buildOption),
+      options: template.optionTemplates?.map(buildOption) ?? [],
     },
   };
 }

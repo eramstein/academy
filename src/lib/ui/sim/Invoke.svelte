@@ -1,14 +1,10 @@
 <script lang="ts">
-  import {
-    CardColor,
-    UnitType,
-    type Action,
-    type UnitKeywords,
-  } from '@/lib/_model';
+  import { CardColor, type Action, type UnitKeywords } from '@/lib/_model';
   import { gs } from '@/lib/_state';
   import { performAction, type CardCreationParameters } from '@/lib/sim/actions';
   import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
 
   let {
     action,
@@ -20,11 +16,18 @@
 
   const STAT_MAX = 20;
 
-  let colors = $state<CardColor[]>([]);
+  function resolveAvailableColors(): CardColor[] {
+    const known = Object.values(CardColor).filter(
+      (color) => !!gs.player.cardCrafting.colors?.[color]
+    );
+    return known.length ? known : Object.values(CardColor);
+  }
+
+  const startingColors = resolveAvailableColors();
+  let colors = $state<CardColor[]>(startingColors.length === 1 ? [startingColors[0]] : []);
   let power = $state(1);
   let hp = $state(1);
   let keywords = $state<Partial<Record<keyof UnitKeywords, number>>>({});
-  let unitTypes = $state<UnitType[]>([]);
 
   $effect(() => {
     function onKey(event: KeyboardEvent) {
@@ -34,17 +37,12 @@
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  const knownColors = $derived(
-    Object.values(CardColor).filter((color) => !!gs.player.cardCrafting.colors?.[color])
-  );
-  const availableColors = $derived(knownColors.length ? knownColors : Object.values(CardColor));
+  const availableColors = $derived(resolveAvailableColors());
 
   const knownKeywords = $derived(
     KEYWORD_KEYS.filter((key) => !!gs.player.cardCrafting.keywords?.[key])
   );
   const availableKeywords = $derived(knownKeywords.length ? knownKeywords : KEYWORD_KEYS);
-
-  const availableUnitTypes = Object.values(UnitType);
 
   const parameters = $derived.by((): CardCreationParameters => {
     const selectedKeywords = toUnitKeywords(keywords);
@@ -53,7 +51,6 @@
       power,
       hp,
       keywords: selectedKeywords,
-      unitTypes: unitTypes.length ? unitTypes : undefined,
     };
   });
 
@@ -81,19 +78,20 @@
     return value.charAt(0).toUpperCase() + value.slice(1);
   }
 
+  function colorPath(color: CardColor): string {
+    return getAssetPath(`images/color_${color}.png`);
+  }
+
+  function clamp(value: number | undefined, min: number, max: number): number {
+    if (typeof value !== 'number' || Number.isNaN(value)) return min;
+    return Math.min(max, Math.max(min, value));
+  }
+
   function toggleColor(color: CardColor) {
     if (colors.includes(color)) {
       colors = colors.filter((entry) => entry !== color);
     } else {
       colors = [...colors, color];
-    }
-  }
-
-  function toggleUnitType(unitType: UnitType) {
-    if (unitTypes.includes(unitType)) {
-      unitTypes = unitTypes.filter((entry) => entry !== unitType);
-    } else {
-      unitTypes = [...unitTypes, unitType];
     }
   }
 
@@ -117,7 +115,24 @@
     keywords = next;
   }
 
+  function adjustFromClick(event: MouseEvent, apply: (delta: number) => void) {
+    if (event.type === 'contextmenu') event.preventDefault();
+    apply(event.type === 'contextmenu' ? -1 : 1);
+  }
+
+  function adjustKeyword(key: keyof UnitKeywords, delta: number) {
+    setKeyword(key, clamp((keywords[key] ?? 0) + delta, 0, STAT_MAX));
+  }
+
+  function onNumberInput(event: Event, min: number, apply: (value: number) => void) {
+    const raw = (event.currentTarget as HTMLInputElement).value;
+    if (raw === '') return;
+    apply(clamp(Number.parseInt(raw, 10), min, STAT_MAX));
+  }
+
   function confirm() {
+    power = clamp(power, 0, STAT_MAX);
+    hp = clamp(hp, 1, STAT_MAX);
     performAction({
       ...action,
       actionParameters: {
@@ -132,122 +147,123 @@
 
 <div class="overlay" role="presentation">
   <div class="panel" role="dialog" aria-labelledby="invoke-title">
-    <header class="header">
-      <h2 id="invoke-title" class="title">Invoke a unit</h2>
-      <p class="subtitle">Choose colors, stats, type, and keywords.</p>
-    </header>
+    <h2 id="invoke-title" class="title">Invoke a unit</h2>
 
-    <section class="section">
-      <h3 class="section-title">Colors</h3>
-      <div class="chip-list">
-        {#each availableColors as color (color)}
-          {@const selected = colors.includes(color)}
-          <button
-            type="button"
-            class="color-chip"
-            class:selected
-            aria-pressed={selected}
-            onclick={() => toggleColor(color)}
-          >
-            <span class="color-dot" style="background-color: var(--color-{color})"></span>
-            <span>{capitalize(color)}</span>
-          </button>
-        {/each}
-      </div>
-    </section>
-
-    <div class="controls">
-      {@render stepper(
-        'Power',
-        power,
-        power > 0,
-        power < STAT_MAX,
-        () => (power -= 1),
-        () => (power += 1)
-      )}
-      {@render stepper(
-        'Health',
-        hp,
-        hp > 1,
-        hp < STAT_MAX,
-        () => (hp -= 1),
-        () => (hp += 1)
-      )}
+    <div class="colors" role="group" aria-label="Colors">
+      {#each availableColors as color (color)}
+        {@const selected = colors.includes(color)}
+        <button
+          type="button"
+          class="color-btn"
+          class:selected
+          aria-pressed={selected}
+          onclick={() => toggleColor(color)}
+        >
+          <span class="color-dot" style="background-image: url('{colorPath(color)}')"></span>
+          {capitalize(color)}
+        </button>
+      {/each}
     </div>
 
-    <section class="section">
-      <h3 class="section-title">Unit type</h3>
-      <div class="chip-list">
-        {#each availableUnitTypes as unitType (unitType)}
-          {@const selected = unitTypes.includes(unitType)}
+    <div class="fields">
+      <button
+        type="button"
+        class="keyword-btn"
+        onclick={(event) =>
+          adjustFromClick(event, (delta) => (power = clamp(power + delta, 0, STAT_MAX)))}
+        oncontextmenu={(event) =>
+          adjustFromClick(event, (delta) => (power = clamp(power + delta, 0, STAT_MAX)))}
+      >
+        <img class="icon" src={getAssetPath('images/power-icon.png')} alt="" aria-hidden="true" />
+        Attack
+      </button>
+      <input
+        type="number"
+        min="0"
+        max={STAT_MAX}
+        bind:value={power}
+        aria-label="Attack"
+        oninput={(event) => onNumberInput(event, 0, (value) => (power = value))}
+        onblur={() => (power = clamp(power, 0, STAT_MAX))}
+      />
+      <button
+        type="button"
+        class="keyword-btn"
+        onclick={(event) =>
+          adjustFromClick(event, (delta) => (hp = clamp(hp + delta, 1, STAT_MAX)))}
+        oncontextmenu={(event) =>
+          adjustFromClick(event, (delta) => (hp = clamp(hp + delta, 1, STAT_MAX)))}
+      >
+        <img class="icon" src={getAssetPath('images/health-icon.png')} alt="" aria-hidden="true" />
+        Health
+      </button>
+      <input
+        type="number"
+        min="1"
+        max={STAT_MAX}
+        bind:value={hp}
+        aria-label="Health"
+        oninput={(event) => onNumberInput(event, 1, (value) => (hp = value))}
+        onblur={() => (hp = clamp(hp, 1, STAT_MAX))}
+      />
+
+      <div class="fields-gap"></div>
+
+      {#each availableKeywords as key (key)}
+        {#if NUMERIC_KEYWORDS.has(key)}
+          {@const value = keywords[key] ?? 0}
           <button
             type="button"
-            class="type-chip"
-            class:selected
-            aria-pressed={selected}
-            onclick={() => toggleUnitType(unitType)}
+            class="keyword-btn"
+            class:on={value > 0}
+            title={getKeywordTooltip(key, value || 1)}
+            onclick={(event) => adjustFromClick(event, (delta) => adjustKeyword(key, delta))}
+            oncontextmenu={(event) =>
+              adjustFromClick(event, (delta) => adjustKeyword(key, delta))}
           >
-            {capitalize(unitType)}
+            <img
+              class="icon"
+              src={getAssetPath(`images/keywords/${key}.png`)}
+              alt=""
+              aria-hidden="true"
+            />
+            {formatKeyword(key)}
           </button>
-        {/each}
-      </div>
-    </section>
-
-    <section class="section">
-      <h3 class="section-title">Keywords</h3>
-      {#if availableKeywords.length === 0}
-        <p class="empty">No known keywords yet.</p>
-      {:else}
-        <div class="chip-list">
-          {#each availableKeywords as key (key)}
-            {#if NUMERIC_KEYWORDS.has(key)}
-              <div class="keyword-chip numeric">
-                <img
-                  class="keyword-icon"
-                  src={getAssetPath(`images/keywords/${key}.png`)}
-                  alt=""
-                  aria-hidden="true"
-                />
-                <span class="keyword-name">{formatKeyword(key)}</span>
-                <button
-                  type="button"
-                  class="step-btn"
-                  disabled={(keywords[key] ?? 0) <= 0}
-                  onclick={() => setKeyword(key, (keywords[key] ?? 0) - 1)}
-                >
-                  −
-                </button>
-                <span class="step-value">{keywords[key] ?? 0}</span>
-                <button
-                  type="button"
-                  class="step-btn"
-                  disabled={(keywords[key] ?? 0) >= STAT_MAX}
-                  onclick={() => setKeyword(key, (keywords[key] ?? 0) + 1)}
-                >
-                  +
-                </button>
-              </div>
-            {:else}
-              {@const selected = !!keywords[key]}
-              <button
-                type="button"
-                class="keyword-chip"
-                class:selected
-                onclick={() => toggleKeyword(key)}
-              >
-                <img
-                  class="keyword-icon"
-                  src={getAssetPath(`images/keywords/${key}.png`)}
-                  alt=""
-                  aria-hidden="true"
-                />
-                <span class="keyword-name">{formatKeyword(key)}</span>
-              </button>
-            {/if}
-          {/each}
-        </div>
-      {/if}
-    </section>
+          <input
+            type="number"
+            min="0"
+            max={STAT_MAX}
+            {value}
+            aria-label={formatKeyword(key)}
+            oninput={(event) => onNumberInput(event, 0, (next) => setKeyword(key, next))}
+            onblur={(event) =>
+              setKeyword(key, clamp(Number.parseInt(event.currentTarget.value, 10), 0, STAT_MAX))}
+          />
+        {:else}
+          {@const selected = !!keywords[key]}
+          <button
+            type="button"
+            class="keyword-btn"
+            class:on={selected}
+            title={getKeywordTooltip(key)}
+            aria-pressed={selected}
+            onclick={() => toggleKeyword(key)}
+            oncontextmenu={(event) => {
+              event.preventDefault();
+              setKeyword(key, 0);
+            }}
+          >
+            <img
+              class="icon"
+              src={getAssetPath(`images/keywords/${key}.png`)}
+              alt=""
+              aria-hidden="true"
+            />
+            {formatKeyword(key)}
+          </button>
+        {/if}
+      {/each}
+    </div>
 
     <footer class="actions">
       <button type="button" class="action-btn cancel" onclick={onDone}>Cancel</button>
@@ -255,22 +271,6 @@
     </footer>
   </div>
 </div>
-
-{#snippet stepper(
-  label: string,
-  value: number,
-  canDec: boolean,
-  canInc: boolean,
-  dec: () => void,
-  inc: () => void
-)}
-  <div class="stepper">
-    <span class="stepper-label">{label}</span>
-    <button type="button" class="step-btn" disabled={!canDec} onclick={dec}>−</button>
-    <span class="step-value">{value}</span>
-    <button type="button" class="step-btn" disabled={!canInc} onclick={inc}>+</button>
-  </div>
-{/snippet}
 
 <style>
   .overlay {
@@ -286,114 +286,36 @@
   }
 
   .panel {
-    width: min(960px, 100%);
+    width: min(380px, 100%);
     max-height: 90vh;
     overflow-y: auto;
     background: #2c251d;
     border: 1px solid #5a4b3c;
     border-radius: 6px;
     color: #e8dcc4;
-    padding: 20px 24px 16px;
+    padding: 16px 18px 12px;
     box-sizing: border-box;
     font-family: Georgia, 'Times New Roman', serif;
-  }
-
-  .header {
-    text-align: center;
-    margin-bottom: 16px;
+    font-size: 1rem;
   }
 
   .title {
-    margin: 0;
+    margin: 0 0 14px;
     font-size: 1.15rem;
     font-weight: 600;
     color: #f0e6c8;
-  }
-
-  .subtitle {
-    margin: 6px 0 0;
-    font-size: 0.85rem;
-    color: #a89880;
-  }
-
-  .section {
-    margin-bottom: 18px;
-  }
-
-  .section-title {
-    margin: 0 0 10px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #a89880;
     text-align: center;
   }
 
-  .empty {
-    margin: 0;
-    text-align: center;
-    font-size: 0.85rem;
-    color: #a89880;
-  }
-
-  .controls {
+  .colors {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 16px 24px;
-    margin-bottom: 18px;
+    gap: 6px;
+    margin-bottom: 14px;
   }
 
-  .stepper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .stepper-label {
-    min-width: 4.5rem;
-    font-size: 0.85rem;
-    color: #a89880;
-  }
-
-  .step-btn {
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    font-size: 1rem;
-    line-height: 1;
-    color: #e8dcc4;
-    background: #3d3429;
-    border: 1px solid #5a4b3c;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .step-btn:hover:not(:disabled) {
-    background: #4a3f32;
-    border-color: #7a6b5c;
-  }
-
-  .step-btn:disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
-
-  .step-value {
-    min-width: 1.25rem;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .chip-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .color-chip {
+  .color-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -403,74 +325,114 @@
     border: 1px solid #5a4b3c;
     border-radius: 4px;
     font-family: inherit;
-    font-size: 0.8rem;
-    text-transform: capitalize;
+    font-size: 1rem;
     cursor: pointer;
   }
 
-  .color-chip:hover {
+  .color-btn:hover {
     background: #4a3f32;
     border-color: #7a6b5c;
   }
 
-  .color-chip.selected {
+  .color-btn.selected {
     border-color: var(--color-golden);
     color: #f0e6c8;
   }
 
   .color-dot {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
+    background-size: cover;
+    background-position: center;
     border: 1px solid rgba(255, 255, 255, 0.25);
   }
 
-  .type-chip,
-  .keyword-chip {
-    display: inline-flex;
+  .fields {
+    display: inline-grid;
+    grid-template-columns: 1fr 3rem;
+    justify-content: start;
     align-items: center;
-    gap: 6px;
-    padding: 4px 8px;
+    column-gap: 8px;
+    row-gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .fields-gap {
+    grid-column: 1 / -1;
+    height: 8px;
+  }
+
+  .fields input {
+    grid-column: 2;
+    width: 3rem;
+    height: 32px;
+    padding: 0 4px;
     color: #e8dcc4;
     background: #3d3429;
     border: 1px solid #5a4b3c;
     border-radius: 4px;
     font-family: inherit;
-    font-size: 0.8rem;
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    outline: none;
+    box-sizing: border-box;
+    -moz-appearance: textfield;
+  }
+
+  .fields input:focus {
+    border-color: #7a6b5c;
+  }
+
+  .fields input::-webkit-inner-spin-button,
+  .fields input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .keyword-btn {
+    grid-column: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    width: 100%;
+    padding: 4px 10px;
+    color: #e8dcc4;
+    background: #3d3429;
+    border: 1px solid #5a4b3c;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    text-transform: capitalize;
+    text-align: left;
     cursor: pointer;
+    user-select: none;
+    box-sizing: border-box;
   }
 
-  .keyword-chip.numeric {
-    cursor: default;
-  }
-
-  .type-chip:hover,
-  .keyword-chip:hover:not(.numeric) {
+  .keyword-btn:hover {
     background: #4a3f32;
     border-color: #7a6b5c;
   }
 
-  .type-chip.selected,
-  .keyword-chip.selected {
+  .keyword-btn.on {
     border-color: var(--color-golden);
-    color: #f0e6c8;
   }
 
-  .keyword-icon {
-    width: 18px;
-    height: 18px;
+  .icon {
+    width: 22px;
+    height: 22px;
     object-fit: contain;
-  }
-
-  .keyword-name {
-    text-transform: capitalize;
+    flex-shrink: 0;
   }
 
   .actions {
     display: flex;
     justify-content: center;
     gap: 12px;
-    padding-top: 8px;
+    padding-top: 4px;
   }
 
   .action-btn {
@@ -480,7 +442,7 @@
     background: #3d3429;
     border: 1px solid #5a4b3c;
     border-radius: 4px;
-    padding: 10px 24px;
+    padding: 8px 20px;
     cursor: pointer;
   }
 
@@ -492,10 +454,6 @@
   .action-btn.confirm {
     color: #f0e6c8;
     border-color: var(--color-golden);
-  }
-
-  .action-btn.confirm:hover:not(:disabled) {
-    border-color: #d4b85c;
   }
 
   .action-btn.cancel {

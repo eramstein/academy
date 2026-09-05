@@ -5,7 +5,7 @@
     type Attributes,
     type UnitKeywords,
   } from '@/lib/_model';
-  import { SubscriptionType } from '@/lib/_model/enums-sim';
+  import { ResourceType, SubscriptionType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
 
@@ -49,6 +49,13 @@
     })),
   );
 
+  const resources = $derived(
+    Object.values(ResourceType).map((type) => ({
+      type,
+      amount: player.resources[type] ?? 0,
+    })),
+  );
+
   const craftingColors = $derived(
     Object.entries(player.cardCrafting.colors ?? {}).map(([color, level]) => ({
       color: color as CardColor,
@@ -73,6 +80,10 @@
 
   function formatKeyword(keyword: string): string {
     return keyword.replace(/([a-z])([A-Z])/g, '$1 $2');
+  }
+
+  function formatResource(type: ResourceType): string {
+    return type.replace(/_/g, ' ');
   }
 </script>
 
@@ -130,6 +141,18 @@
             <div class="attr-fill" style="width: {attr.pct}%"></div>
           </div>
           <span class="attr-value">{attr.value}</span>
+        </li>
+      {/each}
+    </ul>
+  </section>
+
+  <section class="section">
+    <h3 class="section-title">Inventory</h3>
+    <ul class="kv-list">
+      {#each resources as resource (resource.type)}
+        <li class="kv-row">
+          <span class="kv-name">{formatResource(resource.type)}</span>
+          <span class="kv-value">{resource.amount}</span>
         </li>
       {/each}
     </ul>
