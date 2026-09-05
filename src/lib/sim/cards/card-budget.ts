@@ -1,5 +1,4 @@
 import { CardColor, type UnitKeywords } from '@/lib/_model';
-import { getRandomFromArray } from '@/lib/_utils/random';
 import type { PartialConjuredUnit } from './creation';
 
 type FeatureCostKey = 'power' | 'maxHealth' | keyof UnitKeywords;
@@ -42,9 +41,6 @@ export function getCardBudget(card: PartialConjuredUnit): number {
   let budget =
     card.power * featureCosts.power(card) + card.maxHealth * featureCosts.maxHealth(card);
 
-  if (card.power >= card.maxHealth) {
-    budget += 4;
-  }
   for (const [key, value] of Object.entries(card.keywords ?? {}) as [
     keyof UnitKeywords,
     boolean | number | undefined,
@@ -57,39 +53,18 @@ export function getCardBudget(card: PartialConjuredUnit): number {
   return budget;
 }
 
-export function getCostFromBudget(
-  budget: number,
-  colors: CardColor[]
-): {
+export function getCostFromBudget(budget: number): {
   cost: number;
-  colors: { color: CardColor; count: number }[];
   extraHealth: number;
 } {
-  const matchingCosts = Object.entries(cardBudget)
-    .filter(([, value]) => value <= budget)
-    .map(([key]) => Number(key));
-  const cost = matchingCosts.length > 0 ? Math.max(...matchingCosts) : 0;
-  const allocated = matchingCosts.length > 0 ? cardBudget[cost] : 0;
-  let rest = budget - allocated;
-
-  const resultColors = [...new Set(colors)].map((color) => ({ color, count: 1 }));
-  if (resultColors.length === 0) {
-    resultColors.push({ color: getRandomFromArray(Object.values(CardColor)), count: 1 });
-  }
-
-  let grantedOffCurveBonus = false;
-  while (rest > 0) {
-    getRandomFromArray(resultColors).count++;
-    rest -= 2;
-    const totalColorCount = resultColors.reduce((sum, entry) => sum + entry.count, 0);
-    if (!grantedOffCurveBonus && totalColorCount > cost) {
-      rest -= 4;
-      grantedOffCurveBonus = true;
-    }
-  }
-
-  const extraHealth = rest < -1 ? Math.floor(-rest / 2) : 0;
-  return { cost, colors: resultColors, extraHealth };
+  const entries = Object.entries(cardBudget)
+    .map(([key, value]) => [Number(key), value] as const)
+    .sort(([a], [b]) => a - b);
+  const match = entries.find(([, value]) => value >= budget) ?? entries.at(-1)!;
+  const [cost, allocated] = match;
+  const rest = allocated - budget;
+  const extraHealth = Math.max(0, Math.floor(rest / 2));
+  return { cost, extraHealth };
 }
 
 export function getBudgetFromCost(

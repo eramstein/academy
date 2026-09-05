@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { SimDataTab } from '@/lib/_model';
+  import { uiState } from '@/lib/_state/state-ui.svelte';
   import Collection from './sim-data/Collection.svelte';
   import Decks from './sim-data/Decks.svelte';
   import League from './sim-data/League.svelte';
@@ -7,8 +9,6 @@
   import Schedule from './sim-data/Schedule.svelte';
   import SceneData from './sim-data/SceneData.svelte';
   import TimeDisplay from './TimeDisplay.svelte';
-
-  type SimDataTab = 'scene' | 'player' | 'schedule' | 'places' | 'collection' | 'decks' | 'league';
 
   const tabs: { id: SimDataTab; label: string }[] = [
     { id: 'scene', label: 'Scene' },
@@ -20,7 +20,7 @@
     { id: 'league', label: 'League' },
   ];
 
-  let selected = $state<SimDataTab>('scene');
+  const selected = $derived(uiState.sim.dataTab);
 </script>
 
 <div class="sim-data">
@@ -31,7 +31,7 @@
           type="button"
           class="menu-item"
           class:active={selected === tab.id}
-          onclick={() => (selected = tab.id)}
+          onclick={() => (uiState.sim.dataTab = tab.id)}
         >
           {tab.label}
         </button>

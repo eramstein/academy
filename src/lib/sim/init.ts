@@ -1,11 +1,11 @@
 import { npcs } from '@/data/npcs';
+import { PLACES, REGIONS } from '@/data/sim/places';
 import { DayPeriod, type GameState } from '../_model';
 import { gs } from '../_state';
-import { PLACES, REGIONS } from '@/data/sim/places';
-import { setSceneEvents } from './scene';
-import { newLeagueSeason } from './league';
 import { initNpcDecks } from './deck';
 import { loadEventTemplates, restoreEventTemplates } from './events';
+import { newLeagueSeason } from './league';
+import { setSceneEvents } from './scene';
 
 export const defaultGameState: GameState = {
   time: {
@@ -37,7 +37,11 @@ export const defaultGameState: GameState = {
       library: 0,
       inn: 0,
     },
-    cardCrafting: {},
+    cardCrafting: {
+      keywords: {
+        retaliate: 1,
+      },
+    },
   },
   places: {
     ...PLACES,

@@ -29,6 +29,9 @@
 
   const availableCards = $derived(cardsFromAction(action));
   const canChangeCard = $derived(availableCards.length > 1);
+  const knownKeywords = $derived(
+    KEYWORD_KEYS.filter((key) => !!gs.player.cardCrafting.keywords?.[key])
+  );
 
   const parameters = $derived.by((): AugmentParameters | null => {
     if (!cardId) return null;
@@ -241,8 +244,11 @@
 
       <section class="keywords">
         <h3 class="section-title">Keywords</h3>
-        <div class="keyword-list">
-          {#each KEYWORD_KEYS as key (key)}
+        {#if knownKeywords.length === 0}
+          <p class="empty">No known keywords yet.</p>
+        {:else}
+          <div class="keyword-list">
+            {#each knownKeywords as key (key)}
             {#if NUMERIC_KEYWORDS.has(key)}
               <div class="keyword-chip numeric">
                 <img
@@ -294,7 +300,8 @@
               </button>
             {/if}
           {/each}
-        </div>
+          </div>
+        {/if}
       </section>
     {/if}
 
@@ -522,6 +529,13 @@
     text-transform: uppercase;
     color: #a89880;
     text-align: center;
+  }
+
+  .empty {
+    margin: 0;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #a89880;
   }
 
   .keyword-list {

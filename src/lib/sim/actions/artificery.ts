@@ -2,7 +2,7 @@ import { CardColor, type UnitCardTemplate, type UnitKeywords, type UnitType } fr
 import { gs } from '@/lib/_state';
 import { getRandomFromArray } from '@/lib/_utils/random';
 import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
-import { createUnitCard } from '../cards/creation';
+import { buildUnitCard } from '../cards/creation';
 import { filterFlavorTemplates } from '../cards/flavor-filters';
 import { loadFlavorTemplates } from '../cards/flavor-templates';
 import { narrateCardConjured } from '../narration';
@@ -17,17 +17,36 @@ export interface CardCreationParameters {
 }
 
 export function createUnit(parameters: CardCreationParameters): string {
-  // limit card colors to known ones in crafting skills
-  if (!parameters.colors?.length && gs.player.cardCrafting.colors) {
-    parameters.colors = Object.keys(gs.player.cardCrafting.colors).map(
-      (color) => color as CardColor
-    );
-  }
-  const template = getUnitTemplate(parameters);
+  const prunedParams = limitParametersToSkills(parameters);
+  const template = getUnitTemplate(prunedParams);
   const learnt = learnUnitCard(template);
   const text = learnt ? `You created ${template.name}. ${learnt}` : `You created ${template.name}`;
   narrateCardConjured(template.id, text);
   return '';
+}
+
+function limitParametersToSkills(parameters: CardCreationParameters): CardCreationParameters {
+  const knownColors = gs.player.cardCrafting.colors;
+  const knownKeywords = gs.player.cardCrafting.keywords;
+
+  let colors = parameters.colors?.filter((color) => knownColors?.[color]);
+  if (!colors?.length) {
+    colors = knownColors ? Object.keys(knownColors).map((color) => color as CardColor) : undefined;
+  }
+
+  let keywords = parameters.keywords;
+  if (keywords) {
+    const pruned = Object.fromEntries(
+      Object.entries(keywords).filter(([key]) => knownKeywords?.[key as keyof UnitKeywords])
+    ) as UnitKeywords;
+    keywords = Object.keys(pruned).length ? pruned : undefined;
+  }
+
+  return {
+    ...parameters,
+    colors,
+    keywords,
+  };
 }
 
 function learnUnitCard(template: UnitCardTemplate): string {
@@ -79,15 +98,15 @@ function getUnitTemplate(parameters: CardCreationParameters): UnitCardTemplate {
   const flavorTemplates = loadFlavorTemplates();
 
   // 1. create card template based on parameters (randomize rest)
-  const cardBase = createUnitCard(parameters);
+  const cardBase = buildUnitCard(parameters);
   // 2. get budget for card
   const budget = getCardBudget(cardBase);
-  // 3. define mana cost based on budget
-  const { cost, colors, extraHealth } = getCostFromBudget(
-    budget,
-    cardBase.colors.map((entry) => entry.color)
-  );
+  console.log('budget', budget);
 
+  // 3. define mana cost based on budget
+  const { cost, extraHealth } = getCostFromBudget(budget);
+  console.log('cost', cost, extraHealth);
+  const colors = cardBase.colors.map((entry) => ({ color: entry.color, count: 1 }));
   const conjured: Omit<UnitCardTemplate, 'id' | 'name' | 'imageFileName'> = {
     ...cardBase,
     cost,

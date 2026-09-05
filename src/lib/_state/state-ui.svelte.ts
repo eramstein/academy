@@ -3,6 +3,10 @@ import { UiView, type UiState } from '@/lib/_model';
 export const defaultUiState: UiState = {
   currentView: UiView.Scene,
   navigationVisible: false,
+  sim: {
+    dataTab: 'scene',
+    selectedCharacterKey: null,
+  },
   battle: {
     selectedUnit: null,
     validTargets: null,
@@ -84,4 +88,13 @@ export function showToast(
 
 export function hideToast() {
   uiState.toast.visible = false;
+}
+
+export function selectSimCharacter(characterKey: string) {
+  uiState.sim.dataTab = 'scene';
+  uiState.sim.selectedCharacterKey = characterKey;
+}
+
+export function clearSelectedSimCharacter() {
+  uiState.sim.selectedCharacterKey = null;
 }

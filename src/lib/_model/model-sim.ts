@@ -109,9 +109,16 @@ export interface Narration {
   id: string;
   text: string;
   type: NarrationType;
+  mentions?: Mentions;
   attributeCheck?: AttributeCheck;
   cardIds?: string[];
   cardTemplates?: CardTemplate[];
+}
+
+// First string is the word appearing in the text, second is id
+export interface Mentions {
+  keywords: string[][];
+  characters: string[][];
 }
 
 export interface ScheduledActivity {

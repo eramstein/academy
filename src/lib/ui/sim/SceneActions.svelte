@@ -5,12 +5,14 @@
   import { performAction } from '@/lib/sim/actions';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
   import Enchantment from './Enchantment.svelte';
+  import Invoke from './Invoke.svelte';
 
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
 
   let pendingAction = $state<Action | null>(null);
   let enchantAction = $state<Action | null>(null);
+  let invokeAction = $state<Action | null>(null);
 
   const parameterPrompts: Record<string, string> = {
     characterKey: 'Who?',
@@ -114,6 +116,10 @@
       enchantAction = next;
       return;
     }
+    if (next.actionType === ActionType.Invoke) {
+      invokeAction = next;
+      return;
+    }
     commitAction(next);
   }
 
@@ -129,6 +135,9 @@
 
 {#if enchantAction}
   <Enchantment action={enchantAction} onDone={() => (enchantAction = null)} />
+{/if}
+{#if invokeAction}
+  <Invoke action={invokeAction} onDone={() => (invokeAction = null)} />
 {/if}
 
 <div class="actions">

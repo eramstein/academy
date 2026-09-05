@@ -1,14 +1,29 @@
-import { CardColor, CardType, UnitType, type UnitCardTemplate, type UnitKeywords } from "@/lib/_model";
-import { getRandomFromArray, getRandomFromObjectWeights, getRandomInteger, getRandomWeighted } from "@/lib/_utils/random";
-import type { CardCreationParameters } from "../actions";
-import { colorPie, type StatsPreference } from "./color-pie";
-import { KEYWORD_KEYS, NUMERIC_KEYWORDS, keywordConfig } from "./keywords";
+import {
+  CardColor,
+  CardType,
+  UnitType,
+  type UnitCardTemplate,
+  type UnitKeywords,
+} from '@/lib/_model';
+import {
+  getRandomFromArray,
+  getRandomFromObjectWeights,
+  getRandomInteger,
+  getRandomWeighted,
+} from '@/lib/_utils/random';
+import type { CardCreationParameters } from '../actions';
+import { colorPie, type StatsPreference } from './color-pie';
+import { KEYWORD_KEYS, NUMERIC_KEYWORDS, keywordConfig } from './keywords';
 
-type UnitIdentityKeys = "id" | "cost" | "name" | "imageFileName";
+type UnitIdentityKeys = 'id' | 'cost' | 'name' | 'imageFileName';
 export type PartialConjuredUnit = Omit<UnitCardTemplate, UnitIdentityKeys>;
 
-export function createUnitCard(parameters: CardCreationParameters): PartialConjuredUnit {
+export function buildUnitCard(parameters: CardCreationParameters): PartialConjuredUnit {
   const card = getRandomUnitCardTemplate(parameters.colors);
+  if (isInvocation(parameters)) {
+    card.keywords = {};
+    card.abilities = [];
+  }
   if (parameters.keywords) {
     card.keywords = parameters.keywords;
   }
@@ -24,13 +39,16 @@ export function createUnitCard(parameters: CardCreationParameters): PartialConju
   return card;
 }
 
+// if there is more than just color, it is an invocation, else it's a conjuration
+function isInvocation(parameters: CardCreationParameters): boolean {
+  return !!(Object.keys(parameters).length > 1);
+}
+
 function getRandomUnitCardTemplate(colors?: CardColor[]): PartialConjuredUnit {
   const cardColors = colors?.length
     ? colors.map((color) => ({ color, count: 1 }))
     : [{ color: getRandomFromArray(Object.values(CardColor)), count: 1 }];
-  const { power, maxHealth, retaliate } = randomCombatStats(
-    cardColors.map((entry) => entry.color)
-  );
+  const { power, maxHealth, retaliate } = randomCombatStats(cardColors.map((entry) => entry.color));
   const keywords: UnitKeywords = {};
   if (retaliate > 0) {
     keywords.retaliate = retaliate;

@@ -19,3 +19,11 @@ export const KEYWORD_TOOLTIPS = {
   immobile: 'Immobile: Cannot move.',
   armorPiercing: 'Armor Piercing: Ignores armor.',
 };
+
+export function getKeywordTooltip(key: string, value = 1): string {
+  const tooltip = KEYWORD_TOOLTIPS[key as keyof typeof KEYWORD_TOOLTIPS];
+  if (typeof tooltip === 'function') {
+    return tooltip(value);
+  }
+  return tooltip ?? key;
+}

@@ -1,13 +1,54 @@
 import type { CardTemplate } from '../_model';
 import { NarrationType } from '../_model/enums-sim';
-import type { AttributeCheck } from '../_model/model-sim';
+import type { AttributeCheck, Mentions, Narration } from '../_model/model-sim';
 import { gs } from '../_state';
+import { KEYWORD_KEYS } from './cards/keywords';
+
+export function narrate(narration: Narration) {
+  const expandedNarration = {
+    ...narration,
+    mentions: narration.mentions ?? findMentions(narration.text),
+  };
+  gs.scene.narration.push(expandedNarration);
+}
+
+function findMentions(text: string): Mentions {
+  const mentions: Mentions = { keywords: [], characters: [] };
+  let remaining = text;
+
+  const candidates: { type: keyof Mentions; word: string; id: string }[] = [
+    ...Object.values(gs.characters).map((character) => ({
+      type: 'characters' as const,
+      word: character.name,
+      id: character.key,
+    })),
+    ...KEYWORD_KEYS.map((key) => ({
+      type: 'keywords' as const,
+      word: key.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase(),
+      id: key,
+    })),
+  ].sort((a, b) => b.word.length - a.word.length);
+
+  for (const { type, word, id } of candidates) {
+    const match = remaining.match(new RegExp(`\\b${escapeRegExp(word)}\\b`, 'i'));
+    if (match) {
+      mentions[type].push([match[0], id]);
+      remaining = remaining.replace(match[0], ' '.repeat(match[0].length));
+    }
+  }
+
+  return mentions;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
   gs.scene.narration = gs.scene.narration.filter(
     (narration) => narration.type !== NarrationType.AttributeCheck
   );
-  gs.scene.narration.push({
+  narrate({
     id: crypto.randomUUID(),
     text: `You roll a ${attributeCheck.roll} on a ${attributeCheck.difficulty} difficulty check for ${attributeCheck.attribute}.`,
     type: NarrationType.AttributeCheck,
@@ -16,7 +57,7 @@ export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
 }
 
 export function narrateText(text: string) {
-  gs.scene.narration.push({
+  narrate({
     id: crypto.randomUUID(),
     text,
     type: NarrationType.Text,
@@ -24,7 +65,7 @@ export function narrateText(text: string) {
 }
 
 export function narrateCardConjured(cardId: string, text: string) {
-  gs.scene.narration.push({
+  narrate({
     id: crypto.randomUUID(),
     text,
     type: NarrationType.ConjuredCard,
@@ -33,7 +74,7 @@ export function narrateCardConjured(cardId: string, text: string) {
 }
 
 export function narrateCardEncanted(oldCard: CardTemplate, newCard: CardTemplate, text: string) {
-  gs.scene.narration.push({
+  narrate({
     id: crypto.randomUUID(),
     text,
     type: NarrationType.ConjuredCard,

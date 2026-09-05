@@ -11,9 +11,15 @@ import type {
   UnitDeployed,
 } from './model-battle';
 
+export type SimDataTab = 'scene' | 'player' | 'schedule' | 'places' | 'collection' | 'decks' | 'league';
+
 export type UiState = {
   currentView: UiView;
   navigationVisible: boolean;
+  sim: {
+    dataTab: SimDataTab;
+    selectedCharacterKey: string | null;
+  };
   battle: {
     selectedUnit: UnitDeployed | null;
     validTargets: {

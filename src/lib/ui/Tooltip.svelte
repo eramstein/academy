@@ -80,9 +80,7 @@
   });
 </script>
 
-<div bind:this={referenceElement} class="tooltip-reference">
-  {@render children?.()}
-</div>
+<div bind:this={referenceElement} class="tooltip-reference">{@render children?.()}</div>
 
 <style>
   .tooltip-reference {

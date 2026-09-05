@@ -1,36 +1,51 @@
 <script lang="ts">
   import type { Character as CharacterModel } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
+  import {
+    clearSelectedSimCharacter,
+    selectSimCharacter,
+    uiState,
+  } from '@/lib/_state/state-ui.svelte';
+  import { getCharactersAtScene } from '@/lib/sim/characters';
   import Character from '../Character.svelte';
   import CharacterPortrait from '../characters/CharacterPortrait.svelte';
   import Location from '../Location.svelte';
+  import Player from './Player.svelte';
 
-  let selectedCharacter: CharacterModel | null = $state(null);
-
-  const presentCharacters = $derived(
-    Object.values(gs.characters).filter((c) => c.placeKey === gs.player.placeKey),
+  const presentCharacters = $derived([gs.player, ...getCharactersAtScene()]);
+  const selectedCharacter = $derived(
+    uiState.sim.selectedCharacterKey === gs.player.key
+      ? gs.player
+      : uiState.sim.selectedCharacterKey
+        ? (gs.characters[uiState.sim.selectedCharacterKey] ?? null)
+        : null,
   );
+  const playerSelected = $derived(selectedCharacter?.key === gs.player.key);
 
   $effect(() => {
-    const key = selectedCharacter?.key;
+    const key = uiState.sim.selectedCharacterKey;
     if (!key) return;
-    if (!presentCharacters.some((c) => c.key === key)) {
-      selectedCharacter = null;
+    if (key !== gs.player.key && !gs.characters[key]) {
+      uiState.sim.selectedCharacterKey = null;
     }
   });
 
   function selectCharacter(character: CharacterModel) {
-    selectedCharacter = character;
+    selectSimCharacter(character.key);
   }
 
   function clearSelection() {
-    selectedCharacter = null;
+    clearSelectedSimCharacter();
   }
 </script>
 
 <div class="scene-data">
   <div class="top-panel">
-    {#if selectedCharacter}
+    {#if playerSelected}
+      <div class="player-view">
+        <Player />
+      </div>
+    {:else if selectedCharacter}
       <Character character={selectedCharacter} />
     {:else}
       <Location />
@@ -71,6 +86,14 @@
     flex: 1 1 60%;
     min-height: 0;
     overflow: hidden;
+  }
+
+  .player-view {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 1rem 0.85rem;
+    box-sizing: border-box;
   }
 
   .bottom-panel {

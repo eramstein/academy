@@ -6,8 +6,8 @@
   import { NarrationType } from '@/lib/_model/enums-sim';
   import type { CardTemplate, Narration } from '@/lib/_model';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
-  import TypedText from './TypedText.svelte';
   import AttributeCheckEntry from './AttributeCheckEntry.svelte';
+  import NarrationText from './NarrationText.svelte';
   import SceneActions from './SceneActions.svelte';
 
   const narration = $derived(gs.scene.narration);
@@ -226,16 +226,14 @@
   {@const inDeck = cardsInFirstDeck(entry)}
   {@const canAddToDeck =
     entry.type === NarrationType.ConjuredCard && !!firstDeck() && cards.length > 0 && !inDeck}
-  {#if animate}
-    <TypedText
-      class="narration"
-      text={entry.text}
-      onProgress={() => scrollPageToBottom('auto')}
-      onDone={() => onTextDone(entry)}
-    />
-  {:else}
-    <p class="narration">{entry.text}</p>
-  {/if}
+  <NarrationText
+    class="narration"
+    text={entry.text}
+    mentions={entry.mentions}
+    animate={animate}
+    onProgress={() => scrollPageToBottom('auto')}
+    onDone={() => onTextDone(entry)}
+  />
   {#if entry.cardTemplates?.length}
     <div class="narration-cards">
       {#each entry.cardTemplates as card, i (`${card.id}-${i}`)}
@@ -366,7 +364,6 @@
     background: rgba(90, 75, 60, 0.65);
   }
 
-  .narration,
   .page :global(.narration) {
     margin: 0 0 1.25em;
   }

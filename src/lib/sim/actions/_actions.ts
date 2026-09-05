@@ -86,4 +86,5 @@ const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => s
   [ActionType.StartMatch]: (parameters) => startMatch(parameters as StartMatchParameters),
   [ActionType.Augment]: (parameters) => augmentUnit(parameters as AugmentParameters),
   [ActionType.Conjure]: (parameters) => createUnit(parameters as CardCreationParameters),
+  [ActionType.Invoke]: (parameters) => createUnit(parameters as CardCreationParameters),
 };
