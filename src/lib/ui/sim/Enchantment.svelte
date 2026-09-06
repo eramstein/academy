@@ -30,7 +30,7 @@
   const availableCards = $derived(cardsFromAction(action));
   const canChangeCard = $derived(availableCards.length > 1);
   const knownKeywords = $derived(
-    KEYWORD_KEYS.filter((key) => !!gs.player.cardCrafting.keywords?.[key])
+    KEYWORD_KEYS.filter((key) => !!gs.player.craftingKnowledge.keywords?.[key])
   );
 
   const parameters = $derived.by((): AugmentParameters | null => {
@@ -249,57 +249,57 @@
         {:else}
           <div class="keyword-list">
             {#each knownKeywords as key (key)}
-            {#if NUMERIC_KEYWORDS.has(key)}
-              <div class="keyword-chip numeric">
-                <img
-                  class="keyword-icon"
-                  src="/assets/images/keywords/{key}.png"
-                  alt=""
-                  aria-hidden="true"
-                />
-                <span class="keyword-name">{formatKeyword(key)}</span>
+              {#if NUMERIC_KEYWORDS.has(key)}
+                <div class="keyword-chip numeric">
+                  <img
+                    class="keyword-icon"
+                    src="/assets/images/keywords/{key}.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <span class="keyword-name">{formatKeyword(key)}</span>
+                  <button
+                    type="button"
+                    class="step-btn"
+                    disabled={(keywords[key] ?? 0) <= 0}
+                    onclick={() => setKeyword(key, (keywords[key] ?? 0) - 1)}
+                  >
+                    −
+                  </button>
+                  <span class="step-value">{keywords[key] ?? 0}</span>
+                  <button
+                    type="button"
+                    class="step-btn"
+                    disabled={!canIncKeyword(key)}
+                    onclick={() => setKeyword(key, (keywords[key] ?? 0) + 1)}
+                  >
+                    +
+                  </button>
+                </div>
+              {:else}
+                {@const owned = hasBooleanKeyword(key)}
+                {@const selected = !!keywords[key]}
                 <button
                   type="button"
-                  class="step-btn"
-                  disabled={(keywords[key] ?? 0) <= 0}
-                  onclick={() => setKeyword(key, (keywords[key] ?? 0) - 1)}
+                  class="keyword-chip"
+                  class:selected
+                  class:owned
+                  disabled={owned || (!selected && !canIncKeyword(key))}
+                  onclick={() => toggleKeyword(key)}
                 >
-                  −
+                  <img
+                    class="keyword-icon"
+                    src="/assets/images/keywords/{key}.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <span class="keyword-name">{formatKeyword(key)}</span>
+                  {#if owned}
+                    <span class="owned-label">has</span>
+                  {/if}
                 </button>
-                <span class="step-value">{keywords[key] ?? 0}</span>
-                <button
-                  type="button"
-                  class="step-btn"
-                  disabled={!canIncKeyword(key)}
-                  onclick={() => setKeyword(key, (keywords[key] ?? 0) + 1)}
-                >
-                  +
-                </button>
-              </div>
-            {:else}
-              {@const owned = hasBooleanKeyword(key)}
-              {@const selected = !!keywords[key]}
-              <button
-                type="button"
-                class="keyword-chip"
-                class:selected
-                class:owned
-                disabled={owned || (!selected && !canIncKeyword(key))}
-                onclick={() => toggleKeyword(key)}
-              >
-                <img
-                  class="keyword-icon"
-                  src="/assets/images/keywords/{key}.png"
-                  alt=""
-                  aria-hidden="true"
-                />
-                <span class="keyword-name">{formatKeyword(key)}</span>
-                {#if owned}
-                  <span class="owned-label">has</span>
-                {/if}
-              </button>
-            {/if}
-          {/each}
+              {/if}
+            {/each}
           </div>
         {/if}
       </section>

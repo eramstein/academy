@@ -1,4 +1,10 @@
-import { CardColor, type UnitCardTemplate, type UnitKeywords, type UnitType } from '@/lib/_model';
+import {
+  CardColor,
+  ResourceType,
+  type UnitCardTemplate,
+  type UnitKeywords,
+  type UnitType,
+} from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getRandomFromArray } from '@/lib/_utils/random';
 import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
@@ -6,6 +12,7 @@ import { buildUnitCard } from '../cards/creation';
 import { filterFlavorTemplates } from '../cards/flavor-filters';
 import { loadFlavorTemplates } from '../cards/flavor-templates';
 import { narrateCardConjured } from '../narration';
+import { spendResources } from '../resources';
 
 export interface CardCreationParameters {
   colors?: CardColor[];
@@ -14,9 +21,16 @@ export interface CardCreationParameters {
   hp?: number;
   keywords?: UnitKeywords;
   unitTypes?: UnitType[];
+  resources: { type: ResourceType; count: number }[];
 }
 
 export function createUnit(parameters: CardCreationParameters): string {
+  if (!parameters.resources) {
+    parameters.resources = [];
+  }
+  if (!spendResources(parameters.resources)) {
+    return 'You do not have enough resources to create this unit. You need to collect more resources.';
+  }
   const prunedParams = limitParametersToSkills(parameters);
   const template = getUnitTemplate(prunedParams);
   const learnt = learnUnitCard(template);
@@ -26,8 +40,8 @@ export function createUnit(parameters: CardCreationParameters): string {
 }
 
 function limitParametersToSkills(parameters: CardCreationParameters): CardCreationParameters {
-  const knownColors = gs.player.cardCrafting.colors;
-  const knownKeywords = gs.player.cardCrafting.keywords;
+  const knownColors = gs.player.craftingKnowledge.colors;
+  const knownKeywords = gs.player.craftingKnowledge.keywords;
 
   let colors = parameters.colors?.filter((color) => knownColors?.[color]);
   if (!colors?.length) {
@@ -54,10 +68,10 @@ function learnUnitCard(template: UnitCardTemplate): string {
   const improvedKeywords: string[] = [];
   // add card's keywords to player's known keywords
   if (template.keywords) {
-    if (!gs.player.cardCrafting.keywords) {
-      gs.player.cardCrafting.keywords = {};
+    if (!gs.player.craftingKnowledge.keywords) {
+      gs.player.craftingKnowledge.keywords = {};
     }
-    const known = gs.player.cardCrafting.keywords;
+    const known = gs.player.craftingKnowledge.keywords;
     for (const keyword of Object.keys(template.keywords) as (keyof UnitKeywords)[]) {
       const name = formatKeywordName(keyword);
       if (known[keyword] === undefined) {
@@ -101,11 +115,8 @@ function getUnitTemplate(parameters: CardCreationParameters): UnitCardTemplate {
   const cardBase = buildUnitCard(parameters);
   // 2. get budget for card
   const budget = getCardBudget(cardBase);
-  console.log('budget', budget);
-
   // 3. define mana cost based on budget
   const { cost, extraHealth } = getCostFromBudget(budget);
-  console.log('cost', cost, extraHealth);
   const colors = cardBase.colors.map((entry) => ({ color: entry.color, count: 1 }));
   const conjured: Omit<UnitCardTemplate, 'id' | 'name' | 'imageFileName'> = {
     ...cardBase,

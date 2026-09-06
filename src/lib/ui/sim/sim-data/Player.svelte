@@ -3,6 +3,7 @@
     CardColor,
     isLandCard,
     type Attributes,
+    type CardCraftingSkills,
     type UnitKeywords,
   } from '@/lib/_model';
   import { ResourceType, SubscriptionType } from '@/lib/_model/enums-sim';
@@ -16,6 +17,11 @@
     'vitality',
     'charisma',
     'aura',
+  ];
+  const CRAFTING_SKILL_ORDER: (keyof CardCraftingSkills)[] = [
+    'mastery',
+    'efficiency',
+    'inspiration',
   ];
 
   let portraitFailed = $state(false);
@@ -35,39 +41,46 @@
       key,
       value: player.attributes[key],
       pct: Math.min(100, Math.max(0, (player.attributes[key] / ATTR_MAX) * 100)),
-    })),
+    }))
   );
 
   const focusPct = $derived(
-    player.maxFocus > 0 ? Math.min(100, Math.max(0, (player.focus / player.maxFocus) * 100)) : 0,
+    player.maxFocus > 0 ? Math.min(100, Math.max(0, (player.focus / player.maxFocus) * 100)) : 0
   );
 
   const subscriptions = $derived(
     Object.values(SubscriptionType).map((type) => ({
       type,
       days: player.subscriptions[type] ?? 0,
-    })),
+    }))
   );
 
   const resources = $derived(
     Object.values(ResourceType).map((type) => ({
       type,
       amount: player.resources[type] ?? 0,
-    })),
+    }))
+  );
+
+  const craftingSkills = $derived(
+    CRAFTING_SKILL_ORDER.map((key) => ({
+      key,
+      value: player.craftingSkills?.[key] ?? 0,
+    }))
   );
 
   const craftingColors = $derived(
-    Object.entries(player.cardCrafting.colors ?? {}).map(([color, level]) => ({
+    Object.entries(player.craftingKnowledge.colors ?? {}).map(([color, level]) => ({
       color: color as CardColor,
       level,
-    })),
+    }))
   );
 
   const craftingKeywords = $derived(
-    Object.entries(player.cardCrafting.keywords ?? {}).map(([keyword, level]) => ({
+    Object.entries(player.craftingKnowledge.keywords ?? {}).map(([keyword, level]) => ({
       keyword: keyword as keyof UnitKeywords,
       level,
-    })),
+    }))
   );
 
   const collectionCount = $derived(player.collection.length);
@@ -172,36 +185,40 @@
 
   <section class="section">
     <h3 class="section-title">Card Crafting</h3>
-    {#if craftingColors.length === 0 && craftingKeywords.length === 0}
-      <p class="empty">No crafting skills yet.</p>
-    {:else}
-      {#if craftingColors.length > 0}
-        <h4 class="subsection-title">Colors</h4>
-        <ul class="chip-list">
-          {#each craftingColors as { color, level } (color)}
-            <li class="chip">
-              <div
-                class="color-indicator"
-                style="background-image: url('{colorPath(color)}')"
-                title={color}
-              ></div>
-              <span class="chip-name">{color}</span>
-              <span class="chip-level">{level}</span>
-            </li>
-          {/each}
-        </ul>
-      {/if}
-      {#if craftingKeywords.length > 0}
-        <h4 class="subsection-title">Keywords</h4>
-        <ul class="kv-list">
-          {#each craftingKeywords as { keyword, level } (keyword)}
-            <li class="kv-row">
-              <span class="kv-name keyword">{formatKeyword(keyword)}</span>
-              <span class="kv-value">{level}</span>
-            </li>
-          {/each}
-        </ul>
-      {/if}
+    <ul class="kv-list">
+      {#each craftingSkills as skill (skill.key)}
+        <li class="kv-row">
+          <span class="kv-name">{skill.key}</span>
+          <span class="kv-value">{skill.value}</span>
+        </li>
+      {/each}
+    </ul>
+    {#if craftingColors.length > 0}
+      <h4 class="subsection-title">Colors</h4>
+      <ul class="chip-list">
+        {#each craftingColors as { color, level } (color)}
+          <li class="chip">
+            <div
+              class="color-indicator"
+              style="background-image: url('{colorPath(color)}')"
+              title={color}
+            ></div>
+            <span class="chip-name">{color}</span>
+            <span class="chip-level">{level}</span>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+    {#if craftingKeywords.length > 0}
+      <h4 class="subsection-title">Keywords</h4>
+      <ul class="kv-list">
+        {#each craftingKeywords as { keyword, level } (keyword)}
+          <li class="kv-row">
+            <span class="kv-name keyword">{formatKeyword(keyword)}</span>
+            <span class="kv-value">{level}</span>
+          </li>
+        {/each}
+      </ul>
     {/if}
   </section>
 

@@ -42,10 +42,15 @@ export const defaultGameState: GameState = {
       library: 0,
       inn: 0,
     },
-    cardCrafting: {
+    craftingKnowledge: {
       keywords: {
         retaliate: 1,
       },
+    },
+    craftingSkills: {
+      mastery: 0,
+      efficiency: 0,
+      inspiration: 0,
     },
   },
   places: {

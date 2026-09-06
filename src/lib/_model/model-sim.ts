@@ -166,7 +166,8 @@ export interface Character {
 export interface Player extends Character {
   maxFocus: number;
   focus: number;
-  cardCrafting: CardCraftingSkills;
+  craftingKnowledge: CardKnowledge;
+  craftingSkills: CardCraftingSkills;
   resources: Record<ResourceType, number>;
 }
 
@@ -204,7 +205,13 @@ export interface Attributes {
   aura: number;
 }
 
-export interface CardCraftingSkills {
+export interface CardKnowledge {
   colors?: Partial<Record<CardColor, number>>;
   keywords?: Partial<Record<keyof UnitKeywords, number>>;
+}
+
+export interface CardCraftingSkills {
+  mastery: number;
+  efficiency: number;
+  inspiration: number;
 }

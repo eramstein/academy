@@ -1,6 +1,12 @@
 <script lang="ts">
   import { gs } from '@/lib/_state/main.svelte';
+  import {
+    clearSelectedSimPlace,
+    selectSimPlace,
+    uiState,
+  } from '@/lib/_state/state-ui.svelte';
   import { getPlaceImagePath } from '@/lib/_utils/asset-paths';
+  import Place from '../Place.svelte';
 
   const regionsWithPlaces = $derived(
     Object.values(gs.regions).map((region) => ({
@@ -8,30 +14,80 @@
       places: Object.values(gs.places).filter((place) => place.regionKey === region.key),
     })),
   );
+
+  const selectedPlace = $derived(
+    uiState.sim.selectedPlaceKey ? (gs.places[uiState.sim.selectedPlaceKey] ?? null) : null,
+  );
+
+  $effect(() => {
+    const key = uiState.sim.selectedPlaceKey;
+    if (!key) return;
+    if (!gs.places[key]) {
+      uiState.sim.selectedPlaceKey = null;
+    }
+  });
 </script>
 
-<div class="places">
-  {#each regionsWithPlaces as { region, places } (region.key)}
-    <section class="region">
-      <h3 class="region-title">{region.name}</h3>
-      <p class="region-description">{region.description}</p>
+{#if selectedPlace}
+  <div class="place-view">
+    <button type="button" class="back-btn" onclick={clearSelectedSimPlace}>Back</button>
+    <Place place={selectedPlace} />
+  </div>
+{:else}
+  <div class="places">
+    {#each regionsWithPlaces as { region, places } (region.key)}
+      <section class="region">
+        <h3 class="region-title">{region.name}</h3>
+        <p class="region-description">{region.description}</p>
 
-      <ul class="place-list">
-        {#each places as place (place.key)}
-          <li class="place-item">
-            <div class="place-image" style="--bg-image: url('{getPlaceImagePath(place.key)}')"></div>
-            <div class="place-info">
-              <h4 class="place-name">{place.name}</h4>
-              <p class="place-description">{place.description}</p>
-            </div>
-          </li>
-        {/each}
-      </ul>
-    </section>
-  {/each}
-</div>
+        <ul class="place-list">
+          {#each places as place (place.key)}
+            <li>
+              <button type="button" class="place-item" onclick={() => selectSimPlace(place.key)}>
+                <div
+                  class="place-image"
+                  style="--bg-image: url('{getPlaceImagePath(place.key)}')"
+                ></div>
+                <div class="place-info">
+                  <h4 class="place-name">{place.name}</h4>
+                  <p class="place-description">{place.description}</p>
+                </div>
+              </button>
+            </li>
+          {/each}
+        </ul>
+      </section>
+    {/each}
+  </div>
+{/if}
 
 <style>
+  .place-view {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .back-btn {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 1;
+    padding: 0.5rem 0.9rem;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: #cccccc;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .back-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+  }
+
   .places {
     display: flex;
     flex-direction: column;
@@ -75,6 +131,21 @@
     display: flex;
     gap: 0.75rem;
     min-width: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0.35rem;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .place-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
   .place-image {

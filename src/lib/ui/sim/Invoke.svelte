@@ -18,7 +18,7 @@
 
   function resolveAvailableColors(): CardColor[] {
     const known = Object.values(CardColor).filter(
-      (color) => !!gs.player.cardCrafting.colors?.[color]
+      (color) => !!gs.player.craftingKnowledge.colors?.[color]
     );
     return known.length ? known : Object.values(CardColor);
   }
@@ -40,7 +40,7 @@
   const availableColors = $derived(resolveAvailableColors());
 
   const knownKeywords = $derived(
-    KEYWORD_KEYS.filter((key) => !!gs.player.cardCrafting.keywords?.[key])
+    KEYWORD_KEYS.filter((key) => !!gs.player.craftingKnowledge.keywords?.[key])
   );
   const availableKeywords = $derived(knownKeywords.length ? knownKeywords : KEYWORD_KEYS);
 
@@ -218,8 +218,7 @@
             class:on={value > 0}
             title={getKeywordTooltip(key, value || 1)}
             onclick={(event) => adjustFromClick(event, (delta) => adjustKeyword(key, delta))}
-            oncontextmenu={(event) =>
-              adjustFromClick(event, (delta) => adjustKeyword(key, delta))}
+            oncontextmenu={(event) => adjustFromClick(event, (delta) => adjustKeyword(key, delta))}
           >
             <img
               class="icon"

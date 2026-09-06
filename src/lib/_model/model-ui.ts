@@ -19,6 +19,7 @@ export type UiState = {
   sim: {
     dataTab: SimDataTab;
     selectedCharacterKey: string | null;
+    selectedPlaceKey: string | null;
   };
   battle: {
     selectedUnit: UnitDeployed | null;

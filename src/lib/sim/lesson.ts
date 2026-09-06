@@ -36,8 +36,8 @@ export function getLessonActions(): Action[] {
 
   if (
     currentActivity.classType === ClassType.Artificery &&
-    gs.player.cardCrafting.keywords &&
-    Object.keys(gs.player.cardCrafting.keywords).length > 1
+    gs.player.craftingKnowledge.keywords &&
+    Object.keys(gs.player.craftingKnowledge.keywords).length > 1
   ) {
     lessons.push({
       label: 'Invoke',

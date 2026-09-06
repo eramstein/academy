@@ -21,6 +21,9 @@
   ];
 
   const selected = $derived(uiState.sim.dataTab);
+  const flush = $derived(
+    selected === 'scene' || (selected === 'places' && uiState.sim.selectedPlaceKey !== null),
+  );
 </script>
 
 <div class="sim-data">
@@ -40,7 +43,7 @@
     <TimeDisplay />
   </nav>
 
-  <div class="content" class:flush={selected === 'scene'}>
+  <div class="content" class:flush>
     {#if selected === 'scene'}
       <SceneData />
     {:else if selected === 'player'}

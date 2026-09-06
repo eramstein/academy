@@ -18,7 +18,7 @@
       ? gs.player
       : uiState.sim.selectedCharacterKey
         ? (gs.characters[uiState.sim.selectedCharacterKey] ?? null)
-        : null,
+        : null
   );
   const playerSelected = $derived(selectedCharacter?.key === gs.player.key);
 
@@ -64,7 +64,7 @@
           class:selected={selectedCharacter?.key === character.key}
           onclick={() => selectCharacter(character)}
         >
-          <CharacterPortrait {character} />
+          <CharacterPortrait {character} zoom={1.2} />
         </button>
       {/each}
     </div>

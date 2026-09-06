@@ -6,6 +6,7 @@ export const defaultUiState: UiState = {
   sim: {
     dataTab: 'scene',
     selectedCharacterKey: null,
+    selectedPlaceKey: null,
   },
   battle: {
     selectedUnit: null,
@@ -97,4 +98,13 @@ export function selectSimCharacter(characterKey: string) {
 
 export function clearSelectedSimCharacter() {
   uiState.sim.selectedCharacterKey = null;
+}
+
+export function selectSimPlace(placeKey: string) {
+  uiState.sim.dataTab = 'places';
+  uiState.sim.selectedPlaceKey = placeKey;
+}
+
+export function clearSelectedSimPlace() {
+  uiState.sim.selectedPlaceKey = null;
 }
