@@ -48,6 +48,7 @@ export interface BaseCardTemplate {
 export interface UnitCardTemplate extends BaseCardTemplate {
   power: number;
   maxHealth: number;
+  retaliate: number;
   keywords?: UnitKeywords;
   abilities?: Ability[];
   unitTypes?: UnitType[];
@@ -126,7 +127,6 @@ export interface UnitKeywords {
   ranged?: boolean;
   haste?: boolean;
   moveAndAttack?: boolean;
-  retaliate?: number;
   armor?: number;
   resist?: number;
   poisonous?: number;
@@ -142,6 +142,7 @@ export interface UnitKeywords {
 
 export type UnitEndOfTurnEffects = UnitKeywords & {
   power?: number;
+  retaliate?: number;
 };
 
 export interface UnitStatuses {

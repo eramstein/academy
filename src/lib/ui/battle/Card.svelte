@@ -35,6 +35,7 @@
   function isUnitCard(card: Card): card is Card & {
     power: number;
     maxHealth: number;
+    retaliate: number;
     keywords?: any;
     abilities?: any;
     unitTypes?: UnitType[];
@@ -237,7 +238,7 @@
             power={card.power}
             health={card.maxHealth}
             armor={card.keywords?.armor}
-            retaliate={card.keywords?.retaliate}
+            retaliate={card.retaliate}
           />
         {/if}
 

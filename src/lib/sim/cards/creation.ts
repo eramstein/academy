@@ -36,6 +36,9 @@ export function buildUnitCard(parameters: CardCreationParameters): PartialConjur
   if (parameters.hp !== undefined) {
     card.maxHealth = parameters.hp;
   }
+  if (parameters.retaliate !== undefined) {
+    card.retaliate = parameters.retaliate;
+  }
   return card;
 }
 
@@ -49,19 +52,13 @@ function getRandomUnitCardTemplate(colors?: CardColor[]): PartialConjuredUnit {
     ? colors.map((color) => ({ color, count: 1 }))
     : [{ color: getRandomFromArray(Object.values(CardColor)), count: 1 }];
   const { power, maxHealth, retaliate } = randomCombatStats(cardColors.map((entry) => entry.color));
-  const keywords: UnitKeywords = {};
-  if (retaliate > 0) {
-    keywords.retaliate = retaliate;
-  }
   return {
     type: CardType.Unit,
     colors: cardColors,
     power,
     maxHealth,
-    keywords: randomKeywords(
-      cardColors.map((entry) => entry.color),
-      keywords
-    ),
+    retaliate,
+    keywords: randomKeywords(cardColors.map((entry) => entry.color)),
     unitTypes: randomUnitTypes(cardColors.map((entry) => entry.color)),
   };
 }

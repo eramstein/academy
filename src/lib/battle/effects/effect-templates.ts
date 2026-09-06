@@ -204,12 +204,14 @@ export const DataEffectTemplates: Record<
   staticStats: ({
     power,
     maxHealth,
+    retaliate,
     range,
     dynamicValue,
     fromTriggerParam,
   }: {
     power?: number;
     maxHealth?: number;
+    retaliate?: number;
     range?: UnitFilterArgs;
     dynamicValue?: DynamicValue;
     fromTriggerParam?: string;
@@ -222,6 +224,9 @@ export const DataEffectTemplates: Record<
       const effectiveMaxHealth = dynamicValue
         ? DynamicValues[dynamicValue]({ unit, player }) * (maxHealth ?? 0)
         : maxHealth;
+      const effectiveRetaliate = dynamicValue
+        ? DynamicValues[dynamicValue]({ unit, player }) * (retaliate ?? 0)
+        : retaliate;
       const unitsInRange = fromTriggerParam
         ? getUnitFromTriggerParam(triggerParams, fromTriggerParam)
         : getUnitsInRange(targets as UnitDeployed[][], range, sourcePermanent, player);
@@ -233,6 +238,9 @@ export const DataEffectTemplates: Record<
           u.maxHealth += effectiveMaxHealth;
           u.health += effectiveMaxHealth;
         }
+        if (effectiveRetaliate) {
+          u.retaliate += effectiveRetaliate;
+        }
       });
     },
     label: (targets: TargetDefinition[]) => {
@@ -243,7 +251,10 @@ export const DataEffectTemplates: Record<
       const maxHealthLabel = dynamicValue
         ? `[${dynamicValue} ${maxHealth !== 1 ? ' x ' + maxHealth : ''}]`
         : maxHealth;
-      return `Add ${valueLabel ? `power ${valueLabel}` : ''}${maxHealthLabel ? ` health ${maxHealthLabel}` : ''}${targetsLabel}. ${range ? getRangeLabel(range) : ''}`;
+      const retaliateLabel = dynamicValue
+        ? `[${dynamicValue} ${retaliate !== 1 ? ' x ' + retaliate : ''}]`
+        : retaliate;
+      return `Add ${valueLabel ? `power ${valueLabel}` : ''}${maxHealthLabel ? ` health ${maxHealthLabel}` : ''}${retaliateLabel ? ` retaliate ${retaliateLabel}` : ''}${targetsLabel}. ${range ? getRangeLabel(range) : ''}`;
     },
   }),
   staticKeyword: ({

@@ -96,8 +96,8 @@ export function attackUnit(unit: UnitDeployed, target: UnitDeployed) {
       attackedUnit.statuses.poison = (attackedUnit.statuses.poison || 0) + unit.keywords.poisonous;
     }
     const wasDestroyed = damageUnit(attackedUnit, dealtDamage, true);
-    if (!wasDestroyed && attackedUnit.keywords?.retaliate && !unit.keywords?.ranged) {
-      damageUnit(unit, attackedUnit.keywords.retaliate, true);
+    if (!wasDestroyed && attackedUnit.retaliate && !unit.keywords?.ranged) {
+      damageUnit(unit, attackedUnit.retaliate, true);
     }
     if (excessDamage && unit.keywords?.trample) {
       const nextUnit = getClosestBlocker(unit);
@@ -191,7 +191,7 @@ function useRage(unit: UnitDeployed) {
 export function fightUnit(unit1: UnitDeployed, unit2: UnitDeployed) {
   const preventedDamage = (!unit1.keywords?.armorPiercing && unit2.keywords?.armor) || 0;
   const dealtDamage = unit1.power - preventedDamage;
-  const retaliation = unit2.keywords?.retaliate;
+  const retaliation = unit2.retaliate;
   if (retaliation) {
     damageUnit(unit1, retaliation);
   }

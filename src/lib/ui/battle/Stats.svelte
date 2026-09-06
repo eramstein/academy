@@ -5,20 +5,21 @@
     maxHealth,
     armor = 0,
     retaliate = 0,
+    compact = false,
   }: {
     power: number;
     health?: number;
     maxHealth?: number;
     armor?: number;
     retaliate?: number;
+    compact?: boolean;
   } = $props();
 </script>
 
-<div class="stats">
-  <div class="power" class:retaliate-bg={retaliate > 0}>
-    {power}
-  </div>
-  <div class="health" class:armor-bg={armor > 0}>
+<div class="stats" class:compact>
+  <div class="stat power">{power}</div>
+  <div class="stat retaliate">{retaliate}</div>
+  <div class="stat health" class:armor-bg={armor > 0}>
     {health || maxHealth || '0'}
   </div>
 </div>
@@ -31,9 +32,7 @@
     align-items: flex-end;
   }
 
-  .power,
-  .health {
-    background: #000;
+  .stat {
     color: white;
     border-radius: 4px;
     font-weight: bold;
@@ -46,9 +45,22 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    border: 1px solid #bfa14a;
+    border: 1px solid #a8a8a8;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     padding-bottom: 2px;
+  }
+
+  .power {
+    background: url('/assets/images/power-icon.png') center/contain no-repeat rgba(19, 16, 16, 0.8);
+  }
+
+  .retaliate {
+    background: url('/assets/images/retaliate-icon.png') center/contain no-repeat;
+    border: none;
+    box-shadow: none;
+    width: 30px;
+    height: 28px;
+    transform: translateX(3px);
   }
 
   .health {
@@ -65,16 +77,28 @@
     height: 22px;
   }
 
-  .power {
-    background: url('/assets/images/power-icon.png') center/contain no-repeat rgba(19, 16, 16, 0.8);
+  .compact {
+    gap: 1px;
+    align-items: flex-start;
   }
 
-  .power.retaliate-bg {
-    background: url('/assets/images/retaliate-icon.png') center/contain no-repeat;
-    border: none;
-    box-shadow: none;
-    width: 30px;
-    height: 28px;
-    transform: translateX(3px);
+  .compact .stat {
+    width: 22px;
+    height: 20px;
+    font-size: 0.75rem;
+    padding: 2px;
+    padding-bottom: 3px;
+    box-sizing: border-box;
+  }
+
+  .compact .retaliate {
+    width: 28px;
+    height: 26px;
+    transform: translateX(-3px);
+  }
+
+  .compact .health.armor-bg {
+    width: 23px;
+    height: 21px;
   }
 </style>

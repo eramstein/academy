@@ -117,10 +117,11 @@
 
   <div class="stats-container">
     <Stats
+      compact
       power={unit.power}
       health={unit.health}
       armor={unit.keywords?.armor}
-      retaliate={unit.keywords?.retaliate}
+      retaliate={unit.retaliate}
     />
   </div>
 
@@ -225,7 +226,7 @@
 
   .stats-container {
     position: absolute;
-    bottom: 8px;
+    bottom: 4px;
     left: 4px;
     z-index: 2;
   }

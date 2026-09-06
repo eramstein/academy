@@ -43,9 +43,7 @@ export const defaultGameState: GameState = {
       inn: 0,
     },
     craftingKnowledge: {
-      keywords: {
-        retaliate: 1,
-      },
+      keywords: {},
     },
     craftingSkills: {
       mastery: 0,

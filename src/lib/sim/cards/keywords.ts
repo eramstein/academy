@@ -16,7 +16,6 @@ export const keywordConfig: Record<keyof UnitKeywords, { baseCost: number; preva
   ranged: { baseCost: 3, prevalence: 8 },
   haste: { baseCost: 3, prevalence: 3 },
   moveAndAttack: { baseCost: 2, prevalence: 3 },
-  retaliate: { baseCost: 1, prevalence: -Infinity }, // handled with stats preferences
   armor: { baseCost: 3, prevalence: 6 },
   resist: { baseCost: 2, prevalence: 6 },
   poisonous: { baseCost: 3, prevalence: 3 },
@@ -31,7 +30,6 @@ export const keywordConfig: Record<keyof UnitKeywords, { baseCost: number; preva
 };
 
 export const NUMERIC_KEYWORDS = new Set<keyof UnitKeywords>([
-  "retaliate",
   "armor",
   "resist",
   "poisonous",
@@ -42,7 +40,6 @@ export const KEYWORD_KEYS: (keyof UnitKeywords)[] = [
   "ranged",
   "haste",
   "moveAndAttack",
-  "retaliate",
   "armor",
   "resist",
   "poisonous",

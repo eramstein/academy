@@ -124,25 +124,24 @@
         </div>
       {/if}
 
-      <!-- Bottom row: stats on left, keywords on right -->
-      <div class="bottom-row">
-        <!-- Stats display - only for Unit cards -->
-        {#if isUnitCard(card)}
+      {#if isUnitCard(card)}
+        <div class="stats-container">
           <Stats
+            compact
             power={card.power}
             health={card.maxHealth}
             armor={card.keywords?.armor}
-            retaliate={card.keywords?.retaliate}
+            retaliate={card.retaliate}
           />
-        {/if}
+        </div>
+      {/if}
 
-        <!-- Keywords display - only for Unit cards with keywords -->
-        {#if isUnitCard(card) && card.keywords}
-          <div class="keywords-container">
-            <Keywords keywords={card.keywords} />
-          </div>
-        {/if}
-      </div>
+      <!-- Keywords on the right -->
+      {#if isUnitCard(card) && card.keywords}
+        <div class="keywords-container">
+          <Keywords keywords={card.keywords} />
+        </div>
+      {/if}
     </div>
 
     <!-- Spell effect display for SpellCard -->
@@ -187,6 +186,7 @@
     overflow: hidden;
     border-top: none;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    position: relative;
   }
 
   .card:active {
@@ -257,11 +257,15 @@
     width: 100%;
   }
 
-  .bottom-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    width: 100%;
+  .stats-container {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    z-index: 2;
+  }
+
+  .keywords-container {
+    align-self: flex-end;
   }
 
   .abilities-container {

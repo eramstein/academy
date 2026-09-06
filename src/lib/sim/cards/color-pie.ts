@@ -1,5 +1,5 @@
-import { CardColor, UnitType, type CardTemplate, type UnitKeywords } from "@/lib/_model";
-import { getRandomFromArray } from "@/lib/_utils/random";
+import { CardColor, UnitType, type CardTemplate, type UnitKeywords } from '@/lib/_model';
+import { getRandomFromArray } from '@/lib/_utils/random';
 
 export interface StatsPreference {
   power: number;
@@ -16,27 +16,25 @@ export interface ColorPie {
 export const colorPie: Record<CardColor, ColorPie> = {
   [CardColor.Red]: {
     statsPreference: {
-      power: 2,
-      hp: 2,
-      ret: 1,
+      power: 4,
+      hp: 4,
+      ret: 2,
     },
     unitTypes: [UnitType.Dwarf, UnitType.Dragon],
     keywordsPreferences: {
       haste: 9,
       moveAndAttack: 6,
-      retaliate: 3,
       zerk: 3,
     },
   },
   [CardColor.Green]: {
     statsPreference: {
-      power: 1,
-      hp: 2,
-      ret: 0,
+      power: 2,
+      hp: 3,
+      ret: 1,
     },
     unitTypes: [UnitType.Mushroom, UnitType.Plant],
     keywordsPreferences: {
-      retaliate: 2,
       regeneration: 6,
       trample: 6,
       poisonous: 5,
@@ -47,7 +45,7 @@ export const colorPie: Record<CardColor, ColorPie> = {
   [CardColor.Blue]: {
     statsPreference: {
       power: 2,
-      hp: 4,
+      hp: 3,
       ret: 1,
     },
     unitTypes: [UnitType.Construct],
@@ -61,8 +59,8 @@ export const colorPie: Record<CardColor, ColorPie> = {
   },
   [CardColor.Black]: {
     statsPreference: {
-      power: 1,
-      hp: 3,
+      power: 2,
+      hp: 4,
       ret: 2,
     },
     unitTypes: [UnitType.Demon, UnitType.Construct],

@@ -48,6 +48,7 @@ export function makeDeployedUnit(unit: UnitCard, position: Position) {
     ...unit,
     position,
     health: unit.maxHealth,
+    retaliate: unit.retaliate || 0,
     hasAttacked: false,
     hasMoved: false,
     exhausted: !unit.keywords?.haste,

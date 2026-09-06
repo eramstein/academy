@@ -16,6 +16,7 @@ export interface AugmentParameters {
   costIncrease?: number;
   maxHealth?: number;
   power?: number;
+  retaliate?: number;
   keywords?: Partial<Record<keyof UnitKeywords, number>>;
 }
 
@@ -115,7 +116,7 @@ export function augmentUnit(parameters: AugmentParameters): string {
         card.maxHealth++;
         break;
       case 'ret':
-        addKeyword(card, 'retaliate', 1);
+        card.retaliate = (card.retaliate || 0) + 1;
         break;
     }
   }
@@ -144,6 +145,9 @@ function describeAugmentChanges(oldCard: UnitCardTemplate, newCard: UnitCardTemp
   }
   if (oldCard.maxHealth !== newCard.maxHealth) {
     parts.push(`health ${oldCard.maxHealth} → ${newCard.maxHealth}`);
+  }
+  if (oldCard.retaliate !== newCard.retaliate) {
+    parts.push(`retaliate ${oldCard.retaliate} → ${newCard.retaliate}`);
   }
   parts.push(...describeKeywordChanges(oldCard.keywords, newCard.keywords));
 
@@ -224,6 +228,7 @@ function makeNewCardTemplate(
   target.cost += parameters.costIncrease ?? 0;
   target.maxHealth += parameters.maxHealth ?? 0;
   target.power += parameters.power ?? 0;
+  target.retaliate = (target.retaliate || 0) + (parameters.retaliate ?? 0);
 
   if (parameters.keywords) {
     for (const [keyword, value] of Object.entries(parameters.keywords) as [

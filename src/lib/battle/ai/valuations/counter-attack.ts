@@ -23,8 +23,8 @@ export function getCounterAttackValue(attacker: UnitDeployed, attackTarget?: Uni
   if (destroyed) {
     return valueUnit(attacker);
   }
-  if (attacker.keywords?.retaliate && attackTarget) {
-    return -attacker.keywords?.retaliate * unitLifeValue * defenders.length;
+  if (attacker.retaliate && attackTarget) {
+    return -attacker.retaliate * unitLifeValue * defenders.length;
   }
   return 0;
 }

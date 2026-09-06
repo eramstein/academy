@@ -27,6 +27,7 @@
   let colors = $state<CardColor[]>(startingColors.length === 1 ? [startingColors[0]] : []);
   let power = $state(1);
   let hp = $state(1);
+  let retaliate = $state(0);
   let keywords = $state<Partial<Record<keyof UnitKeywords, number>>>({});
 
   $effect(() => {
@@ -50,6 +51,7 @@
       colors: colors.length ? colors : undefined,
       power,
       hp,
+      retaliate,
       keywords: selectedKeywords,
     };
   });
@@ -133,6 +135,7 @@
   function confirm() {
     power = clamp(power, 0, STAT_MAX);
     hp = clamp(hp, 1, STAT_MAX);
+    retaliate = clamp(retaliate, 0, STAT_MAX);
     performAction({
       ...action,
       actionParameters: {
@@ -205,6 +208,28 @@
         aria-label="Health"
         oninput={(event) => onNumberInput(event, 1, (value) => (hp = value))}
         onblur={() => (hp = clamp(hp, 1, STAT_MAX))}
+      />
+      <button
+        type="button"
+        class="keyword-btn"
+        class:on={retaliate > 0}
+        title={getKeywordTooltip('retaliate', retaliate || 1)}
+        onclick={(event) =>
+          adjustFromClick(event, (delta) => (retaliate = clamp(retaliate + delta, 0, STAT_MAX)))}
+        oncontextmenu={(event) =>
+          adjustFromClick(event, (delta) => (retaliate = clamp(retaliate + delta, 0, STAT_MAX)))}
+      >
+        <img class="icon" src={getAssetPath('images/retaliate-icon.png')} alt="" aria-hidden="true" />
+        Retaliate
+      </button>
+      <input
+        type="number"
+        min="0"
+        max={STAT_MAX}
+        bind:value={retaliate}
+        aria-label="Retaliate"
+        oninput={(event) => onNumberInput(event, 0, (value) => (retaliate = value))}
+        onblur={() => (retaliate = clamp(retaliate, 0, STAT_MAX))}
       />
 
       <div class="fields-gap"></div>

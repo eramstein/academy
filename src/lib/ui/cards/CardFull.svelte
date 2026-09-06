@@ -31,6 +31,7 @@
   function isUnitCard(card: CardTemplate | Land): card is CardTemplate & {
     power: number;
     maxHealth: number;
+    retaliate: number;
     keywords?: any;
     abilities?: any;
     unitTypes?: UnitType[];
@@ -88,7 +89,6 @@
     ranged: 'Ranged',
     haste: 'Haste',
     moveAndAttack: 'Move and Attack',
-    retaliate: 'Retaliate',
     armor: 'Armor',
     resist: 'Resist',
     poisonous: 'Poisonous',
@@ -201,6 +201,12 @@
             <span class="stat-label">Health:</span>
             <span class="stat-value">{card.maxHealth}</span>
           </div>
+          {#if card.retaliate}
+            <div class="stat">
+              <span class="stat-label">Retaliate:</span>
+              <span class="stat-value">{card.retaliate}</span>
+            </div>
+          {/if}
         </div>
       {:else if isLandCard(card)}
         <div class="stats-container">

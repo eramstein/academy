@@ -19,6 +19,7 @@ export interface CardCreationParameters {
   cost?: number;
   power?: number;
   hp?: number;
+  retaliate?: number;
   keywords?: UnitKeywords;
   unitTypes?: UnitType[];
   resources: { type: ResourceType; count: number }[];

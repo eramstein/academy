@@ -17,6 +17,7 @@
   let costIncrease = $state(1);
   let power = $state(0);
   let maxHealth = $state(0);
+  let retaliate = $state(0);
   let keywords = $state<Partial<Record<keyof UnitKeywords, number>>>({});
 
   $effect(() => {
@@ -43,6 +44,7 @@
       costIncrease,
       power: power || undefined,
       maxHealth: maxHealth || undefined,
+      retaliate: retaliate || undefined,
       keywords: Object.keys(selectedKeywords).length ? selectedKeywords : undefined,
     };
   });
@@ -59,6 +61,10 @@
   const canIncPower = $derived(!!parameters && fits({ ...parameters, power: power + 1 }));
   const canDecHealth = $derived(maxHealth > 0);
   const canIncHealth = $derived(!!parameters && fits({ ...parameters, maxHealth: maxHealth + 1 }));
+  const canDecRetaliate = $derived(retaliate > 0);
+  const canIncRetaliate = $derived(
+    !!parameters && fits({ ...parameters, retaliate: retaliate + 1 })
+  );
 
   function optionId(option: string | [string, string]): string {
     return Array.isArray(option) ? option[0] : option;
@@ -92,6 +98,7 @@
     costIncrease = 1;
     power = 0;
     maxHealth = 0;
+    retaliate = 0;
     keywords = {};
   }
 
@@ -239,6 +246,14 @@
           canIncHealth,
           () => (maxHealth -= 1),
           () => (maxHealth += 1)
+        )}
+        {@render stepper(
+          'Retaliate +',
+          retaliate,
+          canDecRetaliate,
+          canIncRetaliate,
+          () => (retaliate -= 1),
+          () => (retaliate += 1)
         )}
       </div>
 

@@ -1,7 +1,7 @@
 import { CardColor, type UnitKeywords } from '@/lib/_model';
 import type { PartialConjuredUnit } from './creation';
 
-type FeatureCostKey = 'power' | 'maxHealth' | keyof UnitKeywords;
+type FeatureCostKey = 'power' | 'maxHealth' | 'retaliate' | keyof UnitKeywords;
 
 export const cardBudget: Record<number, number> = {
   0: 4,
@@ -19,11 +19,11 @@ export const cardBudget: Record<number, number> = {
 export const featureCosts: Record<FeatureCostKey, (card: PartialConjuredUnit) => number> = {
   power: () => 4,
   maxHealth: () => 2,
+  retaliate: () => 1,
   // keywords
   ranged: () => 3,
   haste: (card) => Math.ceil(card.power / 2) * 3,
   moveAndAttack: (card) => Math.ceil(card.power / 2) * 2,
-  retaliate: () => 1,
   armor: () => 3,
   resist: () => 2,
   poisonous: () => 3,
@@ -39,7 +39,9 @@ export const featureCosts: Record<FeatureCostKey, (card: PartialConjuredUnit) =>
 
 export function getCardBudget(card: PartialConjuredUnit): number {
   let budget =
-    card.power * featureCosts.power(card) + card.maxHealth * featureCosts.maxHealth(card);
+    card.power * featureCosts.power(card) +
+    card.maxHealth * featureCosts.maxHealth(card) +
+    (card.retaliate || 0) * featureCosts.retaliate(card);
 
   for (const [key, value] of Object.entries(card.keywords ?? {}) as [
     keyof UnitKeywords,
