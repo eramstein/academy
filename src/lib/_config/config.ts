@@ -1,7 +1,7 @@
 export const config = {
   // battle
   initialMana: 2,
-  initialHandSize: 7,
+  initialHandSize: 6,
   initialLife: 10,
   boardRows: 4,
   boardColumns: 4,

@@ -79,6 +79,9 @@ export function getBudgetFromCost(
   if (colorsCount >= manaCost) {
     colorsBudget += 4;
   }
+  if (colorsCount > 1) {
+    colorsBudget++;
+  }
   if (colorsCount > 2) {
     colorsBudget += (colorsCount - 2) * 2;
   }

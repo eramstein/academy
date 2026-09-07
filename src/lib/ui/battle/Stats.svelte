@@ -87,7 +87,7 @@
     height: 20px;
     font-size: 0.75rem;
     padding: 2px;
-    padding-bottom: 3px;
+    padding-bottom: 4px;
     box-sizing: border-box;
   }
 

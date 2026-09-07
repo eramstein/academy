@@ -64,6 +64,7 @@ export enum UnitType {
   Plant = 'plant',
   Construct = 'construct',
   Building = 'building',
+  Undead = 'undead',
 }
 
 export enum CounterType {

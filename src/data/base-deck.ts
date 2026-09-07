@@ -1,9 +1,17 @@
-import { AiTurnGoal, CardColor, CardType, TargetType, type Deck } from '@/lib/_model';
+import {
+  AiTurnGoal,
+  CardColor,
+  CardType,
+  TargetType,
+  UnitType,
+  type Deck,
+  type UnitCardTemplate,
+} from '@/lib/_model';
 
 // GREEN BASE CARDS
 // ---------------------------------------------------------
 
-const lion = {
+const lion: UnitCardTemplate = {
   id: 'lion',
   name: 'Lion',
   imageFileName: 'lion',
@@ -12,6 +20,21 @@ const lion = {
   colors: [{ color: CardColor.Green, count: 1 }],
   power: 2,
   maxHealth: 2,
+  retaliate: 1,
+  unitTypes: [UnitType.Beast],
+};
+
+const not_so_little_pig = {
+  id: 'not_so_little_pig',
+  name: 'Not So Little Pig',
+  imageFileName: 'not_so_little_pig',
+  type: CardType.Unit,
+  cost: 2,
+  colors: [{ color: CardColor.Green, count: 2 }],
+  power: 2,
+  maxHealth: 4,
+  retaliate: 1,
+  unitTypes: [UnitType.Beast],
 };
 
 const bear_minimum = {
@@ -23,6 +46,34 @@ const bear_minimum = {
   colors: [{ color: CardColor.Green, count: 1 }],
   power: 3,
   maxHealth: 3,
+  retaliate: 0,
+  unitTypes: [UnitType.Beast],
+};
+
+const hungry_wolf = {
+  id: 'hungry_wolf',
+  name: 'Wall of Brambles',
+  imageFileName: 'hungry_wolf',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Green, count: 2 }],
+  power: 3,
+  maxHealth: 3,
+  retaliate: 1,
+  unitTypes: [UnitType.Beast],
+};
+
+const jumping_hare = {
+  id: 'jumping_hare',
+  name: 'Jaumping Hare',
+  imageFileName: 'jumping_hare',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Green, count: 1 }],
+  power: 2,
+  maxHealth: 5,
+  retaliate: 0,
+  unitTypes: [UnitType.Beast],
 };
 
 const boring_boar = {
@@ -32,8 +83,23 @@ const boring_boar = {
   type: CardType.Unit,
   cost: 4,
   colors: [{ color: CardColor.Green, count: 1 }],
-  power: 4,
-  maxHealth: 3,
+  power: 3,
+  maxHealth: 4,
+  retaliate: 2,
+  unitTypes: [UnitType.Beast],
+};
+
+const pandy_panda = {
+  id: 'pandy_panda',
+  name: 'Pandy Panda',
+  imageFileName: 'pandy_panda',
+  type: CardType.Unit,
+  cost: 4,
+  colors: [{ color: CardColor.Green, count: 3 }],
+  power: 3,
+  maxHealth: 6,
+  retaliate: 1,
+  unitTypes: [UnitType.Beast],
 };
 
 const ferocious_badger = {
@@ -45,17 +111,34 @@ const ferocious_badger = {
   colors: [{ color: CardColor.Green, count: 1 }],
   power: 4,
   maxHealth: 5,
+  retaliate: 0,
+  unitTypes: [UnitType.Beast],
 };
 
-const wolf = {
-  id: 'wolf',
-  name: 'Wolf',
-  imageFileName: 'wolf',
+const unicorn = {
+  id: 'unicorn',
+  name: 'Unicorn',
+  imageFileName: 'unicorn',
   type: CardType.Unit,
-  cost: 6,
-  colors: [{ color: CardColor.Green, count: 1 }],
+  cost: 5,
+  colors: [{ color: CardColor.Green, count: 4 }],
   power: 5,
   maxHealth: 5,
+  retaliate: 1,
+  unitTypes: [UnitType.Beast],
+};
+
+const the_beast = {
+  id: 'the_beast',
+  name: 'The Beast',
+  imageFileName: 'the_beast',
+  type: CardType.Unit,
+  cost: 6,
+  colors: [{ color: CardColor.Green, count: 6 }],
+  power: 5,
+  maxHealth: 6,
+  retaliate: 6,
+  unitTypes: [UnitType.Beast],
 };
 
 const deer = {
@@ -67,6 +150,8 @@ const deer = {
   colors: [{ color: CardColor.Green, count: 1 }],
   power: 5,
   maxHealth: 7,
+  retaliate: 0,
+  unitTypes: [UnitType.Beast],
 };
 
 const bison = {
@@ -76,8 +161,13 @@ const bison = {
   type: CardType.Unit,
   cost: 8,
   colors: [{ color: CardColor.Green, count: 1 }],
-  power: 6,
-  maxHealth: 7,
+  power: 5,
+  maxHealth: 6,
+  retaliate: 1,
+  unitTypes: [UnitType.Beast],
+  keywords: {
+    trample: true,
+  },
 };
 
 const giant_growth = {
@@ -87,24 +177,42 @@ const giant_growth = {
   type: CardType.Spell,
   cost: 4,
   colors: [{ color: CardColor.Green, count: 2 }],
-  "actions": [
+  actions: [
     {
       effect: {
         name: 'addCounters',
         args: {
           counterType: 'growth',
-          counterValue: 1
-        }
+          counterValue: 1,
+        },
       },
       targets: [
         {
           type: TargetType.Units,
-          count: 1
-        }
-      ]
-    }
-  ]
-}
+          count: 1,
+        },
+      ],
+    },
+  ],
+};
+
+const healing_salve = {
+  id: 'healing_salve',
+  name: 'Healing Salve',
+  imageFileName: 'healing_salve',
+  type: CardType.Spell,
+  cost: 1,
+  colors: [{ color: CardColor.Green, count: 2 }],
+  actions: [
+    {
+      effect: {
+        name: 'healUnit',
+        args: { health: 3 },
+      },
+      targets: [{ type: TargetType.Units, count: 1 }],
+    },
+  ],
+};
 
 // RED BASE CARDS
 // ---------------------------------------------------------
@@ -118,17 +226,63 @@ const young_viking = {
   colors: [{ color: CardColor.Red, count: 1 }],
   power: 2,
   maxHealth: 2,
+  retaliate: 1,
+  unitTypes: [UnitType.Human],
 };
 
-const rock_elemental = {
-  id: 'rock_elemental',
-  name: 'Rock Elemental',
-  imageFileName: 'rock_elemental',
+const enraged_goblin = {
+  id: 'enraged_goblin',
+  name: 'Enraged Goblin',
+  imageFileName: 'enraged_goblin',
+  type: CardType.Unit,
+  cost: 2,
+  colors: [{ color: CardColor.Red, count: 2 }],
+  power: 3,
+  maxHealth: 2,
+  retaliate: 1,
+  unitTypes: [UnitType.Monster],
+};
+
+const dwarf_berserker = {
+  id: 'dwarf_berserker',
+  name: 'Dwarf Berserker',
+  imageFileName: 'dwarf_berserker',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Red, count: 1 }],
+  power: 4,
+  maxHealth: 1,
+  retaliate: 0,
+  unitTypes: [UnitType.Dwarf],
+};
+
+const lunging_cougar = {
+  id: 'lunging_cougar',
+  name: 'Lunging Cougar',
+  imageFileName: 'lunging_cougar',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Red, count: 2 }],
+  power: 2,
+  maxHealth: 2,
+  retaliate: 1,
+  unitTypes: [UnitType.Beast],
+  keywords: {
+    haste: true,
+  },
+};
+
+const angry_lizard = {
+  id: 'angry_lizard',
+  name: 'Angry Lizard',
+  imageFileName: 'angry_lizard',
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Red, count: 1 }],
   power: 3,
   maxHealth: 3,
+  retaliate: 1,
+  unitTypes: [UnitType.Beast],
 };
 
 const northern_challenger = {
@@ -138,19 +292,49 @@ const northern_challenger = {
   type: CardType.Unit,
   cost: 4,
   colors: [{ color: CardColor.Red, count: 1 }],
-  power: 5,
-  maxHealth: 1,
+  power: 3,
+  maxHealth: 5,
+  retaliate: 0,
+  unitTypes: [UnitType.Human],
 };
 
-const dwarf_berserker = {
-  id: 'dwarf_berserker',
-  name: 'Dwarf Berserker',
-  imageFileName: 'dwarf_berserker',
+const ogre_brawler = {
+  id: 'ogre_brawler',
+  name: 'Ogre Brawler',
+  imageFileName: 'ogre_brawler',
+  type: CardType.Unit,
+  cost: 4,
+  colors: [{ color: CardColor.Red, count: 3 }],
+  power: 4,
+  maxHealth: 4,
+  retaliate: 1,
+  unitTypes: [UnitType.Monster],
+};
+
+const rock_elemental = {
+  id: 'rock_elemental',
+  name: 'Rock Elemental',
+  imageFileName: 'rock_elemental',
   type: CardType.Unit,
   cost: 5,
   colors: [{ color: CardColor.Red, count: 1 }],
-  power: 5,
-  maxHealth: 3,
+  power: 4,
+  maxHealth: 4,
+  retaliate: 2,
+  unitTypes: [UnitType.Elemental],
+};
+
+const hill_troll = {
+  id: 'hill_troll',
+  name: 'Hill Troll',
+  imageFileName: 'hill_troll',
+  type: CardType.Unit,
+  cost: 5,
+  colors: [{ color: CardColor.Red, count: 2 }],
+  power: 3,
+  maxHealth: 5,
+  retaliate: 3,
+  unitTypes: [UnitType.Monster],
 };
 
 const modis_chosen = {
@@ -160,8 +344,10 @@ const modis_chosen = {
   type: CardType.Unit,
   cost: 6,
   colors: [{ color: CardColor.Red, count: 1 }],
-  power: 6,
-  maxHealth: 3,
+  power: 5,
+  maxHealth: 4,
+  retaliate: 2,
+  unitTypes: [UnitType.Dwarf],
 };
 
 const frenzied_shaman = {
@@ -171,8 +357,10 @@ const frenzied_shaman = {
   type: CardType.Unit,
   cost: 7,
   colors: [{ color: CardColor.Red, count: 1 }],
-  power: 6,
-  maxHealth: 5,
+  power: 5,
+  maxHealth: 6,
+  retaliate: 2,
+  unitTypes: [UnitType.Human],
 };
 
 const mountain_giant = {
@@ -184,6 +372,8 @@ const mountain_giant = {
   colors: [{ color: CardColor.Red, count: 1 }],
   power: 7,
   maxHealth: 5,
+  retaliate: 0,
+  unitTypes: [UnitType.Monster],
 };
 
 const lightning_bolt = {
@@ -198,19 +388,44 @@ const lightning_bolt = {
       effect: {
         name: 'damageUnit',
         args: {
-          damage: 3
-        }
+          damage: 3,
+        },
       },
       targets: [
         {
           type: TargetType.Units,
-          count: 1
-        }
-      ]
-    }
+          count: 1,
+        },
+      ],
+    },
   ],
   aiHints: [AiTurnGoal.RemoveUnit],
-}
+};
+
+const rock_drop = {
+  id: 'rock_drop',
+  name: 'Rock Drop',
+  imageFileName: 'rock_drop',
+  type: CardType.Spell,
+  cost: 2,
+  colors: [{ color: CardColor.Red, count: 2 }],
+  actions: [
+    {
+      effect: {
+        name: 'damageLand',
+        args: {
+          damage: 2,
+        },
+      },
+      targets: [
+        {
+          type: TargetType.Land,
+          count: 1,
+        },
+      ],
+    },
+  ],
+};
 
 // BLACK BASE CARDS
 // ---------------------------------------------------------
@@ -224,6 +439,21 @@ const sewer_rat = {
   colors: [{ color: CardColor.Black, count: 1 }],
   power: 1,
   maxHealth: 4,
+  retaliate: 1,
+  unitTypes: [UnitType.Beast],
+};
+
+const expendable_recruit = {
+  id: 'expendable_recruit',
+  name: 'Expendable Recruit',
+  imageFileName: 'expendable_recruit',
+  type: CardType.Unit,
+  cost: 1,
+  colors: [{ color: CardColor.Black, count: 1 }],
+  power: 0,
+  maxHealth: 4,
+  retaliate: 0,
+  unitTypes: [UnitType.Human],
 };
 
 const zombie = {
@@ -234,7 +464,38 @@ const zombie = {
   cost: 3,
   colors: [{ color: CardColor.Black, count: 1 }],
   power: 2,
-  maxHealth: 5,
+  maxHealth: 4,
+  retaliate: 2,
+  unitTypes: [UnitType.Undead],
+};
+
+const market_beggar = {
+  id: 'market_beggar',
+  name: 'Market Beggar',
+  imageFileName: 'market_beggar',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Black, count: 2 }],
+  power: 1,
+  maxHealth: 6,
+  retaliate: 3,
+  unitTypes: [UnitType.Human],
+};
+
+const gate_keepers = {
+  id: 'gate_keepers',
+  name: 'Gatekeepers',
+  imageFileName: 'gate_keepers',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Black, count: 1 }],
+  power: 0,
+  maxHealth: 10,
+  retaliate: 3,
+  unitTypes: [UnitType.Human],
+  keywords: {
+    immobile: true,
+  },
 };
 
 const grim_guard = {
@@ -244,8 +505,25 @@ const grim_guard = {
   type: CardType.Unit,
   cost: 4,
   colors: [{ color: CardColor.Black, count: 1 }],
+  power: 2,
+  maxHealth: 6,
+  retaliate: 2,
+};
+
+const street_slinger = {
+  id: 'street_slinger',
+  name: 'Street Slinger',
+  imageFileName: 'street_slinger',
+  type: CardType.Unit,
+  cost: 4,
+  colors: [{ color: CardColor.Black, count: 2 }],
   power: 3,
-  maxHealth: 5,
+  maxHealth: 4,
+  retaliate: 0,
+  unitTypes: [UnitType.Human],
+  keywords: {
+    ranged: true,
+  },
 };
 
 const iron_golem = {
@@ -256,7 +534,24 @@ const iron_golem = {
   cost: 5,
   colors: [{ color: CardColor.Black, count: 1 }],
   power: 3,
-  maxHealth: 7,
+  maxHealth: 6,
+  retaliate: 2,
+};
+
+const elite_crossbowmen = {
+  id: 'elite_crossbowmen',
+  name: 'Elite Crossbowmen',
+  imageFileName: 'elite_crossbowmen',
+  type: CardType.Unit,
+  cost: 5,
+  colors: [{ color: CardColor.Black, count: 3 }],
+  power: 2,
+  maxHealth: 8,
+  retaliate: 2,
+  unitTypes: [UnitType.Human],
+  keywords: {
+    ranged: true,
+  },
 };
 
 const royal_halberdier = {
@@ -268,6 +563,7 @@ const royal_halberdier = {
   colors: [{ color: CardColor.Black, count: 1 }],
   power: 4,
   maxHealth: 7,
+  retaliate: 0,
 };
 
 const vigilant_knight = {
@@ -278,23 +574,29 @@ const vigilant_knight = {
   cost: 7,
   colors: [{ color: CardColor.Black, count: 1 }],
   power: 4,
-  maxHealth: 9,
+  maxHealth: 7,
+  retaliate: 4,
 };
 
-const expensive_mercenary = {
-  id: 'expensive_mercenary',
-  name: 'Expensive Mercenary',
-  imageFileName: 'franz',
+const big_bertha = {
+  id: 'big_bertha',
+  name: 'Big Bertha',
+  imageFileName: 'big_bertha',
   type: CardType.Unit,
   cost: 8,
-  colors: [{ color: CardColor.Black, count: 1 }],
+  colors: [{ color: CardColor.Black, count: 4 }],
   power: 5,
   maxHealth: 9,
+  retaliate: 3,
+  unitTypes: [UnitType.Human, UnitType.Monster],
+  keywords: {
+    ranged: true,
+  },
 };
 
 const execution = {
-  "id": "execution",
-  "name": "Execution",
+  id: 'execution',
+  name: 'Execution',
   imageFileName: 'execution',
   type: CardType.Spell,
   cost: 6,
@@ -303,18 +605,43 @@ const execution = {
     {
       effect: {
         name: 'destroyUnit',
-        args: {}
+        args: {},
       },
       targets: [
         {
           type: TargetType.Units,
-          count: 1
-        }
-      ]
-    }
+          count: 1,
+        },
+      ],
+    },
   ],
   aiHints: [AiTurnGoal.RemoveUnit],
-}
+};
+
+const fortify = {
+  id: 'fortify',
+  name: 'Fortify',
+  imageFileName: 'fortify',
+  type: CardType.Spell,
+  cost: 3,
+  colors: [{ color: CardColor.Black, count: 2 }],
+  actions: [
+    {
+      effect: {
+        name: 'fortifyLand',
+        args: {
+          amount: 8,
+        },
+      },
+      targets: [
+        {
+          type: TargetType.Land,
+          count: 1,
+        },
+      ],
+    },
+  ],
+};
 
 // BASIC LANDS
 // ---------------------------------------------------------
@@ -366,7 +693,27 @@ const plains = {
   type: CardType.Land,
   cost: 0,
   colors: [],
-  health: 15,
+  health: 10,
+  abilities: [
+    {
+      trigger: {
+        type: 'Activated',
+      },
+      actions: [
+        {
+          effect: {
+            name: 'damagePlayer',
+            args: {
+              damage: -1,
+              opposingPlayer: false,
+            },
+          },
+        },
+      ],
+      cost: 0,
+      exhausts: true,
+    },
+  ],
 };
 
 const market = {
@@ -379,78 +726,108 @@ const market = {
   health: 10,
   abilities: [
     {
-      'trigger': {
-        "type": "Activated"
+      trigger: {
+        type: 'Activated',
       },
-      "actions": [
+      actions: [
         {
-          "effect": {
-            "name": "drawCard",
-            "args": {
-              "count": 1
-            }
-          }
-        }
+          effect: {
+            name: 'drawCard',
+            args: {
+              count: 1,
+            },
+          },
+        },
       ],
-      "cost": 1,
-      "exhausts": true
-    }
+      cost: 1,
+      exhausts: true,
+    },
   ],
+};
+
+const enchanter_lair = {
+  id: 'enchanter_lair',
+  name: 'Enchanter Lair',
+  imageFileName: 'enchanter_lair',
+  type: CardType.Land,
+  cost: 0,
+  colors: [],
+  health: 10,
+  abilities: [
+    {
+      trigger: {
+        type: 'Activated',
+      },
+      actions: [
+        {
+          effect: {
+            name: 'damageUnit',
+            args: {
+              damage: 1,
+            },
+          },
+          targets: [
+            {
+              type: TargetType.Units,
+              count: 1,
+            },
+          ],
+        },
+      ],
+      cost: 3,
+      exhausts: true,
+    },
+  ],
+  aiHints: [AiTurnGoal.RemoveUnit],
 };
 
 export const BASE_DECK_GREEN: Deck = {
   key: 'base',
-  name: 'Base',
+  name: 'Base Green',
   cards: [
     lion,
     bear_minimum,
     boring_boar,
     ferocious_badger,
-    wolf,
+    jumping_hare,
+    healing_salve,
+    not_so_little_pig,
+    hungry_wolf,
+    pandy_panda,
+    unicorn,
+    the_beast,
     deer,
     bison,
-    lion,
-    bear_minimum,
-    boring_boar,
-    ferocious_badger,
-    wolf,
-    deer,
-    bison,
-    giant_growth,
     giant_growth,
   ],
-  lands: [forest, plains, market, plains],
+  lands: [forest, plains, market, enchanter_lair],
 };
 
 export const BASE_DECK_RED: Deck = {
   key: 'base',
-  name: 'Base',
+  name: 'Base Red',
   cards: [
     young_viking,
     rock_elemental,
     northern_challenger,
-    ferocious_badger,
-    dwarf_berserker,
-    modis_chosen,
-    frenzied_shaman,
-    mountain_giant,
-    young_viking,
-    rock_elemental,
-    northern_challenger,
-    ferocious_badger,
     dwarf_berserker,
     modis_chosen,
     frenzied_shaman,
     mountain_giant,
     lightning_bolt,
-    lightning_bolt,
+    rock_drop,
+    lunging_cougar,
+    angry_lizard,
+    ogre_brawler,
+    hill_troll,
+    enraged_goblin,
   ],
-  lands: [mountain, plains, market, mountain],
+  lands: [mountain, plains, market, enchanter_lair],
 };
 
 export const BASE_DECK_BLACK: Deck = {
   key: 'base',
-  name: 'Base',
+  name: 'Base Black',
   cards: [
     sewer_rat,
     zombie,
@@ -458,16 +835,14 @@ export const BASE_DECK_BLACK: Deck = {
     iron_golem,
     royal_halberdier,
     vigilant_knight,
-    expensive_mercenary,
-    sewer_rat,
-    zombie,
-    grim_guard,
-    iron_golem,
-    royal_halberdier,
-    vigilant_knight,
-    expensive_mercenary,
+    big_bertha,
     execution,
-    execution,
+    gate_keepers,
+    elite_crossbowmen,
+    fortify,
+    market_beggar,
+    street_slinger,
+    expendable_recruit,
   ],
-  lands: [city, plains, market, plains],
+  lands: [city, plains, market, enchanter_lair],
 };

@@ -34,7 +34,7 @@ Points per mana:
 {
   0: 4,
   1: 8,
-  2: 12,
+  2: 13,
   3: 18,
   4: 22,
   5: 26,
@@ -46,7 +46,7 @@ Points per mana:
 
 Color bonus:
 if color count >= mana cost: +4 points
-if color count > 2: +2 per color between 3 and 5, +1 after that
+if color count >= 2: +1 for color 2, +2 per color between 3 and 5, +1 after that
 
 e.g.
 1 CC +4
