@@ -25,6 +25,14 @@ export interface CardCreationParameters {
   resources: { type: ResourceType; count: number }[];
 }
 
+export interface CardCreationBonuses {
+  learningChance: number; // get new knowledge (conjure), or level up (upgrade)
+  extraBudgetChance: number;
+  // legendaryChance: number;
+  // consumableBuffChance: number;
+  // uniqueAbilityChance: number;
+}
+
 export function createUnit(parameters: CardCreationParameters): string {
   if (!parameters.resources) {
     parameters.resources = [];
@@ -32,10 +40,14 @@ export function createUnit(parameters: CardCreationParameters): string {
   if (!spendResources(parameters.resources)) {
     return 'You do not have enough resources to create this unit. You need to collect more resources.';
   }
+  const bonuses = getCardCreationBonuses(parameters.resources);
   const prunedParams = limitParametersToSkills(parameters);
-  const template = getUnitTemplate(prunedParams);
-  const learnt = learnUnitCard(template);
-  const text = learnt ? `You created ${template.name}. ${learnt}` : `You created ${template.name}`;
+  const { template, bonusBudget } = getUnitTemplate(prunedParams, bonuses);
+  const learnt = learnUnitCard(template, bonuses.learningChance);
+  let text = learnt ? `You created ${template.name}. ${learnt}` : `You created ${template.name}.`;
+  if (bonusBudget) {
+    text += ` Your mastery granted it ${bonusBudget} bonus budget.`;
+  }
   narrateCardConjured(template.id, text);
   return '';
 }
@@ -64,11 +76,31 @@ function limitParametersToSkills(parameters: CardCreationParameters): CardCreati
   };
 }
 
-function learnUnitCard(template: UnitCardTemplate): string {
+export function getCardCreationBonuses(
+  resources: { type: ResourceType; count: number }[]
+): CardCreationBonuses {
+  let learningChance = 0.1;
+  let extraBudgetChance = 0;
+  // skills bonuses
+  learningChance += gs.player.craftingSkills.inspiration * 0.1;
+  extraBudgetChance += gs.player.craftingSkills.mastery * 0.1;
+  // resources bonuses
+  for (const resource of resources) {
+    if (resource.type === ResourceType.MagicDust) {
+      learningChance += resource.count * 0.1;
+    }
+    if (resource.type === ResourceType.Mithril) {
+      extraBudgetChance += resource.count * 0.1;
+    }
+  }
+  return { learningChance, extraBudgetChance };
+}
+
+function learnUnitCard(template: UnitCardTemplate, learningChance: number): string {
   const learntKeywords: string[] = [];
   const improvedKeywords: string[] = [];
   // add card's keywords to player's known keywords
-  if (template.keywords) {
+  if (template.keywords && Math.random() < learningChance) {
     if (!gs.player.craftingKnowledge.keywords) {
       gs.player.craftingKnowledge.keywords = {};
     }
@@ -109,21 +141,31 @@ function joinKeywordNames(names: string[]): string {
   return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
 }
 
-function getUnitTemplate(parameters: CardCreationParameters): UnitCardTemplate {
+function getUnitTemplate(
+  parameters: CardCreationParameters,
+  bonuses: CardCreationBonuses
+): {
+  template: UnitCardTemplate;
+  bonusBudget: number;
+} {
   const flavorTemplates = loadFlavorTemplates();
 
   // 1. create card template based on parameters (randomize rest)
   const cardBase = buildUnitCard(parameters);
   // 2. get budget for card
-  const budget = getCardBudget(cardBase);
+  const sureMastery = Math.floor(bonuses.extraBudgetChance);
+  const extraBudget = Math.random() < bonuses.extraBudgetChance - sureMastery ? 1 : 0;
+  const budget = getCardBudget(cardBase) - sureMastery - extraBudget;
   // 3. define mana cost based on budget
-  const { cost, extraHealth } = getCostFromBudget(budget);
+  const { cost, extraPower, extraHealth, extraRetaliate } = getCostFromBudget(budget);
   const colors = cardBase.colors.map((entry) => ({ color: entry.color, count: 1 }));
   const conjured: Omit<UnitCardTemplate, 'id' | 'name' | 'imageFileName'> = {
     ...cardBase,
     cost,
     colors,
+    power: cardBase.power + extraPower,
     maxHealth: cardBase.maxHealth + extraHealth,
+    retaliate: cardBase.retaliate + extraRetaliate,
   };
   const templateParameters = {
     ...parameters,
@@ -134,11 +176,13 @@ function getUnitTemplate(parameters: CardCreationParameters): UnitCardTemplate {
   // 4. pick template
   const filteredTemplates = filterFlavorTemplates(flavorTemplates, templateParameters);
   const template = getRandomFromArray(filteredTemplates);
-
   return {
-    ...conjured,
-    id: template.name + crypto.randomUUID(),
-    imageFileName: template.imageName,
-    name: template.name,
+    template: {
+      ...conjured,
+      id: template.name + crypto.randomUUID(),
+      imageFileName: template.imageName,
+      name: template.name,
+    },
+    bonusBudget: sureMastery + extraBudget,
   };
 }

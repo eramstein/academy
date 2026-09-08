@@ -33,7 +33,7 @@ export const featureCosts: Record<FeatureCostKey, (card: PartialConjuredUnit) =>
   cleave: () => 7,
   lance: () => 5,
   flying: () => 6,
-  immobile: () => -3,
+  immobile: () => -4,
   armorPiercing: () => 2,
 };
 
@@ -57,16 +57,31 @@ export function getCardBudget(card: PartialConjuredUnit): number {
 
 export function getCostFromBudget(budget: number): {
   cost: number;
+  extraPower: number;
   extraHealth: number;
+  extraRetaliate: number;
 } {
   const entries = Object.entries(cardBudget)
     .map(([key, value]) => [Number(key), value] as const)
     .sort(([a], [b]) => a - b);
   const match = entries.find(([, value]) => value >= budget) ?? entries.at(-1)!;
   const [cost, allocated] = match;
-  const rest = allocated - budget;
-  const extraHealth = Math.max(0, Math.floor(rest / 2));
-  return { cost, extraHealth };
+  let rest = allocated - budget;
+  let extraPower = 0;
+  let extraHealth = 0;
+  let extraRetaliate = 0;
+  if (rest > 4) {
+    extraPower += Math.max(0, Math.floor(rest / 4));
+    rest -= extraPower * 4;
+  }
+  if (rest > 2) {
+    extraHealth += Math.max(0, Math.floor(rest / 2));
+    rest -= extraHealth * 2;
+  }
+  if (rest > 0) {
+    extraRetaliate += Math.max(0, Math.floor(rest));
+  }
+  return { cost, extraPower, extraHealth, extraRetaliate };
 }
 
 export function getBudgetFromCost(

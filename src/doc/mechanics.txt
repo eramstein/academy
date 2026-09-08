@@ -1,0 +1,3 @@
+- consumable cards (charges). disintegrates.
+  could be feel bad to use (potions in Witcher), 
+  might be only for big permanent effects (RPG buff, card buff)

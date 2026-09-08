@@ -1,18 +1,21 @@
 <script lang="ts">
-  import { ActionType, type Action } from '@/lib/_model';
+  import { ActionType, type Action, type ResourceType } from '@/lib/_model';
   import { selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state';
   import { performAction } from '@/lib/sim/actions';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
   import Enchantment from './Enchantment.svelte';
   import Invoke from './Invoke.svelte';
+  import Recipe from './Recipe.svelte';
 
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
 
   let pendingAction = $state<Action | null>(null);
   let enchantAction = $state<Action | null>(null);
-  let invokeAction = $state<Action | null>(null);
+  let cardCraftAction = $state<Action | null>(null);
+  let cardCraftStep = $state<'recipe' | 'invoke'>('recipe');
+  let recipeResources = $state<{ type: ResourceType; count: number }[]>([]);
 
   const parameterPrompts: Record<string, string> = {
     characterKey: 'Who?',
@@ -116,11 +119,39 @@
       enchantAction = next;
       return;
     }
-    if (next.actionType === ActionType.Invoke) {
-      invokeAction = next;
+    if (next.actionType === ActionType.Conjure || next.actionType === ActionType.Invoke) {
+      cardCraftAction = next;
+      cardCraftStep = 'recipe';
+      recipeResources = Array.isArray(next.actionParameters.resources)
+        ? next.actionParameters.resources
+        : [];
       return;
     }
     commitAction(next);
+  }
+
+  function closeCardCraft() {
+    cardCraftAction = null;
+    cardCraftStep = 'recipe';
+    recipeResources = [];
+  }
+
+  function onRecipeConfirm(resources: { type: ResourceType; count: number }[]) {
+    if (!cardCraftAction) return;
+    recipeResources = resources;
+    if (cardCraftAction.actionType === ActionType.Conjure) {
+      performAction({
+        ...cardCraftAction,
+        actionParameters: {
+          ...cardCraftAction.actionParameters,
+          resources,
+        },
+        missingParameters: {},
+      });
+      closeCardCraft();
+      return;
+    }
+    cardCraftStep = 'invoke';
   }
 
   function pickParameter(value: string) {
@@ -136,8 +167,27 @@
 {#if enchantAction}
   <Enchantment action={enchantAction} onDone={() => (enchantAction = null)} />
 {/if}
-{#if invokeAction}
-  <Invoke action={invokeAction} onDone={() => (invokeAction = null)} />
+{#if cardCraftAction && cardCraftStep === 'recipe'}
+  <Recipe
+    title={cardCraftAction.actionType === ActionType.Conjure ? 'Conjure' : 'Recipe'}
+    confirmLabel={cardCraftAction.actionType === ActionType.Conjure ? 'Conjure' : 'Next'}
+    initialResources={recipeResources}
+    onConfirm={onRecipeConfirm}
+    onDone={closeCardCraft}
+  />
+{/if}
+{#if cardCraftAction && cardCraftStep === 'invoke'}
+  <Invoke
+    action={{
+      ...cardCraftAction,
+      actionParameters: {
+        ...cardCraftAction.actionParameters,
+        resources: recipeResources,
+      },
+    }}
+    onBack={() => (cardCraftStep = 'recipe')}
+    onDone={closeCardCraft}
+  />
 {/if}
 
 <div class="actions">

@@ -9,9 +9,11 @@
   let {
     action,
     onDone,
+    onBack,
   }: {
     action: Action;
     onDone: () => void;
+    onBack?: () => void;
   } = $props();
 
   const STAT_MAX = 20;
@@ -30,9 +32,13 @@
   let retaliate = $state(0);
   let keywords = $state<Partial<Record<keyof UnitKeywords, number>>>({});
 
+  function cancel() {
+    (onBack ?? onDone)();
+  }
+
   $effect(() => {
     function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') onDone();
+      if (event.key === 'Escape') cancel();
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -53,6 +59,9 @@
       hp,
       retaliate,
       keywords: selectedKeywords,
+      resources: Array.isArray(action.actionParameters.resources)
+        ? action.actionParameters.resources
+        : [],
     };
   });
 
@@ -290,7 +299,9 @@
     </div>
 
     <footer class="actions">
-      <button type="button" class="action-btn cancel" onclick={onDone}>Cancel</button>
+      <button type="button" class="action-btn cancel" onclick={cancel}>
+        {onBack ? 'Back' : 'Cancel'}
+      </button>
       <button type="button" class="action-btn confirm" onclick={confirm}>Invoke</button>
     </footer>
   </div>

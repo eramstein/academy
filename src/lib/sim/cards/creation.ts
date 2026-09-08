@@ -5,6 +5,7 @@ import {
   type UnitCardTemplate,
   type UnitKeywords,
 } from '@/lib/_model';
+import { gs } from '@/lib/_state';
 import {
   getRandomFromArray,
   getRandomFromObjectWeights,
@@ -19,7 +20,7 @@ type UnitIdentityKeys = 'id' | 'cost' | 'name' | 'imageFileName';
 export type PartialConjuredUnit = Omit<UnitCardTemplate, UnitIdentityKeys>;
 
 export function buildUnitCard(parameters: CardCreationParameters): PartialConjuredUnit {
-  const card = getRandomUnitCardTemplate(parameters.colors);
+  const card = getRandomUnitCardTemplate(parameters.colors, isConjuration(parameters));
   if (isInvocation(parameters)) {
     card.keywords = {};
     card.abilities = [];
@@ -46,8 +47,14 @@ export function buildUnitCard(parameters: CardCreationParameters): PartialConjur
 function isInvocation(parameters: CardCreationParameters): boolean {
   return !!(Object.keys(parameters).length > 1);
 }
+function isConjuration(parameters: CardCreationParameters): boolean {
+  return Object.keys(parameters).length === 0;
+}
 
-function getRandomUnitCardTemplate(colors?: CardColor[]): PartialConjuredUnit {
+function getRandomUnitCardTemplate(
+  colors?: CardColor[],
+  isConjuration: boolean = true
+): PartialConjuredUnit {
   const cardColors = colors?.length
     ? colors.map((color) => ({ color, count: 1 }))
     : [{ color: getRandomFromArray(Object.values(CardColor)), count: 1 }];
@@ -58,7 +65,10 @@ function getRandomUnitCardTemplate(colors?: CardColor[]): PartialConjuredUnit {
     power,
     maxHealth,
     retaliate,
-    keywords: randomKeywords(cardColors.map((entry) => entry.color)),
+    keywords: randomKeywords(
+      cardColors.map((entry) => entry.color),
+      isConjuration
+    ),
     unitTypes: randomUnitTypes(cardColors.map((entry) => entry.color)),
   };
 }
@@ -110,10 +120,15 @@ function allowedUnitTypesForColors(colors: CardColor[]): UnitType[] {
   );
 }
 
-function randomKeywords(colors: CardColor[], existing: UnitKeywords = {}): UnitKeywords {
-  const keywords: UnitKeywords = { ...existing };
+function randomKeywords(colors: CardColor[], isConjuration: boolean): UnitKeywords {
+  const keywords: UnitKeywords = {};
   const colorBonus = combinedKeywordPreferences(colors);
-  const weightedKeys = KEYWORD_KEYS.filter((key) => keywords[key] === undefined)
+  // if it's a conjuration we focus on new keywords
+  const keywordsPool = isConjuration
+    ? KEYWORD_KEYS.filter((key) => !gs.player.craftingKnowledge.keywords?.[key])
+    : KEYWORD_KEYS;
+  const weightedKeys = keywordsPool
+    .filter((key) => keywords[key] === undefined)
     .map((key) => ({
       item: key,
       weight: Math.max(0, keywordConfig[key].prevalence + (colorBonus[key] ?? 0)),
