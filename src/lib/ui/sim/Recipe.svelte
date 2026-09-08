@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ResourceType } from '@/lib/_model';
   import { gs } from '@/lib/_state';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
   import { getCardCreationBonuses } from '@/lib/sim/actions';
 
   type ResourceAmount = { type: ResourceType; count: number };
@@ -18,6 +19,10 @@
     onConfirm: (resources: ResourceAmount[]) => void;
     onDone: () => void;
   } = $props();
+
+  const woodPath = getAssetPath('images/wood_chip_base.png');
+  const tablePath = getAssetPath('images/table.jpg');
+  const parchmentPath = getAssetPath('images/parchment.png');
 
   let selected = $state<Record<ResourceType, number>>(countsFrom(initialResources));
 
@@ -64,9 +69,25 @@
     return `${Math.round(value * 100)}%`;
   }
 
+  function clamp(value: number | undefined, min: number, max: number): number {
+    if (typeof value !== 'number' || Number.isNaN(value)) return min;
+    return Math.min(max, Math.max(min, value));
+  }
+
   function setCount(type: ResourceType, value: number) {
     const owned = gs.player.resources[type] ?? 0;
-    selected = { ...selected, [type]: Math.min(owned, Math.max(0, value)) };
+    selected = { ...selected, [type]: clamp(value, 0, owned) };
+  }
+
+  function onNumberInput(event: Event, type: ResourceType) {
+    const raw = (event.currentTarget as HTMLInputElement).value;
+    if (raw === '') return;
+    setCount(type, Number.parseInt(raw, 10));
+  }
+
+  function onResourceRowClick(event: MouseEvent, type: ResourceType, value: number) {
+    if (event.type === 'contextmenu') event.preventDefault();
+    setCount(type, value + (event.type === 'contextmenu' ? -1 : 1));
   }
 
   function confirm() {
@@ -74,57 +95,102 @@
   }
 </script>
 
+{#snippet stepper(type: ResourceType, value: number, owned: number, label: string)}
+  <div
+    class="num-control"
+    onclick={(event) => event.stopPropagation()}
+    oncontextmenu={(event) => event.stopPropagation()}
+  >
+    <input
+      type="number"
+      min="0"
+      max={owned}
+      {value}
+      aria-label={label}
+      oninput={(event) => onNumberInput(event, type)}
+      onblur={() => setCount(type, value)}
+    />
+    <div class="step-arrows">
+      <button
+        type="button"
+        class="step-arrow"
+        disabled={value >= owned}
+        aria-label="Increase {label}"
+        onclick={() => setCount(type, value + 1)}
+      >
+        ▲
+      </button>
+      <button
+        type="button"
+        class="step-arrow"
+        disabled={value <= 0}
+        aria-label="Decrease {label}"
+        onclick={() => setCount(type, value - 1)}
+      >
+        ▼
+      </button>
+    </div>
+  </div>
+{/snippet}
+
 <div class="overlay" role="presentation">
-  <div class="panel" role="dialog" aria-labelledby="recipe-title">
-    <h2 id="recipe-title" class="title">{title}</h2>
+  <div
+    class="frame"
+    role="dialog"
+    aria-labelledby="recipe-title"
+    style="--wood: url('{woodPath}'); --table: url('{tablePath}'); --parchment: url('{parchmentPath}')"
+  >
+    <div class="panel">
+      <h2 id="recipe-title" class="title">
+        <span class="star" aria-hidden="true"></span>
+        {title}
+        <span class="star" aria-hidden="true"></span>
+      </h2>
 
-    <ul class="resource-list">
-      {#each resourceRows as row (row.type)}
-        <li class="resource-row">
-          <span class="kv-name">{formatResource(row.type)}</span>
-          <div class="stepper">
-            <button
-              type="button"
-              class="step-btn"
-              disabled={row.selected <= 0}
-              aria-label="Remove {formatResource(row.type)}"
-              onclick={() => setCount(row.type, row.selected - 1)}
+      <section class="section" aria-label="Resources">
+        <h3 class="section-heading">
+          <span class="section-icon star-icon" aria-hidden="true"></span>
+          Resources
+        </h3>
+        <div class="resource-list">
+          {#each resourceRows as row (row.type)}
+            {@const label = formatResource(row.type)}
+            <div
+              class="resource-row"
+              class:on={row.selected > 0}
+              onclick={(event) => onResourceRowClick(event, row.type, row.selected)}
+              oncontextmenu={(event) => onResourceRowClick(event, row.type, row.selected)}
             >
-              −
-            </button>
-            <span class="step-value">{row.selected}</span>
-            <button
-              type="button"
-              class="step-btn"
-              disabled={row.selected >= row.owned}
-              aria-label="Add {formatResource(row.type)}"
-              onclick={() => setCount(row.type, row.selected + 1)}
-            >
-              +
-            </button>
+              <span class="resource-name">{label}</span>
+              {@render stepper(row.type, row.selected, row.owned, label)}
+              <span class="owned">{row.owned} owned</span>
+            </div>
+          {/each}
+        </div>
+      </section>
+
+      <section class="section" aria-label="Outcome">
+        <h3 class="section-heading">
+          <span class="section-icon star-icon" aria-hidden="true"></span>
+          Outcome
+        </h3>
+        <div class="bonuses">
+          <div class="bonus">
+            <div class="bonus-label">Learning chance</div>
+            <div class="bonus-well">{formatChance(bonuses.learningChance)}</div>
           </div>
-          <span class="owned">{row.owned} owned</span>
-        </li>
-      {/each}
-    </ul>
+          <div class="bonus">
+            <div class="bonus-label">Extra budget chance</div>
+            <div class="bonus-well">{formatChance(bonuses.extraBudgetChance)}</div>
+          </div>
+        </div>
+      </section>
 
-    <span class="arrow" aria-hidden="true">↓</span>
-
-    <ul class="kv-list">
-      <li class="kv-row">
-        <span class="kv-name">Learning chance</span>
-        <span class="kv-value">{formatChance(bonuses.learningChance)}</span>
-      </li>
-      <li class="kv-row">
-        <span class="kv-name">Extra budget chance</span>
-        <span class="kv-value">{formatChance(bonuses.extraBudgetChance)}</span>
-      </li>
-    </ul>
-
-    <footer class="actions">
-      <button type="button" class="action-btn cancel" onclick={onDone}>Cancel</button>
-      <button type="button" class="action-btn confirm" onclick={confirm}>{confirmLabel}</button>
-    </footer>
+      <footer class="actions">
+        <button type="button" class="action-btn cancel" onclick={onDone}>Cancel</button>
+        <button type="button" class="action-btn confirm" onclick={confirm}>{confirmLabel}</button>
+      </footer>
+    </div>
   </div>
 </div>
 
@@ -141,155 +207,272 @@
     box-sizing: border-box;
   }
 
-  .panel {
-    width: min(380px, 100%);
+  .frame {
+    position: relative;
+    width: min(520px, 100%);
     max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: #4a2a18 var(--table) center / cover;
+    border: 2px solid #2a1810;
+    border-radius: 4px;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+    box-sizing: border-box;
+  }
+
+  .panel {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
     overflow-y: auto;
-    background: #2c251d;
-    border: 1px solid #5a4b3c;
-    border-radius: 6px;
-    color: #e8dcc4;
-    padding: 16px 18px 12px;
+    background: #e8dcc4 var(--parchment) center / cover;
+    background-blend-mode: multiply;
+    color: #2c251d;
+    padding: 16px 16px 12px;
     box-sizing: border-box;
     font-family: Georgia, 'Times New Roman', serif;
     font-size: 1rem;
+    box-shadow: inset 0 0 28px rgba(90, 75, 60, 0.12);
   }
 
   .title {
-    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 0 10px;
     font-size: 1.15rem;
-    font-weight: 600;
-    color: #f0e6c8;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #2c251d;
     text-align: center;
   }
 
-  .kv-list,
+  .star,
+  .star-icon {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    background: #4a3f32;
+    clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
+  }
+
+  .section {
+    padding: 10px 12px 12px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(44, 37, 29, 0.45);
+    border-radius: 4px;
+    background: rgba(255, 248, 230, 0.18);
+    box-sizing: border-box;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #3a3228;
+  }
+
+  .star-icon {
+    width: 12px;
+    height: 12px;
+  }
+
   .resource-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
   }
 
-  .kv-list {
-    margin-bottom: 14px;
-  }
-
-  .arrow {
-    display: block;
-    padding: 12px 0;
-    font-size: 1.4rem;
-    line-height: 1;
-    color: #a89880;
-    text-align: left;
-  }
-
-  .kv-row,
   .resource-row {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.95rem;
-  }
-
-  .kv-name {
-    flex: 1 1 auto;
-    text-transform: capitalize;
-    color: #e8dcc4;
-  }
-
-  .kv-value {
-    color: #f0e6c8;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .resource-row .kv-name {
-    flex: 1 1 0;
     min-width: 0;
+    cursor: pointer;
+    user-select: none;
   }
 
-  .stepper {
+  .resource-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 6px 10px;
+    font-size: calc(0.78rem + 2px);
+    text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: #efe4c8;
+    border: 1px solid rgba(90, 75, 60, 0.28);
+    border-radius: 6px;
+  }
+
+  .resource-row.on .resource-name {
+    border-color: var(--color-golden);
+  }
+
+  .num-control {
     display: flex;
-    align-items: center;
-    gap: 6px;
+    align-items: stretch;
+    gap: 4px;
     flex-shrink: 0;
   }
 
-  .step-btn {
-    width: 28px;
-    height: 28px;
-    padding: 0;
+  .num-control input {
+    width: 2.6rem;
+    height: 34px;
+    padding: 0 4px;
+    color: #f0e6c8;
+    background: #2c251d;
+    border: 1px solid #3a3228;
+    border-radius: 3px;
+    font-family: inherit;
     font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    outline: none;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
+    -moz-appearance: textfield;
+  }
+
+  .num-control input:focus {
+    border-color: var(--color-golden);
+  }
+
+  .num-control input::-webkit-inner-spin-button,
+  .num-control input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .step-arrows {
+    display: flex;
+    flex-direction: column;
+    width: 18px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: #d8c9ad;
+    border: 1px solid rgba(90, 75, 60, 0.35);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  }
+
+  .step-arrow {
+    flex: 1;
+    padding: 0;
+    color: #3a3228;
+    background: transparent;
+    border: none;
+    font-size: 0.5rem;
     line-height: 1;
-    color: #e8dcc4;
-    background: #3d3429;
-    border: 1px solid #5a4b3c;
-    border-radius: 4px;
     cursor: pointer;
   }
 
-  .step-btn:hover:not(:disabled) {
-    background: #4a3f32;
-    border-color: #7a6b5c;
+  .step-arrow + .step-arrow {
+    border-top: 1px solid rgba(90, 75, 60, 0.25);
   }
 
-  .step-btn:disabled {
-    opacity: 0.4;
+  .step-arrow:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.28);
+  }
+
+  .step-arrow:disabled {
+    opacity: 0.35;
     cursor: default;
-  }
-
-  .step-value {
-    min-width: 1.25rem;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
   }
 
   .owned {
     width: 5.5rem;
+    flex-shrink: 0;
     text-align: right;
     font-size: 0.8rem;
-    color: #a89880;
+    color: #6a5c4c;
     font-variant-numeric: tabular-nums;
-    flex-shrink: 0;
+  }
+
+  .bonuses {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .bonus {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .bonus + .bonus {
+    border-left: 1px solid rgba(90, 75, 60, 0.35);
+  }
+
+  .bonus-label {
+    font-size: 0.92rem;
+    color: #2c251d;
+    text-align: center;
+  }
+
+  .bonus-well {
+    min-width: 4.5rem;
+    padding: 8px 12px;
+    color: #f0e6c8;
+    background: #2c251d;
+    border: 1px solid #3a3228;
+    border-radius: 3px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
   }
 
   .actions {
     display: flex;
     justify-content: center;
     gap: 12px;
-    padding-top: 4px;
+    padding-top: 14px;
   }
 
   .action-btn {
+    min-width: 7.5rem;
     font-family: inherit;
     font-size: 1rem;
-    color: #e8dcc4;
-    background: #3d3429;
-    border: 1px solid #5a4b3c;
+    color: #f0e6c8;
+    background: #3a221f var(--wood) center / cover;
+    border: 1px solid #2a110a;
     border-radius: 4px;
     padding: 8px 20px;
     cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 2px 4px rgba(0, 0, 0, 0.35);
   }
 
   .action-btn:hover:not(:disabled) {
-    background: #4a3f32;
-    border-color: #7a6b5c;
+    filter: brightness(1.12);
   }
 
   .action-btn.confirm {
     color: #f0e6c8;
-    border-color: var(--color-golden);
+    border: 2px solid #000;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 2px 4px rgba(0, 0, 0, 0.35);
   }
 
   .action-btn.cancel {
-    color: #a89880;
-    background: transparent;
-  }
-
-  .action-btn.cancel:hover {
-    color: #e8dcc4;
-    background: #3d3429;
+    color: #ececec;
+    background: #6e6e6e;
+    border: 1px solid #4a4a4a;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 2px 4px rgba(0, 0, 0, 0.25);
   }
 </style>

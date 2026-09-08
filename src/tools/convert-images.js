@@ -1,6 +1,7 @@
 // convert-images.js
 // Recursively converts images to JPEG, with per-folder resize/size settings
-// Only processes images that are either not JPG or are too large
+// Only processes images that are either not JPG, not yet at the target
+// dimensions, or over the size limit without already being converted
 // Optionally overwrites the original PNGs
 
 import fs from 'fs';
@@ -8,6 +9,7 @@ import path from 'path';
 import sharp from 'sharp';
 
 const overwriteOriginals = true; // true = replace PNGs with JPGs
+const minQuality = 40;
 
 const targets = [
   {
@@ -30,6 +32,23 @@ const targets = [
   },
 ];
 
+async function matchesTargetDimensions(inputPath, width, height) {
+  if (!width && !height) return true;
+  const meta = await sharp(inputPath).metadata();
+  return (!width || meta.width === width) && (!height || meta.height === height);
+}
+
+async function encodeJpeg(inputPath, outputPath, { width, height, quality }) {
+  let pipeline = sharp(inputPath);
+  if (width && height) {
+    pipeline = pipeline.resize(width, height, {
+      fit: 'cover',
+      position: 'centre',
+    });
+  }
+  await pipeline.jpeg({ quality }).toFile(outputPath);
+}
+
 async function processImage(inputPath, { width, height, maxFileSizeKB, quality }) {
   const ext = path.extname(inputPath).toLowerCase();
   if (!['.png', '.jpg', '.jpeg'].includes(ext)) return;
@@ -39,10 +58,15 @@ async function processImage(inputPath, { width, height, maxFileSizeKB, quality }
   const alreadyJpg = ['.jpg', '.jpeg'].includes(ext);
   const underSizeLimit = maxFileSizeKB == null || fileSizeKB <= maxFileSizeKB;
 
-  // Skip if it's already a JPG and under the size limit (or no size limit)
-  if (alreadyJpg && underSizeLimit) {
-    console.log(`⏭️ Skipping (already optimized): ${inputPath} (${fileSizeKB.toFixed(1)}KB)`);
-    return;
+  if (alreadyJpg) {
+    const alreadyConverted = await matchesTargetDimensions(inputPath, width, height);
+    // Target-dimension JPGs must skip even when over maxFileSizeKB.
+    // Re-encoding 1024² place art at quality 90 still lands at 300–440KB,
+    // so a size-only skip would rewrite the same files every run.
+    if (alreadyConverted || underSizeLimit) {
+      console.log(`⏭️ Skipping (already optimized): ${inputPath} (${fileSizeKB.toFixed(1)}KB)`);
+      return;
+    }
   }
 
   console.log(`🔄 Processing: ${inputPath} (${fileSizeKB.toFixed(1)}KB)`);
@@ -55,14 +79,17 @@ async function processImage(inputPath, { width, height, maxFileSizeKB, quality }
   }
 
   try {
-    let pipeline = sharp(inputPath);
-    if (width && height) {
-      pipeline = pipeline.resize(width, height, {
-        fit: 'cover',
-        position: 'centre',
-      });
+    let q = quality;
+    let newFileSizeKB;
+
+    while (true) {
+      await encodeJpeg(inputPath, outputPath, { width, height, quality: q });
+      newFileSizeKB = fs.statSync(outputPath).size / 1024;
+      if (maxFileSizeKB == null || newFileSizeKB <= maxFileSizeKB || q <= minQuality) {
+        break;
+      }
+      q -= 5;
     }
-    await pipeline.jpeg({ quality }).toFile(outputPath);
 
     if (overwriteOriginals) {
       const finalOutputPath = inputPath.replace(/\.(png|jpg|jpeg)$/i, '.jpg');
@@ -74,12 +101,8 @@ async function processImage(inputPath, { width, height, maxFileSizeKB, quality }
       }
     }
 
-    const newStats = fs.statSync(
-      overwriteOriginals ? inputPath.replace(/\.(png|jpg|jpeg)$/i, '.jpg') : outputPath
-    );
-    const newFileSizeKB = newStats.size / 1024;
-
-    console.log(`✅ Processed: ${inputPath} -> ${newFileSizeKB.toFixed(1)}KB`);
+    const qualityNote = q !== quality ? ` @ q${q}` : '';
+    console.log(`✅ Processed: ${inputPath} -> ${newFileSizeKB.toFixed(1)}KB${qualityNote}`);
   } catch (err) {
     console.error(`❌ Error processing ${inputPath}:`, err);
     if (fs.existsSync(outputPath) && overwriteOriginals) {
@@ -88,21 +111,21 @@ async function processImage(inputPath, { width, height, maxFileSizeKB, quality }
   }
 }
 
-function walkDir(dir, settings) {
-  fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => {
+async function walkDir(dir, settings) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      walkDir(fullPath, settings);
+      await walkDir(fullPath, settings);
     } else {
-      processImage(fullPath, settings);
+      await processImage(fullPath, settings);
     }
-  });
+  }
 }
 
 for (const target of targets) {
   console.log(`\n🔄 Processing directory: ${target.dir}`);
   if (fs.existsSync(target.dir)) {
-    walkDir(target.dir, target);
+    await walkDir(target.dir, target);
   } else {
     console.log(`⚠️ Directory not found: ${target.dir}`);
   }
