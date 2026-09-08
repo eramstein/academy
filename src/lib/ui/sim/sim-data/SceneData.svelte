@@ -1,69 +1,31 @@
 <script lang="ts">
   import type { Character as CharacterModel } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
-  import {
-    clearSelectedSimCharacter,
-    selectSimCharacter,
-    uiState,
-  } from '@/lib/_state/state-ui.svelte';
+  import { selectSimCharacter, uiState } from '@/lib/_state/state-ui.svelte';
   import { getCharactersAtScene } from '@/lib/sim/characters';
-  import Character from '../Character.svelte';
   import CharacterPortrait from '../characters/CharacterPortrait.svelte';
   import Location from '../Location.svelte';
-  import Player from './Player.svelte';
 
   const presentCharacters = $derived([gs.player, ...getCharactersAtScene()]);
-  const selectedCharacter = $derived(
-    uiState.sim.selectedCharacterKey === gs.player.key
-      ? gs.player
-      : uiState.sim.selectedCharacterKey
-        ? (gs.characters[uiState.sim.selectedCharacterKey] ?? null)
-        : null
-  );
-  const playerSelected = $derived(selectedCharacter?.key === gs.player.key);
 
-  $effect(() => {
-    const key = uiState.sim.selectedCharacterKey;
-    if (!key) return;
-    if (key !== gs.player.key && !gs.characters[key]) {
-      uiState.sim.selectedCharacterKey = null;
+  function inspectCharacter(character: CharacterModel) {
+    if (character.key === gs.player.key) {
+      uiState.sim.dataTab = 'player';
+      return;
     }
-  });
-
-  function selectCharacter(character: CharacterModel) {
     selectSimCharacter(character.key);
-  }
-
-  function clearSelection() {
-    clearSelectedSimCharacter();
   }
 </script>
 
 <div class="scene-data">
   <div class="top-panel">
-    {#if playerSelected}
-      <div class="player-view">
-        <Player />
-      </div>
-    {:else if selectedCharacter}
-      <Character character={selectedCharacter} />
-    {:else}
-      <Location />
-    {/if}
+    <Location />
   </div>
 
   <div class="bottom-panel">
-    {#if selectedCharacter}
-      <button type="button" class="back-btn" onclick={clearSelection}>Back</button>
-    {/if}
     <div class="portraits">
       {#each presentCharacters as character (character.key)}
-        <button
-          type="button"
-          class="portrait-btn"
-          class:selected={selectedCharacter?.key === character.key}
-          onclick={() => selectCharacter(character)}
-        >
+        <button type="button" class="portrait-btn" onclick={() => inspectCharacter(character)}>
           <CharacterPortrait {character} zoom={1.2} />
         </button>
       {/each}
@@ -88,14 +50,6 @@
     overflow: hidden;
   }
 
-  .player-view {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    padding: 1rem 0.85rem;
-    box-sizing: border-box;
-  }
-
   .bottom-panel {
     flex: 0 0 auto;
     display: flex;
@@ -105,22 +59,6 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     background: #141414;
     min-height: 0;
-  }
-
-  .back-btn {
-    flex-shrink: 0;
-    padding: 0.5rem 0.9rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    color: #cccccc;
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-
-  .back-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: white;
   }
 
   .portraits {
@@ -150,9 +88,5 @@
 
   .portrait-btn:hover {
     border-color: rgba(255, 255, 255, 0.35);
-  }
-
-  .portrait-btn.selected {
-    border-color: rgba(255, 255, 255, 0.55);
   }
 </style>

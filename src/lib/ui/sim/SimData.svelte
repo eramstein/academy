@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { SimDataTab } from '@/lib/_model';
   import { uiState } from '@/lib/_state/state-ui.svelte';
+  import Characters from './sim-data/Characters.svelte';
   import Collection from './sim-data/Collection.svelte';
   import Decks from './sim-data/Decks.svelte';
   import League from './sim-data/League.svelte';
@@ -13,6 +14,7 @@
   const tabs: { id: SimDataTab; label: string }[] = [
     { id: 'scene', label: 'Scene' },
     { id: 'player', label: 'Player' },
+    { id: 'characters', label: 'Characters' },
     { id: 'schedule', label: 'Schedule' },
     { id: 'places', label: 'Places' },
     { id: 'collection', label: 'Collection' },
@@ -22,7 +24,9 @@
 
   const selected = $derived(uiState.sim.dataTab);
   const flush = $derived(
-    selected === 'scene' || (selected === 'places' && uiState.sim.selectedPlaceKey !== null),
+    selected === 'scene' ||
+      (selected === 'places' && uiState.sim.selectedPlaceKey !== null) ||
+      (selected === 'characters' && uiState.sim.selectedCharacterKey !== null),
   );
 </script>
 
@@ -48,6 +52,8 @@
       <SceneData />
     {:else if selected === 'player'}
       <Player />
+    {:else if selected === 'characters'}
+      <Characters />
     {:else if selected === 'schedule'}
       <Schedule />
     {:else if selected === 'places'}
@@ -87,6 +93,8 @@
     display: flex;
     gap: 0.25rem;
     min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
   }
 
   .menu-item {

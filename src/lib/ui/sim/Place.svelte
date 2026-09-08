@@ -7,7 +7,7 @@
     type ScheduledActivity,
   } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
-  import { selectSimCharacter } from '@/lib/_state/state-ui.svelte';
+  import { selectSimCharacter, uiState } from '@/lib/_state/state-ui.svelte';
   import { getPlaceImagePath } from '@/lib/_utils/asset-paths';
   import { getWeekDay } from '@/lib/sim/time';
   import CharacterPortrait from './characters/CharacterPortrait.svelte';
@@ -78,6 +78,10 @@
   }
 
   function inspectCharacter(character: Character) {
+    if (character.key === gs.player.key) {
+      uiState.sim.dataTab = 'player';
+      return;
+    }
     selectSimCharacter(character.key);
   }
 </script>

@@ -6,6 +6,7 @@ export const defaultUiState: UiState = {
   sim: {
     dataTab: 'scene',
     selectedCharacterKey: null,
+    characterBackTab: null,
     selectedPlaceKey: null,
   },
   battle: {
@@ -92,12 +93,16 @@ export function hideToast() {
 }
 
 export function selectSimCharacter(characterKey: string) {
-  uiState.sim.dataTab = 'scene';
+  uiState.sim.characterBackTab = uiState.sim.dataTab;
+  uiState.sim.dataTab = 'characters';
   uiState.sim.selectedCharacterKey = characterKey;
 }
 
 export function clearSelectedSimCharacter() {
+  const backTab = uiState.sim.characterBackTab ?? 'characters';
   uiState.sim.selectedCharacterKey = null;
+  uiState.sim.characterBackTab = null;
+  uiState.sim.dataTab = backTab;
 }
 
 export function selectSimPlace(placeKey: string) {
