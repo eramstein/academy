@@ -32,21 +32,21 @@
         (activity) =>
           activity.placeKey === place.key &&
           isAtOrAfterNow(activity) &&
-          activity.day <= gs.time.day + 7,
+          activity.day <= gs.time.day + 7
       )
-      .sort(
-        (a, b) => a.day - b.day || periodIndex(a.period) - periodIndex(b.period),
-      ),
+      .sort((a, b) => a.day - b.day || periodIndex(a.period) - periodIndex(b.period))
   );
 
   const happeningNow = $derived(
-    upcoming.filter((activity) => activity.day === gs.time.day && activity.period === gs.time.period),
+    upcoming.filter(
+      (activity) => activity.day === gs.time.day && activity.period === gs.time.period
+    )
   );
 
   const later = $derived(
     upcoming.filter(
-      (activity) => !(activity.day === gs.time.day && activity.period === gs.time.period),
-    ),
+      (activity) => !(activity.day === gs.time.day && activity.period === gs.time.period)
+    )
   );
 
   function periodIndex(period: DayPeriod): number {
@@ -108,11 +108,7 @@
         <ul class="people">
           {#each present as character (character.key)}
             <li>
-              <button
-                type="button"
-                class="person"
-                onclick={() => inspectCharacter(character)}
-              >
+              <button type="button" class="person" onclick={() => inspectCharacter(character)}>
                 <span class="portrait-frame">
                   <CharacterPortrait {character} zoom={1.2} />
                 </span>

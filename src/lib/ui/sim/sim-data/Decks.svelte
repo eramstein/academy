@@ -41,7 +41,9 @@
   {#if selected}
     <div class="detail-actions">
       <button type="button" class="back-btn" onclick={() => (selected = null)}>Back</button>
-      <button type="button" class="edit-btn" onclick={() => selected && openEdit(selected)}>Edit</button>
+      <button type="button" class="edit-btn" onclick={() => selected && openEdit(selected)}
+        >Edit</button
+      >
     </div>
     <Deck deck={selected} />
   {:else}
@@ -88,6 +90,7 @@
     gap: 0.75rem;
     color: var(--color-cream);
     font-family: var(--font-narrative);
+    padding: 12px 16px;
   }
 
   .list-header,

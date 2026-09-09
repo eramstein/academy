@@ -33,9 +33,9 @@
   const activityGrid = $derived(
     periods.map((period) =>
       weekDays.map((day) =>
-        gs.scheduledActivities.filter((a) => a.day === day && a.period === period),
-      ),
-    ),
+        gs.scheduledActivities.filter((a) => a.day === day && a.period === period)
+      )
+    )
   );
 </script>
 
@@ -89,6 +89,7 @@
     min-height: 0;
     color: var(--color-cream);
     font-family: var(--font-narrative);
+    margin-top: 10px;
   }
 
   .week-nav {
@@ -112,10 +113,12 @@
 
   .week-nav > :first-child {
     justify-self: start;
+    margin-left: 20px;
   }
 
   .week-nav > :last-child {
     justify-self: end;
+    margin-right: 20px;
   }
 
   .nav-btn:hover {

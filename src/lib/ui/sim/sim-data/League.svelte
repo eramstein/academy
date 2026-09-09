@@ -10,7 +10,9 @@
 
   const season = $derived(gs.league.season);
   const rankings = $derived(
-    [...gs.league.rankings].sort((a, b) => b.points - a.points || a.characterKey.localeCompare(b.characterKey)),
+    [...gs.league.rankings].sort(
+      (a, b) => b.points - a.points || a.characterKey.localeCompare(b.characterKey)
+    )
   );
 </script>
 
@@ -45,6 +47,7 @@
     gap: 0.75rem;
     color: var(--color-cream);
     font-family: var(--font-narrative);
+    padding: 12px 16px;
   }
 
   .section-title {

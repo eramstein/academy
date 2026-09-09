@@ -1,10 +1,6 @@
 <script lang="ts">
   import { gs } from '@/lib/_state/main.svelte';
-  import {
-    clearSelectedSimPlace,
-    selectSimPlace,
-    uiState,
-  } from '@/lib/_state/state-ui.svelte';
+  import { clearSelectedSimPlace, selectSimPlace, uiState } from '@/lib/_state/state-ui.svelte';
   import { getPlaceImagePath } from '@/lib/_utils/asset-paths';
   import Place from '../Place.svelte';
 
@@ -12,11 +8,11 @@
     Object.values(gs.regions).map((region) => ({
       region,
       places: Object.values(gs.places).filter((place) => place.regionKey === region.key),
-    })),
+    }))
   );
 
   const selectedPlace = $derived(
-    uiState.sim.selectedPlaceKey ? (gs.places[uiState.sim.selectedPlaceKey] ?? null) : null,
+    uiState.sim.selectedPlaceKey ? (gs.places[uiState.sim.selectedPlaceKey] ?? null) : null
   );
 
   $effect(() => {
@@ -71,8 +67,8 @@
 
   .back-btn {
     position: absolute;
-    top: 12px;
-    left: 12px;
+    top: 16px;
+    right: 20px;
     z-index: 1;
     padding: 0.5rem 0.9rem;
     background: var(--color-data);
@@ -95,6 +91,7 @@
     gap: 1.5rem;
     color: var(--color-cream);
     font-family: var(--font-narrative);
+    padding: 12px 16px;
   }
 
   .region {

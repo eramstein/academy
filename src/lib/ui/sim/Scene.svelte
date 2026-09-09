@@ -1,14 +1,18 @@
 <script lang="ts">
-  import { tick, untrack } from 'svelte';
-  import { selectNextScene } from '@/lib/sim/scene';
-  import { addCardToDeck } from '@/lib/sim/deck';
-  import { gs } from '@/lib/_state/main.svelte';
-  import { NarrationType } from '@/lib/_model/enums-sim';
   import type { CardTemplate, Narration } from '@/lib/_model';
+  import { NarrationType } from '@/lib/_model/enums-sim';
+  import { gs } from '@/lib/_state/main.svelte';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { addCardToDeck } from '@/lib/sim/deck';
+  import { selectNextScene } from '@/lib/sim/scene';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
+  import { tick, untrack } from 'svelte';
   import AttributeCheckEntry from './AttributeCheckEntry.svelte';
   import NarrationText from './NarrationText.svelte';
   import SceneActions from './SceneActions.svelte';
+
+  const flourishPath = getAssetPath('images/ui/page-flourish.svg');
+  const starPath = getAssetPath('images/ui/page-star.svg');
 
   const narration = $derived(gs.scene.narration);
   const selectingNextPlace = $derived(gs.scene.selectingNextPlace);
@@ -16,7 +20,7 @@
     Object.values(gs.regions).map((region) => ({
       region,
       places: Object.values(gs.places).filter((place) => place.regionKey === region.key),
-    })),
+    }))
   );
 
   let bookEl: HTMLElement | undefined = $state();
@@ -26,6 +30,8 @@
   let bookHeight = $state<number | undefined>(undefined);
   let heightTransition = $state(false);
   let scrollable = $state(false);
+  let scrolling = $state(false);
+  let hideScrollbarTimer: ReturnType<typeof setTimeout> | undefined;
 
   const completedSet = $derived(new Set(completedIds));
   const activeEntry = $derived(narration.find((entry) => !completedSet.has(entry.id)));
@@ -55,7 +61,9 @@
 
     const syncHeight = () => {
       if (!bookEl || !pageEl || !contentEl) return;
-      const pageStyles = getComputedStyle(pageEl);
+      const frameEl = pageEl.parentElement;
+      if (!frameEl) return;
+      const pageStyles = getComputedStyle(frameEl);
       const chromeY =
         parseFloat(pageStyles.paddingTop) +
         parseFloat(pageStyles.paddingBottom) +
@@ -129,6 +137,15 @@
     return Math.max(0, scene.clientHeight - padY - bottomH - (bottomEl ? gap : 0));
   }
 
+  function revealScrollbar() {
+    if (!untrack(() => scrollable)) return;
+    scrolling = true;
+    clearTimeout(hideScrollbarTimer);
+    hideScrollbarTimer = setTimeout(() => {
+      scrolling = false;
+    }, 800);
+  }
+
   function scrollPageToBottom(behavior: ScrollBehavior = 'smooth') {
     if (!untrack(() => scrollable)) return;
     queueMicrotask(() => {
@@ -176,32 +193,46 @@
   }
 </script>
 
-<div class="scene">
+<div
+  class="scene"
+  style="--page-flourish: url('{flourishPath}'); --page-star: url('{starPath}');"
+>
   <article
     class="book"
     class:height-transition={heightTransition && !reduceMotion}
     bind:this={bookEl}
     style:height={bookHeight !== undefined ? `${bookHeight}px` : undefined}
   >
-    <span class="ornament tl" aria-hidden="true"></span>
-    <span class="ornament tr" aria-hidden="true"></span>
-    <span class="ornament bl" aria-hidden="true"></span>
-    <span class="ornament br" aria-hidden="true"></span>
-    <div class="page" class:scrollable bind:this={pageEl}>
-      <div class="page-content" bind:this={contentEl}>
-        {#each narration as entry (entry.id)}
-          {#if completedSet.has(entry.id)}
-            {@render narrationEntry(entry, false)}
-          {:else if activeEntry?.id === entry.id}
-            {@render narrationEntry(entry, true)}
+    <div class="page">
+      <div
+        class="page-scroll"
+        class:scrollable
+        class:scrolling
+        bind:this={pageEl}
+        onscroll={revealScrollbar}
+      >
+        <div class="page-content" bind:this={contentEl}>
+          {#each narration as entry (entry.id)}
+            {#if completedSet.has(entry.id)}
+              {@render narrationEntry(entry, false)}
+            {:else if activeEntry?.id === entry.id}
+              {@render narrationEntry(entry, true)}
+            {/if}
+          {/each}
+          {#if selectingNextPlace}
+            <p class="prompt">Where do you go?</p>
+          {:else if narrationDone}
+            <p class="prompt">What do you do?</p>
           {/if}
-        {/each}
-        {#if selectingNextPlace}
-          <p class="prompt">Where do you go?</p>
-        {:else if narrationDone}
-          <p class="prompt">What do you do?</p>
-        {/if}
+        </div>
       </div>
+    </div>
+    <div class="page-chrome" aria-hidden="true">
+      <span class="ink-frame"></span>
+      <span class="ornament flourish tl"></span>
+      <span class="ornament star tr"></span>
+      <span class="ornament flourish bl"></span>
+      <span class="ornament star br"></span>
     </div>
   </article>
 
@@ -234,7 +265,7 @@
     class="narration"
     text={entry.text}
     mentions={entry.mentions}
-    animate={animate}
+    {animate}
     onProgress={() => scrollPageToBottom('auto')}
     onDone={() => onTextDone(entry)}
   />
@@ -258,7 +289,7 @@
   {#if entry.attributeCheck}
     <AttributeCheckEntry
       check={entry.attributeCheck}
-      animate={animate}
+      {animate}
       onProgress={() => scrollPageToBottom('auto')}
       onDone={() => completeEntry(entry.id)}
     />
@@ -292,53 +323,93 @@
   }
 
   .book {
+    --page-edge: 14px;
     position: relative;
+    isolation: isolate;
     width: 100%;
-    max-width: 640px;
     flex: 0 1 auto;
     min-height: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: var(--color-deep-brown);
-    border: 1px solid var(--color-golden);
-    border-radius: 4px;
-    outline: 7px solid var(--color-deep-brown);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    background: var(--color-parchment);
+    border-radius: 3px;
+    box-shadow:
+      -1px -1px 0 rgba(232, 220, 196, 0.18),
+      1px 1px 0 rgba(42, 24, 16, 0.55),
+      2px 3px 0 rgba(42, 24, 16, 0.32),
+      0 10px 22px rgba(0, 0, 0, 0.42),
+      0 22px 40px rgba(0, 0, 0, 0.28);
+  }
+
+  .page-chrome {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .page-chrome::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 55% 40% at 22% 12%, rgba(255, 248, 230, 0.22), transparent 58%),
+      radial-gradient(ellipse 50% 45% at 82% 88%, rgba(90, 75, 60, 0.16), transparent 62%),
+      radial-gradient(ellipse 90% 80% at 50% 42%, transparent 46%, rgba(42, 24, 16, 0.2) 100%);
+    mix-blend-mode: multiply;
+  }
+
+  .ink-frame {
+    position: absolute;
+    inset: var(--page-edge);
+    border: 1px solid var(--color-brown-border);
+    opacity: 0.42;
+    box-shadow:
+      inset 0 0 0 3px rgba(232, 220, 196, 0.08),
+      0 0 0 1px rgba(90, 75, 60, 0.12);
   }
 
   .ornament {
     position: absolute;
-    z-index: 2;
-    width: 26px;
-    height: 26px;
-    pointer-events: none;
-    background: var(--color-golden);
-    mask: var(--corner) center / contain no-repeat;
-    -webkit-mask: var(--corner) center / contain no-repeat;
+    width: 48px;
+    height: 48px;
+    opacity: 0.48;
+    background: var(--color-ink-muted);
+  }
+
+  .ornament.flourish {
+    mask: var(--page-flourish) center / contain no-repeat;
+    -webkit-mask: var(--page-flourish) center / contain no-repeat;
+  }
+
+  .ornament.star {
+    width: 36px;
+    height: 36px;
+    mask: var(--page-star) center / contain no-repeat;
+    -webkit-mask: var(--page-star) center / contain no-repeat;
   }
 
   .ornament.tl {
-    top: -2px;
-    left: -2px;
+    top: 10px;
+    left: 12px;
   }
 
   .ornament.tr {
-    top: -2px;
-    right: -2px;
-    transform: rotate(90deg);
+    top: 16px;
+    right: 16px;
   }
 
   .ornament.bl {
-    bottom: -2px;
-    left: -2px;
-    transform: rotate(-90deg);
+    bottom: 10px;
+    left: 12px;
+    transform: scaleY(-1);
   }
 
   .ornament.br {
-    bottom: -2px;
-    right: -2px;
-    transform: rotate(180deg);
+    bottom: 16px;
+    right: 16px;
+    transform: scaleY(-1);
   }
 
   .book.height-transition {
@@ -350,20 +421,37 @@
     min-height: 0;
     height: 100%;
     overflow: hidden;
-    background: var(--color-parchment) var(--parchment) center/cover;
+    background-color: var(--color-parchment);
+    background-image:
+      radial-gradient(ellipse 80% 65% at 48% 32%, rgba(255, 250, 235, 0.32), transparent 58%),
+      radial-gradient(ellipse at 50% 50%, transparent 42%, rgba(90, 75, 60, 0.22) 100%),
+      var(--parchment);
+    background-size: cover;
+    background-position: center;
     background-blend-mode: multiply;
     color: var(--color-ink);
-    padding: 40px 48px;
+    padding: 52px 28px 44px 48px;
     border: 1px solid var(--color-brown-border);
-    border-radius: 2px;
+    border-radius: 3px;
     font-family: var(--font-narrative);
     font-size: 1.05rem;
     line-height: 1.7;
-    box-shadow: inset 0 0 40px rgba(90, 75, 60, 0.15);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 248, 230, 0.35),
+      inset 0 -18px 28px rgba(90, 75, 60, 0.1),
+      inset 16px 0 32px rgba(90, 75, 60, 0.08),
+      inset -18px 0 32px rgba(90, 75, 60, 0.12),
+      inset 0 0 72px rgba(90, 75, 60, 0.12);
     box-sizing: border-box;
   }
 
-  .page.scrollable {
+  .page-scroll {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .page-scroll.scrollable {
     overflow-x: hidden;
     overflow-y: auto;
   }
@@ -374,32 +462,40 @@
 
   /* Chrome 121+ prefers scrollbar-* over ::-webkit-*, which brings OS arrows back */
   @supports not selector(::-webkit-scrollbar) {
-    .page.scrollable {
+    .page-scroll.scrollable {
       scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+
+    .page-scroll.scrollable.scrolling {
       scrollbar-color: rgba(90, 75, 60, 0.45) transparent;
     }
   }
 
-  .page.scrollable::-webkit-scrollbar {
+  .page-scroll.scrollable::-webkit-scrollbar {
     width: 6px;
   }
 
-  .page.scrollable::-webkit-scrollbar-button {
+  .page-scroll.scrollable::-webkit-scrollbar-button {
     display: none;
     width: 0;
     height: 0;
   }
 
-  .page.scrollable::-webkit-scrollbar-track {
+  .page-scroll.scrollable::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  .page.scrollable::-webkit-scrollbar-thumb {
-    background: rgba(90, 75, 60, 0.45);
+  .page-scroll.scrollable::-webkit-scrollbar-thumb {
+    background: transparent;
     border-radius: 3px;
   }
 
-  .page.scrollable::-webkit-scrollbar-thumb:hover {
+  .page-scroll.scrollable.scrolling::-webkit-scrollbar-thumb {
+    background: rgba(90, 75, 60, 0.45);
+  }
+
+  .page-scroll.scrollable.scrolling::-webkit-scrollbar-thumb:hover {
     background: rgba(90, 75, 60, 0.65);
   }
 
@@ -452,7 +548,6 @@
     gap: 20px;
     flex-shrink: 0;
     width: 100%;
-    max-width: 640px;
     margin-top: auto;
     max-height: 45%;
     overflow-y: auto;

@@ -25,7 +25,7 @@
   const typeOptions = Object.values(CardType);
 
   const costOptions = $derived(
-    [...new Set(collection.map((card) => card.cost))].sort((a, b) => a - b),
+    [...new Set(collection.map((card) => card.cost))].sort((a, b) => a - b)
   );
 
   const filtered = $derived(
@@ -35,12 +35,14 @@
       if (costFilter !== null && card.cost !== costFilter) return false;
       if (typeFilter && card.type !== typeFilter) return false;
       return true;
-    }),
+    })
   );
 
   const lands = $derived(sortCards(filtered.filter(isLandCard)));
   const cards = $derived(sortCards(filtered.filter((card) => !isLandCard(card))));
-  const hasActiveFilters = $derived(colorFilter !== null || costFilter !== null || typeFilter !== null);
+  const hasActiveFilters = $derived(
+    colorFilter !== null || costFilter !== null || typeFilter !== null
+  );
 
   function handleCardClick(card: CardTemplate) {
     onSelect?.(card);
@@ -183,6 +185,7 @@
     height: 100%;
     color: var(--color-cream);
     font-family: var(--font-narrative);
+    padding: 0px 16px;
   }
 
   .filters {

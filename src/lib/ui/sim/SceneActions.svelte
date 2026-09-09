@@ -248,7 +248,6 @@
     gap: 16px;
     flex-shrink: 0;
     width: 100%;
-    max-width: 640px;
     margin-top: auto;
   }
 

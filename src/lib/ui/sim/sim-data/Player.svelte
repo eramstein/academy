@@ -2,56 +2,33 @@
   import {
     CardColor,
     isLandCard,
-    type Attributes,
     type CardCraftingSkills,
     type UnitKeywords,
   } from '@/lib/_model';
   import { ResourceType, SubscriptionType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
-  import { getAssetPath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import Attributes from '../Attributes.svelte';
+  import CharacterIdentity from '../characters/CharacterIdentity.svelte';
 
-  const ATTR_MAX = 20;
-  const ATTR_ORDER: (keyof Attributes)[] = [
-    'dexterity',
-    'intelligence',
-    'vitality',
-    'charisma',
-    'aura',
-  ];
   const CRAFTING_SKILL_ORDER: (keyof CardCraftingSkills)[] = [
     'mastery',
     'efficiency',
     'inspiration',
   ];
-
-  let portraitFailed = $state(false);
+  const SUB_ICONS: Record<SubscriptionType, string> = {
+    [SubscriptionType.Academy]: 'sun',
+    [SubscriptionType.Library]: 'book',
+    [SubscriptionType.Inn]: 'mug',
+  };
 
   const player = $derived(gs.player);
-  const place = $derived(gs.places[player.placeKey]);
-  const region = $derived(place ? gs.regions[place.regionKey] : undefined);
-  const portraitPath = $derived(getCharacterImagePath(player.key));
-
-  $effect(() => {
-    portraitPath;
-    portraitFailed = false;
-  });
-
-  const attributeRows = $derived(
-    ATTR_ORDER.map((key) => ({
-      key,
-      value: player.attributes[key],
-      pct: Math.min(100, Math.max(0, (player.attributes[key] / ATTR_MAX) * 100)),
-    }))
-  );
-
-  const focusPct = $derived(
-    player.maxFocus > 0 ? Math.min(100, Math.max(0, (player.focus / player.maxFocus) * 100)) : 0
-  );
 
   const subscriptions = $derived(
     Object.values(SubscriptionType).map((type) => ({
       type,
       days: player.subscriptions[type] ?? 0,
+      icon: SUB_ICONS[type],
     }))
   );
 
@@ -98,355 +75,287 @@
   function formatResource(type: ResourceType): string {
     return type.replace(/_/g, ' ');
   }
+
+  function iconUrl(name: string) {
+    return getAssetPath(`images/ui/${name}.svg`);
+  }
 </script>
 
+{#snippet icon(name: string)}
+  <span class="icon" style="--icon: url('{iconUrl(name)}')" aria-hidden="true"></span>
+{/snippet}
+
+{#snippet divider()}
+  <div class="divider" aria-hidden="true">
+    <span class="rule"></span>
+    <span class="diamond"></span>
+    <span class="rule"></span>
+  </div>
+{/snippet}
+
 <div class="player">
-  <header class="sheet-header">
-    <div class="portrait-frame">
-      {#if !portraitFailed}
-        <img
-          class="portrait"
-          src={portraitPath}
-          alt={player.name}
-          onerror={() => (portraitFailed = true)}
-        />
-      {:else}
-        <div class="portrait-fallback" aria-hidden="true">{player.name.charAt(0)}</div>
-      {/if}
-    </div>
-    <div class="identity">
-      <h2 class="name">{player.name}</h2>
-      <dl class="meta">
-        <div class="meta-row">
-          <dt>Location</dt>
-          <dd>{place?.name ?? player.placeKey}</dd>
-        </div>
-        {#if region}
-          <div class="meta-row">
-            <dt>Region</dt>
-            <dd>{region.name}</dd>
-          </div>
+  <div class="sheet">
+    <CharacterIdentity character={player} />
+
+    <div class="sheet-body">
+      <section class="section">
+        <h3 class="section-title">
+          {@render icon('compass')}
+          Attributes
+        </h3>
+        {@render divider()}
+        <Attributes attributes={player.attributes} />
+      </section>
+
+      <section class="section">
+        <h3 class="section-title">
+          {@render icon('coin')}
+          Inventory
+        </h3>
+        {@render divider()}
+        <ul class="kv-list">
+          {#each resources as resource (resource.type)}
+            <li class="kv-row">
+              <span class="kv-name">{formatResource(resource.type)}</span>
+              <span class="kv-value">{resource.amount}</span>
+            </li>
+          {/each}
+        </ul>
+      </section>
+
+      <section class="section">
+        <h3 class="section-title">
+          {@render icon('book')}
+          Subscriptions
+        </h3>
+        {@render divider()}
+        <ul class="sub-list">
+          {#each subscriptions as sub (sub.type)}
+            <li class="sub-row">
+              {@render icon(sub.icon)}
+              <span class="sub-name">{sub.type}</span>
+              <span class="sub-days">{sub.days} days</span>
+            </li>
+          {/each}
+        </ul>
+      </section>
+
+      <section class="section">
+        <h3 class="section-title">
+          {@render icon('spiral')}
+          Card Crafting
+        </h3>
+        {@render divider()}
+        <ul class="kv-list">
+          {#each craftingSkills as skill (skill.key)}
+            <li class="kv-row">
+              <span class="kv-name">{skill.key}</span>
+              <span class="kv-value">{skill.value}</span>
+            </li>
+          {/each}
+        </ul>
+        {#if craftingColors.length > 0}
+          <h4 class="subsection-title">Colors</h4>
+          <ul class="chip-list">
+            {#each craftingColors as { color, level } (color)}
+              <li
+                class="color-indicator"
+                style="background-image: url('{colorPath(color)}')"
+                title="{color} · {level}"
+              ></li>
+            {/each}
+          </ul>
         {/if}
-        <div class="meta-row">
-          <dt>Gold</dt>
-          <dd class="gold">{player.gold}</dd>
-        </div>
-        <div class="meta-row">
-          <dt>Focus</dt>
-          <dd class="focus-meta">
-            <div class="focus-bar" aria-hidden="true">
-              <div class="focus-fill" style="width: {focusPct}%"></div>
-            </div>
-            <span>{player.focus} / {player.maxFocus}</span>
-          </dd>
-        </div>
-      </dl>
+        {#if craftingKeywords.length > 0}
+          <h4 class="subsection-title">Keywords</h4>
+          <ul class="kv-list">
+            {#each craftingKeywords as { keyword, level } (keyword)}
+              <li class="kv-row">
+                <span class="kv-name keyword">{formatKeyword(keyword)}</span>
+                <span class="kv-value">{level}</span>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      </section>
+
+      <section class="section">
+        <h3 class="section-title">
+          {@render icon('book')}
+          Collection
+        </h3>
+        {@render divider()}
+        {#if collectionCount === 0}
+          <p class="empty">Empty.</p>
+        {:else}
+          <p class="summary">{cardCount} cards · {landCount} lands</p>
+        {/if}
+      </section>
+
+      <section class="section">
+        <h3 class="section-title">
+          {@render icon('cards')}
+          Decks
+        </h3>
+        {@render divider()}
+        {#if player.decks.length === 0}
+          <p class="empty">None yet.</p>
+        {:else}
+          <ul class="kv-list">
+            {#each player.decks as deck (deck.key)}
+              <li class="kv-row">
+                <span class="kv-name">{deck.name}</span>
+                <span class="kv-value">{deck.cards.length} cards · {deck.lands.length} lands</span>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      </section>
     </div>
-  </header>
-
-  <section class="section">
-    <h3 class="section-title">Attributes</h3>
-    <ul class="attr-list">
-      {#each attributeRows as attr (attr.key)}
-        <li class="attr-row">
-          <span class="attr-name">{attr.key}</span>
-          <div class="attr-bar" aria-hidden="true">
-            <div class="attr-fill" style="width: {attr.pct}%"></div>
-          </div>
-          <span class="attr-value">{attr.value}</span>
-        </li>
-      {/each}
-    </ul>
-  </section>
-
-  <section class="section">
-    <h3 class="section-title">Inventory</h3>
-    <ul class="kv-list">
-      {#each resources as resource (resource.type)}
-        <li class="kv-row">
-          <span class="kv-name">{formatResource(resource.type)}</span>
-          <span class="kv-value">{resource.amount}</span>
-        </li>
-      {/each}
-    </ul>
-  </section>
-
-  <section class="section">
-    <h3 class="section-title">Subscriptions</h3>
-    <ul class="kv-list">
-      {#each subscriptions as sub (sub.type)}
-        <li class="kv-row">
-          <span class="kv-name">{sub.type}</span>
-          <span class="kv-value">{sub.days} days</span>
-        </li>
-      {/each}
-    </ul>
-  </section>
-
-  <section class="section">
-    <h3 class="section-title">Card Crafting</h3>
-    <ul class="kv-list">
-      {#each craftingSkills as skill (skill.key)}
-        <li class="kv-row">
-          <span class="kv-name">{skill.key}</span>
-          <span class="kv-value">{skill.value}</span>
-        </li>
-      {/each}
-    </ul>
-    {#if craftingColors.length > 0}
-      <h4 class="subsection-title">Colors</h4>
-      <ul class="chip-list">
-        {#each craftingColors as { color, level } (color)}
-          <li class="chip">
-            <div
-              class="color-indicator"
-              style="background-image: url('{colorPath(color)}')"
-              title={color}
-            ></div>
-            <span class="chip-name">{color}</span>
-            <span class="chip-level">{level}</span>
-          </li>
-        {/each}
-      </ul>
-    {/if}
-    {#if craftingKeywords.length > 0}
-      <h4 class="subsection-title">Keywords</h4>
-      <ul class="kv-list">
-        {#each craftingKeywords as { keyword, level } (keyword)}
-          <li class="kv-row">
-            <span class="kv-name keyword">{formatKeyword(keyword)}</span>
-            <span class="kv-value">{level}</span>
-          </li>
-        {/each}
-      </ul>
-    {/if}
-  </section>
-
-  <section class="section">
-    <h3 class="section-title">Collection</h3>
-    {#if collectionCount === 0}
-      <p class="empty">Empty.</p>
-    {:else}
-      <p class="summary">{cardCount} cards · {landCount} lands</p>
-    {/if}
-  </section>
-
-  <section class="section">
-    <h3 class="section-title">Decks</h3>
-    {#if player.decks.length === 0}
-      <p class="empty">None yet.</p>
-    {:else}
-      <ul class="kv-list">
-        {#each player.decks as deck (deck.key)}
-          <li class="kv-row">
-            <span class="kv-name">{deck.name}</span>
-            <span class="kv-value">{deck.cards.length} cards · {deck.lands.length} lands</span>
-          </li>
-        {/each}
-      </ul>
-    {/if}
-  </section>
+  </div>
 </div>
 
 <style>
   .player {
+    --gold: var(--color-golden);
+    --gold-text: var(--color-cream);
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    color: var(--color-cream);
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    color: var(--gold-text);
     font-family: var(--font-narrative);
+    background: transparent;
   }
 
-  .sheet-header {
-    display: flex;
-    gap: 1rem;
-    align-items: stretch;
-    min-width: 0;
-  }
-
-  .portrait-frame {
-    flex: 0 0 144px;
-    width: 144px;
-    height: 144px;
-    overflow: hidden;
-    border-radius: 6px;
-    border: 1px solid var(--color-golden);
-    background: var(--color-deep-brown);
-  }
-
-  .portrait {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .portrait-fallback {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3rem;
-    font-weight: 600;
-    color: var(--color-muted-label);
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  .identity {
-    flex: 1 1 auto;
-    min-width: 0;
+  .sheet {
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(196, 165, 116, 0.35) transparent;
   }
 
-  .name {
-    margin: 0;
-    font-size: 1.15rem;
-    font-weight: 600;
-    line-height: 1.3;
-    color: var(--color-cream);
+  .icon {
+    display: block;
+    width: 1.05rem;
+    height: 1.05rem;
+    flex-shrink: 0;
+    background: currentColor;
+    mask: var(--icon) center / contain no-repeat;
+    -webkit-mask: var(--icon) center / contain no-repeat;
   }
 
-  .meta {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-
-  .meta-row {
+  .divider {
     display: grid;
-    grid-template-columns: 5.5rem 1fr;
-    gap: 0.5rem;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    font-size: 0.9rem;
+    gap: 0.45rem;
   }
 
-  .meta-row dt {
-    margin: 0;
-    color: var(--color-muted-label);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-size: 0.75rem;
+  .rule {
+    height: 1px;
+    background: currentColor;
+    opacity: 0.38;
   }
 
-  .meta-row dd {
-    margin: 0;
-    color: var(--color-cream);
+  .diamond {
+    width: 7px;
+    height: 7px;
+    background: currentColor;
+    opacity: 0.55;
+    clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
   }
 
-  .gold {
-    color: var(--color-golden);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .focus-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .focus-bar,
-  .attr-bar {
-    height: 0.45rem;
-    border-radius: 2px;
-    background: #0c1016;
-    overflow: hidden;
-  }
-
-  .focus-bar {
+  .sheet-body {
     flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
     min-width: 0;
-  }
-
-  .focus-fill,
-  .attr-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: var(--color-golden);
+    padding: 1.05rem 1.2rem 1.2rem;
+    box-sizing: border-box;
+    color: var(--gold-text);
+    background: transparent;
   }
 
   .section {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.45rem;
   }
 
   .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
     margin: 0;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--color-muted-label);
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid rgba(191, 161, 74, 0.35);
+    color: var(--color-golden);
+  }
+
+  .section-title .icon {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  .sheet-body .divider {
+    color: var(--gold);
   }
 
   .subsection-title {
-    margin: 0.25rem 0 0;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    margin: 0.35rem 0 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--color-muted-label);
+    color: var(--color-golden);
   }
 
   .empty,
   .summary {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
   }
 
-  .empty {
-    font-size: 0.95rem;
-  }
-
-  .attr-list,
   .kv-list,
+  .sub-list,
   .chip-list {
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .attr-list,
-  .kv-list {
+  .kv-list,
+  .sub-list {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .attr-row {
-    display: grid;
-    grid-template-columns: 6.5rem 1fr 2rem;
     gap: 0.55rem;
-    align-items: center;
-  }
-
-  .attr-name,
-  .kv-name {
-    font-size: 0.85rem;
-    text-transform: capitalize;
-    color: var(--color-cream);
-  }
-
-  .attr-value {
-    text-align: right;
-    font-size: 0.9rem;
-    font-variant-numeric: tabular-nums;
-    color: var(--color-cream);
   }
 
   .kv-row {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
+    align-items: center;
+    font-size: 0.95rem;
+  }
+
+  .kv-name {
     font-size: 0.9rem;
+    text-transform: capitalize;
+    color: var(--color-cream);
   }
 
   .kv-value {
@@ -458,37 +367,33 @@
     text-transform: none;
   }
 
-  .chip-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  .chip {
-    display: flex;
+  .sub-row {
+    display: grid;
+    grid-template-columns: 1.1rem 1fr auto;
+    gap: 0.5rem;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.2rem 0.55rem;
-    border: 1px solid var(--color-golden);
-    border-radius: 3px;
-    background: rgba(191, 161, 74, 0.08);
+    font-size: 0.95rem;
   }
 
-  .chip-name {
-    font-size: 0.85rem;
+  .sub-name {
     text-transform: capitalize;
     color: var(--color-cream);
   }
 
-  .chip-level {
-    font-size: 0.8rem;
+  .sub-days {
     color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
   }
 
+  .chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
   .color-indicator {
-    width: 14px;
-    height: 14px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background-size: cover;
     background-position: center;

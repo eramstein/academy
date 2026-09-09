@@ -30,19 +30,21 @@
     return getAssetPath(`images/color_${color}.png`);
   }
 
-  const colors = $derived(
-    [...new Set([...deck.cards, ...deck.lands].flatMap((c) => c.colors.map((col) => col.color)))],
-  );
+  const colors = $derived([
+    ...new Set([...deck.cards, ...deck.lands].flatMap((c) => c.colors.map((col) => col.color))),
+  ]);
   const sortedCards = $derived(sortCards(deck.cards));
   const sortedLands = $derived(sortCards(deck.lands));
   const clickable = $derived(!!onCardClick);
   const landsOk = $derived(requiredLands === undefined || deck.lands.length === requiredLands);
   const cardsOk = $derived(minCards === undefined || deck.cards.length >= minCards);
   const landsCount = $derived(
-    requiredLands !== undefined ? `${deck.lands.length}/${requiredLands}` : String(deck.lands.length),
+    requiredLands !== undefined
+      ? `${deck.lands.length}/${requiredLands}`
+      : String(deck.lands.length)
   );
   const cardsCount = $derived(
-    minCards !== undefined ? `${deck.cards.length}/${minCards}+` : String(deck.cards.length),
+    minCards !== undefined ? `${deck.cards.length}/${minCards}+` : String(deck.cards.length)
   );
 </script>
 

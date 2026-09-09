@@ -9,7 +9,7 @@
   import CharacterPortrait from '../characters/CharacterPortrait.svelte';
 
   const characters = $derived(
-    Object.values(gs.characters).sort((a, b) => a.name.localeCompare(b.name)),
+    Object.values(gs.characters).sort((a, b) => a.name.localeCompare(b.name))
   );
 
   const selectedCharacter = $derived(
@@ -17,7 +17,7 @@
       ? gs.player
       : uiState.sim.selectedCharacterKey
         ? (gs.characters[uiState.sim.selectedCharacterKey] ?? null)
-        : null,
+        : null
   );
 
   $effect(() => {
@@ -75,10 +75,14 @@
     min-height: 0;
   }
 
+  .character-view :global(.identity) {
+    padding-right: 4.75rem;
+  }
+
   .back-btn {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 24px;
+    right: 24px;
     z-index: 3;
     padding: 0.5rem 0.9rem;
     background: var(--color-data);
@@ -101,6 +105,7 @@
     gap: 0.75rem;
     color: var(--color-cream);
     font-family: var(--font-narrative);
+    padding: 12px 16px;
   }
 
   .empty {
