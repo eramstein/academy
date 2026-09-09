@@ -12,6 +12,27 @@ export function addKeyword(card: UnitCardTemplate, keyword: keyof UnitKeywords, 
   }
 }
 
+export function removeKeyword(card: UnitCardTemplate, keyword: keyof UnitKeywords, value = 1) {
+  if (!card.keywords) return;
+  const current = card.keywords[keyword];
+  if (!current) return;
+
+  if (typeof current === 'number') {
+    const next = current - value;
+    if (next > 0) {
+      (card.keywords[keyword] as number) = next;
+    } else {
+      delete card.keywords[keyword];
+    }
+  } else {
+    delete card.keywords[keyword];
+  }
+
+  if (Object.keys(card.keywords).length === 0) {
+    card.keywords = undefined;
+  }
+}
+
 export const keywordConfig: Record<keyof UnitKeywords, { baseCost: number; prevalence: number }> = {
   ranged: { baseCost: 3, prevalence: 8 },
   haste: { baseCost: 3, prevalence: 3 },

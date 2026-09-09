@@ -8,7 +8,7 @@ import { gs } from '@/lib/_state';
 import { getRandomFromObjectWeights } from '@/lib/_utils/random';
 import { cardBudget, featureCosts, getCardBudget } from '../cards/card-budget';
 import { colorPie, getCardDominantColor } from '../cards/color-pie';
-import { addKeyword, KEYWORD_KEYS } from '../cards/keywords';
+import { addKeyword, KEYWORD_KEYS, removeKeyword } from '../cards/keywords';
 import { narrateCardEncanted } from '../narration';
 
 export interface AugmentParameters {
@@ -27,6 +27,24 @@ export interface AugmentPreview {
   upgradeBudget: number;
   spent: number;
   extraBudget: number;
+}
+
+export interface DistillParameters {
+  cardId: string;
+  costDecrease?: number;
+  maxHealth?: number;
+  power?: number;
+  retaliate?: number;
+  keywords?: Partial<Record<keyof UnitKeywords, number>>;
+}
+
+export interface DistillPreview {
+  error: string;
+  card: UnitCardTemplate | null;
+  preview: UnitCardTemplate | null;
+  downgradeBudget: number;
+  saved: number;
+  extraCut: number;
 }
 
 export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview {
@@ -126,15 +144,102 @@ export function augmentUnit(parameters: AugmentParameters): string {
   return '';
 }
 
+export function getDistillPreview(parameters: DistillParameters): DistillPreview {
+  const card = gs.player.collection.find((c) => c.id === parameters.cardId);
+
+  if (!card) {
+    return emptyDistillPreview(`Card not found: ${parameters.cardId}.`);
+  }
+  if (!isUnitCard(card)) {
+    return emptyDistillPreview(`Card is not a unit: ${parameters.cardId}.`);
+  }
+
+  const costDecrease = parameters.costDecrease || 1;
+  if (card.cost < costDecrease) {
+    return {
+      error: `Card cost is too low to distill: ${card.cost}.`,
+      card,
+      preview: null,
+      downgradeBudget: 0,
+      saved: 0,
+      extraCut: 0,
+    };
+  }
+
+  const cutError = getDistillCutError(card, parameters);
+  if (cutError) {
+    return {
+      error: cutError,
+      card,
+      preview: null,
+      downgradeBudget: 0,
+      saved: 0,
+      extraCut: 0,
+    };
+  }
+
+  const downgradeBudget = cardBudget[card.cost] - cardBudget[card.cost - costDecrease];
+  const preview = makeDistilledCardTemplate(card, { ...parameters, costDecrease });
+  const saved = getCardBudget(card) - getCardBudget(preview);
+  if (saved < downgradeBudget) {
+    return {
+      error: `Need to cut more budget: ${saved} < ${downgradeBudget}.`,
+      card,
+      preview,
+      downgradeBudget,
+      saved,
+      extraCut: 0,
+    };
+  }
+
+  return {
+    error: '',
+    card,
+    preview,
+    downgradeBudget,
+    saved,
+    extraCut: saved - downgradeBudget,
+  };
+}
+
+export function distillUnit(parameters: DistillParameters): string {
+  const result = getDistillPreview(parameters);
+  if (result.error || !result.card) {
+    return result.error;
+  }
+  if (!parameters.costDecrease) {
+    parameters.costDecrease = 1;
+  }
+
+  const card = result.card;
+  const oldCard: UnitCardTemplate = {
+    ...card,
+    keywords: card.keywords ? { ...card.keywords } : undefined,
+  };
+
+  makeDistilledCardTemplate(card, parameters, true);
+  narrateCardEncanted(oldCard, card, describeDistill(oldCard, card));
+
+  return '';
+}
+
 function describeAugment(oldCard: UnitCardTemplate, newCard: UnitCardTemplate): string {
-  const changes = describeAugmentChanges(oldCard, newCard);
+  const changes = describeCardChanges(oldCard, newCard);
   if (!changes) {
     return `You augmented ${newCard.name}.`;
   }
   return `You augmented ${newCard.name}. ${changes}`;
 }
 
-function describeAugmentChanges(oldCard: UnitCardTemplate, newCard: UnitCardTemplate): string {
+function describeDistill(oldCard: UnitCardTemplate, newCard: UnitCardTemplate): string {
+  const changes = describeCardChanges(oldCard, newCard);
+  if (!changes) {
+    return `You distilled ${newCard.name}.`;
+  }
+  return `You distilled ${newCard.name}. ${changes}`;
+}
+
+function describeCardChanges(oldCard: UnitCardTemplate, newCard: UnitCardTemplate): string {
   const parts: string[] = [];
 
   if (oldCard.cost !== newCard.cost) {
@@ -197,6 +302,45 @@ function emptyPreview(error: string): AugmentPreview {
   };
 }
 
+function emptyDistillPreview(error: string): DistillPreview {
+  return {
+    error,
+    card: null,
+    preview: null,
+    downgradeBudget: 0,
+    saved: 0,
+    extraCut: 0,
+  };
+}
+
+function getDistillCutError(card: UnitCardTemplate, parameters: DistillParameters): string {
+  if ((parameters.power ?? 0) > card.power) {
+    return `Cannot cut more power than the card has: ${card.power}.`;
+  }
+  if ((parameters.maxHealth ?? 0) > card.maxHealth - 1) {
+    return `Cannot cut health below 1: ${card.maxHealth}.`;
+  }
+  if ((parameters.retaliate ?? 0) > (card.retaliate || 0)) {
+    return `Cannot cut more retaliate than the card has: ${card.retaliate || 0}.`;
+  }
+  if (parameters.keywords) {
+    for (const [keyword, value] of Object.entries(parameters.keywords) as [
+      keyof UnitKeywords,
+      number,
+    ][]) {
+      if (!value) continue;
+      const current = card.keywords?.[keyword];
+      if (!current) {
+        return `Card does not have keyword: ${formatKeywordName(keyword)}.`;
+      }
+      if (typeof current === 'number' && value > current) {
+        return `Cannot cut more ${formatKeywordName(keyword)} than the card has: ${current}.`;
+      }
+    }
+  }
+  return '';
+}
+
 function getUpgradePreference(
   card: CardTemplate,
   costs: Record<string, number>,
@@ -237,6 +381,37 @@ function makeNewCardTemplate(
     ][]) {
       if (value) {
         addKeyword(target, keyword, value);
+      }
+    }
+  }
+
+  return target;
+}
+
+function makeDistilledCardTemplate(
+  card: UnitCardTemplate,
+  parameters: DistillParameters,
+  mutate = false
+): UnitCardTemplate {
+  const target: UnitCardTemplate = mutate
+    ? card
+    : {
+        ...card,
+        keywords: card.keywords ? { ...card.keywords } : undefined,
+      };
+
+  target.cost -= parameters.costDecrease ?? 0;
+  target.maxHealth -= parameters.maxHealth ?? 0;
+  target.power -= parameters.power ?? 0;
+  target.retaliate = Math.max(0, (target.retaliate || 0) - (parameters.retaliate ?? 0));
+
+  if (parameters.keywords) {
+    for (const [keyword, value] of Object.entries(parameters.keywords) as [
+      keyof UnitKeywords,
+      number,
+    ][]) {
+      if (value) {
+        removeKeyword(target, keyword, value);
       }
     }
   }

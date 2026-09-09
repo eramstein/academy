@@ -19,6 +19,7 @@ export enum ActionType {
   Invoke = 'invoke',
   Conjure = 'conjure',
   Augment = 'augment',
+  Distill = 'distill',
   Move = 'move',
   Transaction = 'transaction',
   Negotiate = 'negotiate',

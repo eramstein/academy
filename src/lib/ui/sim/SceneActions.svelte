@@ -18,6 +18,7 @@
     [ActionType.Invoke]: 'spiral',
     [ActionType.Wait]: 'hourglass',
     [ActionType.Augment]: 'leaf',
+    [ActionType.Distill]: 'moon',
     [ActionType.StartMatch]: 'trophy',
     [ActionType.Move]: 'boot',
     [ActionType.Transaction]: 'coin',
@@ -128,7 +129,7 @@
       actionParameters: { ...action.actionParameters },
       missingParameters: { ...action.missingParameters },
     };
-    if (next.actionType === ActionType.Augment) {
+    if (next.actionType === ActionType.Augment || next.actionType === ActionType.Distill) {
       enchantAction = next;
       return;
     }

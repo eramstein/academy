@@ -1,8 +1,21 @@
 <script lang="ts">
-  import { CardColor, CardType, type Action, type CardTemplate, type UnitKeywords } from '@/lib/_model';
+  import {
+    ActionType,
+    CardColor,
+    CardType,
+    type Action,
+    type CardTemplate,
+    type UnitKeywords,
+  } from '@/lib/_model';
   import { gs } from '@/lib/_state';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
-  import { performAction, getAugmentPreview, type AugmentParameters } from '@/lib/sim/actions';
+  import {
+    performAction,
+    getAugmentPreview,
+    getDistillPreview,
+    type AugmentParameters,
+    type DistillParameters,
+  } from '@/lib/sim/actions';
   import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import CardFilters from '@/lib/ui/cards/CardFilters.svelte';
@@ -20,6 +33,8 @@
   const woodPath = getAssetPath('images/wood_chip_base.png');
   const tablePath = getAssetPath('images/table.jpg');
   const parchmentPath = getAssetPath('images/parchment.png');
+
+  const isDistill = $derived(action.actionType === ActionType.Distill);
 
   let cardId = $state<string | null>(initialCardId(action));
   let costIncrease = $state(1);
@@ -51,36 +66,89 @@
     KEYWORD_KEYS.filter((key) => !!gs.player.craftingKnowledge.keywords?.[key])
   );
 
-  const parameters = $derived.by((): AugmentParameters | null => {
+  const parameters = $derived.by((): AugmentParameters | DistillParameters | null => {
     if (!cardId) return null;
     const selectedKeywords = Object.fromEntries(
       Object.entries(keywords).filter(([, value]) => value)
     ) as Partial<Record<keyof UnitKeywords, number>>;
-    return {
+    const shared = {
       cardId,
-      costIncrease,
       power: power || undefined,
       maxHealth: maxHealth || undefined,
       retaliate: retaliate || undefined,
       keywords: Object.keys(selectedKeywords).length ? selectedKeywords : undefined,
     };
+    if (isDistill) {
+      return { ...shared, costDecrease: 1 };
+    }
+    return { ...shared, costIncrease };
   });
 
-  const preview = $derived(parameters ? getAugmentPreview(parameters) : null);
+  const preview = $derived(
+    parameters
+      ? isDistill
+        ? getDistillPreview(parameters as DistillParameters)
+        : getAugmentPreview(parameters as AugmentParameters)
+      : null
+  );
   const card = $derived(preview?.card ?? null);
   const maxCostIncrease = $derived(card ? 9 - card.cost : 1);
+  const maxPowerCut = $derived(card?.power ?? 0);
+  const maxHealthCut = $derived(card ? Math.max(0, card.maxHealth - 1) : 0);
+  const maxRetaliateCut = $derived(card?.retaliate ?? 0);
+  const ownedKeywords = $derived(
+    card ? KEYWORD_KEYS.filter((key) => !!card.keywords?.[key]) : []
+  );
 
   const canDecCost = $derived(
-    !!parameters && costIncrease > 1 && fits({ ...parameters, costIncrease: costIncrease - 1 })
+    !isDistill &&
+      !!parameters &&
+      costIncrease > 1 &&
+      fits({ ...(parameters as AugmentParameters), costIncrease: costIncrease - 1 })
   );
-  const canIncCost = $derived(costIncrease < maxCostIncrease);
+  const canIncCost = $derived(!isDistill && costIncrease < maxCostIncrease);
   const canDecPower = $derived(power > 0);
-  const canIncPower = $derived(!!parameters && fits({ ...parameters, power: power + 1 }));
+  const canIncPower = $derived(
+    !!parameters &&
+      (isDistill
+        ? power < maxPowerCut
+        : fits({ ...(parameters as AugmentParameters), power: power + 1 }))
+  );
   const canDecHealth = $derived(maxHealth > 0);
-  const canIncHealth = $derived(!!parameters && fits({ ...parameters, maxHealth: maxHealth + 1 }));
+  const canIncHealth = $derived(
+    !!parameters &&
+      (isDistill
+        ? maxHealth < maxHealthCut
+        : fits({ ...(parameters as AugmentParameters), maxHealth: maxHealth + 1 }))
+  );
   const canDecRetaliate = $derived(retaliate > 0);
   const canIncRetaliate = $derived(
-    !!parameters && fits({ ...parameters, retaliate: retaliate + 1 })
+    !!parameters &&
+      (isDistill
+        ? retaliate < maxRetaliateCut
+        : fits({ ...(parameters as AugmentParameters), retaliate: retaliate + 1 }))
+  );
+
+  const budgetUsed = $derived.by(() => {
+    if (!preview) return 0;
+    return isDistill
+      ? (preview as ReturnType<typeof getDistillPreview>).saved
+      : (preview as ReturnType<typeof getAugmentPreview>).spent;
+  });
+  const budgetCap = $derived.by(() => {
+    if (!preview) return 0;
+    return isDistill
+      ? (preview as ReturnType<typeof getDistillPreview>).downgradeBudget
+      : (preview as ReturnType<typeof getAugmentPreview>).upgradeBudget;
+  });
+  const budgetRemainder = $derived.by(() => {
+    if (!preview || preview.error) return 0;
+    return isDistill
+      ? (preview as ReturnType<typeof getDistillPreview>).extraCut
+      : (preview as ReturnType<typeof getAugmentPreview>).extraBudget;
+  });
+  const budgetShort = $derived(
+    isDistill && preview?.error ? Math.max(0, budgetCap - budgetUsed) : 0
   );
 
   function optionId(option: string | [string, string]): string {
@@ -133,8 +201,10 @@
     onDone();
   }
 
-  function fits(next: AugmentParameters): boolean {
-    return getAugmentPreview(next).error === '';
+  function fits(next: AugmentParameters | DistillParameters): boolean {
+    return isDistill
+      ? getDistillPreview(next as DistillParameters).error === ''
+      : getAugmentPreview(next as AugmentParameters).error === '';
   }
 
   function formatKeyword(keyword: string): string {
@@ -146,26 +216,39 @@
     return !!card.keywords?.[key];
   }
 
+  function keywordOwnedValue(key: keyof UnitKeywords): number {
+    const current = card?.keywords?.[key];
+    if (typeof current === 'number') return current;
+    return current ? 1 : 0;
+  }
+
   function setKeyword(key: keyof UnitKeywords, value: number) {
     if (!parameters) return;
     const next = Math.max(0, value);
+    const maxCut = isDistill ? keywordOwnedValue(key) : Infinity;
+    const clamped = Math.min(next, maxCut);
     const nextKeywords = { ...keywords };
-    if (next) {
-      nextKeywords[key] = next;
+    if (clamped) {
+      nextKeywords[key] = clamped;
     } else {
       delete nextKeywords[key];
     }
-    if (next > (keywords[key] ?? 0) && !fits({ ...parameters, keywords: nextKeywords })) return;
+    if (!isDistill && clamped > (keywords[key] ?? 0) && !fits({ ...parameters, keywords: nextKeywords })) {
+      return;
+    }
     keywords = nextKeywords;
   }
 
   function toggleKeyword(key: keyof UnitKeywords) {
-    if (!parameters || hasBooleanKeyword(key)) return;
+    if (!parameters) return;
+    if (!isDistill && hasBooleanKeyword(key)) return;
+    if (isDistill && !hasBooleanKeyword(key) && !NUMERIC_KEYWORDS.has(key)) return;
+
     const enabled = !keywords[key];
     const nextKeywords = { ...keywords };
     if (enabled) {
       nextKeywords[key] = 1;
-      if (!fits({ ...parameters, keywords: nextKeywords })) return;
+      if (!isDistill && !fits({ ...parameters, keywords: nextKeywords })) return;
     } else {
       delete nextKeywords[key];
     }
@@ -174,12 +257,15 @@
 
   function canIncKeyword(key: keyof UnitKeywords): boolean {
     if (!parameters) return false;
+    if (isDistill) {
+      return (keywords[key] ?? 0) < keywordOwnedValue(key);
+    }
     const nextKeywords = { ...keywords, [key]: (keywords[key] ?? 0) + 1 };
     return fits({ ...parameters, keywords: nextKeywords });
   }
 
   function setCostIncrease(next: number) {
-    if (!Number.isFinite(next)) return;
+    if (isDistill || !Number.isFinite(next)) return;
     const value = Math.round(next);
     if (value < 1 || value > maxCostIncrease) return;
     if (value < costIncrease && parameters && !fits({ ...parameters, costIncrease: value })) return;
@@ -189,6 +275,7 @@
   function setPower(next: number) {
     if (!Number.isFinite(next) || next < 0) return;
     const value = Math.round(next);
+    if (isDistill && value > maxPowerCut) return;
     if (value > power && !canIncPower) return;
     if (value < power && !canDecPower) return;
     power = value;
@@ -197,6 +284,7 @@
   function setMaxHealth(next: number) {
     if (!Number.isFinite(next) || next < 0) return;
     const value = Math.round(next);
+    if (isDistill && value > maxHealthCut) return;
     if (value > maxHealth && !canIncHealth) return;
     if (value < maxHealth && !canDecHealth) return;
     maxHealth = value;
@@ -205,6 +293,7 @@
   function setRetaliate(next: number) {
     if (!Number.isFinite(next) || next < 0) return;
     const value = Math.round(next);
+    if (isDistill && value > maxRetaliateCut) return;
     if (value > retaliate && !canIncRetaliate) return;
     if (value < retaliate && !canDecRetaliate) return;
     retaliate = value;
@@ -353,9 +442,9 @@
       <h2 id="enchant-title" class="title">
         <span class="star" aria-hidden="true"></span>
         {#if cardId}
-          Enchant {card?.name ?? 'Card'}
+          {isDistill ? 'Distill' : 'Enchant'} {card?.name ?? 'Card'}
         {:else}
-          Enchant a Card
+          {isDistill ? 'Distill a Card' : 'Enchant a Card'}
         {/if}
         <span class="star" aria-hidden="true"></span>
       </h2>
@@ -412,27 +501,39 @@
           </h3>
           <div class="budget">
             <div class="budget-stat">
-              <div class="stat-label">Spent</div>
+              <div class="stat-label">{isDistill ? 'Cut' : 'Spent'}</div>
               <div class="bonus-well" class:over={!!preview.error}>
-                {preview.spent} / {preview.upgradeBudget}
+                {budgetUsed} / {budgetCap}
               </div>
             </div>
             <div class="budget-stat">
-              <div class="stat-label">Cost +</div>
-              {@render stepper(
-                costIncrease,
-                canDecCost,
-                canIncCost,
-                'Cost increase',
-                setCostIncrease,
-                1
-              )}
+              <div class="stat-label">{isDistill ? 'Cost −' : 'Cost +'}</div>
+              {#if isDistill}
+                <div class="bonus-well">1</div>
+              {:else}
+                {@render stepper(
+                  costIncrease,
+                  canDecCost,
+                  canIncCost,
+                  'Cost increase',
+                  setCostIncrease,
+                  1
+                )}
+              {/if}
             </div>
           </div>
           {#if preview.error}
-            <p class="budget-note error-note">{preview.error}</p>
-          {:else if preview.extraBudget > 0}
-            <p class="budget-note">{preview.extraBudget} remaining will be spent automatically</p>
+            <p class="budget-note error-note">
+              {#if isDistill && budgetShort > 0}
+                Need to cut {budgetShort} more
+              {:else}
+                {preview.error}
+              {/if}
+            </p>
+          {:else if !isDistill && budgetRemainder > 0}
+            <p class="budget-note">{budgetRemainder} remaining will be spent automatically</p>
+          {:else if isDistill && budgetRemainder > 0}
+            <p class="budget-note">Cutting {budgetRemainder} more than required</p>
           {/if}
         </section>
 
@@ -443,7 +544,7 @@
           </h3>
           <div class="stats">
             <div class="stat">
-              <div class="stat-label">Power +</div>
+              <div class="stat-label">Power {isDistill ? '−' : '+'}</div>
               {@render statControl(
                 power,
                 canDecPower,
@@ -454,7 +555,7 @@
               )}
             </div>
             <div class="stat">
-              <div class="stat-label">Health +</div>
+              <div class="stat-label">Health {isDistill ? '−' : '+'}</div>
               {@render statControl(
                 maxHealth,
                 canDecHealth,
@@ -466,7 +567,7 @@
             </div>
             <div class="stat large">
               <div class="stat-label" title={getKeywordTooltip('retaliate', retaliate || 1)}>
-                Retaliate +
+                Retaliate {isDistill ? '−' : '+'}
               </div>
               {@render statControl(
                 retaliate,
@@ -486,7 +587,63 @@
             <span class="section-icon star-icon" aria-hidden="true"></span>
             Keywords
           </h3>
-          {#if knownKeywords.length === 0}
+          {#if isDistill}
+            {#if ownedKeywords.length === 0}
+              <p class="empty">This card has no keywords to remove.</p>
+            {:else}
+              <div class="keyword-list">
+                {#each ownedKeywords as key (key)}
+                  {#if NUMERIC_KEYWORDS.has(key)}
+                    {@const value = keywords[key] ?? 0}
+                    <div
+                      class="keyword-row"
+                      class:on={value > 0}
+                      title={getKeywordTooltip(key, keywordOwnedValue(key))}
+                      onclick={(event) => onKeywordRowClick(event, key, true)}
+                      oncontextmenu={(event) => onKeywordRowClick(event, key, true)}
+                    >
+                      <img
+                        class="keyword-icon"
+                        src={getAssetPath(`images/keywords/${key}.png`)}
+                        alt=""
+                        aria-hidden="true"
+                      />
+                      <span class="keyword-name">{formatKeyword(key)}</span>
+                      {@render stepper(
+                        value,
+                        value > 0,
+                        canIncKeyword(key),
+                        formatKeyword(key),
+                        (next) => setKeyword(key, next)
+                      )}
+                    </div>
+                  {:else}
+                    {@const selected = !!keywords[key]}
+                    <div
+                      class="keyword-row"
+                      class:on={selected}
+                      role="switch"
+                      aria-checked={selected}
+                      title={getKeywordTooltip(key)}
+                      onclick={(event) => onKeywordRowClick(event, key, false)}
+                      oncontextmenu={(event) => onKeywordRowClick(event, key, false)}
+                    >
+                      <img
+                        class="keyword-icon"
+                        src={getAssetPath(`images/keywords/${key}.png`)}
+                        alt=""
+                        aria-hidden="true"
+                      />
+                      <span class="keyword-name">{formatKeyword(key)}</span>
+                      <span class="toggle" class:on={selected} aria-hidden="true">
+                        <span class="toggle-knob"></span>
+                      </span>
+                    </div>
+                  {/if}
+                {/each}
+              </div>
+            {/if}
+          {:else if knownKeywords.length === 0}
             <p class="empty">No known keywords yet.</p>
           {:else}
             <div class="keyword-list">
@@ -558,7 +715,7 @@
             disabled={!card || !!preview?.error}
             onclick={confirm}
           >
-            Enchant
+            {isDistill ? 'Distill' : 'Enchant'}
           </button>
         {/if}
       </footer>

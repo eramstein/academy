@@ -23,6 +23,17 @@ export function getLessonActions(): Action[] {
           .map((c) => [c.id, c.name]),
       },
     });
+    lessons.push({
+      label: 'Distill',
+      actionType: ActionType.Distill,
+      isLongAction: true,
+      actionParameters: {},
+      missingParameters: {
+        cardId: gs.player.collection
+          .filter((c) => isUnitCard(c) && c.cost > 0)
+          .map((c) => [c.id, c.name]),
+      },
+    });
   }
 
   if (currentActivity.classType === ClassType.Artificery) {
