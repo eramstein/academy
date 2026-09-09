@@ -1,20 +1,14 @@
 <script lang="ts">
-  import type { CardTemplate, Narration } from '@/lib/_model';
-  import { NarrationType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
-  import { addCardToDeck } from '@/lib/sim/deck';
   import { selectNextScene } from '@/lib/sim/scene';
-  import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import { tick, untrack } from 'svelte';
-  import AttributeCheckEntry from './AttributeCheckEntry.svelte';
-  import NarrationText from './NarrationText.svelte';
+  import NarrationList from './NarrationList.svelte';
   import SceneActions from './SceneActions.svelte';
 
   const flourishPath = getAssetPath('images/ui/page-flourish.svg');
   const starPath = getAssetPath('images/ui/page-star.svg');
 
-  const narration = $derived(gs.scene.narration);
   const selectingNextPlace = $derived(gs.scene.selectingNextPlace);
   const regionsWithPlaces = $derived(
     Object.values(gs.regions).map((region) => ({
@@ -26,35 +20,15 @@
   let bookEl: HTMLElement | undefined = $state();
   let pageEl: HTMLDivElement | undefined = $state();
   let contentEl: HTMLDivElement | undefined = $state();
-  let completedIds = $state<string[]>([]);
   let bookHeight = $state<number | undefined>(undefined);
   let heightTransition = $state(false);
   let scrollable = $state(false);
   let scrolling = $state(false);
   let hideScrollbarTimer: ReturnType<typeof setTimeout> | undefined;
+  let narrationDone = $state(false);
 
-  const completedSet = $derived(new Set(completedIds));
-  const activeEntry = $derived(narration.find((entry) => !completedSet.has(entry.id)));
-  const narrationDone = $derived(narration.length > 0 && completedIds.length >= narration.length);
   const reduceMotion =
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // When scene is replaced (save load / init), show existing narration instantly.
-  // Live pushes keep the same scene object, so new entries still animate.
-  $effect.pre(() => {
-    const scene = gs.scene;
-    untrack(() => {
-      completedIds = scene.narration.map((entry) => entry.id);
-    });
-  });
-
-  $effect(() => {
-    const ids = new Set(narration.map((entry) => entry.id));
-    const next = completedIds.filter((id) => ids.has(id));
-    if (next.length !== completedIds.length) {
-      completedIds = next;
-    }
-  });
 
   $effect(() => {
     if (!bookEl || !pageEl || !contentEl) return;
@@ -146,57 +120,15 @@
     }, 800);
   }
 
-  function scrollPageToBottom(behavior: ScrollBehavior = 'smooth') {
+  function scrollPageToBottom(behavior: 'auto' | 'smooth' = 'smooth') {
     if (!untrack(() => scrollable)) return;
     queueMicrotask(() => {
       pageEl?.scrollTo({ top: pageEl.scrollHeight, behavior });
     });
   }
-
-  function completeEntry(id: string) {
-    if (completedSet.has(id)) return;
-    completedIds = [...completedIds, id];
-    scrollPageToBottom('smooth');
-  }
-
-  function cardsForEntry(entry: Narration): CardTemplate[] {
-    if (!entry.cardIds?.length) return [];
-    return entry.cardIds
-      .map((id) => gs.player.collection.find((card) => card.id === id))
-      .filter((card): card is CardTemplate => card !== undefined);
-  }
-
-  function firstDeck() {
-    return gs.player.decks[0];
-  }
-
-  function cardsInFirstDeck(entry: Narration): boolean {
-    const deck = firstDeck();
-    const cards = cardsForEntry(entry);
-    if (!deck || cards.length === 0) return false;
-    return cards.every((card) => deck.cards.some((c) => c.id === card.id));
-  }
-
-  function addConjuredCardsToDeck(entry: Narration) {
-    const deck = firstDeck();
-    if (!deck || cardsInFirstDeck(entry)) return;
-    for (const card of cardsForEntry(entry)) {
-      if (!deck.cards.some((c) => c.id === card.id)) {
-        addCardToDeck(deck, card);
-      }
-    }
-  }
-
-  function onTextDone(entry: Narration) {
-    if (entry.attributeCheck) return;
-    completeEntry(entry.id);
-  }
 </script>
 
-<div
-  class="scene"
-  style="--page-flourish: url('{flourishPath}'); --page-star: url('{starPath}');"
->
+<div class="scene" style="--page-flourish: url('{flourishPath}'); --page-star: url('{starPath}');">
   <article
     class="book"
     class:height-transition={heightTransition && !reduceMotion}
@@ -212,13 +144,7 @@
         onscroll={revealScrollbar}
       >
         <div class="page-content" bind:this={contentEl}>
-          {#each narration as entry (entry.id)}
-            {#if completedSet.has(entry.id)}
-              {@render narrationEntry(entry, false)}
-            {:else if activeEntry?.id === entry.id}
-              {@render narrationEntry(entry, true)}
-            {/if}
-          {/each}
+          <NarrationList bind:done={narrationDone} onProgress={scrollPageToBottom} />
           {#if selectingNextPlace}
             <p class="prompt">Where do you go?</p>
           {:else if narrationDone}
@@ -255,58 +181,6 @@
     <SceneActions />
   {/if}
 </div>
-
-{#snippet narrationEntry(entry: Narration, animate: boolean)}
-  {@const cards = cardsForEntry(entry)}
-  {@const inDeck = cardsInFirstDeck(entry)}
-  {@const canAddToDeck =
-    entry.type === NarrationType.ConjuredCard && !!firstDeck() && cards.length > 0 && !inDeck}
-  <NarrationText
-    class="narration"
-    text={entry.text}
-    mentions={entry.mentions}
-    {animate}
-    onProgress={() => scrollPageToBottom('auto')}
-    onDone={() => onTextDone(entry)}
-  />
-  {#if entry.cardTemplates?.length}
-    <div class="narration-cards">
-      {#each entry.cardTemplates as card, i (`${card.id}-${i}`)}
-        {#if i > 0}
-          <span class="card-arrow" aria-hidden="true">→</span>
-        {/if}
-        <CardCompact {card} />
-      {/each}
-    </div>
-  {/if}
-  {#if cards.length > 0}
-    <div class="narration-cards">
-      {#each cards as card (card.id)}
-        <CardCompact {card} />
-      {/each}
-    </div>
-  {/if}
-  {#if entry.attributeCheck}
-    <AttributeCheckEntry
-      check={entry.attributeCheck}
-      {animate}
-      onProgress={() => scrollPageToBottom('auto')}
-      onDone={() => completeEntry(entry.id)}
-    />
-  {/if}
-  {#if entry.type === NarrationType.ConjuredCard && cards.length > 0}
-    <div class="narration-actions">
-      <button
-        type="button"
-        class="action-btn add-to-deck"
-        disabled={!canAddToDeck}
-        onclick={() => addConjuredCardsToDeck(entry)}
-      >
-        {inDeck ? 'Added to deck' : 'Add to deck'}
-      </button>
-    </div>
-  {/if}
-{/snippet}
 
 <style>
   .scene {
@@ -497,43 +371,6 @@
 
   .page-scroll.scrollable.scrolling::-webkit-scrollbar-thumb:hover {
     background: rgba(90, 75, 60, 0.65);
-  }
-
-  .page :global(.narration) {
-    margin: 0 0 1.25em;
-  }
-
-  .narration-cards {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin: 0 0 1.25em;
-  }
-
-  .card-arrow {
-    flex-shrink: 0;
-    font-size: 2rem;
-    line-height: 1;
-    color: var(--color-ink-muted);
-  }
-
-  .narration-actions {
-    display: flex;
-    justify-content: center;
-    margin: 0 0 1.25em;
-  }
-
-  .add-to-deck:disabled {
-    opacity: 0.55;
-    cursor: default;
-  }
-
-  .add-to-deck:disabled:hover,
-  .add-to-deck:disabled:active {
-    background: var(--color-data);
-    border-color: var(--color-brass);
   }
 
   .prompt {

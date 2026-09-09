@@ -13,7 +13,7 @@
   }: {
     onclick?: (e: MouseEvent) => void;
     disabled?: boolean;
-    variant?: 'default' | 'cancel' | 'long';
+    variant?: 'default' | 'long';
     icon?: string;
     lead?: Snippet;
     children?: Snippet;
@@ -27,7 +27,6 @@
 <button
   {type}
   class="ornate-button"
-  class:cancel={variant === 'cancel'}
   class:long={variant === 'long'}
   class:has-lead={!!lead}
   class:has-icon={!!iconUrl}
@@ -236,40 +235,5 @@
   .ornate-button:focus-visible {
     outline: 1px solid var(--color-golden);
     outline-offset: 3px;
-  }
-
-  .ornate-button.cancel {
-    color: var(--color-muted-label);
-  }
-
-  .ornate-button.cancel .icon {
-    background: var(--color-muted-label);
-  }
-
-  .ornate-button.cancel .fill {
-    background: rgba(0, 0, 0, 0.4);
-    box-shadow:
-      inset 0 2px 3px rgba(0, 0, 0, 0.5),
-      inset 0 0 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .ornate-button.cancel .corner {
-    opacity: 0.4;
-  }
-
-  .ornate-button.cancel:hover:not(:disabled) {
-    color: var(--color-cream);
-  }
-
-  .ornate-button.cancel:hover:not(:disabled) .icon {
-    background: var(--metal-hi);
-  }
-
-  .ornate-button.cancel:hover:not(:disabled) .fill {
-    background: var(--color-data);
-  }
-
-  .ornate-button.cancel:hover:not(:disabled) .corner {
-    opacity: 0.72;
   }
 </style>

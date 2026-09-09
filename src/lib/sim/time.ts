@@ -1,10 +1,18 @@
 import { DayPeriod } from '../_model';
 import { gs } from '../_state';
-import { narrateText } from './narration';
+import { narrateNewPeriod } from './narration';
 import { startScene } from './scene';
 
 const PERIODS = [DayPeriod.Morning, DayPeriod.Afternoon, DayPeriod.Evening];
-const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const WEEK_DAYS = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
 
 // assumes day 1 is monday, returns 1 for monday, 2 for tuesday... 7 for sunday
 export function getWeekDay(day: number): number {
@@ -22,7 +30,7 @@ export function nextPeriod() {
   }
   gs.time.usedActions = {};
   gs.time.longActionPerformed = false;
-  narrateText('It is now ' + WEEK_DAYS[getWeekDay(gs.time.day) - 1] + ' ' + gs.time.period + '.');
+  narrateNewPeriod(gs.time.day, gs.time.period);
 }
 
 export function isWeekDay(day: number): boolean {

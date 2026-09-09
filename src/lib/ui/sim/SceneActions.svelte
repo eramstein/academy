@@ -240,7 +240,7 @@
             </OrnateButton>
           {/if}
         {/each}
-        <OrnateButton variant="cancel" onclick={cancelParameterPick}>Cancel</OrnateButton>
+        <button type="button" class="cancel-btn" onclick={cancelParameterPick}>Cancel</button>
       {:else}
         {#each actions as action (action.label)}
           <OrnateButton
@@ -306,5 +306,27 @@
 
   .option-thumb.portrait {
     background-position: center 18%;
+  }
+
+  .cancel-btn {
+    font-family: var(--font-narrative);
+    font-size: 0.95rem;
+    color: var(--color-muted-label);
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--color-brass) 45%, transparent);
+    border-radius: 4px;
+    padding: 8px 18px;
+    cursor: pointer;
+    align-self: center;
+  }
+
+  .cancel-btn:hover {
+    color: var(--color-cream);
+    border-color: var(--color-brass);
+    background: color-mix(in srgb, var(--color-data) 55%, transparent);
+  }
+
+  .cancel-btn:active {
+    background: var(--color-data-active);
   }
 </style>

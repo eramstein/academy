@@ -3,7 +3,7 @@ import { CharacterGender, CharacterTrait, SchoolName, type Npc } from '@/lib/_mo
 export const npcs: Record<string, Npc> = {
   administrator: {
     key: 'administrator',
-    name: 'Farid El-Khouri, Administrator',
+    name: 'Moustapha El-Khouri, Administrator',
     gold: 0,
     placeKey: 'admin-office',
     attributes: { dexterity: 4, intelligence: 19, vitality: 5, charisma: 8, aura: 15 },

@@ -4,7 +4,7 @@ import { getRandomFromArray } from '../_utils/random';
 import { initBattle } from '../battle/init';
 import { setPossibleActions } from './actions';
 import { recordLeagueMatchResult } from './league';
-import { narrateText } from './narration';
+import { narrateMatchResult } from './narration';
 
 export function pickNpcDeck(npcKey: string): Deck {
   return getRandomFromArray(gs.characters[npcKey].decks);
@@ -33,6 +33,6 @@ export function recordBattleResult(won: boolean) {
   if (gs.ongoingBattle.isLeagueMatch) {
     recordLeagueMatchResult(won);
   }
-  narrateText(`You have ${won ? 'won' : 'lost'} the match.`);
+  narrateMatchResult(won, gs.ongoingBattle.opponentKey);
   setPossibleActions();
 }

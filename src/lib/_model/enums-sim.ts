@@ -32,6 +32,8 @@ export enum NarrationType {
   AttributeCheck = 'attribute_check',
   ConjuredCard = 'conjured_card',
   EncantedCard = 'encanted_card',
+  NewPeriod = 'new_period',
+  MatchResult = 'match_result',
 }
 
 export enum ActivityType {

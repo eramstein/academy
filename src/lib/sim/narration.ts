@@ -1,8 +1,9 @@
-import type { CardTemplate } from '../_model';
+import type { CardTemplate, DayPeriod } from '../_model';
 import { NarrationType } from '../_model/enums-sim';
 import type { AttributeCheck, Mentions, Narration } from '../_model/model-sim';
 import { gs } from '../_state';
 import { KEYWORD_KEYS } from './cards/keywords';
+import { getWeekDay, WEEK_DAYS } from './time';
 
 export function narrate(narration: Narration) {
   const expandedNarration = {
@@ -61,6 +62,26 @@ export function narrateText(text: string) {
     id: crypto.randomUUID(),
     text,
     type: NarrationType.Text,
+  });
+}
+
+export function narrateNewPeriod(day: number, period: DayPeriod) {
+  narrate({
+    id: crypto.randomUUID(),
+    text: `${WEEK_DAYS[getWeekDay(day) - 1]} ${period}`,
+    type: NarrationType.NewPeriod,
+    day,
+    period,
+  });
+}
+
+export function narrateMatchResult(won: boolean, opponentKey: string) {
+  narrate({
+    id: crypto.randomUUID(),
+    text: `${won ? 'Victory!' : 'Defeat...'}`,
+    type: NarrationType.MatchResult,
+    characters: [opponentKey],
+    won,
   });
 }
 

@@ -115,6 +115,10 @@ export interface Narration {
   attributeCheck?: AttributeCheck;
   cardIds?: string[];
   cardTemplates?: CardTemplate[];
+  day?: number;
+  period?: DayPeriod;
+  characters?: string[];
+  won?: boolean;
 }
 
 // First string is the word appearing in the text, second is id
