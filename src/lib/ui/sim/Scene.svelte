@@ -533,7 +533,7 @@
   .add-to-deck:disabled:hover,
   .add-to-deck:disabled:active {
     background: var(--color-data);
-    border-color: var(--color-golden);
+    border-color: var(--color-brass);
   }
 
   .prompt {
@@ -582,7 +582,7 @@
     font-size: 1rem;
     color: var(--color-cream);
     background: var(--color-data);
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
     padding: 10px 24px;
     cursor: pointer;
@@ -590,7 +590,7 @@
 
   .action-btn:hover {
     background: var(--color-data-hover);
-    border-color: var(--color-golden);
+    border-color: var(--color-brass);
   }
 
   .action-btn:active {

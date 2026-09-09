@@ -37,7 +37,7 @@
     width: 1.5rem;
     height: 1.5rem;
     flex-shrink: 0;
-    background: var(--color-golden);
+    background: var(--color-brass);
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;
   }
@@ -52,7 +52,7 @@
   .day {
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--color-golden);
+    color: var(--color-brass);
     white-space: nowrap;
   }
 

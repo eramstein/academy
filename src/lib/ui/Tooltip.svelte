@@ -99,7 +99,7 @@
     z-index: 999999;
     pointer-events: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     white-space: normal;
     word-wrap: break-word;
     line-height: 1.3;

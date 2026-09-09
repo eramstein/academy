@@ -10,7 +10,7 @@ Use this when adding or restyling Sim UI (not Battle). Match `src/doc/ui/referen
 The screen is a tabletop with two surfaces:
 
 1. **Book (left)** — parchment pages, light theme: light background, dark ink. Action buttons sit **below** the page on the wood.
-2. **Data (right)** — records and stats, dark theme: `data-background.png`, cream text and gold icons.
+2. **Data (right)** — records and stats, dark theme: `data-background.png`, cream text and brass icons.
 3. **Stage** — both columns sit on dark walnut `table.jpg`. A shadowed groove in the wood separates them. Do not use `wood_chip_base.png` as the sim backdrop.
 
 ## Visual identity
@@ -39,9 +39,10 @@ Readability first. Prefer existing textures and CSS variables over new decoratio
 | Data field   | `#1a2433` / `#1a202c`        | With `data-background.png`                  |
 | Data hover   | `#243044`                    | Buttons and list rows on the data panel     |
 | Brown border | `#5a4b3c`                    | Book page stroke                            |
-| Brass        | `--color-golden` (`#bfa14a`) | Data frames, selected tabs, icons, tooltips |
+| Brass        | `--color-brass` (`#af8e67`)  | Data frames, icons, borders, section titles |
+| Golden       | `--color-golden` (`#bfa14a`) | Highlights only: selection, focus, emphasis |
 
-Global tokens live in `src/app.css`. Reuse `--color-golden`. Card colors are gem images (`color_red.png`, etc.).
+Global tokens live in `src/app.css`. Prefer `--color-brass` for chrome; reserve `--color-golden` for highlights. Card colors are gem images (`color_red.png`, etc.).
 
 Do not put parchment fills or ink text on the data panel. Do not put cream-on-dark type on the book page.
 
@@ -52,7 +53,7 @@ Do not put parchment fills or ink text on the data panel. Do not put cream-on-da
 - Console only: `monospace`
 - No new webfonts
 - Book body: ~1.05rem, line-height ~1.7, ink on parchment
-- Action buttons: Georgia, ~1rem, cream on charcoal, gold border
+- Action buttons: Georgia, ~1rem, cream on charcoal, brass border
 - Card names: system-ui (existing card pattern)
 
 ## Materials and assets
@@ -83,8 +84,8 @@ Put new tokens in `src/app.css`. Keep component CSS in the Svelte `<style>` bloc
 ## Do
 
 - Left: parchment page, ink text, buttons below on the table
-- Right: `data-background.png`, cream type, gold hairlines, SVG icons
-- Gold as a thin accent only
+- Right: `data-background.png`, cream type, brass hairlines, SVG icons
+- Brass for chrome; gold only as a highlight accent
 - Small radii (3–6px on panels, ~8px on cards)
 
 ## Do not

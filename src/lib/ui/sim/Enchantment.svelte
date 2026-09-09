@@ -424,7 +424,7 @@
   }
 
   .card-pick:hover {
-    border-color: var(--color-golden);
+    border-color: var(--color-brass);
   }
 
   .preview-row {

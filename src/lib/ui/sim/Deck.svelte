@@ -159,7 +159,7 @@
     flex: 1 1 auto;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(191, 161, 74, 0.4) transparent;
+    scrollbar-color: rgba(175, 142, 103, 0.4) transparent;
   }
 
   .body::-webkit-scrollbar {
@@ -177,12 +177,12 @@
   }
 
   .body::-webkit-scrollbar-thumb {
-    background: rgba(191, 161, 74, 0.4);
+    background: rgba(175, 142, 103, 0.4);
     border-radius: 3px;
   }
 
   .body::-webkit-scrollbar-thumb:hover {
-    background: rgba(191, 161, 74, 0.6);
+    background: rgba(175, 142, 103, 0.6);
   }
 
   .header {
@@ -200,7 +200,7 @@
     min-height: var(--editor-align-bar, 2.5rem);
     box-sizing: border-box;
     padding: 0.25rem 0;
-    border-bottom: 1px solid var(--color-golden);
+    border-bottom: 1px solid var(--color-brass);
   }
 
   .name {
@@ -225,7 +225,7 @@
     margin: 0;
     padding: 0.2rem 0.45rem;
     background: rgba(10, 16, 24, 0.55);
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
     color: var(--color-cream);
     font: inherit;
@@ -268,7 +268,7 @@
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
   }
 
   .section {
@@ -289,7 +289,7 @@
     text-transform: uppercase;
     color: var(--color-muted-label);
     padding-bottom: 0.25rem;
-    border-bottom: 1px solid var(--color-golden);
+    border-bottom: 1px solid var(--color-brass);
   }
 
   .count {
@@ -326,7 +326,7 @@
   }
 
   .card-button:hover {
-    outline: 2px solid var(--color-golden);
+    outline: 2px solid var(--color-brass);
     outline-offset: 2px;
   }
 </style>

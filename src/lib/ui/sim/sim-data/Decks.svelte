@@ -116,7 +116,7 @@
   .row-edit {
     padding: 0.4rem 0.75rem;
     background: var(--color-data);
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
     color: var(--color-cream);
     font-family: inherit;
@@ -129,7 +129,7 @@
   .create-btn:hover,
   .row-edit:hover {
     background: var(--color-data-hover);
-    border-color: var(--color-golden);
+    border-color: var(--color-brass);
     color: var(--color-cream);
   }
 
@@ -137,7 +137,7 @@
   .edit-btn {
     background: var(--color-data);
     color: var(--color-cream);
-    border-color: var(--color-golden);
+    border-color: var(--color-brass);
   }
 
   .deck-list {
@@ -164,7 +164,7 @@
     min-width: 0;
     padding: 0.55rem 0.65rem;
     background: transparent;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
     color: inherit;
     text-align: left;
@@ -172,8 +172,8 @@
   }
 
   .deck-item:hover {
-    background: rgba(191, 161, 74, 0.1);
-    border-color: var(--color-golden);
+    background: rgba(175, 142, 103, 0.1);
+    border-color: var(--color-brass);
   }
 
   .row-edit {
@@ -211,6 +211,6 @@
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
   }
 </style>

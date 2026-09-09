@@ -58,7 +58,7 @@
     text-transform: uppercase;
     color: var(--color-muted-label);
     padding-bottom: 0.35rem;
-    border-bottom: 1px solid var(--color-golden);
+    border-bottom: 1px solid var(--color-brass);
   }
 
   .empty {

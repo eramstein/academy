@@ -161,7 +161,7 @@
     min-width: 0;
     padding: 0.4rem 0.55rem;
     background: rgba(10, 16, 24, 0.55);
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
     color: var(--color-cream);
     font: inherit;
@@ -174,7 +174,7 @@
   .actions button {
     padding: 0.4rem 0.75rem;
     background: var(--color-data);
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
     color: var(--color-cream);
     font-family: inherit;
@@ -183,7 +183,7 @@
   .controls button:hover:not(:disabled),
   .actions button:hover:not(:disabled) {
     background: var(--color-data-hover);
-    border-color: var(--color-golden);
+    border-color: var(--color-brass);
   }
   .controls button:disabled,
   .actions button:disabled {
@@ -200,7 +200,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 10px;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
   }
   .meta {

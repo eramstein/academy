@@ -72,7 +72,7 @@
     z-index: 1;
     padding: 0.5rem 0.9rem;
     background: var(--color-data);
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
     color: var(--color-cream);
     font-family: var(--font-narrative);
@@ -82,7 +82,7 @@
 
   .back-btn:hover {
     background: var(--color-data-hover);
-    border-color: var(--color-golden);
+    border-color: var(--color-brass);
   }
 
   .places {
@@ -108,7 +108,7 @@
     text-transform: uppercase;
     color: var(--color-muted-label);
     padding-bottom: 0.35rem;
-    border-bottom: 1px solid rgba(191, 161, 74, 0.35);
+    border-bottom: 1px solid rgba(175, 142, 103, 0.35);
   }
 
   .region-description {
@@ -144,8 +144,8 @@
   }
 
   .place-item:hover {
-    background: rgba(191, 161, 74, 0.1);
-    border-color: var(--color-golden);
+    background: rgba(175, 142, 103, 0.1);
+    border-color: var(--color-brass);
   }
 
   .place-image {
@@ -153,7 +153,7 @@
     width: 96px;
     height: 72px;
     border-radius: 4px;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     background-color: var(--color-deep-brown);
     background-image: var(--bg-image);
     background-size: cover;

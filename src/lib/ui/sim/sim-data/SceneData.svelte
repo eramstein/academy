@@ -59,7 +59,7 @@
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
-    border-top: 1px solid var(--color-golden);
+    border-top: 1px solid var(--color-brass);
     background: rgba(10, 16, 24, 0.55);
     min-height: 0;
   }
@@ -78,7 +78,7 @@
     padding: 0;
     flex-shrink: 0;
     border-radius: 6px;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     background: var(--color-deep-brown);
     cursor: pointer;
     overflow: hidden;
@@ -90,6 +90,6 @@
   }
 
   .portrait-btn:hover {
-    border-color: var(--color-golden);
+    border-color: var(--color-brass);
   }
 </style>

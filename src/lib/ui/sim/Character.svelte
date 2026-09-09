@@ -103,8 +103,8 @@
 
 <style>
   .character {
-    --gold: var(--color-golden);
-    --gold-text: var(--color-cream);
+    --brass: var(--color-brass);
+    --brass-text: var(--color-cream);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -112,7 +112,7 @@
     height: 100%;
     overflow: hidden;
     box-sizing: border-box;
-    color: var(--gold-text);
+    color: var(--brass-text);
     font-family: var(--font-narrative);
     background: transparent;
   }
@@ -125,7 +125,7 @@
     overflow-y: auto;
     box-sizing: border-box;
     scrollbar-width: thin;
-    scrollbar-color: rgba(196, 165, 116, 0.35) transparent;
+    scrollbar-color: rgba(175, 142, 103, 0.35) transparent;
   }
 
   .icon {
@@ -133,6 +133,7 @@
     width: 1.05rem;
     height: 1.05rem;
     flex-shrink: 0;
+    color: var(--color-brass);
     background: currentColor;
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;
@@ -167,7 +168,7 @@
     min-width: 0;
     padding: 1.05rem 1.2rem 1.2rem;
     box-sizing: border-box;
-    color: var(--gold-text);
+    color: var(--brass-text);
     background: transparent;
   }
 
@@ -186,7 +187,7 @@
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--color-golden);
+    color: var(--color-brass);
   }
 
   .section-title .icon {
@@ -195,7 +196,7 @@
   }
 
   .sheet-body .divider {
-    color: var(--gold);
+    color: var(--brass);
   }
 
   .sub-list {
@@ -221,7 +222,7 @@
     text-transform: capitalize;
     color: #d8c9a0;
     padding: 0.18rem 0.7rem;
-    border: 1px solid rgba(196, 165, 116, 0.55);
+    border: 1px solid rgba(175, 142, 103, 0.55);
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.28);
   }

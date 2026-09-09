@@ -297,7 +297,7 @@
     flex: 0 0 52px;
     align-self: stretch;
     width: 52px;
-    border-right: 1px solid color-mix(in srgb, var(--color-golden) 70%, transparent);
+    border-right: 1px solid color-mix(in srgb, var(--color-brass) 70%, transparent);
     background-color: rgba(0, 0, 0, 0.35);
     background-size: cover;
     background-position: center;

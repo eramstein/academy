@@ -48,7 +48,7 @@
   .modal-content {
     background: var(--color-data) var(--data-bg) center / cover;
     border-radius: 4px;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
     max-width: 640px;
     width: 90vw;
@@ -62,7 +62,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    border-bottom: 1px solid var(--color-golden);
+    border-bottom: 1px solid var(--color-brass);
     background: rgba(10, 16, 24, 0.55);
     color: var(--color-cream);
   }
@@ -76,7 +76,7 @@
     padding: 6px 12px;
     background: var(--color-data);
     color: var(--color-cream);
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
     font-family: inherit;
     cursor: pointer;

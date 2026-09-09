@@ -102,7 +102,7 @@
   .nav-btn {
     padding: 0.35rem 0.65rem;
     background: var(--color-data);
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
     color: var(--color-cream);
     font-family: inherit;
@@ -123,7 +123,7 @@
 
   .nav-btn:hover {
     background: var(--color-data-hover);
-    border-color: var(--color-golden);
+    border-color: var(--color-brass);
   }
 
   .nav-spacer {
@@ -152,15 +152,15 @@
     flex-direction: column;
     gap: 0.1rem;
     padding: 0.4rem;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
-    background: rgba(191, 161, 74, 0.08);
+    background: rgba(175, 142, 103, 0.08);
     text-align: center;
   }
 
   .day-header.today {
     border-color: var(--color-golden);
-    background: rgba(191, 161, 74, 0.12);
+    background: rgba(191, 161, 74, 0.14);
   }
 
   .day-label {
@@ -200,9 +200,9 @@
     min-width: 0;
     min-height: 2.5rem;
     padding: 0.4rem;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
-    background: rgba(191, 161, 74, 0.06);
+    background: rgba(175, 142, 103, 0.06);
   }
 
   .cell.today {
@@ -212,7 +212,7 @@
 
   .cell.current {
     border-color: var(--color-golden);
-    background: rgba(191, 161, 74, 0.14);
+    background: rgba(191, 161, 74, 0.16);
   }
 
   .activity {

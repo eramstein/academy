@@ -59,9 +59,9 @@
     --radius: 7px;
     --ring: 2px;
     --gap: 1.5px;
-    --metal-hi: #d4bc6a;
-    --metal-mid: var(--color-golden);
-    --metal-lo: #6e5a28;
+    --metal-hi: #c9a87a;
+    --metal-mid: var(--color-brass);
+    --metal-lo: #6a5234;
     position: relative;
     display: inline-flex;
     align-items: stretch;
@@ -100,7 +100,7 @@
       var(--metal-lo) 100%
     );
     padding: var(--ring);
-    box-shadow: inset 0 1px 0 rgba(232, 212, 150, 0.28);
+    box-shadow: inset 0 1px 0 rgba(232, 212, 180, 0.22);
   }
 
   .fill {
@@ -201,7 +201,7 @@
   }
 
   .ornate-button:hover:not(:disabled) .frame {
-    background: linear-gradient(145deg, #cbb56a 0%, var(--metal-mid) 42%, var(--metal-lo) 100%);
+    background: linear-gradient(145deg, #d4b896 0%, var(--metal-mid) 42%, var(--metal-lo) 100%);
   }
 
   .ornate-button:hover:not(:disabled) .corner {

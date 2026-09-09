@@ -171,7 +171,7 @@
     justify-content: space-between;
     gap: 1rem;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--color-golden);
+    border-bottom: 1px solid var(--color-brass);
     background: rgba(10, 16, 24, 0.55);
     color: var(--color-cream);
   }
@@ -194,7 +194,7 @@
   .btn {
     padding: 0.45rem 0.85rem;
     background: var(--color-data);
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
     color: var(--color-cream);
     font-family: inherit;
@@ -204,7 +204,7 @@
 
   .btn:hover:not(:disabled) {
     background: var(--color-data-hover);
-    border-color: var(--color-golden);
+    border-color: var(--color-brass);
     color: var(--color-cream);
   }
 
@@ -233,7 +233,7 @@
     min-width: 0;
     min-height: 0;
     padding: 0.5rem 0.65rem 0.65rem;
-    border-right: 1px solid var(--color-golden);
+    border-right: 1px solid var(--color-brass);
   }
 
   .panel:last-child {

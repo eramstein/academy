@@ -130,7 +130,7 @@
     min-width: 0;
     margin: 0;
     padding: var(--trim);
-    background: var(--color-golden);
+    background: var(--color-brass);
     border: none;
     color: var(--color-muted-label);
     font-family: inherit;
@@ -160,7 +160,11 @@
     gap: 0.4rem;
     padding: 0.42rem 0.4rem 0.44rem;
     box-sizing: border-box;
-    background: var(--color-data-hover);
+    background-color: var(--color-data);
+    background-image: var(--data-bg);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
     box-shadow:
       inset 0 1px 0 rgba(240, 230, 200, 0.12),
       inset 0 -2px 4px rgba(0, 0, 0, 0.45);
@@ -181,7 +185,7 @@
     width: 1.35rem;
     height: 1.35rem;
     flex-shrink: 0;
-    background: var(--color-golden);
+    background: var(--color-brass);
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;
   }
@@ -191,19 +195,24 @@
   }
 
   .menu-item:hover .tab-face {
-    background: color-mix(in srgb, var(--color-data-hover) 78%, var(--color-cream));
+    background-color: color-mix(in srgb, var(--color-data) 78%, var(--color-cream));
   }
 
   .menu-item.active {
-    color: var(--color-cream);
+    background: var(--color-golden);
+    color: var(--color-golden);
+  }
+
+  .menu-item.active .tab-icon {
+    background: var(--color-golden);
   }
 
   .menu-item.active .tab-face {
-    background: color-mix(in srgb, rgb(56, 138, 158) 58%, var(--color-data-active));
+    background-color: color-mix(in srgb, var(--color-data) 90%, var(--color-golden));
     box-shadow:
-      inset 0 1px 0 rgba(210, 240, 245, 0.2),
-      inset 0 0 10px rgba(90, 190, 200, 0.18),
-      inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+      inset 0 1px 0 rgba(240, 220, 160, 0.16),
+      inset 0 0 8px rgba(191, 161, 74, 0.1),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.35);
   }
 
   .menu-item:focus-visible {
@@ -212,7 +221,7 @@
   }
 
   .pane {
-    --edge: var(--color-golden);
+    --edge: var(--color-brass);
     --corner-span: 34px;
     position: relative;
     flex: 1 1 auto;
@@ -248,7 +257,7 @@
     width: 40px;
     height: 40px;
     pointer-events: none;
-    background: var(--color-golden);
+    background: var(--color-brass);
     mask: var(--data-corner) 0 0 / 40px 40px no-repeat;
     -webkit-mask: var(--data-corner) 0 0 / 40px 40px no-repeat;
   }
@@ -278,7 +287,7 @@
     padding: 0.65rem 0.5rem;
     color: var(--color-cream);
     scrollbar-width: thin;
-    scrollbar-color: rgba(191, 161, 74, 0.4) transparent;
+    scrollbar-color: rgba(175, 142, 103, 0.4) transparent;
   }
 
   .content::-webkit-scrollbar {
@@ -296,12 +305,12 @@
   }
 
   .content::-webkit-scrollbar-thumb {
-    background: rgba(191, 161, 74, 0.4);
+    background: rgba(175, 142, 103, 0.4);
     border-radius: 3px;
   }
 
   .content::-webkit-scrollbar-thumb:hover {
-    background: rgba(191, 161, 74, 0.6);
+    background: rgba(175, 142, 103, 0.6);
   }
 
   .content.flush {

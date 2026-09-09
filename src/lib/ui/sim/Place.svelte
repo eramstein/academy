@@ -184,12 +184,12 @@
     padding: 0.9rem 1rem;
     box-sizing: border-box;
     border-radius: 4px;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     color: var(--color-cream);
     font-family: var(--font-narrative);
     background: var(--color-data) var(--data-bg) center / cover;
     scrollbar-width: thin;
-    scrollbar-color: rgba(191, 161, 74, 0.4) transparent;
+    scrollbar-color: rgba(175, 142, 103, 0.4) transparent;
   }
 
   .identity {
@@ -219,7 +219,7 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--color-cream);
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     background: transparent;
     border-radius: 3px;
     padding: 0.1rem 0.4rem;
@@ -261,7 +261,7 @@
     text-transform: uppercase;
     color: var(--color-muted-label);
     padding-bottom: 0.35rem;
-    border-bottom: 1px solid rgba(191, 161, 74, 0.35);
+    border-bottom: 1px solid rgba(175, 142, 103, 0.35);
   }
 
   .people {
@@ -292,12 +292,12 @@
     height: 112px;
     overflow: hidden;
     border-radius: 6px;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     background: var(--color-deep-brown);
   }
 
   .person:hover .portrait-frame {
-    border-color: var(--color-golden);
+    border-color: var(--color-brass);
   }
 
   .portrait-frame :global(.character-portrait) {
@@ -327,14 +327,14 @@
     flex-direction: column;
     gap: 0.1rem;
     padding: 0.4rem 0.5rem;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
-    background: rgba(191, 161, 74, 0.08);
+    background: rgba(175, 142, 103, 0.08);
   }
 
   .activity.current {
     border-color: var(--color-golden);
-    background: rgba(191, 161, 74, 0.12);
+    background: rgba(191, 161, 74, 0.14);
   }
 
   .activity-name {

@@ -62,6 +62,7 @@
     width: 1.05rem;
     height: 1.05rem;
     flex-shrink: 0;
+    color: var(--color-brass);
     background: currentColor;
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;

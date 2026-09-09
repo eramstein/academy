@@ -198,7 +198,7 @@
     height: var(--editor-align-bar, auto);
     min-height: var(--editor-align-bar, 2.5rem);
     padding: 0.25rem 0;
-    border-bottom: 1px solid var(--color-golden);
+    border-bottom: 1px solid var(--color-brass);
     overflow-x: auto;
     scrollbar-width: thin;
   }
@@ -222,8 +222,8 @@
   .chip {
     padding: 0.2rem 0.5rem;
     min-width: 1.7rem;
-    background: rgba(191, 161, 74, 0.08);
-    border: 1px solid var(--color-golden);
+    background: rgba(175, 142, 103, 0.08);
+    border: 1px solid var(--color-brass);
     border-radius: 4px;
     color: var(--color-cream);
     font-size: 0.75rem;
@@ -233,12 +233,12 @@
   }
 
   .chip:hover {
-    background: rgba(191, 161, 74, 0.16);
+    background: rgba(175, 142, 103, 0.16);
     color: var(--color-cream);
   }
 
   .chip.active {
-    background: rgba(191, 161, 74, 0.16);
+    background: rgba(191, 161, 74, 0.2);
     border-color: var(--color-golden);
     color: var(--color-cream);
   }
@@ -250,12 +250,12 @@
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-    border: 1px solid var(--color-golden);
+    border: 1px solid var(--color-brass);
     cursor: pointer;
   }
 
   .color-chip:hover {
-    outline: 2px solid var(--color-golden);
+    outline: 2px solid var(--color-brass);
     outline-offset: 1px;
   }
 
@@ -272,7 +272,7 @@
     flex: 1 1 auto;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(191, 161, 74, 0.4) transparent;
+    scrollbar-color: rgba(175, 142, 103, 0.4) transparent;
   }
 
   .results::-webkit-scrollbar {
@@ -290,12 +290,12 @@
   }
 
   .results::-webkit-scrollbar-thumb {
-    background: rgba(191, 161, 74, 0.4);
+    background: rgba(175, 142, 103, 0.4);
     border-radius: 3px;
   }
 
   .results::-webkit-scrollbar-thumb:hover {
-    background: rgba(191, 161, 74, 0.6);
+    background: rgba(175, 142, 103, 0.6);
   }
 
   .empty {
@@ -318,7 +318,7 @@
     text-transform: uppercase;
     color: var(--color-muted-label);
     padding-bottom: 0.25rem;
-    border-bottom: 1px solid var(--color-golden);
+    border-bottom: 1px solid var(--color-brass);
   }
 
   .card-list {
@@ -345,7 +345,7 @@
   }
 
   .card-button:hover {
-    outline: 2px solid var(--color-golden);
+    outline: 2px solid var(--color-brass);
     outline-offset: 2px;
   }
 </style>
