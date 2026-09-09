@@ -4,12 +4,25 @@
   import { gs } from '@/lib/_state';
   import { performAction } from '@/lib/sim/actions';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
+  import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import Enchantment from './Enchantment.svelte';
   import Invoke from './Invoke.svelte';
   import Recipe from './Recipe.svelte';
 
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
+
+  const actionIcons: Partial<Record<ActionType, string>> = {
+    [ActionType.Socialize]: 'people',
+    [ActionType.Conjure]: 'page-star',
+    [ActionType.Invoke]: 'spiral',
+    [ActionType.Wait]: 'hourglass',
+    [ActionType.Augment]: 'leaf',
+    [ActionType.StartMatch]: 'trophy',
+    [ActionType.Move]: 'boot',
+    [ActionType.Transaction]: 'coin',
+    [ActionType.Negotiate]: 'mug',
+  };
 
   let pendingAction = $state<Action | null>(null);
   let enchantAction = $state<Action | null>(null);
@@ -198,41 +211,45 @@
     <div class="action-buttons">
       {#if event && event.options.length > 0}
         {#each event.options as option, i (i)}
-          <button type="button" class="action-btn" onclick={() => selectOption(option)}
-            >{option.text}</button
-          >
+          <OrnateButton onclick={() => selectOption(option)}>{option.text}</OrnateButton>
         {/each}
       {:else if pendingAction && currentParameterKey}
         {#each currentOptions as option (optionValue(option))}
           {@const thumb = optionThumb(option)}
-          <button
-            type="button"
-            class="action-btn"
-            class:long={pendingAction.isLongAction}
-            class:has-thumb={!!thumb}
-            onclick={() => pickParameter(optionValue(option))}
-          >
-            {#if thumb}
-              <span
-                class="option-thumb"
-                class:portrait={thumb.portrait}
-                style="background-image: url('{thumb.path}')"
-                aria-hidden="true"
-              ></span>
-            {/if}
-            <span class="option-label">{optionLabel(option)}</span>
-          </button>
+          {#if thumb}
+            <OrnateButton
+              variant={pendingAction.isLongAction ? 'long' : 'default'}
+              onclick={() => pickParameter(optionValue(option))}
+            >
+              {#snippet lead()}
+                <span
+                  class="option-thumb"
+                  class:portrait={thumb.portrait}
+                  style="background-image: url('{thumb.path}')"
+                  aria-hidden="true"
+                ></span>
+              {/snippet}
+              {optionLabel(option)}
+            </OrnateButton>
+          {:else}
+            <OrnateButton
+              variant={pendingAction.isLongAction ? 'long' : 'default'}
+              onclick={() => pickParameter(optionValue(option))}
+            >
+              {optionLabel(option)}
+            </OrnateButton>
+          {/if}
         {/each}
-        <button type="button" class="action-btn cancel" onclick={cancelParameterPick}>Cancel</button
-        >
+        <OrnateButton variant="cancel" onclick={cancelParameterPick}>Cancel</OrnateButton>
       {:else}
         {#each actions as action (action.label)}
-          <button
-            type="button"
-            class="action-btn"
-            class:long={action.isLongAction}
-            onclick={() => onActionClick(action)}>{action.label}</button
+          <OrnateButton
+            icon={actionIcons[action.actionType]}
+            variant={action.isLongAction ? 'long' : 'default'}
+            onclick={() => onActionClick(action)}
           >
+            {action.label}
+          </OrnateButton>
         {/each}
       {/if}
     </div>
@@ -276,29 +293,11 @@
     gap: 12px;
   }
 
-  .action-btn {
-    display: inline-flex;
-    align-items: center;
-    font-family: var(--font-narrative);
-    font-size: 1rem;
-    color: var(--color-cream);
-    background: var(--color-data);
-    border: 1px solid var(--color-golden);
-    border-radius: 4px;
-    padding: 10px 24px;
-    cursor: pointer;
-  }
-
-  .action-btn.has-thumb {
-    padding: 0;
-    overflow: hidden;
-  }
-
   .option-thumb {
     flex: 0 0 52px;
     align-self: stretch;
     width: 52px;
-    border-right: 1px solid var(--color-golden);
+    border-right: 1px solid color-mix(in srgb, var(--color-golden) 70%, transparent);
     background-color: rgba(0, 0, 0, 0.35);
     background-size: cover;
     background-position: center;
@@ -307,47 +306,5 @@
 
   .option-thumb.portrait {
     background-position: center 18%;
-  }
-
-  .action-btn.has-thumb .option-label {
-    padding: 10px 24px 10px 16px;
-  }
-
-  .action-btn:hover {
-    background: var(--color-data-hover);
-    border-color: var(--color-golden);
-  }
-
-  .action-btn.has-thumb:hover .option-thumb {
-    border-right-color: var(--color-golden);
-  }
-
-  .action-btn:active {
-    background: var(--color-data-active);
-  }
-
-  .action-btn.long {
-    color: var(--color-cream);
-    border-color: var(--color-golden);
-  }
-
-  .action-btn.long.has-thumb .option-thumb {
-    border-right-color: var(--color-golden);
-  }
-
-  .action-btn.long:hover {
-    background: var(--color-data-hover);
-    border-color: var(--color-golden);
-  }
-
-  .action-btn.cancel {
-    color: var(--color-muted-label);
-    background: transparent;
-    border-color: var(--color-golden);
-  }
-
-  .action-btn.cancel:hover {
-    color: var(--color-cream);
-    background: var(--color-data);
   }
 </style>

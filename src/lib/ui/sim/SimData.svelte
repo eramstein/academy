@@ -15,10 +15,10 @@
   const tabs: { id: SimDataTab; label: string; icon: string }[] = [
     { id: 'scene', label: 'Scene', icon: 'compass' },
     { id: 'player', label: 'Player', icon: 'person' },
-    { id: 'characters', label: 'Characters', icon: 'people' },
+    { id: 'characters', label: 'NPCs', icon: 'people' },
     { id: 'schedule', label: 'Schedule', icon: 'calendar' },
     { id: 'places', label: 'Places', icon: 'pin' },
-    { id: 'collection', label: 'Collection', icon: 'book' },
+    { id: 'collection', label: 'Cards', icon: 'book' },
     { id: 'decks', label: 'Decks', icon: 'cards' },
     { id: 'league', label: 'League', icon: 'trophy' },
   ];
@@ -48,9 +48,11 @@
           class:active={selected === tab.id}
           onclick={() => (uiState.sim.dataTab = tab.id)}
         >
-          <span class="tab-icon" style="--icon: url('{iconUrl(tab.icon)}')" aria-hidden="true"
-          ></span>
-          {tab.label}
+          <span class="tab-face">
+            <span class="tab-icon" style="--icon: url('{iconUrl(tab.icon)}')" aria-hidden="true"
+            ></span>
+            {tab.label}
+          </span>
         </button>
       {/each}
     </div>
@@ -58,7 +60,6 @@
   </nav>
 
   <div class="pane">
-    <span class="ornament tl" aria-hidden="true"></span>
     <span class="ornament tr" aria-hidden="true"></span>
     <span class="ornament bl" aria-hidden="true"></span>
     <span class="ornament br" aria-hidden="true"></span>
@@ -93,60 +94,121 @@
     min-height: 0;
     color: var(--color-cream);
     font-family: var(--font-narrative);
-    background: var(--color-data) var(--data-bg) center / cover;
+    background: transparent;
   }
 
   .menu {
+    --tab-chamfer: 6px;
+    --tab-trim: 1px;
     display: flex;
     flex-shrink: 0;
     align-items: stretch;
     justify-content: space-between;
-    gap: 0.6rem;
-    padding: 0.35rem 0.7rem 0;
-    background: rgba(8, 12, 18, 0.28);
+    gap: 0.65rem;
+    padding: 0;
+    background: transparent;
   }
 
   .tabs {
     display: flex;
-    gap: 0.15rem;
+    align-items: stretch;
+    gap: 0.2rem;
     min-width: 0;
+    flex: 1 1 auto;
     overflow-x: auto;
+    padding: 0;
     scrollbar-width: thin;
   }
 
   .menu-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 0.7rem 0.5rem;
-    background: transparent;
+    --chamfer: var(--tab-chamfer);
+    --trim: var(--tab-trim);
+    appearance: none;
+    display: flex;
+    align-items: stretch;
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    padding: var(--trim);
+    background: var(--color-golden);
     border: none;
-    border-radius: 4px 4px 0 0;
     color: var(--color-muted-label);
     font-family: inherit;
     font-size: 0.85rem;
+    white-space: nowrap;
     cursor: pointer;
+    clip-path: polygon(
+      var(--chamfer) 0,
+      calc(100% - var(--chamfer)) 0,
+      100% var(--chamfer),
+      100% calc(100% - 2px),
+      calc(100% - 2px) 100%,
+      2px 100%,
+      0 calc(100% - 2px),
+      0 var(--chamfer)
+    );
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.7)) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.45));
+  }
+
+  .tab-face {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    gap: 0.4rem;
+    padding: 0.42rem 0.4rem 0.44rem;
+    box-sizing: border-box;
+    background: var(--color-data-hover);
+    box-shadow:
+      inset 0 1px 0 rgba(240, 230, 200, 0.12),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.45);
+    clip-path: polygon(
+      calc(var(--chamfer) - var(--trim)) 0,
+      calc(100% - (var(--chamfer) - var(--trim))) 0,
+      100% calc(var(--chamfer) - var(--trim)),
+      100% calc(100% - 1px),
+      calc(100% - 1px) 100%,
+      1px 100%,
+      0 calc(100% - 1px),
+      0 calc(var(--chamfer) - var(--trim))
+    );
   }
 
   .tab-icon {
     display: block;
-    width: 0.95rem;
-    height: 0.95rem;
+    width: 1.35rem;
+    height: 1.35rem;
     flex-shrink: 0;
-    background: currentColor;
+    background: var(--color-golden);
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;
   }
 
   .menu-item:hover {
     color: var(--color-cream);
-    background: rgba(56, 138, 158, 0.16);
+  }
+
+  .menu-item:hover .tab-face {
+    background: color-mix(in srgb, var(--color-data-hover) 78%, var(--color-cream));
   }
 
   .menu-item.active {
     color: var(--color-cream);
-    background: rgba(56, 138, 158, 0.42);
-    box-shadow: inset 0 0 12px rgba(90, 190, 200, 0.18);
+  }
+
+  .menu-item.active .tab-face {
+    background: color-mix(in srgb, rgb(56, 138, 158) 58%, var(--color-data-active));
+    box-shadow:
+      inset 0 1px 0 rgba(210, 240, 245, 0.2),
+      inset 0 0 10px rgba(90, 190, 200, 0.18),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .menu-item:focus-visible {
+    outline: 1px solid var(--color-golden);
+    outline-offset: 2px;
   }
 
   .pane {
@@ -157,23 +219,27 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    border-radius: 12px;
+    border-radius: 0 12px 12px 12px;
     overflow: hidden;
+    background-color: var(--color-data);
     box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.28);
     background-image:
       linear-gradient(var(--edge), var(--edge)), linear-gradient(var(--edge), var(--edge)),
-      linear-gradient(var(--edge), var(--edge)), linear-gradient(var(--edge), var(--edge));
+      linear-gradient(var(--edge), var(--edge)), linear-gradient(var(--edge), var(--edge)),
+      var(--data-bg);
     background-repeat: no-repeat;
     background-position:
-      top center,
+      top left,
       bottom center,
-      center left,
-      center right;
+      top left,
+      right center,
+      center;
     background-size:
+      calc(100% - var(--corner-span)) 1px,
       calc(100% - 2 * var(--corner-span)) 1px,
-      calc(100% - 2 * var(--corner-span)) 1px,
+      1px calc(100% - var(--corner-span)),
       1px calc(100% - 2 * var(--corner-span)),
-      1px calc(100% - 2 * var(--corner-span));
+      cover;
   }
 
   .ornament {
@@ -185,11 +251,6 @@
     background: var(--color-golden);
     mask: var(--data-corner) 0 0 / 40px 40px no-repeat;
     -webkit-mask: var(--data-corner) 0 0 / 40px 40px no-repeat;
-  }
-
-  .ornament.tl {
-    top: 0;
-    left: 0;
   }
 
   .ornament.tr {

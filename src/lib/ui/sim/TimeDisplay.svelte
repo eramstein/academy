@@ -28,14 +28,15 @@
     flex-shrink: 0;
     align-items: center;
     gap: 0.45rem;
-    padding: 0.2rem 0.35rem 0.45rem 0;
+    padding: 0 0.35rem 0.5rem 0;
     line-height: 1.15;
   }
 
   .icon {
     display: block;
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
     background: var(--color-golden);
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;
@@ -45,7 +46,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.18rem;
+    gap: 0.12rem;
   }
 
   .day {

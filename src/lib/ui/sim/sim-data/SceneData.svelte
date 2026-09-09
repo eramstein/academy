@@ -39,6 +39,9 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
+    box-sizing: border-box;
+    /* Leave the pane's 1px golden edge borders visible under flush content */
+    padding: 1px;
     color: var(--color-cream);
     min-height: 0;
     background: transparent;
