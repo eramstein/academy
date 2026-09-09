@@ -16,6 +16,22 @@
   --color-green: #27ae60;
   --color-black: #2c3e50;
   --color-golden: #bfa14a;
+
+  --color-parchment: #e8dcc4;
+  --color-ink: #2c251d;
+  --color-ink-muted: #5c5146;
+  --color-brown-border: #5a4b3c;
+  --color-deep-brown: #2a1810;
+  --color-wood: #3a221f;
+  --color-wood-mid: #3d3429;
+  --color-wood-hover: #4a3f32;
+  --color-cream: #f0e6c8;
+  --color-muted-label: #a89880;
+  --color-navy: #1a202c;
+  --color-data: #1a2433;
+  --color-data-hover: #243044;
+  --color-data-active: #121820;
+  --font-narrative: Georgia, 'Times New Roman', serif;
 }
 
 html,

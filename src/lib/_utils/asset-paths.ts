@@ -31,6 +31,10 @@ export function getTableImagePath(): string {
   return getAssetPath('images/table.jpg');
 }
 
+export function getDataBackgroundPath(): string {
+  return getAssetPath('images/data-background.png');
+}
+
 export function getCardBackImagePath(): string {
   return getAssetPath('images/card_back.jpg');
 }

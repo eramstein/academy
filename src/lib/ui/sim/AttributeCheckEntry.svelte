@@ -99,7 +99,7 @@
     font-size: 0.85rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #4a3f32;
+    color: var(--color-ink-muted);
     min-height: 1.4em;
   }
 
@@ -123,8 +123,8 @@
     align-items: center;
     justify-content: center;
     clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
-    background: #3d3429;
-    color: #e8dcc4;
+    background: var(--color-wood-mid);
+    color: var(--color-parchment);
   }
 
   .check-roll.animated .d20 {
@@ -139,7 +139,7 @@
   }
 
   .vs {
-    color: #4a3f32;
+    color: var(--color-ink-muted);
   }
 
   .attribute-check :global(.check-outcome),

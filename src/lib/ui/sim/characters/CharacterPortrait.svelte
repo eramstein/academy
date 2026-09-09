@@ -1,9 +1,10 @@
 <script lang="ts">
   import type { Character } from '@/lib/_model';
+  import { getCharacterImagePath } from '@/lib/_utils/asset-paths';
 
   let { character, zoom = 1 }: { character: Character; zoom?: number } = $props();
 
-  let imagePath = $derived(`/assets/images/characters/${character.key}.jpg`);
+  let imagePath = $derived(getCharacterImagePath(character.key));
 </script>
 
 <img

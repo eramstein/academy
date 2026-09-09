@@ -31,6 +31,11 @@
 </script>
 
 <div class="sim-data">
+  <span class="ornament tl" aria-hidden="true"></span>
+  <span class="ornament tr" aria-hidden="true"></span>
+  <span class="ornament bl" aria-hidden="true"></span>
+  <span class="ornament br" aria-hidden="true"></span>
+
   <nav class="menu">
     <div class="tabs">
       {#each tabs as tab (tab.id)}
@@ -70,13 +75,51 @@
 
 <style>
   .sim-data {
+    position: relative;
     display: flex;
     flex-direction: column;
     height: 100%;
     min-height: 0;
-    background: #1a1a1a;
-    color: white;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
+    border: 1px solid var(--color-golden);
+    overflow: hidden;
+    box-shadow: inset 0 0 0 4px rgba(26, 48, 72, 0.65);
+    background: var(--color-data) var(--data-bg) center / cover;
+  }
+
+  .ornament {
+    position: absolute;
+    z-index: 2;
+    width: 28px;
+    height: 28px;
+    pointer-events: none;
+    background: var(--color-golden);
+    mask: var(--corner) center / contain no-repeat;
+    -webkit-mask: var(--corner) center / contain no-repeat;
+  }
+
+  .ornament.tl {
+    top: 6px;
+    left: 6px;
+  }
+
+  .ornament.tr {
+    top: 6px;
+    right: 6px;
+    transform: rotate(90deg);
+  }
+
+  .ornament.bl {
+    bottom: 6px;
+    left: 6px;
+    transform: rotate(-90deg);
+  }
+
+  .ornament.br {
+    bottom: 6px;
+    right: 6px;
+    transform: rotate(180deg);
   }
 
   .menu {
@@ -85,8 +128,9 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    padding: 0.5rem 0.75rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.55rem 2.1rem 0.5rem 2.1rem;
+    border-bottom: 1px solid var(--color-golden);
+    background: rgba(10, 16, 24, 0.45);
   }
 
   .tabs {
@@ -102,20 +146,21 @@
     background: transparent;
     border: 1px solid transparent;
     border-radius: 4px;
-    color: #cccccc;
+    color: var(--color-muted-label);
+    font-family: inherit;
     font-size: 0.9rem;
     cursor: pointer;
   }
 
   .menu-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: white;
+    color: var(--color-cream);
+    border-color: rgba(191, 161, 74, 0.45);
   }
 
   .menu-item.active {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: white;
+    color: var(--color-cream);
+    border-color: var(--color-golden);
+    background: rgba(191, 161, 74, 0.12);
   }
 
   .content {
@@ -123,8 +168,9 @@
     min-height: 0;
     overflow-y: auto;
     padding: 0.65rem 0.5rem;
+    color: var(--color-cream);
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+    scrollbar-color: rgba(191, 161, 74, 0.4) transparent;
   }
 
   .content::-webkit-scrollbar {
@@ -142,12 +188,12 @@
   }
 
   .content::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(191, 161, 74, 0.4);
     border-radius: 3px;
   }
 
   .content::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.32);
+    background: rgba(191, 161, 74, 0.6);
   }
 
   .content.flush {

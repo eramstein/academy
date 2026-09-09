@@ -181,7 +181,8 @@
     gap: 0.85rem;
     min-height: 0;
     height: 100%;
-    color: #e8e8e8;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
   }
 
   .filters {
@@ -194,7 +195,7 @@
     height: var(--editor-align-bar, auto);
     min-height: var(--editor-align-bar, 2.5rem);
     padding: 0.25rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid var(--color-golden);
     overflow-x: auto;
     scrollbar-width: thin;
   }
@@ -211,17 +212,17 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #888888;
+    color: var(--color-muted-label);
     margin-right: 0.15rem;
   }
 
   .chip {
     padding: 0.2rem 0.5rem;
     min-width: 1.7rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(191, 161, 74, 0.08);
+    border: 1px solid var(--color-golden);
     border-radius: 4px;
-    color: #cccccc;
+    color: var(--color-cream);
     font-size: 0.75rem;
     font-weight: 600;
     line-height: 1.2;
@@ -229,14 +230,14 @@
   }
 
   .chip:hover {
-    background: rgba(255, 255, 255, 0.14);
-    color: white;
+    background: rgba(191, 161, 74, 0.16);
+    color: var(--color-cream);
   }
 
   .chip.active {
-    background: rgba(255, 255, 255, 0.22);
-    border-color: rgba(255, 255, 255, 0.45);
-    color: white;
+    background: rgba(191, 161, 74, 0.16);
+    border-color: var(--color-golden);
+    color: var(--color-cream);
   }
 
   .color-chip {
@@ -246,17 +247,17 @@
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--color-golden);
     cursor: pointer;
   }
 
   .color-chip:hover {
-    outline: 2px solid rgba(255, 255, 255, 0.35);
+    outline: 2px solid var(--color-golden);
     outline-offset: 1px;
   }
 
   .color-chip.active {
-    outline: 2px solid rgba(255, 255, 255, 0.75);
+    outline: 2px solid var(--color-golden);
     outline-offset: 1px;
   }
 
@@ -268,7 +269,7 @@
     flex: 1 1 auto;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+    scrollbar-color: rgba(191, 161, 74, 0.4) transparent;
   }
 
   .results::-webkit-scrollbar {
@@ -286,18 +287,18 @@
   }
 
   .results::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(191, 161, 74, 0.4);
     border-radius: 3px;
   }
 
   .results::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.32);
+    background: rgba(191, 161, 74, 0.6);
   }
 
   .empty {
     margin: 0;
     font-size: 0.95rem;
-    color: #888888;
+    color: var(--color-muted-label);
   }
 
   .section {
@@ -312,9 +313,9 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #cccccc;
+    color: var(--color-muted-label);
     padding-bottom: 0.25rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid var(--color-golden);
   }
 
   .card-list {
@@ -337,11 +338,11 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    border-radius: 12px;
+    border-radius: 8px;
   }
 
   .card-button:hover {
-    outline: 2px solid rgba(255, 255, 255, 0.35);
+    outline: 2px solid var(--color-golden);
     outline-offset: 2px;
   }
 </style>

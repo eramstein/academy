@@ -75,23 +75,26 @@
     left: 12px;
     z-index: 1;
     padding: 0.5rem 0.9rem;
-    background: rgba(0, 0, 0, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--color-data);
+    border: 1px solid var(--color-golden);
     border-radius: 4px;
-    color: #cccccc;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
     font-size: 0.9rem;
     cursor: pointer;
   }
 
   .back-btn:hover {
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
+    background: var(--color-data-hover);
+    border-color: var(--color-golden);
   }
 
   .places {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
   }
 
   .region {
@@ -106,15 +109,15 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #cccccc;
+    color: var(--color-muted-label);
     padding-bottom: 0.35rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid rgba(191, 161, 74, 0.35);
   }
 
   .region-description {
     margin: 0;
     font-size: 0.85rem;
-    color: #aaaaaa;
+    color: var(--color-muted-label);
     line-height: 1.4;
   }
 
@@ -144,8 +147,8 @@
   }
 
   .place-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(191, 161, 74, 0.1);
+    border-color: var(--color-golden);
   }
 
   .place-image {
@@ -153,8 +156,8 @@
     width: 96px;
     height: 72px;
     border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background-color: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--color-golden);
+    background-color: var(--color-deep-brown);
     background-image: var(--bg-image);
     background-size: cover;
     background-position: center;
@@ -173,13 +176,13 @@
     margin: 0;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #e8e8e8;
+    color: var(--color-cream);
   }
 
   .place-description {
     margin: 0;
     font-size: 0.85rem;
-    color: #aaaaaa;
+    color: var(--color-muted-label);
     line-height: 1.35;
   }
 </style>

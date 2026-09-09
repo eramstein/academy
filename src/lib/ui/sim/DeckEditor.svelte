@@ -159,8 +159,9 @@
     z-index: 20;
     display: flex;
     flex-direction: column;
-    background: #1a1a1a;
-    color: white;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
+    background: var(--color-data) var(--data-bg) center / cover;
   }
 
   .toolbar {
@@ -170,8 +171,9 @@
     justify-content: space-between;
     gap: 1rem;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--color-golden);
+    background: rgba(10, 16, 24, 0.55);
+    color: var(--color-cream);
   }
 
   .toolbar-left,
@@ -186,26 +188,29 @@
     margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
+    color: var(--color-cream);
   }
 
   .btn {
     padding: 0.45rem 0.85rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--color-data);
+    border: 1px solid var(--color-golden);
     border-radius: 4px;
-    color: #cccccc;
+    color: var(--color-cream);
+    font-family: inherit;
     font-size: 0.9rem;
     cursor: pointer;
   }
 
   .btn:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.12);
-    color: white;
+    background: var(--color-data-hover);
+    border-color: var(--color-golden);
+    color: var(--color-cream);
   }
 
   .btn.primary {
-    background: rgba(255, 255, 255, 0.14);
-    color: white;
+    border-color: var(--color-golden);
+    color: var(--color-cream);
   }
 
   .btn:disabled {
@@ -219,6 +224,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0;
+    background: var(--color-data) var(--data-bg) center / cover;
   }
 
   .panel {
@@ -227,7 +233,7 @@
     min-width: 0;
     min-height: 0;
     padding: 0.5rem 0.65rem 0.65rem;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid var(--color-golden);
   }
 
   .panel:last-child {
@@ -240,7 +246,7 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #cccccc;
+    color: var(--color-muted-label);
   }
 
   .panel-body {

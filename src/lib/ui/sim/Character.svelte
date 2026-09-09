@@ -5,6 +5,7 @@
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import CharacterPortrait from './characters/CharacterPortrait.svelte';
 
+
   let { character }: { character: CharacterModel } = $props();
 
   const ATTR_MAX = 20;
@@ -27,10 +28,6 @@
     [SubscriptionType.Library]: 'book',
     [SubscriptionType.Inn]: 'mug',
   };
-
-  const parchmentPath = getAssetPath('images/parchment.png');
-  const woodPath = getAssetPath('images/wood_chip_base.png');
-  const cornerPath = getAssetPath('images/ui/corner.svg');
 
   const place = $derived(gs.places[character.placeKey]);
   const region = $derived(place ? gs.regions[place.regionKey] : undefined);
@@ -77,15 +74,7 @@
   </div>
 {/snippet}
 
-<div
-  class="character"
-  style="--parchment: url('{parchmentPath}'); --wood: url('{woodPath}'); --corner: url('{cornerPath}')"
->
-  <span class="ornament tl" aria-hidden="true"></span>
-  <span class="ornament tr" aria-hidden="true"></span>
-  <span class="ornament bl" aria-hidden="true"></span>
-  <span class="ornament br" aria-hidden="true"></span>
-
+<div class="character">
   <div class="sheet">
     <header class="sheet-header">
       <div class="portrait-frame">
@@ -180,11 +169,8 @@
 
 <style>
   .character {
-    --ink: #2c251d;
-    --ink-muted: #5c5146;
-    --gold: #c4a574;
-    --gold-text: #d4c08a;
-    --navy: #1a202c;
+    --gold: var(--color-golden);
+    --gold-text: var(--color-cream);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -192,10 +178,9 @@
     height: 100%;
     overflow: hidden;
     box-sizing: border-box;
-    border: 1px solid #6a5a3a;
     color: var(--gold-text);
-    font-family: Georgia, 'Times New Roman', serif;
-    background: var(--navy);
+    font-family: var(--font-narrative);
+    background: transparent;
   }
 
   .sheet {
@@ -207,40 +192,6 @@
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: rgba(196, 165, 116, 0.35) transparent;
-  }
-
-  .ornament {
-    position: absolute;
-    z-index: 2;
-    width: 28px;
-    height: 28px;
-    pointer-events: none;
-    background: var(--gold);
-    mask: var(--corner) center / contain no-repeat;
-    -webkit-mask: var(--corner) center / contain no-repeat;
-  }
-
-  .ornament.tl {
-    top: 4px;
-    left: 4px;
-  }
-
-  .ornament.tr {
-    top: 4px;
-    right: 4px;
-    transform: rotate(90deg);
-  }
-
-  .ornament.bl {
-    bottom: 4px;
-    left: 4px;
-    transform: rotate(-90deg);
-  }
-
-  .ornament.br {
-    bottom: 4px;
-    right: 4px;
-    transform: rotate(180deg);
   }
 
   .icon {
@@ -261,10 +212,9 @@
     min-width: 0;
     padding: 1.15rem 1.25rem 1rem;
     box-sizing: border-box;
-    color: var(--ink);
-    background: #e8dcc4 var(--parchment) center / cover;
-    background-blend-mode: multiply;
-    box-shadow: inset 0 -1px 0 rgba(90, 75, 60, 0.28);
+    color: var(--gold-text);
+    background: transparent;
+    box-shadow: inset 0 -1px 0 rgba(191, 161, 74, 0.35);
   }
 
   .portrait-frame {
@@ -273,11 +223,9 @@
     width: clamp(132px, 22vw, 210px);
     aspect-ratio: 1;
     overflow: hidden;
-    border: 1px solid #b39462;
-    background: rgba(44, 37, 29, 0.18);
-    box-shadow:
-      inset 0 0 0 4px rgba(232, 220, 196, 0.55),
-      0 1px 4px rgba(44, 37, 29, 0.18);
+    border: 1px solid var(--color-golden);
+    background: rgba(10, 16, 24, 0.45);
+    box-shadow: inset 0 0 0 4px rgba(191, 161, 74, 0.18);
   }
 
   .frame-corner {
@@ -285,7 +233,7 @@
     z-index: 1;
     width: 12px;
     height: 12px;
-    border-color: #b39462;
+    border-color: var(--color-golden);
     pointer-events: none;
   }
 
@@ -336,7 +284,7 @@
     font-size: 1.55rem;
     font-weight: 700;
     line-height: 1.2;
-    color: var(--ink);
+    color: var(--gold-text);
     letter-spacing: 0.01em;
   }
 
@@ -378,7 +326,7 @@
 
   .meta-row dt {
     margin: 0;
-    color: var(--ink-muted);
+    color: var(--color-muted-label);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     font-size: 0.68rem;
@@ -388,7 +336,7 @@
   .meta-row dd {
     margin: 0;
     min-width: 0;
-    color: var(--ink);
+    color: var(--gold-text);
     font-size: 0.95rem;
     white-space: nowrap;
     overflow: hidden;
@@ -396,7 +344,7 @@
   }
 
   .gold {
-    color: #8a6a28;
+    color: var(--color-golden);
     font-variant-numeric: tabular-nums;
   }
 
@@ -409,9 +357,7 @@
     padding: 1.05rem 1.2rem 1.2rem;
     box-sizing: border-box;
     color: var(--gold-text);
-    background:
-      linear-gradient(180deg, rgba(18, 24, 32, 0.78), rgba(18, 24, 32, 0.88)),
-      #1a202c var(--wood) center / cover;
+    background: transparent;
   }
 
   .section {
@@ -492,7 +438,7 @@
   .attr-name {
     font-size: 0.9rem;
     text-transform: capitalize;
-    color: #e4d8c0;
+    color: var(--color-cream);
   }
 
   .attr-bar {
@@ -516,7 +462,7 @@
     text-align: right;
     font-size: 0.95rem;
     font-variant-numeric: tabular-nums;
-    color: #f0e6c8;
+    color: var(--color-cream);
   }
 
   .sub-row {
@@ -529,11 +475,11 @@
 
   .sub-name {
     text-transform: capitalize;
-    color: #e4d8c0;
+    color: var(--color-cream);
   }
 
   .sub-days {
-    color: #b8aa8c;
+    color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
   }
 </style>

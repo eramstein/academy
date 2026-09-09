@@ -1,6 +1,9 @@
 <script lang="ts">
   import { uiState } from '@/lib/_state';
+  import { getDataBackgroundPath } from '@/lib/_utils/asset-paths';
   import SaveManager from './SaveManager.svelte';
+
+  const dataBgPath = getDataBackgroundPath();
 
   function handleBackdropClick(event: MouseEvent) {
     if (event.target === event.currentTarget) {
@@ -11,7 +14,11 @@
 
 {#if uiState.saveManagerModal.visible}
   <div class="modal-backdrop" onclick={handleBackdropClick}>
-    <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+    <div
+      class="modal-content"
+      style="--data-bg: url('{dataBgPath}')"
+      onclick={(e) => e.stopPropagation()}
+    >
       <div class="modal-header">
         <h2>Save / Load Game</h2>
         <button class="close" onclick={() => (uiState.saveManagerModal.visible = false)}
@@ -32,50 +39,50 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.72);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
   }
   .modal-content {
-    background: rgba(20, 20, 20, 0.95);
-    border-radius: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    box-shadow:
-      0 20px 40px rgba(0, 0, 0, 0.8),
-      0 10px 20px rgba(0, 0, 0, 0.6);
+    background: var(--color-data) var(--data-bg) center / cover;
+    border-radius: 4px;
+    border: 1px solid var(--color-golden);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
     max-width: 640px;
     width: 90vw;
     max-height: 90vh;
     overflow: hidden;
-    color: #fff;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
   }
   .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-golden);
+    background: rgba(10, 16, 24, 0.55);
+    color: var(--color-cream);
   }
   .modal-header h2 {
     margin: 0;
-    color: #ffffff;
+    color: var(--color-cream);
     font-size: 1.2em;
     font-weight: 600;
   }
   .close {
     padding: 6px 12px;
-    background: #444;
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+    background: var(--color-data);
+    color: var(--color-cream);
+    border: 1px solid var(--color-golden);
+    border-radius: 4px;
+    font-family: inherit;
     cursor: pointer;
   }
   .close:hover {
-    background: #666;
+    background: var(--color-data-hover);
   }
   .modal-body {
     padding: 12px 16px;

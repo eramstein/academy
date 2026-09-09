@@ -43,6 +43,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
   }
 
   .section-title {
@@ -51,15 +53,15 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #cccccc;
+    color: var(--color-muted-label);
     padding-bottom: 0.35rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid var(--color-golden);
   }
 
   .empty {
     margin: 0;
     font-size: 0.95rem;
-    color: #888888;
+    color: var(--color-muted-label);
   }
 
   .rankings {
@@ -80,17 +82,17 @@
   }
 
   .rank {
-    color: #888888;
+    color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
   }
 
   .name {
-    color: #e8e8e8;
+    color: var(--color-cream);
     min-width: 0;
   }
 
   .points {
-    color: #aaaaaa;
+    color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
   }
 

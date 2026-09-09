@@ -39,9 +39,9 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
-    background: #1a1a1a;
-    color: white;
+    color: var(--color-cream);
     min-height: 0;
+    background: transparent;
   }
 
   .top-panel {
@@ -56,8 +56,8 @@
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    background: #141414;
+    border-top: 1px solid var(--color-golden);
+    background: rgba(10, 16, 24, 0.55);
     min-height: 0;
   }
 
@@ -74,9 +74,9 @@
     height: 144px;
     padding: 0;
     flex-shrink: 0;
-    border-radius: 8px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    background: rgba(0, 0, 0, 0.4);
+    border-radius: 6px;
+    border: 1px solid var(--color-golden);
+    background: var(--color-deep-brown);
     cursor: pointer;
     overflow: hidden;
   }
@@ -87,6 +87,6 @@
   }
 
   .portrait-btn:hover {
-    border-color: rgba(255, 255, 255, 0.35);
+    border-color: var(--color-golden);
   }
 </style>

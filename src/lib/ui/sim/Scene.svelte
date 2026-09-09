@@ -183,6 +183,10 @@
     bind:this={bookEl}
     style:height={bookHeight !== undefined ? `${bookHeight}px` : undefined}
   >
+    <span class="ornament tl" aria-hidden="true"></span>
+    <span class="ornament tr" aria-hidden="true"></span>
+    <span class="ornament bl" aria-hidden="true"></span>
+    <span class="ornament br" aria-hidden="true"></span>
     <div class="page" class:scrollable bind:this={pageEl}>
       <div class="page-content" bind:this={contentEl}>
         {#each narration as entry (entry.id)}
@@ -288,6 +292,7 @@
   }
 
   .book {
+    position: relative;
     width: 100%;
     max-width: 640px;
     flex: 0 1 auto;
@@ -295,11 +300,45 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow:
-      0 12px 32px rgba(0, 0, 0, 0.5),
-      inset -8px 0 16px rgba(0, 0, 0, 0.08);
-    border-radius: 4px 12px 12px 4px;
-    border-left: 6px solid #5a4b3c;
+    background: var(--color-deep-brown);
+    border: 1px solid var(--color-golden);
+    border-radius: 4px;
+    outline: 7px solid var(--color-deep-brown);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  .ornament {
+    position: absolute;
+    z-index: 2;
+    width: 26px;
+    height: 26px;
+    pointer-events: none;
+    background: var(--color-golden);
+    mask: var(--corner) center / contain no-repeat;
+    -webkit-mask: var(--corner) center / contain no-repeat;
+  }
+
+  .ornament.tl {
+    top: -2px;
+    left: -2px;
+  }
+
+  .ornament.tr {
+    top: -2px;
+    right: -2px;
+    transform: rotate(90deg);
+  }
+
+  .ornament.bl {
+    bottom: -2px;
+    left: -2px;
+    transform: rotate(-90deg);
+  }
+
+  .ornament.br {
+    bottom: -2px;
+    right: -2px;
+    transform: rotate(180deg);
   }
 
   .book.height-transition {
@@ -311,13 +350,13 @@
     min-height: 0;
     height: 100%;
     overflow: hidden;
-    background: #e8dcc4 url('/assets/images/parchment.png') center/cover;
+    background: var(--color-parchment) var(--parchment) center/cover;
     background-blend-mode: multiply;
-    color: #2c251d;
+    color: var(--color-ink);
     padding: 40px 48px;
-    border: 1px solid #5a4b3c;
-    border-radius: 4px 12px 12px 4px;
-    font-family: Georgia, 'Times New Roman', serif;
+    border: 1px solid var(--color-brown-border);
+    border-radius: 2px;
+    font-family: var(--font-narrative);
     font-size: 1.05rem;
     line-height: 1.7;
     box-shadow: inset 0 0 40px rgba(90, 75, 60, 0.15);
@@ -381,7 +420,7 @@
     flex-shrink: 0;
     font-size: 2rem;
     line-height: 1;
-    color: #4a3f32;
+    color: var(--color-ink-muted);
   }
 
   .narration-actions {
@@ -397,14 +436,14 @@
 
   .add-to-deck:disabled:hover,
   .add-to-deck:disabled:active {
-    background: #3d3429;
-    border-color: #5a4b3c;
+    background: var(--color-data);
+    border-color: var(--color-golden);
   }
 
   .prompt {
     margin: 0.75em 0 0;
     font-style: italic;
-    color: #4a3f32;
+    color: var(--color-ink-muted);
   }
 
   .place-picker {
@@ -427,12 +466,12 @@
 
   .place-region-title {
     margin: 0;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-narrative);
     font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #a89880;
+    color: var(--color-muted-label);
     text-align: center;
   }
 
@@ -444,22 +483,22 @@
   }
 
   .action-btn {
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-narrative);
     font-size: 1rem;
-    color: #e8dcc4;
-    background: #3d3429;
-    border: 1px solid #5a4b3c;
+    color: var(--color-cream);
+    background: var(--color-data);
+    border: 1px solid var(--color-golden);
     border-radius: 4px;
     padding: 10px 24px;
     cursor: pointer;
   }
 
   .action-btn:hover {
-    background: #4a3f32;
-    border-color: #7a6b5c;
+    background: var(--color-data-hover);
+    border-color: var(--color-golden);
   }
 
   .action-btn:active {
-    background: #2c251d;
+    background: var(--color-data-active);
   }
 </style>

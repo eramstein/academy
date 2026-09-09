@@ -261,12 +261,12 @@
 
   .parameter-prompt {
     margin: 0;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-narrative);
     font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #a89880;
+    color: var(--color-muted-label);
     text-align: center;
   }
 
@@ -280,11 +280,11 @@
   .action-btn {
     display: inline-flex;
     align-items: center;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: var(--font-narrative);
     font-size: 1rem;
-    color: #e8dcc4;
-    background: #3d3429;
-    border: 1px solid #5a4b3c;
+    color: var(--color-cream);
+    background: var(--color-data);
+    border: 1px solid var(--color-golden);
     border-radius: 4px;
     padding: 10px 24px;
     cursor: pointer;
@@ -299,7 +299,7 @@
     flex: 0 0 52px;
     align-self: stretch;
     width: 52px;
-    border-right: 1px solid #5a4b3c;
+    border-right: 1px solid var(--color-golden);
     background-color: rgba(0, 0, 0, 0.35);
     background-size: cover;
     background-position: center;
@@ -315,20 +315,20 @@
   }
 
   .action-btn:hover {
-    background: #4a3f32;
-    border-color: #7a6b5c;
+    background: var(--color-data-hover);
+    border-color: var(--color-golden);
   }
 
   .action-btn.has-thumb:hover .option-thumb {
-    border-right-color: #7a6b5c;
+    border-right-color: var(--color-golden);
   }
 
   .action-btn:active {
-    background: #2c251d;
+    background: var(--color-data-active);
   }
 
   .action-btn.long {
-    color: #f0e6c8;
+    color: var(--color-cream);
     border-color: var(--color-golden);
   }
 
@@ -337,18 +337,18 @@
   }
 
   .action-btn.long:hover {
-    background: #4a3f32;
-    border-color: #d4b85c;
+    background: var(--color-data-hover);
+    border-color: var(--color-golden);
   }
 
   .action-btn.cancel {
-    color: #a89880;
+    color: var(--color-muted-label);
     background: transparent;
-    border-color: #5a4b3c;
+    border-color: var(--color-golden);
   }
 
   .action-btn.cancel:hover {
-    color: #e8dcc4;
-    background: #3d3429;
+    color: var(--color-cream);
+    background: var(--color-data);
   }
 </style>

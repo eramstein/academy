@@ -253,7 +253,8 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-    color: #e8e8e8;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
   }
 
   .sheet-header {
@@ -269,8 +270,8 @@
     height: 144px;
     overflow: hidden;
     border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--color-golden);
+    background: var(--color-deep-brown);
   }
 
   .portrait {
@@ -287,8 +288,8 @@
     justify-content: center;
     font-size: 3rem;
     font-weight: 600;
-    color: #888888;
-    background: rgba(255, 255, 255, 0.04);
+    color: var(--color-muted-label);
+    background: rgba(255, 255, 255, 0.06);
   }
 
   .identity {
@@ -304,7 +305,7 @@
     font-size: 1.15rem;
     font-weight: 600;
     line-height: 1.3;
-    color: white;
+    color: var(--color-cream);
   }
 
   .meta {
@@ -324,7 +325,7 @@
 
   .meta-row dt {
     margin: 0;
-    color: #aaaaaa;
+    color: var(--color-muted-label);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     font-size: 0.75rem;
@@ -332,7 +333,7 @@
 
   .meta-row dd {
     margin: 0;
-    color: #e8e8e8;
+    color: var(--color-cream);
   }
 
   .gold {
@@ -351,7 +352,7 @@
   .attr-bar {
     height: 0.45rem;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.08);
+    background: #0c1016;
     overflow: hidden;
   }
 
@@ -364,7 +365,7 @@
   .attr-fill {
     height: 100%;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.45);
+    background: var(--color-golden);
   }
 
   .section {
@@ -379,9 +380,9 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #cccccc;
+    color: var(--color-muted-label);
     padding-bottom: 0.35rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid rgba(191, 161, 74, 0.35);
   }
 
   .subsection-title {
@@ -390,19 +391,18 @@
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #aaaaaa;
+    color: var(--color-muted-label);
   }
 
   .empty,
   .summary {
     margin: 0;
     font-size: 0.9rem;
-    color: #aaaaaa;
+    color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
   }
 
   .empty {
-    color: #888888;
     font-size: 0.95rem;
   }
 
@@ -432,14 +432,14 @@
   .kv-name {
     font-size: 0.85rem;
     text-transform: capitalize;
-    color: #dddddd;
+    color: var(--color-cream);
   }
 
   .attr-value {
     text-align: right;
     font-size: 0.9rem;
     font-variant-numeric: tabular-nums;
-    color: #f0f0f0;
+    color: var(--color-cream);
   }
 
   .kv-row {
@@ -450,7 +450,7 @@
   }
 
   .kv-value {
-    color: #aaaaaa;
+    color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
   }
 
@@ -469,20 +469,20 @@
     align-items: center;
     gap: 0.4rem;
     padding: 0.2rem 0.55rem;
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid var(--color-golden);
     border-radius: 3px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(191, 161, 74, 0.08);
   }
 
   .chip-name {
     font-size: 0.85rem;
     text-transform: capitalize;
-    color: #e8e8e8;
+    color: var(--color-cream);
   }
 
   .chip-level {
     font-size: 0.8rem;
-    color: #aaaaaa;
+    color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
   }
 
@@ -492,6 +492,6 @@
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--color-golden);
   }
 </style>

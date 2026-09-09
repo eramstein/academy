@@ -187,13 +187,13 @@
     gap: 1rem;
     padding: 0.9rem 1rem;
     box-sizing: border-box;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(0, 0, 0, 0.68);
-    backdrop-filter: blur(8px);
-    color: #e8e8e8;
+    border-radius: 4px;
+    border: 1px solid var(--color-golden);
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
+    background: var(--color-data) var(--data-bg) center / cover;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+    scrollbar-color: rgba(191, 161, 74, 0.4) transparent;
   }
 
   .identity {
@@ -214,7 +214,7 @@
     font-size: 1.15rem;
     font-weight: 600;
     line-height: 1.3;
-    color: white;
+    color: var(--color-cream);
   }
 
   .here {
@@ -222,9 +222,9 @@
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--color-golden);
-    border: 1px solid rgba(191, 161, 74, 0.45);
-    background: rgba(191, 161, 74, 0.12);
+    color: var(--color-cream);
+    border: 1px solid var(--color-golden);
+    background: transparent;
     border-radius: 3px;
     padding: 0.1rem 0.4rem;
   }
@@ -235,7 +235,7 @@
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #cccccc;
+    color: var(--color-muted-label);
   }
 
   .muted,
@@ -244,11 +244,11 @@
     margin: 0;
     font-size: 0.85rem;
     line-height: 1.4;
-    color: #aaaaaa;
+    color: var(--color-muted-label);
   }
 
   .description {
-    color: #e8e8e8;
+    color: var(--color-cream);
   }
 
   .section {
@@ -263,9 +263,9 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #cccccc;
+    color: var(--color-muted-label);
     padding-bottom: 0.35rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid rgba(191, 161, 74, 0.35);
   }
 
   .people {
@@ -296,12 +296,12 @@
     height: 112px;
     overflow: hidden;
     border-radius: 6px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--color-golden);
+    background: var(--color-deep-brown);
   }
 
   .person:hover .portrait-frame {
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: var(--color-golden);
   }
 
   .portrait-frame :global(.character-portrait) {
@@ -311,7 +311,7 @@
   .person-name {
     font-size: 0.75rem;
     line-height: 1.3;
-    color: #dddddd;
+    color: var(--color-cream);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -331,30 +331,30 @@
     flex-direction: column;
     gap: 0.1rem;
     padding: 0.4rem 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-golden);
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(191, 161, 74, 0.08);
   }
 
   .activity.current {
-    border-color: rgba(191, 161, 74, 0.45);
-    background: rgba(191, 161, 74, 0.1);
+    border-color: var(--color-golden);
+    background: rgba(191, 161, 74, 0.12);
   }
 
   .activity-name {
     font-size: 0.9rem;
     text-transform: capitalize;
-    color: #e8e8e8;
+    color: var(--color-cream);
   }
 
   .activity-when {
     font-size: 0.75rem;
-    color: #aaaaaa;
+    color: var(--color-muted-label);
     text-transform: capitalize;
   }
 
   .activity-who {
     font-size: 0.8rem;
-    color: #cccccc;
+    color: var(--color-cream);
   }
 </style>

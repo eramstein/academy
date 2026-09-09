@@ -145,7 +145,8 @@
     gap: 0.85rem;
     min-height: 0;
     height: 100%;
-    color: #e8e8e8;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
   }
 
   .body {
@@ -156,7 +157,7 @@
     flex: 1 1 auto;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+    scrollbar-color: rgba(191, 161, 74, 0.4) transparent;
   }
 
   .body::-webkit-scrollbar {
@@ -174,12 +175,12 @@
   }
 
   .body::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(191, 161, 74, 0.4);
     border-radius: 3px;
   }
 
   .body::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.32);
+    background: rgba(191, 161, 74, 0.6);
   }
 
   .header {
@@ -197,7 +198,7 @@
     min-height: var(--editor-align-bar, 2.5rem);
     box-sizing: border-box;
     padding: 0.25rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid var(--color-golden);
   }
 
   .name {
@@ -205,7 +206,7 @@
     font-size: 1.15rem;
     font-weight: 600;
     line-height: 1.3;
-    color: white;
+    color: var(--color-cream);
   }
 
   .compact-bar .name {
@@ -221,10 +222,10 @@
     min-width: 0;
     margin: 0;
     padding: 0.2rem 0.45rem;
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(10, 16, 24, 0.55);
+    border: 1px solid var(--color-golden);
     border-radius: 4px;
-    color: white;
+    color: var(--color-cream);
     font: inherit;
     font-size: 0.95rem;
     font-weight: 600;
@@ -233,11 +234,11 @@
 
   .name-input:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: var(--color-golden);
   }
 
   .name-input::placeholder {
-    color: #888888;
+    color: var(--color-muted-label);
     font-weight: 500;
   }
 
@@ -245,12 +246,12 @@
   .empty-section {
     margin: 0;
     font-size: 0.9rem;
-    color: #aaaaaa;
+    color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
   }
 
   .empty-section {
-    color: #888888;
+    color: var(--color-muted-label);
   }
 
   .colors {
@@ -265,7 +266,7 @@
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--color-golden);
   }
 
   .section {
@@ -284,19 +285,19 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #cccccc;
+    color: var(--color-muted-label);
     padding-bottom: 0.25rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid var(--color-golden);
   }
 
   .count {
     font-variant-numeric: tabular-nums;
     letter-spacing: 0;
-    color: #aaaaaa;
+    color: var(--color-muted-label);
   }
 
   .count.bad {
-    color: #e74c3c;
+    color: #7a2e22;
   }
 
   .card-list {
@@ -319,11 +320,11 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    border-radius: 12px;
+    border-radius: 8px;
   }
 
   .card-button:hover {
-    outline: 2px solid rgba(255, 255, 255, 0.35);
+    outline: 2px solid var(--color-golden);
     outline-offset: 2px;
   }
 </style>

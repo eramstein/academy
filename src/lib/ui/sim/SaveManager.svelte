@@ -135,7 +135,6 @@
           <button onclick={() => onLoad(s.id)} disabled={isBusy}>Load</button>
           <button onclick={() => confirmOverwrite(s.id)} disabled={isBusy}>Save as</button>
           <button class="danger" onclick={() => confirmDelete(s.id)} disabled={isBusy}>
-            <span class="icon">🗑️</span>
             Delete
           </button>
         </div>
@@ -149,12 +148,47 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    color: white;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
   }
   .controls {
     display: flex;
     gap: 8px;
     align-items: center;
+  }
+  .controls input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.4rem 0.55rem;
+    background: rgba(10, 16, 24, 0.55);
+    border: 1px solid var(--color-golden);
+    border-radius: 4px;
+    color: var(--color-cream);
+    font: inherit;
+  }
+  .controls input:focus {
+    outline: none;
+    border-color: var(--color-golden);
+  }
+  .controls button,
+  .actions button {
+    padding: 0.4rem 0.75rem;
+    background: var(--color-data);
+    border: 1px solid var(--color-golden);
+    border-radius: 4px;
+    color: var(--color-cream);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .controls button:hover:not(:disabled),
+  .actions button:hover:not(:disabled) {
+    background: var(--color-data-hover);
+    border-color: var(--color-golden);
+  }
+  .controls button:disabled,
+  .actions button:disabled {
+    opacity: 0.45;
+    cursor: default;
   }
   .list {
     display: flex;
@@ -166,8 +200,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 10px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 6px;
+    border: 1px solid var(--color-golden);
+    border-radius: 4px;
   }
   .meta {
     display: flex;
@@ -178,25 +212,22 @@
   }
   .date {
     font-size: 12px;
-    opacity: 0.8;
+    color: var(--color-muted-label);
   }
   .actions {
     display: flex;
     gap: 6px;
   }
   .actions .danger {
-    color: #fecaca;
-    border-color: rgba(239, 68, 68, 0.35);
-    background: rgba(239, 68, 68, 0.08);
+    color: var(--color-cream);
+    border-color: #7a2e22;
+    background: #7a2e22;
   }
-  .actions .danger:hover {
-    background: rgba(239, 68, 68, 0.18);
-    border-color: rgba(239, 68, 68, 0.5);
-  }
-  .actions .icon {
-    margin-right: 4px;
+  .actions .danger:hover:not(:disabled) {
+    background: #5c2419;
+    border-color: #7a2e22;
   }
   .error {
-    color: #ff6b6b;
+    color: #7a2e22;
   }
 </style>

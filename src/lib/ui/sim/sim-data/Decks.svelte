@@ -86,6 +86,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
   }
 
   .list-header,
@@ -102,7 +104,7 @@
   .empty {
     margin: 0;
     font-size: 0.95rem;
-    color: #888888;
+    color: var(--color-muted-label);
   }
 
   .back-btn,
@@ -110,10 +112,11 @@
   .create-btn,
   .row-edit {
     padding: 0.4rem 0.75rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--color-data);
+    border: 1px solid var(--color-golden);
     border-radius: 4px;
-    color: #cccccc;
+    color: var(--color-cream);
+    font-family: inherit;
     font-size: 0.9rem;
     cursor: pointer;
   }
@@ -122,14 +125,16 @@
   .edit-btn:hover,
   .create-btn:hover,
   .row-edit:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: white;
+    background: var(--color-data-hover);
+    border-color: var(--color-golden);
+    color: var(--color-cream);
   }
 
   .create-btn,
   .edit-btn {
-    background: rgba(255, 255, 255, 0.12);
-    color: white;
+    background: var(--color-data);
+    color: var(--color-cream);
+    border-color: var(--color-golden);
   }
 
   .deck-list {
@@ -156,7 +161,7 @@
     min-width: 0;
     padding: 0.55rem 0.65rem;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--color-golden);
     border-radius: 4px;
     color: inherit;
     text-align: left;
@@ -164,8 +169,8 @@
   }
 
   .deck-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(191, 161, 74, 0.1);
+    border-color: var(--color-golden);
   }
 
   .row-edit {
@@ -182,12 +187,12 @@
   .deck-name {
     font-size: 0.95rem;
     font-weight: 600;
-    color: #e8e8e8;
+    color: var(--color-cream);
   }
 
   .deck-meta {
     font-size: 0.8rem;
-    color: #888888;
+    color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
   }
 
@@ -203,6 +208,6 @@
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--color-golden);
   }
 </style>
