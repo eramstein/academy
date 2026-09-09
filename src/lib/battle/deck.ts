@@ -9,7 +9,10 @@ export function shuffleDeck(deck: Card[]): Card[] {
 
 export function drawCard(player: Player) {
   const card = player.deck.shift();
-  if (!card) return;
+  if (!card) {
+    player.life--;
+    return;
+  }
   player.hand.push(card);
   onCardDrawn(player, card);
   if (player.isPlayer) {

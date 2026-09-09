@@ -1,9 +1,13 @@
 <script lang="ts">
-  import type { Action, CardTemplate, UnitKeywords } from '@/lib/_model';
+  import { CardColor, CardType, type Action, type CardTemplate, type UnitKeywords } from '@/lib/_model';
   import { gs } from '@/lib/_state';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
   import { performAction, getAugmentPreview, type AugmentParameters } from '@/lib/sim/actions';
   import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
+  import CardFilters from '@/lib/ui/cards/CardFilters.svelte';
+  import { hasActiveCardFilters, matchesCardFilters } from '@/lib/ui/cards/card-filters';
+  import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
 
   let {
     action,
@@ -13,12 +17,19 @@
     onDone: () => void;
   } = $props();
 
+  const woodPath = getAssetPath('images/wood_chip_base.png');
+  const tablePath = getAssetPath('images/table.jpg');
+  const parchmentPath = getAssetPath('images/parchment.png');
+
   let cardId = $state<string | null>(initialCardId(action));
   let costIncrease = $state(1);
   let power = $state(0);
   let maxHealth = $state(0);
   let retaliate = $state(0);
   let keywords = $state<Partial<Record<keyof UnitKeywords, number>>>({});
+  let colorFilter = $state<CardColor | null>(null);
+  let costFilter = $state<number | null>(null);
+  let typeFilter = $state<CardType | null>(null);
 
   $effect(() => {
     function onKey(event: KeyboardEvent) {
@@ -29,6 +40,12 @@
   });
 
   const availableCards = $derived(cardsFromAction(action));
+  const cardFilters = $derived({ color: colorFilter, cost: costFilter, type: typeFilter });
+  const filteredCards = $derived(
+    availableCards.filter((card) => matchesCardFilters(card, cardFilters))
+  );
+  const hasActiveFilters = $derived(hasActiveCardFilters(cardFilters));
+  const selectingCard = $derived(!cardId);
   const canChangeCard = $derived(availableCards.length > 1);
   const knownKeywords = $derived(
     KEYWORD_KEYS.filter((key) => !!gs.player.craftingKnowledge.keywords?.[key])
@@ -130,13 +147,16 @@
   }
 
   function setKeyword(key: keyof UnitKeywords, value: number) {
-    const next = { ...keywords };
-    if (value) {
-      next[key] = value;
+    if (!parameters) return;
+    const next = Math.max(0, value);
+    const nextKeywords = { ...keywords };
+    if (next) {
+      nextKeywords[key] = next;
     } else {
-      delete next[key];
+      delete nextKeywords[key];
     }
-    keywords = next;
+    if (next > (keywords[key] ?? 0) && !fits({ ...parameters, keywords: nextKeywords })) return;
+    keywords = nextKeywords;
   }
 
   function toggleKeyword(key: keyof UnitKeywords) {
@@ -158,6 +178,66 @@
     return fits({ ...parameters, keywords: nextKeywords });
   }
 
+  function setCostIncrease(next: number) {
+    if (!Number.isFinite(next)) return;
+    const value = Math.round(next);
+    if (value < 1 || value > maxCostIncrease) return;
+    if (value < costIncrease && parameters && !fits({ ...parameters, costIncrease: value })) return;
+    costIncrease = value;
+  }
+
+  function setPower(next: number) {
+    if (!Number.isFinite(next) || next < 0) return;
+    const value = Math.round(next);
+    if (value > power && !canIncPower) return;
+    if (value < power && !canDecPower) return;
+    power = value;
+  }
+
+  function setMaxHealth(next: number) {
+    if (!Number.isFinite(next) || next < 0) return;
+    const value = Math.round(next);
+    if (value > maxHealth && !canIncHealth) return;
+    if (value < maxHealth && !canDecHealth) return;
+    maxHealth = value;
+  }
+
+  function setRetaliate(next: number) {
+    if (!Number.isFinite(next) || next < 0) return;
+    const value = Math.round(next);
+    if (value > retaliate && !canIncRetaliate) return;
+    if (value < retaliate && !canDecRetaliate) return;
+    retaliate = value;
+  }
+
+  function adjustFromClick(event: MouseEvent, canDec: boolean, canInc: boolean, apply: () => void) {
+    if (event.type === 'contextmenu') event.preventDefault();
+    const increase = event.type !== 'contextmenu';
+    if (increase && !canInc) return;
+    if (!increase && !canDec) return;
+    apply();
+  }
+
+  function onKeywordRowClick(event: MouseEvent, key: keyof UnitKeywords, numeric: boolean) {
+    if (numeric) {
+      if (event.type === 'contextmenu') {
+        event.preventDefault();
+        setKeyword(key, (keywords[key] ?? 0) - 1);
+      } else {
+        setKeyword(key, (keywords[key] ?? 0) + 1);
+      }
+      return;
+    }
+    if (event.type === 'contextmenu') event.preventDefault();
+    toggleKeyword(key);
+  }
+
+  function onNumberInput(event: Event, apply: (value: number) => void) {
+    const raw = (event.currentTarget as HTMLInputElement).value;
+    if (raw === '') return;
+    apply(Number.parseInt(raw, 10));
+  }
+
   function confirm() {
     if (!parameters || preview?.error) return;
     performAction({
@@ -172,187 +252,319 @@
   }
 </script>
 
-<div class="overlay" role="presentation">
-  <div class="panel" role="dialog" aria-labelledby="enchant-title">
-    <header class="header">
-      <h2 id="enchant-title" class="title">
-        {#if cardId}
-          Enchant {card?.name ?? 'card'}
-        {:else}
-          Enchant a card
-        {/if}
-      </h2>
-      <p class="subtitle">
-        {cardId ? 'Choose how to spend the upgrade budget.' : 'Which card?'}
-      </p>
-    </header>
-
-    {#if !cardId}
-      {#if availableCards.length === 0}
-        <p class="error">No units available to enchant.</p>
-      {:else}
-        <div class="card-grid">
-          {#each availableCards as option (option.id)}
-            <button type="button" class="card-pick" onclick={() => selectCard(option.id)}>
-              <CardCompact card={option} />
-            </button>
-          {/each}
-        </div>
-      {/if}
-    {:else if !card || !preview}
-      <p class="error">{preview?.error || 'Card not found.'}</p>
-    {:else}
-      <div class="preview-row">
-        <CardCompact {card} />
-        <span class="arrow" aria-hidden="true">→</span>
-        {#if preview.preview}
-          <CardCompact card={preview.preview} />
-        {/if}
-      </div>
-
-      <div class="budget" class:over={!!preview.error}>
-        <span class="budget-label">Budget</span>
-        <span class="budget-value">{preview.spent} / {preview.upgradeBudget}</span>
-        {#if preview.error}
-          <span class="budget-note error-note">{preview.error}</span>
-        {:else if preview.extraBudget > 0}
-          <span class="budget-note">
-            {preview.extraBudget} remaining will be spent automatically
-          </span>
-        {/if}
-      </div>
-
-      <div class="controls">
-        {@render stepper(
-          'Cost +',
-          costIncrease,
-          canDecCost,
-          canIncCost,
-          () => (costIncrease -= 1),
-          () => (costIncrease += 1)
-        )}
-        {@render stepper(
-          'Power +',
-          power,
-          canDecPower,
-          canIncPower,
-          () => (power -= 1),
-          () => (power += 1)
-        )}
-        {@render stepper(
-          'Health +',
-          maxHealth,
-          canDecHealth,
-          canIncHealth,
-          () => (maxHealth -= 1),
-          () => (maxHealth += 1)
-        )}
-        {@render stepper(
-          'Retaliate +',
-          retaliate,
-          canDecRetaliate,
-          canIncRetaliate,
-          () => (retaliate -= 1),
-          () => (retaliate += 1)
-        )}
-      </div>
-
-      <section class="keywords">
-        <h3 class="section-title">Keywords</h3>
-        {#if knownKeywords.length === 0}
-          <p class="empty">No known keywords yet.</p>
-        {:else}
-          <div class="keyword-list">
-            {#each knownKeywords as key (key)}
-              {#if NUMERIC_KEYWORDS.has(key)}
-                <div class="keyword-chip numeric">
-                  <img
-                    class="keyword-icon"
-                    src="/assets/images/keywords/{key}.png"
-                    alt=""
-                    aria-hidden="true"
-                  />
-                  <span class="keyword-name">{formatKeyword(key)}</span>
-                  <button
-                    type="button"
-                    class="step-btn"
-                    disabled={(keywords[key] ?? 0) <= 0}
-                    onclick={() => setKeyword(key, (keywords[key] ?? 0) - 1)}
-                  >
-                    −
-                  </button>
-                  <span class="step-value">{keywords[key] ?? 0}</span>
-                  <button
-                    type="button"
-                    class="step-btn"
-                    disabled={!canIncKeyword(key)}
-                    onclick={() => setKeyword(key, (keywords[key] ?? 0) + 1)}
-                  >
-                    +
-                  </button>
-                </div>
-              {:else}
-                {@const owned = hasBooleanKeyword(key)}
-                {@const selected = !!keywords[key]}
-                <button
-                  type="button"
-                  class="keyword-chip"
-                  class:selected
-                  class:owned
-                  disabled={owned || (!selected && !canIncKeyword(key))}
-                  onclick={() => toggleKeyword(key)}
-                >
-                  <img
-                    class="keyword-icon"
-                    src="/assets/images/keywords/{key}.png"
-                    alt=""
-                    aria-hidden="true"
-                  />
-                  <span class="keyword-name">{formatKeyword(key)}</span>
-                  {#if owned}
-                    <span class="owned-label">has</span>
-                  {/if}
-                </button>
-              {/if}
-            {/each}
-          </div>
-        {/if}
-      </section>
-    {/if}
-
-    <footer class="actions">
-      <button type="button" class="action-btn cancel" onclick={back}>
-        {cardId && canChangeCard ? 'Back' : 'Cancel'}
-      </button>
-      {#if cardId}
-        <button
-          type="button"
-          class="action-btn confirm"
-          disabled={!card || !!preview?.error}
-          onclick={confirm}
-        >
-          Enchant
-        </button>
-      {/if}
-    </footer>
-  </div>
-</div>
-
 {#snippet stepper(
-  label: string,
   value: number,
   canDec: boolean,
   canInc: boolean,
-  dec: () => void,
-  inc: () => void
+  label: string,
+  apply: (next: number) => void,
+  min = 0
 )}
-  <div class="stepper">
-    <span class="stepper-label">{label}</span>
-    <button type="button" class="step-btn" disabled={!canDec} onclick={dec}>−</button>
-    <span class="step-value">{value}</span>
-    <button type="button" class="step-btn" disabled={!canInc} onclick={inc}>+</button>
+  <div
+    class="num-control"
+    onclick={(event) => event.stopPropagation()}
+    oncontextmenu={(event) => event.stopPropagation()}
+  >
+    <input
+      type="number"
+      {min}
+      {value}
+      aria-label={label}
+      oninput={(event) => onNumberInput(event, apply)}
+    />
+    <div class="step-arrows">
+      <button
+        type="button"
+        class="step-arrow"
+        disabled={!canInc}
+        aria-label="Increase {label}"
+        onclick={() => apply(value + 1)}
+      >
+        ▲
+      </button>
+      <button
+        type="button"
+        class="step-arrow"
+        disabled={!canDec}
+        aria-label="Decrease {label}"
+        onclick={() => apply(value - 1)}
+      >
+        ▼
+      </button>
+    </div>
   </div>
 {/snippet}
+
+{#snippet statControl(
+  value: number,
+  canDec: boolean,
+  canInc: boolean,
+  label: string,
+  apply: (next: number) => void,
+  icon: string,
+  large = false
+)}
+  <div class="stat-control">
+    <div
+      class="stat-well"
+      class:large
+      role="spinbutton"
+      aria-label={label}
+      aria-valuemin={0}
+      aria-valuenow={value}
+      onclick={(event) => adjustFromClick(event, canDec, canInc, () => apply(value + 1))}
+      oncontextmenu={(event) => adjustFromClick(event, canDec, canInc, () => apply(value - 1))}
+    >
+      <img class="stat-face" src={icon} alt="" aria-hidden="true" />
+      <span class="stat-value">{value}</span>
+    </div>
+    <div class="step-arrows">
+      <button
+        type="button"
+        class="step-arrow"
+        disabled={!canInc}
+        aria-label="Increase {label}"
+        onclick={() => apply(value + 1)}
+      >
+        ▲
+      </button>
+      <button
+        type="button"
+        class="step-arrow"
+        disabled={!canDec}
+        aria-label="Decrease {label}"
+        onclick={() => apply(value - 1)}
+      >
+        ▼
+      </button>
+    </div>
+  </div>
+{/snippet}
+
+<div class="overlay" role="presentation">
+  <div
+    class="frame"
+    class:wide={selectingCard}
+    role="dialog"
+    aria-labelledby="enchant-title"
+    style="--wood: url('{woodPath}'); --table: url('{tablePath}'); --parchment: url('{parchmentPath}')"
+  >
+    <div class="panel">
+      <h2 id="enchant-title" class="title">
+        <span class="star" aria-hidden="true"></span>
+        {#if cardId}
+          Enchant {card?.name ?? 'Card'}
+        {:else}
+          Enchant a Card
+        {/if}
+        <span class="star" aria-hidden="true"></span>
+      </h2>
+
+      {#if selectingCard}
+        <section class="section cards-section" aria-label="Cards">
+          <h3 class="section-heading">
+            <span class="section-icon star-icon" aria-hidden="true"></span>
+            Which card?
+          </h3>
+          {#if availableCards.length === 0}
+            <p class="empty">No units available to enchant.</p>
+          {:else}
+            <CardFilters
+              cards={availableCards}
+              bind:colorFilter
+              bind:costFilter
+              bind:typeFilter
+              showType={false}
+              tone="parchment"
+            />
+            {#if filteredCards.length === 0}
+              <p class="empty">
+                {hasActiveFilters ? 'No cards match these filters.' : 'No units available to enchant.'}
+              </p>
+            {:else}
+              <div class="card-grid">
+                {#each filteredCards as option (option.id)}
+                  <button type="button" class="card-pick" onclick={() => selectCard(option.id)}>
+                    <CardCompact card={option} />
+                  </button>
+                {/each}
+              </div>
+            {/if}
+          {/if}
+        </section>
+      {:else if !card || !preview}
+        <p class="empty">{preview?.error || 'Card not found.'}</p>
+      {:else}
+        <section class="section preview-section" aria-label="Preview">
+          <div class="preview-row">
+            <CardCompact {card} />
+            <span class="arrow" aria-hidden="true">→</span>
+            {#if preview.preview}
+              <CardCompact card={preview.preview} />
+            {/if}
+          </div>
+        </section>
+
+        <section class="section" aria-label="Budget">
+          <h3 class="section-heading">
+            <span class="section-icon star-icon" aria-hidden="true"></span>
+            Budget
+          </h3>
+          <div class="budget">
+            <div class="budget-stat">
+              <div class="stat-label">Spent</div>
+              <div class="bonus-well" class:over={!!preview.error}>
+                {preview.spent} / {preview.upgradeBudget}
+              </div>
+            </div>
+            <div class="budget-stat">
+              <div class="stat-label">Cost +</div>
+              {@render stepper(
+                costIncrease,
+                canDecCost,
+                canIncCost,
+                'Cost increase',
+                setCostIncrease,
+                1
+              )}
+            </div>
+          </div>
+          {#if preview.error}
+            <p class="budget-note error-note">{preview.error}</p>
+          {:else if preview.extraBudget > 0}
+            <p class="budget-note">{preview.extraBudget} remaining will be spent automatically</p>
+          {/if}
+        </section>
+
+        <section class="section" aria-label="Stats">
+          <h3 class="section-heading">
+            <span class="section-icon star-icon" aria-hidden="true"></span>
+            Stats
+          </h3>
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-label">Power +</div>
+              {@render statControl(
+                power,
+                canDecPower,
+                canIncPower,
+                'Power',
+                setPower,
+                getAssetPath('images/power-icon.png')
+              )}
+            </div>
+            <div class="stat">
+              <div class="stat-label">Health +</div>
+              {@render statControl(
+                maxHealth,
+                canDecHealth,
+                canIncHealth,
+                'Health',
+                setMaxHealth,
+                getAssetPath('images/health-icon.png')
+              )}
+            </div>
+            <div class="stat large">
+              <div class="stat-label" title={getKeywordTooltip('retaliate', retaliate || 1)}>
+                Retaliate +
+              </div>
+              {@render statControl(
+                retaliate,
+                canDecRetaliate,
+                canIncRetaliate,
+                'Retaliate',
+                setRetaliate,
+                getAssetPath('images/retaliate-icon.png'),
+                true
+              )}
+            </div>
+          </div>
+        </section>
+
+        <section class="section keywords-section" aria-label="Keywords">
+          <h3 class="section-heading">
+            <span class="section-icon star-icon" aria-hidden="true"></span>
+            Keywords
+          </h3>
+          {#if knownKeywords.length === 0}
+            <p class="empty">No known keywords yet.</p>
+          {:else}
+            <div class="keyword-list">
+              {#each knownKeywords as key (key)}
+                {#if NUMERIC_KEYWORDS.has(key)}
+                  {@const value = keywords[key] ?? 0}
+                  <div
+                    class="keyword-row"
+                    class:on={value > 0}
+                    title={getKeywordTooltip(key, value || 1)}
+                    onclick={(event) => onKeywordRowClick(event, key, true)}
+                    oncontextmenu={(event) => onKeywordRowClick(event, key, true)}
+                  >
+                    <img
+                      class="keyword-icon"
+                      src={getAssetPath(`images/keywords/${key}.png`)}
+                      alt=""
+                      aria-hidden="true"
+                    />
+                    <span class="keyword-name">{formatKeyword(key)}</span>
+                    {@render stepper(value, value > 0, canIncKeyword(key), formatKeyword(key), (next) =>
+                      setKeyword(key, next)
+                    )}
+                  </div>
+                {:else}
+                  {@const owned = hasBooleanKeyword(key)}
+                  {@const selected = !!keywords[key]}
+                  {@const on = owned || selected}
+                  <div
+                    class="keyword-row"
+                    class:on
+                    class:owned
+                    role="switch"
+                    aria-checked={on}
+                    aria-disabled={owned || (!selected && !canIncKeyword(key))}
+                    title={getKeywordTooltip(key)}
+                    onclick={(event) => onKeywordRowClick(event, key, false)}
+                    oncontextmenu={(event) => onKeywordRowClick(event, key, false)}
+                  >
+                    <img
+                      class="keyword-icon"
+                      src={getAssetPath(`images/keywords/${key}.png`)}
+                      alt=""
+                      aria-hidden="true"
+                    />
+                    <span class="keyword-name">{formatKeyword(key)}</span>
+                    {#if owned}
+                      <span class="owned-label">has</span>
+                    {/if}
+                    <span class="toggle" class:on aria-hidden="true">
+                      <span class="toggle-knob"></span>
+                    </span>
+                  </div>
+                {/if}
+              {/each}
+            </div>
+          {/if}
+        </section>
+      {/if}
+
+      <footer class="actions">
+        <button type="button" class="action-btn cancel" onclick={back}>
+          {cardId && canChangeCard ? 'Back' : 'Cancel'}
+        </button>
+        {#if cardId}
+          <button
+            type="button"
+            class="action-btn confirm"
+            disabled={!card || !!preview?.error}
+            onclick={confirm}
+          >
+            Enchant
+          </button>
+        {/if}
+      </footer>
+    </div>
+  </div>
+</div>
 
 <style>
   .overlay {
@@ -367,49 +579,111 @@
     box-sizing: border-box;
   }
 
-  .panel {
-    width: min(960px, 100%);
+  .frame {
+    position: relative;
+    width: min(620px, 100%);
     max-height: 90vh;
-    overflow-y: auto;
-    background: #2c251d;
-    border: 1px solid #5a4b3c;
-    border-radius: 6px;
-    color: #e8dcc4;
-    padding: 20px 24px 16px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: #4a2a18 var(--table) center / cover;
+    border: 2px solid #2a1810;
+    border-radius: 4px;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
     box-sizing: border-box;
-    font-family: Georgia, 'Times New Roman', serif;
   }
 
-  .header {
-    text-align: center;
-    margin-bottom: 16px;
+  .frame.wide {
+    width: min(1000px, 100%);
+  }
+
+  .panel {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    background: #e8dcc4 var(--parchment) center / cover;
+    background-blend-mode: multiply;
+    color: #2c251d;
+    padding: 16px 16px 12px;
+    box-sizing: border-box;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    box-shadow: inset 0 0 28px rgba(90, 75, 60, 0.12);
   }
 
   .title {
-    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 0 10px;
     font-size: 1.15rem;
-    font-weight: 600;
-    color: #f0e6c8;
-  }
-
-  .subtitle {
-    margin: 6px 0 0;
-    font-size: 0.85rem;
-    color: #a89880;
-  }
-
-  .error {
-    margin: 0 0 16px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #2c251d;
     text-align: center;
-    color: #c47a6a;
+  }
+
+  .star,
+  .star-icon {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    background: #4a3f32;
+    clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
+  }
+
+  .section {
+    padding: 10px 12px 12px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(44, 37, 29, 0.45);
+    border-radius: 4px;
+    background: rgba(255, 248, 230, 0.18);
+    box-sizing: border-box;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #3a3228;
+  }
+
+  .star-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .cards-section {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 0;
+    overflow: hidden;
+  }
+
+  .cards-section .section-heading {
+    margin-bottom: 0;
   }
 
   .card-grid {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 12px;
-    margin-bottom: 16px;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
   }
 
   .card-pick {
@@ -424,7 +698,11 @@
   }
 
   .card-pick:hover {
-    border-color: var(--color-brass);
+    border-color: var(--color-golden);
+  }
+
+  .preview-section {
+    padding: 8px;
   }
 
   .preview-row {
@@ -432,229 +710,401 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 12px;
   }
 
   .arrow {
     flex-shrink: 0;
-    font-size: 1.8rem;
-    color: #a89880;
-  }
-
-  .budget {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: center;
-    gap: 8px 12px;
-    margin-bottom: 16px;
-    padding: 8px 12px;
-    border: 1px solid #5a4b3c;
-    border-radius: 4px;
-    background: #241e18;
-  }
-
-  .budget.over {
-    border-color: #8a4a3c;
-  }
-
-  .budget-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #a89880;
-  }
-
-  .budget-value {
-    font-variant-numeric: tabular-nums;
-    color: #f0e6c8;
-  }
-
-  .budget-note {
-    width: 100%;
-    text-align: center;
-    font-size: 0.8rem;
-    color: #a89880;
-  }
-
-  .error-note {
-    color: #c47a6a;
-  }
-
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px 24px;
-    margin-bottom: 18px;
-  }
-
-  .stepper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .stepper-label {
-    min-width: 4.5rem;
-    font-size: 0.85rem;
-    color: #a89880;
-  }
-
-  .step-btn {
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    font-size: 1rem;
-    line-height: 1;
-    color: #e8dcc4;
-    background: #3d3429;
-    border: 1px solid #5a4b3c;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .step-btn:hover:not(:disabled) {
-    background: #4a3f32;
-    border-color: #7a6b5c;
-  }
-
-  .step-btn:disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
-
-  .step-value {
-    min-width: 1.25rem;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .keywords {
-    margin-bottom: 18px;
-  }
-
-  .section-title {
-    margin: 0 0 10px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #a89880;
-    text-align: center;
+    font-size: 1.6rem;
+    color: #4a3f32;
   }
 
   .empty {
     margin: 0;
     text-align: center;
     font-size: 0.85rem;
-    color: #a89880;
+    color: #6a5c4c;
   }
 
-  .keyword-list {
+  .budget {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .budget-stat {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     gap: 8px;
+    padding: 0 10px;
   }
 
-  .keyword-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 8px;
-    color: #e8dcc4;
-    background: #3d3429;
-    border: 1px solid #5a4b3c;
-    border-radius: 4px;
-    font-family: inherit;
+  .budget-stat + .budget-stat {
+    border-left: 1px solid rgba(90, 75, 60, 0.35);
+  }
+
+  .bonus-well {
+    min-width: 4.5rem;
+    padding: 8px 12px;
+    color: #f0e6c8;
+    background: #2c251d;
+    border: 1px solid #3a3228;
+    border-radius: 3px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
+  }
+
+  .bonus-well.over {
+    border-color: #8a4a3c;
+    color: #e0a090;
+  }
+
+  .budget-note {
+    margin: 10px 0 0;
+    text-align: center;
     font-size: 0.8rem;
+    color: #6a5c4c;
+  }
+
+  .error-note {
+    color: #8a4a3c;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stat {
+    display: grid;
+    grid-template-columns: max-content;
+    justify-content: center;
+    justify-items: start;
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .stat + .stat {
+    border-left: 1px solid rgba(90, 75, 60, 0.35);
+  }
+
+  .stat-label {
+    width: auto;
+    min-width: 40px;
+    font-size: 0.92rem;
+    color: #2c251d;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .stat-control {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 50px;
+  }
+
+  .stat-control .step-arrows {
+    height: 40px;
+    align-self: center;
+  }
+
+  .stat-well {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .stat-well.large {
+    width: 55px;
+    height: 55px;
+  }
+
+  .stat.large .stat-label {
+    min-width: 4.5rem;
+  }
+
+  .stat-face {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+  }
+
+  .stat-value {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 500;
+    font-size: 1.2rem;
+    font-variant-numeric: tabular-nums;
+    text-shadow:
+      0 1px 2px #000,
+      0 0 3px #000;
+    pointer-events: none;
+  }
+
+  .stat-well .stat-value {
+    transform: translateY(-2px);
+  }
+
+  .num-control {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .num-control input {
+    width: 2.6rem;
+    height: 34px;
+    padding: 0 4px;
+    color: #f0e6c8;
+    background: #2c251d;
+    border: 1px solid #3a3228;
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    outline: none;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
+    -moz-appearance: textfield;
+  }
+
+  .num-control input:focus {
+    border-color: var(--color-golden);
+  }
+
+  .num-control input::-webkit-inner-spin-button,
+  .num-control input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .step-arrows {
+    display: flex;
+    flex-direction: column;
+    width: 18px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: #d8c9ad;
+    border: 1px solid rgba(90, 75, 60, 0.35);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  }
+
+  .step-arrow {
+    flex: 1;
+    padding: 0;
+    color: #3a3228;
+    background: transparent;
+    border: none;
+    font-size: 0.5rem;
+    line-height: 1;
     cursor: pointer;
   }
 
-  .keyword-chip.numeric {
+  .step-arrow + .step-arrow {
+    border-top: 1px solid rgba(90, 75, 60, 0.25);
+  }
+
+  .step-arrow:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.28);
+  }
+
+  .step-arrow:disabled {
+    opacity: 0.35;
     cursor: default;
   }
 
-  .keyword-chip:hover:not(:disabled):not(.numeric) {
-    background: #4a3f32;
-    border-color: #7a6b5c;
+  .keywords-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
   }
 
-  .keyword-chip.selected {
-    border-color: var(--color-golden);
-    color: #f0e6c8;
+  .keyword-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 28px;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 2px;
   }
 
-  .keyword-chip.owned,
-  .keyword-chip:disabled {
-    opacity: 0.45;
+  @supports not selector(::-webkit-scrollbar) {
+    .keyword-list,
+    .card-grid {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(90, 75, 60, 0.45) transparent;
+    }
+  }
+
+  .keyword-list::-webkit-scrollbar,
+  .card-grid::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .keyword-list::-webkit-scrollbar-button,
+  .card-grid::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .keyword-list::-webkit-scrollbar-track,
+  .card-grid::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .keyword-list::-webkit-scrollbar-thumb,
+  .card-grid::-webkit-scrollbar-thumb {
+    background: rgba(90, 75, 60, 0.45);
+    border-radius: 3px;
+  }
+
+  .keyword-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .keyword-row.owned {
+    opacity: 0.55;
     cursor: default;
   }
 
   .keyword-icon {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     object-fit: contain;
+    flex-shrink: 0;
+    background: #f3ead4;
+    border: 1px solid rgba(90, 75, 60, 0.35);
+    border-radius: 4px;
   }
 
   .keyword-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 4px 8px;
+    font-size: calc(0.78rem + 2px);
     text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: #efe4c8;
+    border: 1px solid rgba(90, 75, 60, 0.28);
+    border-radius: 6px;
   }
 
   .owned-label {
+    flex-shrink: 0;
     font-size: 0.7rem;
-    color: #a89880;
+    color: #6a5c4c;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+  }
+
+  .keyword-row .num-control input {
+    width: 2rem;
+    height: 26px;
+    font-size: 0.85rem;
+  }
+
+  .keyword-row .step-arrows {
+    width: 14px;
+  }
+
+  .toggle {
+    position: relative;
+    width: 34px;
+    height: 18px;
+    flex-shrink: 0;
+    background: #d8c9ad;
+    border: 1px solid rgba(90, 75, 60, 0.35);
+    border-radius: 999px;
+    pointer-events: none;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+
+  .toggle.on {
+    background: #5d8a46;
+    border-color: #4a6f38;
+  }
+
+  .toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 14px;
+    background: #f5eedf;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    transition: transform 0.15s ease;
+  }
+
+  .toggle.on .toggle-knob {
+    transform: translateX(16px);
   }
 
   .actions {
     display: flex;
     justify-content: center;
     gap: 12px;
-    padding-top: 8px;
+    padding-top: 14px;
   }
 
   .action-btn {
+    min-width: 7.5rem;
     font-family: inherit;
     font-size: 1rem;
-    color: #e8dcc4;
-    background: #3d3429;
-    border: 1px solid #5a4b3c;
+    color: #f0e6c8;
+    background: #3a221f var(--wood) center / cover;
+    border: 1px solid #2a110a;
     border-radius: 4px;
-    padding: 10px 24px;
+    padding: 8px 20px;
     cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 2px 4px rgba(0, 0, 0, 0.35);
   }
 
   .action-btn:hover:not(:disabled) {
-    background: #4a3f32;
-    border-color: #7a6b5c;
+    filter: brightness(1.12);
   }
 
   .action-btn.confirm {
     color: #f0e6c8;
-    border-color: var(--color-golden);
+    border: 2px solid #000;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 2px 4px rgba(0, 0, 0, 0.35);
   }
 
-  .action-btn.confirm:hover:not(:disabled) {
-    border-color: #d4b85c;
+  .action-btn.cancel {
+    color: #ececec;
+    background: #6e6e6e;
+    border: 1px solid #4a4a4a;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 2px 4px rgba(0, 0, 0, 0.25);
   }
 
   .action-btn:disabled {
     opacity: 0.45;
     cursor: default;
-  }
-
-  .action-btn.cancel {
-    color: #a89880;
-    background: transparent;
-  }
-
-  .action-btn.cancel:hover {
-    color: #e8dcc4;
-    background: #3d3429;
+    filter: none;
   }
 </style>

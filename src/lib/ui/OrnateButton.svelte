@@ -193,6 +193,12 @@
     padding: 0.5rem 1.4rem 0.5rem 0.85rem;
   }
 
+  .ornate-button.long {
+    --metal-hi: #d4c078;
+    --metal-mid: var(--color-golden);
+    --metal-lo: #7a6520;
+  }
+
   .ornate-button:hover:not(:disabled) .fill {
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 36%),
@@ -201,7 +207,12 @@
   }
 
   .ornate-button:hover:not(:disabled) .frame {
-    background: linear-gradient(145deg, #d4b896 0%, var(--metal-mid) 42%, var(--metal-lo) 100%);
+    background: linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--metal-hi) 72%, white) 0%,
+      var(--metal-mid) 42%,
+      var(--metal-lo) 100%
+    );
   }
 
   .ornate-button:hover:not(:disabled) .corner {

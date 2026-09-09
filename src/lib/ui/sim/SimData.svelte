@@ -16,7 +16,7 @@
     { id: 'scene', label: 'Scene', icon: 'compass' },
     { id: 'player', label: 'Player', icon: 'person' },
     { id: 'characters', label: 'NPCs', icon: 'people' },
-    { id: 'schedule', label: 'Schedule', icon: 'calendar' },
+    { id: 'schedule', label: 'Events', icon: 'calendar' },
     { id: 'places', label: 'Places', icon: 'pin' },
     { id: 'collection', label: 'Cards', icon: 'book' },
     { id: 'decks', label: 'Decks', icon: 'cards' },
@@ -40,18 +40,20 @@
 
 <div class="sim-data" style="--data-corner: url('{cornerPath}');">
   <nav class="menu">
-    <div class="tabs">
+    <div class="tabs" role="tablist">
       {#each tabs as tab (tab.id)}
         <button
           type="button"
           class="menu-item"
           class:active={selected === tab.id}
+          role="tab"
+          aria-selected={selected === tab.id}
           onclick={() => (uiState.sim.dataTab = tab.id)}
         >
           <span class="tab-face">
             <span class="tab-icon" style="--icon: url('{iconUrl(tab.icon)}')" aria-hidden="true"
             ></span>
-            {tab.label}
+            <span class="tab-label">{tab.label}</span>
           </span>
         </button>
       {/each}
@@ -98,11 +100,11 @@
   }
 
   .menu {
-    --tab-chamfer: 6px;
+    --tab-chamfer: 7px;
     --tab-trim: 1px;
     display: flex;
     flex-shrink: 0;
-    align-items: stretch;
+    align-items: flex-end;
     justify-content: space-between;
     gap: 0.65rem;
     padding: 0;
@@ -111,8 +113,8 @@
 
   .tabs {
     display: flex;
-    align-items: stretch;
-    gap: 0.2rem;
+    align-items: flex-end;
+    gap: 0;
     min-width: 0;
     flex: 1 1 auto;
     overflow-x: auto;
@@ -134,7 +136,8 @@
     border: none;
     color: var(--color-muted-label);
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
+    font-weight: 700;
     white-space: nowrap;
     cursor: pointer;
     clip-path: polygon(
@@ -157,8 +160,8 @@
     flex: 1 1 auto;
     width: 100%;
     min-width: 0;
-    gap: 0.4rem;
-    padding: 0.42rem 0.4rem 0.44rem;
+    gap: 0.32rem;
+    padding: 0.4rem 0.42rem 0.38rem;
     box-sizing: border-box;
     background-color: var(--color-data);
     background-image: var(--data-bg);
@@ -166,8 +169,8 @@
     background-size: cover;
     background-repeat: no-repeat;
     box-shadow:
-      inset 0 1px 0 rgba(240, 230, 200, 0.12),
-      inset 0 -2px 4px rgba(0, 0, 0, 0.45);
+      inset 0 1px 0 rgba(240, 230, 200, 0.14),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.48);
     clip-path: polygon(
       calc(var(--chamfer) - var(--trim)) 0,
       calc(100% - (var(--chamfer) - var(--trim))) 0,
@@ -182,12 +185,16 @@
 
   .tab-icon {
     display: block;
-    width: 1.35rem;
-    height: 1.35rem;
+    width: 1.65rem;
+    height: 1.65rem;
     flex-shrink: 0;
     background: var(--color-brass);
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;
+  }
+
+  .tab-label {
+    min-width: 0;
   }
 
   .menu-item:hover {
@@ -198,7 +205,12 @@
     background-color: color-mix(in srgb, var(--color-data) 78%, var(--color-cream));
   }
 
+  .menu-item:hover .tab-icon {
+    background: var(--color-cream);
+  }
+
   .menu-item.active {
+    z-index: 1;
     background: var(--color-golden);
     color: var(--color-golden);
   }
@@ -210,7 +222,7 @@
   .menu-item.active .tab-face {
     background-color: color-mix(in srgb, var(--color-data) 90%, var(--color-golden));
     box-shadow:
-      inset 0 1px 0 rgba(240, 220, 160, 0.16),
+      inset 0 1px 0 rgba(240, 220, 160, 0.18),
       inset 0 0 8px rgba(191, 161, 74, 0.1),
       inset 0 -2px 4px rgba(0, 0, 0, 0.35);
   }

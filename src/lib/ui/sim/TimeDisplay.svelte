@@ -28,7 +28,7 @@
     flex-shrink: 0;
     align-items: center;
     gap: 0.45rem;
-    padding: 0 0.35rem 0.5rem 0;
+    padding: 0 0.35rem 0.4rem 0;
     line-height: 1.15;
   }
 
