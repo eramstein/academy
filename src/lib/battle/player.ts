@@ -1,4 +1,3 @@
-import { config } from '../_config';
 import type { CardColor, Player } from '../_model';
 import { bs, uiState } from '../_state';
 import { soundManager } from './sound';
@@ -7,9 +6,6 @@ import { checkIfPlayerLost } from './win';
 export function damagePlayer(player: Player, damage: number) {
   player.life -= damage;
   checkIfPlayerLost(player);
-  if (player.life > config.initialLife) {
-    player.life = config.initialLife;
-  }
 }
 
 export function getOpposingPlayer(playerId: number): Player {

@@ -1,3 +1,4 @@
+import type { TransactionParameters } from '../sim/actions';
 import type { CardColor } from './enums-battle';
 import type {
   ActionType,
@@ -119,6 +120,7 @@ export interface Narration {
   period?: DayPeriod;
   characters?: string[];
   won?: boolean;
+  transaction?: TransactionParameters;
 }
 
 // First string is the word appearing in the text, second is id
@@ -186,6 +188,9 @@ export interface Place {
   name: string;
   description: string;
   regionKey: string;
+  itemsOnSale?: {
+    resources?: Partial<Record<ResourceType, { price: number; count: number }>>;
+  };
 }
 
 export interface Region {

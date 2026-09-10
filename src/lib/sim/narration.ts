@@ -2,6 +2,7 @@ import type { CardTemplate, DayPeriod } from '../_model';
 import { NarrationType } from '../_model/enums-sim';
 import type { AttributeCheck, Mentions, Narration } from '../_model/model-sim';
 import { gs } from '../_state';
+import type { TransactionParameters } from './actions';
 import { KEYWORD_KEYS } from './cards/keywords';
 import { getWeekDay, WEEK_DAYS } from './time';
 
@@ -100,5 +101,18 @@ export function narrateCardEncanted(oldCard: CardTemplate, newCard: CardTemplate
     text,
     type: NarrationType.ConjuredCard,
     cardTemplates: [oldCard, newCard],
+  });
+}
+
+export function narrateTransaction(transaction: TransactionParameters) {
+  narrate({
+    id: crypto.randomUUID(),
+    text: `You spent ${transaction.cost} gold to purchase ${Object.entries(
+      transaction.items?.resources ?? {}
+    )
+      .map(([type, count]) => `${count} ${type}`)
+      .join(', ')}.`,
+    type: NarrationType.Transaction,
+    transaction: transaction,
   });
 }

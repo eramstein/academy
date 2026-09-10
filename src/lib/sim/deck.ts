@@ -1,7 +1,6 @@
 import { BASE_DECK_BLACK, BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
 import { type CardTemplate, type Character, type Deck, SchoolName } from '../_model';
 import { gs } from '../_state';
-import { getRandomFromArray } from '../_utils/random';
 
 export function redeemBaseDeck(baseDeck: Deck, character: Character) {
   const cardsWithIds = baseDeck.cards.map(makeUniqueId);
@@ -21,8 +20,9 @@ export function initNpcDecks() {
   const otherStudents = Object.values(gs.characters).filter(
     (character) => character.school === SchoolName.Academy && character.key !== gs.player.key
   );
-  otherStudents.forEach((student) => {
-    const deck = getRandomFromArray([BASE_DECK_RED, BASE_DECK_BLACK, BASE_DECK_GREEN]);
+  const baseDecks = [BASE_DECK_RED, BASE_DECK_BLACK, BASE_DECK_GREEN];
+  otherStudents.forEach((student, index) => {
+    const deck = baseDecks[index % baseDecks.length];
     redeemBaseDeck(deck, student);
   });
 }

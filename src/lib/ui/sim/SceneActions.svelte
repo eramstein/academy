@@ -2,12 +2,13 @@
   import { ActionType, type Action, type ResourceType } from '@/lib/_model';
   import { selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state';
-  import { performAction } from '@/lib/sim/actions';
+  import { performAction, TransactionType } from '@/lib/sim/actions';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import Enchantment from './Enchantment.svelte';
   import Invoke from './Invoke.svelte';
   import Recipe from './Recipe.svelte';
+  import Shop from './Shop.svelte';
 
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
@@ -27,6 +28,7 @@
 
   let pendingAction = $state<Action | null>(null);
   let enchantAction = $state<Action | null>(null);
+  let shopAction = $state<Action | null>(null);
   let cardCraftAction = $state<Action | null>(null);
   let cardCraftStep = $state<'recipe' | 'invoke'>('recipe');
   let recipeResources = $state<{ type: ResourceType; count: number }[]>([]);
@@ -133,6 +135,13 @@
       enchantAction = next;
       return;
     }
+    if (
+      next.actionType === ActionType.Transaction &&
+      next.actionParameters.transactionType === TransactionType.Purchase
+    ) {
+      shopAction = next;
+      return;
+    }
     if (next.actionType === ActionType.Conjure || next.actionType === ActionType.Invoke) {
       cardCraftAction = next;
       cardCraftStep = 'recipe';
@@ -180,6 +189,9 @@
 
 {#if enchantAction}
   <Enchantment action={enchantAction} onDone={() => (enchantAction = null)} />
+{/if}
+{#if shopAction}
+  <Shop action={shopAction} onDone={() => (shopAction = null)} />
 {/if}
 {#if cardCraftAction && cardCraftStep === 'recipe'}
   <Recipe

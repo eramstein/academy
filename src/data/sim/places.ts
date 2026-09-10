@@ -1,4 +1,5 @@
-import type { Place, Region } from '@/lib/_model/model-game';
+import { ResourceType } from '@/lib/_model/enums-sim';
+import type { Place, Region } from '@/lib/_model/model-sim';
 
 const PLACES: Record<string, Place> = {
   ['admin-office']: {
@@ -56,6 +57,13 @@ const PLACES: Record<string, Place> = {
     name: 'Metarials Shop',
     description: 'The Metarials Shop is a place where the students can buy and sell materials.',
     regionKey: 'town',
+    itemsOnSale: {
+      resources: {
+        [ResourceType.Mithril]: { price: 50, count: 10 },
+        [ResourceType.Moxes]: { price: 750, count: 1 },
+        [ResourceType.MagicDust]: { price: 10, count: 100 },
+      },
+    },
   },
 } as const;
 

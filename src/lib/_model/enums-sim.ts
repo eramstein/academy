@@ -35,6 +35,7 @@ export enum NarrationType {
   EncantedCard = 'encanted_card',
   NewPeriod = 'new_period',
   MatchResult = 'match_result',
+  Transaction = 'transaction',
 }
 
 export enum ActivityType {

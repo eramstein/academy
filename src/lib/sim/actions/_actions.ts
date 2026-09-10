@@ -16,13 +16,14 @@ import { getLeagueMatchActions, startMatch, type StartMatchParameters } from './
 import { move, type MoveParameters } from './move';
 import { negotiate, type NegotiateParameters } from './negotiation';
 import { getSocializeActions, socialize, type SocializeParameters } from './socialize';
-import { transaction, type TransactionParameters } from './transaction';
+import { getShopActions, transaction, type TransactionParameters } from './transaction';
 import { wait } from './wait';
 
 export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
   actions.push(...getSocializeActions());
   actions.push(...getLessonActions());
+  actions.push(...getShopActions());
 
   // check if the number of actions is limited by period
   let filteredActions = actions.filter(

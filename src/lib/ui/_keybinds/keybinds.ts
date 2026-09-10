@@ -1,5 +1,5 @@
+import { autoAttackAll } from '@/lib/battle/scripts/auto-attack';
 import {
-  gs,
   loadGameStateFromLocalStorage,
   resetBattleState,
   saveStateToLocalStorage,
@@ -38,6 +38,9 @@ export function handleKeybinds(event: KeyboardEvent) {
   } else if (event.key === ' ') {
     event.preventDefault();
     handleEndTurn();
+  } else if (event.key === 'f') {
+    event.preventDefault();
+    autoAttackAll();
   } else if (event.key === '^') {
     event.preventDefault();
     uiState.consoleCommand.visible = !uiState.consoleCommand.visible;

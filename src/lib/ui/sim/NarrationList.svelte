@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { CardTemplate, Character, Narration } from '@/lib/_model';
-  import { DayPeriod, NarrationType } from '@/lib/_model/enums-sim';
+  import { DayPeriod, NarrationType, ResourceType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import { addCardToDeck } from '@/lib/sim/deck';
@@ -22,6 +22,12 @@
     [DayPeriod.Morning]: 'sunrise',
     [DayPeriod.Afternoon]: 'sun',
     [DayPeriod.Evening]: 'moon',
+  };
+
+  const resourceIcon: Record<ResourceType, string> = {
+    [ResourceType.MagicDust]: 'spiral',
+    [ResourceType.Mithril]: 'leaf',
+    [ResourceType.Moxes]: 'heart',
   };
 
   const narration = $derived(gs.scene.narration);
@@ -109,6 +115,26 @@
     const key = period ?? gs.time.period;
     return getAssetPath(`images/ui/${periodIcon[key]}.svg`);
   }
+
+  function uiIconPath(name: string) {
+    return getAssetPath(`images/ui/${name}.svg`);
+  }
+
+  function formatResource(type: string): string {
+    return type.replace(/_/g, ' ');
+  }
+
+  function purchasedResources(entry: Narration): { type: ResourceType; count: number; label: string }[] {
+    const resources = entry.transaction?.items?.resources;
+    if (!resources) return [];
+    return (Object.entries(resources) as [ResourceType, number][])
+      .filter(([, count]) => (count ?? 0) > 0)
+      .map(([type, count]) => ({
+        type,
+        count,
+        label: formatResource(type),
+      }));
+  }
 </script>
 
 <div class="narration-list">
@@ -126,6 +152,8 @@
     {@render periodSeparator(entry)}
   {:else if entry.type === NarrationType.MatchResult}
     {@render matchResult(entry, animate)}
+  {:else if entry.type === NarrationType.Transaction}
+    {@render transaction(entry, animate)}
   {:else}
     {@const cards = cardsForEntry(entry)}
     {@const inDeck = cardsInFirstDeck(entry)}
@@ -210,6 +238,38 @@
   </div>
 {/snippet}
 
+{#snippet transaction(entry: Narration, animate: boolean)}
+  {@const cost = entry.transaction?.cost ?? 0}
+  {@const items = purchasedResources(entry)}
+  {@const coinPath = uiIconPath('coin')}
+  <div class="transaction">
+    <NarrationText
+      class="narration"
+      text={entry.text}
+      mentions={entry.mentions}
+      {animate}
+      onProgress={() => onProgress?.('auto')}
+      onDone={() => onTextDone(entry)}
+    />
+    <div class="transaction-summary" aria-hidden="true">
+      <span class="tx-chip tx-cost">
+        <span class="tx-icon" style="--icon: url('{coinPath}')"></span>
+        <span class="tx-label">−{cost}</span>
+      </span>
+      {#if items.length > 0}
+        <span class="tx-arrow">→</span>
+        {#each items as item (item.type)}
+          {@const iconPath = uiIconPath(resourceIcon[item.type])}
+          <span class="tx-chip tx-item">
+            <span class="tx-icon" style="--icon: url('{iconPath}')"></span>
+            <span class="tx-label">{item.count} {item.label}</span>
+          </span>
+        {/each}
+      {/if}
+    </div>
+  </div>
+{/snippet}
+
 <style>
   .narration-list :global(.narration) {
     margin: 0 0 1.25em;
@@ -288,6 +348,60 @@
 
   .match-portrait :global(.character-portrait) {
     border-radius: 0;
+  }
+
+  .transaction {
+    margin: 0 0 1.25em;
+  }
+
+  .transaction :global(.narration) {
+    margin: 0 0 0.65em;
+  }
+
+  .transaction-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.65rem;
+    font-family: var(--font-narrative);
+    color: var(--color-ink);
+  }
+
+  .tx-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .tx-cost {
+    color: #8f3d36;
+    font-weight: 700;
+  }
+
+  .tx-item {
+    color: #2f6b45;
+    font-weight: 600;
+  }
+
+  .tx-icon {
+    display: block;
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+    background: currentColor;
+    mask: var(--icon) center / contain no-repeat;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+  }
+
+  .tx-label {
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+
+  .tx-arrow {
+    color: var(--color-ink-muted);
+    font-size: 1.1rem;
+    line-height: 1;
   }
 
   .narration-cards {
