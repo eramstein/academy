@@ -167,6 +167,7 @@ export interface Character {
   subscriptions: Partial<Record<SubscriptionType, number>>;
   decks: Deck[];
   collection: CardTemplate[];
+  resources: Record<ResourceType, number>;
 }
 
 export interface Player extends Character {
@@ -174,7 +175,6 @@ export interface Player extends Character {
   focus: number;
   craftingKnowledge: CardKnowledge;
   craftingSkills: CardCraftingSkills;
-  resources: Record<ResourceType, number>;
 }
 
 export interface Npc extends Character {
