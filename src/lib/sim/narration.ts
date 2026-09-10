@@ -110,7 +110,7 @@ export function narrateTransaction(transaction: TransactionParameters) {
     text: `You spent ${transaction.cost} gold to purchase ${Object.entries(
       transaction.items?.resources ?? {}
     )
-      .map(([type, count]) => `${count} ${type}`)
+      .map(([type, count]) => `${count} ${type.replace(/_/g, ' ').toLowerCase()}`)
       .join(', ')}.`,
     type: NarrationType.Transaction,
     transaction: transaction,

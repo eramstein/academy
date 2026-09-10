@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { SchoolName } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
   import {
     clearSelectedSimCharacter,
@@ -10,6 +11,14 @@
 
   const characters = $derived(
     Object.values(gs.characters).sort((a, b) => a.name.localeCompare(b.name))
+  );
+
+  const students = $derived(
+    characters.filter((character) => character.school === SchoolName.Academy)
+  );
+
+  const others = $derived(
+    characters.filter((character) => character.school !== SchoolName.Academy)
   );
 
   const selectedCharacter = $derived(
@@ -44,25 +53,41 @@
     {#if characters.length === 0}
       <p class="empty">No characters yet.</p>
     {:else}
-      <ul class="character-list">
-        {#each characters as character (character.key)}
-          <li>
-            <button
-              type="button"
-              class="character-item"
-              onclick={() => selectSimCharacter(character.key)}
-            >
-              <span class="portrait-frame">
-                <CharacterPortrait {character} zoom={1.2} />
-              </span>
-              <div class="character-info">
-                <h4 class="character-name">{character.name}</h4>
-                <p class="character-location">{locationName(character.placeKey)}</p>
-              </div>
-            </button>
-          </li>
-        {/each}
-      </ul>
+      {#snippet characterList(items: typeof characters)}
+        <ul class="character-list">
+          {#each items as character (character.key)}
+            <li>
+              <button
+                type="button"
+                class="character-item"
+                onclick={() => selectSimCharacter(character.key)}
+              >
+                <span class="portrait-frame">
+                  <CharacterPortrait {character} zoom={1.2} />
+                </span>
+                <div class="character-info">
+                  <h4 class="character-name">{character.name}</h4>
+                  <p class="character-location">{locationName(character.placeKey)}</p>
+                </div>
+              </button>
+            </li>
+          {/each}
+        </ul>
+      {/snippet}
+
+      {#if students.length > 0}
+        <section class="character-group">
+          <h3 class="group-title">Students</h3>
+          {@render characterList(students)}
+        </section>
+      {/if}
+
+      {#if others.length > 0}
+        <section class="character-group">
+          <h3 class="group-title">Others</h3>
+          {@render characterList(others)}
+        </section>
+      {/if}
     {/if}
   </div>
 {/if}
@@ -112,6 +137,23 @@
     margin: 0;
     font-size: 0.95rem;
     color: var(--color-muted-label);
+  }
+
+  .character-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .group-title {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted-label);
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid rgba(175, 142, 103, 0.35);
   }
 
   .character-list {
