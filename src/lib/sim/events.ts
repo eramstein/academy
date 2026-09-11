@@ -21,12 +21,31 @@ import { getCurrentScheduledActivity } from './schedule';
 
 let eventTemplates: StoredEventTemplate[] = [];
 
+async function readEventTemplatesSource(): Promise<EventTemplate[]> {
+  try {
+    const response = await fetch('/api/events', { cache: 'no-store' });
+    if (response.ok) {
+      return (await response.json()) as EventTemplate[];
+    }
+  } catch {
+    // Fall back to the bundled import outside the Vite dev server.
+  }
+  return eventsData as EventTemplate[];
+}
+
 export async function restoreEventTemplates() {
-  await replaceEventTemplates(eventsData as EventTemplate[]);
+  const templates = await readEventTemplatesSource();
+  await replaceEventTemplates(templates);
 }
 
 export async function loadEventTemplates() {
   eventTemplates = await getAllEventTemplates();
+}
+
+/** Replace IndexedDB + in-memory templates with the given list (e.g. after editor save). */
+export async function syncEventTemplates(templates: EventTemplate[]) {
+  await replaceEventTemplates(templates);
+  await loadEventTemplates();
 }
 
 export function getTriggeredSceneEvent():
@@ -75,9 +94,7 @@ function doesTriggerMatch(trigger: EventTrigger): boolean {
 function buildOption(optionTemplate: EventOptionTemplate): EventOption {
   const option: EventOption = {
     text: optionTemplate.text,
-    outcome: {
-      type: optionTemplate.outcomeType,
-    },
+    outcome: {},
   };
   if (optionTemplate.actionTemplate) {
     const { actionTemplate, args } = optionTemplate.actionTemplate;

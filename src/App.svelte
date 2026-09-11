@@ -7,6 +7,7 @@
   import Main from './lib/ui/Main.svelte';
   import Navigation from './lib/ui/Navigation.svelte';
   import SaveManagerModal from './lib/ui/sim/SaveManagerModal.svelte';
+  import EventEditor from './tools/event-builder/EventEditor.svelte';
 
   let isLoading = $state(true);
 
@@ -34,10 +35,8 @@
   </div>
 {:else}
   {#key uiState.currentView}
-    {#if uiState.currentView === UiView.CardBuilder}
-      <CardBuilder />
-    {:else if uiState.currentView === UiView.Analytics}
-      <Analytics />
+    {#if uiState.currentView === UiView.EventEditor}
+      <EventEditor />
     {:else}
       <Main />
     {/if}

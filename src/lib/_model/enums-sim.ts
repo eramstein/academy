@@ -4,11 +4,6 @@ export enum DayPeriod {
   Evening = 'evening',
 }
 
-export enum EventOutcomeType {
-  Decision = 'decision',
-  Action = 'action',
-}
-
 export enum EventEffectType {
   GetDeck = 'get_deck',
   Subscribe = 'subscribe',

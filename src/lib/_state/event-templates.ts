@@ -9,9 +9,10 @@ export interface StoredEventTemplate extends EventTemplate {
 const eventTemplatesTable: Table<StoredEventTemplate> = db.table('eventTemplates');
 
 export async function replaceEventTemplates(templates: EventTemplate[]): Promise<void> {
+  // Dexie/IndexedDB cannot store Svelte proxies; persist plain objects only.
+  const plain = JSON.parse(JSON.stringify(templates)) as EventTemplate[];
   await eventTemplatesTable.clear();
-  await eventTemplatesTable.bulkAdd(templates);
-  console.log(templates.length);
+  await eventTemplatesTable.bulkAdd(plain);
 }
 
 export async function getAllEventTemplates(): Promise<StoredEventTemplate[]> {

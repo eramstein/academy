@@ -8,7 +8,6 @@ import type {
   ClassType,
   DayPeriod,
   EventEffectType,
-  EventOutcomeType,
   EventTriggerType,
   NarrationType,
   ResourceType,
@@ -67,7 +66,6 @@ export interface EventOption {
 }
 
 export interface EventOutcome {
-  type: EventOutcomeType;
   action?: Action;
   effects?: EventEffect[];
 }
@@ -95,7 +93,6 @@ export interface EventTrigger {
 
 export interface EventOptionTemplate {
   text: string;
-  outcomeType: EventOutcomeType;
   actionTemplate?: ActionTemplate;
   effectsTemplates?: EventEffectsTemplate[];
 }

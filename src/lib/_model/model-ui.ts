@@ -103,6 +103,6 @@ export type UiState = {
 export enum UiView {
   Scene = 'Scene',
   Analytics = 'Analytics',
-  CardBuilder = 'CardBuilder',
+  EventEditor = 'EventEditor',
   Battle = 'Battle',
 }

@@ -5,7 +5,10 @@
   import { endBattle } from '../battle/win';
   import { initSim } from '../sim/init';
 
-  const navItems = [{ view: UiView.Battle, label: 'Game', icon: '🎮' }];
+  const navItems = [
+    { view: UiView.Scene, label: 'Game', icon: '🎮' },
+    { view: UiView.EventEditor, label: 'Events', icon: '📜' },
+  ];
 
   const stopBattle = () => {
     endBattle(true);
@@ -22,7 +25,7 @@
 
 <div class="navigation-overlay" onclick={() => (uiState.navigationVisible = false)}>
   <nav class="navigation" onclick={(e) => e.stopPropagation()}>
-    {#each navItems as item}
+    {#each navItems as item (item.view)}
       <button
         class="nav-item"
         class:active={uiState.currentView === item.view}

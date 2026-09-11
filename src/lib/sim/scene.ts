@@ -1,8 +1,7 @@
 import { performAction, setPossibleActions } from '@/lib/sim/actions';
 import { applyEffect, resolveEffectTemplates } from '@/lib/sim/effects';
-import { type EventOption, EventOutcomeType, type SceneEvent } from '../_model';
+import { type EventOption, type EventTemplate, type SceneEvent } from '../_model';
 import { gs } from '../_state';
-import type { EventTemplate } from '../_state/event-templates';
 import { consumeEventTemplate, getTriggeredSceneEvent } from './events';
 import { narrateText } from './narration';
 import { updateNpcLocations } from './npc';
@@ -30,14 +29,14 @@ export function setSceneEvents() {
 
 export function selectOption(option: EventOption) {
   console.log('selectOption', option, gs.scene.event);
-  // perform option outcome
-  if (option.outcome.type === EventOutcomeType.Action && option.outcome.action) {
-    performAction(option.outcome.action);
-  }
   if (option.outcome.effects) {
     option.outcome.effects.forEach((effect) => {
       applyEffect(effect);
     });
+  }
+  if (option.outcome.action) {
+    performAction(option.outcome.action);
+  } else {
     setSceneEvents();
   }
 }

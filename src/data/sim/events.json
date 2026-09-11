@@ -3,13 +3,22 @@
     "key": "event-1",
     "text": "After a long journey, you finally arrive at the academy. A clerk directs you to the administration office. The administrator asks you for tuition fees.",
     "triggers": [
-      { "triggerType": "day", "parameters": { "day": 1 } },
-      { "triggerType": "period", "parameters": { "period": "morning" } }
+      {
+        "triggerType": "day",
+        "parameters": {
+          "day": 1
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "morning"
+        }
+      }
     ],
     "optionTemplates": [
       {
         "text": "Negotiate",
-        "outcomeType": "action",
         "actionTemplate": {
           "actionTemplate": "enrollmentTransaction",
           "args": {}
@@ -17,7 +26,6 @@
       },
       {
         "text": "Pay",
-        "outcomeType": "action",
         "actionTemplate": {
           "actionTemplate": "enrollmentPayment",
           "args": {}
@@ -30,37 +38,50 @@
     "key": "event-2",
     "text": "We'll learn magic crafting by making cards. Today you'll start by familiarizing yourself with the different card types. Get a deck, noob!",
     "triggers": [
-      { "triggerType": "day", "parameters": { "day": 1 } },
-      { "triggerType": "period", "parameters": { "period": "afternoon" } }
+      {
+        "triggerType": "day",
+        "parameters": {
+          "day": 1
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "afternoon"
+        }
+      }
     ],
     "optionTemplates": [
       {
         "text": "Red",
-        "outcomeType": "decision",
         "effectsTemplates": [
           {
             "effectTemplate": "getDeck",
-            "args": { "deckKey": "base_red" }
+            "args": {
+              "deckKey": "base_red"
+            }
           }
         ]
       },
       {
         "text": "Black",
-        "outcomeType": "decision",
         "effectsTemplates": [
           {
             "effectTemplate": "getDeck",
-            "args": { "deckKey": "base_black" }
+            "args": {
+              "deckKey": "base_black"
+            }
           }
         ]
       },
       {
         "text": "Green",
-        "outcomeType": "decision",
         "effectsTemplates": [
           {
             "effectTemplate": "getDeck",
-            "args": { "deckKey": "base_green" }
+            "args": {
+              "deckKey": "base_green"
+            }
           }
         ]
       }
@@ -71,8 +92,18 @@
     "key": "event-3",
     "text": "This is an enchanting class. Here, you'll learn how to modify existing cards. For now, let's start with Augmentation: it makes a card more powerful in exchange for higher mana requirements. Here is some magic dust, it's an essential component for any magic crafting.",
     "triggers": [
-      { "triggerType": "day", "parameters": { "day": 2 } },
-      { "triggerType": "period", "parameters": { "period": "afternoon" } }
+      {
+        "triggerType": "day",
+        "parameters": {
+          "day": 2
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "afternoon"
+        }
+      }
     ],
     "effectsTemplates": [
       {
@@ -84,5 +115,51 @@
       }
     ],
     "triggersOnce": true
+  },
+  {
+    "key": "molly-1",
+    "text": "Moly says YOYOYO and gives you stuff. Dadidou.",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "day": 1
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "morning"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Get a Mox",
+        "effectsTemplates": [
+          {
+            "effectTemplate": "addResource",
+            "args": {
+              "resourceType": "moxes",
+              "amount": 99
+            }
+          }
+        ]
+      },
+      {
+        "text": "Get some Dust",
+        "effectsTemplates": [
+          {
+            "effectTemplate": "addResource",
+            "args": {
+              "resourceType": "magic_dust",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "molly"
   }
 ]
