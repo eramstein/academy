@@ -1,5 +1,6 @@
 [
   {
+    "key": "event-1",
     "text": "After a long journey, you finally arrive at the academy. A clerk directs you to the administration office. The administrator asks you for tuition fees.",
     "triggers": [
       { "triggerType": "day", "parameters": { "day": 1 } },
@@ -26,6 +27,7 @@
     "triggersOnce": true
   },
   {
+    "key": "event-2",
     "text": "We'll learn magic crafting by making cards. Today you'll start by familiarizing yourself with the different card types. Get a deck, noob!",
     "triggers": [
       { "triggerType": "day", "parameters": { "day": 1 } },
@@ -35,40 +37,47 @@
       {
         "text": "Red",
         "outcomeType": "decision",
-        "effectsTemplates": {
-          "effectTemplate": "getDeck",
-          "args": { "deckKey": "base_red" }
-        }
+        "effectsTemplates": [
+          {
+            "effectTemplate": "getDeck",
+            "args": { "deckKey": "base_red" }
+          }
+        ]
       },
       {
         "text": "Black",
         "outcomeType": "decision",
-        "effectsTemplates": {
-          "effectTemplate": "getDeck",
-          "args": { "deckKey": "base_black" }
-        }
+        "effectsTemplates": [
+          {
+            "effectTemplate": "getDeck",
+            "args": { "deckKey": "base_black" }
+          }
+        ]
       },
       {
         "text": "Green",
         "outcomeType": "decision",
-        "effectsTemplates": {
-          "effectTemplate": "getDeck",
-          "args": { "deckKey": "base_green" }
-        }
+        "effectsTemplates": [
+          {
+            "effectTemplate": "getDeck",
+            "args": { "deckKey": "base_green" }
+          }
+        ]
       }
     ],
     "triggersOnce": true
   },
   {
+    "key": "event-3",
     "text": "This is an enchanting class. Here, you'll learn how to modify existing cards. For now, let's start with Augmentation: it makes a card more powerful in exchange for higher mana requirements. Here is some magic dust, it's an essential component for any magic crafting.",
     "triggers": [
       { "triggerType": "day", "parameters": { "day": 2 } },
       { "triggerType": "period", "parameters": { "period": "afternoon" } }
     ],
-    "effects": [
+    "effectsTemplates": [
       {
-        "type": "add_resource",
-        "parameters": {
+        "effectTemplate": "addResource",
+        "args": {
           "resourceType": "magic_dust",
           "amount": 10
         }

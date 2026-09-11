@@ -79,11 +79,13 @@ export interface EventEffect {
 
 // An event template defines when a scene event triggers and how to generate its options
 export interface EventTemplate {
+  key: string;
   text: string;
   optionTemplates: EventOptionTemplate[];
   triggers: EventTrigger[];
   triggersOnce?: boolean;
-  effects?: EventEffect[];
+  effectsTemplates?: EventEffectsTemplate[];
+  characterArc?: string; // npc key
 }
 
 export interface EventTrigger {
@@ -95,7 +97,7 @@ export interface EventOptionTemplate {
   text: string;
   outcomeType: EventOutcomeType;
   actionTemplate?: ActionTemplate;
-  effectsTemplates?: EventEffectsTemplate;
+  effectsTemplates?: EventEffectsTemplate[];
 }
 
 export interface ActionTemplate {
@@ -181,6 +183,7 @@ export interface Npc extends Character {
   gender: CharacterGender;
   traits: Partial<Record<CharacterTrait, boolean>>;
   school?: SchoolName;
+  storyProgress: number;
 }
 
 export interface Place {

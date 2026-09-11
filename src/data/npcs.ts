@@ -12,6 +12,7 @@ const defaultNpc: Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' | 'school'>
     [ResourceType.Mithril]: 0,
     [ResourceType.Moxes]: 0,
   },
+  storyProgress: 0,
 };
 
 export const npcs: Record<string, Npc> = {

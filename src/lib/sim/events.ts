@@ -16,7 +16,7 @@ import {
 } from '../_state/event-templates';
 import { SceneActionTemplates } from './actions';
 import { getCharactersAtScene } from './characters';
-import { SceneEffectTemplates } from './effects';
+import { resolveEffectTemplates } from './effects';
 import { getCurrentScheduledActivity } from './schedule';
 
 let eventTemplates: StoredEventTemplate[] = [];
@@ -84,8 +84,7 @@ function buildOption(optionTemplate: EventOptionTemplate): EventOption {
     option.outcome.action = SceneActionTemplates[actionTemplate](args);
   }
   if (optionTemplate.effectsTemplates) {
-    const { effectTemplate, args } = optionTemplate.effectsTemplates;
-    option.outcome.effects = SceneEffectTemplates[effectTemplate](args);
+    option.outcome.effects = resolveEffectTemplates(optionTemplate.effectsTemplates);
   }
   return option;
 }
