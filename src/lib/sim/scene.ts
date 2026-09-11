@@ -2,7 +2,7 @@ import { performAction, setPossibleActions } from '@/lib/sim/actions';
 import { applyEffect, resolveEffectTemplates } from '@/lib/sim/effects';
 import { type EventOption, type EventTemplate, type SceneEvent } from '../_model';
 import { gs } from '../_state';
-import { consumeEventTemplate, getTriggeredSceneEvent } from './events';
+import { consumeEventTemplate, getTriggeredSceneEvent, recordEventOccured } from './events';
 import { narrateText } from './narration';
 import { updateNpcLocations } from './npc';
 import { getCurrentScheduledActivity } from './schedule';
@@ -65,13 +65,14 @@ export function selectNextScene(placeKey: string) {
   setSceneEvents();
 }
 
-export function setEvent(event: SceneEvent, template?: EventTemplate) {
+export function setEvent(event: SceneEvent, template: EventTemplate) {
   narrateText(event.text);
   gs.scene.event = event.options.length > 0 ? event : undefined;
-  if (template?.triggersOnce) {
+  if (template.triggersOnce) {
     consumeEventTemplate(template);
   }
-  if (template?.effectsTemplates) {
+  if (template.effectsTemplates) {
     resolveEffectTemplates(template.effectsTemplates).forEach((effect) => applyEffect(effect));
   }
+  recordEventOccured(template);
 }

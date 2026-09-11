@@ -67,6 +67,7 @@ export enum SchoolName {
 }
 
 export enum EventTriggerType {
+  PreviousEvents = 'previous_events',
   Day = 'day',
   Period = 'period',
   ActivityType = 'activity_type',

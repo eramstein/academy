@@ -1,0 +1,356 @@
+{
+	"textures": [
+		{
+			"image": "spritesheet.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 904,
+				"h": 756
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "afternoon.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 201,
+						"h": 189
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 201,
+						"h": 189
+					},
+					"frame": {
+						"x": 0,
+						"y": 0,
+						"w": 201,
+						"h": 189
+					}
+				},
+				{
+					"filename": "book.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 170,
+						"h": 189
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 170,
+						"h": 189
+					},
+					"frame": {
+						"x": 226,
+						"y": 0,
+						"w": 170,
+						"h": 189
+					}
+				},
+				{
+					"filename": "calendar.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 177,
+						"h": 189
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 177,
+						"h": 189
+					},
+					"frame": {
+						"x": 452,
+						"y": 0,
+						"w": 177,
+						"h": 189
+					}
+				},
+				{
+					"filename": "characters.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 178,
+						"h": 166
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 178,
+						"h": 166
+					},
+					"frame": {
+						"x": 678,
+						"y": 0,
+						"w": 178,
+						"h": 166
+					}
+				},
+				{
+					"filename": "conjure.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 163,
+						"h": 166
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 163,
+						"h": 166
+					},
+					"frame": {
+						"x": 0,
+						"y": 189,
+						"w": 163,
+						"h": 166
+					}
+				},
+				{
+					"filename": "decks.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 179,
+						"h": 189
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 179,
+						"h": 189
+					},
+					"frame": {
+						"x": 226,
+						"y": 189,
+						"w": 179,
+						"h": 189
+					}
+				},
+				{
+					"filename": "evening.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 201,
+						"h": 166
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 201,
+						"h": 166
+					},
+					"frame": {
+						"x": 452,
+						"y": 189,
+						"w": 201,
+						"h": 166
+					}
+				},
+				{
+					"filename": "feather.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 173,
+						"h": 189
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 173,
+						"h": 189
+					},
+					"frame": {
+						"x": 678,
+						"y": 189,
+						"w": 173,
+						"h": 189
+					}
+				},
+				{
+					"filename": "heart.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 162,
+						"h": 189
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 162,
+						"h": 189
+					},
+					"frame": {
+						"x": 0,
+						"y": 378,
+						"w": 162,
+						"h": 189
+					}
+				},
+				{
+					"filename": "league.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 164,
+						"h": 189
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 164,
+						"h": 189
+					},
+					"frame": {
+						"x": 226,
+						"y": 378,
+						"w": 164,
+						"h": 189
+					}
+				},
+				{
+					"filename": "menu-icons.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 184,
+						"h": 189
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 184,
+						"h": 189
+					},
+					"frame": {
+						"x": 452,
+						"y": 378,
+						"w": 184,
+						"h": 189
+					}
+				},
+				{
+					"filename": "morning.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 226,
+						"h": 166
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 226,
+						"h": 166
+					},
+					"frame": {
+						"x": 678,
+						"y": 378,
+						"w": 226,
+						"h": 166
+					}
+				},
+				{
+					"filename": "places.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 160,
+						"h": 189
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 160,
+						"h": 189
+					},
+					"frame": {
+						"x": 0,
+						"y": 567,
+						"w": 160,
+						"h": 189
+					}
+				},
+				{
+					"filename": "player.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 161,
+						"h": 189
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 161,
+						"h": 189
+					},
+					"frame": {
+						"x": 226,
+						"y": 567,
+						"w": 161,
+						"h": 189
+					}
+				},
+				{
+					"filename": "star.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 179,
+						"h": 189
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 179,
+						"h": 189
+					},
+					"frame": {
+						"x": 452,
+						"y": 567,
+						"w": 179,
+						"h": 189
+					}
+				},
+				{
+					"filename": "wait.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 172,
+						"h": 166
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 172,
+						"h": 166
+					},
+					"frame": {
+						"x": 678,
+						"y": 567,
+						"w": 172,
+						"h": 166
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:bae7b28a4dc9176d353388d188fef895:2638bf27c4a04c2a0ddc1d29b0557b80:729adc6043343cfda41c447ce8f464d6$"
+	}
+}

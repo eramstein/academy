@@ -73,9 +73,27 @@ export function consumeEventTemplate(template: StoredEventTemplate) {
   }
 }
 
+// clear other events triggers that required this one to trigger
+export function recordEventOccured(template: StoredEventTemplate) {
+  for (const eventTemplate of eventTemplates) {
+    for (const trigger of eventTemplate.triggers.filter(
+      (trigger) => trigger.triggerType === EventTriggerType.PreviousEvents
+    )) {
+      if (trigger.parameters[template.key]) {
+        delete trigger.parameters[template.key];
+        if (Object.keys(trigger.parameters).length === 0) {
+          eventTemplate.triggers = eventTemplate.triggers.filter((t) => t !== trigger);
+        }
+      }
+    }
+  }
+}
+
 function doesTriggerMatch(trigger: EventTrigger): boolean {
   const { parameters } = trigger;
   switch (trigger.triggerType) {
+    case EventTriggerType.PreviousEvents:
+      return false; // we assume it would have been removed by recordEventOccured
     case EventTriggerType.Day:
       return gs.time.day === parameters.day;
     case EventTriggerType.Period:
