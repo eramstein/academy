@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Attributes as AttributeStats } from '@/lib/_model';
-  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
 
   let { attributes }: { attributes: AttributeStats } = $props();
 
@@ -30,14 +30,19 @@
   );
 
   function iconUrl(name: string) {
-    return getAssetPath(`images/ui/${name}.svg`);
+    return getUiIconPath(name);
   }
 </script>
 
 <ul class="attr-list">
   {#each rows as attr (attr.key)}
     <li class="attr-row" style="--attr-color: {attr.color}">
-      <span class="icon" style="--icon: url('{iconUrl(attr.icon)}')" aria-hidden="true"></span>
+      <span
+        class="icon"
+        class:painted={isPaintedUiIcon(attr.icon)}
+        style="--icon: url('{iconUrl(attr.icon)}')"
+        aria-hidden="true"
+      ></span>
       <span class="attr-name">{attr.key}</span>
       <div class="attr-bar" aria-hidden="true">
         <div class="attr-fill" style="width: {attr.pct}%"></div>
@@ -66,6 +71,12 @@
     background: currentColor;
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;
+  }
+
+  .icon.painted {
+    background: var(--icon) center / contain no-repeat;
+    mask: none;
+    -webkit-mask: none;
   }
 
   .attr-row {

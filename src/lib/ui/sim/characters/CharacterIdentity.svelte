@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Character, Player } from '@/lib/_model/model-sim';
   import { gs } from '@/lib/_state/main.svelte';
-  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import CharacterPortrait from './CharacterPortrait.svelte';
 
   let { character }: { character: Character } = $props();
@@ -18,12 +18,17 @@
   }
 
   function iconUrl(name: string) {
-    return getAssetPath(`images/ui/${name}.svg`);
+    return getUiIconPath(name);
   }
 </script>
 
 {#snippet icon(name: string)}
-  <span class="icon" style="--icon: url('{iconUrl(name)}')" aria-hidden="true"></span>
+  <span
+    class="icon"
+    class:painted={isPaintedUiIcon(name)}
+    style="--icon: url('{iconUrl(name)}')"
+    aria-hidden="true"
+  ></span>
 {/snippet}
 
 {#snippet divider()}
@@ -226,6 +231,12 @@
     background: currentColor;
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;
+  }
+
+  .icon.painted {
+    background: var(--icon) center / contain no-repeat;
+    mask: none;
+    -webkit-mask: none;
   }
 
   .meta-row dt {

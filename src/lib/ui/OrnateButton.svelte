@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
 
   let {
     onclick,
@@ -20,7 +20,8 @@
     type?: 'button' | 'submit' | 'reset';
   } = $props();
 
-  const iconUrl = $derived(icon ? getAssetPath(`images/ui/${icon}.svg`) : undefined);
+  const iconUrl = $derived(icon ? getUiIconPath(icon) : undefined);
+  const paintedIcon = $derived(!!icon && isPaintedUiIcon(icon));
   const cornerUrl = getAssetPath('images/ui/corner.svg');
 </script>
 
@@ -45,7 +46,7 @@
     {#if lead}
       {@render lead()}
     {:else if iconUrl}
-      <span class="icon" style="--icon: url('{iconUrl}')"></span>
+      <span class="icon" class:painted={paintedIcon} style="--icon: url('{iconUrl}')"></span>
     {/if}
     {#if children}
       <span class="label">{@render children()}</span>
@@ -180,6 +181,12 @@
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;
     filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.55));
+  }
+
+  .icon.painted {
+    background: var(--icon) center / contain no-repeat;
+    mask: none;
+    -webkit-mask: none;
   }
 
   .label {

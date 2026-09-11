@@ -2,7 +2,7 @@
   import type { CardTemplate, Character, Narration } from '@/lib/_model';
   import { DayPeriod, NarrationType, ResourceType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
-  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import { addCardToDeck } from '@/lib/sim/deck';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import { untrack } from 'svelte';
@@ -113,11 +113,11 @@
 
   function periodIconPath(period?: DayPeriod) {
     const key = period ?? gs.time.period;
-    return getAssetPath(`images/ui/${periodIcon[key]}.svg`);
+    return getUiIconPath(periodIcon[key]);
   }
 
   function uiIconPath(name: string) {
-    return getAssetPath(`images/ui/${name}.svg`);
+    return getUiIconPath(name);
   }
 
   function formatResource(type: string): string {
@@ -261,7 +261,11 @@
         {#each items as item (item.type)}
           {@const iconPath = uiIconPath(resourceIcon[item.type])}
           <span class="tx-chip tx-item">
-            <span class="tx-icon" style="--icon: url('{iconPath}')"></span>
+            <span
+              class="tx-icon"
+              class:painted={isPaintedUiIcon(resourceIcon[item.type])}
+              style="--icon: url('{iconPath}')"
+            ></span>
             <span class="tx-label">{item.count} {item.label}</span>
           </span>
         {/each}
@@ -298,12 +302,10 @@
 
   .period-icon {
     display: block;
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.45rem;
+    height: 1.45rem;
     flex-shrink: 0;
-    background: var(--color-ink);
-    mask: var(--icon) center / contain no-repeat;
-    -webkit-mask: var(--icon) center / contain no-repeat;
+    background: var(--icon) center / contain no-repeat;
   }
 
   .period-label {
@@ -391,6 +393,12 @@
     background: currentColor;
     mask: var(--icon) center / contain no-repeat;
     -webkit-mask: var(--icon) center / contain no-repeat;
+  }
+
+  .tx-icon.painted {
+    background: var(--icon) center / contain no-repeat;
+    mask: none;
+    -webkit-mask: none;
   }
 
   .tx-label {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { DayPeriod } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
-  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { getUiIconPath } from '@/lib/_utils/asset-paths';
 
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -11,7 +11,7 @@
     [DayPeriod.Evening]: 'moon',
   };
 
-  const iconPath = $derived(getAssetPath(`images/ui/${periodIcon[gs.time.period]}.svg`));
+  const iconPath = $derived(getUiIconPath(periodIcon[gs.time.period]));
 </script>
 
 <div class="time-display">
@@ -34,12 +34,10 @@
 
   .icon {
     display: block;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.7rem;
+    height: 1.7rem;
     flex-shrink: 0;
-    background: var(--color-brass);
-    mask: var(--icon) center / contain no-repeat;
-    -webkit-mask: var(--icon) center / contain no-repeat;
+    background: var(--icon) center / contain no-repeat;
   }
 
   .copy {

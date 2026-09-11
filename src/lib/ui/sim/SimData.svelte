@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { SimDataTab } from '@/lib/_model';
   import { uiState } from '@/lib/_state/state-ui.svelte';
-  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
   import Characters from './sim-data/Characters.svelte';
   import Collection from './sim-data/Collection.svelte';
   import Decks from './sim-data/Decks.svelte';
@@ -34,7 +34,7 @@
   const cornerPath = getAssetPath('images/ui/data-corner.svg');
 
   function iconUrl(name: string) {
-    return getAssetPath(`images/ui/${name}.svg`);
+    return getUiIconPath(name);
   }
 </script>
 
@@ -185,12 +185,10 @@
 
   .tab-icon {
     display: block;
-    width: 1.65rem;
-    height: 1.65rem;
+    width: 1.7rem;
+    height: 1.7rem;
     flex-shrink: 0;
-    background: var(--color-brass);
-    mask: var(--icon) center / contain no-repeat;
-    -webkit-mask: var(--icon) center / contain no-repeat;
+    background: var(--icon) center / contain no-repeat;
   }
 
   .tab-label {
@@ -205,18 +203,10 @@
     background-color: color-mix(in srgb, var(--color-data) 78%, var(--color-cream));
   }
 
-  .menu-item:hover .tab-icon {
-    background: var(--color-cream);
-  }
-
   .menu-item.active {
     z-index: 1;
     background: var(--color-golden);
     color: var(--color-golden);
-  }
-
-  .menu-item.active .tab-icon {
-    background: var(--color-golden);
   }
 
   .menu-item.active .tab-face {
