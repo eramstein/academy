@@ -1,15 +1,37 @@
 <script lang="ts">
+  import { npcs } from '@/data/npcs';
   import type { EventTemplate, EventTrigger } from '@/lib/_model';
+  import CharacterArcGraph from './CharacterArcGraph.svelte';
 
   let {
     events,
+    selectedArc = $bindable<string | null>(null),
     onCreate,
+    onCreateFollowUp,
     onEdit,
   }: {
     events: EventTemplate[];
+    selectedArc?: string | null;
     onCreate: () => void;
+    onCreateFollowUp: (fromEvent: EventTemplate) => void;
     onEdit: (event: EventTemplate) => void;
   } = $props();
+
+  const arcCharacters = $derived.by(() => {
+    const keys = new Set<string>();
+    for (const event of events) {
+      if (event.characterArc) keys.add(event.characterArc);
+    }
+    return [...keys].sort((a, b) => displayName(a).localeCompare(displayName(b)));
+  });
+
+  const arcEvents = $derived(
+    selectedArc ? events.filter((event) => event.characterArc === selectedArc) : []
+  );
+
+  function displayName(key: string): string {
+    return npcs[key]?.name ?? key;
+  }
 
   function formatTrigger(trigger: EventTrigger): string {
     const { triggerType, parameters } = trigger;
@@ -24,18 +46,54 @@
   function optionCount(event: EventTemplate): number {
     return event.optionTemplates?.length ?? 0;
   }
+
+  function selectArc(key: string | null) {
+    selectedArc = selectedArc === key ? null : key;
+  }
 </script>
 
 <div class="event-list">
   <header class="header">
     <div class="title-block">
       <h1>Event templates</h1>
-      <p class="subtitle">{events.length} event{events.length === 1 ? '' : 's'}</p>
+      <p class="subtitle">
+        {#if selectedArc}
+          {arcEvents.length} arc event{arcEvents.length === 1 ? '' : 's'} · {displayName(selectedArc)}
+        {:else}
+          {events.length} event{events.length === 1 ? '' : 's'}
+        {/if}
+      </p>
     </div>
     <button type="button" class="create-btn" onclick={onCreate}>New event</button>
   </header>
 
-  {#if events.length === 0}
+  {#if arcCharacters.length > 0}
+    <div class="arc-filters" role="toolbar" aria-label="Character arcs">
+      <button
+        type="button"
+        class="arc-btn"
+        class:active={selectedArc === null}
+        onclick={() => (selectedArc = null)}
+      >
+        All events
+      </button>
+      {#each arcCharacters as key (key)}
+        <button
+          type="button"
+          class="arc-btn"
+          class:active={selectedArc === key}
+          onclick={() => selectArc(key)}
+          title={key}
+        >
+          {displayName(key)}
+        </button>
+      {/each}
+    </div>
+  {/if}
+
+  {#if selectedArc}
+    <CharacterArcGraph events={arcEvents} {onEdit} {onCreateFollowUp} />
+  {:else if events.length === 0}
     <p class="empty">No events in events.json.</p>
   {:else}
     <ul class="list">
@@ -48,6 +106,9 @@
                 {optionCount(event)} option{optionCount(event) === 1 ? '' : 's'}
                 {#if event.triggersOnce}
                   · once
+                {/if}
+                {#if event.characterArc}
+                  · {displayName(event.characterArc)}
                 {/if}
               </span>
             </div>
@@ -115,6 +176,34 @@
 
   .create-btn:hover {
     filter: brightness(1.08);
+  }
+
+  .arc-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .arc-btn {
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid rgba(175, 142, 103, 0.35);
+    color: var(--color-muted-label);
+  }
+
+  .arc-btn:hover {
+    border-color: rgba(175, 142, 103, 0.6);
+    color: var(--color-cream);
+  }
+
+  .arc-btn.active {
+    background: rgba(175, 142, 103, 0.2);
+    border-color: var(--color-brass);
+    color: var(--color-cream);
   }
 
   .empty {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import eventsData from '@/data/sim/events.json';
-  import type { EventTemplate } from '@/lib/_model';
+  import { EventTriggerType, type EventTemplate } from '@/lib/_model';
   import { syncEventTemplates } from '@/lib/sim/events';
   import EventForm from './EventForm.svelte';
   import EventList from './EventList.svelte';
@@ -10,6 +10,7 @@
   let editingEvent = $state<EventTemplate | null>(null);
   let showForm = $state(false);
   let loading = $state(true);
+  let selectedArc = $state<string | null>(null);
 
   const existingKeys = $derived(events.map((event) => event.key));
 
@@ -28,6 +29,28 @@
 
   function openCreate() {
     editingEvent = null;
+    showForm = true;
+  }
+
+  function openCreateFollowUp(fromEvent: EventTemplate) {
+    const characterKey = fromEvent.characterArc ?? selectedArc ?? '';
+    editingEvent = {
+      key: `${characterKey}-${Math.floor(Math.random() * 1_000_000_000)}`,
+      text: '',
+      characterArc: characterKey,
+      triggersOnce: true,
+      optionTemplates: [],
+      triggers: [
+        {
+          triggerType: EventTriggerType.CharacterPresent,
+          parameters: { characterKey },
+        },
+        {
+          triggerType: EventTriggerType.PreviousEvents,
+          parameters: { [fromEvent.key]: true },
+        },
+      ],
+    };
     showForm = true;
   }
 
@@ -66,7 +89,13 @@
       />
     {/key}
   {:else}
-    <EventList {events} onCreate={openCreate} onEdit={openEdit} />
+    <EventList
+      {events}
+      bind:selectedArc
+      onCreate={openCreate}
+      onCreateFollowUp={openCreateFollowUp}
+      onEdit={openEdit}
+    />
   {/if}
 </div>
 

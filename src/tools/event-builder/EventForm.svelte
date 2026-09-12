@@ -26,8 +26,8 @@
     onCancel: () => void;
   } = $props();
 
-  const isEdit = $derived(event != null);
-  const originalKey = $derived(event?.key ?? null);
+  const isEdit = $derived(event != null && existingKeys.includes(event.key));
+  const originalKey = $derived(isEdit ? (event?.key ?? null) : null);
 
   let key = $state('');
   let text = $state('');
@@ -135,9 +135,14 @@
     triggers = [...triggers];
   }
 
+  function beginPreviousEventDraft(index: number) {
+    previousEventDrafts = { ...previousEventDrafts, [index]: '' };
+  }
+
   function commitPreviousEventDraft(index: number) {
     addPreviousEventKey(index, previousEventDrafts[index] ?? '');
-    previousEventDrafts[index] = '';
+    const { [index]: _, ...rest } = previousEventDrafts;
+    previousEventDrafts = rest;
   }
 
   function defaultActionTemplate(): ActionTemplate {
@@ -404,23 +409,29 @@
                         >
                       </span>
                     {/each}
-                    <input
-                      class="input param-input"
-                      placeholder="event key"
-                      aria-label="Previous event key"
-                      value={previousEventDrafts[i] ?? ''}
-                      oninput={(e) =>
-                        (previousEventDrafts[i] = (e.currentTarget as HTMLInputElement).value)}
-                      onkeydown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          commitPreviousEventDraft(i);
-                        }
-                      }}
-                    />
-                    <button type="button" class="btn ghost compact" onclick={() => commitPreviousEventDraft(i)}
-                      >Add key</button
-                    >
+                    {#if Object.keys(trigger.parameters).length === 0 || previousEventDrafts[i] !== undefined}
+                      <input
+                        class="input param-input"
+                        placeholder="event key"
+                        aria-label="Previous event key"
+                        value={previousEventDrafts[i] ?? ''}
+                        oninput={(e) =>
+                          (previousEventDrafts[i] = (e.currentTarget as HTMLInputElement).value)}
+                        onkeydown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            commitPreviousEventDraft(i);
+                          }
+                        }}
+                      />
+                      <button type="button" class="btn ghost compact" onclick={() => commitPreviousEventDraft(i)}
+                        >Add key</button
+                      >
+                    {:else}
+                      <button type="button" class="btn ghost compact" onclick={() => beginPreviousEventDraft(i)}
+                        >Add key</button
+                      >
+                    {/if}
                   </div>
                 {:else if trigger.triggerType === EventTriggerType.RelationParameter}
                   <input
