@@ -33,23 +33,59 @@ export interface CardCreationBonuses {
   // uniqueAbilityChance: number;
 }
 
-export function createUnit(parameters: CardCreationParameters): string {
+export interface CardCreationResult {
+  template: UnitCardTemplate;
+  bonusBudget: number;
+  learningChance: number;
+}
+
+export function getNewUnitTemplate(
+  parameters: CardCreationParameters,
+  spend = true
+): CardCreationResult | null {
   if (!parameters.resources) {
     parameters.resources = [];
   }
-  if (!spendResources(parameters.resources)) {
-    return 'You do not have enough resources to create this unit. You need to collect more resources.';
+  if (spend && !spendResources(parameters.resources)) {
+    return null;
   }
   const bonuses = getCardCreationBonuses(parameters.resources);
   const prunedParams = limitParametersToSkills(parameters);
   const { template, bonusBudget } = getUnitTemplate(prunedParams, bonuses);
-  const learnt = learnUnitCard(template, bonuses.learningChance);
-  let text = learnt ? `You created ${template.name}. ${learnt}` : `You created ${template.name}.`;
-  if (bonusBudget) {
-    text += ` Your mastery granted it ${bonusBudget} bonus budget.`;
+  return { template, bonusBudget, learningChance: bonuses.learningChance };
+}
+
+export function invokeUnit(parameters: CardCreationParameters): string {
+  const result = getNewUnitTemplate(parameters);
+  if (!result) {
+    return '';
   }
-  narrateCardConjured(template.id, text);
+  const { template, bonusBudget, learningChance } = result;
+  if (!template) {
+    return '';
+  }
+  learnUnitCard(template, learningChance, bonusBudget);
   return '';
+}
+
+export function conjureUnit(parameters: CardCreationResult): string {
+  learnUnitCard(parameters.template, parameters.learningChance, parameters.bonusBudget);
+  return '';
+}
+
+export function getConjurationOtions(parameters: CardCreationParameters): CardCreationResult[] {
+  const optionsCount = 2 + Math.floor(gs.player.craftingSkills.inspiration);
+  if (!spendResources(parameters.resources ?? [])) {
+    return [];
+  }
+  const options: CardCreationResult[] = [];
+  for (let i = 0; i < optionsCount; i++) {
+    const result = getNewUnitTemplate(parameters, false);
+    if (result) {
+      options.push(result);
+    }
+  }
+  return options;
 }
 
 function limitParametersToSkills(parameters: CardCreationParameters): CardCreationParameters {
@@ -96,7 +132,7 @@ export function getCardCreationBonuses(
   return { learningChance, extraBudgetChance };
 }
 
-function learnUnitCard(template: UnitCardTemplate, learningChance: number): string {
+function learnUnitCard(template: UnitCardTemplate, learningChance: number, bonusBudget: number) {
   const learntKeywords: string[] = [];
   const improvedKeywords: string[] = [];
   // add card's keywords to player's known keywords
@@ -116,6 +152,7 @@ function learnUnitCard(template: UnitCardTemplate, learningChance: number): stri
       }
     }
   }
+  // add card to collection
   gs.player.collection.push(template);
   const parts: string[] = [];
   if (learntKeywords.length) {
@@ -124,7 +161,13 @@ function learnUnitCard(template: UnitCardTemplate, learningChance: number): stri
   if (improvedKeywords.length) {
     parts.push(`You improved ${joinKeywordNames(improvedKeywords)}`);
   }
-  return parts.length ? `${parts.join('. ')}.` : '';
+  // narrate
+  const learnt = parts.length ? `${parts.join('. ')}.` : '';
+  let text = learnt ? `You created ${template.name}. ${learnt}` : `You created ${template.name}.`;
+  if (bonusBudget) {
+    text += ` Your mastery granted it ${bonusBudget} bonus budget.`;
+  }
+  narrateCardConjured(template.id, text);
 }
 
 function formatKeywordName(keyword: string): string {

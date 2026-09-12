@@ -5,7 +5,12 @@ import { getLessonActions } from '../lesson';
 import { narrateText } from '../narration';
 import { nextScene, setSceneEvents } from '../scene';
 import { ActionsLimitByPeriod } from './_action-types';
-import { createUnit, type CardCreationParameters } from './artificery';
+import {
+  conjureUnit,
+  invokeUnit,
+  type CardCreationParameters,
+  type CardCreationResult,
+} from './artificery';
 import {
   augmentUnit,
   distillUnit,
@@ -92,6 +97,6 @@ const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => s
   [ActionType.StartMatch]: (parameters) => startMatch(parameters as StartMatchParameters),
   [ActionType.Augment]: (parameters) => augmentUnit(parameters as AugmentParameters),
   [ActionType.Distill]: (parameters) => distillUnit(parameters as DistillParameters),
-  [ActionType.Conjure]: (parameters) => createUnit(parameters as CardCreationParameters),
-  [ActionType.Invoke]: (parameters) => createUnit(parameters as CardCreationParameters),
+  [ActionType.Conjure]: (parameters) => conjureUnit(parameters as CardCreationResult),
+  [ActionType.Invoke]: (parameters) => invokeUnit(parameters as CardCreationParameters),
 };

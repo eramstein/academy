@@ -2,9 +2,15 @@
   import { ActionType, type Action, type ResourceType } from '@/lib/_model';
   import { selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state';
-  import { performAction, TransactionType } from '@/lib/sim/actions';
+  import {
+    getConjurationOtions,
+    performAction,
+    TransactionType,
+    type CardCreationResult,
+  } from '@/lib/sim/actions';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
+  import Conjure from './Conjure.svelte';
   import Enchantment from './Enchantment.svelte';
   import Invoke from './Invoke.svelte';
   import Recipe from './Recipe.svelte';
@@ -30,8 +36,9 @@
   let enchantAction = $state<Action | null>(null);
   let shopAction = $state<Action | null>(null);
   let cardCraftAction = $state<Action | null>(null);
-  let cardCraftStep = $state<'recipe' | 'invoke'>('recipe');
+  let cardCraftStep = $state<'recipe' | 'invoke' | 'conjure'>('recipe');
   let recipeResources = $state<{ type: ResourceType; count: number }[]>([]);
+  let conjureOptions = $state<CardCreationResult[]>([]);
 
   const parameterPrompts: Record<string, string> = {
     characterKey: 'Who?',
@@ -157,24 +164,31 @@
     cardCraftAction = null;
     cardCraftStep = 'recipe';
     recipeResources = [];
+    conjureOptions = [];
   }
 
   function onRecipeConfirm(resources: { type: ResourceType; count: number }[]) {
     if (!cardCraftAction) return;
     recipeResources = resources;
     if (cardCraftAction.actionType === ActionType.Conjure) {
-      performAction({
-        ...cardCraftAction,
-        actionParameters: {
-          ...cardCraftAction.actionParameters,
-          resources,
-        },
-        missingParameters: {},
+      conjureOptions = getConjurationOtions({
+        ...cardCraftAction.actionParameters,
+        resources,
       });
-      closeCardCraft();
+      cardCraftStep = 'conjure';
       return;
     }
     cardCraftStep = 'invoke';
+  }
+
+  function onConjurePick(result: CardCreationResult) {
+    if (!cardCraftAction) return;
+    performAction({
+      ...cardCraftAction,
+      actionParameters: result,
+      missingParameters: {},
+    });
+    closeCardCraft();
   }
 
   function pickParameter(value: string) {
@@ -196,11 +210,14 @@
 {#if cardCraftAction && cardCraftStep === 'recipe'}
   <Recipe
     title={cardCraftAction.actionType === ActionType.Conjure ? 'Conjure' : 'Recipe'}
-    confirmLabel={cardCraftAction.actionType === ActionType.Conjure ? 'Conjure' : 'Next'}
+    confirmLabel="Next"
     initialResources={recipeResources}
     onConfirm={onRecipeConfirm}
     onDone={closeCardCraft}
   />
+{/if}
+{#if cardCraftAction && cardCraftStep === 'conjure'}
+  <Conjure options={conjureOptions} onPick={onConjurePick} onDone={closeCardCraft} />
 {/if}
 {#if cardCraftAction && cardCraftStep === 'invoke'}
   <Invoke
