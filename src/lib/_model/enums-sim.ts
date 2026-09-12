@@ -73,6 +73,7 @@ export enum EventTriggerType {
   ActivityType = 'activity_type',
   Place = 'place',
   CharacterPresent = 'character_present',
+  RelationParameter = 'relation_parameter',
 }
 
 export enum ResourceType {

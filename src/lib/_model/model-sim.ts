@@ -1,4 +1,5 @@
 import type { TransactionParameters } from '../sim/actions';
+import type { EventTrigger } from '../sim/events';
 import type { CardColor } from './enums-battle';
 import type {
   ActionType,
@@ -8,7 +9,6 @@ import type {
   ClassType,
   DayPeriod,
   EventEffectType,
-  EventTriggerType,
   NarrationType,
   ResourceType,
   SchoolName,
@@ -84,11 +84,6 @@ export interface EventTemplate {
   triggersOnce?: boolean;
   effectsTemplates?: EventEffectsTemplate[];
   characterArc?: string; // npc key
-}
-
-export interface EventTrigger {
-  triggerType: EventTriggerType;
-  parameters: Record<string, any>;
 }
 
 export interface EventOptionTemplate {
@@ -180,7 +175,12 @@ export interface Npc extends Character {
   gender: CharacterGender;
   traits: Partial<Record<CharacterTrait, boolean>>;
   school?: SchoolName;
-  storyProgress: number;
+  relationProgress: {
+    friendship: number;
+    respect: number;
+    love: number;
+    rivalry: number;
+  };
 }
 
 export interface Place {

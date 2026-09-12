@@ -13,11 +13,29 @@
     [SubscriptionType.Inn]: 'mug',
   };
 
+  const RELATION_ORDER = ['friendship', 'respect', 'love', 'rivalry'] as const;
+  const RELATION_ICONS: Record<(typeof RELATION_ORDER)[number], string> = {
+    friendship: 'people',
+    respect: 'trophy',
+    love: 'heart',
+    rivalry: 'boot',
+  };
+
   const traits = $derived(
     'traits' in character
       ? Object.entries((character as Npc).traits)
           .filter(([, active]) => active)
           .map(([trait]) => trait)
+      : []
+  );
+
+  const relations = $derived(
+    'relationProgress' in character
+      ? RELATION_ORDER.map((key) => ({
+          key,
+          value: (character as Npc).relationProgress[key],
+          icon: RELATION_ICONS[key],
+        }))
       : []
   );
 
@@ -86,22 +104,43 @@
         </section>
       {/if}
 
-      <section class="section">
-        <h3 class="section-title">
-          {@render icon('book')}
-          Subscriptions
-        </h3>
-        {@render divider()}
-        <ul class="sub-list">
-          {#each subscriptions as sub (sub.type)}
-            <li class="sub-row">
-              {@render icon(sub.icon)}
-              <span class="sub-name">{sub.type}</span>
-              <span class="sub-days">{sub.days} days</span>
-            </li>
-          {/each}
-        </ul>
-      </section>
+      <div class="two-col" class:single={relations.length === 0}>
+        {#if relations.length > 0}
+          <section class="section">
+            <h3 class="section-title">
+              {@render icon('people')}
+              Relations
+            </h3>
+            {@render divider()}
+            <ul class="relation-list">
+              {#each relations as rel (rel.key)}
+                <li class="relation-row">
+                  {@render icon(rel.icon)}
+                  <span class="relation-name">{rel.key}</span>
+                  <span class="relation-value">{rel.value}</span>
+                </li>
+              {/each}
+            </ul>
+          </section>
+        {/if}
+
+        <section class="section">
+          <h3 class="section-title">
+            {@render icon('book')}
+            Subscriptions
+          </h3>
+          {@render divider()}
+          <ul class="sub-list">
+            {#each subscriptions as sub (sub.type)}
+              <li class="sub-row">
+                {@render icon(sub.icon)}
+                <span class="sub-name">{sub.type}</span>
+                <span class="sub-days">{sub.days} days</span>
+              </li>
+            {/each}
+          </ul>
+        </section>
+      </div>
     </div>
   </div>
 </div>
@@ -210,7 +249,23 @@
     color: var(--brass);
   }
 
-  .sub-list {
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.15rem;
+    min-width: 0;
+  }
+
+  .two-col.single {
+    grid-template-columns: 1fr;
+  }
+
+  .two-col .section {
+    min-width: 0;
+  }
+
+  .sub-list,
+  .relation-list {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -248,6 +303,24 @@
     color: #d4b8a8;
     border-color: #a07050;
     background: #2a1c18;
+  }
+
+  .relation-row {
+    display: grid;
+    grid-template-columns: 1.1rem 1fr auto;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.95rem;
+  }
+
+  .relation-name {
+    text-transform: capitalize;
+    color: var(--color-cream);
+  }
+
+  .relation-value {
+    color: var(--color-muted-label);
+    font-variant-numeric: tabular-nums;
   }
 
   .sub-row {

@@ -22,3 +22,10 @@ export async function getAllEventTemplates(): Promise<StoredEventTemplate[]> {
 export async function deleteEventTemplate(id: number): Promise<void> {
   await eventTemplatesTable.delete(id);
 }
+
+export async function updateEventTemplate(template: StoredEventTemplate): Promise<void> {
+  if (template.id === undefined) return;
+  // Dexie/IndexedDB cannot store Svelte proxies; persist plain objects only.
+  const plain = JSON.parse(JSON.stringify(template)) as StoredEventTemplate;
+  await eventTemplatesTable.put(plain);
+}

@@ -8,6 +8,7 @@
     type EventOptionTemplate,
     type EventTemplate,
     type EventTrigger,
+    type EventTriggerParameters,
   } from '@/lib/_model';
   import { SceneActionTemplates } from '@/lib/sim/actions/_templates';
   import EffectsTemplatesEditor from './EffectsTemplatesEditor.svelte';
@@ -41,7 +42,10 @@
   const triggerTypes = Object.values(EventTriggerType);
   const periods = Object.values(DayPeriod);
   const activityTypes = Object.values(ActivityType);
+  const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
   const actionNames = Object.keys(SceneActionTemplates);
+
+  let previousEventDrafts = $state<Record<number, string>>({});
 
   function cloneEventFields(source: EventTemplate | null | undefined) {
     if (!source) {
@@ -70,25 +74,27 @@
 
   cloneEventFields(event);
 
-  function defaultParams(triggerType: EventTriggerType): Record<string, any> {
-    switch (triggerType) {
-      case EventTriggerType.Day:
-        return { day: 1 };
-      case EventTriggerType.Period:
-        return { period: DayPeriod.Morning };
-      case EventTriggerType.ActivityType:
-        return { activityType: ActivityType.Class };
-      case EventTriggerType.Place:
-        return { placeKey: '' };
-      case EventTriggerType.CharacterPresent:
-        return { characterKey: '' };
-      default:
-        return {};
-    }
+  function defaultParams<T extends EventTriggerType>(triggerType: T): EventTriggerParameters[T] {
+    const defaults: EventTriggerParameters = {
+      [EventTriggerType.PreviousEvents]: {},
+      [EventTriggerType.Day]: { day: 1 },
+      [EventTriggerType.Period]: { period: DayPeriod.Morning },
+      [EventTriggerType.ActivityType]: { activityType: ActivityType.Class },
+      [EventTriggerType.Place]: { placeKey: '' },
+      [EventTriggerType.CharacterPresent]: { characterKey: '' },
+      [EventTriggerType.RelationParameter]: {
+        characterKey: '',
+        relationParameter: 'friendship',
+        value: 0,
+      },
+    };
+    return defaults[triggerType];
   }
 
   function setTriggerType(index: number, triggerType: EventTriggerType) {
-    triggers[index] = { triggerType, parameters: defaultParams(triggerType) };
+    triggers[index] = { triggerType, parameters: defaultParams(triggerType) } as EventTrigger;
+    const { [index]: _, ...rest } = previousEventDrafts;
+    previousEventDrafts = rest;
   }
 
   function addTrigger() {
@@ -100,6 +106,38 @@
 
   function removeTrigger(index: number) {
     triggers = triggers.filter((_, i) => i !== index);
+    previousEventDrafts = Object.fromEntries(
+      Object.entries(previousEventDrafts)
+        .filter(([i]) => Number(i) !== index)
+        .map(([i, value]) => {
+          const n = Number(i);
+          return [n > index ? n - 1 : n, value];
+        })
+    );
+  }
+
+  function addPreviousEventKey(index: number, eventKey: string) {
+    const trimmed = eventKey.trim();
+    const trigger = triggers[index];
+    if (!trimmed || trigger?.triggerType !== EventTriggerType.PreviousEvents) return;
+    triggers[index] = {
+      ...trigger,
+      parameters: { ...trigger.parameters, [trimmed]: true },
+    };
+    triggers = [...triggers];
+  }
+
+  function removePreviousEventKey(index: number, eventKey: string) {
+    const trigger = triggers[index];
+    if (trigger?.triggerType !== EventTriggerType.PreviousEvents) return;
+    const { [eventKey]: _, ...rest } = trigger.parameters;
+    triggers[index] = { ...trigger, parameters: rest };
+    triggers = [...triggers];
+  }
+
+  function commitPreviousEventDraft(index: number) {
+    addPreviousEventKey(index, previousEventDrafts[index] ?? '');
+    previousEventDrafts[index] = '';
   }
 
   function defaultActionTemplate(): ActionTemplate {
@@ -352,6 +390,60 @@
                     bind:value={trigger.parameters.characterKey}
                     placeholder="character key"
                     aria-label="Character key"
+                  />
+                {:else if trigger.triggerType === EventTriggerType.PreviousEvents}
+                  <div class="previous-events">
+                    {#each Object.keys(trigger.parameters) as eventKey (eventKey)}
+                      <span class="chip">
+                        {eventKey}
+                        <button
+                          type="button"
+                          class="btn icon danger chip-remove"
+                          onclick={() => removePreviousEventKey(i, eventKey)}
+                          aria-label="Remove {eventKey}">×</button
+                        >
+                      </span>
+                    {/each}
+                    <input
+                      class="input param-input"
+                      placeholder="event key"
+                      aria-label="Previous event key"
+                      value={previousEventDrafts[i] ?? ''}
+                      oninput={(e) =>
+                        (previousEventDrafts[i] = (e.currentTarget as HTMLInputElement).value)}
+                      onkeydown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          commitPreviousEventDraft(i);
+                        }
+                      }}
+                    />
+                    <button type="button" class="btn ghost compact" onclick={() => commitPreviousEventDraft(i)}
+                      >Add key</button
+                    >
+                  </div>
+                {:else if trigger.triggerType === EventTriggerType.RelationParameter}
+                  <input
+                    class="input param-input"
+                    bind:value={trigger.parameters.characterKey}
+                    placeholder="character key"
+                    aria-label="Character key"
+                  />
+                  <select
+                    class="input param-select"
+                    bind:value={trigger.parameters.relationParameter}
+                    aria-label="Relation parameter"
+                  >
+                    {#each relationParameters as param (param)}
+                      <option value={param}>{param}</option>
+                    {/each}
+                  </select>
+                  <input
+                    class="input narrow"
+                    type="number"
+                    bind:value={trigger.parameters.value}
+                    aria-label="Relation threshold"
+                    title="Negative: ≤ value; non-negative: ≥ value"
                   />
                 {/if}
 
@@ -608,7 +700,7 @@
   }
 
   .type-select {
-    width: 10.5rem;
+    width: 12.5rem;
     flex-shrink: 0;
   }
 
@@ -618,6 +710,32 @@
 
   .param-input {
     width: 10rem;
+  }
+
+  .previous-events {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.15rem 0.2rem 0.15rem 0.45rem;
+    background: rgba(175, 142, 103, 0.15);
+    border: 1px solid rgba(175, 142, 103, 0.35);
+    border-radius: 3px;
+    font-size: 0.8rem;
+  }
+
+  .chip-remove {
+    padding: 0 0.25rem;
+    font-size: 0.95rem;
+    border: none;
   }
 
   .check {

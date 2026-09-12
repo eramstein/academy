@@ -52,7 +52,7 @@ export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
   );
   narrate({
     id: crypto.randomUUID(),
-    text: `You roll a ${attributeCheck.roll} on a ${attributeCheck.difficulty} difficulty check for ${attributeCheck.attribute}.`,
+    text: '',
     type: NarrationType.AttributeCheck,
     attributeCheck,
   });

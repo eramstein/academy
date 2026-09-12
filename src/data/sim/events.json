@@ -118,18 +118,20 @@
   },
   {
     "key": "molly-1",
-    "text": "Moly says YOYOYO and gives you stuff. Dadidou.",
+    "text": "Moly says \"yo take some stuff bro\".",
     "triggers": [
       {
-        "triggerType": "day",
+        "triggerType": "relation_parameter",
         "parameters": {
-          "day": 1
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "value": 1
         }
       },
       {
-        "triggerType": "period",
+        "triggerType": "character_present",
         "parameters": {
-          "period": "morning"
+          "characterKey": "molly"
         }
       }
     ],
@@ -159,6 +161,58 @@
         ]
       }
     ],
+    "triggersOnce": true,
+    "characterArc": "molly"
+  },
+  {
+    "key": "molly-2",
+    "text": "Molly doesn't like you! boo!",
+    "triggers": [
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "value": -1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "molly"
+        }
+      }
+    ],
+    "optionTemplates": [],
+    "triggersOnce": true,
+    "characterArc": "molly"
+  },
+  {
+    "key": "molly-3",
+    "text": "Molly is looking for coaching.",
+    "triggers": [
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "molly"
+        }
+      },
+      {
+        "triggerType": "previous_events",
+        "parameters": {
+          "molly-1": true
+        }
+      }
+    ],
+    "optionTemplates": [],
     "triggersOnce": true,
     "characterArc": "molly"
   }

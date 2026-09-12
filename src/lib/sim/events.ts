@@ -1,23 +1,46 @@
 import eventsData from '@/data/sim/events.json';
-import {
-  EventTriggerType,
-  type EventOption,
-  type EventOptionTemplate,
-  type EventTemplate,
-  type EventTrigger,
-  type SceneEvent,
-} from '../_model';
+import { ActivityType, DayPeriod, EventTriggerType } from '../_model/enums-sim';
+import type {
+  EventOption,
+  EventOptionTemplate,
+  EventTemplate,
+  Npc,
+  SceneEvent,
+} from '../_model/model-sim';
 import { gs } from '../_state';
 import {
   deleteEventTemplate,
   getAllEventTemplates,
   replaceEventTemplates,
+  updateEventTemplate,
   type StoredEventTemplate,
 } from '../_state/event-templates';
 import { SceneActionTemplates } from './actions';
 import { getCharactersAtScene } from './characters';
 import { resolveEffectTemplates } from './effects';
 import { getCurrentScheduledActivity } from './schedule';
+
+/** Parameter shapes expected by each EventTriggerType (see doesTriggerMatch). */
+export interface EventTriggerParameters {
+  [EventTriggerType.PreviousEvents]: Record<string, unknown>; // pending prior event keys
+  [EventTriggerType.Day]: { day: number };
+  [EventTriggerType.Period]: { period: DayPeriod };
+  [EventTriggerType.ActivityType]: { activityType: ActivityType };
+  [EventTriggerType.Place]: { placeKey: string };
+  [EventTriggerType.CharacterPresent]: { characterKey: string };
+  [EventTriggerType.RelationParameter]: {
+    characterKey: string;
+    relationParameter: keyof Npc['relationProgress'];
+    value: number;
+  };
+}
+
+export type EventTrigger = {
+  [K in EventTriggerType]: {
+    triggerType: K;
+    parameters: EventTriggerParameters[K];
+  };
+}[EventTriggerType];
 
 let eventTemplates: StoredEventTemplate[] = [];
 
@@ -71,41 +94,76 @@ export function consumeEventTemplate(template: StoredEventTemplate) {
   if (template.id !== undefined) {
     void deleteEventTemplate(template.id);
   }
+  // for events requiring relation values, "consume" the relation value
+  for (const trigger of template.triggers.filter(
+    (t) => t.triggerType === EventTriggerType.RelationParameter
+  )) {
+    const { characterKey, relationParameter } = trigger.parameters;
+    const character = gs.characters[characterKey];
+    character.relationProgress[relationParameter] = 0;
+  }
 }
 
 // clear other events triggers that required this one to trigger
 export function recordEventOccured(template: StoredEventTemplate) {
+  const key = template.key;
   for (const eventTemplate of eventTemplates) {
-    for (const trigger of eventTemplate.triggers.filter(
-      (trigger) => trigger.triggerType === EventTriggerType.PreviousEvents
-    )) {
-      if (trigger.parameters[template.key]) {
-        delete trigger.parameters[template.key];
-        if (Object.keys(trigger.parameters).length === 0) {
-          eventTemplate.triggers = eventTemplate.triggers.filter((t) => t !== trigger);
-        }
+    let changed = false;
+    eventTemplate.triggers = eventTemplate.triggers.filter((trigger) => {
+      if (trigger.triggerType !== EventTriggerType.PreviousEvents) {
+        return true;
       }
+      if (key in trigger.parameters) {
+        delete trigger.parameters[key];
+        changed = true;
+      }
+      // Drop once all required prior events have occurred (or were already empty)
+      if (Object.keys(trigger.parameters).length === 0) {
+        changed = true;
+        return false;
+      }
+      return true;
+    });
+    if (changed) {
+      void updateEventTemplate(eventTemplate);
     }
   }
 }
 
 function doesTriggerMatch(trigger: EventTrigger): boolean {
-  const { parameters } = trigger;
+  // Keep trigger intact so switch narrows parameters per triggerType
   switch (trigger.triggerType) {
     case EventTriggerType.PreviousEvents:
-      return false; // we assume it would have been removed by recordEventOccured
+      // Satisfied when nothing is left to wait on (also handles already-empty params)
+      return Object.keys(trigger.parameters).length === 0;
     case EventTriggerType.Day:
-      return gs.time.day === parameters.day;
+      return gs.time.day === trigger.parameters.day;
     case EventTriggerType.Period:
-      return gs.time.period === parameters.period;
+      return gs.time.period === trigger.parameters.period;
     case EventTriggerType.ActivityType:
-      return getCurrentScheduledActivity()?.type === parameters.activityType;
+      return getCurrentScheduledActivity()?.type === trigger.parameters.activityType;
     case EventTriggerType.Place:
-      return gs.player.placeKey === parameters.placeKey;
+      return gs.player.placeKey === trigger.parameters.placeKey;
+    case EventTriggerType.RelationParameter:
+      return checkRelationParameter(trigger);
     case EventTriggerType.CharacterPresent:
-      return getCharactersAtScene().some((character) => character.key === parameters.characterKey);
+      return getCharactersAtScene().some(
+        (character) => character.key === trigger.parameters.characterKey
+      );
     default:
       return false;
+  }
+}
+
+function checkRelationParameter(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.RelationParameter }>
+): boolean {
+  const { characterKey, relationParameter, value } = trigger.parameters;
+  const character = gs.characters[characterKey];
+  if (value < 0) {
+    return character.relationProgress[relationParameter] <= value;
+  } else {
+    return character.relationProgress[relationParameter] >= value;
   }
 }
 

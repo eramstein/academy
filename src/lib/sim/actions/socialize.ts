@@ -1,12 +1,14 @@
 import type { Action } from '@/lib/_model';
-import { ActionType, CharacterTrait } from '@/lib/_model/enums-sim';
+import { ActionType } from '@/lib/_model/enums-sim';
 import { gs } from '@/lib/_state';
 import { attributeCheck, skillCheckDifficulty } from '../attribute-checks';
-import { getCharacterPronoun, getCharactersAtScene } from '../characters';
+import { getCharactersAtScene } from '../characters';
 
 export enum SocializeType {
   Befriend = 'befriend',
-  Confront = 'confront',
+  Taunt = 'taunt',
+  Impress = 'impress',
+  Flirt = 'flirt',
 }
 
 export interface SocializeParameters {
@@ -14,34 +16,45 @@ export interface SocializeParameters {
   socializeType: SocializeType;
 }
 
+// this progresses a relation parameter up or down
+// these values get used to trigger relation events
 export function socialize(parameters: SocializeParameters): string {
   const partner = gs.characters[parameters.characterKey];
-  let difficulty = skillCheckDifficulty.medium;
-  let difficultyText = '';
-  if (
-    parameters.socializeType === SocializeType.Befriend &&
-    partner.traits[CharacterTrait.Friendly]
-  ) {
-    difficulty = skillCheckDifficulty.easy;
-    difficultyText = `As ${getCharacterPronoun(partner)} is friendly, it is a bit easier.`;
-  } else if (
-    parameters.socializeType === SocializeType.Confront &&
-    partner.traits[CharacterTrait.Grumpy]
-  ) {
-    difficulty = skillCheckDifficulty.easy;
-    difficultyText = `As ${getCharacterPronoun(partner)} is grumpy, it is a bit easier.`;
-  }
+  const difficulty = skillCheckDifficulty.trivial;
+
   const { success, critical, outcomeText } = attributeCheck(
     gs.player.attributes.charisma,
     difficulty,
     'charisma'
   );
-  const narrationText = `
-    You try to ${parameters.socializeType} ${gs.characters[parameters.characterKey].name}.    
-    ${difficultyText} \n
-    ${outcomeText}
-  `;
-  return narrationText;
+  const outcomeValue = (critical ? 2 : 1) * (success ? 1 : -1);
+  switch (parameters.socializeType) {
+    case SocializeType.Befriend:
+      if (success) {
+        partner.relationProgress.friendship = Math.max(0, partner.relationProgress.friendship);
+      }
+      partner.relationProgress.friendship += outcomeValue;
+      break;
+    case SocializeType.Taunt:
+      if (success) {
+        partner.relationProgress.rivalry = Math.max(0, partner.relationProgress.rivalry);
+      }
+      partner.relationProgress.rivalry += outcomeValue;
+      break;
+    case SocializeType.Impress:
+      if (success) {
+        partner.relationProgress.friendship = Math.max(0, partner.relationProgress.friendship);
+      }
+      partner.relationProgress.respect += outcomeValue;
+      break;
+    case SocializeType.Flirt:
+      if (success) {
+        partner.relationProgress.love = Math.max(0, partner.relationProgress.love);
+      }
+      partner.relationProgress.love += outcomeValue;
+      break;
+  }
+  return `You try to ${parameters.socializeType} ${gs.characters[parameters.characterKey].name}. ${outcomeText}`;
 }
 
 export function getSocializeActions(): Action[] {
@@ -57,7 +70,12 @@ export function getSocializeActions(): Action[] {
       actionParameters: {},
       missingParameters: {
         characterKey: presentCharacters.map((c) => [c.key, c.name]),
-        socializeType: [SocializeType.Befriend, SocializeType.Confront],
+        socializeType: [
+          SocializeType.Befriend,
+          SocializeType.Taunt,
+          SocializeType.Impress,
+          SocializeType.Flirt,
+        ],
       },
     },
   ];
