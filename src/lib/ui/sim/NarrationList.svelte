@@ -25,9 +25,9 @@
   };
 
   const resourceIcon: Record<ResourceType, string> = {
-    [ResourceType.MagicDust]: 'spiral',
-    [ResourceType.Mithril]: 'leaf',
-    [ResourceType.Moxes]: 'heart',
+    [ResourceType.MagicDust]: 'magic_dust',
+    [ResourceType.Mithril]: 'metal_bar',
+    [ResourceType.Moxes]: 'gem',
   };
 
   const narration = $derived(gs.scene.narration);

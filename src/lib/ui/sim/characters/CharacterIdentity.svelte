@@ -217,7 +217,7 @@
 
   .meta-row {
     display: grid;
-    grid-template-columns: 1.1rem 5.6rem 1fr;
+    grid-template-columns: 1.4rem 5.6rem 1fr;
     gap: 0.45rem;
     align-items: center;
     min-width: 0;
@@ -225,8 +225,8 @@
 
   .icon {
     display: block;
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 1.35rem;
+    height: 1.35rem;
     flex-shrink: 0;
     background: currentColor;
     mask: var(--icon) center / contain no-repeat;

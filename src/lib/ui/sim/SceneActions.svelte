@@ -5,6 +5,7 @@
   import {
     getConjurationOtions,
     performAction,
+    SocializeType,
     TransactionType,
     type CardCreationResult,
   } from '@/lib/sim/actions';
@@ -30,6 +31,13 @@
     [ActionType.Move]: 'boot',
     [ActionType.Transaction]: 'coin',
     [ActionType.Negotiate]: 'mug',
+  };
+
+  const socializeIcons: Record<SocializeType, string> = {
+    [SocializeType.Befriend]: 'handshake',
+    [SocializeType.Taunt]: 'finger_pointing',
+    [SocializeType.Impress]: 'crown',
+    [SocializeType.Flirt]: 'heart',
   };
 
   let pendingAction = $state<Action | null>(null);
@@ -89,6 +97,11 @@
     if (card) return { path: getCardImagePath(card.imageFileName), portrait: false };
     const character = gs.characters[value];
     if (character) return { path: getCharacterImagePath(character.key), portrait: true };
+  }
+
+  function optionIcon(option: string | [string, string]): string | undefined {
+    if (currentParameterKey !== 'socializeType') return undefined;
+    return socializeIcons[optionValue(option) as SocializeType];
   }
 
   function applyParameter(action: Action, key: string, value: string): Action {
@@ -263,6 +276,7 @@
             </OrnateButton>
           {:else}
             <OrnateButton
+              icon={optionIcon(option)}
               variant={pendingAction.isLongAction ? 'long' : 'default'}
               onclick={() => pickParameter(optionValue(option))}
             >
@@ -321,6 +335,11 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
+  }
+
+  .action-buttons :global(.ornate-button .icon) {
+    width: 1.65rem;
+    height: 1.65rem;
   }
 
   .option-thumb {

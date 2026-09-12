@@ -64,8 +64,8 @@
 
   .icon {
     display: block;
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 1.35rem;
+    height: 1.35rem;
     flex-shrink: 0;
     color: var(--color-brass);
     background: currentColor;
@@ -81,7 +81,7 @@
 
   .attr-row {
     display: grid;
-    grid-template-columns: 1.1rem 6.4rem 1fr 1.7rem;
+    grid-template-columns: 1.4rem 6.4rem 1fr 1.7rem;
     gap: 0.5rem;
     align-items: center;
   }

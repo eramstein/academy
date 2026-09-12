@@ -66,6 +66,21 @@ const PAINTED_UI_ICONS: Record<string, string> = {
   star: 'star',
   'page-star': 'star',
   feather: 'feather',
+  boot: 'boot',
+  coin: 'coin',
+  mug: 'mug',
+  leaf: 'leaf',
+  temple: 'temple',
+  handshake: 'handshake',
+  finger_pointing: 'finger_pointing',
+  gem: 'gem',
+  magic_dust: 'magic_dust',
+  metal_bar: 'metal_bar',
+  crown: 'more_icons',
+  befriend: 'handshake',
+  taunt: 'finger_pointing',
+  impress: 'more_icons',
+  flirt: 'heart',
 };
 
 export function isPaintedUiIcon(name: string): boolean {

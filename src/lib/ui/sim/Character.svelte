@@ -174,8 +174,8 @@
 
   .icon {
     display: block;
-    width: 1.05rem;
-    height: 1.05rem;
+    width: 1.35rem;
+    height: 1.35rem;
     flex-shrink: 0;
     color: var(--color-brass);
     background: currentColor;
@@ -241,8 +241,8 @@
   }
 
   .section-title .icon {
-    width: 0.95rem;
-    height: 0.95rem;
+    width: 1.2rem;
+    height: 1.2rem;
   }
 
   .sheet-body .divider {
@@ -307,7 +307,7 @@
 
   .relation-row {
     display: grid;
-    grid-template-columns: 1.1rem 1fr auto;
+    grid-template-columns: 1.4rem 1fr auto;
     gap: 0.5rem;
     align-items: center;
     font-size: 0.95rem;
@@ -325,7 +325,7 @@
 
   .sub-row {
     display: grid;
-    grid-template-columns: 1.1rem 1fr auto;
+    grid-template-columns: 1.4rem 1fr auto;
     gap: 0.5rem;
     align-items: center;
     font-size: 0.95rem;
