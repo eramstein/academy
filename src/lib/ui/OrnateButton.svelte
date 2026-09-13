@@ -61,10 +61,15 @@
 
 <style>
   .ornate-button {
-    /* Native assets: corner 32×32, border 15×192. Keep the same scale so they join. */
+    /*
+      Native assets: corner 32×32, border strip 192×15; the corner's arm meets
+      the strip at 11/32 in. The strip is squashed to 7px rather than its
+      proportional 7.5px: at 7.5px the browser rounds up and the strip's gold
+      band renders a pixel wider than the corner's, leaving a step at the join.
+    */
     --corner-size: 16px;
-    --border-w: calc(var(--corner-size) * 15 / 32);
-    --edge-inset: calc(var(--corner-size) * 0.34);
+    --border-w: calc(var(--corner-size) * 7 / 16);
+    --edge-inset: calc(var(--corner-size) * 11 / 32);
     --radius: 7px;
     --metal-hi: #c9a87a;
     position: relative;
@@ -215,6 +220,7 @@
   }
 
   .ornate-button.has-lead .content {
+    z-index: 3;
     align-items: stretch;
     padding: 0;
     gap: 0;

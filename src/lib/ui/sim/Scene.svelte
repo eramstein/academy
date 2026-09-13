@@ -3,6 +3,7 @@
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import { selectNextScene } from '@/lib/sim/scene';
   import { tick, untrack } from 'svelte';
+  import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import NarrationList from './NarrationList.svelte';
   import SceneActions from './SceneActions.svelte';
 
@@ -169,9 +170,7 @@
           <h3 class="place-region-title">{region.name}</h3>
           <div class="place-buttons">
             {#each places as place (place.key)}
-              <button type="button" class="action-btn" onclick={() => selectNextScene(place.key)}
-                >{place.name}</button
-              >
+              <OrnateButton onclick={() => selectNextScene(place.key)}>{place.name}</OrnateButton>
             {/each}
           </div>
         </section>
@@ -412,25 +411,5 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
-  }
-
-  .action-btn {
-    font-family: var(--font-narrative);
-    font-size: 1rem;
-    color: var(--color-cream);
-    background: var(--color-data);
-    border: 1px solid var(--color-brass);
-    border-radius: 4px;
-    padding: 10px 24px;
-    cursor: pointer;
-  }
-
-  .action-btn:hover {
-    background: var(--color-data-hover);
-    border-color: var(--color-brass);
-  }
-
-  .action-btn:active {
-    background: var(--color-data-active);
   }
 </style>

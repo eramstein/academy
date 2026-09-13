@@ -354,7 +354,8 @@
   }
 
   .option-thumb.portrait {
-    background-position: center 18%;
+    background-size: 160%;
+    background-position: center 12%;
   }
 
   .cancel-btn {
