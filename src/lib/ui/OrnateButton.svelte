@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte';
   import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
+  import type { Snippet } from 'svelte';
 
   let {
     onclick,
@@ -22,7 +22,8 @@
 
   const iconUrl = $derived(icon ? getUiIconPath(icon) : undefined);
   const paintedIcon = $derived(!!icon && isPaintedUiIcon(icon));
-  const cornerUrl = getAssetPath('images/ui/corner.svg');
+  const borderUrl = getAssetPath('images/border.png');
+  const cornerUrl = getAssetPath('images/corner.png');
 </script>
 
 <button
@@ -31,12 +32,16 @@
   class:long={variant === 'long'}
   class:has-lead={!!lead}
   class:has-icon={!!iconUrl}
-  style="--corner: url('{cornerUrl}')"
+  style="--border-img: url('{borderUrl}'); --corner-img: url('{cornerUrl}')"
   {disabled}
   {onclick}
 >
   <span class="frame" aria-hidden="true">
     <span class="fill"></span>
+    <span class="edge top"></span>
+    <span class="edge right"><span class="strip"></span></span>
+    <span class="edge bottom"></span>
+    <span class="edge left"><span class="strip"></span></span>
     <span class="corner tl"></span>
     <span class="corner tr"></span>
     <span class="corner bl"></span>
@@ -56,12 +61,12 @@
 
 <style>
   .ornate-button {
+    /* Native assets: corner 32×32, border 15×192. Keep the same scale so they join. */
+    --corner-size: 16px;
+    --border-w: calc(var(--corner-size) * 15 / 32);
+    --edge-inset: calc(var(--corner-size) * 0.34);
     --radius: 7px;
-    --ring: 2px;
-    --gap: 1.5px;
     --metal-hi: #c9a87a;
-    --metal-mid: var(--color-brass);
-    --metal-lo: #6a5234;
     position: relative;
     display: inline-flex;
     align-items: stretch;
@@ -78,8 +83,7 @@
     transition:
       transform 80ms ease,
       filter 80ms ease;
-    filter:
-      drop-shadow(0 1px 0 rgba(0, 0, 0, 0.65)) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.4))
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.65)) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.4))
       drop-shadow(0 8px 12px rgba(0, 0, 0, 0.22));
   }
 
@@ -92,24 +96,13 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    border-radius: var(--radius);
-    background: linear-gradient(
-      145deg,
-      var(--metal-hi) 0%,
-      var(--metal-mid) 42%,
-      var(--metal-lo) 100%
-    );
-    padding: var(--ring);
-    box-shadow: inset 0 1px 0 rgba(232, 212, 180, 0.22);
   }
 
   .fill {
-    display: block;
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    inset: 0;
     box-sizing: border-box;
-    border-radius: calc(var(--radius) - var(--ring));
-    border: var(--gap) solid color-mix(in srgb, var(--metal-mid) 70%, var(--metal-lo));
+    border-radius: var(--radius);
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 36%),
       radial-gradient(120% 90% at 50% 0%, rgba(240, 230, 200, 0.06), transparent 55%),
@@ -120,38 +113,93 @@
       inset 0 0 10px rgba(0, 0, 0, 0.35);
   }
 
-  .corner {
+  .edge {
     position: absolute;
     z-index: 1;
-    width: 11px;
-    height: 11px;
-    opacity: 0.72;
-    background: var(--metal-hi);
-    mask: var(--corner) center / contain no-repeat;
-    -webkit-mask: var(--corner) center / contain no-repeat;
+    background: var(--border-img) center / 100% 100% no-repeat;
+  }
+
+  .edge.top {
+    top: 0;
+    left: var(--edge-inset);
+    right: var(--edge-inset);
+    height: var(--border-w);
+  }
+
+  .edge.bottom {
+    bottom: 0;
+    left: var(--edge-inset);
+    right: var(--edge-inset);
+    height: var(--border-w);
+    transform: rotate(180deg);
+  }
+
+  .edge.left,
+  .edge.right {
+    top: var(--edge-inset);
+    bottom: var(--edge-inset);
+    width: var(--border-w);
+    background: none;
+    overflow: hidden;
+    container-type: size;
+  }
+
+  .edge.left {
+    left: 0;
+  }
+
+  .edge.right {
+    right: 0;
+  }
+
+  .edge .strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100cqh;
+    height: 100cqw;
+    background: var(--border-img) center / 100% 100% no-repeat;
+  }
+
+  .edge.right .strip {
+    transform-origin: top left;
+    transform: rotate(90deg) translateY(-100%);
+  }
+
+  .edge.left .strip {
+    transform-origin: top left;
+    transform: rotate(-90deg) translateX(-100%);
+  }
+
+  .corner {
+    position: absolute;
+    z-index: 2;
+    width: var(--corner-size);
+    height: var(--corner-size);
+    background: var(--corner-img) center / 100% 100% no-repeat;
   }
 
   .corner.tl {
-    top: 1px;
-    left: 1px;
+    top: 0;
+    left: 0;
   }
 
   .corner.tr {
-    top: 1px;
-    right: 1px;
-    transform: scaleX(-1);
+    top: 0;
+    right: 0;
+    transform: rotate(90deg);
   }
 
   .corner.bl {
-    bottom: 1px;
-    left: 1px;
-    transform: scaleY(-1);
+    bottom: 0;
+    left: 0;
+    transform: rotate(270deg);
   }
 
   .corner.br {
-    bottom: 1px;
-    right: 1px;
-    transform: scale(-1);
+    bottom: 0;
+    right: 0;
+    transform: rotate(180deg);
   }
 
   .content {
@@ -161,8 +209,8 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    min-height: 2.55rem;
-    padding: 0.5rem 1.4rem;
+    min-height: 2.65rem;
+    padding: calc(0.55rem + 5px) 1.5rem;
     box-sizing: border-box;
   }
 
@@ -196,13 +244,7 @@
   }
 
   .ornate-button.has-lead .label {
-    padding: 0.5rem 1.4rem 0.5rem 0.85rem;
-  }
-
-  .ornate-button.long {
-    --metal-hi: #d4c078;
-    --metal-mid: var(--color-golden);
-    --metal-lo: #7a6520;
+    padding: calc(0.5rem + 5px) 1.4rem calc(0.5rem + 5px) 0.85rem;
   }
 
   .ornate-button:hover:not(:disabled) .fill {
@@ -212,17 +254,9 @@
       var(--color-data-hover);
   }
 
-  .ornate-button:hover:not(:disabled) .frame {
-    background: linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--metal-hi) 72%, white) 0%,
-      var(--metal-mid) 42%,
-      var(--metal-lo) 100%
-    );
-  }
-
+  .ornate-button:hover:not(:disabled) .edge,
   .ornate-button:hover:not(:disabled) .corner {
-    opacity: 0.85;
+    filter: brightness(1.08);
   }
 
   .ornate-button:active:not(:disabled) {
@@ -232,8 +266,7 @@
 
   .ornate-button:active:not(:disabled) .fill {
     background:
-      linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent 50%),
-      var(--color-data-active);
+      linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent 50%), var(--color-data-active);
     box-shadow:
       inset 0 3px 5px rgba(0, 0, 0, 0.65),
       inset 0 0 8px rgba(0, 0, 0, 0.4);

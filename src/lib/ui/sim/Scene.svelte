@@ -191,7 +191,7 @@
     align-items: center;
     justify-content: flex-start;
     gap: 32px;
-    padding: 32px;
+    padding: 16px 32px 32px;
     box-sizing: border-box;
     overflow: hidden;
   }

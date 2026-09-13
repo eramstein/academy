@@ -67,7 +67,7 @@
     width: 55%;
     min-width: 0;
     min-height: 0;
-    padding: 24px 24px 24px 12px;
+    padding: 8px 24px 24px 12px;
     box-sizing: border-box;
   }
 </style>

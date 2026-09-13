@@ -31,14 +31,20 @@
       (selected === 'characters' && uiState.sim.selectedCharacterKey !== null)
   );
 
-  const cornerPath = getAssetPath('images/ui/data-corner.svg');
+  const paneCornerPath = getAssetPath('images/ui/data-corner.svg');
+  const borderUrl = getAssetPath('images/border.png');
+  const cornerUrl = getAssetPath('images/corner.png');
+  const joinUrl = getAssetPath('images/tab-join.png');
 
   function iconUrl(name: string) {
     return getUiIconPath(name);
   }
 </script>
 
-<div class="sim-data" style="--data-corner: url('{cornerPath}');">
+<div
+  class="sim-data"
+  style="--data-corner: url('{paneCornerPath}'); --border-img: url('{borderUrl}'); --corner-img: url('{cornerUrl}'); --join-img: url('{joinUrl}')"
+>
   <nav class="menu">
     <div class="tabs" role="tablist">
       {#each tabs as tab (tab.id)}
@@ -50,6 +56,17 @@
           aria-selected={selected === tab.id}
           onclick={() => (uiState.sim.dataTab = tab.id)}
         >
+          <span class="tab-frame" aria-hidden="true">
+            <span class="tab-fill"></span>
+            <span class="edge top"></span>
+            <span class="edge right"><span class="strip"></span></span>
+            <span class="edge bottom"></span>
+            <span class="edge left"><span class="strip"></span></span>
+            <span class="corner tl"></span>
+            <span class="corner tr"></span>
+            <span class="join"></span>
+            <span class="seam"></span>
+          </span>
           <span class="tab-face">
             <span class="tab-icon" style="--icon: url('{iconUrl(tab.icon)}')" aria-hidden="true"
             ></span>
@@ -100,8 +117,6 @@
   }
 
   .menu {
-    --tab-chamfer: 7px;
-    --tab-trim: 1px;
     display: flex;
     flex-shrink: 0;
     align-items: flex-end;
@@ -120,19 +135,28 @@
     overflow-x: auto;
     padding: 0;
     scrollbar-width: thin;
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.65)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
   }
 
   .menu-item {
-    --chamfer: var(--tab-chamfer);
-    --trim: var(--tab-trim);
+    --corner-size: 12px;
+    --border-w: calc(var(--corner-size) * 15 / 32);
+    --edge-inset: calc(var(--corner-size) * 0.34);
+    /* Native tab-join.png is 56×40; scale so its rail profile matches --border-w. */
+    --join-scale: calc(var(--border-w) / 15);
+    --join-w: calc(56 * var(--join-scale));
+    --join-h: calc(40 * var(--join-scale));
+    --join-half: calc(var(--join-w) * 0.42);
+    --radius: 5px;
     appearance: none;
+    position: relative;
     display: flex;
     align-items: stretch;
     flex: 1 1 0;
     min-width: 0;
     margin: 0;
-    padding: var(--trim);
-    background: var(--color-brass);
+    padding: 0;
+    background: transparent;
     border: none;
     color: var(--color-muted-label);
     font-family: inherit;
@@ -140,20 +164,173 @@
     font-weight: 700;
     white-space: nowrap;
     cursor: pointer;
-    clip-path: polygon(
-      var(--chamfer) 0,
-      calc(100% - var(--chamfer)) 0,
-      100% var(--chamfer),
-      100% calc(100% - 2px),
-      calc(100% - 2px) 100%,
-      2px 100%,
-      0 calc(100% - 2px),
-      0 var(--chamfer)
+  }
+
+  .tab-frame {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .tab-fill {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    border-radius: var(--radius) var(--radius) 0 0;
+    background-color: var(--color-data);
+    background-image: var(--data-bg);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    box-shadow:
+      inset 0 1px 0 rgba(240, 230, 200, 0.12),
+      inset 0 2px 3px rgba(0, 0, 0, 0.5),
+      inset 0 -1px 0 rgba(240, 230, 200, 0.05),
+      inset 0 0 8px rgba(0, 0, 0, 0.32);
+  }
+
+  .edge {
+    position: absolute;
+    z-index: 1;
+    background: var(--border-img) center / 100% 100% no-repeat;
+  }
+
+  .edge.top {
+    top: 0;
+    left: var(--edge-inset);
+    right: var(--edge-inset);
+    height: var(--border-w);
+  }
+
+  /* Meet the Y-join instead of a second corner where tabs touch. */
+  .menu-item:not(:last-child) .edge.top {
+    right: var(--join-half);
+  }
+
+  .menu-item:not(:first-child) .edge.top {
+    left: var(--join-half);
+  }
+
+  .edge.bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--border-w);
+    transform: rotate(180deg);
+  }
+
+  .edge.left,
+  .edge.right {
+    top: var(--edge-inset);
+    bottom: var(--border-w);
+    width: var(--border-w);
+    background: none;
+    overflow: hidden;
+    container-type: size;
+  }
+
+  .edge.left {
+    left: 0;
+  }
+
+  .edge.right {
+    right: 0;
+  }
+
+  /* Outer rails only on the strip ends; shared seams use join + gold fade. */
+  .menu-item:not(:first-child) .edge.left,
+  .menu-item:not(:last-child) .edge.right {
+    display: none;
+  }
+
+  .edge .strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100cqh;
+    height: 100cqw;
+    background: var(--border-img) center / 100% 100% no-repeat;
+  }
+
+  .edge.right .strip {
+    transform-origin: top left;
+    transform: rotate(90deg) translateY(-100%);
+  }
+
+  .edge.left .strip {
+    transform-origin: top left;
+    transform: rotate(-90deg) translateX(-100%);
+  }
+
+  .corner {
+    position: absolute;
+    z-index: 2;
+    width: var(--corner-size);
+    height: var(--corner-size);
+    background: var(--corner-img) center / 100% 100% no-repeat;
+  }
+
+  .corner.tl {
+    top: 0;
+    left: 0;
+  }
+
+  .corner.tr {
+    top: 0;
+    right: 0;
+    transform: rotate(90deg);
+  }
+
+  .menu-item:not(:first-child) .corner.tl,
+  .menu-item:not(:last-child) .corner.tr {
+    display: none;
+  }
+
+  .join {
+    display: none;
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    width: var(--join-w);
+    height: var(--join-h);
+    transform: translateX(-50%);
+    background: var(--join-img) left top / 100% 100% no-repeat;
+    pointer-events: none;
+  }
+
+  .menu-item:not(:first-child) .join {
+    display: block;
+  }
+
+  .seam {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    top: calc(var(--join-h) * 0.42);
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    transform: translateX(-50%);
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-brass) 75%, #e8d4a8) 0%,
+      var(--color-brass) 22%,
+      color-mix(in srgb, var(--color-brass) 55%, transparent) 58%,
+      color-mix(in srgb, var(--color-brass) 18%, transparent) 82%,
+      transparent 100%
     );
-    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.7)) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.45));
+    box-shadow: 0 0 4px color-mix(in srgb, var(--color-brass) 35%, transparent);
+  }
+
+  .menu-item:not(:first-child) .seam {
+    display: block;
   }
 
   .tab-face {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -161,26 +338,8 @@
     width: 100%;
     min-width: 0;
     gap: 0.32rem;
-    padding: 0.4rem 0.42rem 0.38rem;
+    padding: calc(0.42rem + 5px) 0.5rem calc(0.4rem + 5px);
     box-sizing: border-box;
-    background-color: var(--color-data);
-    background-image: var(--data-bg);
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    box-shadow:
-      inset 0 1px 0 rgba(240, 230, 200, 0.14),
-      inset 0 -2px 4px rgba(0, 0, 0, 0.48);
-    clip-path: polygon(
-      calc(var(--chamfer) - var(--trim)) 0,
-      calc(100% - (var(--chamfer) - var(--trim))) 0,
-      100% calc(var(--chamfer) - var(--trim)),
-      100% calc(100% - 1px),
-      calc(100% - 1px) 100%,
-      1px 100%,
-      0 calc(100% - 1px),
-      0 calc(var(--chamfer) - var(--trim))
-    );
   }
 
   .tab-icon {
@@ -199,22 +358,43 @@
     color: var(--color-cream);
   }
 
-  .menu-item:hover .tab-face {
+  .menu-item:hover .tab-fill {
     background-color: color-mix(in srgb, var(--color-data) 78%, var(--color-cream));
+  }
+
+  .menu-item:hover .edge,
+  .menu-item:hover .corner,
+  .menu-item:hover .join,
+  .menu-item:hover .seam {
+    filter: brightness(1.08);
   }
 
   .menu-item.active {
     z-index: 1;
-    background: var(--color-golden);
     color: var(--color-golden);
   }
 
-  .menu-item.active .tab-face {
-    background-color: color-mix(in srgb, var(--color-data) 90%, var(--color-golden));
+  .menu-item.active .tab-fill {
+    background-color: color-mix(in srgb, var(--color-data) 86%, var(--color-golden));
     box-shadow:
-      inset 0 1px 0 rgba(240, 220, 160, 0.18),
-      inset 0 0 8px rgba(191, 161, 74, 0.1),
-      inset 0 -2px 4px rgba(0, 0, 0, 0.35);
+      inset 0 1px 0 rgba(240, 220, 160, 0.2),
+      inset 0 0 10px rgba(191, 161, 74, 0.12),
+      inset 0 2px 3px rgba(0, 0, 0, 0.4),
+      inset 0 -1px 0 rgba(240, 230, 200, 0.06);
+  }
+
+  .menu-item.active .edge,
+  .menu-item.active .corner,
+  .menu-item.active .join,
+  .menu-item.active .seam {
+    filter: brightness(1.12);
+  }
+
+  .menu-item:not(.active) .edge,
+  .menu-item:not(.active) .corner,
+  .menu-item:not(.active) .join,
+  .menu-item:not(.active) .seam {
+    opacity: 0.88;
   }
 
   .menu-item:focus-visible {
