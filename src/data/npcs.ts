@@ -1,28 +1,44 @@
-import { CharacterGender, CharacterTrait, ResourceType, SchoolName, type Npc } from '@/lib/_model';
+import {
+  CardColor,
+  CharacterGender,
+  CharacterTrait,
+  ResourceType,
+  SchoolName,
+  type Npc,
+} from '@/lib/_model';
 
-const defaultNpc: Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' | 'school'> = {
-  gold: 0,
-  placeKey: '',
-  subscriptions: {},
-  traits: {},
-  decks: [],
-  collection: [],
-  resources: {
-    [ResourceType.MagicDust]: 0,
-    [ResourceType.Mithril]: 0,
-    [ResourceType.Moxes]: 0,
-  },
-  relationProgress: {
-    friendship: 0,
-    respect: 0,
-    love: 0,
-    rivalry: 0,
-  },
-};
+function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' | 'school'> {
+  return {
+    gold: 0,
+    placeKey: '',
+    subscriptions: {},
+    traits: {},
+    decks: [],
+    collection: [],
+    resources: {
+      [ResourceType.MagicDust]: 0,
+      [ResourceType.Mithril]: 0,
+      [ResourceType.Moxes]: 0,
+    },
+    relationProgress: {
+      friendship: 0,
+      respect: 0,
+      love: 0,
+      rivalry: 0,
+    },
+    favoriteColors: [],
+    craftingKnowledge: {},
+    craftingSkills: {
+      mastery: 0,
+      efficiency: 0,
+      inspiration: 0,
+    },
+  };
+}
 
 export const npcs: Record<string, Npc> = {
   administrator: {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'administrator',
     name: 'Moustapha El-Khouri, Administrator',
     placeKey: 'admin-office',
@@ -31,7 +47,7 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Male,
   },
   rustic_innkeeper: {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'rustic_innkeeper',
     name: 'Old Ross, Innkeeper',
     placeKey: 'old-monk-inn',
@@ -40,7 +56,7 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Male,
   },
   fancy_innkeeper: {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'fancy_innkeeper',
     name: 'Lady Margaret, Innkeeper',
     gold: 0,
@@ -50,7 +66,7 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Female,
   },
   material_shopkeeper: {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'material_shopkeeper',
     name: 'Matilda, Shopkeeper',
     placeKey: 'metarials-shop',
@@ -59,7 +75,7 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Female,
   },
   molly: {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'molly',
     name: 'Molly Moreno',
     placeKey: 'admin-office',
@@ -67,9 +83,10 @@ export const npcs: Record<string, Npc> = {
     traits: { [CharacterTrait.Friendly]: true },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
+    favoriteColors: [CardColor.Green],
   },
   elsa: {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'elsa',
     name: 'Elsa Falkenstein',
     placeKey: 'admin-office',
@@ -77,9 +94,10 @@ export const npcs: Record<string, Npc> = {
     traits: { [CharacterTrait.Friendly]: true },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
+    favoriteColors: [CardColor.Red],
   },
   ousmane: {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'ousmane',
     name: 'Ousmane Tempeli',
     placeKey: 'admin-office',
@@ -87,9 +105,10 @@ export const npcs: Record<string, Npc> = {
     traits: { [CharacterTrait.Friendly]: true },
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
+    favoriteColors: [CardColor.Black],
   },
   emma: {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'emma',
     name: 'Emma Delamain',
     placeKey: 'admin-office',
@@ -97,9 +116,10 @@ export const npcs: Record<string, Npc> = {
     traits: { [CharacterTrait.Grumpy]: true },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
+    favoriteColors: [CardColor.Red],
   },
   vai: {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'vai',
     name: 'Vaiana Chen',
     placeKey: 'admin-office',
@@ -107,9 +127,10 @@ export const npcs: Record<string, Npc> = {
     traits: { [CharacterTrait.Grumpy]: true },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
+    favoriteColors: [CardColor.Green],
   },
   henry: {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'henry',
     name: 'Henry Prescott',
     placeKey: 'admin-office',
@@ -117,9 +138,10 @@ export const npcs: Record<string, Npc> = {
     traits: { [CharacterTrait.Friendly]: true },
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
+    favoriteColors: [CardColor.Black],
   },
   farid: {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'farid',
     name: 'Farid El-Khouri',
     placeKey: 'admin-office',
@@ -127,9 +149,10 @@ export const npcs: Record<string, Npc> = {
     traits: { [CharacterTrait.Friendly]: true },
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
+    favoriteColors: [CardColor.Red],
   },
   'the-dude': {
-    ...defaultNpc,
+    ...createDefaultNpc(),
     key: 'the-dude',
     name: 'The Dude',
     placeKey: 'admin-office',
@@ -137,5 +160,6 @@ export const npcs: Record<string, Npc> = {
     traits: { [CharacterTrait.Friendly]: true },
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
+    favoriteColors: [CardColor.Green],
   },
 };

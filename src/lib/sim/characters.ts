@@ -1,5 +1,12 @@
-import { CharacterGender, type Npc } from '../_model';
+import { CharacterGender, type Character, type Npc } from '../_model';
 import { gs } from '../_state';
+
+export function getActingCharacter(characterKey = 'player'): Character {
+  if (characterKey === 'player' || characterKey === gs.player.key) {
+    return gs.player;
+  }
+  return gs.characters[characterKey] ?? gs.player;
+}
 
 export function getCharactersAtScene() {
   return Object.values(gs.characters).filter((c) => c.placeKey === gs.player.placeKey);

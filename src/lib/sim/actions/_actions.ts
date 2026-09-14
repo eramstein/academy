@@ -97,6 +97,8 @@ const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => s
   [ActionType.StartMatch]: (parameters) => startMatch(parameters as StartMatchParameters),
   [ActionType.Augment]: (parameters) => augmentUnit(parameters as AugmentParameters),
   [ActionType.Distill]: (parameters) => distillUnit(parameters as DistillParameters),
-  [ActionType.Conjure]: (parameters) => conjureUnit(parameters as CardCreationResult),
-  [ActionType.Invoke]: (parameters) => invokeUnit(parameters as CardCreationParameters),
+  [ActionType.Conjure]: (parameters) =>
+    conjureUnit(parameters as CardCreationResult, parameters.characterKey ?? 'player'),
+  [ActionType.Invoke]: (parameters) =>
+    invokeUnit(parameters as CardCreationParameters, parameters.characterKey ?? 'player'),
 };

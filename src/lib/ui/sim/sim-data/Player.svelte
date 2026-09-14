@@ -1,21 +1,12 @@
 <script lang="ts">
-  import {
-    CardColor,
-    isLandCard,
-    type CardCraftingSkills,
-    type UnitKeywords,
-  } from '@/lib/_model';
+  import { isLandCard } from '@/lib/_model';
   import { ResourceType, SubscriptionType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
-  import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
+  import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import Attributes from '../Attributes.svelte';
+  import CardCrafting from '../characters/CardCrafting.svelte';
   import CharacterIdentity from '../characters/CharacterIdentity.svelte';
 
-  const CRAFTING_SKILL_ORDER: (keyof CardCraftingSkills)[] = [
-    'mastery',
-    'efficiency',
-    'inspiration',
-  ];
   const SUB_ICONS: Record<SubscriptionType, string> = {
     [SubscriptionType.Academy]: 'sun',
     [SubscriptionType.Library]: 'book',
@@ -44,38 +35,9 @@
     }))
   );
 
-  const craftingSkills = $derived(
-    CRAFTING_SKILL_ORDER.map((key) => ({
-      key,
-      value: player.craftingSkills?.[key] ?? 0,
-    }))
-  );
-
-  const craftingColors = $derived(
-    Object.entries(player.craftingKnowledge.colors ?? {}).map(([color, level]) => ({
-      color: color as CardColor,
-      level,
-    }))
-  );
-
-  const craftingKeywords = $derived(
-    Object.entries(player.craftingKnowledge.keywords ?? {}).map(([keyword, level]) => ({
-      keyword: keyword as keyof UnitKeywords,
-      level,
-    }))
-  );
-
   const collectionCount = $derived(player.collection.length);
   const landCount = $derived(player.collection.filter(isLandCard).length);
   const cardCount = $derived(collectionCount - landCount);
-
-  function colorPath(color: CardColor): string {
-    return getAssetPath(`images/color_${color}.png`);
-  }
-
-  function formatKeyword(keyword: string): string {
-    return keyword.replace(/([a-z])([A-Z])/g, '$1 $2');
-  }
 
   function formatResource(type: ResourceType): string {
     return type.replace(/_/g, ' ');
@@ -151,44 +113,7 @@
         </ul>
       </section>
 
-      <section class="section">
-        <h3 class="section-title">
-          {@render icon('spiral')}
-          Card Crafting
-        </h3>
-        {@render divider()}
-        <ul class="kv-list">
-          {#each craftingSkills as skill (skill.key)}
-            <li class="kv-row">
-              <span class="kv-name">{skill.key}</span>
-              <span class="kv-value">{skill.value}</span>
-            </li>
-          {/each}
-        </ul>
-        {#if craftingColors.length > 0}
-          <h4 class="subsection-title">Colors</h4>
-          <ul class="chip-list">
-            {#each craftingColors as { color, level } (color)}
-              <li
-                class="color-indicator"
-                style="background-image: url('{colorPath(color)}')"
-                title="{color} · {level}"
-              ></li>
-            {/each}
-          </ul>
-        {/if}
-        {#if craftingKeywords.length > 0}
-          <h4 class="subsection-title">Keywords</h4>
-          <ul class="kv-list">
-            {#each craftingKeywords as { keyword, level } (keyword)}
-              <li class="kv-row">
-                <span class="kv-name keyword">{formatKeyword(keyword)}</span>
-                <span class="kv-value">{level}</span>
-              </li>
-            {/each}
-          </ul>
-        {/if}
-      </section>
+      <CardCrafting character={player} />
 
       <section class="section">
         <h3 class="section-title">
@@ -330,15 +255,6 @@
     color: var(--brass);
   }
 
-  .subsection-title {
-    margin: 0.35rem 0 0;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-brass);
-  }
-
   .empty,
   .summary {
     margin: 0;
@@ -348,15 +264,10 @@
   }
 
   .kv-list,
-  .sub-list,
-  .chip-list {
+  .sub-list {
     margin: 0;
     padding: 0;
     list-style: none;
-  }
-
-  .kv-list,
-  .sub-list {
     display: flex;
     flex-direction: column;
     gap: 0.55rem;
@@ -381,10 +292,6 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .keyword {
-    text-transform: none;
-  }
-
   .sub-row {
     display: grid;
     grid-template-columns: 1.4rem 1fr auto;
@@ -401,20 +308,5 @@
   .sub-days {
     color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
-  }
-
-  .chip-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-  }
-
-  .color-indicator {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    border: 1px solid var(--color-brass);
   }
 </style>

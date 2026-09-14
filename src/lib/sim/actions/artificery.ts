@@ -1,6 +1,7 @@
 import {
   CardColor,
   ResourceType,
+  type Character,
   type UnitCardTemplate,
   type UnitKeywords,
   type UnitType,
@@ -11,6 +12,7 @@ import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
 import { buildUnitCard } from '../cards/creation';
 import { filterFlavorTemplates } from '../cards/flavor-filters';
 import { loadFlavorTemplates } from '../cards/flavor-templates';
+import { getActingCharacter } from '../characters';
 import { narrateCardConjured } from '../narration';
 import { spendResources } from '../resources';
 
@@ -41,7 +43,8 @@ export interface CardCreationResult {
 
 export function getNewUnitTemplate(
   parameters: CardCreationParameters,
-  spend = true
+  spend = true,
+  characterKey = 'player'
 ): CardCreationResult | null {
   if (!parameters.resources) {
     parameters.resources = [];
@@ -49,14 +52,15 @@ export function getNewUnitTemplate(
   if (spend && !spendResources(parameters.resources)) {
     return null;
   }
-  const bonuses = getCardCreationBonuses(parameters.resources);
-  const prunedParams = limitParametersToSkills(parameters);
-  const { template, bonusBudget } = getUnitTemplate(prunedParams, bonuses);
+  const character = getActingCharacter(characterKey);
+  const bonuses = getCardCreationBonuses(parameters.resources, characterKey);
+  const prunedParams = limitParametersToSkills(parameters, character);
+  const { template, bonusBudget } = getUnitTemplate(prunedParams, bonuses, character);
   return { template, bonusBudget, learningChance: bonuses.learningChance };
 }
 
-export function invokeUnit(parameters: CardCreationParameters): string {
-  const result = getNewUnitTemplate(parameters);
+export function invokeUnit(parameters: CardCreationParameters, characterKey = 'player'): string {
+  const result = getNewUnitTemplate(parameters, true, characterKey);
   if (!result) {
     return '';
   }
@@ -64,23 +68,32 @@ export function invokeUnit(parameters: CardCreationParameters): string {
   if (!template) {
     return '';
   }
-  learnUnitCard(template, learningChance, bonusBudget);
+  learnUnitCard(template, learningChance, bonusBudget, getActingCharacter(characterKey));
   return '';
 }
 
-export function conjureUnit(parameters: CardCreationResult): string {
-  learnUnitCard(parameters.template, parameters.learningChance, parameters.bonusBudget);
+export function conjureUnit(parameters: CardCreationResult, characterKey = 'player'): string {
+  learnUnitCard(
+    parameters.template,
+    parameters.learningChance,
+    parameters.bonusBudget,
+    getActingCharacter(characterKey)
+  );
   return '';
 }
 
-export function getConjurationOtions(parameters: CardCreationParameters): CardCreationResult[] {
-  const optionsCount = 2 + Math.floor(gs.player.craftingSkills.inspiration);
+export function getConjurationOtions(
+  parameters: CardCreationParameters,
+  characterKey = 'player'
+): CardCreationResult[] {
+  const character = getActingCharacter(characterKey);
+  const optionsCount = 2 + Math.floor(character.craftingSkills.inspiration);
   if (!spendResources(parameters.resources ?? [])) {
     return [];
   }
   const options: CardCreationResult[] = [];
   for (let i = 0; i < optionsCount; i++) {
-    const result = getNewUnitTemplate(parameters, false);
+    const result = getNewUnitTemplate(parameters, false, characterKey);
     if (result) {
       options.push(result);
     }
@@ -88,9 +101,12 @@ export function getConjurationOtions(parameters: CardCreationParameters): CardCr
   return options;
 }
 
-function limitParametersToSkills(parameters: CardCreationParameters): CardCreationParameters {
-  const knownColors = gs.player.craftingKnowledge.colors;
-  const knownKeywords = gs.player.craftingKnowledge.keywords;
+function limitParametersToSkills(
+  parameters: CardCreationParameters,
+  character: Character
+): CardCreationParameters {
+  const knownColors = character.craftingKnowledge.colors;
+  const knownKeywords = character.craftingKnowledge.keywords;
 
   let colors = parameters.colors?.filter((color) => knownColors?.[color]);
   if (!colors?.length) {
@@ -113,13 +129,15 @@ function limitParametersToSkills(parameters: CardCreationParameters): CardCreati
 }
 
 export function getCardCreationBonuses(
-  resources: { type: ResourceType; count: number }[]
+  resources: { type: ResourceType; count: number }[],
+  characterKey = 'player'
 ): CardCreationBonuses {
+  const character = getActingCharacter(characterKey);
   let learningChance = 0.1;
   let extraBudgetChance = 0;
   // skills bonuses
-  learningChance += gs.player.craftingSkills.inspiration * 0.1;
-  extraBudgetChance += gs.player.craftingSkills.mastery * 0.1;
+  learningChance += character.craftingSkills.inspiration * 0.1;
+  extraBudgetChance += character.craftingSkills.mastery * 0.1;
   // resources bonuses
   for (const resource of resources) {
     if (resource.type === ResourceType.MagicDust) {
@@ -132,15 +150,23 @@ export function getCardCreationBonuses(
   return { learningChance, extraBudgetChance };
 }
 
-function learnUnitCard(template: UnitCardTemplate, learningChance: number, bonusBudget: number) {
+function learnUnitCard(
+  template: UnitCardTemplate,
+  learningChance: number,
+  bonusBudget: number,
+  character: Character
+) {
   const learntKeywords: string[] = [];
   const improvedKeywords: string[] = [];
-  // add card's keywords to player's known keywords
+  const isPlayer = character.key === gs.player.key;
+  const subject = isPlayer ? 'You' : character.name;
+  const possessive = isPlayer ? 'Your' : `${character.name}'s`;
+  // add card's keywords to character's known keywords
   if (template.keywords && Math.random() < learningChance) {
-    if (!gs.player.craftingKnowledge.keywords) {
-      gs.player.craftingKnowledge.keywords = {};
+    if (!character.craftingKnowledge.keywords) {
+      character.craftingKnowledge.keywords = {};
     }
-    const known = gs.player.craftingKnowledge.keywords;
+    const known = character.craftingKnowledge.keywords;
     for (const keyword of Object.keys(template.keywords) as (keyof UnitKeywords)[]) {
       const name = formatKeywordName(keyword);
       if (known[keyword] === undefined) {
@@ -153,19 +179,21 @@ function learnUnitCard(template: UnitCardTemplate, learningChance: number, bonus
     }
   }
   // add card to collection
-  gs.player.collection.push(template);
+  character.collection.push(template);
   const parts: string[] = [];
   if (learntKeywords.length) {
-    parts.push(`You learnt ${joinKeywordNames(learntKeywords)}`);
+    parts.push(`${subject} learnt ${joinKeywordNames(learntKeywords)}`);
   }
   if (improvedKeywords.length) {
-    parts.push(`You improved ${joinKeywordNames(improvedKeywords)}`);
+    parts.push(`${subject} improved ${joinKeywordNames(improvedKeywords)}`);
   }
   // narrate
   const learnt = parts.length ? `${parts.join('. ')}.` : '';
-  let text = learnt ? `You created ${template.name}. ${learnt}` : `You created ${template.name}.`;
+  let text = learnt
+    ? `${subject} created ${template.name}. ${learnt}`
+    : `${subject} created ${template.name}.`;
   if (bonusBudget) {
-    text += ` Your mastery granted it ${bonusBudget} bonus budget.`;
+    text += ` ${possessive} mastery granted it ${bonusBudget} bonus budget.`;
   }
   narrateCardConjured(template.id, text);
 }
@@ -186,7 +214,8 @@ function joinKeywordNames(names: string[]): string {
 
 function getUnitTemplate(
   parameters: CardCreationParameters,
-  bonuses: CardCreationBonuses
+  bonuses: CardCreationBonuses,
+  character: Character
 ): {
   template: UnitCardTemplate;
   bonusBudget: number;
@@ -194,7 +223,7 @@ function getUnitTemplate(
   const flavorTemplates = loadFlavorTemplates();
 
   // 1. create card template based on parameters (randomize rest)
-  const cardBase = buildUnitCard(parameters);
+  const cardBase = buildUnitCard(parameters, character);
   // 2. get budget for card
   const sureMastery = Math.floor(bonuses.extraBudgetChance);
   const extraBudget = Math.random() < bonuses.extraBudgetChance - sureMastery ? 1 : 0;

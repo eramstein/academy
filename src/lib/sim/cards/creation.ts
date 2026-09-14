@@ -2,6 +2,7 @@ import {
   CardColor,
   CardType,
   UnitType,
+  type Character,
   type UnitCardTemplate,
   type UnitKeywords,
 } from '@/lib/_model';
@@ -19,8 +20,11 @@ import { KEYWORD_KEYS, NUMERIC_KEYWORDS, keywordConfig } from './keywords';
 type UnitIdentityKeys = 'id' | 'cost' | 'name' | 'imageFileName';
 export type PartialConjuredUnit = Omit<UnitCardTemplate, UnitIdentityKeys>;
 
-export function buildUnitCard(parameters: CardCreationParameters): PartialConjuredUnit {
-  const card = getRandomUnitCardTemplate(parameters.colors, isConjuration(parameters));
+export function buildUnitCard(
+  parameters: CardCreationParameters,
+  character: Character = gs.player
+): PartialConjuredUnit {
+  const card = getRandomUnitCardTemplate(parameters.colors, isConjuration(parameters), character);
   if (isInvocation(parameters)) {
     card.keywords = {};
     card.abilities = [];
@@ -53,7 +57,8 @@ function isConjuration(parameters: CardCreationParameters): boolean {
 
 function getRandomUnitCardTemplate(
   colors?: CardColor[],
-  isConjuration: boolean = true
+  isConjuration: boolean = true,
+  character: Character = gs.player
 ): PartialConjuredUnit {
   const cardColors = colors?.length
     ? colors.map((color) => ({ color, count: 1 }))
@@ -67,7 +72,8 @@ function getRandomUnitCardTemplate(
     retaliate,
     keywords: randomKeywords(
       cardColors.map((entry) => entry.color),
-      isConjuration
+      isConjuration,
+      character
     ),
     unitTypes: randomUnitTypes(cardColors.map((entry) => entry.color)),
   };
@@ -120,12 +126,16 @@ function allowedUnitTypesForColors(colors: CardColor[]): UnitType[] {
   );
 }
 
-function randomKeywords(colors: CardColor[], isConjuration: boolean): UnitKeywords {
+function randomKeywords(
+  colors: CardColor[],
+  isConjuration: boolean,
+  character: Character
+): UnitKeywords {
   const keywords: UnitKeywords = {};
   const colorBonus = combinedKeywordPreferences(colors);
   // if it's a conjuration we focus on new keywords
   const keywordsPool = isConjuration
-    ? KEYWORD_KEYS.filter((key) => !gs.player.craftingKnowledge.keywords?.[key])
+    ? KEYWORD_KEYS.filter((key) => !character.craftingKnowledge.keywords?.[key])
     : KEYWORD_KEYS;
   const weightedKeys = keywordsPool
     .filter((key) => keywords[key] === undefined)

@@ -162,19 +162,20 @@ export interface Character {
   decks: Deck[];
   collection: CardTemplate[];
   resources: Record<ResourceType, number>;
+  craftingKnowledge: CardKnowledge;
+  craftingSkills: CardCraftingSkills;
 }
 
 export interface Player extends Character {
   maxFocus: number;
   focus: number;
-  craftingKnowledge: CardKnowledge;
-  craftingSkills: CardCraftingSkills;
 }
 
 export interface Npc extends Character {
   gender: CharacterGender;
   traits: Partial<Record<CharacterTrait, boolean>>;
   school?: SchoolName;
+  favoriteColors: CardColor[];
   relationProgress: {
     friendship: number;
     respect: number;

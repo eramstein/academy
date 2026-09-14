@@ -1,6 +1,8 @@
-import { ActionType, ClassType, isUnitCard, type Action } from '../_model';
+import { ActionType, ClassType, isUnitCard, SchoolName, type Action } from '../_model';
 import { isClassActivity } from '../_model/type-lookup-sim';
 import { gs } from '../_state';
+import { getRandomFromArray } from '../_utils/random';
+import { conjureUnit, getConjurationOtions } from './actions/artificery';
 import { getCurrentScheduledActivity } from './schedule';
 
 export function getLessonActions(): Action[] {
@@ -37,6 +39,7 @@ export function getLessonActions(): Action[] {
   }
 
   if (currentActivity.classType === ClassType.Artificery) {
+    makeAllNpcsConjure();
     lessons.push({
       label: 'Conjure',
       actionType: ActionType.Conjure,
@@ -58,4 +61,24 @@ export function getLessonActions(): Action[] {
     });
   }
   return lessons;
+}
+
+function makeAllNpcsConjure() {
+  for (const character of Object.values(gs.characters)) {
+    if (character.school === SchoolName.Academy) {
+      const options = getConjurationOtions(
+        {
+          resources: [],
+        },
+        character.key
+      );
+      if (options.length === 0) {
+        continue;
+      }
+      const result = getRandomFromArray(options);
+      conjureUnit(result, character.key);
+      character.collection.push(result.template);
+      character.decks[0]!.cards.push(result.template);
+    }
+  }
 }

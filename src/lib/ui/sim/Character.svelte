@@ -3,6 +3,7 @@
   import { SubscriptionType } from '@/lib/_model/enums-sim';
   import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import Attributes from './Attributes.svelte';
+  import CardCrafting from './characters/CardCrafting.svelte';
   import CharacterIdentity from './characters/CharacterIdentity.svelte';
 
   let { character }: { character: CharacterModel } = $props();
@@ -141,6 +142,8 @@
           </ul>
         </section>
       </div>
+
+      <CardCrafting {character} />
     </div>
   </div>
 </div>
