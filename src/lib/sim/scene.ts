@@ -47,6 +47,12 @@ export function startScene() {
   console.log('nextScene', currentScheduledActivity);
   if (currentScheduledActivity) {
     gs.player.placeKey = currentScheduledActivity.placeKey;
+    currentScheduledActivity.participants.forEach((participant) => {
+      if (participant === gs.player.key) {
+        return;
+      }
+      gs.characters[participant].placeKey = currentScheduledActivity.placeKey;
+    });
     setSceneEvents();
   } else {
     gs.scene.selectingNextPlace = true;

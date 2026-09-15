@@ -215,5 +215,51 @@
     "optionTemplates": [],
     "triggersOnce": true,
     "characterArc": "molly"
+  },
+  {
+    "key": "emma-1",
+    "text": "Emma asks you out",
+    "triggers": [
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "love",
+          "value": 1
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept",
+        "effectsTemplates": [
+          {
+            "effectTemplate": "scheduleActivity",
+            "args": {
+              "activity": {
+                "type": "date",
+                "participants": [
+                  "emma"
+                ],
+                "placeKey": "cafeteria",
+                "day": 1,
+                "period": "evening"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "text": "Decline"
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "emma"
   }
 ]

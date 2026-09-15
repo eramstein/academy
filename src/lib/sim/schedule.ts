@@ -1,8 +1,9 @@
 import type { ScheduledActivity } from '../_model';
 import { gs } from '../_state';
 
-export function scheduleActivity(activity: ScheduledActivity) {
+export function scheduleActivity(activity: ScheduledActivity): string {
   gs.scheduledActivities.push(activity);
+  return `You have scheduled an activity for ${activity.day} at ${activity.period}.`;
 }
 
 export function getCurrentScheduledActivity() {

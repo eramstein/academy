@@ -129,6 +129,7 @@ export interface ScheduledActivity {
   placeKey: string;
   day: number;
   period: DayPeriod;
+  jobId?: string;
 }
 
 export interface ClassActivity extends ScheduledActivity {
@@ -164,6 +165,15 @@ export interface Character {
   resources: Record<ResourceType, number>;
   craftingKnowledge: CardKnowledge;
   craftingSkills: CardCraftingSkills;
+  jobs: Job[];
+}
+
+export interface Job {
+  id: string;
+  name: string;
+  description: string;
+  payPerActivity: number;
+  employerKey: string;
 }
 
 export interface Player extends Character {

@@ -8,6 +8,7 @@ export enum EventEffectType {
   GetDeck = 'get_deck',
   Subscribe = 'subscribe',
   AddResource = 'add_resource',
+  ScheduleActivity = 'schedule_activity',
 }
 
 export enum ActionType {
@@ -37,6 +38,8 @@ export enum ActivityType {
   Class = 'class',
   Work = 'work',
   Social = 'social',
+  Date = 'date',
+  Training = 'training',
 }
 
 export enum ClassType {

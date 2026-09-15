@@ -50,6 +50,7 @@ export const defaultGameState: GameState = {
       efficiency: 0,
       inspiration: 0,
     },
+    jobs: [],
   },
   places: {
     ...PLACES,

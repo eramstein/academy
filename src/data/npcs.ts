@@ -33,6 +33,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
       efficiency: 0,
       inspiration: 0,
     },
+    jobs: [],
   };
 }
 
@@ -161,5 +162,23 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Green],
+  },
+  lombard: {
+    ...createDefaultNpc(),
+    key: 'lombard',
+    name: 'Professor Lombard',
+    placeKey: 'artificery-room',
+    attributes: { dexterity: 11, intelligence: 19, vitality: 10, charisma: 15, aura: 18 },
+    traits: { [CharacterTrait.Grumpy]: true },
+    gender: CharacterGender.Female,
+  },
+  glutzenbaum: {
+    ...createDefaultNpc(),
+    key: 'glutzenbaum',
+    name: 'Professor Glutzenbaum',
+    placeKey: 'enchanting-room',
+    attributes: { dexterity: 8, intelligence: 15, vitality: 13, charisma: 16, aura: 20 },
+    traits: { [CharacterTrait.Friendly]: true },
+    gender: CharacterGender.Male,
   },
 };
