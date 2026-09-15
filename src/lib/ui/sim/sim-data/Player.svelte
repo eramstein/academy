@@ -43,6 +43,15 @@
     return type.replace(/_/g, ' ');
   }
 
+  function characterName(characterKey: string): string {
+    if (characterKey === player.key) return player.name;
+    return gs.characters[characterKey]?.name ?? characterKey;
+  }
+
+  function placeName(placeKey: string): string {
+    return gs.places[placeKey]?.name ?? placeKey;
+  }
+
   function iconUrl(name: string) {
     return getUiIconPath(name);
   }
@@ -111,6 +120,34 @@
             </li>
           {/each}
         </ul>
+      </section>
+
+      <section class="section">
+        <h3 class="section-title">
+          {@render icon('handshake')}
+          Jobs
+        </h3>
+        {@render divider()}
+        {#if player.jobs.length === 0}
+          <p class="empty">None yet.</p>
+        {:else}
+          <ul class="kv-list">
+            {#each player.jobs as job (job.id)}
+              <li class="job-row">
+                <div class="kv-row">
+                  <span class="kv-name">{job.name}</span>
+                  <span class="kv-value">{job.payPerActivity}g / activity</span>
+                </div>
+                <p class="job-meta">
+                  {job.jobType} · {characterName(job.employerKey)} · {placeName(job.placeKey)}
+                </p>
+                {#if job.description}
+                  <p class="job-desc">{job.description}</p>
+                {/if}
+              </li>
+            {/each}
+          </ul>
+        {/if}
       </section>
 
       <CardCrafting character={player} />
@@ -308,5 +345,22 @@
   .sub-days {
     color: var(--color-muted-label);
     font-variant-numeric: tabular-nums;
+  }
+
+  .job-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .job-meta,
+  .job-desc {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-muted-label);
+  }
+
+  .job-meta {
+    text-transform: capitalize;
   }
 </style>

@@ -167,6 +167,9 @@
       onProgress={() => onProgress?.('auto')}
       onDone={() => onTextDone(entry)}
     />
+    {#if entry.gold}
+      {@render goldEarned(entry.gold)}
+    {/if}
     {#if entry.cardTemplates?.length}
       <div class="narration-cards">
         {#each entry.cardTemplates as card, i (`${card.id}-${i}`)}
@@ -235,6 +238,16 @@
       onProgress={() => onProgress?.('auto')}
       onDone={() => onTextDone(entry)}
     />
+  </div>
+{/snippet}
+
+{#snippet goldEarned(gold: number)}
+  {@const coinPath = uiIconPath('coin')}
+  <div class="gold-earned" aria-label={`Earned ${gold} gold`}>
+    <span class="tx-chip tx-gain">
+      <span class="tx-icon painted" style="--icon: url('{coinPath}')"></span>
+      <span class="tx-label">+{gold}</span>
+    </span>
   </div>
 {/snippet}
 
@@ -360,6 +373,13 @@
     margin: 0 0 0.65em;
   }
 
+  .gold-earned {
+    display: flex;
+    align-items: center;
+    margin: -0.5em 0 1.25em;
+    font-family: var(--font-narrative);
+  }
+
   .transaction-summary {
     display: flex;
     flex-wrap: wrap;
@@ -383,6 +403,11 @@
   .tx-item {
     color: #2f6b45;
     font-weight: 600;
+  }
+
+  .tx-gain {
+    color: var(--color-ink);
+    font-weight: 700;
   }
 
   .tx-icon {

@@ -13,6 +13,7 @@ export enum EventEffectType {
 }
 
 export enum ActionType {
+  PerformJob = 'perform_job',
   Invoke = 'invoke',
   Conjure = 'conjure',
   Augment = 'augment',
@@ -33,6 +34,7 @@ export enum NarrationType {
   NewPeriod = 'new_period',
   MatchResult = 'match_result',
   Transaction = 'transaction',
+  JobResult = 'job_result',
 }
 
 export enum ActivityType {

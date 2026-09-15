@@ -116,6 +116,7 @@ export interface Narration {
   characters?: string[];
   won?: boolean;
   transaction?: TransactionParameters;
+  gold?: number;
 }
 
 // First string is the word appearing in the text, second is id

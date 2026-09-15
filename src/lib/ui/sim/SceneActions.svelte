@@ -31,6 +31,7 @@
     [ActionType.Move]: 'boot',
     [ActionType.Transaction]: 'coin',
     [ActionType.Negotiate]: 'mug',
+    [ActionType.PerformJob]: 'coin',
   };
 
   const socializeIcons: Record<SocializeType, string> = {

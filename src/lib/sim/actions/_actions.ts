@@ -1,6 +1,7 @@
-import type { Action } from '@/lib/_model';
+import type { Action, Job } from '@/lib/_model';
 import { ActionType } from '@/lib/_model/enums-sim';
 import { gs } from '@/lib/_state';
+import { getJobActions, performJob } from '../jobs';
 import { getLessonActions } from '../lesson';
 import { narrateText } from '../narration';
 import { nextScene, setSceneEvents } from '../scene';
@@ -29,6 +30,8 @@ export function getPossibleActions(): Action[] {
   actions.push(...getSocializeActions());
   actions.push(...getLessonActions());
   actions.push(...getShopActions());
+  actions.push(...getJobActions());
+  console.log('actions', actions);
 
   // check if the number of actions is limited by period
   let filteredActions = actions.filter(
@@ -101,4 +104,5 @@ const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => s
     conjureUnit(parameters as CardCreationResult, parameters.characterKey ?? 'player'),
   [ActionType.Invoke]: (parameters) =>
     invokeUnit(parameters as CardCreationParameters, parameters.characterKey ?? 'player'),
+  [ActionType.PerformJob]: (parameters) => performJob(parameters.job as Job),
 };

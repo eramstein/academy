@@ -1,6 +1,6 @@
 import type { CardTemplate, DayPeriod } from '../_model';
 import { NarrationType } from '../_model/enums-sim';
-import type { AttributeCheck, Mentions, Narration } from '../_model/model-sim';
+import type { AttributeCheck, Job, Mentions, Narration } from '../_model/model-sim';
 import { gs } from '../_state';
 import type { TransactionParameters } from './actions';
 import { KEYWORD_KEYS } from './cards/keywords';
@@ -114,5 +114,14 @@ export function narrateTransaction(transaction: TransactionParameters) {
       .join(', ')}.`,
     type: NarrationType.Transaction,
     transaction: transaction,
+  });
+}
+
+export function narrateJobResult(job: Job, outcome: boolean, gold: number) {
+  narrate({
+    id: crypto.randomUUID(),
+    text: outcome ? `You succeeded at ${job.name}.` : `You failed at ${job.name}.`,
+    type: NarrationType.JobResult,
+    gold,
   });
 }
