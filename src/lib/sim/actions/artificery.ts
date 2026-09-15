@@ -158,9 +158,6 @@ function learnUnitCard(
 ) {
   const learntKeywords: string[] = [];
   const improvedKeywords: string[] = [];
-  const isPlayer = character.key === gs.player.key;
-  const subject = isPlayer ? 'You' : character.name;
-  const possessive = isPlayer ? 'Your' : `${character.name}'s`;
   // add card's keywords to character's known keywords
   if (template.keywords && Math.random() < learningChance) {
     if (!character.craftingKnowledge.keywords) {
@@ -180,20 +177,30 @@ function learnUnitCard(
   }
   // add card to collection
   character.collection.push(template);
+  if (character.key === gs.player.key) {
+    narrateUnitLearnt(template, bonusBudget, learntKeywords, improvedKeywords);
+  }
+}
+
+function narrateUnitLearnt(
+  template: UnitCardTemplate,
+  bonusBudget: number,
+  learntKeywords: string[],
+  improvedKeywords: string[]
+) {
   const parts: string[] = [];
   if (learntKeywords.length) {
-    parts.push(`${subject} learnt ${joinKeywordNames(learntKeywords)}`);
+    parts.push(`You learnt ${joinKeywordNames(learntKeywords)}`);
   }
   if (improvedKeywords.length) {
-    parts.push(`${subject} improved ${joinKeywordNames(improvedKeywords)}`);
+    parts.push(`You improved ${joinKeywordNames(improvedKeywords)}`);
   }
-  // narrate
   const learnt = parts.length ? `${parts.join('. ')}.` : '';
   let text = learnt
-    ? `${subject} created ${template.name}. ${learnt}`
-    : `${subject} created ${template.name}.`;
+    ? `You created ${template.name}. ${learnt}`
+    : `You created ${template.name}.`;
   if (bonusBudget) {
-    text += ` ${possessive} mastery granted it ${bonusBudget} bonus budget.`;
+    text += ` Your mastery granted it ${bonusBudget} bonus budget.`;
   }
   narrateCardConjured(template.id, text);
 }

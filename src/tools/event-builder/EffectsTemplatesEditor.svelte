@@ -4,8 +4,11 @@
     ActivityType,
     ClassType,
     DayPeriod,
+    JobType,
     ResourceType,
     type EventEffectsTemplate,
+    type Job,
+    type Schedule,
     type ScheduledActivity,
   } from '@/lib/_model';
   import { SceneEffectTemplates } from '@/lib/sim/effects/_templates';
@@ -29,22 +32,19 @@
   const resourceTypes = Object.values(ResourceType);
   const activityTypes = Object.values(ActivityType);
   const classTypes = Object.values(ClassType);
+  const jobTypes = Object.values(JobType);
   const periods = Object.values(DayPeriod);
   const placeKeys = Object.keys(PLACES);
   const weekDays = WEEK_DAYS.map((name, index) => ({ name, value: index + 1 }));
 
+  type ActivityArgs = Omit<ScheduledActivity, 'day' | 'period'> & { classType?: ClassType };
+
   type ScheduleActivityArgs = {
-    activity: ScheduledActivity & { classType?: ClassType };
-    date?: {
-      day?: number;
-      period?: DayPeriod;
-    };
-    recurrence?: {
-      maxCount?: number;
-      daysOfWeek?: number[];
-      period?: DayPeriod;
-    };
+    activity: ActivityArgs;
+    schedule: Schedule;
   };
+
+  type JobArgs = { job: Omit<Job, 'id'> };
 
   function defaultScheduleArgs(): ScheduleActivityArgs {
     return {
@@ -52,12 +52,12 @@
         type: ActivityType.Social,
         participants: ['player'],
         placeKey: placeKeys[0] ?? '',
-        day: 0,
-        period: DayPeriod.Evening,
       },
-      date: {
-        day: 0,
-        period: DayPeriod.Evening,
+      schedule: {
+        date: {
+          day: 0,
+          period: DayPeriod.Evening,
+        },
       },
     };
   }
@@ -70,6 +70,26 @@
     };
   }
 
+  function defaultJobArgs(): JobArgs {
+    return {
+      job: {
+        jobType: JobType.Mentoring,
+        name: '',
+        description: '',
+        payPerActivity: 10,
+        employerKey: '',
+        placeKey: placeKeys[0] ?? '',
+        schedule: {
+          date: {
+            day: 0,
+            period: DayPeriod.Afternoon,
+          },
+          recurrence: { ...defaultRecurrence(), period: DayPeriod.Afternoon },
+        },
+      },
+    };
+  }
+
   function defaultArgs(effectTemplate: string): Record<string, any> {
     switch (effectTemplate) {
       case 'getDeck':
@@ -78,6 +98,8 @@
         return { resourceType: ResourceType.MagicDust, amount: 1 };
       case 'scheduleActivity':
         return defaultScheduleArgs();
+      case 'getJob':
+        return defaultJobArgs();
       default:
         return {};
     }
@@ -112,44 +134,126 @@
     );
   }
 
-  function scheduleArgs(effect: EventEffectsTemplate): ScheduleActivityArgs {
+  function normalizeScheduleArgs(raw: Record<string, any>): ScheduleActivityArgs {
     const defaults = defaultScheduleArgs();
-    const activity = {
-      ...defaults.activity,
-      ...(effect.args.activity ?? {}),
-    };
+    const legacyDate = raw.date;
+    const legacyRecurrence = raw.recurrence;
+    const { day: _day, period: _period, ...activityRest } = raw.activity ?? {};
     return {
-      activity,
-      date: {
-        ...defaults.date,
-        ...(effect.args.date ?? {}),
+      activity: {
+        ...defaults.activity,
+        ...activityRest,
       },
-      recurrence: effect.args.recurrence,
+      schedule: {
+        ...defaults.schedule,
+        ...(raw.schedule ?? {}),
+        date: {
+          ...defaults.schedule.date,
+          ...(legacyDate ?? {}),
+          ...(raw.schedule?.date ?? {}),
+        },
+        recurrence: raw.schedule?.recurrence ?? legacyRecurrence,
+      },
     };
+  }
+
+  function scheduleArgs(effect: EventEffectsTemplate): ScheduleActivityArgs {
+    return normalizeScheduleArgs(effect.args);
+  }
+
+  function withoutEmptyRecurrence(schedule: Schedule): Schedule {
+    const next: Schedule = { ...schedule };
+    if (!next.recurrence) {
+      delete next.recurrence;
+    }
+    return next;
+  }
+
+  function writeScheduleArgs(index: number, next: ScheduleActivityArgs) {
+    update(
+      effects.map((effect, i) =>
+        i === index
+          ? {
+              ...effect,
+              args: {
+                activity: next.activity,
+                schedule: withoutEmptyRecurrence(next.schedule),
+              },
+            }
+          : effect
+      )
+    );
+  }
+
+  function normalizeJobArgs(raw: Record<string, any>): JobArgs {
+    const defaults = defaultJobArgs();
+    return {
+      job: {
+        ...defaults.job,
+        ...(raw.job ?? {}),
+        schedule: {
+          ...(raw.job?.schedule ?? defaults.job.schedule),
+          date: {
+            ...defaults.job.schedule.date,
+            ...(raw.job?.schedule?.date ?? {}),
+          },
+        },
+      },
+    };
+  }
+
+  function jobArgs(effect: EventEffectsTemplate): JobArgs {
+    return normalizeJobArgs(effect.args);
+  }
+
+  function writeJobArgs(index: number, next: JobArgs) {
+    const job = { ...next.job, schedule: withoutEmptyRecurrence(next.job.schedule) };
+    update(effects.map((effect, i) => (i === index ? { ...effect, args: { job } } : effect)));
+  }
+
+  function setJobField(index: number, key: keyof Omit<Job, 'id'>, value: unknown) {
+    const current = jobArgs(effects[index]);
+    writeJobArgs(index, { job: { ...current.job, [key]: value } });
+  }
+
+  // The schedule controls are shared, so read and write it through the owning template's args.
+  function currentSchedule(index: number): Schedule {
+    const effect = effects[index];
+    return effect.effectTemplate === 'getJob'
+      ? jobArgs(effect).job.schedule
+      : scheduleArgs(effect).schedule;
+  }
+
+  function setSchedule(index: number, schedule: Schedule) {
+    const effect = effects[index];
+    if (effect.effectTemplate === 'getJob') {
+      writeJobArgs(index, { job: { ...jobArgs(effect).job, schedule } });
+    } else {
+      writeScheduleArgs(index, { ...scheduleArgs(effect), schedule });
+    }
   }
 
   function setDateField(index: number, key: 'day' | 'period', value: unknown) {
-    const current = scheduleArgs(effects[index]);
-    setArg(index, 'date', {
-      ...(current.date ?? { day: 0, period: DayPeriod.Evening }),
-      [key]: value,
+    const schedule = currentSchedule(index);
+    setSchedule(index, {
+      ...schedule,
+      date: {
+        ...(schedule.date ?? { day: 0, period: DayPeriod.Evening }),
+        [key]: value,
+      },
     });
   }
 
-  function setActivityField(
-    index: number,
-    key: keyof ScheduleActivityArgs['activity'],
-    value: unknown
-  ) {
+  function setActivityField(index: number, key: keyof ActivityArgs, value: unknown) {
     const current = scheduleArgs(effects[index]);
-    const activity = { ...current.activity, [key]: value };
+    const activity = { ...current.activity, [key]: value } as ActivityArgs;
     if (key === 'type' && value !== ActivityType.Class) {
       delete activity.classType;
     }
     if (key === 'type' && value === ActivityType.Class && !activity.classType) {
       activity.classType = ClassType.Artificery;
     }
-    setArg(index, 'activity', activity);
+    writeScheduleArgs(index, { ...current, activity });
   }
 
   function setParticipants(index: number, raw: string) {
@@ -161,17 +265,15 @@
   }
 
   function setRecurring(index: number, enabled: boolean) {
-    const current = scheduleArgs(effects[index]);
+    const schedule = currentSchedule(index);
     if (enabled) {
-      setArg(index, 'recurrence', current.recurrence ?? defaultRecurrence());
+      setSchedule(index, {
+        ...schedule,
+        recurrence: schedule.recurrence ?? defaultRecurrence(),
+      });
     } else {
-      update(
-        effects.map((effect, i) => {
-          if (i !== index) return effect;
-          const { recurrence: _, ...args } = effect.args;
-          return { ...effect, args };
-        })
-      );
+      const { recurrence: _, ...rest } = schedule;
+      setSchedule(index, rest);
     }
   }
 
@@ -180,16 +282,18 @@
     key: 'maxCount' | 'daysOfWeek' | 'period',
     value: unknown
   ) {
-    const current = scheduleArgs(effects[index]);
-    setArg(index, 'recurrence', {
-      ...(current.recurrence ?? defaultRecurrence()),
-      [key]: value,
+    const schedule = currentSchedule(index);
+    setSchedule(index, {
+      ...schedule,
+      recurrence: {
+        ...(schedule.recurrence ?? defaultRecurrence()),
+        [key]: value,
+      },
     });
   }
 
   function toggleDayOfWeek(index: number, dayOfWeek: number) {
-    const current = scheduleArgs(effects[index]);
-    const days = [...(current.recurrence?.daysOfWeek ?? [])];
+    const days = [...(currentSchedule(index).recurrence?.daysOfWeek ?? [])];
     const next = days.includes(dayOfWeek)
       ? days.filter((day) => day !== dayOfWeek)
       : [...days, dayOfWeek].sort((a, b) => a - b);
@@ -213,15 +317,15 @@
   {:else}
     <ul class="stack">
       {#each effects as effect, i (i)}
-        {@const schedule = effect.effectTemplate === 'scheduleActivity' ? scheduleArgs(effect) : null}
+        {@const args = effect.effectTemplate === 'scheduleActivity' ? scheduleArgs(effect) : null}
+        {@const job = effect.effectTemplate === 'getJob' ? jobArgs(effect) : null}
         <li class="effect-item">
           <div class="effect-row">
             <select
               class="input template"
               value={effect.effectTemplate}
               aria-label="Effect template"
-              onchange={(e) =>
-                setEffectTemplate(i, (e.currentTarget as HTMLSelectElement).value)}
+              onchange={(e) => setEffectTemplate(i, (e.currentTarget as HTMLSelectElement).value)}
             >
               {#each effectNames as name (name)}
                 <option value={name}>{name}</option>
@@ -234,8 +338,7 @@
                 value={effect.args.deckKey ?? ''}
                 placeholder="deck key"
                 aria-label="Deck key"
-                oninput={(e) =>
-                  setArg(i, 'deckKey', (e.currentTarget as HTMLInputElement).value)}
+                oninput={(e) => setArg(i, 'deckKey', (e.currentTarget as HTMLInputElement).value)}
               />
             {:else if effect.effectTemplate === 'addResource'}
               <select
@@ -268,11 +371,11 @@
             >
           </div>
 
-          {#if schedule}
+          {#if args}
             <div class="schedule-fields">
               <select
                 class="input"
-                value={schedule.activity.type}
+                value={args.activity.type}
                 aria-label="Activity type"
                 onchange={(e) =>
                   setActivityField(i, 'type', (e.currentTarget as HTMLSelectElement).value)}
@@ -282,10 +385,10 @@
                 {/each}
               </select>
 
-              {#if schedule.activity.type === ActivityType.Class}
+              {#if args.activity.type === ActivityType.Class}
                 <select
                   class="input"
-                  value={schedule.activity.classType ?? ClassType.Artificery}
+                  value={args.activity.classType ?? ClassType.Artificery}
                   aria-label="Class type"
                   onchange={(e) =>
                     setActivityField(i, 'classType', (e.currentTarget as HTMLSelectElement).value)}
@@ -298,7 +401,7 @@
 
               <select
                 class="input"
-                value={schedule.activity.placeKey}
+                value={args.activity.placeKey}
                 aria-label="Place"
                 onchange={(e) =>
                   setActivityField(i, 'placeKey', (e.currentTarget as HTMLSelectElement).value)}
@@ -310,85 +413,84 @@
 
               <input
                 class="input participants"
-                value={schedule.activity.participants.join(', ')}
+                value={args.activity.participants.join(', ')}
                 placeholder="participants (comma-separated)"
                 aria-label="Participants"
                 oninput={(e) => setParticipants(i, (e.currentTarget as HTMLInputElement).value)}
               />
 
+              {@render scheduleFields(i, args.schedule)}
+            </div>
+          {/if}
+
+          {#if job}
+            <div class="schedule-fields">
+              <select
+                class="input"
+                value={job.job.jobType}
+                aria-label="Job type"
+                onchange={(e) =>
+                  setJobField(i, 'jobType', (e.currentTarget as HTMLSelectElement).value)}
+              >
+                {#each jobTypes as type (type)}
+                  <option value={type}>{type}</option>
+                {/each}
+              </select>
+
+              <input
+                class="input arg"
+                value={job.job.name}
+                placeholder="job name"
+                aria-label="Job name"
+                oninput={(e) => setJobField(i, 'name', (e.currentTarget as HTMLInputElement).value)}
+              />
+
+              <input
+                class="input arg"
+                value={job.job.employerKey}
+                placeholder="employer key"
+                aria-label="Employer key"
+                oninput={(e) =>
+                  setJobField(i, 'employerKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+
+              <select
+                class="input"
+                value={job.job.placeKey}
+                aria-label="Place"
+                onchange={(e) =>
+                  setJobField(i, 'placeKey', (e.currentTarget as HTMLSelectElement).value)}
+              >
+                {#each placeKeys as placeKey (placeKey)}
+                  <option value={placeKey}>{PLACES[placeKey].name}</option>
+                {/each}
+              </select>
+
               <input
                 class="input narrow"
                 type="number"
                 min="0"
-                value={schedule.date?.day ?? 0}
-                aria-label="Days from now"
-                title="Days from now"
+                value={job.job.payPerActivity}
+                aria-label="Pay per activity"
+                title="Gold per work activity"
                 oninput={(e) =>
-                  setDateField(i, 'day', Number((e.currentTarget as HTMLInputElement).value))}
+                  setJobField(
+                    i,
+                    'payPerActivity',
+                    Number((e.currentTarget as HTMLInputElement).value)
+                  )}
               />
-              {#if !schedule.recurrence}
-                <select
-                  class="input"
-                  value={schedule.date?.period ?? DayPeriod.Evening}
-                  aria-label="Period"
-                  onchange={(e) =>
-                    setDateField(i, 'period', (e.currentTarget as HTMLSelectElement).value)}
-                >
-                  {#each periods as period (period)}
-                    <option value={period}>{period}</option>
-                  {/each}
-                </select>
-              {/if}
 
-              <label class="check">
-                <input
-                  type="checkbox"
-                  checked={!!schedule.recurrence}
-                  onchange={(e) =>
-                    setRecurring(i, (e.currentTarget as HTMLInputElement).checked)}
-                />
-                Recurring
-              </label>
+              <input
+                class="input participants"
+                value={job.job.description}
+                placeholder="description"
+                aria-label="Job description"
+                oninput={(e) =>
+                  setJobField(i, 'description', (e.currentTarget as HTMLInputElement).value)}
+              />
 
-              {#if schedule.recurrence}
-                <input
-                  class="input narrow"
-                  type="number"
-                  min="1"
-                  value={schedule.recurrence.maxCount ?? 24}
-                  aria-label="Max count"
-                  title="Max occurrences"
-                  oninput={(e) =>
-                    setRecurrenceField(
-                      i,
-                      'maxCount',
-                      Number((e.currentTarget as HTMLInputElement).value)
-                    )}
-                />
-                <select
-                  class="input"
-                  value={schedule.recurrence.period ?? schedule.date?.period ?? DayPeriod.Evening}
-                  aria-label="Recurrence period"
-                  onchange={(e) =>
-                    setRecurrenceField(i, 'period', (e.currentTarget as HTMLSelectElement).value)}
-                >
-                  {#each periods as period (period)}
-                    <option value={period}>{period}</option>
-                  {/each}
-                </select>
-                <div class="days" role="group" aria-label="Days of week">
-                  {#each weekDays as day (day.value)}
-                    <label class="check day">
-                      <input
-                        type="checkbox"
-                        checked={schedule.recurrence.daysOfWeek?.includes(day.value) ?? false}
-                        onchange={() => toggleDayOfWeek(i, day.value)}
-                      />
-                      {day.name.slice(0, 3)}
-                    </label>
-                  {/each}
-                </div>
-              {/if}
+              {@render scheduleFields(i, job.job.schedule)}
             </div>
           {/if}
         </li>
@@ -396,6 +498,75 @@
     </ul>
   {/if}
 </div>
+
+{#snippet scheduleFields(i: number, schedule: Schedule)}
+  <input
+    class="input narrow"
+    type="number"
+    min="0"
+    value={schedule.date?.day ?? 0}
+    aria-label="Days from now"
+    title="Days from now"
+    oninput={(e) => setDateField(i, 'day', Number((e.currentTarget as HTMLInputElement).value))}
+  />
+  {#if !schedule.recurrence}
+    <select
+      class="input"
+      value={schedule.date?.period ?? DayPeriod.Evening}
+      aria-label="Period"
+      onchange={(e) => setDateField(i, 'period', (e.currentTarget as HTMLSelectElement).value)}
+    >
+      {#each periods as period (period)}
+        <option value={period}>{period}</option>
+      {/each}
+    </select>
+  {/if}
+
+  <label class="check">
+    <input
+      type="checkbox"
+      checked={!!schedule.recurrence}
+      onchange={(e) => setRecurring(i, (e.currentTarget as HTMLInputElement).checked)}
+    />
+    Recurring
+  </label>
+
+  {#if schedule.recurrence}
+    <input
+      class="input narrow"
+      type="number"
+      min="1"
+      value={schedule.recurrence.maxCount ?? 24}
+      aria-label="Max count"
+      title="Max occurrences"
+      oninput={(e) =>
+        setRecurrenceField(i, 'maxCount', Number((e.currentTarget as HTMLInputElement).value))}
+    />
+    <select
+      class="input"
+      value={schedule.recurrence.period ?? schedule.date?.period ?? DayPeriod.Evening}
+      aria-label="Recurrence period"
+      onchange={(e) =>
+        setRecurrenceField(i, 'period', (e.currentTarget as HTMLSelectElement).value)}
+    >
+      {#each periods as period (period)}
+        <option value={period}>{period}</option>
+      {/each}
+    </select>
+    <div class="days" role="group" aria-label="Days of week">
+      {#each weekDays as day (day.value)}
+        <label class="check day">
+          <input
+            type="checkbox"
+            checked={schedule.recurrence.daysOfWeek?.includes(day.value) ?? false}
+            onchange={() => toggleDayOfWeek(i, day.value)}
+          />
+          {day.name.slice(0, 3)}
+        </label>
+      {/each}
+    </div>
+  {/if}
+{/snippet}
 
 <style>
   .effects-editor {

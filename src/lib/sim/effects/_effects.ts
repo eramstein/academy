@@ -2,6 +2,7 @@ import type { EventEffect } from '@/lib/_model';
 import { EventEffectType } from '@/lib/_model/enums-sim';
 import { narrateText } from '../narration';
 import { getDeck, type GetDeckParameters } from './decks';
+import { getJob, type GetJobParameters } from './jobs';
 import { addResource, type AddResourceParameters } from './resources';
 import { scheduleActivities, type ScheduleActivitiesParameters } from './schedule';
 import { subscribe, type TransactionSubscriptionParameters } from './subscribe';
@@ -18,4 +19,5 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.AddResource]: (parameters) => addResource(parameters as AddResourceParameters),
   [EventEffectType.ScheduleActivity]: (parameters) =>
     scheduleActivities(parameters as ScheduleActivitiesParameters),
+  [EventEffectType.GetJob]: (parameters) => getJob(parameters as GetJobParameters),
 };

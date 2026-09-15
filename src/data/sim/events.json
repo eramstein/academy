@@ -118,7 +118,7 @@
   },
   {
     "key": "molly-1",
-    "text": "Moly says \"yo take some stuff bro\".",
+    "text": "Moly approaches you and tells you she appreciated the way you made her feel welcome last time. She offers you a token of gratitude, pick your favorite.",
     "triggers": [
       {
         "triggerType": "relation_parameter",
@@ -189,13 +189,19 @@
   },
   {
     "key": "molly-3",
-    "text": "Molly is looking for coaching.",
+    "text": "Molly seeks you out with a thoughtful look. She says she has been watching how you carry yourself, and she respects the care you put into your work. She asks if you would take on a mentoring post with her at the library on Tuesday evenings, helping younger students find their footing.",
     "triggers": [
+      {
+        "triggerType": "previous_events",
+        "parameters": {
+          "molly-1": true
+        }
+      },
       {
         "triggerType": "relation_parameter",
         "parameters": {
           "characterKey": "molly",
-          "relationParameter": "friendship",
+          "relationParameter": "respect",
           "value": 1
         }
       },
@@ -204,15 +210,38 @@
         "parameters": {
           "characterKey": "molly"
         }
-      },
-      {
-        "triggerType": "previous_events",
-        "parameters": {
-          "molly-1": true
-        }
       }
     ],
-    "optionTemplates": [],
+    "optionTemplates": [
+      {
+        "text": "Accept",
+        "effectsTemplates": [
+          {
+            "effectTemplate": "getJob",
+            "args": {
+              "job": {
+                "jobType": "mentoring",
+                "name": "Library Mentoring",
+                "description": "Help younger students at the library under Molly's guidance.",
+                "payPerActivity": 10,
+                "employerKey": "molly",
+                "placeKey": "library",
+                "schedule": {
+                  "recurrence": {
+                    "maxCount": 12,
+                    "daysOfWeek": [2],
+                    "period": "evening"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "text": "Decline"
+      }
+    ],
     "triggersOnce": true,
     "characterArc": "molly"
   },
@@ -244,12 +273,14 @@
             "args": {
               "activity": {
                 "type": "date",
-                "participants": [
-                  "emma"
-                ],
-                "placeKey": "cafeteria",
-                "day": 1,
-                "period": "evening"
+                "participants": ["player", "emma"],
+                "placeKey": "cafeteria"
+              },
+              "schedule": {
+                "date": {
+                  "day": 0,
+                  "period": "evening"
+                }
               }
             }
           }

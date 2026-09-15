@@ -9,6 +9,7 @@ import type {
   ClassType,
   DayPeriod,
   EventEffectType,
+  JobType,
   NarrationType,
   ResourceType,
   SchoolName,
@@ -170,10 +171,13 @@ export interface Character {
 
 export interface Job {
   id: string;
+  jobType: JobType;
   name: string;
   description: string;
   payPerActivity: number;
   employerKey: string;
+  placeKey: string;
+  schedule: Schedule;
 }
 
 export interface Player extends Character {
@@ -234,4 +238,16 @@ export interface CardCraftingSkills {
   mastery: number;
   efficiency: number;
   inspiration: number;
+}
+
+export interface Schedule {
+  date?: {
+    day?: number;
+    period?: DayPeriod;
+  };
+  recurrence?: {
+    maxCount?: number;
+    daysOfWeek?: number[];
+    period?: DayPeriod;
+  };
 }

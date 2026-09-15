@@ -1,23 +1,16 @@
-import { DayPeriod, type ScheduledActivity } from '@/lib/_model';
+import { DayPeriod, type Schedule, type ScheduledActivity } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { scheduleActivity } from '../schedule';
 import { getWeekDay, WEEK_DAYS } from '../time';
 
 export interface ScheduleActivitiesParameters {
-  activity: ScheduledActivity;
-  date?: {
-    day?: number;
-    period?: DayPeriod;
-  };
-  recurrence?: {
-    maxCount?: number;
-    daysOfWeek?: number[];
-    period?: DayPeriod;
-  };
+  activity: Omit<ScheduledActivity, 'day' | 'period'>;
+  schedule?: Schedule;
 }
 
 export function scheduleActivities(parameters: ScheduleActivitiesParameters): string {
-  const { activity, date, recurrence } = parameters;
+  const { activity, schedule = {} } = parameters;
+  const { date, recurrence } = schedule;
   const activities: ScheduledActivity[] = [];
   const startDay = gs.time.day + (date?.day ?? 0);
   const datePeriod = date?.period ?? DayPeriod.Evening;

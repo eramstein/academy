@@ -14,11 +14,11 @@ export const SceneEffectTemplates: Record<string, (args: Record<string, any>) =>
       type: EventEffectType.ScheduleActivity,
       parameters: {
         activity: args.activity,
-        date: args.date,
-        recurrence: args.recurrence,
+        schedule: args.schedule,
       },
     },
   ],
+  getJob: (args) => [{ type: EventEffectType.GetJob, parameters: { job: args.job } }],
 };
 
 export function resolveEffectTemplates(templates: EventEffectsTemplate[]): EventEffect[] {

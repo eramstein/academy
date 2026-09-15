@@ -9,6 +9,7 @@ export enum EventEffectType {
   Subscribe = 'subscribe',
   AddResource = 'add_resource',
   ScheduleActivity = 'schedule_activity',
+  GetJob = 'get_job',
 }
 
 export enum ActionType {
@@ -83,4 +84,9 @@ export enum ResourceType {
   MagicDust = 'magic_dust',
   Mithril = 'mithril',
   Moxes = 'moxes',
+}
+
+export enum JobType {
+  Mentoring = 'mentoring',
+  Coaching = 'coaching',
 }
