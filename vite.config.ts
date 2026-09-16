@@ -42,9 +42,7 @@ export default defineConfig(({ command }) => ({
                   allCards.push(newCard);
                 }
 
-                allCards.sort((a: any, b: any) =>
-                  (a.name || a.id).localeCompare(b.name || b.id)
-                );
+                allCards.sort((a: any, b: any) => (a.name || a.id).localeCompare(b.name || b.id));
 
                 fs.writeFileSync(filePath, JSON.stringify(allCards, null, 2), 'utf-8');
                 sendJson(200, { success: true });
@@ -114,6 +112,13 @@ export default defineConfig(({ command }) => ({
     watch: {
       // Avoid full reloads when the event editor writes this file.
       ignored: ['**/src/data/sim/events.json'],
+    },
+    proxy: {
+      '/mistral-api': {
+        target: 'https://api.mistral.ai',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/mistral-api/, ''),
+      },
     },
   },
   resolve: {

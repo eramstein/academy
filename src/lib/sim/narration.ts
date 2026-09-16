@@ -1,3 +1,4 @@
+import { generateAttributeCheckNarration } from '@/lib/llm/prompts';
 import type { CardTemplate, DayPeriod } from '../_model';
 import { NarrationType } from '../_model/enums-sim';
 import type { AttributeCheck, Job, Mentions, Narration } from '../_model/model-sim';
@@ -50,12 +51,41 @@ export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
   gs.scene.narration = gs.scene.narration.filter(
     (narration) => narration.type !== NarrationType.AttributeCheck
   );
+  const id = crypto.randomUUID();
   narrate({
-    id: crypto.randomUUID(),
+    id,
     text: '',
     type: NarrationType.AttributeCheck,
     attributeCheck,
   });
+  void fillAttributeCheckNarration(id, attributeCheck);
+}
+
+async function fillAttributeCheckNarration(id: string, attributeCheck: AttributeCheck) {
+  let text: string;
+  try {
+    text = await generateAttributeCheckNarration(attributeCheck, {
+      placeName: gs.places[gs.player.placeKey]?.name,
+    });
+  } catch (error) {
+    console.error('Failed to generate attribute check narration', error);
+    text = fallbackAttributeCheckText(attributeCheck);
+  }
+  const entry = gs.scene.narration.find((narration) => narration.id === id);
+  if (!entry) return;
+  entry.text = text;
+  entry.mentions = findMentions(text);
+}
+
+function fallbackAttributeCheckText(attributeCheck: AttributeCheck): string {
+  const verb = attributeCheck.critical
+    ? attributeCheck.success
+      ? 'brilliantly succeed through'
+      : 'catastrophically falter despite'
+    : attributeCheck.success
+      ? 'succeed through'
+      : 'fall short despite';
+  return `You ${verb} your ${attributeCheck.attribute}.`;
 }
 
 export function narrateText(text: string) {

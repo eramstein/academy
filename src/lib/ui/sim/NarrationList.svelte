@@ -33,8 +33,12 @@
   const narration = $derived(gs.scene.narration);
 
   let completedIds = $state<string[]>([]);
+  let checkDoneIds = $state<string[]>([]);
+  let textDoneIds = $state<string[]>([]);
 
   const completedSet = $derived(new Set(completedIds));
+  const checkDoneSet = $derived(new Set(checkDoneIds));
+  const textDoneSet = $derived(new Set(textDoneIds));
   const activeEntry = $derived(narration.find((entry) => !completedSet.has(entry.id)));
   const narrationDone = $derived(narration.length > 0 && completedIds.length >= narration.length);
 
@@ -53,9 +57,17 @@
 
   $effect(() => {
     const ids = new Set(narration.map((entry) => entry.id));
-    const next = completedIds.filter((id) => ids.has(id));
-    if (next.length !== completedIds.length) {
-      completedIds = next;
+    const nextCompleted = completedIds.filter((id) => ids.has(id));
+    if (nextCompleted.length !== completedIds.length) {
+      completedIds = nextCompleted;
+    }
+    const nextCheckDone = checkDoneIds.filter((id) => ids.has(id));
+    if (nextCheckDone.length !== checkDoneIds.length) {
+      checkDoneIds = nextCheckDone;
+    }
+    const nextTextDone = textDoneIds.filter((id) => ids.has(id));
+    if (nextTextDone.length !== textDoneIds.length) {
+      textDoneIds = nextTextDone;
     }
   });
 
@@ -107,7 +119,31 @@
   }
 
   function onTextDone(entry: Narration) {
-    if (entry.attributeCheck) return;
+    if (!textDoneSet.has(entry.id)) {
+      textDoneIds = [...textDoneIds, entry.id];
+    }
+    if (entry.attributeCheck) {
+      maybeCompleteAttributeCheck(entry, { textDone: true });
+      return;
+    }
+    completeEntry(entry.id);
+  }
+
+  function onCheckDone(entry: Narration) {
+    if (!checkDoneSet.has(entry.id)) {
+      checkDoneIds = [...checkDoneIds, entry.id];
+    }
+    maybeCompleteAttributeCheck(entry, { checkDone: true });
+  }
+
+  function maybeCompleteAttributeCheck(
+    entry: Narration,
+    ready: { checkDone?: boolean; textDone?: boolean } = {}
+  ) {
+    if (!entry.attributeCheck || !entry.text) return;
+    const checkDone = ready.checkDone || checkDoneSet.has(entry.id);
+    const textDone = ready.textDone || textDoneSet.has(entry.id);
+    if (!checkDone || !textDone) return;
     completeEntry(entry.id);
   }
 
@@ -124,7 +160,9 @@
     return type.replace(/_/g, ' ');
   }
 
-  function purchasedResources(entry: Narration): { type: ResourceType; count: number; label: string }[] {
+  function purchasedResources(
+    entry: Narration
+  ): { type: ResourceType; count: number; label: string }[] {
     const resources = entry.transaction?.items?.resources;
     if (!resources) return [];
     return (Object.entries(resources) as [ResourceType, number][])
@@ -159,14 +197,28 @@
     {@const inDeck = cardsInFirstDeck(entry)}
     {@const canAddToDeck =
       entry.type === NarrationType.ConjuredCard && !!firstDeck() && cards.length > 0 && !inDeck}
-    <NarrationText
-      class="narration"
-      text={entry.text}
-      mentions={entry.mentions}
-      {animate}
-      onProgress={() => onProgress?.('auto')}
-      onDone={() => onTextDone(entry)}
-    />
+    {#if entry.attributeCheck}
+      <AttributeCheckEntry
+        check={entry.attributeCheck}
+        {animate}
+        onProgress={() => onProgress?.('auto')}
+        onDone={() => onCheckDone(entry)}
+      />
+    {/if}
+    {#if entry.text}
+      <NarrationText
+        class="narration"
+        text={entry.text}
+        mentions={entry.mentions}
+        {animate}
+        onProgress={() => onProgress?.('auto')}
+        onDone={() => onTextDone(entry)}
+      />
+    {:else if animate && entry.attributeCheck}
+      <div class="narration narration-pending" aria-hidden="true">
+        <span class="caret"></span>
+      </div>
+    {/if}
     {#if entry.gold}
       {@render goldEarned(entry.gold)}
     {/if}
@@ -186,14 +238,6 @@
           <CardCompact {card} />
         {/each}
       </div>
-    {/if}
-    {#if entry.attributeCheck}
-      <AttributeCheckEntry
-        check={entry.attributeCheck}
-        {animate}
-        onProgress={() => onProgress?.('auto')}
-        onDone={() => completeEntry(entry.id)}
-      />
     {/if}
     {#if entry.type === NarrationType.ConjuredCard && cards.length > 0}
       <div class="narration-actions">
@@ -290,6 +334,33 @@
 <style>
   .narration-list :global(.narration) {
     margin: 0 0 1.25em;
+  }
+
+  .narration-pending {
+    min-height: 1.7em;
+  }
+
+  .narration-pending .caret {
+    display: inline-block;
+    width: 0.55ch;
+    height: 1.05em;
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    background: currentColor;
+    opacity: 0.55;
+    animation: blink 0.85s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .narration-pending .caret {
+      display: none;
+    }
   }
 
   .period-separator {
