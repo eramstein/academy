@@ -40,7 +40,13 @@ export function performJob(job: Job) {
   const result = attributeCheck(
     gs.player.attributes[attribute],
     skillCheckDifficulty.medium,
-    attribute
+    attribute,
+    {
+      label: 'Perform Job',
+      actionType: ActionType.PerformJob,
+      actionParameters: { job },
+      isLongAction: true,
+    }
   );
   const pay = result.success ? job.payPerActivity : 0;
   gs.player.gold += pay;

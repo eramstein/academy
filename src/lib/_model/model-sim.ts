@@ -145,6 +145,7 @@ export interface AttributeCheck {
   attribute: string;
   difficulty: string;
   target: number;
+  attemptedAction?: Action;
 }
 
 export interface Action {

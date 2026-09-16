@@ -1,4 +1,4 @@
-import type { Attributes } from '../_model/model-sim';
+import type { Action, Attributes } from '../_model/model-sim';
 import { gs } from '../_state';
 import { narrateAttributeCheck } from './narration';
 
@@ -42,7 +42,8 @@ export function getDifficultyFromAttributeDelta(attributeDelta: number): number 
 
 export function confrontNpc(
   attribute: keyof Attributes,
-  npcKey: string
+  npcKey: string,
+  attemptedAction?: Action
 ): {
   roll: number;
   success: boolean;
@@ -52,14 +53,15 @@ export function confrontNpc(
   const playerAttributeValue = gs.player.attributes[attribute];
   const attributeDelta = npcAttributeValue - playerAttributeValue;
   const difficulty = getDifficultyFromAttributeDelta(attributeDelta);
-  return attributeCheck(playerAttributeValue, difficulty, attribute);
+  return attributeCheck(playerAttributeValue, difficulty, attribute, attemptedAction);
 }
 
 // This is DnD style, very random. A attribute of 10/20 can succeed an extreme difficulty check with some luck.
 export function attributeCheck(
   attribute: number,
   difficulty: number,
-  attributeName: keyof Attributes
+  attributeName: keyof Attributes,
+  attemptedAction?: Action
 ): {
   roll: number;
   success: boolean;
@@ -78,6 +80,7 @@ export function attributeCheck(
     attribute: attributeName,
     difficulty: difficultLabels[difficulty as keyof typeof difficultLabels] ?? 'Unknown',
     target: attribute - difficulty,
+    attemptedAction,
   });
   return {
     roll,

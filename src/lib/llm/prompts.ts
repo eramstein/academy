@@ -1,24 +1,13 @@
 import type { AttributeCheck } from '@/lib/_model/model-sim';
 import { NARRATION_SYSTEM_PROMPT } from './config';
+import { buildLlmContext } from './context-builder';
 import { completeChat } from './llm-service';
 
-function outcomeLabel(check: AttributeCheck): string {
-  if (check.critical) {
-    return check.success ? 'a critical success' : 'a critical failure';
-  }
-  return check.success ? 'a success' : 'a failure';
-}
-
-export async function generateAttributeCheckNarration(
-  check: AttributeCheck,
-  context: { placeName?: string } = {}
-): Promise<string> {
-  const placeLine = context.placeName ? ` They are at ${context.placeName}.` : '';
+export async function generateAttributeCheckNarration(check: AttributeCheck): Promise<string> {
   const userPrompt = [
-    `The player's character just attempted a ${check.attribute} check of ${check.difficulty.toLowerCase()} difficulty.${placeLine}`,
-    `The result is ${outcomeLabel(check)}.`,
+    buildLlmContext({ attributeCheck: check }),
     'Write one short paragraph describing what happens.',
-  ].join(' ');
+  ].join('\n\n');
 
   const text = await completeChat(
     [

@@ -64,9 +64,7 @@ export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
 async function fillAttributeCheckNarration(id: string, attributeCheck: AttributeCheck) {
   let text: string;
   try {
-    text = await generateAttributeCheckNarration(attributeCheck, {
-      placeName: gs.places[gs.player.placeKey]?.name,
-    });
+    text = await generateAttributeCheckNarration(attributeCheck);
   } catch (error) {
     console.error('Failed to generate attribute check narration', error);
     text = fallbackAttributeCheckText(attributeCheck);

@@ -25,7 +25,16 @@ export function socialize(parameters: SocializeParameters): string {
   const { success, critical, outcomeText } = attributeCheck(
     gs.player.attributes.charisma,
     difficulty,
-    'charisma'
+    'charisma',
+    {
+      label: 'Socialize',
+      actionType: ActionType.Socialize,
+      actionParameters: {
+        characterKey: parameters.characterKey,
+        socializeType: parameters.socializeType,
+      },
+      isLongAction: false,
+    }
   );
   const outcomeValue = (critical ? 2 : 1) * (success ? 1 : -1);
   switch (parameters.socializeType) {
