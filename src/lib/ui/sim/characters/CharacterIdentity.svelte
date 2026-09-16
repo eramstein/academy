@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Character, Player } from '@/lib/_model/model-sim';
+  import type { Character, Npc, Player } from '@/lib/_model/model-sim';
   import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import CharacterPortrait from './CharacterPortrait.svelte';
@@ -12,9 +12,14 @@
   const place = $derived(gs.places[character.placeKey]);
   const region = $derived(place ? gs.regions[place.regionKey] : undefined);
   const player = $derived(isPlayer(character) ? character : null);
+  const bio = $derived(isNpc(character) ? character.bio.trim() : '');
 
   function isPlayer(value: Character): value is Player {
     return 'maxFocus' in value;
+  }
+
+  function isNpc(value: Character): value is Npc {
+    return !isPlayer(value) && 'bio' in value;
   }
 
   function iconUrl(name: string) {
@@ -43,54 +48,59 @@
   class="identity-card"
   style="--parchment: url('{parchmentPath}'); --corner: url('{cornerPath}');"
 >
-  <div class="portrait-frame">
-    <span class="portrait-ornament tl" aria-hidden="true"></span>
-    <span class="portrait-ornament tr" aria-hidden="true"></span>
-    <span class="portrait-ornament bl" aria-hidden="true"></span>
-    <span class="portrait-ornament br" aria-hidden="true"></span>
-    <div class="portrait-inner">
-      <CharacterPortrait {character} />
+  <div class="identity-top">
+    <div class="portrait-frame">
+      <span class="portrait-ornament tl" aria-hidden="true"></span>
+      <span class="portrait-ornament tr" aria-hidden="true"></span>
+      <span class="portrait-ornament bl" aria-hidden="true"></span>
+      <span class="portrait-ornament br" aria-hidden="true"></span>
+      <div class="portrait-inner">
+        <CharacterPortrait {character} />
+      </div>
+    </div>
+    <div class="identity">
+      <h2 class="name">{character.name}</h2>
+      {@render divider()}
+      <dl class="meta">
+        <div class="meta-row">
+          {@render icon('pin')}
+          <dt>Location</dt>
+          <dd>{place?.name ?? character.placeKey}</dd>
+        </div>
+        {#if region}
+          <div class="meta-row">
+            {@render icon('temple')}
+            <dt>Region</dt>
+            <dd>{region.name}</dd>
+          </div>
+        {/if}
+        <div class="meta-row">
+          {@render icon('coin')}
+          <dt>Gold</dt>
+          <dd class="gold">{character.gold}</dd>
+        </div>
+        {#if player}
+          <div class="meta-row">
+            {@render icon('spiral')}
+            <dt>Focus</dt>
+            <dd class="gold">{player.focus}</dd>
+          </div>
+        {/if}
+      </dl>
+      {@render divider()}
     </div>
   </div>
-  <div class="identity">
-    <h2 class="name">{character.name}</h2>
-    {@render divider()}
-    <dl class="meta">
-      <div class="meta-row">
-        {@render icon('pin')}
-        <dt>Location</dt>
-        <dd>{place?.name ?? character.placeKey}</dd>
-      </div>
-      {#if region}
-        <div class="meta-row">
-          {@render icon('temple')}
-          <dt>Region</dt>
-          <dd>{region.name}</dd>
-        </div>
-      {/if}
-      <div class="meta-row">
-        {@render icon('coin')}
-        <dt>Gold</dt>
-        <dd class="gold">{character.gold}</dd>
-      </div>
-      {#if player}
-        <div class="meta-row">
-          {@render icon('spiral')}
-          <dt>Focus</dt>
-          <dd class="gold">{player.focus}</dd>
-        </div>
-      {/if}
-    </dl>
-    {@render divider()}
-  </div>
+  {#if bio}
+    <p class="bio">{bio}</p>
+  {/if}
 </header>
 
 <style>
   .identity-card {
     display: flex;
+    flex-direction: column;
     flex-shrink: 0;
-    gap: 1rem;
-    align-items: center;
+    gap: 0.7rem;
     min-width: 0;
     margin: 0.7rem 0.7rem 0;
     padding: 0.7rem 0.85rem;
@@ -104,6 +114,13 @@
     box-shadow:
       inset 0 0 28px rgba(90, 75, 60, 0.12),
       0 8px 18px rgba(0, 0, 0, 0.35);
+  }
+
+  .identity-top {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    min-width: 0;
   }
 
   .portrait-frame {
@@ -260,5 +277,12 @@
 
   .gold {
     font-variant-numeric: tabular-nums;
+  }
+
+  .bio {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: 1.05rem;
+    line-height: 1.7;
   }
 </style>

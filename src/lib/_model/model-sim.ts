@@ -188,6 +188,7 @@ export interface Player extends Character {
 
 export interface Npc extends Character {
   gender: CharacterGender;
+  age: number;
   traits: Partial<Record<CharacterTrait, boolean>>;
   school?: SchoolName;
   favoriteColors: CardColor[];
@@ -197,6 +198,7 @@ export interface Npc extends Character {
     love: number;
     rivalry: number;
   };
+  bio: string;
 }
 
 export interface Place {

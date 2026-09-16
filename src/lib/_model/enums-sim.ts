@@ -59,6 +59,12 @@ export enum SubscriptionType {
 export enum CharacterTrait {
   Grumpy = 'grumpy',
   Friendly = 'friendly',
+  Funny = 'funny',
+  Beautiful = 'beautiful',
+  Shy = 'shy',
+  Confident = 'confident',
+  Assertive = 'assertive',
+  Abrasive = 'abrasive',
 }
 
 export enum CharacterGender {

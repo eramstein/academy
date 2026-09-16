@@ -34,6 +34,8 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
       inspiration: 0,
     },
     jobs: [],
+    bio: '',
+    age: 0,
   };
 }
 
@@ -46,6 +48,8 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 4, intelligence: 19, vitality: 5, charisma: 8, aura: 15 },
     traits: { [CharacterTrait.Grumpy]: true },
     gender: CharacterGender.Male,
+    age: 54,
+    bio: `Moustapha El-Khouri administers the Academy as other men keep a fortress: with ledgers instead of swords, and a patience worn thin by years of excuses. At fifty-four he has the look of someone who has heard every plea twice and believed none of them the second time. Students know him as the grim presence behind the office door, whose word can open a future or close it without raising his voice. He is fiercely intelligent, little given to charm, and possessed of a residual aura that reminds the careless he was never merely a clerk. Decades of petitions, missing funds, and half-mended disasters have left him short-tempered, though not without a private sense of duty. He loves the institution more than he loves the people in it, and he would deny even that. Those who waste his time find him unyielding; those who come prepared find him, if not kind, at least exact. He keeps the school standing, and he expects the school, in return, to stand up straight.`,
   },
   rustic_innkeeper: {
     ...createDefaultNpc(),
@@ -55,6 +59,8 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 4, intelligence: 12, vitality: 18, charisma: 17, aura: 0 },
     traits: { [CharacterTrait.Friendly]: true },
     gender: CharacterGender.Male,
+    age: 58,
+    bio: `Old Ross has kept The Old Monk Inn for so long that the beams seem to remember his laugh. He is a man of fifty-eight, broad-shouldered and weather-worn, with the manners of a farmhand and the heart of a parish saint. Guests who arrive expecting a rustic oaf are not disappointed at first glance: his speech is plain, his clothes are patched, and he will wipe a tankard on his sleeve without a thought. Yet those who stay discover a generosity that borders on stubbornness. He feeds the hungry before they can ask, and he has never learned to keep a proper ledger of what is owed. The inn is his kingdom and his chapel, a warm, noisy refuge at the edge of Godsend Town. He is friendly to a fault, quick to clap a stranger on the back, and slower still to judge. In a town of scholars and pretenders, Old Ross remains what he has always been: an honest man with a full cellar and an open door.`,
   },
   fancy_innkeeper: {
     ...createDefaultNpc(),
@@ -65,6 +71,8 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 8, intelligence: 17, vitality: 7, charisma: 12, aura: 0 },
     traits: { [CharacterTrait.Grumpy]: true },
     gender: CharacterGender.Female,
+    age: 45,
+    bio: `Lady Margaret presides over the Royal Pigeon Inn as though it were a minor court, and she has spent years trying to make the world believe it. Forty-five, upright, and perpetually overdressed for the hour, she cultivates the air of a woman who once dined with better company than she can now afford. Her speech is carefully chosen; her linens are always a little too white; her manners are a performance she has rehearsed until the seams show. The performance, unfortunately, is never quite convincing. A dropped accent, a too-eager curtsy, a boast that does not land—these small betrayals follow her like a shadow. She is easily irritated by those who fail to play along, and her temper has earned her a reputation for frost. Beneath the affectation lies a shrewd mind and a genuine love of her establishment, which she tends with more care than she will ever admit. Guests who treat her as the lady she wishes to be are rewarded; those who smirk find the wine suddenly dearer.`,
   },
   material_shopkeeper: {
     ...createDefaultNpc(),
@@ -74,6 +82,8 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 18, intelligence: 13, vitality: 12, charisma: 15, aura: 5 },
     traits: { [CharacterTrait.Friendly]: true },
     gender: CharacterGender.Female,
+    age: 40,
+    bio: `Matilda keeps the materials shop of Godsend Town, and the place smells of earth, resin, and crushed petal long before one sees her behind the counter. She is forty, deft of hand and easy of manner, a woman who can weigh mithril and prune a rosebush with the same unhurried grace. Gardening is not a pastime for her but a vocation: she speaks of plants as other people speak of friends, and her window boxes are the envy of the street. Customers come for reagents and stay for advice, for she has a gift for knowing what a student actually needs rather than what they think they want. She is warm without being foolish, generous without being taken in. Years of trade have given her a practical intelligence, but it is her affection for living things that colors every corner of the shop. In a town of grand theories and dangerous experiments, Matilda remains rooted—quite literally—in the quiet work of growing, gathering, and making do.`,
   },
   molly: {
     ...createDefaultNpc(),
@@ -81,10 +91,12 @@ export const npcs: Record<string, Npc> = {
     name: 'Molly Moreno',
     placeKey: 'admin-office',
     attributes: { dexterity: 11, intelligence: 8, vitality: 14, charisma: 18, aura: 9 },
-    traits: { [CharacterTrait.Friendly]: true },
+    traits: { [CharacterTrait.Friendly]: true, [CharacterTrait.Shy]: true },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Green],
+    bio: `Molly Moreno arrived at the Academy with a fortune she would rather the world forgot. Born to wealth, she dresses as if money were a rumor and moves through the halls with a modest, almost apologetic grace. She is twenty-one, shy at first glance and warm upon the second, a young woman whose first instinct is always toward other people. Empathy comes to her as easily as breathing; she notices the lonely, the struggling, the ones who sit a little apart, and she cannot help but try to ease their way. In the lecture rooms, however, that same tenderness turns inward as doubt. She is not without ability, yet she distrusts her own mind, and praise sits uneasily on her. Sports, open country, and the company of children restore her in a way no examination ever has. Those who look past her quiet clothes find a generous heart, a little unsure of itself, and a loyalty that, once given, is not easily withdrawn.`,
+    age: 21,
   },
   elsa: {
     ...createDefaultNpc(),
@@ -96,6 +108,8 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Red],
+    bio: `Elsa Falkenstein attends the Academy the way other young nobles take the waters: as an occupation, not a necessity. She expects, in due course, to inherit the family estate, and she has never been required to work, nor even to succeed. Twenty-four and already practiced in disdain, she carries herself as if the rooms she enters were slightly beneath her. The haughtiness is not entirely a pose. She grew up alone in a house that offered rank instead of affection, and she learned early that pride could pass for armor. Beneath it, however, she is lonely in a way she cannot name. She would like friends—true ones, not courtiers—but she has never been taught how to ask, and her manner drives away the very people she secretly hopes will stay. Those who endure the frost may find, at last, a young woman who has spent her life waiting to be wanted, and who still does not know how to begin.`,
+    age: 24,
   },
   ousmane: {
     ...createDefaultNpc(),
@@ -107,6 +121,8 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Black],
+    bio: `Ousmane Tempeli comes from a distant empire, and he does not speak of it unless he must. He was a soldier once, and a good one, until the war his country waged grew so cruel that desertion seemed the only remaining honor. He is twenty-nine now, far from the banners of his youth, and he has set himself a different campaign: to become a great artificer, as his grandfather Omar was, a name still spoken with awe in the trade. Energy is his native climate; he loves a challenge the way other men love rest, and he meets most days with an easy, infectious cheer. Then, without warning, the old war returns to him. Melancholy settles on his face, and he is elsewhere—among things he will not describe. Those who know him learn to wait through these silences. The man who emerges from them is still the same: ambitious, warm, and determined to make something lasting with his hands, as if a well-made work might at last outshine what he has seen.`,
+    age: 29,
   },
   emma: {
     ...createDefaultNpc(),
@@ -118,6 +134,8 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Red],
+    bio: `Emma Delamain was born poor and raised as if poverty were a problem to be solved by books. Her family had little money and a great deal of culture, and they spent what they had on an education of the highest order. She repaid them by becoming brilliant. At twenty-seven she is already a force at the Academy: ambitious, exacting, and, when a goal is in sight, capable of a ruthlessness that startles even those who admire her. Beauty is another of her instruments. She is strikingly lovely and does not pretend otherwise; charm, for her, is a tool as legitimate as any theorem. Yet she is not all calculation. She reads voraciously, plays the violin with real feeling, and possesses a sharp, delighted humor. Those she likes she teases without mercy, as if affection were a sport. To be chosen by Emma is to be both flattered and a little afraid, for she gives her attention the way a duelist gives a salute: gracefully, and with every intention of winning.`,
+    age: 27,
   },
   vai: {
     ...createDefaultNpc(),
@@ -129,17 +147,21 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Green],
+    bio: `Vaiana Chen grew up among ledgers and cargo, the daughter of merchants who recognized a rarer talent than trade and refused to let it go unused. She did not want to study magic. She was pushed into it by parents who saw her gifts more clearly than she wished to, and who treated genius as an obligation. At twenty-two she remains what she has always been: a prodigy without appetite, capable of work that startles her teachers and unwilling, most days, to be startled herself. Games interest her more than glory; she has a tomboy's ease with contests, dirt, and dare, and she would rather win a wager than a prize. She is introverted but not shy. Silence, for her, is a preference, not a fear, and she will not be walked over by anyone who mistakes her quiet for compliance. Those who try find a young woman who can be pushed into a school, but not, it seems, into caring.`,
+    age: 22,
   },
   henry: {
     ...createDefaultNpc(),
     key: 'henry',
-    name: 'Henry Prescott',
+    name: 'Henry Lombard',
     placeKey: 'admin-office',
     attributes: { dexterity: 8, intelligence: 15, vitality: 11, charisma: 15, aura: 8 },
     traits: { [CharacterTrait.Friendly]: true },
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Black],
+    bio: `Henry Lombard lives in the long shadow of his mother's reputation, and he has never quite learned how to stand in the sun. He is the son of Professor Lombard, the Academy's exacting mistress of artificery, and at twenty he still measures every effort against a standard he cannot reach. He is not untalented so much as overmatched: earnest, anxious, and perpetually certain that he is about to disappoint her. Friendship comes to him without calculation. He is warm, quick to smile, and almost painfully eager to be liked, which makes him easy company and easier still to use. Naivety clings to him like a schoolboy's coat; he believes the best of people until the evidence is overwhelming, and sometimes even then. Those who are kind to him find a loyal, open-hearted young man. Those who are not find a willing instrument. He wants, more than anything, to be worthy of the name he already bears.`,
+    age: 20,
   },
   farid: {
     ...createDefaultNpc(),
@@ -151,6 +173,8 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Red],
+    bio: `Farid El-Khouri arrived at the Academy as a defector from a more prestigious rival, and he has never let anyone forget it. Twenty-five, restless, and convinced of his own pedigree, he carries his former schooling like a medal he insists on wearing indoors. Superiority comes to him as a habit; he cannot help comparing, ranking, and finding the present company slightly wanting. Yet he is not a bore. Humor runs through him like a live wire, mischievous and schoolboyish, and he will risk a joke at the precise moment a wiser man would keep silent. He looks for battles the way other students look for friends. Provocation is his sport, and a quiet room is, to him, an invitation. Those who rise to it discover a duelist who enjoys the quarrel almost more than the victory. Those who refuse may glimpse, beneath the swagger, a young man still proving that leaving the greater school was not a fall.`,
+    age: 25,
   },
   'the-dude': {
     ...createDefaultNpc(),
@@ -162,6 +186,8 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Green],
+    bio: `Nobody quite knows who The Dude is, and he has arranged his life so that the question never quite lands. He has been at the Academy longer than seems reasonable, a man of forty-one who appears, each term, to have no intention of leaving. He does the minimum required to avoid expulsion and not a stroke more, as if effort itself were a kind of bad manners. Nonchalance is his native climate; he drifts through lectures, gardens, and other people's crises with the same unhurried air. He cultivates mystery the way some men cultivate a garden: a little too obviously, and with evident pleasure. The effect is not entirely false. There is something in him—an ease, a strange gravity—that makes even his idleness feel like a choice. Students invent histories for him. He smiles, declines to confirm them, and remains, year after year, the Academy's most enduring riddle.`,
+    age: 41,
   },
   lombard: {
     ...createDefaultNpc(),
@@ -171,6 +197,8 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 11, intelligence: 19, vitality: 10, charisma: 15, aura: 18 },
     traits: { [CharacterTrait.Grumpy]: true },
     gender: CharacterGender.Female,
+    bio: `Professor Lombard teaches artificery as if the craft were a form of moral instruction, and she does not forgive a slovenly line. She is thirty-eight, elegant to the point of severity, and she moves through the workshops with a nobility that has nothing to do with birth and everything to do with standards. Students learn quickly that her praise is rare and her disappointment precise. She is strict, demanding, and entirely unmoved by charm; a piece of work is either worthy or it is not, and she will say so. Her clothes are always exact, her posture never casual, her voice low enough that the room goes still to hear it. Those who survive her courses emerge sharper than they arrived, and they rarely thank her until years later. She is, to her son Henry, both north star and weather. To everyone else she is simply the mistress of the artificery room: brilliant, unyielding, and dressed as if the work itself were a court.`,
+    age: 38,
   },
   glutzenbaum: {
     ...createDefaultNpc(),
@@ -180,5 +208,7 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 8, intelligence: 15, vitality: 13, charisma: 16, aura: 20 },
     traits: { [CharacterTrait.Friendly]: true },
     gender: CharacterGender.Male,
+    bio: `Professor Glutzenbaum teaches enchantment, though it is not always clear, from one hour to the next, whether he remembers he has a class. He is sixty-five, kindly, and habitually elsewhere. His clothes look as if they were chosen by a magpie with a sense of humor; his hair has not been convinced to lie down in living memory. Students find him wandering the corridors with the air of a man who has just remembered an important thought and then forgotten where he put it. He is not a fool. Magic gathers around him with an ease that makes younger prodigies look effortful, and his absent-mindedness is the weather of a mind still traveling. He will pause mid-sentence to admire a dust mote, then complete a theory no one else could have reached. Those who are patient with him are rewarded; those who are not still tend to like him. He is the Academy's gentlest riddle: lost, luminous, and never quite on time.`,
+    age: 65,
   },
 };
