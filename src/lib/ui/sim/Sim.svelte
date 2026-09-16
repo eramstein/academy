@@ -21,7 +21,6 @@
       <Scene />
     {/if}
   </div>
-  <div class="table-seam" aria-hidden="true"></div>
   <aside class="sim-data-panel">
     <SimData />
   </aside>
@@ -48,18 +47,6 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
-  }
-
-  .table-seam {
-    flex: 0 0 4px;
-    width: 4px;
-    align-self: stretch;
-    pointer-events: none;
-    border-left: 1px solid rgba(212, 180, 128, 0.34);
-    background: rgba(6, 3, 0, 0.58);
-    box-shadow:
-      1px 0 2px rgba(0, 0, 0, 0.5),
-      4px 0 7px rgba(0, 0, 0, 0.28);
   }
 
   .sim-data-panel {

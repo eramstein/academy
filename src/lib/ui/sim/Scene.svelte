@@ -2,8 +2,8 @@
   import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import { selectNextScene } from '@/lib/sim/scene';
-  import { tick, untrack } from 'svelte';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
+  import { tick, untrack } from 'svelte';
   import NarrationList from './NarrationList.svelte';
   import SceneActions from './SceneActions.svelte';
 
@@ -190,7 +190,7 @@
     align-items: center;
     justify-content: flex-start;
     gap: 32px;
-    padding: 16px 32px 32px;
+    padding: 16px 16px 32px 32px;
     box-sizing: border-box;
     overflow: hidden;
   }

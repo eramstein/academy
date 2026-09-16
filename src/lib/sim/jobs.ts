@@ -9,7 +9,7 @@ import {
 import { gs } from '../_state';
 import { attributeCheck, skillCheckDifficulty } from './attribute-checks';
 import { scheduleActivities } from './effects/schedule';
-import { narrateJobResult } from './narration';
+import { narrateJobResult, narrateText } from './narration';
 import { getCurrentScheduledActivity } from './schedule';
 
 const attributePerJobType: Record<JobType, keyof Attributes & string> = {
@@ -48,6 +48,11 @@ export function performJob(job: Job) {
   return '';
 }
 
+export function quitJob(job: Job): string {
+  gs.player.jobs = gs.player.jobs.filter((j) => j.id !== job.id);
+  return `You have quit the job ${job.name}.`;
+}
+
 export function getJobActions() {
   const activity = getCurrentScheduledActivity();
   if (activity?.type !== ActivityType.Work) {
@@ -57,6 +62,7 @@ export function getJobActions() {
   if (!job) {
     return [];
   }
+  narrateText(job.description);
   return [
     {
       label: 'Perform Job',

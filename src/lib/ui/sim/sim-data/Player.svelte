@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { isLandCard } from '@/lib/_model';
+  import { isLandCard, type Job } from '@/lib/_model';
   import { ResourceType, SubscriptionType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
   import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
+  import { quitJob } from '@/lib/sim/jobs';
+  import { narrateText } from '@/lib/sim/narration';
   import Attributes from '../Attributes.svelte';
   import CardCrafting from '../characters/CardCrafting.svelte';
   import CharacterIdentity from '../characters/CharacterIdentity.svelte';
@@ -54,6 +56,10 @@
 
   function iconUrl(name: string) {
     return getUiIconPath(name);
+  }
+
+  function handleQuitJob(job: Job) {
+    narrateText(quitJob(job));
   }
 </script>
 
@@ -137,6 +143,9 @@
                 <div class="kv-row">
                   <span class="kv-name">{job.name}</span>
                   <span class="kv-value">{job.payPerActivity}g / activity</span>
+                  <button type="button" class="quit-btn" onclick={() => handleQuitJob(job)}
+                    >Quit</button
+                  >
                 </div>
                 <p class="job-meta">
                   {job.jobType} · {characterName(job.employerKey)} · {placeName(job.placeKey)}
@@ -316,6 +325,31 @@
     gap: 1rem;
     align-items: center;
     font-size: 0.95rem;
+  }
+
+  .job-row .kv-row {
+    gap: 0.5rem;
+  }
+
+  .job-row .kv-value {
+    margin-left: auto;
+  }
+
+  .quit-btn {
+    flex-shrink: 0;
+    padding: 0.2rem 0.5rem;
+    background: var(--color-data);
+    border: 1px solid var(--color-brass);
+    border-radius: 4px;
+    color: var(--color-cream);
+    font-family: inherit;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+
+  .quit-btn:hover {
+    background: var(--color-data-hover);
   }
 
   .kv-name {
