@@ -186,6 +186,9 @@ function checkEffect(where, effect) {
       checkSchedule(where, job.schedule);
       break;
     }
+    case 'unlockEvent':
+      checkOneOf(where, 'eventKey', args.eventKey, eventKeys);
+      break;
   }
 }
 

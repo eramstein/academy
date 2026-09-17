@@ -145,6 +145,16 @@ export function recordEventOccured(template: StoredEventTemplate) {
   }
 }
 
+export function unlockEventTemplate(templateKey: string): boolean {
+  const template = eventTemplates.find((eventTemplate) => eventTemplate.key === templateKey);
+  if (!template) {
+    return false;
+  }
+  template.locked = false;
+  void updateEventTemplate(template);
+  return true;
+}
+
 function doesTriggerMatch(trigger: EventTrigger): boolean {
   // Keep trigger intact so switch narrows parameters per triggerType
   switch (trigger.triggerType) {

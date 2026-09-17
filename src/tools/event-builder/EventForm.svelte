@@ -32,6 +32,7 @@
   let key = $state('');
   let text = $state('');
   let triggersOnce = $state(true);
+  let locked = $state(false);
   let characterArc = $state('');
   let triggers = $state<EventTrigger[]>([]);
   let options = $state<EventOptionTemplate[]>([]);
@@ -52,6 +53,7 @@
       key = '';
       text = '';
       triggersOnce = true;
+      locked = false;
       characterArc = '';
       triggers = [
         { triggerType: EventTriggerType.Day, parameters: { day: 1 } },
@@ -66,6 +68,7 @@
     key = cloned.key;
     text = cloned.text;
     triggersOnce = cloned.triggersOnce ?? false;
+    locked = cloned.locked ?? false;
     characterArc = cloned.characterArc ?? '';
     triggers = cloned.triggers ?? [];
     options = cloned.optionTemplates ?? [];
@@ -224,6 +227,10 @@
       triggersOnce,
     };
 
+    if (locked) {
+      built.locked = true;
+    }
+
     const arc = characterArc.trim();
     if (arc) {
       built.characterArc = arc;
@@ -320,6 +327,11 @@
         <label class="check">
           <input type="checkbox" bind:checked={triggersOnce} />
           <span>Triggers once</span>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" bind:checked={locked} />
+          <span>Locked</span>
         </label>
       </div>
 

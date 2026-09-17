@@ -19,6 +19,9 @@ export const SceneEffectTemplates: Record<string, (args: Record<string, any>) =>
     },
   ],
   getJob: (args) => [{ type: EventEffectType.GetJob, parameters: { job: args.job } }],
+  unlockEvent: (args) => [
+    { type: EventEffectType.UnlockEvent, parameters: { eventKey: args.eventKey } },
+  ],
 };
 
 export function resolveEffectTemplates(templates: EventEffectsTemplate[]): EventEffect[] {

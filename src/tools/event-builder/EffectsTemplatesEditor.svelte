@@ -100,6 +100,8 @@
         return defaultScheduleArgs();
       case 'getJob':
         return defaultJobArgs();
+      case 'unlockEvent':
+        return { eventKey: '' };
       default:
         return {};
     }
@@ -360,6 +362,14 @@
                 aria-label="Amount"
                 oninput={(e) =>
                   setArg(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+              />
+            {:else if effect.effectTemplate === 'unlockEvent'}
+              <input
+                class="input arg"
+                value={effect.args.eventKey ?? ''}
+                placeholder="event key"
+                aria-label="Event key"
+                oninput={(e) => setArg(i, 'eventKey', (e.currentTarget as HTMLInputElement).value)}
               />
             {/if}
 

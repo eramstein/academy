@@ -10,6 +10,7 @@ export enum EventEffectType {
   AddResource = 'add_resource',
   ScheduleActivity = 'schedule_activity',
   GetJob = 'get_job',
+  UnlockEvent = 'unlock_event',
 }
 
 export enum ActionType {

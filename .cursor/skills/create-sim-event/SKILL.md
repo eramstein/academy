@@ -5,8 +5,8 @@ description: Creates or edits sim events in src/data/sim/events.json from a natu
 
 # Create a sim event
 
-Events are `EventTemplate` entries in `src/data/sim/events.json`. Each one declares *when* it fires
-(triggers), *what the player reads* (text), and *what happens* (event effects and player options).
+Events are `EventTemplate` entries in `src/data/sim/events.json`. Each one declares _when_ it fires
+(triggers), _what the player reads_ (text), and _what happens_ (event effects and player options).
 The type lives in `src/lib/_model/model-sim.ts`; the runtime that consumes it is
 `src/lib/sim/events.ts`.
 
@@ -33,7 +33,7 @@ request did not imply.
 1. Read `src/data/sim/events.json` to see existing keys, arc grouping, and house style.
 2. Pick the key: `<npcKey>-<n>` for a character arc event, `event-<n>` for main story, using the
    next free number in that series. Keys are permanent identifiers, not prose.
-3. Write `text` (see *Writing the text*).
+3. Write `text` (see _Writing the text_).
 4. Map every condition in the request to a trigger, and every outcome to an effect template.
    Verify character, place, and deck keys against the source files listed below.
 5. Insert the event object after the last event of the same `characterArc`, or append it at the end
@@ -57,13 +57,19 @@ invent template names: unknown names crash at runtime when the event fires.
 
 ```jsonc
 {
-  "key": "molly-4",              // unique, permanent
-  "text": "One paragraph...",    // what the player reads
-  "triggers": [ /* ALL must match */ ],
-  "optionTemplates": [ /* player choices; [] means the event is pure narration */ ],
-  "triggersOnce": true,          // set true unless the event is meant to repeat
-  "effectsTemplates": [ /* optional: applied on trigger, before options */ ],
-  "characterArc": "molly"        // npc key, only for character arc events
+  "key": "molly-4", // unique, permanent
+  "text": "One paragraph...", // what the player reads
+  "triggers": [
+    /* ALL must match */
+  ],
+  "optionTemplates": [
+    /* player choices; [] means the event is pure narration */
+  ],
+  "triggersOnce": true, // set true unless the event is meant to repeat
+  "effectsTemplates": [
+    /* optional: applied on trigger, before options */
+  ],
+  "characterArc": "molly", // npc key, only for character arc events
 }
 ```
 
@@ -75,15 +81,15 @@ Property order in the file follows the existing entries: `key`, `text`, `trigger
 Every trigger in the array must match at the same time (logical AND). The engine picks the first
 event in file order whose triggers all match.
 
-| `triggerType` | `parameters` | Notes |
-|---|---|---|
+| `triggerType`        | `parameters`                                 | Notes                                                                                                                             |
+| -------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `relation_parameter` | `{ characterKey, relationParameter, value }` | `relationParameter` is `friendship`, `respect`, `love` or `rivalry`. Positive `value` means "at least"; negative means "at most". |
-| `character_present` | `{ characterKey }` | The NPC is in the player's current place. |
-| `day` | `{ day: 3 }` | Absolute day number; day 1 is a Monday. |
-| `period` | `{ period: "morning" }` | `morning`, `afternoon`, `evening`. |
-| `place` | `{ placeKey }` | The player's current place. |
-| `activity_type` | `{ activityType }` | `class`, `work`, `social`, `date`, `training`; matches the currently scheduled activity. |
-| `previous_events` | `{ "molly-1": true }` | Map of event keys that must have happened first; add one entry per prerequisite. |
+| `character_present`  | `{ characterKey }`                           | The NPC is in the player's current place.                                                                                         |
+| `day`                | `{ day: 3 }`                                 | Absolute day number; day 1 is a Monday.                                                                                           |
+| `period`             | `{ period: "morning" }`                      | `morning`, `afternoon`, `evening`.                                                                                                |
+| `place`              | `{ placeKey }`                               | The player's current place.                                                                                                       |
+| `activity_type`      | `{ activityType }`                           | `class`, `work`, `social`, `date`, `training`; matches the currently scheduled activity.                                          |
+| `previous_events`    | `{ "molly-1": true }`                        | Map of event keys that must have happened first; add one entry per prerequisite.                                                  |
 
 Two consequences of how the engine handles these:
 
@@ -97,12 +103,13 @@ Two consequences of how the engine handles these:
 
 Effect templates, from `SceneEffectTemplates`:
 
-| `effectTemplate` | `args` |
-|---|---|
-| `addResource` | `{ resourceType: "magic_dust" \| "mithril" \| "moxes", amount: 10 }` |
-| `getDeck` | `{ deckKey: "base_red" \| "base_black" \| "base_green" }` |
+| `effectTemplate`   | `args`                                                                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `addResource`      | `{ resourceType: "magic_dust" \| "mithril" \| "moxes", amount: 10 }`                                                                              |
+| `getDeck`          | `{ deckKey: "base_red" \| "base_black" \| "base_green" }`                                                                                         |
 | `scheduleActivity` | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, recurrence?: { maxCount, daysOfWeek, period } } }` |
-| `getJob` | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }` |
+| `getJob`           | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                             |
+| `unlockEvent`      | `{ eventKey: "molly-2" }`                                                                                                                         |
 
 For `scheduleActivity`: `schedule.date.day` is an **offset in days from now** (`0` = today), not an
 absolute day. `participants` are character keys and include `"player"` when the player takes part.
@@ -113,6 +120,9 @@ which takes the same shape and day-offset rules as `scheduleActivity`'s. Give a 
 `recurrence`, or it turns into a single shift. `employerKey` is an NPC key (never `"player"`) and
 `payPerActivity` is the gold earned per shift.
 
+`unlockEvent` clears `locked` on another event by key so it can start triggering. The target must
+already exist in `events.json`.
+
 `effectsTemplates` on the event fire as soon as it triggers; `effectsTemplates` on an option fire
 only if the player picks that option.
 
@@ -122,12 +132,12 @@ applying an effect. Only `enrollmentTransaction` and `enrollmentPayment` exist, 
 
 ## Keys to verify
 
-| Kind | Source |
-|---|---|
-| Character keys, display names, gender | `src/data/npcs.ts` (plus `"player"`) |
-| Place keys | `PLACES` in `src/data/sim/places.ts` |
-| Deck keys | `getDeck` in `src/lib/sim/effects/decks.ts` |
-| Resource, period, activity, class values | `src/lib/_model/enums-sim.ts` |
+| Kind                                     | Source                                      |
+| ---------------------------------------- | ------------------------------------------- |
+| Character keys, display names, gender    | `src/data/npcs.ts` (plus `"player"`)        |
+| Place keys                               | `PLACES` in `src/data/sim/places.ts`        |
+| Deck keys                                | `getDeck` in `src/lib/sim/effects/decks.ts` |
+| Resource, period, activity, class values | `src/lib/_model/enums-sim.ts`               |
 
 The validator enumerates the valid values in its error messages, so a run also doubles as a
 reference when unsure.
@@ -136,7 +146,7 @@ reference when unsure.
 
 Elaborate the synopsis into **one paragraph, two to four sentences**, matching the existing entries:
 
-- Second person present tense, addressing the player: the NPC approaches *you*.
+- Second person present tense, addressing the player: the NPC approaches _you_.
 - Use the NPC's first name from `src/data/npcs.ts`, and pronouns consistent with their gender.
 - Describe the offer or situation qualitatively; keep amounts, resource names and mechanics out of
   the prose. The option labels and effects carry the numbers.
@@ -149,8 +159,8 @@ Option labels are short imperative phrases of one to three words: `Accept`, `Dec
 
 ## Example
 
-Request: *"add event for molly: if friendship is 1, molly offers a choice between 2 gifts: 99 moxes,
-or 1 magic dust."*
+Request: _"add event for molly: if friendship is 1, molly offers a choice between 2 gifts: 99 moxes,
+or 1 magic dust."_
 
 ```json
 {

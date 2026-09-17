@@ -83,6 +83,7 @@ export interface EventTemplate {
   optionTemplates: EventOptionTemplate[];
   triggers: EventTrigger[];
   triggersOnce?: boolean;
+  locked?: boolean;
   effectsTemplates?: EventEffectsTemplate[];
   characterArc?: string; // npc key
 }

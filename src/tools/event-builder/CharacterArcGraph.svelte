@@ -210,8 +210,12 @@
             <text class="node-text" x="12" y="46">
               {truncate(node.event.text, 28)}
             </text>
-            {#if node.event.triggersOnce}
-              <text class="node-meta" x="12" y="62">once</text>
+            {#if node.event.triggersOnce || node.event.locked}
+              <text class="node-meta" x="12" y="62">
+                {[node.event.triggersOnce && 'once', node.event.locked && 'locked']
+                  .filter(Boolean)
+                  .join(' · ')}
+              </text>
             {/if}
           </g>
           <g

@@ -107,6 +107,9 @@
                 {#if event.triggersOnce}
                   · once
                 {/if}
+                {#if event.locked}
+                  · locked
+                {/if}
                 {#if event.characterArc}
                   · {displayName(event.characterArc)}
                 {/if}
