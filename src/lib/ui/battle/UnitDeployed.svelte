@@ -1,6 +1,6 @@
 <script lang="ts">
   import { TargetType } from '@/lib/_model/enums-battle';
-  import type { UnitDeployed } from '@lib/_model';
+  import type { UnitDeployed, UnitKeywords } from '@lib/_model';
   import { uiState } from '@lib/_state';
   import { getCardImagePath } from '@lib/_utils/asset-paths';
   import { attackUnit } from '@lib/battle/combat';
@@ -17,6 +17,9 @@
   import Keywords from './Keywords.svelte';
   import Stats from './Stats.svelte';
   import Statuses from './Statuses.svelte';
+
+  /** Keywords shown on deployed units even when not hovered. */
+  const ALWAYS_VISIBLE_KEYWORDS: (keyof UnitKeywords)[] = ['ranged'];
 
   let { unit }: { unit: UnitDeployed } = $props();
 
@@ -41,6 +44,29 @@
       !isValidTarget &&
       uiState.battle.targetBeingSelected !== null
   );
+
+  let alwaysVisibleKeywords = $derived.by(() => {
+    if (!unit.keywords) return null;
+    const result: UnitKeywords = {};
+    for (const key of ALWAYS_VISIBLE_KEYWORDS) {
+      const value = unit.keywords[key];
+      if (value) {
+        (result as Record<string, boolean | number>)[key] = value;
+      }
+    }
+    return Object.keys(result).length > 0 ? result : null;
+  });
+
+  let hoverKeywords = $derived.by(() => {
+    if (!unit.keywords) return null;
+    const result: UnitKeywords = {};
+    for (const [key, value] of Object.entries(unit.keywords)) {
+      if (!value) continue;
+      if (ALWAYS_VISIBLE_KEYWORDS.includes(key as keyof UnitKeywords)) continue;
+      (result as Record<string, boolean | number>)[key] = value;
+    }
+    return Object.keys(result).length > 0 ? result : null;
+  });
 
   function handleUnitClick() {
     const selectedUnit = uiState.battle.selectedUnit;
@@ -125,9 +151,18 @@
     />
   </div>
 
-  {#if unit.keywords}
+  {#if alwaysVisibleKeywords || hoverKeywords}
     <div class="keywords-container">
-      <Keywords keywords={unit.keywords} />
+      {#if alwaysVisibleKeywords}
+        <div class="keywords-always">
+          <Keywords keywords={alwaysVisibleKeywords} />
+        </div>
+      {/if}
+      {#if hoverKeywords}
+        <div class="keywords-hover">
+          <Keywords keywords={hoverKeywords} />
+        </div>
+      {/if}
     </div>
   {/if}
 
@@ -237,6 +272,13 @@
     right: 4px;
     z-index: 2;
     width: 100px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 2px;
+  }
+
+  .keywords-hover {
     opacity: 0;
     transition: opacity 0.2s ease;
   }
@@ -259,7 +301,7 @@
     transition: opacity 0.2s ease;
   }
 
-  .unit-deployed:hover .keywords-container,
+  .unit-deployed:hover .keywords-hover,
   .unit-deployed:hover .abilities-container,
   .unit-deployed:hover .counters-container {
     opacity: 1;
