@@ -1,4 +1,5 @@
 import { Mistral } from '@mistralai/mistralai';
+import { getCachedLlmResponse, makePromptKey, setCachedLlmResponse } from './cache';
 import { LLM_API_CHAT_MODEL, LLM_API_KEY, LLM_TIMEOUT_MS } from './config';
 
 export type ChatRole = 'system' | 'user' | 'assistant';
@@ -58,6 +59,29 @@ function messageContentToText(content: unknown): string {
 export async function completeChat(
   messages: ChatMessage[],
   options: CompleteChatOptions = {}
+): Promise<string> {
+  const cacheKey = await makePromptKey(messages, options);
+  const cached = await getCachedLlmResponse(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  try {
+    const text = await requestChatCompletion(messages, options);
+    await setCachedLlmResponse(cacheKey, text);
+    return text;
+  } catch (error) {
+    const fallback = await getCachedLlmResponse(cacheKey);
+    if (fallback) {
+      return fallback;
+    }
+    throw error;
+  }
+}
+
+async function requestChatCompletion(
+  messages: ChatMessage[],
+  options: CompleteChatOptions
 ): Promise<string> {
   const result = await getClient().chat.complete({
     model: options.model ?? LLM_API_CHAT_MODEL,

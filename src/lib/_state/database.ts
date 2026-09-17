@@ -11,3 +11,7 @@ db.version(1).stores({
 db.version(2).stores({
   eventTemplates: '++id',
 });
+
+db.version(3).stores({
+  llmCache: 'key',
+});
