@@ -105,14 +105,14 @@
     const deck = firstDeck();
     const cards = cardsForEntry(entry);
     if (!deck || cards.length === 0) return false;
-    return cards.every((card) => deck.cards.some((c) => c.id === card.id));
+    return cards.every((card) => deck.cards.includes(card.id));
   }
 
   function addConjuredCardsToDeck(entry: Narration) {
     const deck = firstDeck();
     if (!deck || cardsInFirstDeck(entry)) return;
     for (const card of cardsForEntry(entry)) {
-      if (!deck.cards.some((c) => c.id === card.id)) {
+      if (!deck.cards.includes(card.id)) {
         addCardToDeck(deck, card);
       }
     }

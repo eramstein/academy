@@ -1,15 +1,22 @@
 import { BASE_DECK_BLACK, BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
-import { CardColor, type CardTemplate, type Character, type Deck, SchoolName } from '../_model';
+import {
+  CardColor,
+  type CardTemplate,
+  type Character,
+  type Deck,
+  type DeckBlueprint,
+  SchoolName,
+} from '../_model';
 import { gs } from '../_state';
 import { learnKeywordsFromDeck } from './effects/decks';
 
-const BASE_DECKS_BY_COLOR: Partial<Record<CardColor, Deck>> = {
+const BASE_DECKS_BY_COLOR: Partial<Record<CardColor, DeckBlueprint>> = {
   [CardColor.Red]: BASE_DECK_RED,
   [CardColor.Black]: BASE_DECK_BLACK,
   [CardColor.Green]: BASE_DECK_GREEN,
 };
 
-export function redeemBaseDeck(baseDeck: Deck, character: Character) {
+export function redeemBaseDeck(baseDeck: DeckBlueprint, character: Character) {
   const cardsWithIds = baseDeck.cards.map(makeUniqueId);
   const landsWithIds = baseDeck.lands.map(makeUniqueId);
   character.collection.push(...cardsWithIds);
@@ -17,8 +24,8 @@ export function redeemBaseDeck(baseDeck: Deck, character: Character) {
   character.decks.push({
     key: baseDeck.key,
     name: baseDeck.name,
-    cards: cardsWithIds,
-    lands: landsWithIds,
+    cards: cardsWithIds.map((c) => c.id),
+    lands: landsWithIds.map((c) => c.id),
   });
 }
 
@@ -43,7 +50,19 @@ export function initNpcDecks() {
 }
 
 export function addCardToDeck(deck: Deck, card: CardTemplate) {
-  deck.cards.push(card);
+  if (!deck.cards.includes(card.id)) {
+    deck.cards.push(card.id);
+  }
+}
+
+export function resolveDeckCards(ids: string[], collection: CardTemplate[]): CardTemplate[] {
+  return ids.map((id) => {
+    const card = collection.find((c) => c.id === id);
+    if (!card) {
+      throw new Error(`Card ${id} not found in collection`);
+    }
+    return card;
+  });
 }
 
 function makeUniqueId(cardTemplate: CardTemplate): CardTemplate {

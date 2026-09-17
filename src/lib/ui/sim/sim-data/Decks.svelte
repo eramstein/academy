@@ -3,11 +3,13 @@
   import { gs } from '@/lib/_state/main.svelte';
   import { uiState } from '@/lib/_state/state-ui.svelte';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { resolveDeckCards } from '@/lib/sim/deck';
   import Deck from '../Deck.svelte';
 
   let selected: DeckModel | null = $state(null);
 
   const decks = $derived(gs.player.decks);
+  const collection = $derived(gs.player.collection);
 
   $effect(() => {
     if (selected && !decks.includes(selected)) {
@@ -17,9 +19,11 @@
   });
 
   function deckColors(deck: DeckModel): string[] {
-    return [
-      ...new Set([...deck.cards, ...deck.lands].flatMap((c) => c.colors.map((col) => col.color))),
+    const cards = [
+      ...resolveDeckCards(deck.cards, collection),
+      ...resolveDeckCards(deck.lands, collection),
     ];
+    return [...new Set(cards.flatMap((c) => c.colors.map((col) => col.color)))];
   }
 
   function colorPath(color: string): string {

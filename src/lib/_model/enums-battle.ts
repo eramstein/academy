@@ -88,4 +88,5 @@ export enum AiTurnGoal {
   BreachRow = 'Breach Row', // try to breach a specific row for lethal damage
   RemoveUnit = 'Remove Unit', // remove a specific unit
   DestroyLand = 'Destroy Land', // destroy a specific land
+  LethalAttackRow = 'Lethal Attack Row', // there is a deterministic win in this row
 }

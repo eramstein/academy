@@ -4,7 +4,7 @@ import {
   CardType,
   TargetType,
   UnitType,
-  type Deck,
+  type DeckBlueprint,
   type UnitCardTemplate,
 } from '@/lib/_model';
 
@@ -781,7 +781,7 @@ const enchanter_lair = {
   aiHints: [AiTurnGoal.RemoveUnit],
 };
 
-export const BASE_DECK_GREEN: Deck = {
+export const BASE_DECK_GREEN: DeckBlueprint = {
   key: 'base',
   name: 'Base Green',
   cards: [
@@ -803,7 +803,7 @@ export const BASE_DECK_GREEN: Deck = {
   lands: [forest, plains, market, enchanter_lair],
 };
 
-export const BASE_DECK_RED: Deck = {
+export const BASE_DECK_RED: DeckBlueprint = {
   key: 'base',
   name: 'Base Red',
   cards: [
@@ -825,7 +825,7 @@ export const BASE_DECK_RED: Deck = {
   lands: [mountain, plains, market, enchanter_lair],
 };
 
-export const BASE_DECK_BLACK: Deck = {
+export const BASE_DECK_BLACK: DeckBlueprint = {
   key: 'base',
   name: 'Base Black',
   cards: [

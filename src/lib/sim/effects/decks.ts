@@ -3,7 +3,7 @@ import {
   CardColor,
   isUnitCard,
   type CardTemplate,
-  type Deck,
+  type DeckBlueprint,
   type UnitKeywords,
 } from '@/lib/_model';
 import { gs } from '@/lib/_state';
@@ -15,7 +15,7 @@ export interface GetDeckParameters {
 }
 
 export function getDeck(parameters: GetDeckParameters): string {
-  let deck: Deck | undefined = undefined;
+  let deck: DeckBlueprint | undefined = undefined;
   // base decks unlock the color in crafting skills
   if (parameters.deckKey === 'base_black') {
     deck = BASE_DECK_BLACK;

@@ -77,7 +77,7 @@ function makeAllNpcsConjure() {
       }
       const result = getRandomFromArray(options);
       conjureUnit(result, character.key);
-      character.decks[0]!.cards.push(result.template);
+      character.decks[0]!.cards.push(result.template.id);
     }
   }
 }

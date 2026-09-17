@@ -136,31 +136,41 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    padding: 0;
   }
 
   .card-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-content: flex-start;
     gap: 12px;
     min-height: 0;
     flex: 1 1 auto;
     overflow-y: auto;
+    /* Room for hover lift / shadow so they aren't clipped */
+    padding: 10px 8px 16px;
+    box-sizing: border-box;
   }
 
   .card-pick {
     padding: 0;
-    border: 1px solid transparent;
+    border: none;
     border-radius: 8px;
     background: transparent;
     color: inherit;
     font: inherit;
     line-height: 0;
     cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
   }
 
-  .card-pick:hover {
-    border-color: var(--color-golden);
+  .card-pick:hover,
+  .card-pick:focus-visible {
+    transform: translateY(-2px);
+    box-shadow:
+      0 3px 6px rgba(44, 37, 29, 0.22),
+      0 10px 22px rgba(44, 37, 29, 0.38);
   }
 
   .empty {

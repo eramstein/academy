@@ -1,7 +1,11 @@
-import type { Position, UnitDeployed } from '@/lib/_model';
+import { AiTurnGoal, isUnitCard, type Position, type UnitCard, type UnitDeployed } from '@/lib/_model';
 import { bs } from '@/lib/_state';
 import { getRandomFromArray } from '@/lib/_utils/random';
 import { getEmptyCells } from '../../boards';
+import { canAttack } from '../../combat';
+import { isPayable } from '../../cost';
+import { canMove } from '../../move';
+import { getAiPlayer } from '../../player';
 import { getDangerLevelPerRow, getOpponentCountPerRow, getOpponentUnitDamagePerRow } from '../rows';
 import { landDestructionValue } from './config';
 import { valueUnit } from './unit';
@@ -55,6 +59,25 @@ export function getHighestMoveValueInRow(
   return getHighestMoveValue(unit);
 }
 
+/** True if a stronger moveAndAttack unit or haste-in-hand can deliver lethal instead. */
+function hasHigherPowerLethalAlternative(unit: UnitDeployed): boolean {
+  const higherMoveAndAttack = bs.units.some(
+    (u) =>
+      u.ownerPlayerId === unit.ownerPlayerId &&
+      u.instanceId !== unit.instanceId &&
+      u.keywords?.moveAndAttack &&
+      canMove(u) &&
+      canAttack(u) &&
+      u.power > unit.power
+  );
+  if (higherMoveAndAttack) return true;
+
+  return getAiPlayer().hand.some(
+    (c) =>
+      isUnitCard(c) && c.keywords?.haste && isPayable(c) && (c as UnitCard).power > unit.power
+  );
+}
+
 const getMoveValue = (
   unit: UnitDeployed,
   cell: Position,
@@ -67,6 +90,21 @@ const getMoveValue = (
   const ennemyCount = ennemyCountPerRow[cell.row];
   const wouldBeDestroyed =
     (unit.health ?? unit.maxHealth) + (unit.keywords?.armor || 0) * ennemyCount <= ennemyPower;
+
+  // Lethal win this turn: attack (or join the lethal row) instead of diverting to block,
+  // unless a higher-power moveAndAttack / haste can deliver — then this unit may move away.
+  const lethalAttackGoal = bs.aiState.goals.find((g) => g.goal === AiTurnGoal.LethalAttackRow);
+  if (lethalAttackGoal && !hasHigherPowerLethalAlternative(unit)) {
+    const lethalRow = lethalAttackGoal.args.row as number;
+    if (unit.position?.row === lethalRow) {
+      return -Infinity;
+    }
+    const canJoinLethalThisTurn =
+      !!unit.keywords?.moveAndAttack || (!unit.position && !!unit.keywords?.haste);
+    if (canJoinLethalThisTurn) {
+      return cell.row === lethalRow ? Infinity : -Infinity;
+    }
+  }
 
   // If the unit stands in front of lethal, don't move
   if (unit.position && dangerLevelPerRow[unit.position.row] === Infinity) {

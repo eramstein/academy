@@ -1,10 +1,13 @@
 <script lang="ts">
   import { CardColor, type CardTemplate, type Deck as DeckModel } from '@/lib/_model';
+  import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { resolveDeckCards } from '@/lib/sim/deck';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
 
   let {
     deck,
+    collection = gs.player.collection,
     onCardClick,
     onNameChange,
     compact = false,
@@ -12,6 +15,7 @@
     minCards,
   }: {
     deck: DeckModel;
+    collection?: CardTemplate[];
     onCardClick?: (card: CardTemplate) => void;
     onNameChange?: (name: string) => void;
     compact?: boolean;
@@ -30,11 +34,13 @@
     return getAssetPath(`images/color_${color}.png`);
   }
 
+  const cards = $derived(resolveDeckCards(deck.cards, collection));
+  const lands = $derived(resolveDeckCards(deck.lands, collection));
   const colors = $derived([
-    ...new Set([...deck.cards, ...deck.lands].flatMap((c) => c.colors.map((col) => col.color))),
+    ...new Set([...cards, ...lands].flatMap((c) => c.colors.map((col) => col.color))),
   ]);
-  const sortedCards = $derived(sortCards(deck.cards));
-  const sortedLands = $derived(sortCards(deck.lands));
+  const sortedCards = $derived(sortCards(cards));
+  const sortedLands = $derived(sortCards(lands));
   const clickable = $derived(!!onCardClick);
   const landsOk = $derived(requiredLands === undefined || deck.lands.length === requiredLands);
   const cardsOk = $derived(minCards === undefined || deck.cards.length >= minCards);

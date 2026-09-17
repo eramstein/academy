@@ -15,7 +15,7 @@
 
   const visible = $derived(uiState.deckEditor.visible);
   const selectedIds = $derived(
-    new Set(draft ? [...draft.cards, ...draft.lands].map((card) => card.id) : [])
+    new Set(draft ? [...draft.cards, ...draft.lands] : [])
   );
   const landsOk = $derived(draft !== null && draft.lands.length === REQUIRED_LANDS);
   const cardsOk = $derived(draft !== null && draft.cards.length >= MIN_CARDS);
@@ -71,20 +71,20 @@
         showToast(`Decks need exactly ${REQUIRED_LANDS} lands.`, 'warning');
         return;
       }
-      draft.lands = [...draft.lands, card];
+      draft.lands = [...draft.lands, card.id];
       return;
     }
 
-    draft.cards = [...draft.cards, card];
+    draft.cards = [...draft.cards, card.id];
   }
 
   function removeCard(card: CardTemplate) {
     if (!draft) return;
     if (isLandCard(card)) {
-      draft.lands = draft.lands.filter((c) => c.id !== card.id);
+      draft.lands = draft.lands.filter((id) => id !== card.id);
       return;
     }
-    draft.cards = draft.cards.filter((c) => c.id !== card.id);
+    draft.cards = draft.cards.filter((id) => id !== card.id);
   }
 
   function save() {

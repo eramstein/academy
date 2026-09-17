@@ -22,14 +22,14 @@ function pickTarget(
   targets: (UnitDeployed | Land | Player)[]
 ): { target: UnitDeployed | Land | Player | null; value: number } {
   const playerTarget = targets.filter((t) => 'isPlayer' in t);
-  let playerValue = playerTarget.length
+  const playerValue = playerTarget.length
     ? playerTarget[0].life <= attacker.power
       ? Infinity
       : attacker.power * playerLifeValue
     : -1;
 
   const landTargets: Land[] = targets.filter((t) => isAttackTargetLand(t)) as Land[];
-  let landValue = landTargets.length
+  const landValue = landTargets.length
     ? landTargets[0].health <= attacker.power
       ? landDestructionValue
       : attacker.power * landLifeValue
@@ -44,7 +44,7 @@ function pickTarget(
       return { value: valueUnit(t) * wouldBeDestroyedFactor, target: t };
     })
     .sort((a, b) => b.value - a.value);
-  let unitValue = unitTargetsValues.length ? unitTargetsValues[0].value : -1;
+  const unitValue = unitTargetsValues.length ? unitTargetsValues[0].value : -1;
 
   const maxValue = Math.max(playerValue, landValue, unitValue);
 

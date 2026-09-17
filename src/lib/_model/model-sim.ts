@@ -222,6 +222,13 @@ export interface Region {
 export interface Deck {
   key: string;
   name: string;
+  cards: string[];
+  lands: string[];
+}
+
+export interface DeckBlueprint {
+  key: string;
+  name: string;
   cards: CardTemplate[];
   lands: CardTemplate[];
 }

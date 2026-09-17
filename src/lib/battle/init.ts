@@ -1,6 +1,14 @@
 import { config } from '../_config';
-import { AiTurnStrategy, type BattleState, type Card, type Deck, type Land } from '../_model';
+import {
+  AiTurnStrategy,
+  type BattleState,
+  type Card,
+  type CardTemplate,
+  type Deck,
+  type Land,
+} from '../_model';
 import { bs, gs } from '../_state';
+import { resolveDeckCards } from '../sim/deck';
 import { playAiTurn } from './ai/ai';
 import { drawCard, shuffleDeck } from './deck';
 import { initColorsFromLands } from './land';
@@ -19,6 +27,9 @@ export const defaultBattleState: BattleState = {
 };
 
 export const initBattle = (foeKey: string = 'administrator', playerDeck: Deck, foeDeck: Deck) => {
+  const playerCollection = gs.player.collection;
+  const foeCollection = gs.characters[foeKey].collection;
+
   bs.turn = 1;
   bs.isPlayersTurn = Math.random() > 0.5;
   bs.players = [
@@ -30,10 +41,10 @@ export const initBattle = (foeKey: string = 'administrator', playerDeck: Deck, f
       maxMana: config.initialMana,
       life: config.initialLife,
       hand: [],
-      deck: shuffleDeck(loadDeckCards(playerDeck, 0)),
+      deck: shuffleDeck(loadDeckCards(playerDeck, playerCollection, 0)),
       graveyard: [],
       colors: {},
-      lands: loadDeckLands(playerDeck, 0),
+      lands: loadDeckLands(playerDeck, playerCollection, 0),
       abilityUsed: false,
     },
     {
@@ -44,10 +55,10 @@ export const initBattle = (foeKey: string = 'administrator', playerDeck: Deck, f
       maxMana: config.initialMana,
       life: config.initialLife,
       hand: [],
-      deck: shuffleDeck(loadDeckCards(foeDeck, 1)),
+      deck: shuffleDeck(loadDeckCards(foeDeck, foeCollection, 1)),
       graveyard: [],
       colors: {},
-      lands: loadDeckLands(foeDeck, 1),
+      lands: loadDeckLands(foeDeck, foeCollection, 1),
       abilityUsed: false,
     },
   ];
@@ -69,28 +80,34 @@ export const initBattle = (foeKey: string = 'administrator', playerDeck: Deck, f
   }
 };
 
-function loadDeckCards(deck: Deck, ownerPlayerId: number): Card[] {
-  const deckCards: Card[] = [];
-  for (const card of deck.cards) {
-    deckCards.push({
-      ...card,
-      ownerPlayerId: ownerPlayerId,
-      instanceId: crypto.randomUUID(),
-    } as Card);
-  }
-  return deckCards;
+function loadDeckCards(
+  deck: Deck,
+  collection: CardTemplate[],
+  ownerPlayerId: number
+): Card[] {
+  return resolveDeckCards(deck.cards, collection).map(
+    (card) =>
+      ({
+        ...card,
+        ownerPlayerId,
+        instanceId: crypto.randomUUID(),
+      }) as Card
+  );
 }
 
-function loadDeckLands(deck: Deck, ownerPlayerId: number): Land[] {
-  const deckLands: Land[] = [];
-  for (const [index, land] of deck.lands.entries()) {
-    deckLands.push({
-      ...land,
-      ownerPlayerId: ownerPlayerId,
-      instanceId: crypto.randomUUID(),
-      position: index,
-      isRuined: false,
-    } as Land);
-  }
-  return deckLands;
+function loadDeckLands(
+  deck: Deck,
+  collection: CardTemplate[],
+  ownerPlayerId: number
+): Land[] {
+  return resolveDeckCards(deck.lands, collection).map(
+    (land, index) =>
+      ({
+        ...land,
+        ownerPlayerId,
+        instanceId: crypto.randomUUID(),
+        position: index,
+        isRuined: false,
+      }) as Land
+  );
 }

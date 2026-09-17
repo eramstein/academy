@@ -72,6 +72,9 @@ export function selectNextScene(placeKey: string) {
 }
 
 export function setEvent(event: SceneEvent, template: EventTemplate) {
+  if (event.text === gs.scene.event?.text) {
+    return;
+  }
   narrateText(event.text);
   gs.scene.event = event.options.length > 0 ? event : undefined;
   if (template.triggersOnce) {

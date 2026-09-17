@@ -37,6 +37,24 @@ export const AiPersonaNormal: AiPersona = {
 };
 
 function handleCardsToPlay(possibleActions: PossibleActions): boolean {
+  // LethalAttackRow: deploy strongest haste into the winning row before other plays
+  const lethalGoal = bs.aiState.goals.find((g) => g.goal === AiTurnGoal.LethalAttackRow);
+  if (lethalGoal && possibleActions.deployableUnits.length > 0) {
+    const hasteUnits = possibleActions.deployableUnits
+      .filter((u) => u.keywords?.haste)
+      .sort((a, b) => b.power - a.power);
+    if (hasteUnits.length > 0) {
+      const bestPosition = getHighestMoveValueInRow(
+        hasteUnits[0] as UnitDeployed,
+        lethalGoal.args.row
+      );
+      if (bestPosition && bestPosition.value > -Infinity) {
+        deployUnit(hasteUnits[0], bestPosition.cell);
+        return true;
+      }
+    }
+  }
+
   // priority 1: cards that match a goal
   if (bs.aiState.goals.length > 0) {
     for (const goalEntry of bs.aiState.goals) {
@@ -60,7 +78,8 @@ function handleCardsToPlay(possibleActions: PossibleActions): boolean {
         .sort((a, b) => b.cost - a.cost);
       for (const unit of matchingUnits) {
         const bestPosition =
-          goalEntry.goal === AiTurnGoal.BreachRow
+          goalEntry.goal === AiTurnGoal.BreachRow ||
+          goalEntry.goal === AiTurnGoal.LethalAttackRow
             ? getHighestMoveValueInRow(unit as UnitDeployed, goalEntry.args.row)
             : getHighestMoveValue(unit as UnitDeployed);
         if (bestPosition) {
@@ -127,17 +146,21 @@ function selectBestSpellForRemoveUnit(unit: UnitDeployed, spells: SpellCard[]): 
 }
 
 function handleDeployedUnits(possibleActions: PossibleActions): boolean {
-  // special case: if a BreachRow goal is active, move the strongest moveAndAttack unit into that row
-  const breachGoal = bs.aiState.goals.find((g) => g.goal === AiTurnGoal.BreachRow);
-  if (breachGoal && possibleActions.unitsWhoCanAttack?.length > 0) {
+  // Move the strongest moveAndAttack unit into a BreachRow / LethalAttackRow target
+  const rowGoal = bs.aiState.goals.find(
+    (g) => g.goal === AiTurnGoal.BreachRow || g.goal === AiTurnGoal.LethalAttackRow
+  );
+  if (rowGoal && possibleActions.unitsWhoCanAttack?.length > 0) {
     const candidates = possibleActions.unitsWhoCanAttack.filter(
       (u) =>
-        u.keywords?.moveAndAttack && possibleActions.unitsWhoCanMove?.some((m) => m.id === u.id)
+        u.keywords?.moveAndAttack &&
+        u.position.row !== rowGoal.args.row &&
+        possibleActions.unitsWhoCanMove?.some((m) => m.id === u.id)
     );
     if (candidates.length > 0) {
       const strongest = candidates.slice().sort((a, b) => b.power - a.power)[0];
-      const bestPosition = getHighestMoveValueInRow(strongest, breachGoal.args.row);
-      if (bestPosition) {
+      const bestPosition = getHighestMoveValueInRow(strongest, rowGoal.args.row);
+      if (bestPosition && bestPosition.value > -Infinity) {
         moveUnit(strongest, bestPosition.cell);
         return true;
       }

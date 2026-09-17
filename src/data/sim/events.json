@@ -229,7 +229,9 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [2],
+                    "daysOfWeek": [
+                      2
+                    ],
                     "period": "evening"
                   }
                 }
@@ -273,7 +275,10 @@
             "args": {
               "activity": {
                 "type": "date",
-                "participants": ["player", "emma"],
+                "participants": [
+                  "player",
+                  "emma"
+                ],
                 "placeKey": "cafeteria"
               },
               "schedule": {
@@ -292,5 +297,25 @@
     ],
     "triggersOnce": true,
     "characterArc": "emma"
+  },
+  {
+    "key": "conjuration-1",
+    "text": "This is an artificery class. Here, we'll learn how to create new cards. Conjuration consists in creating a new card from scratch. Try it!",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "day": 2
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "morning"
+        }
+      }
+    ],
+    "optionTemplates": [],
+    "triggersOnce": true
   }
 ]
