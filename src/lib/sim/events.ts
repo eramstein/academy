@@ -18,6 +18,7 @@ import {
 import { SceneActionTemplates } from './actions';
 import { getCharactersAtScene } from './characters';
 import { resolveEffectTemplates } from './effects';
+import { narrateText } from './narration';
 import { getCurrentScheduledActivity } from './schedule';
 
 /** Parameter shapes expected by each EventTriggerType (see doesTriggerMatch). */
@@ -87,6 +88,20 @@ export function getTriggeredSceneEvent():
       options: template.optionTemplates?.map(buildOption) ?? [],
     },
   };
+}
+
+export function simulateEvent(templateKey: string) {
+  const template = eventTemplates.find((eventTemplate) => eventTemplate.key === templateKey);
+  if (!template) {
+    return undefined;
+  }
+  const event = {
+    text: template.text,
+    options: template.optionTemplates?.map(buildOption) ?? [],
+  };
+  narrateText(event.text);
+  gs.scene.event = event;
+  return event;
 }
 
 export function consumeEventTemplate(template: StoredEventTemplate) {

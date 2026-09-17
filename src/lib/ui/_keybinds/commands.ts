@@ -1,6 +1,7 @@
 import { DayPeriod } from '../../_model';
 import { bs, gs } from '../../_state';
 import { scheduleClassesForCurrentTerm } from '../../sim/academy';
+import { simulateEvent } from '../../sim/events';
 import { goToPeriod } from '../../sim/time';
 
 const PERIODS = [DayPeriod.Morning, DayPeriod.Afternoon, DayPeriod.Evening];
@@ -40,6 +41,19 @@ export function executeCommand(input: string): CommandResult {
       }
       goToPeriod(day, period);
       return { ok: true, message: `Went to day ${day} ${period}` };
+    }
+
+    case 'e': {
+      // /e <event-key>
+      const eventKey = parts[1];
+      if (!eventKey) {
+        return { ok: false, message: 'Usage: /e <event-key>' };
+      }
+      const event = simulateEvent(eventKey);
+      if (!event) {
+        return { ok: false, message: `Event not found: ${eventKey}` };
+      }
+      return { ok: true, message: `Simulated event ${eventKey}` };
     }
 
     default:
