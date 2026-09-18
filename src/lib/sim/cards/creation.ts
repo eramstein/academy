@@ -56,7 +56,10 @@ export function buildSpellCard(parameters: CardCreationParameters): {
   actionName: string[];
 } {
   const cardColors = resolveCardColors(parameters.colors);
-  const action = pickRandomActionTemplate(cardColors.map((entry) => entry.color));
+  const action = pickRandomActionTemplate(
+    cardColors.map((entry) => entry.color),
+    parameters.actions
+  );
   return {
     card: {
       type: CardType.Spell,

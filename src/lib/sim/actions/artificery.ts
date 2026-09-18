@@ -29,6 +29,7 @@ export interface CardCreationParameters {
   hp?: number;
   retaliate?: number;
   keywords?: UnitKeywords;
+  actions?: string[];
   unitTypes?: UnitType[];
   resources: { type: ResourceType; count: number }[];
 }
@@ -51,7 +52,8 @@ export interface CardCreationResult {
 export function getNewCardTemplate(
   parameters: CardCreationParameters,
   spend = true,
-  characterKey = 'player'
+  characterKey = 'player',
+  prune = false
 ): CardCreationResult | null {
   if (!parameters.resources) {
     parameters.resources = [];
@@ -61,7 +63,7 @@ export function getNewCardTemplate(
   }
   const character = getActingCharacter(characterKey);
   const bonuses = getCardCreationBonuses(parameters.resources, characterKey);
-  const prunedParams = limitParametersToSkills(parameters, character);
+  const prunedParams = prune ? limitParametersToSkills(parameters, character) : parameters;
   const cardType = resolveCardType(prunedParams.cardType);
   const typedParams = { ...prunedParams, cardType };
   if (cardType === CardType.Spell) {
@@ -73,7 +75,7 @@ export function getNewCardTemplate(
 }
 
 export function invokeCard(parameters: CardCreationParameters, characterKey = 'player'): string {
-  const result = getNewCardTemplate(parameters, true, characterKey);
+  const result = getNewCardTemplate(parameters, true, characterKey, true);
   if (!result) {
     return '';
   }
@@ -121,6 +123,7 @@ function limitParametersToSkills(
 ): CardCreationParameters {
   const knownColors = character.craftingKnowledge.colors;
   const knownKeywords = character.craftingKnowledge.keywords;
+  const knownActions = character.craftingKnowledge.actions;
 
   let colors = parameters.colors?.filter((color) => knownColors?.[color]);
   if (!colors?.length) {
@@ -135,10 +138,16 @@ function limitParametersToSkills(
     keywords = Object.keys(pruned).length ? pruned : undefined;
   }
 
+  let actions = parameters.actions?.filter((action) => knownActions?.[action]);
+  if (!actions?.length) {
+    actions = knownActions ? Object.keys(knownActions) : undefined;
+  }
+
   return {
     ...parameters,
     colors,
     keywords,
+    actions,
   };
 }
 

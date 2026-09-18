@@ -32,16 +32,23 @@ const randomActionArgs: Record<string, () => Record<string, unknown>> = {
   fortifyLand: () => ({ amount: getRandomInteger(1, 4) }),
 };
 
-export function pickRandomActionTemplate(colors: CardColor[]): ActionTemplate {
+export function pickRandomActionTemplate(
+  colors: CardColor[],
+  allowedActions?: string[]
+): ActionTemplate {
   const colorBonus = combinedActionPreferences(colors);
-  const weightedKeys = Object.keys(actionTemplates)
+  const actionPool = allowedActions?.length
+    ? allowedActions.filter((key) => key in actionTemplates)
+    : Object.keys(actionTemplates);
+  const weightedKeys = actionPool
     .map((key) => ({
       item: key,
       weight: Math.max(0, DEFAULT_ACTION_PREVALENCE + (colorBonus[key] ?? 0)),
     }))
     .filter(({ weight }) => weight > 0);
+  const fallbackPool = actionPool.length ? actionPool : Object.keys(actionTemplates);
   const name =
-    weightedKeys.length > 0 ? getRandomWeighted(weightedKeys) : Object.keys(actionTemplates)[0];
+    weightedKeys.length > 0 ? getRandomWeighted(weightedKeys) : fallbackPool[0];
   const args = randomActionArgs[name]?.() ?? {};
   return actionTemplates[name](args);
 }

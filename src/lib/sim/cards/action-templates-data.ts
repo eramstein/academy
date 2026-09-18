@@ -47,7 +47,7 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
         },
       ],
     },
-    budget: (args.counters ?? 0) * 8,
+    budget: (args.counters ?? 0) * 6,
   }),
   healUnit: (args: { health: number }) => ({
     name: 'healUnit',
