@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { CardColor, type Action, type UnitKeywords } from '@/lib/_model';
+  import { CardColor, CardType, type Action, type UnitKeywords } from '@/lib/_model';
   import { gs } from '@/lib/_state';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import { performAction, type CardCreationParameters } from '@/lib/sim/actions';
+  import { getKeywordBudget } from '@/lib/sim/cards/card-budget';
+  import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
   import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
 
@@ -67,6 +69,19 @@
         : [],
     };
   });
+
+  const draftUnit = $derived.by((): PartialConjuredUnit => ({
+    type: CardType.Unit,
+    colors: (colors.length ? colors : availableColors).map((color) => ({ color, count: 1 })),
+    power,
+    maxHealth: hp,
+    retaliate,
+    keywords: toUnitKeywords(keywords) ?? {},
+  }));
+
+  function keywordCost(key: keyof UnitKeywords): number {
+    return getKeywordBudget(key, draftUnit);
+  }
 
   function toUnitKeywords(
     selected: Partial<Record<keyof UnitKeywords, number>>
@@ -363,6 +378,7 @@
                   aria-hidden="true"
                 />
                 <span class="keyword-name">{formatKeyword(key)}</span>
+                <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
                 {@render stepper(value, 0, formatKeyword(key), (next) => setKeyword(key, next))}
               </div>
             {:else}
@@ -383,6 +399,7 @@
                   aria-hidden="true"
                 />
                 <span class="keyword-name">{formatKeyword(key)}</span>
+                <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
                 <span class="toggle" class:on={selected} aria-hidden="true">
                   <span class="toggle-knob"></span>
                 </span>
@@ -792,6 +809,15 @@
     background: #efe4c8;
     border: 1px solid rgba(90, 75, 60, 0.28);
     border-radius: 6px;
+  }
+
+  .keyword-cost {
+    flex-shrink: 0;
+    min-width: 1.4rem;
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    color: #5c5146;
+    text-align: right;
   }
 
   .keyword-row .num-control input {

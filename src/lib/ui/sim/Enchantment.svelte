@@ -24,6 +24,7 @@
     getActionTemplateMeta,
     getActionTemplateNameForEffect,
   } from '@/lib/sim/cards/action-templates';
+  import { getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
   import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import CardFilters from '@/lib/ui/cards/CardFilters.svelte';
@@ -105,6 +106,16 @@
   const card = $derived(preview?.card ?? null);
   const unitCard = $derived(card && isUnitCard(card) ? card : null);
   const spellCard = $derived(card && isSpellCard(card) ? card : null);
+  const budgetUnit = $derived(
+    preview?.preview && isUnitCard(preview.preview)
+      ? preview.preview
+      : unitCard
+  );
+  const budgetSpell = $derived(
+    preview?.preview && isSpellCard(preview.preview)
+      ? preview.preview
+      : spellCard
+  );
   const maxCostIncrease = $derived(card ? 9 - card.cost : 1);
   const maxPowerCut = $derived(unitCard?.power ?? 0);
   const maxHealthCut = $derived(unitCard ? Math.max(0, unitCard.maxHealth - 1) : 0);
@@ -233,6 +244,30 @@
 
   function formatKeyword(keyword: string): string {
     return keyword.replace(/([a-z])([A-Z])/g, '$1 $2');
+  }
+
+  function keywordCost(key: keyof UnitKeywords): number {
+    if (!budgetUnit) return 0;
+    return getKeywordBudget(key, budgetUnit);
+  }
+
+  function actionParamCost(index: number, key: string): number {
+    if (!budgetSpell) return 0;
+    const action = budgetSpell.actions[index];
+    if (!action) return 0;
+    const colors = budgetSpell.colors.map((entry) => entry.color);
+    const current = Number(action.effect.args[key]) || 0;
+    const next = {
+      ...action,
+      effect: {
+        ...action.effect,
+        args: {
+          ...action.effect.args,
+          [key]: current + (isDistill ? -1 : 1),
+        },
+      },
+    };
+    return Math.abs(getActionBudget(next, colors) - getActionBudget(action, colors));
   }
 
   function hasBooleanKeyword(key: keyof UnitKeywords): boolean {
@@ -677,6 +712,7 @@
                           aria-hidden="true"
                         />
                         <span class="keyword-name">{formatKeyword(key)}</span>
+                        <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
                         {@render stepper(
                           value,
                           value > 0,
@@ -703,6 +739,7 @@
                           aria-hidden="true"
                         />
                         <span class="keyword-name">{formatKeyword(key)}</span>
+                        <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
                         <span class="toggle" class:on={selected} aria-hidden="true">
                           <span class="toggle-knob"></span>
                         </span>
@@ -732,6 +769,7 @@
                         aria-hidden="true"
                       />
                       <span class="keyword-name">{formatKeyword(key)}</span>
+                      <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
                       {@render stepper(
                         value,
                         value > 0,
@@ -762,6 +800,7 @@
                         aria-hidden="true"
                       />
                       <span class="keyword-name">{formatKeyword(key)}</span>
+                      <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
                       {#if owned}
                         <span class="owned-label">has</span>
                       {/if}
@@ -788,11 +827,12 @@
                   {@const value = actionArgValue(param.index, param.key)}
                   <div class="stat">
                     <div class="stat-label">
-                      {#if spellCard.actions.length > 1}
-                        {param.actionLabel}:
-                      {/if}
+                      {param.actionLabel}:
                       {param.label}
                       {isDistill ? '−' : '+'}
+                      <span class="effect-cost" title="Budget cost of one step"
+                        >{actionParamCost(param.index, param.key)}</span
+                      >
                     </div>
                     {@render stepper(
                       value,
@@ -1272,6 +1312,20 @@
     background: #efe4c8;
     border: 1px solid rgba(90, 75, 60, 0.28);
     border-radius: 6px;
+  }
+
+  .keyword-cost,
+  .effect-cost {
+    flex-shrink: 0;
+    min-width: 1.4rem;
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    color: #5c5146;
+    text-align: right;
+  }
+
+  .effect-cost {
+    margin-left: 0.35rem;
   }
 
   .owned-label {

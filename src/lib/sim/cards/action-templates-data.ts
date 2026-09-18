@@ -81,7 +81,7 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
       },
       targets: [
         {
-          type: TargetType.Units,
+          type: TargetType.Land,
         },
       ],
     },

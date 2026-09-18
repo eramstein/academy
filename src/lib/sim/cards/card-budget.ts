@@ -1,5 +1,10 @@
 import { CardColor, type UnitKeywords } from '@/lib/_model';
-import { getActionDefinitionBudget } from './action-templates';
+import type { ActionDefinition } from '@/lib/_model/model-battle';
+import {
+  getActionDefinitionBudget,
+  getActionTemplateNameForEffect,
+} from './action-templates';
+import { colorPie } from './color-pie';
 import type { PartialConjuredSpell, PartialConjuredUnit } from './creation';
 
 type FeatureCostKey = 'power' | 'maxHealth' | 'retaliate' | keyof UnitKeywords;
@@ -38,11 +43,42 @@ export const featureCosts: Record<FeatureCostKey, (card: PartialConjuredUnit) =>
   armorPiercing: () => 2,
 };
 
+// this is extra cost for keywords and actions to keep colors asymetric
+// e.g. 1.5 means the budget for that keyword or action is multiplied by 1.5
+// based on colorPie preferences
+const colorTax: Record<string, number> = {
+  '-3': 3,
+  '-2': 2,
+  '-1': 1.5,
+};
+
 export function getCardBudget(card: PartialConjuredUnit | PartialConjuredSpell): number {
   if ('actions' in card) {
-    return card.actions.reduce((sum, action) => sum + getActionDefinitionBudget(action), 0);
+    return getSpellBudget(card);
   }
   return getUnitBudget(card);
+}
+
+function getSpellBudget(card: PartialConjuredSpell): number {
+  const colors = uniqueColors(card);
+  return card.actions.reduce((sum, action) => sum + getActionBudget(action, colors), 0);
+}
+
+export function getActionBudget(definition: ActionDefinition, colors: CardColor[]): number {
+  const base = getActionDefinitionBudget(definition);
+  const name = getActionTemplateNameForEffect(definition.effect.name);
+  const preference = name ? actionPreference(colors, name) : 0;
+  return applyColorTax(base, preference);
+}
+
+export function getKeywordBudget(
+  key: keyof UnitKeywords,
+  card: PartialConjuredUnit,
+  amount = 1
+): number {
+  if (!amount) return 0;
+  const base = featureCosts[key](card) * amount;
+  return applyColorTax(base, keywordPreference(uniqueColors(card), key));
 }
 
 function getUnitBudget(card: PartialConjuredUnit): number {
@@ -56,11 +92,36 @@ function getUnitBudget(card: PartialConjuredUnit): number {
     boolean | number | undefined,
   ][]) {
     if (!value) continue;
-    const cost = featureCosts[key](card);
-    budget += typeof value === 'number' ? cost * value : cost;
+    budget += getKeywordBudget(key, card, typeof value === 'number' ? value : 1);
   }
 
   return budget;
+}
+
+function applyColorTax(cost: number, preference: number): number {
+  if (preference >= 0) return cost;
+  // Only the defined tiers apply; stronger negative sums still cap at the -3 tier
+  const multiplier = colorTax[String(Math.max(preference, -3))];
+  if (!multiplier) return cost;
+  return Math.ceil(cost * multiplier);
+}
+
+function uniqueColors(card: PartialConjuredUnit | PartialConjuredSpell): CardColor[] {
+  return [...new Set(card.colors.map((entry) => entry.color))];
+}
+
+function keywordPreference(colors: CardColor[], key: keyof UnitKeywords): number {
+  return colors.reduce(
+    (sum, color) => sum + (colorPie[color].keywordsPreferences[key] ?? 0),
+    0
+  );
+}
+
+function actionPreference(colors: CardColor[], actionName: string): number {
+  return colors.reduce(
+    (sum, color) => sum + (colorPie[color].actionPreferences[actionName] ?? 0),
+    0
+  );
 }
 
 export function getCostFromBudget(budget: number): {

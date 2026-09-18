@@ -8,11 +8,10 @@ import {
 } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getRandomFromObjectWeights } from '@/lib/_utils/random';
-import { cardBudget, featureCosts, getCardBudget } from '../cards/card-budget';
+import { cardBudget, featureCosts, getActionBudget, getCardBudget } from '../cards/card-budget';
 import { colorPie, getCardDominantColor } from '../cards/color-pie';
 import {
   getActionNumericParams,
-  getActionParamBudgetDelta,
   getActionTemplateMeta,
   getActionTemplateNameForEffect,
 } from '../cards/action-templates';
@@ -451,14 +450,28 @@ function spendUnitExtraBudget(card: UnitCardTemplate, extraBudget: number): numb
 }
 
 function spendSpellExtraBudget(card: SpellCardTemplate, extraBudget: number): number {
+  const colors = card.colors.map((entry) => entry.color);
   while (extraBudget > 0) {
     const options = card.actions.flatMap((action) =>
       getActionNumericParams(action)
-        .map((param) => ({
-          action,
-          param,
-          cost: getActionParamBudgetDelta(action, param.definitionKey, 1),
-        }))
+        .map((param) => {
+          const next = {
+            ...action,
+            effect: {
+              ...action.effect,
+              args: {
+                ...action.effect.args,
+                [param.definitionKey]:
+                  (Number(action.effect.args[param.definitionKey]) || 0) + 1,
+              },
+            },
+          };
+          return {
+            action,
+            param,
+            cost: getActionBudget(next, colors) - getActionBudget(action, colors),
+          };
+        })
         .filter((option) => option.cost > 0 && option.cost <= extraBudget)
     );
     if (!options.length) {

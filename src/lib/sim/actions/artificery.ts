@@ -333,10 +333,10 @@ function getSpellTemplate(
   actionName: string[];
 } {
   const flavorTemplates = loadFlavorTemplates();
-  const { card, budget: actionBudget, actionName } = buildSpellCard(parameters);
+  const { card, actionName } = buildSpellCard(parameters);
   const sureMastery = Math.floor(bonuses.extraBudgetChance);
   const extraBudget = Math.random() < bonuses.extraBudgetChance - sureMastery ? 1 : 0;
-  const budget = actionBudget - sureMastery - extraBudget;
+  const budget = getCardBudget(card) - sureMastery - extraBudget;
   const { cost } = getCostFromBudget(budget);
   const conjured: Omit<SpellCardTemplate, 'id' | 'name' | 'imageFileName'> = {
     ...card,
