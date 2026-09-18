@@ -12,6 +12,7 @@ import {
 } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getRandomFromArray } from '@/lib/_utils/random';
+import { getAbilityActionNames, type AbilityPick } from '../cards/ability-templates';
 import { getActionTemplateMeta } from '../cards/action-templates';
 import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
 import { buildSpellCard, buildUnitCard } from '../cards/creation';
@@ -21,6 +22,8 @@ import { getActingCharacter } from '../characters';
 import { narrateCardConjured } from '../narration';
 import { spendResources } from '../resources';
 
+export type { AbilityPick } from '../cards/ability-templates';
+
 export interface CardCreationParameters {
   cardType?: CardType;
   colors?: CardColor[];
@@ -29,6 +32,7 @@ export interface CardCreationParameters {
   hp?: number;
   retaliate?: number;
   keywords?: UnitKeywords;
+  ability?: AbilityPick;
   actions?: string[];
   unitTypes?: UnitType[];
   resources: { type: ResourceType; count: number }[];
@@ -64,14 +68,14 @@ export function getNewCardTemplate(
   const character = getActingCharacter(characterKey);
   const bonuses = getCardCreationBonuses(parameters.resources, characterKey);
   const prunedParams = prune ? limitParametersToSkills(parameters, character) : parameters;
-  const cardType = resolveCardType(prunedParams.cardType);
+  const cardType = resolveCardType(prunedParams);
   const typedParams = { ...prunedParams, cardType };
   if (cardType === CardType.Spell) {
     const { template, bonusBudget, actionName } = getSpellTemplate(typedParams, bonuses);
     return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
   }
-  const { template, bonusBudget } = getUnitTemplate(typedParams, bonuses, character);
-  return { template, bonusBudget, learningChance: bonuses.learningChance };
+  const { template, bonusBudget, actionName } = getUnitTemplate(typedParams, bonuses, character);
+  return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
 }
 
 export function invokeCard(parameters: CardCreationParameters, characterKey = 'player'): string {
@@ -103,7 +107,7 @@ export function getConjurationOtions(
   characterKey = 'player'
 ): CardCreationResult[] {
   const character = getActingCharacter(characterKey);
-  const optionsCount = 2 + Math.floor(character.craftingSkills.inspiration);
+  const optionsCount = 3 + Math.floor(character.craftingSkills.inspiration);
   if (!spendResources(parameters.resources ?? [])) {
     return [];
   }
@@ -138,6 +142,11 @@ function limitParametersToSkills(
     keywords = Object.keys(pruned).length ? pruned : undefined;
   }
 
+  let ability = parameters.ability;
+  if (ability && !knownActions?.[ability.action]) {
+    ability = undefined;
+  }
+
   let actions = parameters.actions?.filter((action) => knownActions?.[action]);
   if (!actions?.length) {
     actions = knownActions ? Object.keys(knownActions) : undefined;
@@ -147,6 +156,7 @@ function limitParametersToSkills(
     ...parameters,
     colors,
     keywords,
+    ability,
     actions,
   };
 }
@@ -258,11 +268,23 @@ function formatKnowledgeName(keyword: string): string {
   return keyword.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
 }
 
-function resolveCardType(cardType?: CardType): CardType.Unit | CardType.Spell {
-  if (cardType === CardType.Spell || cardType === CardType.Unit) {
-    return cardType;
+function resolveCardType(parameters: CardCreationParameters): CardType.Unit | CardType.Spell {
+  if (parameters.cardType === CardType.Spell || parameters.cardType === CardType.Unit) {
+    return parameters.cardType;
   }
-  return Math.random() < 0.95 ? CardType.Spell : CardType.Unit;
+  if (
+    parameters.power !== undefined ||
+    parameters.hp !== undefined ||
+    parameters.keywords ||
+    parameters.ability ||
+    parameters.unitTypes
+  ) {
+    return CardType.Unit;
+  }
+  if (parameters.actions?.length) {
+    return CardType.Spell;
+  }
+  return Math.random() < 0.25 ? CardType.Spell : CardType.Unit;
 }
 
 function joinKeywordNames(names: string[]): string {
@@ -282,6 +304,7 @@ function getUnitTemplate(
 ): {
   template: UnitCardTemplate;
   bonusBudget: number;
+  actionName: string[];
 } {
   const flavorTemplates = loadFlavorTemplates();
   const unitParams = { ...parameters };
@@ -321,6 +344,7 @@ function getUnitTemplate(
       name: flavor.name,
     },
     bonusBudget: sureMastery + extraBudget,
+    actionName: (conjured.abilities ?? []).flatMap(getAbilityActionNames),
   };
 }
 

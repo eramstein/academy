@@ -183,7 +183,7 @@ const giant_growth = {
         name: 'addCounters',
         args: {
           counterType: 'growth',
-          counterValue: 1,
+          counterValue: 4,
         },
       },
       targets: [

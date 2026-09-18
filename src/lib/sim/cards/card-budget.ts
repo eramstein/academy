@@ -1,9 +1,7 @@
 import { CardColor, type UnitKeywords } from '@/lib/_model';
-import type { ActionDefinition } from '@/lib/_model/model-battle';
-import {
-  getActionDefinitionBudget,
-  getActionTemplateNameForEffect,
-} from './action-templates';
+import type { Ability, ActionDefinition } from '@/lib/_model/model-battle';
+import { getTriggerCostMultiplier } from './ability-templates';
+import { getActionDefinitionBudget, getActionTemplateNameForEffect } from './action-templates';
 import { colorPie } from './color-pie';
 import type { PartialConjuredSpell, PartialConjuredUnit } from './creation';
 
@@ -71,6 +69,15 @@ export function getActionBudget(definition: ActionDefinition, colors: CardColor[
   return applyColorTax(base, preference);
 }
 
+export function getAbilityCost(ability: Ability, colors: CardColor[]): number {
+  const triggerCost = getTriggerCostMultiplier(ability.trigger);
+  const actionsCost = ability.actions.reduce(
+    (acc, action) => acc + getActionBudget(action, colors),
+    0
+  );
+  return Math.ceil(triggerCost * actionsCost);
+}
+
 export function getKeywordBudget(
   key: keyof UnitKeywords,
   card: PartialConjuredUnit,
@@ -95,6 +102,11 @@ function getUnitBudget(card: PartialConjuredUnit): number {
     budget += getKeywordBudget(key, card, typeof value === 'number' ? value : 1);
   }
 
+  const colors = uniqueColors(card);
+  for (const ability of card.abilities ?? []) {
+    budget += getAbilityCost(ability, colors);
+  }
+
   return budget;
 }
 
@@ -111,10 +123,7 @@ function uniqueColors(card: PartialConjuredUnit | PartialConjuredSpell): CardCol
 }
 
 function keywordPreference(colors: CardColor[], key: keyof UnitKeywords): number {
-  return colors.reduce(
-    (sum, color) => sum + (colorPie[color].keywordsPreferences[key] ?? 0),
-    0
-  );
+  return colors.reduce((sum, color) => sum + (colorPie[color].keywordsPreferences[key] ?? 0), 0);
 }
 
 function actionPreference(colors: CardColor[], actionName: string): number {

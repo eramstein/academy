@@ -1,6 +1,8 @@
 import {
   isSpellCard,
   isUnitCard,
+  type Ability,
+  type ActionDefinition,
   type CardTemplate,
   type SpellCardTemplate,
   type UnitCardTemplate,
@@ -8,6 +10,7 @@ import {
 } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getRandomFromObjectWeights } from '@/lib/_utils/random';
+import { buildAbility, getAbilityActionNames, type AbilityPick } from '../cards/ability-templates';
 import { cardBudget, featureCosts, getActionBudget, getCardBudget } from '../cards/card-budget';
 import { colorPie, getCardDominantColor } from '../cards/color-pie';
 import {
@@ -28,6 +31,9 @@ export interface AugmentParameters {
   retaliate?: number;
   keywords?: Partial<Record<keyof UnitKeywords, number>>;
   actionArgs?: ActionArgDeltas;
+  ability?: AbilityPick;
+  abilityArgs?: ActionArgDeltas;
+  removeAbilities?: number[];
 }
 
 export interface AugmentPreview {
@@ -47,6 +53,9 @@ export interface DistillParameters {
   retaliate?: number;
   keywords?: Partial<Record<keyof UnitKeywords, number>>;
   actionArgs?: ActionArgDeltas;
+  ability?: AbilityPick;
+  abilityArgs?: ActionArgDeltas;
+  removeAbilities?: number[];
 }
 
 export interface DistillPreview {
@@ -257,6 +266,7 @@ function describeCardChanges(oldCard: CardTemplate, newCard: CardTemplate): stri
       parts.push(`retaliate ${oldCard.retaliate} → ${newCard.retaliate}`);
     }
     parts.push(...describeKeywordChanges(oldCard.keywords, newCard.keywords));
+    parts.push(...describeAbilityChanges(oldCard.abilities, newCard.abilities));
   }
 
   if (isSpellCard(oldCard) && isSpellCard(newCard)) {
@@ -292,6 +302,71 @@ function describeKeywordChanges(
     }
   }
   return parts;
+}
+
+function describeAbilityChanges(
+  oldAbilities: Ability[] | undefined,
+  newAbilities: Ability[] | undefined
+): string[] {
+  const parts: string[] = [];
+  const oldList = oldAbilities ?? [];
+  const newList = newAbilities ?? [];
+  const oldLabels = oldList.map(abilityLabel);
+  const unmatched = [...oldLabels];
+
+  for (const label of newList.map(abilityLabel)) {
+    const index = unmatched.indexOf(label);
+    if (index === -1) {
+      parts.push(`gained ${label}`);
+    } else {
+      unmatched.splice(index, 1);
+    }
+  }
+  for (const label of unmatched) {
+    parts.push(`lost ${label}`);
+  }
+
+  const shared = Math.min(oldList.length, newList.length);
+  for (let index = 0; index < shared; index++) {
+    if (abilityLabel(oldList[index]) !== abilityLabel(newList[index])) continue;
+    parts.push(...describeAbilityArgChanges(oldList[index], newList[index], oldList.length > 1));
+  }
+
+  return parts;
+}
+
+function describeAbilityArgChanges(
+  oldAbility: Ability,
+  newAbility: Ability,
+  qualify: boolean
+): string[] {
+  const parts: string[] = [];
+  const count = Math.max(oldAbility.actions.length, newAbility.actions.length);
+  for (let index = 0; index < count; index++) {
+    const oldAction = oldAbility.actions[index];
+    const newAction = newAbility.actions[index];
+    if (!oldAction || !newAction) continue;
+    for (const param of getActionNumericParams(oldAction)) {
+      const oldValue = Number(oldAction.effect.args[param.definitionKey]) || 0;
+      const newValue = Number(newAction.effect.args[param.definitionKey]) || 0;
+      if (oldValue === newValue) continue;
+      const label = param.label.toLowerCase();
+      parts.push(
+        qualify
+          ? `${abilityLabel(newAbility)} ${label} ${oldValue} → ${newValue}`
+          : `${label} ${oldValue} → ${newValue}`
+      );
+    }
+  }
+  return parts;
+}
+
+function abilityLabel(ability: Ability): string {
+  const actionName = getAbilityActionNames(ability)[0];
+  const actionLabel = actionName
+    ? (getActionTemplateMeta(actionName)?.label ?? actionName)
+    : (ability.actions[0]?.effect.name ?? 'ability');
+  return `${ability.trigger.type}: ${actionLabel}`.toLowerCase();
 }
 
 function describeActionArgChanges(
@@ -396,6 +471,39 @@ function getDistillCutError(
         const current = Number(action.effect.args[argKey]) || 0;
         if (value > current - MIN_ACTION_ARG) {
           return `Cannot cut ${param.label.toLowerCase()} below ${MIN_ACTION_ARG}: ${current}.`;
+        }
+      }
+    }
+  }
+
+  if (isUnitCard(card)) {
+    const removed = new Set(parameters.removeAbilities ?? []);
+    if (parameters.removeAbilities) {
+      for (const index of parameters.removeAbilities) {
+        if (!card.abilities?.[index]) {
+          return `Card does not have ability ${index}.`;
+        }
+      }
+    }
+    if (parameters.abilityArgs) {
+      for (const [indexKey, args] of Object.entries(parameters.abilityArgs)) {
+        const index = Number(indexKey);
+        if (removed.has(index)) continue;
+        const action = card.abilities?.[index]?.actions[0];
+        if (!action) {
+          return `Card does not have ability ${indexKey}.`;
+        }
+        const params = getActionNumericParams(action);
+        for (const [argKey, value] of Object.entries(args)) {
+          if (!value) continue;
+          const param = params.find((entry) => entry.definitionKey === argKey);
+          if (!param) {
+            return `Ability does not have adjustable parameter: ${argKey}.`;
+          }
+          const current = Number(action.effect.args[argKey]) || 0;
+          if (value > current - MIN_ACTION_ARG) {
+            return `Cannot cut ${param.label.toLowerCase()} below ${MIN_ACTION_ARG}: ${current}.`;
+          }
         }
       }
     }
@@ -509,6 +617,14 @@ function makeNewCardTemplate(
         }
       }
     }
+
+    applyAbilityArgDeltas(target, parameters.abilityArgs, 1);
+    if (parameters.ability) {
+      const ability = buildAbility(parameters.ability);
+      if (ability) {
+        target.abilities = [...(target.abilities ?? []), ability];
+      }
+    }
   }
 
   if (isSpellCard(target)) {
@@ -542,6 +658,15 @@ function makeDistilledCardTemplate(
         }
       }
     }
+
+    applyAbilityArgDeltas(target, parameters.abilityArgs, -1);
+    if (parameters.removeAbilities?.length) {
+      const removed = new Set(parameters.removeAbilities);
+      target.abilities = target.abilities?.filter((_, index) => !removed.has(index));
+      if (!target.abilities?.length) {
+        target.abilities = undefined;
+      }
+    }
   }
 
   if (isSpellCard(target)) {
@@ -560,32 +685,72 @@ function applyActionArgDeltas(
   for (const [indexKey, args] of Object.entries(deltas)) {
     const action = card.actions[Number(indexKey)];
     if (!action) continue;
-    for (const [argKey, value] of Object.entries(args)) {
-      if (!value) continue;
-      const current = Number(action.effect.args[argKey]) || 0;
-      action.effect.args[argKey] = Math.max(0, current + sign * value);
-    }
+    applyArgDeltas(action, args, sign);
   }
+}
+
+function applyAbilityArgDeltas(
+  card: UnitCardTemplate,
+  deltas: ActionArgDeltas | undefined,
+  sign: 1 | -1
+) {
+  if (!deltas) return;
+  for (const [indexKey, args] of Object.entries(deltas)) {
+    const action = card.abilities?.[Number(indexKey)]?.actions[0];
+    if (!action) continue;
+    applyArgDeltas(action, args, sign);
+  }
+}
+
+function applyArgDeltas(
+  action: ActionDefinition,
+  args: Record<string, number>,
+  sign: 1 | -1
+) {
+  for (const [argKey, value] of Object.entries(args)) {
+    if (!value) continue;
+    const current = Number(action.effect.args[argKey]) || 0;
+    action.effect.args[argKey] = Math.max(0, current + sign * value);
+  }
+}
+
+function cloneActionDefinition(action: ActionDefinition): ActionDefinition {
+  return {
+    ...action,
+    effect: {
+      name: action.effect.name,
+      args: { ...action.effect.args },
+    },
+    targets: action.targets?.map((target) => ({ ...target })),
+  };
+}
+
+function cloneAbility(ability: Ability): Ability {
+  return {
+    ...ability,
+    trigger: {
+      ...ability.trigger,
+      range: ability.trigger.range ? { ...ability.trigger.range } : undefined,
+      staticRecompute: ability.trigger.staticRecompute
+        ? [...ability.trigger.staticRecompute]
+        : undefined,
+    },
+    actions: ability.actions.map(cloneActionDefinition),
+  };
 }
 
 function cloneCardTemplate<T extends CardTemplate>(card: T): T {
   if (isSpellCard(card)) {
     return {
       ...card,
-      actions: card.actions.map((action) => ({
-        ...action,
-        effect: {
-          name: action.effect.name,
-          args: { ...action.effect.args },
-        },
-        targets: action.targets?.map((target) => ({ ...target })),
-      })),
+      actions: card.actions.map(cloneActionDefinition),
     } as T;
   }
   if (isUnitCard(card)) {
     return {
       ...card,
       keywords: card.keywords ? { ...card.keywords } : undefined,
+      abilities: card.abilities?.map(cloneAbility),
     } as T;
   }
   return { ...card };

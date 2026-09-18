@@ -3,7 +3,20 @@
   import { gs } from '@/lib/_state';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import { performAction, type CardCreationParameters } from '@/lib/sim/actions';
-  import { getKeywordBudget } from '@/lib/sim/cards/card-budget';
+  import {
+    buildAbility,
+    getTriggerTemplateAsset,
+    getTriggerTemplateLabel,
+    TRIGGER_TEMPLATE_KEYS,
+  } from '@/lib/sim/cards/ability-templates';
+  import {
+    ACTION_TEMPLATE_KEYS,
+    createActionTemplate,
+    defaultActionFactoryArgs,
+    getActionTemplateMeta,
+    getActionTooltip,
+  } from '@/lib/sim/cards/action-templates';
+  import { getAbilityCost, getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
   import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
   import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
@@ -19,6 +32,7 @@
   } = $props();
 
   const STAT_MAX = 20;
+  const CARD_TYPES = [CardType.Unit, CardType.Spell] as const;
   const woodPath = getAssetPath('images/wood_chip_base.png');
   const tablePath = getAssetPath('images/table.jpg');
   const parchmentPath = getAssetPath('images/parchment.png');
@@ -31,11 +45,15 @@
   }
 
   const startingColors = resolveAvailableColors();
+  let cardType = $state<CardType.Unit | CardType.Spell>(CardType.Unit);
   let colors = $state<CardColor[]>(startingColors.length === 1 ? [startingColors[0]] : []);
   let power = $state(1);
   let hp = $state(1);
   let retaliate = $state(0);
   let keywords = $state<Partial<Record<keyof UnitKeywords, number>>>({});
+  let abilityTrigger = $state<string>('onDeploy');
+  let abilityAction = $state<string | null>(null);
+  let spellAction = $state<string | null>(null);
 
   function cancel() {
     (onBack ?? onDone)();
@@ -55,33 +73,65 @@
     KEYWORD_KEYS.filter((key) => !!gs.player.craftingKnowledge.keywords?.[key])
   );
   const availableKeywords = $derived(knownKeywords.length ? knownKeywords : KEYWORD_KEYS);
+  const knownActions = $derived(
+    ACTION_TEMPLATE_KEYS.filter((name) => !!gs.player.craftingKnowledge.actions?.[name])
+  );
+
+  const isUnit = $derived(cardType === CardType.Unit);
+  const selectedColors = $derived(colors.length ? colors : availableColors);
+  const abilityPick = $derived(
+    abilityAction ? { trigger: abilityTrigger, action: abilityAction } : undefined
+  );
+  const draftAbility = $derived(abilityPick ? buildAbility(abilityPick) : null);
 
   const parameters = $derived.by((): CardCreationParameters => {
-    const selectedKeywords = toUnitKeywords(keywords);
+    const resources = Array.isArray(action.actionParameters.resources)
+      ? action.actionParameters.resources
+      : [];
+    if (cardType === CardType.Spell) {
+      return {
+        cardType: CardType.Spell,
+        colors: colors.length ? colors : undefined,
+        actions: spellAction ? [spellAction] : undefined,
+        resources,
+      };
+    }
     return {
+      cardType: CardType.Unit,
       colors: colors.length ? colors : undefined,
       power,
       hp,
       retaliate,
-      keywords: selectedKeywords,
-      resources: Array.isArray(action.actionParameters.resources)
-        ? action.actionParameters.resources
-        : [],
+      keywords: toUnitKeywords(keywords),
+      ability: abilityPick,
+      resources,
     };
   });
 
   const draftUnit = $derived.by((): PartialConjuredUnit => ({
     type: CardType.Unit,
-    colors: (colors.length ? colors : availableColors).map((color) => ({ color, count: 1 })),
+    colors: selectedColors.map((color) => ({ color, count: 1 })),
     power,
     maxHealth: hp,
     retaliate,
     keywords: toUnitKeywords(keywords) ?? {},
+    abilities: draftAbility ? [draftAbility] : undefined,
   }));
 
   function keywordCost(key: keyof UnitKeywords): number {
     return getKeywordBudget(key, draftUnit);
   }
+
+  function abilityCost(): number {
+    if (!draftAbility) return 0;
+    return getAbilityCost(draftAbility, selectedColors);
+  }
+
+  const spellActionCost = $derived.by(() => {
+    if (!spellAction) return 0;
+    const template = createActionTemplate(spellAction, defaultActionFactoryArgs(spellAction));
+    return getActionBudget(template.definition, selectedColors);
+  });
 
   function toUnitKeywords(
     selected: Partial<Record<keyof UnitKeywords, number>>
@@ -142,6 +192,18 @@
       next[key] = 1;
     }
     keywords = next;
+  }
+
+  function setAbilityTrigger(key: string) {
+    abilityTrigger = key;
+  }
+
+  function toggleAbilityAction(name: string) {
+    abilityAction = abilityAction === name ? null : name;
+  }
+
+  function toggleSpellAction(name: string) {
+    spellAction = spellAction === name ? null : name;
   }
 
   function adjustKeyword(key: keyof UnitKeywords, delta: number) {
@@ -286,6 +348,28 @@
         <span class="star" aria-hidden="true"></span>
       </h2>
 
+      <section class="section" aria-label="Card type">
+        <h3 class="section-heading">
+          <span class="section-icon star-icon" aria-hidden="true"></span>
+          Type
+        </h3>
+        <div class="type-choices" role="radiogroup" aria-label="Card type">
+          {#each CARD_TYPES as type (type)}
+            {@const selected = cardType === type}
+            <button
+              type="button"
+              class="type-btn"
+              class:selected
+              role="radio"
+              aria-checked={selected}
+              onclick={() => (cardType = type)}
+            >
+              {capitalize(type)}
+            </button>
+          {/each}
+        </div>
+      </section>
+
       <section class="section" aria-label="Colors">
         <h3 class="section-heading">
           <span class="section-icon star-icon" aria-hidden="true"></span>
@@ -313,6 +397,7 @@
         </div>
       </section>
 
+      {#if isUnit}
       <section class="section" aria-label="Stats">
         <h3 class="section-heading">
           <span class="section-icon star-icon" aria-hidden="true"></span>
@@ -409,6 +494,103 @@
         </div>
       </section>
 
+      <section class="section abilities-section" aria-label="Ability">
+        <h3 class="section-heading">
+          <span class="section-icon star-icon" aria-hidden="true"></span>
+          Ability
+          {#if draftAbility}
+            <span class="ability-cost" title="Budget cost">{abilityCost()}</span>
+          {/if}
+        </h3>
+        {#if knownActions.length === 0}
+          <p class="empty">No known actions yet.</p>
+        {:else}
+          <div class="ability-group">
+            <div class="ability-label">Trigger</div>
+            <div class="keyword-list">
+              {#each TRIGGER_TEMPLATE_KEYS as key (key)}
+                {@const selected = abilityTrigger === key}
+                <div
+                  class="keyword-row"
+                  class:on={selected}
+                  role="switch"
+                  aria-checked={selected}
+                  title={getTriggerTemplateLabel(key)}
+                  onclick={() => setAbilityTrigger(key)}
+                >
+                  <img
+                    class="keyword-icon"
+                    src={getAssetPath(getTriggerTemplateAsset(key))}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <span class="keyword-name">{getTriggerTemplateLabel(key)}</span>
+                  <span class="toggle" class:on={selected} aria-hidden="true">
+                    <span class="toggle-knob"></span>
+                  </span>
+                </div>
+              {/each}
+            </div>
+          </div>
+          <div class="ability-group">
+            <div class="ability-label">Action</div>
+            <div class="keyword-list">
+              {#each knownActions as name (name)}
+                {@const selected = abilityAction === name}
+                {@const meta = getActionTemplateMeta(name)}
+                <div
+                  class="keyword-row"
+                  class:on={selected}
+                  role="switch"
+                  aria-checked={selected}
+                  title={getActionTooltip(name)}
+                  onclick={() => toggleAbilityAction(name)}
+                >
+                  <span class="keyword-name">{meta?.label ?? name}</span>
+                  <span class="toggle" class:on={selected} aria-hidden="true">
+                    <span class="toggle-knob"></span>
+                  </span>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/if}
+      </section>
+      {:else}
+      <section class="section abilities-section" aria-label="Effect">
+        <h3 class="section-heading">
+          <span class="section-icon star-icon" aria-hidden="true"></span>
+          Effect
+          {#if spellAction}
+            <span class="ability-cost" title="Budget cost">{spellActionCost}</span>
+          {/if}
+        </h3>
+        {#if knownActions.length === 0}
+          <p class="empty">No known actions yet.</p>
+        {:else}
+          <div class="keyword-list">
+            {#each knownActions as name (name)}
+              {@const selected = spellAction === name}
+              {@const meta = getActionTemplateMeta(name)}
+              <div
+                class="keyword-row"
+                class:on={selected}
+                role="switch"
+                aria-checked={selected}
+                title={getActionTooltip(name)}
+                onclick={() => toggleSpellAction(name)}
+              >
+                <span class="keyword-name">{meta?.label ?? name}</span>
+                <span class="toggle" class:on={selected} aria-hidden="true">
+                  <span class="toggle-knob"></span>
+                </span>
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </section>
+      {/if}
+
       <footer class="actions">
         <button type="button" class="action-btn cancel" onclick={cancel}>
           {onBack ? 'Back' : 'Cancel'}
@@ -451,7 +633,7 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    overflow: hidden;
+    overflow-y: auto;
     background: #e8dcc4 var(--parchment) center / cover;
     background-blend-mode: multiply;
     color: #2c251d;
@@ -509,6 +691,37 @@
   .star-icon {
     width: 12px;
     height: 12px;
+  }
+
+  .type-choices {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .type-btn {
+    min-width: 7.5rem;
+    padding: 8px 20px;
+    color: #2c251d;
+    background: #efe4c8;
+    border: 1px solid rgba(90, 75, 60, 0.45);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .type-btn:hover {
+    background: #f5ead0;
+  }
+
+  .type-btn.selected {
+    border-color: var(--color-golden);
+    background: rgba(191, 161, 74, 0.22);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.35),
+      0 0 0 1px #8a6a28;
   }
 
   .colors {
@@ -735,12 +948,49 @@
     cursor: default;
   }
 
-  .keywords-section {
+  .keywords-section,
+  .abilities-section {
     flex: 1 1 auto;
     min-height: 0;
     display: flex;
     flex-direction: column;
     margin-bottom: 0;
+  }
+
+  .abilities-section {
+    flex: 0 1 auto;
+    margin-top: 10px;
+  }
+
+  .empty {
+    margin: 0;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6a5c4c;
+  }
+
+  .ability-group + .ability-group {
+    margin-top: 10px;
+  }
+
+  .ability-label {
+    margin: 0 0 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5c5146;
+  }
+
+  .section-heading .ability-cost {
+    margin-left: auto;
+    min-width: 1.4rem;
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+    text-transform: none;
+    color: #5c5146;
+    text-align: right;
   }
 
   .keyword-list {

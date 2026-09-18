@@ -15,6 +15,7 @@ import {
   getRandomWeighted,
 } from '@/lib/_utils/random';
 import type { CardCreationParameters } from '../actions';
+import { buildAbility, pickRandomAbility } from './ability-templates';
 import { pickRandomActionTemplate } from './action-templates';
 import { colorPie, type StatsPreference } from './color-pie';
 import { KEYWORD_KEYS, NUMERIC_KEYWORDS, keywordConfig } from './keywords';
@@ -34,6 +35,10 @@ export function buildUnitCard(
   }
   if (parameters.keywords) {
     card.keywords = parameters.keywords;
+  }
+  if (parameters.ability) {
+    const ability = buildAbility(parameters.ability);
+    card.abilities = ability ? [ability] : [];
   }
   if (parameters.unitTypes) {
     card.unitTypes = parameters.unitTypes;
@@ -103,6 +108,7 @@ function getRandomUnitCardTemplate(
       isConjuration,
       character
     ),
+    abilities: randomAbilities(cardColors.map((entry) => entry.color)),
     unitTypes: randomUnitTypes(cardColors.map((entry) => entry.color)),
   };
 }
@@ -152,6 +158,14 @@ function allowedUnitTypesForColors(colors: CardColor[]): UnitType[] {
   return Object.values(UnitType).filter(
     (unitType) => !restrictedTypes.has(unitType) || typesForCardColors.has(unitType)
   );
+}
+
+function randomAbilities(colors: CardColor[]): UnitCardTemplate['abilities'] {
+  if (Math.random() >= 0.5) {
+    return undefined;
+  }
+  const picked = pickRandomAbility(colors);
+  return picked ? [picked.ability] : undefined;
 }
 
 function randomKeywords(

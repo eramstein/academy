@@ -32,6 +32,24 @@ const randomActionArgs: Record<string, () => Record<string, unknown>> = {
   fortifyLand: () => ({ amount: getRandomInteger(1, 4) }),
 };
 
+export const ACTION_TEMPLATE_KEYS = Object.keys(actionTemplates);
+
+const DEFAULT_ACTION_ARG = 1;
+
+export function defaultActionFactoryArgs(name: string): Record<string, number> {
+  return Object.fromEntries(
+    (actionNumericParams[name] ?? []).map((param) => [param.factoryKey, DEFAULT_ACTION_ARG])
+  );
+}
+
+export function createActionTemplate(
+  name: string,
+  factoryArgs?: Record<string, number>
+): ActionTemplate {
+  const args = factoryArgs ?? randomActionArgs[name]?.() ?? {};
+  return actionTemplates[name](args);
+}
+
 export function pickRandomActionTemplate(
   colors: CardColor[],
   allowedActions?: string[]
@@ -39,18 +57,17 @@ export function pickRandomActionTemplate(
   const colorBonus = combinedActionPreferences(colors);
   const actionPool = allowedActions?.length
     ? allowedActions.filter((key) => key in actionTemplates)
-    : Object.keys(actionTemplates);
+    : ACTION_TEMPLATE_KEYS;
   const weightedKeys = actionPool
     .map((key) => ({
       item: key,
       weight: Math.max(0, DEFAULT_ACTION_PREVALENCE + (colorBonus[key] ?? 0)),
     }))
     .filter(({ weight }) => weight > 0);
-  const fallbackPool = actionPool.length ? actionPool : Object.keys(actionTemplates);
+  const fallbackPool = actionPool.length ? actionPool : ACTION_TEMPLATE_KEYS;
   const name =
     weightedKeys.length > 0 ? getRandomWeighted(weightedKeys) : fallbackPool[0];
-  const args = randomActionArgs[name]?.() ?? {};
-  return actionTemplates[name](args);
+  return createActionTemplate(name);
 }
 
 export function getActionTemplateNameForEffect(effectName: string): string | undefined {

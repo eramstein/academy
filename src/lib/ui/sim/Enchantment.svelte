@@ -5,6 +5,7 @@
     CardType,
     isSpellCard,
     isUnitCard,
+    type Ability,
     type Action,
     type UnitKeywords,
   } from '@/lib/_model';
@@ -20,11 +21,21 @@
     type DistillParameters,
   } from '@/lib/sim/actions';
   import {
+    buildAbility,
+    getAbilityActionNames,
+    getTriggerTemplateAsset,
+    getTriggerTemplateKey,
+    getTriggerTemplateLabel,
+    TRIGGER_TEMPLATE_KEYS,
+  } from '@/lib/sim/cards/ability-templates';
+  import {
+    ACTION_TEMPLATE_KEYS,
     getActionNumericParams,
     getActionTemplateMeta,
     getActionTemplateNameForEffect,
+    getActionTooltip,
   } from '@/lib/sim/cards/action-templates';
-  import { getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
+  import { getAbilityCost, getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
   import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import CardFilters from '@/lib/ui/cards/CardFilters.svelte';
@@ -52,6 +63,10 @@
   let retaliate = $state(0);
   let keywords = $state<Partial<Record<keyof UnitKeywords, number>>>({});
   let actionArgs = $state<ActionArgDeltas>({});
+  let abilityTrigger = $state<string | null>(null);
+  let abilityAction = $state<string | null>(null);
+  let abilityArgs = $state<ActionArgDeltas>({});
+  let removeAbilities = $state<number[]>([]);
   let colorFilter = $state<CardColor | null>(null);
   let costFilter = $state<number | null>(null);
   let typeFilter = $state<CardType | null>(null);
@@ -75,6 +90,9 @@
   const knownKeywords = $derived(
     KEYWORD_KEYS.filter((key) => !!gs.player.craftingKnowledge.keywords?.[key])
   );
+  const knownActions = $derived(
+    ACTION_TEMPLATE_KEYS.filter((name) => !!gs.player.craftingKnowledge.actions?.[name])
+  );
 
   const parameters = $derived.by((): AugmentParameters | DistillParameters | null => {
     if (!cardId) return null;
@@ -82,6 +100,11 @@
       Object.entries(keywords).filter(([, value]) => value)
     ) as Partial<Record<keyof UnitKeywords, number>>;
     const selectedActionArgs = compactActionArgs(actionArgs);
+    const selectedAbilityArgs = compactActionArgs(abilityArgs);
+    const abilityPick =
+      !isDistill && abilityTrigger && abilityAction
+        ? { trigger: abilityTrigger, action: abilityAction }
+        : undefined;
     const shared = {
       cardId,
       power: power || undefined,
@@ -89,6 +112,9 @@
       retaliate: retaliate || undefined,
       keywords: Object.keys(selectedKeywords).length ? selectedKeywords : undefined,
       actionArgs: selectedActionArgs,
+      ability: abilityPick,
+      abilityArgs: selectedAbilityArgs,
+      removeAbilities: isDistill && removeAbilities.length ? removeAbilities : undefined,
     };
     if (isDistill) {
       return { ...shared, costDecrease: 1 };
@@ -136,6 +162,24 @@
         label: param.label,
         actionLabel,
         current: Number(spellAction.effect.args[param.definitionKey]) || 0,
+      }));
+    });
+  });
+  const unitAbilityParams = $derived.by(() => {
+    if (!unitCard?.abilities) return [];
+    return unitCard.abilities.flatMap((ability, index) => {
+      const abilityActionDef = ability.actions[0];
+      if (!abilityActionDef) return [];
+      const templateName = getActionTemplateNameForEffect(abilityActionDef.effect.name);
+      const actionLabel = templateName
+        ? (getActionTemplateMeta(templateName)?.label ?? templateName)
+        : abilityActionDef.effect.name;
+      return getActionNumericParams(abilityActionDef).map((param) => ({
+        index,
+        key: param.definitionKey,
+        label: param.label,
+        abilityLabel: `${ability.trigger.type}: ${actionLabel}`,
+        current: Number(abilityActionDef.effect.args[param.definitionKey]) || 0,
       }));
     });
   });
@@ -220,6 +264,10 @@
     retaliate = 0;
     keywords = {};
     actionArgs = {};
+    abilityTrigger = null;
+    abilityAction = null;
+    abilityArgs = {};
+    removeAbilities = [];
   }
 
   function selectCard(id: string) {
@@ -270,6 +318,43 @@
     return Math.abs(getActionBudget(next, colors) - getActionBudget(action, colors));
   }
 
+  function abilityParamCost(index: number, key: string): number {
+    if (!budgetUnit) return 0;
+    const action = budgetUnit.abilities?.[index]?.actions[0];
+    if (!action) return 0;
+    const colors = budgetUnit.colors.map((entry) => entry.color);
+    const current = Number(action.effect.args[key]) || 0;
+    const next = {
+      ...action,
+      effect: {
+        ...action.effect,
+        args: {
+          ...action.effect.args,
+          [key]: current + (isDistill ? -1 : 1),
+        },
+      },
+    };
+    return Math.abs(getActionBudget(next, colors) - getActionBudget(action, colors));
+  }
+
+  function addAbilityCost(): number {
+    if (!abilityTrigger || !abilityAction || !budgetUnit) return 0;
+    const ability = buildAbility({ trigger: abilityTrigger, action: abilityAction });
+    if (!ability) return 0;
+    return getAbilityCost(
+      ability,
+      budgetUnit.colors.map((entry) => entry.color)
+    );
+  }
+
+  function formatAbility(ability: Ability): string {
+    const actionName = getAbilityActionNames(ability)[0];
+    const actionLabel = actionName
+      ? (getActionTemplateMeta(actionName)?.label ?? actionName)
+      : (ability.actions[0]?.effect.name ?? 'Ability');
+    return `${ability.trigger.type}: ${actionLabel}`;
+  }
+
   function hasBooleanKeyword(key: keyof UnitKeywords): boolean {
     if (!unitCard || NUMERIC_KEYWORDS.has(key)) return false;
     return !!unitCard.keywords?.[key];
@@ -317,6 +402,88 @@
     const current = actionArgValue(index, key);
     if (value > current && !canIncActionArg(index, key)) return;
     actionArgs = withActionArg(index, key, value);
+  }
+
+  function abilityArgValue(index: number, key: string): number {
+    return abilityArgs[index]?.[key] ?? 0;
+  }
+
+  function maxAbilityArgCut(index: number, key: string): number {
+    const param = unitAbilityParams.find((entry) => entry.index === index && entry.key === key);
+    return Math.max(0, (param?.current ?? 0) - 1);
+  }
+
+  function withAbilityArg(index: number, key: string, value: number): ActionArgDeltas {
+    const next: ActionArgDeltas = {
+      ...abilityArgs,
+      [index]: { ...abilityArgs[index], [key]: value },
+    };
+    if (!value) {
+      delete next[index][key];
+    }
+    return next;
+  }
+
+  function canIncAbilityArg(index: number, key: string): boolean {
+    if (!parameters) return false;
+    const value = abilityArgValue(index, key);
+    if (isDistill) {
+      return value < maxAbilityArgCut(index, key);
+    }
+    return fits({ ...parameters, abilityArgs: withAbilityArg(index, key, value + 1) });
+  }
+
+  function setAbilityArg(index: number, key: string, next: number) {
+    if (!parameters || !Number.isFinite(next) || next < 0) return;
+    const value = Math.round(next);
+    if (isDistill && value > maxAbilityArgCut(index, key)) return;
+    const current = abilityArgValue(index, key);
+    if (value > current && !canIncAbilityArg(index, key)) return;
+    abilityArgs = withAbilityArg(index, key, value);
+  }
+
+  function isAbilityRemoved(index: number): boolean {
+    return removeAbilities.includes(index);
+  }
+
+  function toggleRemoveAbility(index: number) {
+    if (!isDistill) return;
+    if (isAbilityRemoved(index)) {
+      removeAbilities = removeAbilities.filter((entry) => entry !== index);
+      return;
+    }
+    removeAbilities = [...removeAbilities, index];
+    if (abilityArgs[index]) {
+      const next = { ...abilityArgs };
+      delete next[index];
+      abilityArgs = next;
+    }
+  }
+
+  function setAbilityTrigger(key: string) {
+    if (isDistill || !parameters) return;
+    const nextTrigger = abilityTrigger === key ? null : key;
+    if (
+      nextTrigger &&
+      abilityAction &&
+      !fits({ ...parameters, ability: { trigger: nextTrigger, action: abilityAction } })
+    ) {
+      return;
+    }
+    abilityTrigger = nextTrigger;
+  }
+
+  function setAbilityAction(name: string) {
+    if (isDistill || !parameters) return;
+    const nextAction = abilityAction === name ? null : name;
+    if (
+      nextAction &&
+      abilityTrigger &&
+      !fits({ ...parameters, ability: { trigger: abilityTrigger, action: nextAction } })
+    ) {
+      return;
+    }
+    abilityAction = nextAction;
   }
 
   function setKeyword(key: keyof UnitKeywords, value: number) {
@@ -813,6 +980,143 @@
               </div>
             {/if}
           </section>
+
+          <section class="section abilities-section" aria-label="Abilities">
+            <h3 class="section-heading">
+              <span class="section-icon star-icon" aria-hidden="true"></span>
+              Abilities
+            </h3>
+            {#if unitCard.abilities?.length}
+              <div class="ability-owned">
+                {#each unitCard.abilities as ability, index (index)}
+                  {@const removed = isAbilityRemoved(index)}
+                  <div class="ability-owned-row" class:on={removed} class:removed>
+                    {#if isDistill}
+                      <div
+                        class="keyword-row"
+                        class:on={removed}
+                        role="switch"
+                        aria-checked={removed}
+                        title={formatAbility(ability)}
+                        onclick={() => toggleRemoveAbility(index)}
+                      >
+                        <img
+                          class="keyword-icon"
+                          src={getAssetPath(
+                            getTriggerTemplateAsset(
+                              getTriggerTemplateKey(ability.trigger.type) ?? 'onDeploy'
+                            )
+                          )}
+                          alt=""
+                          aria-hidden="true"
+                        />
+                        <span class="keyword-name">{formatAbility(ability)}</span>
+                        <span class="owned-label">{removed ? 'remove' : 'has'}</span>
+                        <span class="toggle" class:on={removed} aria-hidden="true">
+                          <span class="toggle-knob"></span>
+                        </span>
+                      </div>
+                    {:else}
+                      <div class="ability-name-row">
+                        <img
+                          class="keyword-icon"
+                          src={getAssetPath(
+                            getTriggerTemplateAsset(
+                              getTriggerTemplateKey(ability.trigger.type) ?? 'onDeploy'
+                            )
+                          )}
+                          alt=""
+                          aria-hidden="true"
+                        />
+                        <span class="keyword-name">{formatAbility(ability)}</span>
+                      </div>
+                    {/if}
+                    {#if !removed}
+                      {#each unitAbilityParams.filter((param) => param.index === index) as param (`${param.index}-${param.key}`)}
+                        {@const value = abilityArgValue(param.index, param.key)}
+                        <div class="ability-param">
+                          <span class="stat-label">
+                            {param.label}
+                            {isDistill ? '−' : '+'}
+                            <span class="effect-cost" title="Budget cost of one step"
+                              >{abilityParamCost(param.index, param.key)}</span
+                            >
+                          </span>
+                          {@render stepper(
+                            value,
+                            value > 0,
+                            canIncAbilityArg(param.index, param.key),
+                            param.label,
+                            (next) => setAbilityArg(param.index, param.key, next)
+                          )}
+                        </div>
+                      {/each}
+                    {/if}
+                  </div>
+                {/each}
+              </div>
+            {:else if isDistill}
+              <p class="empty">This card has no abilities to remove.</p>
+            {/if}
+
+            {#if !isDistill}
+              <div class="ability-group" class:spaced={!!unitCard.abilities?.length}>
+                <div class="ability-label">
+                  Add ability
+                  {#if abilityTrigger && abilityAction}
+                    <span class="effect-cost" title="Budget cost">{addAbilityCost()}</span>
+                  {/if}
+                </div>
+                {#if knownActions.length === 0}
+                  <p class="empty">No known actions yet.</p>
+                {:else}
+                  <div class="keyword-list">
+                    {#each TRIGGER_TEMPLATE_KEYS as key (key)}
+                      {@const selected = abilityTrigger === key}
+                      <div
+                        class="keyword-row"
+                        class:on={selected}
+                        role="switch"
+                        aria-checked={selected}
+                        title={getTriggerTemplateLabel(key)}
+                        onclick={() => setAbilityTrigger(key)}
+                      >
+                        <img
+                          class="keyword-icon"
+                          src={getAssetPath(getTriggerTemplateAsset(key))}
+                          alt=""
+                          aria-hidden="true"
+                        />
+                        <span class="keyword-name">{getTriggerTemplateLabel(key)}</span>
+                        <span class="toggle" class:on={selected} aria-hidden="true">
+                          <span class="toggle-knob"></span>
+                        </span>
+                      </div>
+                    {/each}
+                  </div>
+                  <div class="keyword-list action-list">
+                    {#each knownActions as name (name)}
+                      {@const selected = abilityAction === name}
+                      {@const meta = getActionTemplateMeta(name)}
+                      <div
+                        class="keyword-row"
+                        class:on={selected}
+                        role="switch"
+                        aria-checked={selected}
+                        title={getActionTooltip(name)}
+                        onclick={() => setAbilityAction(name)}
+                      >
+                        <span class="keyword-name">{meta?.label ?? name}</span>
+                        <span class="toggle" class:on={selected} aria-hidden="true">
+                          <span class="toggle-knob"></span>
+                        </span>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+            {/if}
+          </section>
         {:else if spellCard}
           <section class="section" aria-label="Effects">
             <h3 class="section-heading">
@@ -1234,6 +1538,63 @@
     display: flex;
     flex-direction: column;
     margin-bottom: 0;
+  }
+
+  .abilities-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+    margin-top: 10px;
+  }
+
+  .ability-owned {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ability-owned-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ability-owned-row.removed {
+    opacity: 0.55;
+  }
+
+  .ability-name-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .ability-param {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-left: 27px;
+  }
+
+  .ability-group.spaced {
+    margin-top: 12px;
+  }
+
+  .ability-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5c5146;
+  }
+
+  .action-list {
+    margin-top: 8px;
   }
 
   .keyword-list {
