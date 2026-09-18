@@ -11,6 +11,7 @@ export interface ColorPie {
   statsPreference: StatsPreference;
   unitTypes: UnitType[];
   keywordsPreferences: Partial<Record<keyof UnitKeywords, number>>;
+  actionPreferences: Partial<Record<string, number>>;
 }
 
 export const colorPie: Record<CardColor, ColorPie> = {
@@ -25,6 +26,9 @@ export const colorPie: Record<CardColor, ColorPie> = {
       haste: 9,
       moveAndAttack: 6,
       zerk: 3,
+    },
+    actionPreferences: {
+      directDamage: 3,
     },
   },
   [CardColor.Green]: {
@@ -41,6 +45,11 @@ export const colorPie: Record<CardColor, ColorPie> = {
       moveAndAttack: -3,
       cleave: 3,
     },
+    actionPreferences: {
+      directDamage: -3,
+      healUnit: 3,
+      grow: 3,
+    },
   },
   [CardColor.Blue]: {
     statsPreference: {
@@ -55,6 +64,9 @@ export const colorPie: Record<CardColor, ColorPie> = {
       resist: 6,
       cleave: -3,
       flying: 3,
+    },
+    actionPreferences: {
+      directDamage: 1,
     },
   },
   [CardColor.Black]: {
@@ -71,6 +83,10 @@ export const colorPie: Record<CardColor, ColorPie> = {
       moveAndAttack: -3,
       lance: 3,
       flying: -3,
+    },
+    actionPreferences: {
+      destroyUnit: 3,
+      fortifyLand: 3,
     },
   },
 };

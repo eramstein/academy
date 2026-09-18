@@ -1,5 +1,6 @@
 import {
   CardColor,
+  CardType,
   ResourceType,
   type Character,
   type UnitCardTemplate,
@@ -17,6 +18,7 @@ import { narrateCardConjured } from '../narration';
 import { spendResources } from '../resources';
 
 export interface CardCreationParameters {
+  cardType?: CardType;
   colors?: CardColor[];
   cost?: number;
   power?: number;
@@ -196,9 +198,7 @@ function narrateUnitLearnt(
     parts.push(`You improved ${joinKeywordNames(improvedKeywords)}`);
   }
   const learnt = parts.length ? `${parts.join('. ')}.` : '';
-  let text = learnt
-    ? `You created ${template.name}. ${learnt}`
-    : `You created ${template.name}.`;
+  let text = learnt ? `You created ${template.name}. ${learnt}` : `You created ${template.name}.`;
   if (bonusBudget) {
     text += ` Your mastery granted it ${bonusBudget} bonus budget.`;
   }

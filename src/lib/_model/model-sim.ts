@@ -244,6 +244,7 @@ export interface Attributes {
 export interface CardKnowledge {
   colors?: Partial<Record<CardColor, number>>;
   keywords?: Partial<Record<keyof UnitKeywords, number>>;
+  actions?: Partial<Record<string, number>>;
 }
 
 export interface CardCraftingSkills {
