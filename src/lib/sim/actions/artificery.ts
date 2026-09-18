@@ -1,16 +1,20 @@
 import {
   CardColor,
   CardType,
+  isUnitCard,
   ResourceType,
+  type CardTemplate,
   type Character,
+  type SpellCardTemplate,
   type UnitCardTemplate,
   type UnitKeywords,
   type UnitType,
 } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getRandomFromArray } from '@/lib/_utils/random';
+import { getActionTemplateMeta } from '../cards/action-templates';
 import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
-import { buildUnitCard } from '../cards/creation';
+import { buildSpellCard, buildUnitCard } from '../cards/creation';
 import { filterFlavorTemplates } from '../cards/flavor-filters';
 import { loadFlavorTemplates } from '../cards/flavor-templates';
 import { getActingCharacter } from '../characters';
@@ -38,12 +42,13 @@ export interface CardCreationBonuses {
 }
 
 export interface CardCreationResult {
-  template: UnitCardTemplate;
+  template: CardTemplate;
   bonusBudget: number;
   learningChance: number;
+  actionName?: string[];
 }
 
-export function getNewUnitTemplate(
+export function getNewCardTemplate(
   parameters: CardCreationParameters,
   spend = true,
   characterKey = 'player'
@@ -57,29 +62,36 @@ export function getNewUnitTemplate(
   const character = getActingCharacter(characterKey);
   const bonuses = getCardCreationBonuses(parameters.resources, characterKey);
   const prunedParams = limitParametersToSkills(parameters, character);
-  const { template, bonusBudget } = getUnitTemplate(prunedParams, bonuses, character);
+  const cardType = resolveCardType(prunedParams.cardType);
+  const typedParams = { ...prunedParams, cardType };
+  if (cardType === CardType.Spell) {
+    const { template, bonusBudget, actionName } = getSpellTemplate(typedParams, bonuses);
+    return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
+  }
+  const { template, bonusBudget } = getUnitTemplate(typedParams, bonuses, character);
   return { template, bonusBudget, learningChance: bonuses.learningChance };
 }
 
-export function invokeUnit(parameters: CardCreationParameters, characterKey = 'player'): string {
-  const result = getNewUnitTemplate(parameters, true, characterKey);
+export function invokeCard(parameters: CardCreationParameters, characterKey = 'player'): string {
+  const result = getNewCardTemplate(parameters, true, characterKey);
   if (!result) {
     return '';
   }
-  const { template, bonusBudget, learningChance } = result;
+  const { template, bonusBudget, learningChance, actionName } = result;
   if (!template) {
     return '';
   }
-  learnUnitCard(template, learningChance, bonusBudget, getActingCharacter(characterKey));
+  learnCard(template, learningChance, bonusBudget, getActingCharacter(characterKey), actionName);
   return '';
 }
 
-export function conjureUnit(parameters: CardCreationResult, characterKey = 'player'): string {
-  learnUnitCard(
+export function conjureCard(parameters: CardCreationResult, characterKey = 'player'): string {
+  learnCard(
     parameters.template,
     parameters.learningChance,
     parameters.bonusBudget,
-    getActingCharacter(characterKey)
+    getActingCharacter(characterKey),
+    parameters.actionName
   );
   return '';
 }
@@ -95,7 +107,7 @@ export function getConjurationOtions(
   }
   const options: CardCreationResult[] = [];
   for (let i = 0; i < optionsCount; i++) {
-    const result = getNewUnitTemplate(parameters, false, characterKey);
+    const result = getNewCardTemplate(parameters, false, characterKey);
     if (result) {
       options.push(result);
     }
@@ -152,22 +164,24 @@ export function getCardCreationBonuses(
   return { learningChance, extraBudgetChance };
 }
 
-function learnUnitCard(
-  template: UnitCardTemplate,
+function learnCard(
+  template: CardTemplate,
   learningChance: number,
   bonusBudget: number,
-  character: Character
+  character: Character,
+  actionName?: string[]
 ) {
   const learntKeywords: string[] = [];
   const improvedKeywords: string[] = [];
-  // add card's keywords to character's known keywords
-  if (template.keywords && Math.random() < learningChance) {
+  const learntActions: string[] = [];
+  const improvedActions: string[] = [];
+  if (isUnitCard(template) && template.keywords && Math.random() < learningChance) {
     if (!character.craftingKnowledge.keywords) {
       character.craftingKnowledge.keywords = {};
     }
     const known = character.craftingKnowledge.keywords;
     for (const keyword of Object.keys(template.keywords) as (keyof UnitKeywords)[]) {
-      const name = formatKeywordName(keyword);
+      const name = formatKnowledgeName(keyword);
       if (known[keyword] === undefined) {
         known[keyword] = 1;
         learntKeywords.push(name);
@@ -177,25 +191,51 @@ function learnUnitCard(
       }
     }
   }
-  // add card to collection
+  if (actionName?.length && Math.random() < learningChance) {
+    if (!character.craftingKnowledge.actions) {
+      character.craftingKnowledge.actions = {};
+    }
+    const known = character.craftingKnowledge.actions;
+    for (const action of actionName) {
+      const name = getActionTemplateMeta(action)?.label ?? formatKnowledgeName(action);
+      if (known[action] === undefined) {
+        known[action] = 1;
+        learntActions.push(name);
+      } else {
+        known[action] += 1;
+        improvedActions.push(`${name} (${known[action]})`);
+      }
+    }
+  }
   character.collection.push(template);
   if (character.key === gs.player.key) {
-    narrateUnitLearnt(template, bonusBudget, learntKeywords, improvedKeywords);
+    narrateCardLearnt(
+      template,
+      bonusBudget,
+      learntKeywords,
+      improvedKeywords,
+      learntActions,
+      improvedActions
+    );
   }
 }
 
-function narrateUnitLearnt(
-  template: UnitCardTemplate,
+function narrateCardLearnt(
+  template: CardTemplate,
   bonusBudget: number,
   learntKeywords: string[],
-  improvedKeywords: string[]
+  improvedKeywords: string[],
+  learntActions: string[],
+  improvedActions: string[]
 ) {
   const parts: string[] = [];
-  if (learntKeywords.length) {
-    parts.push(`You learnt ${joinKeywordNames(learntKeywords)}`);
+  const learntNames = [...learntKeywords, ...learntActions];
+  const improvedNames = [...improvedKeywords, ...improvedActions];
+  if (learntNames.length) {
+    parts.push(`You learnt ${joinKeywordNames(learntNames)}`);
   }
-  if (improvedKeywords.length) {
-    parts.push(`You improved ${joinKeywordNames(improvedKeywords)}`);
+  if (improvedNames.length) {
+    parts.push(`You improved ${joinKeywordNames(improvedNames)}`);
   }
   const learnt = parts.length ? `${parts.join('. ')}.` : '';
   let text = learnt ? `You created ${template.name}. ${learnt}` : `You created ${template.name}.`;
@@ -205,8 +245,15 @@ function narrateUnitLearnt(
   narrateCardConjured(template.id, text);
 }
 
-function formatKeywordName(keyword: string): string {
+function formatKnowledgeName(keyword: string): string {
   return keyword.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+}
+
+function resolveCardType(cardType?: CardType): CardType.Unit | CardType.Spell {
+  if (cardType === CardType.Spell || cardType === CardType.Unit) {
+    return cardType;
+  }
+  return Math.random() < 0.95 ? CardType.Spell : CardType.Unit;
 }
 
 function joinKeywordNames(names: string[]): string {
@@ -228,9 +275,11 @@ function getUnitTemplate(
   bonusBudget: number;
 } {
   const flavorTemplates = loadFlavorTemplates();
+  const unitParams = { ...parameters };
+  delete unitParams.cardType;
 
   // 1. create card template based on parameters (randomize rest)
-  const cardBase = buildUnitCard(parameters, character);
+  const cardBase = buildUnitCard(unitParams, character);
   // 2. get budget for card
   const sureMastery = Math.floor(bonuses.extraBudgetChance);
   const extraBudget = Math.random() < bonuses.extraBudgetChance - sureMastery ? 1 : 0;
@@ -246,22 +295,73 @@ function getUnitTemplate(
     maxHealth: cardBase.maxHealth + extraHealth,
     retaliate: cardBase.retaliate + extraRetaliate,
   };
-  const templateParameters = {
+  const templateParameters: CardCreationParameters = {
     ...parameters,
+    cardType: CardType.Unit,
     colors: colors.map((entry) => entry.color),
     cost,
   };
 
   // 4. pick template
-  const filteredTemplates = filterFlavorTemplates(flavorTemplates, templateParameters);
-  const template = getRandomFromArray(filteredTemplates);
+  const flavor = pickFlavorTemplate(flavorTemplates, templateParameters);
   return {
     template: {
       ...conjured,
-      id: template.name + crypto.randomUUID(),
-      imageFileName: template.imageName,
-      name: template.name,
+      id: flavor.name + crypto.randomUUID(),
+      imageFileName: flavor.imageName,
+      name: flavor.name,
     },
     bonusBudget: sureMastery + extraBudget,
   };
+}
+
+function getSpellTemplate(
+  parameters: CardCreationParameters,
+  bonuses: CardCreationBonuses
+): {
+  template: SpellCardTemplate;
+  bonusBudget: number;
+  actionName: string[];
+} {
+  const flavorTemplates = loadFlavorTemplates();
+  const { card, budget: actionBudget, actionName } = buildSpellCard(parameters);
+  const sureMastery = Math.floor(bonuses.extraBudgetChance);
+  const extraBudget = Math.random() < bonuses.extraBudgetChance - sureMastery ? 1 : 0;
+  const budget = actionBudget - sureMastery - extraBudget;
+  const { cost } = getCostFromBudget(budget);
+  const conjured: Omit<SpellCardTemplate, 'id' | 'name' | 'imageFileName'> = {
+    ...card,
+    cost,
+  };
+  const templateParameters: CardCreationParameters = {
+    ...parameters,
+    cardType: CardType.Spell,
+    colors: card.colors.map((entry) => entry.color),
+    cost,
+  };
+  const flavor = pickFlavorTemplate(flavorTemplates, templateParameters);
+  return {
+    template: {
+      ...conjured,
+      id: flavor.name + crypto.randomUUID(),
+      imageFileName: flavor.imageName,
+      name: flavor.name,
+    },
+    bonusBudget: sureMastery + extraBudget,
+    actionName,
+  };
+}
+
+function pickFlavorTemplate(
+  flavorTemplates: ReturnType<typeof loadFlavorTemplates>,
+  parameters: CardCreationParameters
+) {
+  const filteredTemplates = filterFlavorTemplates(flavorTemplates, parameters);
+  if (filteredTemplates.length) {
+    return getRandomFromArray(filteredTemplates);
+  }
+  const typed = parameters.cardType
+    ? flavorTemplates.filter((template) => template.cardType === parameters.cardType)
+    : flavorTemplates;
+  return getRandomFromArray(typed.length ? typed : flavorTemplates);
 }

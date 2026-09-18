@@ -8,7 +8,7 @@ import {
   SchoolName,
 } from '../_model';
 import { gs } from '../_state';
-import { learnKeywordsFromDeck } from './effects/decks';
+import { learnFromDeck } from './effects/decks';
 
 const BASE_DECKS_BY_COLOR: Partial<Record<CardColor, DeckBlueprint>> = {
   [CardColor.Red]: BASE_DECK_RED,
@@ -44,7 +44,7 @@ export function initNpcDecks() {
         ...student.craftingKnowledge.colors,
         ...Object.fromEntries(student.favoriteColors.map((color) => [color, 1])),
       };
-      learnKeywordsFromDeck(deck.cards, student.key);
+      learnFromDeck(deck.cards, student.key);
     }
   });
 }

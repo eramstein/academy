@@ -1,8 +1,9 @@
-import { ActionType, ClassType, isUnitCard, SchoolName, type Action } from '../_model';
+import { ActionType, ClassType, SchoolName, type Action } from '../_model';
 import { isClassActivity } from '../_model/type-lookup-sim';
 import { gs } from '../_state';
 import { getRandomFromArray } from '../_utils/random';
-import { conjureUnit, getConjurationOtions } from './actions/artificery';
+import { conjureCard, getConjurationOtions } from './actions/artificery';
+import { getEnchantableCards } from './actions/enchanting';
 import { getCurrentScheduledActivity } from './schedule';
 
 export function getLessonActions(): Action[] {
@@ -20,9 +21,7 @@ export function getLessonActions(): Action[] {
       isLongAction: true,
       actionParameters: {},
       missingParameters: {
-        cardId: gs.player.collection
-          .filter((c) => isUnitCard(c) && c.cost < 9)
-          .map((c) => [c.id, c.name]),
+        cardId: getEnchantableCards().map((c) => [c.id, c.name]),
       },
     });
     lessons.push({
@@ -31,9 +30,7 @@ export function getLessonActions(): Action[] {
       isLongAction: true,
       actionParameters: {},
       missingParameters: {
-        cardId: gs.player.collection
-          .filter((c) => isUnitCard(c) && c.cost > 0)
-          .map((c) => [c.id, c.name]),
+        cardId: getEnchantableCards({ distill: true }).map((c) => [c.id, c.name]),
       },
     });
   }
@@ -76,7 +73,7 @@ function makeAllNpcsConjure() {
         continue;
       }
       const result = getRandomFromArray(options);
-      conjureUnit(result, character.key);
+      conjureCard(result, character.key);
       character.decks[0]!.cards.push(result.template.id);
     }
   }

@@ -1,5 +1,6 @@
 import { CardColor, type UnitKeywords } from '@/lib/_model';
-import type { PartialConjuredUnit } from './creation';
+import { getActionDefinitionBudget } from './action-templates';
+import type { PartialConjuredSpell, PartialConjuredUnit } from './creation';
 
 type FeatureCostKey = 'power' | 'maxHealth' | 'retaliate' | keyof UnitKeywords;
 
@@ -37,7 +38,14 @@ export const featureCosts: Record<FeatureCostKey, (card: PartialConjuredUnit) =>
   armorPiercing: () => 2,
 };
 
-export function getCardBudget(card: PartialConjuredUnit): number {
+export function getCardBudget(card: PartialConjuredUnit | PartialConjuredSpell): number {
+  if ('actions' in card) {
+    return card.actions.reduce((sum, action) => sum + getActionDefinitionBudget(action), 0);
+  }
+  return getUnitBudget(card);
+}
+
+function getUnitBudget(card: PartialConjuredUnit): number {
   let budget =
     card.power * featureCosts.power(card) +
     card.maxHealth * featureCosts.maxHealth(card) +

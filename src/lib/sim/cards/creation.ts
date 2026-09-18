@@ -3,6 +3,7 @@ import {
   CardType,
   UnitType,
   type Character,
+  type SpellCardTemplate,
   type UnitCardTemplate,
   type UnitKeywords,
 } from '@/lib/_model';
@@ -14,11 +15,13 @@ import {
   getRandomWeighted,
 } from '@/lib/_utils/random';
 import type { CardCreationParameters } from '../actions';
+import { pickRandomActionTemplate } from './action-templates';
 import { colorPie, type StatsPreference } from './color-pie';
 import { KEYWORD_KEYS, NUMERIC_KEYWORDS, keywordConfig } from './keywords';
 
-type UnitIdentityKeys = 'id' | 'cost' | 'name' | 'imageFileName';
-export type PartialConjuredUnit = Omit<UnitCardTemplate, UnitIdentityKeys>;
+type CardIdentityKeys = 'id' | 'cost' | 'name' | 'imageFileName';
+export type PartialConjuredUnit = Omit<UnitCardTemplate, CardIdentityKeys>;
+export type PartialConjuredSpell = Omit<SpellCardTemplate, CardIdentityKeys>;
 
 export function buildUnitCard(
   parameters: CardCreationParameters,
@@ -47,6 +50,30 @@ export function buildUnitCard(
   return card;
 }
 
+export function buildSpellCard(parameters: CardCreationParameters): {
+  card: PartialConjuredSpell;
+  budget: number;
+  actionName: string[];
+} {
+  const cardColors = resolveCardColors(parameters.colors);
+  const action = pickRandomActionTemplate(cardColors.map((entry) => entry.color));
+  return {
+    card: {
+      type: CardType.Spell,
+      colors: cardColors,
+      actions: [action.definition],
+    },
+    budget: action.budget,
+    actionName: [action.name],
+  };
+}
+
+function resolveCardColors(colors?: CardColor[]): { color: CardColor; count: number }[] {
+  return colors?.length
+    ? colors.map((color) => ({ color, count: 1 }))
+    : [{ color: getRandomFromArray(Object.values(CardColor)), count: 1 }];
+}
+
 // if there is more than just color, it is an invocation, else it's a conjuration
 function isInvocation(parameters: CardCreationParameters): boolean {
   return !!(Object.keys(parameters).length > 1);
@@ -60,9 +87,7 @@ function getRandomUnitCardTemplate(
   isConjuration: boolean = true,
   character: Character = gs.player
 ): PartialConjuredUnit {
-  const cardColors = colors?.length
-    ? colors.map((color) => ({ color, count: 1 }))
-    : [{ color: getRandomFromArray(Object.values(CardColor)), count: 1 }];
+  const cardColors = resolveCardColors(colors);
   const { power, maxHealth, retaliate } = randomCombatStats(cardColors.map((entry) => entry.color));
   return {
     type: CardType.Unit,

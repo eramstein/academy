@@ -3,8 +3,9 @@
     ActionType,
     CardColor,
     CardType,
+    isSpellCard,
+    isUnitCard,
     type Action,
-    type CardTemplate,
     type UnitKeywords,
   } from '@/lib/_model';
   import { gs } from '@/lib/_state';
@@ -13,9 +14,16 @@
     performAction,
     getAugmentPreview,
     getDistillPreview,
+    getEnchantableCards,
+    type ActionArgDeltas,
     type AugmentParameters,
     type DistillParameters,
   } from '@/lib/sim/actions';
+  import {
+    getActionNumericParams,
+    getActionTemplateMeta,
+    getActionTemplateNameForEffect,
+  } from '@/lib/sim/cards/action-templates';
   import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import CardFilters from '@/lib/ui/cards/CardFilters.svelte';
@@ -42,6 +50,7 @@
   let maxHealth = $state(0);
   let retaliate = $state(0);
   let keywords = $state<Partial<Record<keyof UnitKeywords, number>>>({});
+  let actionArgs = $state<ActionArgDeltas>({});
   let colorFilter = $state<CardColor | null>(null);
   let costFilter = $state<number | null>(null);
   let typeFilter = $state<CardType | null>(null);
@@ -54,7 +63,7 @@
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  const availableCards = $derived(cardsFromAction(action));
+  const availableCards = $derived(getEnchantableCards({ distill: isDistill }));
   const cardFilters = $derived({ color: colorFilter, cost: costFilter, type: typeFilter });
   const filteredCards = $derived(
     availableCards.filter((card) => matchesCardFilters(card, cardFilters))
@@ -71,12 +80,14 @@
     const selectedKeywords = Object.fromEntries(
       Object.entries(keywords).filter(([, value]) => value)
     ) as Partial<Record<keyof UnitKeywords, number>>;
+    const selectedActionArgs = compactActionArgs(actionArgs);
     const shared = {
       cardId,
       power: power || undefined,
       maxHealth: maxHealth || undefined,
       retaliate: retaliate || undefined,
       keywords: Object.keys(selectedKeywords).length ? selectedKeywords : undefined,
+      actionArgs: selectedActionArgs,
     };
     if (isDistill) {
       return { ...shared, costDecrease: 1 };
@@ -92,13 +103,31 @@
       : null
   );
   const card = $derived(preview?.card ?? null);
+  const unitCard = $derived(card && isUnitCard(card) ? card : null);
+  const spellCard = $derived(card && isSpellCard(card) ? card : null);
   const maxCostIncrease = $derived(card ? 9 - card.cost : 1);
-  const maxPowerCut = $derived(card?.power ?? 0);
-  const maxHealthCut = $derived(card ? Math.max(0, card.maxHealth - 1) : 0);
-  const maxRetaliateCut = $derived(card?.retaliate ?? 0);
+  const maxPowerCut = $derived(unitCard?.power ?? 0);
+  const maxHealthCut = $derived(unitCard ? Math.max(0, unitCard.maxHealth - 1) : 0);
+  const maxRetaliateCut = $derived(unitCard?.retaliate ?? 0);
   const ownedKeywords = $derived(
-    card ? KEYWORD_KEYS.filter((key) => !!card.keywords?.[key]) : []
+    unitCard ? KEYWORD_KEYS.filter((key) => !!unitCard.keywords?.[key]) : []
   );
+  const spellParams = $derived.by(() => {
+    if (!spellCard) return [];
+    return spellCard.actions.flatMap((spellAction, index) => {
+      const templateName = getActionTemplateNameForEffect(spellAction.effect.name);
+      const actionLabel = templateName
+        ? (getActionTemplateMeta(templateName)?.label ?? templateName)
+        : spellAction.effect.name;
+      return getActionNumericParams(spellAction).map((param) => ({
+        index,
+        key: param.definitionKey,
+        label: param.label,
+        actionLabel,
+        current: Number(spellAction.effect.args[param.definitionKey]) || 0,
+      }));
+    });
+  });
 
   const canDecCost = $derived(
     !isDistill &&
@@ -107,23 +136,26 @@
       fits({ ...(parameters as AugmentParameters), costIncrease: costIncrease - 1 })
   );
   const canIncCost = $derived(!isDistill && costIncrease < maxCostIncrease);
-  const canDecPower = $derived(power > 0);
+  const canDecPower = $derived(!!unitCard && power > 0);
   const canIncPower = $derived(
-    !!parameters &&
+    !!unitCard &&
+      !!parameters &&
       (isDistill
         ? power < maxPowerCut
         : fits({ ...(parameters as AugmentParameters), power: power + 1 }))
   );
-  const canDecHealth = $derived(maxHealth > 0);
+  const canDecHealth = $derived(!!unitCard && maxHealth > 0);
   const canIncHealth = $derived(
-    !!parameters &&
+    !!unitCard &&
+      !!parameters &&
       (isDistill
         ? maxHealth < maxHealthCut
         : fits({ ...(parameters as AugmentParameters), maxHealth: maxHealth + 1 }))
   );
-  const canDecRetaliate = $derived(retaliate > 0);
+  const canDecRetaliate = $derived(!!unitCard && retaliate > 0);
   const canIncRetaliate = $derived(
-    !!parameters &&
+    !!unitCard &&
+      !!parameters &&
       (isDistill
         ? retaliate < maxRetaliateCut
         : fits({ ...(parameters as AugmentParameters), retaliate: retaliate + 1 }))
@@ -151,32 +183,23 @@
     isDistill && preview?.error ? Math.max(0, budgetCap - budgetUsed) : 0
   );
 
-  function optionId(option: string | [string, string]): string {
-    return Array.isArray(option) ? option[0] : option;
-  }
-
-  function cardsFromAction(source: Action): CardTemplate[] {
-    const raw = source.missingParameters?.cardId;
-    const ids = Array.isArray(raw) ? raw.map(optionId) : [];
-    const fromMissing = ids
-      .map((id) => gs.player.collection.find((c) => c.id === id))
-      .filter((c): c is CardTemplate => !!c);
-    if (fromMissing.length) return fromMissing;
-
-    const selected = source.actionParameters.cardId;
-    if (typeof selected === 'string') {
-      const found = gs.player.collection.find((c) => c.id === selected);
-      return found ? [found] : [];
-    }
-    return [];
-  }
-
   function initialCardId(source: Action): string | null {
     if (typeof source.actionParameters.cardId === 'string') {
       return source.actionParameters.cardId;
     }
-    const cards = cardsFromAction(source);
+    const cards = getEnchantableCards({ distill: source.actionType === ActionType.Distill });
     return cards.length === 1 ? cards[0].id : null;
+  }
+
+  function compactActionArgs(deltas: ActionArgDeltas): ActionArgDeltas | undefined {
+    const next: ActionArgDeltas = {};
+    for (const [indexKey, args] of Object.entries(deltas)) {
+      const cleaned = Object.fromEntries(Object.entries(args).filter(([, value]) => value));
+      if (Object.keys(cleaned).length) {
+        next[Number(indexKey)] = cleaned;
+      }
+    }
+    return Object.keys(next).length ? next : undefined;
   }
 
   function resetForm() {
@@ -185,6 +208,7 @@
     maxHealth = 0;
     retaliate = 0;
     keywords = {};
+    actionArgs = {};
   }
 
   function selectCard(id: string) {
@@ -212,14 +236,52 @@
   }
 
   function hasBooleanKeyword(key: keyof UnitKeywords): boolean {
-    if (!card || NUMERIC_KEYWORDS.has(key)) return false;
-    return !!card.keywords?.[key];
+    if (!unitCard || NUMERIC_KEYWORDS.has(key)) return false;
+    return !!unitCard.keywords?.[key];
   }
 
   function keywordOwnedValue(key: keyof UnitKeywords): number {
-    const current = card?.keywords?.[key];
+    const current = unitCard?.keywords?.[key];
     if (typeof current === 'number') return current;
     return current ? 1 : 0;
+  }
+
+  function actionArgValue(index: number, key: string): number {
+    return actionArgs[index]?.[key] ?? 0;
+  }
+
+  function maxActionArgCut(index: number, key: string): number {
+    const param = spellParams.find((entry) => entry.index === index && entry.key === key);
+    return Math.max(0, (param?.current ?? 0) - 1);
+  }
+
+  function withActionArg(index: number, key: string, value: number): ActionArgDeltas {
+    const next: ActionArgDeltas = {
+      ...actionArgs,
+      [index]: { ...actionArgs[index], [key]: value },
+    };
+    if (!value) {
+      delete next[index][key];
+    }
+    return next;
+  }
+
+  function canIncActionArg(index: number, key: string): boolean {
+    if (!parameters) return false;
+    const value = actionArgValue(index, key);
+    if (isDistill) {
+      return value < maxActionArgCut(index, key);
+    }
+    return fits({ ...parameters, actionArgs: withActionArg(index, key, value + 1) });
+  }
+
+  function setActionArg(index: number, key: string, next: number) {
+    if (!parameters || !Number.isFinite(next) || next < 0) return;
+    const value = Math.round(next);
+    if (isDistill && value > maxActionArgCut(index, key)) return;
+    const current = actionArgValue(index, key);
+    if (value > current && !canIncActionArg(index, key)) return;
+    actionArgs = withActionArg(index, key, value);
   }
 
   function setKeyword(key: keyof UnitKeywords, value: number) {
@@ -233,7 +295,11 @@
     } else {
       delete nextKeywords[key];
     }
-    if (!isDistill && clamped > (keywords[key] ?? 0) && !fits({ ...parameters, keywords: nextKeywords })) {
+    if (
+      !isDistill &&
+      clamped > (keywords[key] ?? 0) &&
+      !fits({ ...parameters, keywords: nextKeywords })
+    ) {
       return;
     }
     keywords = nextKeywords;
@@ -456,19 +522,20 @@
             Which card?
           </h3>
           {#if availableCards.length === 0}
-            <p class="empty">No units available to enchant.</p>
+            <p class="empty">No cards available to enchant.</p>
           {:else}
             <CardFilters
               cards={availableCards}
               bind:colorFilter
               bind:costFilter
               bind:typeFilter
-              showType={false}
               tone="parchment"
             />
             {#if filteredCards.length === 0}
               <p class="empty">
-                {hasActiveFilters ? 'No cards match these filters.' : 'No units available to enchant.'}
+                {hasActiveFilters
+                  ? 'No cards match these filters.'
+                  : 'No cards available to enchant.'}
               </p>
             {:else}
               <div class="card-grid">
@@ -537,68 +604,124 @@
           {/if}
         </section>
 
-        <section class="section" aria-label="Stats">
-          <h3 class="section-heading">
-            <span class="section-icon star-icon" aria-hidden="true"></span>
-            Stats
-          </h3>
-          <div class="stats">
-            <div class="stat">
-              <div class="stat-label">Power {isDistill ? '−' : '+'}</div>
-              {@render statControl(
-                power,
-                canDecPower,
-                canIncPower,
-                'Power',
-                setPower,
-                getAssetPath('images/power-icon.png')
-              )}
-            </div>
-            <div class="stat">
-              <div class="stat-label">Health {isDistill ? '−' : '+'}</div>
-              {@render statControl(
-                maxHealth,
-                canDecHealth,
-                canIncHealth,
-                'Health',
-                setMaxHealth,
-                getAssetPath('images/health-icon.png')
-              )}
-            </div>
-            <div class="stat large">
-              <div class="stat-label" title={getKeywordTooltip('retaliate', retaliate || 1)}>
-                Retaliate {isDistill ? '−' : '+'}
+        {#if unitCard}
+          <section class="section" aria-label="Stats">
+            <h3 class="section-heading">
+              <span class="section-icon star-icon" aria-hidden="true"></span>
+              Stats
+            </h3>
+            <div class="stats">
+              <div class="stat">
+                <div class="stat-label">Power {isDistill ? '−' : '+'}</div>
+                {@render statControl(
+                  power,
+                  canDecPower,
+                  canIncPower,
+                  'Power',
+                  setPower,
+                  getAssetPath('images/power-icon.png')
+                )}
               </div>
-              {@render statControl(
-                retaliate,
-                canDecRetaliate,
-                canIncRetaliate,
-                'Retaliate',
-                setRetaliate,
-                getAssetPath('images/retaliate-icon.png'),
-                true
-              )}
+              <div class="stat">
+                <div class="stat-label">Health {isDistill ? '−' : '+'}</div>
+                {@render statControl(
+                  maxHealth,
+                  canDecHealth,
+                  canIncHealth,
+                  'Health',
+                  setMaxHealth,
+                  getAssetPath('images/health-icon.png')
+                )}
+              </div>
+              <div class="stat large">
+                <div class="stat-label" title={getKeywordTooltip('retaliate', retaliate || 1)}>
+                  Retaliate {isDistill ? '−' : '+'}
+                </div>
+                {@render statControl(
+                  retaliate,
+                  canDecRetaliate,
+                  canIncRetaliate,
+                  'Retaliate',
+                  setRetaliate,
+                  getAssetPath('images/retaliate-icon.png'),
+                  true
+                )}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section class="section keywords-section" aria-label="Keywords">
-          <h3 class="section-heading">
-            <span class="section-icon star-icon" aria-hidden="true"></span>
-            Keywords
-          </h3>
-          {#if isDistill}
-            {#if ownedKeywords.length === 0}
-              <p class="empty">This card has no keywords to remove.</p>
+          <section class="section keywords-section" aria-label="Keywords">
+            <h3 class="section-heading">
+              <span class="section-icon star-icon" aria-hidden="true"></span>
+              Keywords
+            </h3>
+            {#if isDistill}
+              {#if ownedKeywords.length === 0}
+                <p class="empty">This card has no keywords to remove.</p>
+              {:else}
+                <div class="keyword-list">
+                  {#each ownedKeywords as key (key)}
+                    {#if NUMERIC_KEYWORDS.has(key)}
+                      {@const value = keywords[key] ?? 0}
+                      <div
+                        class="keyword-row"
+                        class:on={value > 0}
+                        title={getKeywordTooltip(key, keywordOwnedValue(key))}
+                        onclick={(event) => onKeywordRowClick(event, key, true)}
+                        oncontextmenu={(event) => onKeywordRowClick(event, key, true)}
+                      >
+                        <img
+                          class="keyword-icon"
+                          src={getAssetPath(`images/keywords/${key}.png`)}
+                          alt=""
+                          aria-hidden="true"
+                        />
+                        <span class="keyword-name">{formatKeyword(key)}</span>
+                        {@render stepper(
+                          value,
+                          value > 0,
+                          canIncKeyword(key),
+                          formatKeyword(key),
+                          (next) => setKeyword(key, next)
+                        )}
+                      </div>
+                    {:else}
+                      {@const selected = !!keywords[key]}
+                      <div
+                        class="keyword-row"
+                        class:on={selected}
+                        role="switch"
+                        aria-checked={selected}
+                        title={getKeywordTooltip(key)}
+                        onclick={(event) => onKeywordRowClick(event, key, false)}
+                        oncontextmenu={(event) => onKeywordRowClick(event, key, false)}
+                      >
+                        <img
+                          class="keyword-icon"
+                          src={getAssetPath(`images/keywords/${key}.png`)}
+                          alt=""
+                          aria-hidden="true"
+                        />
+                        <span class="keyword-name">{formatKeyword(key)}</span>
+                        <span class="toggle" class:on={selected} aria-hidden="true">
+                          <span class="toggle-knob"></span>
+                        </span>
+                      </div>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+            {:else if knownKeywords.length === 0}
+              <p class="empty">No known keywords yet.</p>
             {:else}
               <div class="keyword-list">
-                {#each ownedKeywords as key (key)}
+                {#each knownKeywords as key (key)}
                   {#if NUMERIC_KEYWORDS.has(key)}
                     {@const value = keywords[key] ?? 0}
                     <div
                       class="keyword-row"
                       class:on={value > 0}
-                      title={getKeywordTooltip(key, keywordOwnedValue(key))}
+                      title={getKeywordTooltip(key, value || 1)}
                       onclick={(event) => onKeywordRowClick(event, key, true)}
                       oncontextmenu={(event) => onKeywordRowClick(event, key, true)}
                     >
@@ -618,12 +741,16 @@
                       )}
                     </div>
                   {:else}
+                    {@const owned = hasBooleanKeyword(key)}
                     {@const selected = !!keywords[key]}
+                    {@const on = owned || selected}
                     <div
                       class="keyword-row"
-                      class:on={selected}
+                      class:on
+                      class:owned
                       role="switch"
-                      aria-checked={selected}
+                      aria-checked={on}
+                      aria-disabled={owned || (!selected && !canIncKeyword(key))}
                       title={getKeywordTooltip(key)}
                       onclick={(event) => onKeywordRowClick(event, key, false)}
                       oncontextmenu={(event) => onKeywordRowClick(event, key, false)}
@@ -635,7 +762,10 @@
                         aria-hidden="true"
                       />
                       <span class="keyword-name">{formatKeyword(key)}</span>
-                      <span class="toggle" class:on={selected} aria-hidden="true">
+                      {#if owned}
+                        <span class="owned-label">has</span>
+                      {/if}
+                      <span class="toggle" class:on aria-hidden="true">
                         <span class="toggle-knob"></span>
                       </span>
                     </div>
@@ -643,65 +773,40 @@
                 {/each}
               </div>
             {/if}
-          {:else if knownKeywords.length === 0}
-            <p class="empty">No known keywords yet.</p>
-          {:else}
-            <div class="keyword-list">
-              {#each knownKeywords as key (key)}
-                {#if NUMERIC_KEYWORDS.has(key)}
-                  {@const value = keywords[key] ?? 0}
-                  <div
-                    class="keyword-row"
-                    class:on={value > 0}
-                    title={getKeywordTooltip(key, value || 1)}
-                    onclick={(event) => onKeywordRowClick(event, key, true)}
-                    oncontextmenu={(event) => onKeywordRowClick(event, key, true)}
-                  >
-                    <img
-                      class="keyword-icon"
-                      src={getAssetPath(`images/keywords/${key}.png`)}
-                      alt=""
-                      aria-hidden="true"
-                    />
-                    <span class="keyword-name">{formatKeyword(key)}</span>
-                    {@render stepper(value, value > 0, canIncKeyword(key), formatKeyword(key), (next) =>
-                      setKeyword(key, next)
+          </section>
+        {:else if spellCard}
+          <section class="section" aria-label="Effects">
+            <h3 class="section-heading">
+              <span class="section-icon star-icon" aria-hidden="true"></span>
+              Effects
+            </h3>
+            {#if spellParams.length === 0}
+              <p class="empty">This spell has no adjustable effects.</p>
+            {:else}
+              <div class="stats spell-stats">
+                {#each spellParams as param (`${param.index}-${param.key}`)}
+                  {@const value = actionArgValue(param.index, param.key)}
+                  <div class="stat">
+                    <div class="stat-label">
+                      {#if spellCard.actions.length > 1}
+                        {param.actionLabel}:
+                      {/if}
+                      {param.label}
+                      {isDistill ? '−' : '+'}
+                    </div>
+                    {@render stepper(
+                      value,
+                      value > 0,
+                      canIncActionArg(param.index, param.key),
+                      param.label,
+                      (next) => setActionArg(param.index, param.key, next)
                     )}
                   </div>
-                {:else}
-                  {@const owned = hasBooleanKeyword(key)}
-                  {@const selected = !!keywords[key]}
-                  {@const on = owned || selected}
-                  <div
-                    class="keyword-row"
-                    class:on
-                    class:owned
-                    role="switch"
-                    aria-checked={on}
-                    aria-disabled={owned || (!selected && !canIncKeyword(key))}
-                    title={getKeywordTooltip(key)}
-                    onclick={(event) => onKeywordRowClick(event, key, false)}
-                    oncontextmenu={(event) => onKeywordRowClick(event, key, false)}
-                  >
-                    <img
-                      class="keyword-icon"
-                      src={getAssetPath(`images/keywords/${key}.png`)}
-                      alt=""
-                      aria-hidden="true"
-                    />
-                    <span class="keyword-name">{formatKeyword(key)}</span>
-                    {#if owned}
-                      <span class="owned-label">has</span>
-                    {/if}
-                    <span class="toggle" class:on aria-hidden="true">
-                      <span class="toggle-knob"></span>
-                    </span>
-                  </div>
-                {/if}
-              {/each}
-            </div>
-          {/if}
-        </section>
+                {/each}
+              </div>
+            {/if}
+          </section>
+        {/if}
       {/if}
 
       <footer class="actions">
@@ -931,6 +1036,10 @@
   .stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .spell-stats {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
 
   .stat {

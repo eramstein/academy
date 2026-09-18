@@ -1,6 +1,8 @@
 import {
+  isSpellCard,
   isUnitCard,
   type CardTemplate,
+  type SpellCardTemplate,
   type UnitCardTemplate,
   type UnitKeywords,
 } from '@/lib/_model';
@@ -8,8 +10,16 @@ import { gs } from '@/lib/_state';
 import { getRandomFromObjectWeights } from '@/lib/_utils/random';
 import { cardBudget, featureCosts, getCardBudget } from '../cards/card-budget';
 import { colorPie, getCardDominantColor } from '../cards/color-pie';
+import {
+  getActionNumericParams,
+  getActionParamBudgetDelta,
+  getActionTemplateMeta,
+  getActionTemplateNameForEffect,
+} from '../cards/action-templates';
 import { addKeyword, KEYWORD_KEYS, removeKeyword } from '../cards/keywords';
 import { narrateCardEncanted } from '../narration';
+
+export type ActionArgDeltas = Record<number, Record<string, number>>;
 
 export interface AugmentParameters {
   cardId: string;
@@ -18,12 +28,13 @@ export interface AugmentParameters {
   power?: number;
   retaliate?: number;
   keywords?: Partial<Record<keyof UnitKeywords, number>>;
+  actionArgs?: ActionArgDeltas;
 }
 
 export interface AugmentPreview {
   error: string;
-  card: UnitCardTemplate | null;
-  preview: UnitCardTemplate | null;
+  card: UnitCardTemplate | SpellCardTemplate | null;
+  preview: UnitCardTemplate | SpellCardTemplate | null;
   upgradeBudget: number;
   spent: number;
   extraBudget: number;
@@ -36,16 +47,19 @@ export interface DistillParameters {
   power?: number;
   retaliate?: number;
   keywords?: Partial<Record<keyof UnitKeywords, number>>;
+  actionArgs?: ActionArgDeltas;
 }
 
 export interface DistillPreview {
   error: string;
-  card: UnitCardTemplate | null;
-  preview: UnitCardTemplate | null;
+  card: UnitCardTemplate | SpellCardTemplate | null;
+  preview: UnitCardTemplate | SpellCardTemplate | null;
   downgradeBudget: number;
   saved: number;
   extraCut: number;
 }
+
+const MIN_ACTION_ARG = 1;
 
 export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview {
   const card = gs.player.collection.find((c) => c.id === parameters.cardId);
@@ -53,8 +67,8 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
   if (!card) {
     return emptyPreview(`Card not found: ${parameters.cardId}.`);
   }
-  if (!isUnitCard(card)) {
-    return emptyPreview(`Card is not a unit: ${parameters.cardId}.`);
+  if (!isEnchantableCard(card)) {
+    return emptyPreview(`Card cannot be enchanted: ${parameters.cardId}.`);
   }
 
   const costIncrease = parameters.costIncrease || 1;
@@ -93,7 +107,7 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
   };
 }
 
-export function augmentUnit(parameters: AugmentParameters): string {
+export function augmentCard(parameters: AugmentParameters): string {
   const result = getAugmentPreview(parameters);
   if (result.error || !result.card) {
     return result.error;
@@ -103,40 +117,14 @@ export function augmentUnit(parameters: AugmentParameters): string {
   }
 
   const card = result.card;
-  const oldCard: UnitCardTemplate = {
-    ...card,
-    keywords: card.keywords ? { ...card.keywords } : undefined,
-  };
+  const oldCard = cloneCardTemplate(card);
 
-  const costs: Record<string, number> = {
-    power: featureCosts.power(card),
-    maxHealth: featureCosts.maxHealth(card),
-    ret: featureCosts.retaliate(card),
-  };
-
-  let extraBudget = result.extraBudget;
-
-  // mutate card to become newCardTemplate
   makeNewCardTemplate(card, parameters, true);
 
-  // automatically use remaining budget points based on color preferences
-  while (extraBudget > 0) {
-    const upgradePreference = getUpgradePreference(card, costs, extraBudget);
-    if (upgradePreference === '') {
-      break;
-    }
-    extraBudget -= costs[upgradePreference];
-    switch (upgradePreference) {
-      case 'power':
-        card.power++;
-        break;
-      case 'maxHealth':
-        card.maxHealth++;
-        break;
-      case 'ret':
-        card.retaliate = (card.retaliate || 0) + 1;
-        break;
-    }
+  if (isUnitCard(card)) {
+    spendUnitExtraBudget(card, result.extraBudget);
+  } else if (isSpellCard(card)) {
+    spendSpellExtraBudget(card, result.extraBudget);
   }
 
   narrateCardEncanted(oldCard, card, describeAugment(oldCard, card));
@@ -144,14 +132,16 @@ export function augmentUnit(parameters: AugmentParameters): string {
   return '';
 }
 
+export const augmentUnit = augmentCard;
+
 export function getDistillPreview(parameters: DistillParameters): DistillPreview {
   const card = gs.player.collection.find((c) => c.id === parameters.cardId);
 
   if (!card) {
     return emptyDistillPreview(`Card not found: ${parameters.cardId}.`);
   }
-  if (!isUnitCard(card)) {
-    return emptyDistillPreview(`Card is not a unit: ${parameters.cardId}.`);
+  if (!isEnchantableCard(card)) {
+    return emptyDistillPreview(`Card cannot be distilled: ${parameters.cardId}.`);
   }
 
   const costDecrease = parameters.costDecrease || 1;
@@ -202,7 +192,7 @@ export function getDistillPreview(parameters: DistillParameters): DistillPreview
   };
 }
 
-export function distillUnit(parameters: DistillParameters): string {
+export function distillCard(parameters: DistillParameters): string {
   const result = getDistillPreview(parameters);
   if (result.error || !result.card) {
     return result.error;
@@ -212,10 +202,7 @@ export function distillUnit(parameters: DistillParameters): string {
   }
 
   const card = result.card;
-  const oldCard: UnitCardTemplate = {
-    ...card,
-    keywords: card.keywords ? { ...card.keywords } : undefined,
-  };
+  const oldCard = cloneCardTemplate(card);
 
   makeDistilledCardTemplate(card, parameters, true);
   narrateCardEncanted(oldCard, card, describeDistill(oldCard, card));
@@ -223,7 +210,21 @@ export function distillUnit(parameters: DistillParameters): string {
   return '';
 }
 
-function describeAugment(oldCard: UnitCardTemplate, newCard: UnitCardTemplate): string {
+export const distillUnit = distillCard;
+
+export function isEnchantableCard(card: CardTemplate): card is UnitCardTemplate | SpellCardTemplate {
+  return isUnitCard(card) || isSpellCard(card);
+}
+
+export function getEnchantableCards(options: { distill?: boolean } = {}): CardTemplate[] {
+  return gs.player.collection.filter((card) => {
+    if (!isEnchantableCard(card)) return false;
+    if (options.distill) return card.cost > 0;
+    return card.cost < 9;
+  });
+}
+
+function describeAugment(oldCard: CardTemplate, newCard: CardTemplate): string {
   const changes = describeCardChanges(oldCard, newCard);
   if (!changes) {
     return `You augmented ${newCard.name}.`;
@@ -231,7 +232,7 @@ function describeAugment(oldCard: UnitCardTemplate, newCard: UnitCardTemplate): 
   return `You augmented ${newCard.name}. ${changes}`;
 }
 
-function describeDistill(oldCard: UnitCardTemplate, newCard: UnitCardTemplate): string {
+function describeDistill(oldCard: CardTemplate, newCard: CardTemplate): string {
   const changes = describeCardChanges(oldCard, newCard);
   if (!changes) {
     return `You distilled ${newCard.name}.`;
@@ -239,22 +240,29 @@ function describeDistill(oldCard: UnitCardTemplate, newCard: UnitCardTemplate): 
   return `You distilled ${newCard.name}. ${changes}`;
 }
 
-function describeCardChanges(oldCard: UnitCardTemplate, newCard: UnitCardTemplate): string {
+function describeCardChanges(oldCard: CardTemplate, newCard: CardTemplate): string {
   const parts: string[] = [];
 
   if (oldCard.cost !== newCard.cost) {
     parts.push(`cost ${oldCard.cost} → ${newCard.cost}`);
   }
-  if (oldCard.power !== newCard.power) {
-    parts.push(`power ${oldCard.power} → ${newCard.power}`);
+
+  if (isUnitCard(oldCard) && isUnitCard(newCard)) {
+    if (oldCard.power !== newCard.power) {
+      parts.push(`power ${oldCard.power} → ${newCard.power}`);
+    }
+    if (oldCard.maxHealth !== newCard.maxHealth) {
+      parts.push(`health ${oldCard.maxHealth} → ${newCard.maxHealth}`);
+    }
+    if (oldCard.retaliate !== newCard.retaliate) {
+      parts.push(`retaliate ${oldCard.retaliate} → ${newCard.retaliate}`);
+    }
+    parts.push(...describeKeywordChanges(oldCard.keywords, newCard.keywords));
   }
-  if (oldCard.maxHealth !== newCard.maxHealth) {
-    parts.push(`health ${oldCard.maxHealth} → ${newCard.maxHealth}`);
+
+  if (isSpellCard(oldCard) && isSpellCard(newCard)) {
+    parts.push(...describeActionArgChanges(oldCard, newCard));
   }
-  if (oldCard.retaliate !== newCard.retaliate) {
-    parts.push(`retaliate ${oldCard.retaliate} → ${newCard.retaliate}`);
-  }
-  parts.push(...describeKeywordChanges(oldCard.keywords, newCard.keywords));
 
   if (!parts.length) {
     return '';
@@ -287,6 +295,35 @@ function describeKeywordChanges(
   return parts;
 }
 
+function describeActionArgChanges(
+  oldCard: SpellCardTemplate,
+  newCard: SpellCardTemplate
+): string[] {
+  const parts: string[] = [];
+  const count = Math.max(oldCard.actions.length, newCard.actions.length);
+  for (let index = 0; index < count; index++) {
+    const oldAction = oldCard.actions[index];
+    const newAction = newCard.actions[index];
+    if (!oldAction || !newAction) continue;
+    const templateName = getActionTemplateNameForEffect(oldAction.effect.name);
+    const actionLabel = templateName
+      ? (getActionTemplateMeta(templateName)?.label ?? templateName)
+      : oldAction.effect.name;
+    for (const param of getActionNumericParams(oldAction)) {
+      const oldValue = Number(oldAction.effect.args[param.definitionKey]) || 0;
+      const newValue = Number(newAction.effect.args[param.definitionKey]) || 0;
+      if (oldValue === newValue) continue;
+      const label = param.label.toLowerCase();
+      parts.push(
+        count > 1
+          ? `${actionLabel} ${label} ${oldValue} → ${newValue}`
+          : `${label} ${oldValue} → ${newValue}`
+      );
+    }
+  }
+  return parts;
+}
+
 function formatKeywordName(keyword: string): string {
   return keyword.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
 }
@@ -313,31 +350,58 @@ function emptyDistillPreview(error: string): DistillPreview {
   };
 }
 
-function getDistillCutError(card: UnitCardTemplate, parameters: DistillParameters): string {
-  if ((parameters.power ?? 0) > card.power) {
-    return `Cannot cut more power than the card has: ${card.power}.`;
-  }
-  if ((parameters.maxHealth ?? 0) > card.maxHealth - 1) {
-    return `Cannot cut health below 1: ${card.maxHealth}.`;
-  }
-  if ((parameters.retaliate ?? 0) > (card.retaliate || 0)) {
-    return `Cannot cut more retaliate than the card has: ${card.retaliate || 0}.`;
-  }
-  if (parameters.keywords) {
-    for (const [keyword, value] of Object.entries(parameters.keywords) as [
-      keyof UnitKeywords,
-      number,
-    ][]) {
-      if (!value) continue;
-      const current = card.keywords?.[keyword];
-      if (!current) {
-        return `Card does not have keyword: ${formatKeywordName(keyword)}.`;
-      }
-      if (typeof current === 'number' && value > current) {
-        return `Cannot cut more ${formatKeywordName(keyword)} than the card has: ${current}.`;
+function getDistillCutError(
+  card: UnitCardTemplate | SpellCardTemplate,
+  parameters: DistillParameters
+): string {
+  if (isUnitCard(card)) {
+    if ((parameters.power ?? 0) > card.power) {
+      return `Cannot cut more power than the card has: ${card.power}.`;
+    }
+    if ((parameters.maxHealth ?? 0) > card.maxHealth - 1) {
+      return `Cannot cut health below 1: ${card.maxHealth}.`;
+    }
+    if ((parameters.retaliate ?? 0) > (card.retaliate || 0)) {
+      return `Cannot cut more retaliate than the card has: ${card.retaliate || 0}.`;
+    }
+    if (parameters.keywords) {
+      for (const [keyword, value] of Object.entries(parameters.keywords) as [
+        keyof UnitKeywords,
+        number,
+      ][]) {
+        if (!value) continue;
+        const current = card.keywords?.[keyword];
+        if (!current) {
+          return `Card does not have keyword: ${formatKeywordName(keyword)}.`;
+        }
+        if (typeof current === 'number' && value > current) {
+          return `Cannot cut more ${formatKeywordName(keyword)} than the card has: ${current}.`;
+        }
       }
     }
   }
+
+  if (isSpellCard(card) && parameters.actionArgs) {
+    for (const [indexKey, args] of Object.entries(parameters.actionArgs)) {
+      const action = card.actions[Number(indexKey)];
+      if (!action) {
+        return `Spell does not have action ${indexKey}.`;
+      }
+      const params = getActionNumericParams(action);
+      for (const [argKey, value] of Object.entries(args)) {
+        if (!value) continue;
+        const param = params.find((entry) => entry.definitionKey === argKey);
+        if (!param) {
+          return `Action does not have adjustable parameter: ${argKey}.`;
+        }
+        const current = Number(action.effect.args[argKey]) || 0;
+        if (value > current - MIN_ACTION_ARG) {
+          return `Cannot cut ${param.label.toLowerCase()} below ${MIN_ACTION_ARG}: ${current}.`;
+        }
+      }
+    }
+  }
+
   return '';
 }
 
@@ -357,64 +421,159 @@ function getUpgradePreference(
   return getRandomFromObjectWeights(preferences);
 }
 
+function spendUnitExtraBudget(card: UnitCardTemplate, extraBudget: number): number {
+  const costs: Record<string, number> = {
+    power: featureCosts.power(card),
+    maxHealth: featureCosts.maxHealth(card),
+    ret: featureCosts.retaliate(card),
+  };
+
+  while (extraBudget > 0) {
+    const upgradePreference = getUpgradePreference(card, costs, extraBudget);
+    if (upgradePreference === '') {
+      break;
+    }
+    extraBudget -= costs[upgradePreference];
+    switch (upgradePreference) {
+      case 'power':
+        card.power++;
+        break;
+      case 'maxHealth':
+        card.maxHealth++;
+        break;
+      case 'ret':
+        card.retaliate = (card.retaliate || 0) + 1;
+        break;
+    }
+  }
+
+  return extraBudget;
+}
+
+function spendSpellExtraBudget(card: SpellCardTemplate, extraBudget: number): number {
+  while (extraBudget > 0) {
+    const options = card.actions.flatMap((action) =>
+      getActionNumericParams(action)
+        .map((param) => ({
+          action,
+          param,
+          cost: getActionParamBudgetDelta(action, param.definitionKey, 1),
+        }))
+        .filter((option) => option.cost > 0 && option.cost <= extraBudget)
+    );
+    if (!options.length) {
+      break;
+    }
+    const pick = options.reduce((best, option) => (option.cost < best.cost ? option : best));
+    const key = pick.param.definitionKey;
+    pick.action.effect.args[key] = (Number(pick.action.effect.args[key]) || 0) + 1;
+    extraBudget -= pick.cost;
+  }
+  return extraBudget;
+}
+
 function makeNewCardTemplate(
-  card: UnitCardTemplate,
+  card: UnitCardTemplate | SpellCardTemplate,
   parameters: AugmentParameters,
   mutate = false
-): UnitCardTemplate {
-  const target: UnitCardTemplate = mutate
-    ? card
-    : {
-        ...card,
-        keywords: card.keywords ? { ...card.keywords } : undefined,
-      };
+): UnitCardTemplate | SpellCardTemplate {
+  const target = mutate ? card : cloneCardTemplate(card);
 
   target.cost += parameters.costIncrease ?? 0;
-  target.maxHealth += parameters.maxHealth ?? 0;
-  target.power += parameters.power ?? 0;
-  target.retaliate = (target.retaliate || 0) + (parameters.retaliate ?? 0);
 
-  if (parameters.keywords) {
-    for (const [keyword, value] of Object.entries(parameters.keywords) as [
-      keyof UnitKeywords,
-      number,
-    ][]) {
-      if (value) {
-        addKeyword(target, keyword, value);
+  if (isUnitCard(target)) {
+    target.maxHealth += parameters.maxHealth ?? 0;
+    target.power += parameters.power ?? 0;
+    target.retaliate = (target.retaliate || 0) + (parameters.retaliate ?? 0);
+
+    if (parameters.keywords) {
+      for (const [keyword, value] of Object.entries(parameters.keywords) as [
+        keyof UnitKeywords,
+        number,
+      ][]) {
+        if (value) {
+          addKeyword(target, keyword, value);
+        }
       }
     }
+  }
+
+  if (isSpellCard(target)) {
+    applyActionArgDeltas(target, parameters.actionArgs, 1);
   }
 
   return target;
 }
 
 function makeDistilledCardTemplate(
-  card: UnitCardTemplate,
+  card: UnitCardTemplate | SpellCardTemplate,
   parameters: DistillParameters,
   mutate = false
-): UnitCardTemplate {
-  const target: UnitCardTemplate = mutate
-    ? card
-    : {
-        ...card,
-        keywords: card.keywords ? { ...card.keywords } : undefined,
-      };
+): UnitCardTemplate | SpellCardTemplate {
+  const target = mutate ? card : cloneCardTemplate(card);
 
   target.cost -= parameters.costDecrease ?? 0;
-  target.maxHealth -= parameters.maxHealth ?? 0;
-  target.power -= parameters.power ?? 0;
-  target.retaliate = Math.max(0, (target.retaliate || 0) - (parameters.retaliate ?? 0));
 
-  if (parameters.keywords) {
-    for (const [keyword, value] of Object.entries(parameters.keywords) as [
-      keyof UnitKeywords,
-      number,
-    ][]) {
-      if (value) {
-        removeKeyword(target, keyword, value);
+  if (isUnitCard(target)) {
+    target.maxHealth -= parameters.maxHealth ?? 0;
+    target.power -= parameters.power ?? 0;
+    target.retaliate = Math.max(0, (target.retaliate || 0) - (parameters.retaliate ?? 0));
+
+    if (parameters.keywords) {
+      for (const [keyword, value] of Object.entries(parameters.keywords) as [
+        keyof UnitKeywords,
+        number,
+      ][]) {
+        if (value) {
+          removeKeyword(target, keyword, value);
+        }
       }
     }
   }
 
+  if (isSpellCard(target)) {
+    applyActionArgDeltas(target, parameters.actionArgs, -1);
+  }
+
   return target;
+}
+
+function applyActionArgDeltas(
+  card: SpellCardTemplate,
+  deltas: ActionArgDeltas | undefined,
+  sign: 1 | -1
+) {
+  if (!deltas) return;
+  for (const [indexKey, args] of Object.entries(deltas)) {
+    const action = card.actions[Number(indexKey)];
+    if (!action) continue;
+    for (const [argKey, value] of Object.entries(args)) {
+      if (!value) continue;
+      const current = Number(action.effect.args[argKey]) || 0;
+      action.effect.args[argKey] = Math.max(0, current + sign * value);
+    }
+  }
+}
+
+function cloneCardTemplate<T extends CardTemplate>(card: T): T {
+  if (isSpellCard(card)) {
+    return {
+      ...card,
+      actions: card.actions.map((action) => ({
+        ...action,
+        effect: {
+          name: action.effect.name,
+          args: { ...action.effect.args },
+        },
+        targets: action.targets?.map((target) => ({ ...target })),
+      })),
+    } as T;
+  }
+  if (isUnitCard(card)) {
+    return {
+      ...card,
+      keywords: card.keywords ? { ...card.keywords } : undefined,
+    } as T;
+  }
+  return { ...card };
 }

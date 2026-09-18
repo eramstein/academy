@@ -1,15 +1,23 @@
-import type { UnitKeywords } from "@/lib/_model";
-import type { CardCreationParameters } from "../actions";
-import type { FlavorTemplate } from "./flavor-templates";
+import type { UnitKeywords } from '@/lib/_model';
+import type { CardCreationParameters } from '../actions';
+import type { FlavorTemplate } from './flavor-templates';
 
 const COLOR_MATCH_WEIGHT = 3;
 const COST_EXACT_MATCH_WEIGHT = 3;
 const COST_NEAR_MATCH_WEIGHT = 1;
 const DEFAULT_MATCH_WEIGHT = 1;
 
-export function filterFlavorTemplates(templates: FlavorTemplate[], parameters: CardCreationParameters): FlavorTemplate[] {
+export function filterFlavorTemplates(
+  templates: FlavorTemplate[],
+  parameters: CardCreationParameters
+): FlavorTemplate[] {
+  const typed = parameters.cardType
+    ? templates.filter((template) => template.cardType === parameters.cardType)
+    : templates;
+  const pool = typed.length ? typed : templates;
+
   let highestScore = 0;
-  const scored = templates.map(template => {
+  const scored = pool.map((template) => {
     const score = scoreFlavorTemplate(template, parameters);
     if (score > highestScore) {
       highestScore = score;
@@ -17,9 +25,7 @@ export function filterFlavorTemplates(templates: FlavorTemplate[], parameters: C
     return { template, score };
   });
 
-  return scored
-    .filter(({ score }) => score === highestScore)
-    .map(({ template }) => template);
+  return scored.filter(({ score }) => score === highestScore).map(({ template }) => template);
 }
 
 function scoreFlavorTemplate(template: FlavorTemplate, parameters: CardCreationParameters): number {

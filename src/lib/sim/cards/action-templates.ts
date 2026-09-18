@@ -1,111 +1,123 @@
-import { TargetType } from '@/lib/_model';
+import { CardColor } from '@/lib/_model';
 import type { ActionDefinition } from '@/lib/_model/model-battle';
+import { getRandomInteger, getRandomWeighted } from '@/lib/_utils/random';
+import { actionTemplates, type ActionTemplate } from './action-templates-data';
+import { colorPie } from './color-pie';
 
-export interface ActionTemplate {
-  name: string;
-  definition: ActionDefinition;
-  budget: number;
+export { actionTemplates, type ActionTemplate };
+
+export interface ActionNumericParam {
+  factoryKey: string;
+  definitionKey: string;
+  label: string;
 }
 
-export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
-  directDamage: (args: { damage: number }) => ({
-    name: 'directDamage',
-    definition: {
-      effect: {
-        name: 'damageUnit',
-        args: {
-          damage: args.damage,
-        },
-      },
-      targets: [
-        {
-          type: TargetType.Units,
-        },
-      ],
-    },
-    budget: args.damage * 4,
-  }),
-  grow: (args: { counters: number }) => ({
-    name: 'grow',
-    definition: {
-      effect: {
-        name: 'addCounters',
-        args: {
-          counterType: 'growth',
-          damage: args.counters,
-        },
-      },
-      targets: [
-        {
-          type: TargetType.Units,
-        },
-      ],
-    },
-    budget: args.counters * 8,
-  }),
-  healUnit: (args: { health: number }) => ({
-    name: 'healUnit',
-    definition: {
-      effect: {
-        name: 'healUnit',
-        args: {
-          health: args.health,
-        },
-      },
-      targets: [
-        {
-          type: TargetType.Units,
-        },
-      ],
-    },
-    budget: args.health * 2,
-  }),
-  damageLand: (args: { damage: number }) => ({
-    name: 'damageLand',
-    definition: {
-      effect: {
-        name: 'damageLand',
-        args: {
-          damage: args.damage,
-        },
-      },
-      targets: [
-        {
-          type: TargetType.Units,
-        },
-      ],
-    },
-    budget: args.damage * 12,
-  }),
-  destroyUnit: () => ({
-    name: 'destroyUnit',
-    definition: {
-      effect: {
-        name: 'destroyUnit',
-        args: {},
-      },
-      targets: [
-        {
-          type: TargetType.Units,
-        },
-      ],
-    },
-    budget: 30,
-  }),
-  fortifyLand: (args: { amount: number }) => ({
-    name: 'fortifyLand',
-    definition: {
-      effect: {
-        name: 'fortifyLand',
-        args: { amount: args.amount },
-      },
-      targets: [
-        {
-          type: TargetType.Land,
-          count: 1,
-        },
-      ],
-    },
-    budget: args.amount * 4,
-  }),
+const DEFAULT_ACTION_PREVALENCE = 3;
+
+export const actionNumericParams: Record<string, ActionNumericParam[]> = {
+  directDamage: [{ factoryKey: 'damage', definitionKey: 'damage', label: 'Damage' }],
+  grow: [{ factoryKey: 'counters', definitionKey: 'counterValue', label: 'Growth' }],
+  healUnit: [{ factoryKey: 'health', definitionKey: 'health', label: 'Heal' }],
+  damageLand: [{ factoryKey: 'damage', definitionKey: 'damage', label: 'Damage' }],
+  destroyUnit: [],
+  fortifyLand: [{ factoryKey: 'amount', definitionKey: 'amount', label: 'Fortify' }],
 };
+
+const randomActionArgs: Record<string, () => Record<string, unknown>> = {
+  directDamage: () => ({ damage: getRandomInteger(1, 5) }),
+  grow: () => ({ counters: getRandomInteger(1, 3) }),
+  healUnit: () => ({ health: getRandomInteger(2, 6) }),
+  damageLand: () => ({ damage: getRandomInteger(1, 3) }),
+  destroyUnit: () => ({}),
+  fortifyLand: () => ({ amount: getRandomInteger(1, 4) }),
+};
+
+export function pickRandomActionTemplate(colors: CardColor[]): ActionTemplate {
+  const colorBonus = combinedActionPreferences(colors);
+  const weightedKeys = Object.keys(actionTemplates)
+    .map((key) => ({
+      item: key,
+      weight: Math.max(0, DEFAULT_ACTION_PREVALENCE + (colorBonus[key] ?? 0)),
+    }))
+    .filter(({ weight }) => weight > 0);
+  const name =
+    weightedKeys.length > 0 ? getRandomWeighted(weightedKeys) : Object.keys(actionTemplates)[0];
+  const args = randomActionArgs[name]?.() ?? {};
+  return actionTemplates[name](args);
+}
+
+export function getActionTemplateNameForEffect(effectName: string): string | undefined {
+  for (const [name, create] of Object.entries(actionTemplates)) {
+    if (create({}).definition.effect.name === effectName) {
+      return name;
+    }
+  }
+}
+
+export function getActionTemplateMeta(
+  name: string
+): Pick<ActionTemplate, 'label' | 'description'> | undefined {
+  const template = actionTemplates[name]?.({});
+  if (!template) return undefined;
+  return { label: template.label, description: template.description };
+}
+
+export function getActionTooltip(name: string): string {
+  return getActionTemplateMeta(name)?.description ?? name;
+}
+
+export function getActionNumericParams(definition: ActionDefinition): ActionNumericParam[] {
+  const name = getActionTemplateNameForEffect(definition.effect.name);
+  if (!name) return [];
+  return actionNumericParams[name] ?? [];
+}
+
+export function getActionDefinitionBudget(definition: ActionDefinition): number {
+  const name = getActionTemplateNameForEffect(definition.effect.name);
+  if (!name) return 0;
+  return actionTemplates[name](factoryArgsFromDefinition(name, definition)).budget;
+}
+
+export function getActionParamBudgetDelta(
+  definition: ActionDefinition,
+  definitionKey: string,
+  delta: number
+): number {
+  const next: ActionDefinition = {
+    ...definition,
+    effect: {
+      ...definition.effect,
+      args: {
+        ...definition.effect.args,
+        [definitionKey]: (Number(definition.effect.args[definitionKey]) || 0) + delta,
+      },
+    },
+  };
+  return getActionDefinitionBudget(next) - getActionDefinitionBudget(definition);
+}
+
+function factoryArgsFromDefinition(
+  name: string,
+  definition: ActionDefinition
+): Record<string, number> {
+  const params = actionNumericParams[name] ?? [];
+  return Object.fromEntries(
+    params.map((param) => [
+      param.factoryKey,
+      Number(definition.effect.args[param.definitionKey]) || 0,
+    ])
+  );
+}
+
+function combinedActionPreferences(colors: CardColor[]): Partial<Record<string, number>> {
+  const combined: Partial<Record<string, number>> = {};
+  for (const color of colors) {
+    for (const [key, value] of Object.entries(colorPie[color].actionPreferences) as [
+      string,
+      number,
+    ][]) {
+      combined[key] = (combined[key] ?? 0) + value;
+    }
+  }
+  return combined;
+}

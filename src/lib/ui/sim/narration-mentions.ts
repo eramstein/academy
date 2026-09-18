@@ -3,6 +3,7 @@ import type { Mentions } from '@/lib/_model';
 export type NarrationSegment =
   | { type: 'text'; text: string }
   | { type: 'keyword'; text: string; id: string }
+  | { type: 'action'; text: string; id: string }
   | { type: 'character'; text: string; id: string };
 
 export function segmentNarration(text: string, mentions?: Mentions): NarrationSegment[] {
@@ -10,10 +11,17 @@ export function segmentNarration(text: string, mentions?: Mentions): NarrationSe
 
   const candidates = [
     ...mentions.keywords.map(([word, id]) => ({ word, id, type: 'keyword' as const })),
+    ...(mentions.actions ?? []).map(([word, id]) => ({ word, id, type: 'action' as const })),
     ...mentions.characters.map(([word, id]) => ({ word, id, type: 'character' as const })),
   ].sort((a, b) => b.word.length - a.word.length);
 
-  type Hit = { start: number; end: number; text: string; id: string; type: 'keyword' | 'character' };
+  type Hit = {
+    start: number;
+    end: number;
+    text: string;
+    id: string;
+    type: 'keyword' | 'action' | 'character';
+  };
   const hits: Hit[] = [];
   const taken: [number, number][] = [];
 

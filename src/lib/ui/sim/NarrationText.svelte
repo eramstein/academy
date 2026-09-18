@@ -2,6 +2,7 @@
   import { untrack } from 'svelte';
   import type { Mentions } from '@/lib/_model';
   import { selectSimCharacter } from '@/lib/_state/state-ui.svelte';
+  import { getActionTooltip } from '@/lib/sim/cards/action-templates';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
   import { segmentNarration, visibleSegments } from './narration-mentions';
@@ -59,7 +60,7 @@
 </script>
 
 <!-- prettier-ignore -->
-<div class={className}>{#each shown as segment, i (i)}{#if segment.type === 'text'}{segment.text}{:else if segment.type === 'keyword'}<Tooltip content={getKeywordTooltip(segment.id)} show={hoveredMention === i}><span class="mention" onmouseenter={() => (hoveredMention = i)} onmouseleave={() => (hoveredMention = null)}>{segment.text}</span></Tooltip>{:else}<button type="button" class="mention mention-character" onclick={() => selectSimCharacter(segment.id)}>{segment.text}</button>{/if}{/each}{#if animate}<span class="caret" class:done={visibleLength >= text.length} aria-hidden="true"></span>{/if}</div>
+<div class={className}>{#each shown as segment, i (i)}{#if segment.type === 'text'}{segment.text}{:else if segment.type === 'keyword'}<Tooltip content={getKeywordTooltip(segment.id)} show={hoveredMention === i}><span class="mention" onmouseenter={() => (hoveredMention = i)} onmouseleave={() => (hoveredMention = null)}>{segment.text}</span></Tooltip>{:else if segment.type === 'action'}<Tooltip content={getActionTooltip(segment.id)} show={hoveredMention === i}><span class="mention" onmouseenter={() => (hoveredMention = i)} onmouseleave={() => (hoveredMention = null)}>{segment.text}</span></Tooltip>{:else}<button type="button" class="mention mention-character" onclick={() => selectSimCharacter(segment.id)}>{segment.text}</button>{/if}{/each}{#if animate}<span class="caret" class:done={visibleLength >= text.length} aria-hidden="true"></span>{/if}</div>
 
 <style>
   .mention {

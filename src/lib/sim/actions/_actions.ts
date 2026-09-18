@@ -7,14 +7,14 @@ import { narrateText } from '../narration';
 import { nextScene, setSceneEvents } from '../scene';
 import { ActionsLimitByPeriod } from './_action-types';
 import {
-  conjureUnit,
-  invokeUnit,
+  conjureCard,
+  invokeCard,
   type CardCreationParameters,
   type CardCreationResult,
 } from './artificery';
 import {
-  augmentUnit,
-  distillUnit,
+  augmentCard,
+  distillCard,
   type AugmentParameters,
   type DistillParameters,
 } from './enchanting';
@@ -98,11 +98,11 @@ const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => s
   [ActionType.Wait]: () => wait(),
   [ActionType.Socialize]: (parameters) => socialize(parameters as SocializeParameters),
   [ActionType.StartMatch]: (parameters) => startMatch(parameters as StartMatchParameters),
-  [ActionType.Augment]: (parameters) => augmentUnit(parameters as AugmentParameters),
-  [ActionType.Distill]: (parameters) => distillUnit(parameters as DistillParameters),
+  [ActionType.Augment]: (parameters) => augmentCard(parameters as AugmentParameters),
+  [ActionType.Distill]: (parameters) => distillCard(parameters as DistillParameters),
   [ActionType.Conjure]: (parameters) =>
-    conjureUnit(parameters as CardCreationResult, parameters.characterKey ?? 'player'),
+    conjureCard(parameters as CardCreationResult, parameters.characterKey ?? 'player'),
   [ActionType.Invoke]: (parameters) =>
-    invokeUnit(parameters as CardCreationParameters, parameters.characterKey ?? 'player'),
+    invokeCard(parameters as CardCreationParameters, parameters.characterKey ?? 'player'),
   [ActionType.PerformJob]: (parameters) => performJob(parameters.job as Job),
 };

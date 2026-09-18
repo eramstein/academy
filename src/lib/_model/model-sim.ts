@@ -124,6 +124,7 @@ export interface Narration {
 export interface Mentions {
   keywords: string[][];
   characters: string[][];
+  actions: string[][];
 }
 
 export interface ScheduledActivity {

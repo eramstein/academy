@@ -6,8 +6,11 @@
     type UnitKeywords,
   } from '@/lib/_model';
   import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
+  import { getActionTemplateMeta } from '@/lib/sim/cards/action-templates';
+  import Tooltip from '@/lib/ui/Tooltip.svelte';
 
   let { character }: { character: Character } = $props();
+  let hoveredAction = $state<string | null>(null);
 
   const CRAFTING_SKILL_ORDER: (keyof CardCraftingSkills)[] = [
     'mastery',
@@ -34,6 +37,18 @@
       keyword: keyword as keyof UnitKeywords,
       level,
     }))
+  );
+
+  const craftingActions = $derived(
+    Object.entries(character.craftingKnowledge.actions ?? {}).map(([name, level]) => {
+      const meta = getActionTemplateMeta(name);
+      return {
+        name,
+        level,
+        label: meta?.label ?? formatKeyword(name),
+        description: meta?.description ?? '',
+      };
+    })
   );
 
   function colorPath(color: CardColor): string {
@@ -108,6 +123,25 @@
       {#each craftingKeywords as { keyword, level } (keyword)}
         <li class="kv-row">
           <span class="kv-name keyword">{formatKeyword(keyword)}</span>
+          <span class="kv-value">{level}</span>
+        </li>
+      {/each}
+    </ul>
+  {/if}
+  {#if craftingActions.length > 0}
+    <h4 class="subsection-title">Actions</h4>
+    <ul class="kv-list">
+      {#each craftingActions as { name, level, label, description } (name)}
+        <li class="kv-row">
+          <Tooltip content={description} show={hoveredAction === name}>
+            <span
+              class="kv-name action"
+              onmouseenter={() => (hoveredAction = name)}
+              onmouseleave={() => (hoveredAction = null)}
+            >
+              {label}
+            </span>
+          </Tooltip>
           <span class="kv-value">{level}</span>
         </li>
       {/each}
@@ -249,8 +283,13 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .keyword {
+  .keyword,
+  .action {
     text-transform: none;
+  }
+
+  .action {
+    cursor: help;
   }
 
   .chip-list {
