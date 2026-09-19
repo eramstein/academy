@@ -56,5 +56,13 @@ function scoreFlavorTemplate(template: FlavorTemplate, parameters: CardCreationP
     }
   }
 
+  if (parameters.unitTypes) {
+    for (const unitType of parameters.unitTypes) {
+      if (template.unitTypes?.includes(unitType)) {
+        score += DEFAULT_MATCH_WEIGHT;
+      }
+    }
+  }
+
   return score;
 }

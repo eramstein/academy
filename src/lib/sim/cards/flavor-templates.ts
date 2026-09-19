@@ -1,13 +1,21 @@
 import conjurationTemplatesData from "@/data/sim/conjuration_templates.json";
-import { CardColor, CardType, isUnitCard, type CardTemplate, type UnitKeywords } from "@/lib/_model";
+import {
+  CardColor,
+  CardType,
+  UnitType,
+  isUnitCard,
+  type CardTemplate,
+  type UnitKeywords,
+} from "@/lib/_model";
 
 export interface FlavorTemplate {
   name: string;
   imageName: string;
-  cardType: CardType; 
+  cardType: CardType;
   cost: number;
   colors: CardColor[];
   keywords: (keyof UnitKeywords)[];
+  unitTypes?: UnitType[];
 }
 
 const conjurationTemplates = conjurationTemplatesData as FlavorTemplate[];
@@ -17,14 +25,16 @@ export function loadFlavorTemplates(): FlavorTemplate[] {
 }
 
 export function extractConjurationFromCardTemplate(cardTemplates: CardTemplate[]): FlavorTemplate[] {
-  return cardTemplates.map(card => ({
+  return cardTemplates.map((card) => ({
     name: card.name,
     imageName: card.imageFileName ?? card.id,
     cardType: card.type,
     cost: card.cost,
-    colors: card.colors.map(color => color.color),
-    keywords: isUnitCard(card) && card.keywords
-      ? (Object.keys(card.keywords) as (keyof UnitKeywords)[])
-      : [],
+    colors: card.colors.map((color) => color.color),
+    keywords:
+      isUnitCard(card) && card.keywords
+        ? (Object.keys(card.keywords) as (keyof UnitKeywords)[])
+        : [],
+    ...(isUnitCard(card) && card.unitTypes?.length ? { unitTypes: card.unitTypes } : {}),
   }));
 }

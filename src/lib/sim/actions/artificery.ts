@@ -15,14 +15,12 @@ import { getRandomFromArray } from '@/lib/_utils/random';
 import { getAbilityActionNames, type AbilityPick } from '../cards/ability-templates';
 import { getActionTemplateMeta } from '../cards/action-templates';
 import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
-import { buildSpellCard, buildUnitCard } from '../cards/creation';
+import { buildSpellCard, buildUnitCard, randomUnitTypes } from '../cards/creation';
 import { filterFlavorTemplates } from '../cards/flavor-filters';
 import { loadFlavorTemplates } from '../cards/flavor-templates';
 import { getActingCharacter } from '../characters';
 import { narrateCardConjured } from '../narration';
 import { spendResources } from '../resources';
-
-export type { AbilityPick } from '../cards/ability-templates';
 
 export interface CardCreationParameters {
   cardType?: CardType;
@@ -334,14 +332,21 @@ function getUnitTemplate(
     cost,
   };
 
-  // 4. pick template
+  // 4. pick name/image/unitTypes from flavor templates
   const flavor = pickFlavorTemplate(flavorTemplates, templateParameters);
+  const unitTypes =
+    parameters.unitTypes?.length
+      ? parameters.unitTypes
+      : flavor.unitTypes?.length
+        ? flavor.unitTypes
+        : randomUnitTypes(colors.map((entry) => entry.color));
   return {
     template: {
       ...conjured,
       id: flavor.name + crypto.randomUUID(),
       imageFileName: flavor.imageName,
       name: flavor.name,
+      unitTypes,
     },
     bonusBudget: sureMastery + extraBudget,
     actionName: (conjured.abilities ?? []).flatMap(getAbilityActionNames),

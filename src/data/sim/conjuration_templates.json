@@ -10,6 +10,9 @@
     "keywords": [
       "ranged",
       "armor"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -22,6 +25,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "demon"
     ]
   },
   {
@@ -37,6 +43,9 @@
       "ranged",
       "retaliate",
       "resist"
+    ],
+    "unitTypes": [
+      "spirit"
     ]
   },
   {
@@ -48,7 +57,10 @@
       "red",
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Albatros",
@@ -60,6 +72,9 @@
     ],
     "keywords": [
       "flying"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -71,7 +86,10 @@
       "red",
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Alpha Male",
@@ -82,7 +100,10 @@
       "red",
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Ammunition Cart",
@@ -94,6 +115,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -104,7 +128,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Angry Mob",
@@ -116,6 +143,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -126,7 +156,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Arcane Sniper",
@@ -139,6 +172,9 @@
     "keywords": [
       "ranged",
       "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -159,7 +195,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Baba Yaga",
@@ -173,6 +212,9 @@
     "keywords": [
       "resist",
       "poisonous"
+    ],
+    "unitTypes": [
+      "demon"
     ]
   },
   {
@@ -185,6 +227,9 @@
     ],
     "keywords": [
       "ranged"
+    ],
+    "unitTypes": [
+      "building"
     ]
   },
   {
@@ -199,6 +244,9 @@
     "keywords": [
       "retaliate",
       "resist"
+    ],
+    "unitTypes": [
+      "monster"
     ]
   },
   {
@@ -219,7 +267,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Bear Minimum",
@@ -231,6 +282,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -245,6 +299,10 @@
     "keywords": [
       "moveAndAttack",
       "trample"
+    ],
+    "unitTypes": [
+      "human",
+      "beast"
     ]
   },
   {
@@ -256,7 +314,10 @@
       "green",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Benevolent Monk",
@@ -266,7 +327,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Big Bertha",
@@ -281,6 +345,9 @@
       "cleave",
       "lance",
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -304,6 +371,9 @@
     "keywords": [
       "trample",
       "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -317,6 +387,9 @@
     "keywords": [
       "retaliate",
       "armor"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -327,7 +400,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ]
   },
   {
     "name": "Boring Boar",
@@ -337,7 +413,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Born From Magic",
@@ -350,6 +429,9 @@
     ],
     "keywords": [
       "flying"
+    ],
+    "unitTypes": [
+      "spirit"
     ]
   },
   {
@@ -360,7 +442,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Busy Forge",
@@ -371,7 +456,10 @@
       "red",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ]
   },
   {
     "name": "Caring Druidess",
@@ -381,7 +469,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Carnival of Miracles",
@@ -426,6 +517,9 @@
     "keywords": [
       "lance",
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -436,7 +530,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Clunky Helicopter",
@@ -448,6 +545,9 @@
     ],
     "keywords": [
       "armor"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -460,6 +560,10 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "elemental",
+      "demon"
     ]
   },
   {
@@ -473,6 +577,9 @@
     ],
     "keywords": [
       "armor"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -485,6 +592,9 @@
     ],
     "keywords": [
       "ranged"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -496,7 +606,10 @@
       "blue",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Dark Remedy",
@@ -528,7 +641,10 @@
       "green",
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ]
   },
   {
     "name": "Decaying Ray",
@@ -548,7 +664,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Desert Sorcerer",
@@ -561,6 +680,9 @@
     ],
     "keywords": [
       "ranged"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -583,7 +705,10 @@
       "blue",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Drake",
@@ -597,6 +722,9 @@
       "lance",
       "flying",
       "retaliate"
+    ],
+    "unitTypes": [
+      "dragon"
     ]
   },
   {
@@ -609,6 +737,9 @@
     ],
     "keywords": [
       "regeneration"
+    ],
+    "unitTypes": [
+      "spirit"
     ]
   },
   {
@@ -630,6 +761,9 @@
     ],
     "keywords": [
       "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -642,6 +776,9 @@
     ],
     "keywords": [
       "zerk"
+    ],
+    "unitTypes": [
+      "dwarf"
     ]
   },
   {
@@ -652,7 +789,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "dwarf"
+    ]
   },
   {
     "name": "Dwarven Punisher",
@@ -665,6 +805,9 @@
     "keywords": [
       "haste",
       "trample"
+    ],
+    "unitTypes": [
+      "dwarf"
     ]
   },
   {
@@ -679,6 +822,10 @@
       "ranged",
       "flying",
       "retaliate"
+    ],
+    "unitTypes": [
+      "human",
+      "beast"
     ]
   },
   {
@@ -700,7 +847,10 @@
       "black",
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "demon"
+    ]
   },
   {
     "name": "Elite Crossbowmen",
@@ -713,6 +863,9 @@
     "keywords": [
       "ranged",
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -743,6 +896,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "monster"
     ]
   },
   {
@@ -763,7 +919,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ]
   },
   {
     "name": "Ent",
@@ -776,6 +935,9 @@
     "keywords": [
       "retaliate",
       "armor"
+    ],
+    "unitTypes": [
+      "spirit"
     ]
   },
   {
@@ -786,7 +948,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ]
   },
   {
     "name": "Entrench",
@@ -817,7 +982,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Explosive Trap",
@@ -828,7 +996,10 @@
       "red",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ]
   },
   {
     "name": "Fair Trader",
@@ -840,6 +1011,9 @@
     ],
     "keywords": [
       "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -853,6 +1027,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -866,6 +1043,9 @@
     ],
     "keywords": [
       "flying"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -878,6 +1058,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -900,6 +1083,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "elemental"
     ]
   },
   {
@@ -923,6 +1109,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "spirit"
     ]
   },
   {
@@ -936,6 +1125,9 @@
     ],
     "keywords": [
       "lance"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -949,6 +1141,9 @@
     ],
     "keywords": [
       "flying"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -983,6 +1178,9 @@
     "keywords": [
       "retaliate",
       "immobile"
+    ],
+    "unitTypes": [
+      "building"
     ]
   },
   {
@@ -996,6 +1194,9 @@
     ],
     "keywords": [
       "armor"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1006,7 +1207,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Gas Station",
@@ -1028,6 +1232,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1041,6 +1248,9 @@
     "keywords": [
       "cleave",
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1064,6 +1274,9 @@
     "keywords": [
       "retaliate",
       "poisonous"
+    ],
+    "unitTypes": [
+      "monster"
     ]
   },
   {
@@ -1075,7 +1288,10 @@
       "red",
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Glacial Guard",
@@ -1088,6 +1304,9 @@
     ],
     "keywords": [
       "ranged"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1098,7 +1317,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ]
   },
   {
     "name": "Gnome Mechanic",
@@ -1108,7 +1330,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ]
   },
   {
     "name": "Goblin Engineer",
@@ -1118,7 +1343,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ]
   },
   {
     "name": "Golgoth",
@@ -1132,6 +1360,9 @@
     "keywords": [
       "retaliate",
       "armor"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1146,6 +1377,9 @@
     "keywords": [
       "trample",
       "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -1161,6 +1395,9 @@
       "ranged",
       "cleave",
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1173,6 +1410,9 @@
     ],
     "keywords": [
       "ranged"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1196,6 +1436,9 @@
     ],
     "keywords": [
       "cleave"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1209,6 +1452,9 @@
     "keywords": [
       "flying",
       "retaliate"
+    ],
+    "unitTypes": [
+      "monster"
     ]
   },
   {
@@ -1225,6 +1471,9 @@
       "cleave",
       "retaliate",
       "resist"
+    ],
+    "unitTypes": [
+      "dwarf"
     ]
   },
   {
@@ -1261,7 +1510,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ]
   },
   {
     "name": "Hobbit Gardener",
@@ -1271,7 +1523,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ]
   },
   {
     "name": "Hobbit Villager",
@@ -1284,6 +1539,9 @@
     "keywords": [
       "retaliate",
       "regeneration"
+    ],
+    "unitTypes": [
+      "halfing"
     ]
   },
   {
@@ -1306,7 +1564,10 @@
       "red",
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Hungry Wolf",
@@ -1318,6 +1579,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -1330,6 +1594,9 @@
     ],
     "keywords": [
       "haste"
+    ],
+    "unitTypes": [
+      "monster"
     ]
   },
   {
@@ -1354,6 +1621,9 @@
     "keywords": [
       "retaliate",
       "armor"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -1388,6 +1658,9 @@
     "keywords": [
       "haste",
       "moveAndAttack"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -1401,6 +1674,9 @@
     ],
     "keywords": [
       "moveAndAttack"
+    ],
+    "unitTypes": [
+      "monster"
     ]
   },
   {
@@ -1413,6 +1689,9 @@
     ],
     "keywords": [
       "ranged"
+    ],
+    "unitTypes": [
+      "monster"
     ]
   },
   {
@@ -1446,6 +1725,9 @@
     ],
     "keywords": [
       "ranged"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1478,6 +1760,9 @@
     ],
     "keywords": [
       "haste"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -1488,7 +1773,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Luxurious Growth",
@@ -1508,7 +1796,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Magic Weapons",
@@ -1529,7 +1820,10 @@
       "green",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Market",
@@ -1549,6 +1843,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1561,6 +1858,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1603,6 +1903,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1613,7 +1916,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ]
   },
   {
     "name": "Melting Spree",
@@ -1636,6 +1942,9 @@
     "keywords": [
       "ranged",
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1660,6 +1969,9 @@
     "keywords": [
       "haste",
       "zerk"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1678,7 +1990,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Mountain",
@@ -1700,6 +2015,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "monster"
     ]
   },
   {
@@ -1711,7 +2029,11 @@
       "green",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "beast",
+      "mushroom"
+    ]
   },
   {
     "name": "Nature's Reconquest",
@@ -1754,6 +2076,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1767,6 +2092,9 @@
     ],
     "keywords": [
       "resist"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -1777,7 +2105,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Odin's Chosen",
@@ -1790,6 +2121,9 @@
     ],
     "keywords": [
       "haste"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1800,7 +2134,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ]
   },
   {
     "name": "Opera Singer",
@@ -1812,6 +2149,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1825,6 +2165,9 @@
     "keywords": [
       "retaliate",
       "armor"
+    ],
+    "unitTypes": [
+      "monster"
     ]
   },
   {
@@ -1835,7 +2178,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "demon"
+    ]
   },
   {
     "name": "Ousmane's Summoning Circle",
@@ -1855,6 +2201,9 @@
     ],
     "keywords": [
       "regeneration"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -1865,7 +2214,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Peaceful Faerie",
@@ -1877,6 +2229,9 @@
     ],
     "keywords": [
       "ranged"
+    ],
+    "unitTypes": [
+      "spirit"
     ]
   },
   {
@@ -1905,7 +2260,11 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human",
+      "demon"
+    ]
   },
   {
     "name": "Plains",
@@ -1924,7 +2283,10 @@
       "blue",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Promising Prototype",
@@ -1943,6 +2305,9 @@
       "retaliate",
       "armor",
       "resist"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -1953,7 +2318,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ]
   },
   {
     "name": "Ragnar Lothbrok",
@@ -1966,6 +2334,9 @@
     ],
     "keywords": [
       "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -1997,6 +2368,9 @@
     ],
     "keywords": [
       "lance"
+    ],
+    "unitTypes": [
+      "dragon"
     ]
   },
   {
@@ -2007,7 +2381,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Rock Drop",
@@ -2029,6 +2406,9 @@
     ],
     "keywords": [
       "resist"
+    ],
+    "unitTypes": [
+      "elemental"
     ]
   },
   {
@@ -2039,7 +2419,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Royal Halberdier",
@@ -2053,6 +2436,9 @@
       "lance",
       "retaliate",
       "armor"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -2065,6 +2451,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -2095,7 +2484,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Self Building Tank",
@@ -2109,6 +2501,9 @@
       "ranged",
       "retaliate",
       "armor"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -2119,7 +2514,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Sewers",
@@ -2139,7 +2537,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Sherazad",
@@ -2153,6 +2554,9 @@
     "keywords": [
       "ranged",
       "resist"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -2164,7 +2568,10 @@
       "red",
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Shroomy",
@@ -2174,7 +2581,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "mushroom"
+    ]
   },
   {
     "name": "Shroomy Protecs",
@@ -2184,7 +2594,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "mushroom"
+    ]
   },
   {
     "name": "Snek",
@@ -2196,6 +2609,9 @@
     ],
     "keywords": [
       "poisonous"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -2207,7 +2623,10 @@
       "blue",
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Snow storm",
@@ -2232,6 +2651,9 @@
     "keywords": [
       "retaliate",
       "regeneration"
+    ],
+    "unitTypes": [
+      "monster"
     ]
   },
   {
@@ -2245,6 +2667,9 @@
     ],
     "keywords": [
       "haste"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -2255,7 +2680,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ]
   },
   {
     "name": "Spirited Train",
@@ -2270,6 +2698,10 @@
       "retaliate",
       "armor",
       "resist"
+    ],
+    "unitTypes": [
+      "construct",
+      "demon"
     ]
   },
   {
@@ -2291,7 +2723,10 @@
       "blue",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ]
   },
   {
     "name": "Stone Skin",
@@ -2314,6 +2749,9 @@
     ],
     "keywords": [
       "ranged"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -2349,6 +2787,9 @@
     "keywords": [
       "haste",
       "retaliate"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -2363,6 +2804,9 @@
     "keywords": [
       "ranged",
       "poisonous"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -2387,6 +2831,9 @@
     "keywords": [
       "ranged",
       "armor"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -2402,6 +2849,9 @@
       "lance",
       "retaliate",
       "armor"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -2425,6 +2875,10 @@
     "keywords": [
       "trample",
       "retaliate"
+    ],
+    "unitTypes": [
+      "beast",
+      "demon"
     ]
   },
   {
@@ -2439,6 +2893,10 @@
     "keywords": [
       "retaliate",
       "regeneration"
+    ],
+    "unitTypes": [
+      "human",
+      "demon"
     ]
   },
   {
@@ -2457,7 +2915,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Time Elemental",
@@ -2470,6 +2931,9 @@
     ],
     "keywords": [
       "moveAndAttack"
+    ],
+    "unitTypes": [
+      "elemental"
     ]
   },
   {
@@ -2494,6 +2958,11 @@
     "keywords": [
       "armor",
       "resist"
+    ],
+    "unitTypes": [
+      "demon",
+      "beast",
+      "human"
     ]
   },
   {
@@ -2523,7 +2992,10 @@
       "red",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Tricky Move",
@@ -2576,6 +3048,9 @@
     ],
     "keywords": [
       "resist"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -2586,7 +3061,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ]
   },
   {
     "name": "Unicorn",
@@ -2600,6 +3078,9 @@
       "trample",
       "retaliate",
       "resist"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -2632,6 +3113,9 @@
     ],
     "keywords": [
       "armor"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -2642,7 +3126,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Viking Banner",
@@ -2655,6 +3142,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -2667,6 +3157,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "plant"
     ]
   },
   {
@@ -2682,6 +3175,9 @@
       "immobile",
       "ranged",
       "retaliate"
+    ],
+    "unitTypes": [
+      "building"
     ]
   },
   {
@@ -2714,7 +3210,10 @@
       "red",
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Who is fat ???",
@@ -2747,6 +3246,9 @@
     ],
     "keywords": [
       "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -2765,7 +3267,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ]
   },
   {
     "name": "Young Viking",
@@ -2776,7 +3281,10 @@
       "red",
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Zeppelin",
@@ -2789,6 +3297,9 @@
     "keywords": [
       "flying",
       "retaliate"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -2810,6 +3321,9 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ]
   }
 ]

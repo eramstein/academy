@@ -109,7 +109,6 @@ function getRandomUnitCardTemplate(
       character
     ),
     abilities: randomAbilities(cardColors.map((entry) => entry.color)),
-    unitTypes: randomUnitTypes(cardColors.map((entry) => entry.color)),
   };
 }
 
@@ -148,7 +147,8 @@ function combinedStatsPreference(colors: CardColor[]): StatsPreference {
   );
 }
 
-function randomUnitTypes(colors: CardColor[]): UnitType[] {
+/** Fallback when neither creation params nor a flavor template provide unitTypes. */
+export function randomUnitTypes(colors: CardColor[]): UnitType[] {
   return [getRandomFromArray(allowedUnitTypesForColors(colors))];
 }
 
