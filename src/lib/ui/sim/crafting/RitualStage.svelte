@@ -295,14 +295,29 @@
       const orbit = orbitTarget(token.type, token.unit, row.chosen, center);
       const pile = pileTarget(token.type, token.unit, row.chosen, bench);
       const flight = flights.get(token.id);
+      const leftover = consume && !inCircle;
 
       let x: number;
       let y: number;
       let scale = 1;
-      let opacity = consume && !inCircle ? 1 - suction : 1;
+      let opacity = leftover ? Math.max(0, 1 - suction) : 1;
       let flying = false;
 
-      if (flight) {
+      if (leftover) {
+        // Leftovers dissolve where they sit — never feed into the circle.
+        const prev = lastPos.get(token.id);
+        if (prev) {
+          x = prev.x;
+          y = prev.y;
+        } else if (pile) {
+          x = pile.x;
+          y = pile.y;
+        } else {
+          continue;
+        }
+        scale = 1 - suction * 0.4;
+        flying = false;
+      } else if (flight) {
         const t = (now - flight.start - flight.delay) / flight.duration;
         if (t < 0) {
           x = flight.fromX;
@@ -330,7 +345,7 @@
         continue;
       }
 
-      if (consume && suction > 0) {
+      if (consume && suction > 0 && inCircle) {
         x = lerp(x, center.x, suction);
         y = lerp(y, center.y, suction);
         scale = 1 - suction * 0.85;

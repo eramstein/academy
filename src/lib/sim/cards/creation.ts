@@ -17,12 +17,28 @@ import {
 import type { CardCreationParameters } from '../actions';
 import { buildAbility, pickRandomAbility } from './ability-templates';
 import { pickRandomActionTemplate } from './action-templates';
+import { getBudgetFromCost, getCardBudget } from './card-budget';
 import { colorPie, type StatsPreference } from './color-pie';
 import { KEYWORD_KEYS, NUMERIC_KEYWORDS, keywordConfig } from './keywords';
 
 type CardIdentityKeys = 'id' | 'cost' | 'name' | 'imageFileName';
 export type PartialConjuredUnit = Omit<UnitCardTemplate, CardIdentityKeys>;
 export type PartialConjuredSpell = Omit<SpellCardTemplate, CardIdentityKeys>;
+
+// chance of creating a card of a given cost
+const costDistribution = {
+  1: 0.05,
+  2: 0.1,
+  3: 0.15,
+  4: 0.15,
+  5: 0.15,
+  6: 0.15,
+  7: 0.1,
+  8: 0.1,
+  9: 0.05,
+};
+
+const CARD_CANDIDATE_COUNT = 30;
 
 export function buildUnitCard(
   parameters: CardCreationParameters,
@@ -61,18 +77,24 @@ export function buildSpellCard(parameters: CardCreationParameters): {
   actionName: string[];
 } {
   const cardColors = resolveCardColors(parameters.colors);
-  const action = pickRandomActionTemplate(
-    cardColors.map((entry) => entry.color),
-    parameters.actions
-  );
+  const targetCost = Number(getRandomFromObjectWeights(costDistribution));
+  const targetBudget = getBudgetFromCost(targetCost, cardColors);
+
+  let best: { card: PartialConjuredSpell; actionName: string } | null = null;
+  let bestDistance = Infinity;
+  for (let i = 0; i < CARD_CANDIDATE_COUNT; i++) {
+    const candidate = rollSpellCandidate(cardColors, parameters.actions);
+    const distance = Math.abs(getCardBudget(candidate.card) - targetBudget);
+    if (distance < bestDistance) {
+      best = candidate;
+      bestDistance = distance;
+    }
+  }
+
   return {
-    card: {
-      type: CardType.Spell,
-      colors: cardColors,
-      actions: [action.definition],
-    },
-    budget: action.budget,
-    actionName: [action.name],
+    card: best!.card,
+    budget: getCardBudget(best!.card),
+    actionName: [best!.actionName],
   };
 }
 
@@ -96,19 +118,55 @@ function getRandomUnitCardTemplate(
   character: Character = gs.player
 ): PartialConjuredUnit {
   const cardColors = resolveCardColors(colors);
-  const { power, maxHealth, retaliate } = randomCombatStats(cardColors.map((entry) => entry.color));
+  const targetCost = Number(getRandomFromObjectWeights(costDistribution));
+  const targetBudget = getBudgetFromCost(targetCost, cardColors);
+
+  let best: PartialConjuredUnit | null = null;
+  let bestDistance = Infinity;
+  for (let i = 0; i < CARD_CANDIDATE_COUNT; i++) {
+    const candidate = rollUnitCandidate(cardColors, isConjuration, character);
+    const distance = Math.abs(getCardBudget(candidate) - targetBudget);
+    if (distance < bestDistance) {
+      best = candidate;
+      bestDistance = distance;
+    }
+  }
+  return best!;
+}
+
+function rollSpellCandidate(
+  cardColors: { color: CardColor; count: number }[],
+  allowedActions?: string[]
+): { card: PartialConjuredSpell; actionName: string } {
+  const action = pickRandomActionTemplate(
+    cardColors.map((entry) => entry.color),
+    allowedActions
+  );
+  return {
+    card: {
+      type: CardType.Spell,
+      colors: cardColors,
+      actions: [action.definition],
+    },
+    actionName: action.name,
+  };
+}
+
+function rollUnitCandidate(
+  cardColors: { color: CardColor; count: number }[],
+  isConjuration: boolean,
+  character: Character
+): PartialConjuredUnit {
+  const colorList = cardColors.map((entry) => entry.color);
+  const { power, maxHealth, retaliate } = randomCombatStats(colorList);
   return {
     type: CardType.Unit,
     colors: cardColors,
     power,
     maxHealth,
     retaliate,
-    keywords: randomKeywords(
-      cardColors.map((entry) => entry.color),
-      isConjuration,
-      character
-    ),
-    abilities: randomAbilities(cardColors.map((entry) => entry.color)),
+    keywords: randomKeywords(colorList, isConjuration, character),
+    abilities: randomAbilities(colorList),
   };
 }
 

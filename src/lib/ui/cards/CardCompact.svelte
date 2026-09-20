@@ -231,6 +231,7 @@
   .unit-types-inline {
     display: flex;
     justify-content: center;
+    gap: 0.35rem;
   }
 
   .unit-type-text {

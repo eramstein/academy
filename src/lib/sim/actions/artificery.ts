@@ -51,11 +51,17 @@ export interface CardCreationResult {
   actionName?: string[];
 }
 
+export interface UsedFlavors {
+  names: Set<string>;
+  images: Set<string>;
+}
+
 export function getNewCardTemplate(
   parameters: CardCreationParameters,
   spend = true,
   characterKey = 'player',
-  prune = false
+  prune = false,
+  usedFlavors?: UsedFlavors
 ): CardCreationResult | null {
   if (!parameters.resources) {
     parameters.resources = [];
@@ -69,10 +75,19 @@ export function getNewCardTemplate(
   const cardType = resolveCardType(prunedParams);
   const typedParams = { ...prunedParams, cardType };
   if (cardType === CardType.Spell) {
-    const { template, bonusBudget, actionName } = getSpellTemplate(typedParams, bonuses);
+    const { template, bonusBudget, actionName } = getSpellTemplate(
+      typedParams,
+      bonuses,
+      usedFlavors
+    );
     return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
   }
-  const { template, bonusBudget, actionName } = getUnitTemplate(typedParams, bonuses, character);
+  const { template, bonusBudget, actionName } = getUnitTemplate(
+    typedParams,
+    bonuses,
+    character,
+    usedFlavors
+  );
   return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
 }
 
@@ -109,10 +124,16 @@ export function getConjurationOtions(
   if (!spendResources(parameters.resources ?? [])) {
     return [];
   }
+  const usedFlavors: UsedFlavors = {
+    names: new Set(character.collection.map((card) => card.name)),
+    images: new Set(character.collection.map((card) => card.imageFileName)),
+  };
   const options: CardCreationResult[] = [];
   for (let i = 0; i < optionsCount; i++) {
-    const result = getNewCardTemplate(parameters, false, characterKey);
+    const result = getNewCardTemplate(parameters, false, characterKey, false, usedFlavors);
     if (result) {
+      usedFlavors.names.add(result.template.name);
+      usedFlavors.images.add(result.template.imageFileName);
       options.push(result);
     }
   }
@@ -298,7 +319,8 @@ function joinKeywordNames(names: string[]): string {
 function getUnitTemplate(
   parameters: CardCreationParameters,
   bonuses: CardCreationBonuses,
-  character: Character
+  character: Character,
+  usedFlavors?: UsedFlavors
 ): {
   template: UnitCardTemplate;
   bonusBudget: number;
@@ -333,7 +355,7 @@ function getUnitTemplate(
   };
 
   // 4. pick name/image/unitTypes from flavor templates
-  const flavor = pickFlavorTemplate(flavorTemplates, templateParameters);
+  const flavor = pickFlavorTemplate(flavorTemplates, templateParameters, usedFlavors);
   const unitTypes = parameters.unitTypes?.length
     ? parameters.unitTypes
     : flavor.unitTypes?.length
@@ -354,7 +376,8 @@ function getUnitTemplate(
 
 function getSpellTemplate(
   parameters: CardCreationParameters,
-  bonuses: CardCreationBonuses
+  bonuses: CardCreationBonuses,
+  usedFlavors?: UsedFlavors
 ): {
   template: SpellCardTemplate;
   bonusBudget: number;
@@ -376,7 +399,7 @@ function getSpellTemplate(
     colors: card.colors.map((entry) => entry.color),
     cost,
   };
-  const flavor = pickFlavorTemplate(flavorTemplates, templateParameters);
+  const flavor = pickFlavorTemplate(flavorTemplates, templateParameters, usedFlavors);
   return {
     template: {
       ...conjured,
@@ -391,14 +414,24 @@ function getSpellTemplate(
 
 function pickFlavorTemplate(
   flavorTemplates: ReturnType<typeof loadFlavorTemplates>,
-  parameters: CardCreationParameters
+  parameters: CardCreationParameters,
+  usedFlavors?: UsedFlavors
 ) {
-  const filteredTemplates = filterFlavorTemplates(flavorTemplates, parameters);
+  const unused = (templates: typeof flavorTemplates) => {
+    if (!usedFlavors) return templates;
+    return templates.filter(
+      (template) =>
+        !usedFlavors.names.has(template.name) && !usedFlavors.images.has(template.imageName)
+    );
+  };
+
+  const filteredTemplates = unused(filterFlavorTemplates(flavorTemplates, parameters));
   if (filteredTemplates.length) {
     return getRandomFromArray(filteredTemplates);
   }
   const typed = parameters.cardType
     ? flavorTemplates.filter((template) => template.cardType === parameters.cardType)
     : flavorTemplates;
-  return getRandomFromArray(typed.length ? typed : flavorTemplates);
+  const unusedTyped = unused(typed.length ? typed : flavorTemplates);
+  return getRandomFromArray(unusedTyped.length ? unusedTyped : typed.length ? typed : flavorTemplates);
 }
