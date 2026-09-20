@@ -19,7 +19,7 @@
 
   // Helper function to get color image path
   function getColorImagePath(color: string): string {
-    return getAssetPath(`images/color_${color}.png`);
+    return getAssetPath(`images/ui/icons/color_${color}.png`);
   }
 
   // Get available colors for the player
@@ -171,7 +171,7 @@
     position: absolute;
     bottom: 5px;
     right: 5px;
-    background: url('/assets/images/mana-contour.png') center/contain no-repeat;
+    background: url('/assets/images/ui/decorations/mana-contour.png') center/contain no-repeat;
     padding: 0;
     border-radius: 50%;
     font-weight: bold;
@@ -210,7 +210,7 @@
     position: absolute;
     bottom: 5px;
     left: 5px;
-    background: url('/assets/images/health-icon.png') center/cover no-repeat;
+    background: url('/assets/images/ui/icons/health-icon.png') center/cover no-repeat;
     color: white;
     padding: 0.5rem;
     border-radius: 8px;

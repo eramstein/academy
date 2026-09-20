@@ -7,8 +7,8 @@
   import NarrationList from './NarrationList.svelte';
   import SceneActions from './SceneActions.svelte';
 
-  const flourishPath = getAssetPath('images/ui/page-flourish.svg');
-  const starPath = getAssetPath('images/ui/page-star.svg');
+  const flourishPath = getAssetPath('images/ui/decorations/page-flourish.svg');
+  const starPath = getAssetPath('images/ui/decorations/page-star.svg');
 
   const selectingNextPlace = $derived(gs.scene.selectingNextPlace);
   const regionsWithPlaces = $derived(

@@ -128,7 +128,7 @@
   }
 
   .chip-btn {
-    background: url('/assets/images/wood_chip_base.png') center/cover no-repeat;
+    background: url('/assets/images/ui/backgrounds/wood_chip_base.png') center/cover no-repeat;
     border: 1px solid rgba(0, 0, 0, 0.4);
     padding: 0;
     cursor: pointer;

@@ -53,7 +53,7 @@
 
   // Helper function to get color image path
   function getColorImagePath(color: CardColor): string {
-    return getAssetPath(`images/color_${color}.png`);
+    return getAssetPath(`images/ui/icons/color_${color}.png`);
   }
 
   // Handle card click
@@ -266,7 +266,7 @@
     box-shadow:
       0 4px 12px rgba(0, 0, 0, 0.5),
       inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-    background: #444 url('/assets/images/cardboard.png') center/cover;
+    background: #444 url('/assets/images/ui/backgrounds/cardboard.png') center/cover;
     background-blend-mode: multiply;
     border: 1px solid #1a1a1a;
     padding: 4px;
@@ -307,7 +307,7 @@
   }
 
   .name {
-    background: #e8dcc4 url('/assets/images/parchment.png') center/cover;
+    background: #e8dcc4 url('/assets/images/ui/backgrounds/parchment.png') center/cover;
     background-blend-mode: multiply;
     color: #2c251d;
     padding: 6px 10px 2px 10px;

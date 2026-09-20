@@ -51,11 +51,11 @@
   }
 
   .power {
-    background: url('/assets/images/power-icon.png') center/contain no-repeat rgba(19, 16, 16, 0.8);
+    background: url('/assets/images/ui/icons/power-icon.png') center/contain no-repeat rgba(19, 16, 16, 0.8);
   }
 
   .retaliate {
-    background: url('/assets/images/retaliate-icon.png') center/contain no-repeat;
+    background: url('/assets/images/ui/icons/retaliate-icon.png') center/contain no-repeat;
     border: none;
     box-shadow: none;
     width: 30px;
@@ -65,12 +65,12 @@
 
   .health {
     background:
-      url('/assets/images/health-icon.png') center/contain no-repeat,
+      url('/assets/images/ui/icons/health-icon.png') center/contain no-repeat,
       rgba(139, 0, 0, 0.8);
   }
 
   .health.armor-bg {
-    background: url('/assets/images/armor-icon.png') center/contain no-repeat;
+    background: url('/assets/images/ui/icons/armor-icon.png') center/contain no-repeat;
     border: none;
     box-shadow: none;
     width: 24px;

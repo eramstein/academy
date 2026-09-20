@@ -56,7 +56,7 @@
 
   // Helper function to get color image path
   function getColorImagePath(color: CardColor): string {
-    return getAssetPath(`images/color_${color}.png`);
+    return getAssetPath(`images/ui/icons/color_${color}.png`);
   }
 
   // Get concatenated text from all actions for spells
@@ -175,7 +175,7 @@
                 <div
                   class="color-indicator"
                   style="background-image: url('{getAssetPath(
-                    `images/color_${colorInfo.color}.png`
+                    `images/ui/icons/color_${colorInfo.color}.png`
                   )}');"
                 ></div>
               {/each}
@@ -316,7 +316,7 @@
       0 8px 16px rgba(0, 0, 0, 0.4),
       inset 0 0 0 1px rgba(255, 255, 255, 0.1);
     border: 1px solid #1a1a1a;
-    background: #444 url('/assets/images/cardboard.png') center/cover;
+    background: #444 url('/assets/images/ui/backgrounds/cardboard.png') center/cover;
     background-blend-mode: multiply;
     padding: 10px;
     box-sizing: border-box;
@@ -352,7 +352,7 @@
   }
 
   .name {
-    background: #e8dcc4 url('/assets/images/parchment.png') center/cover;
+    background: #e8dcc4 url('/assets/images/ui/backgrounds/parchment.png') center/cover;
     background-blend-mode: multiply;
     color: #2c251d;
     padding: 12px 20px 4px 20px;

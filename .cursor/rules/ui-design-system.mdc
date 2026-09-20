@@ -58,16 +58,19 @@ Do not put parchment fills or ink text on the data panel. Do not put cream-on-da
 
 ## Materials and assets
 
-- `table.jpg` — sim (and battle) tabletop
-- `parchment.png` — book pages, card name bars, crafting sheets
-- `data-background.png` — data panel fill
-- `cardboard.png` — card frames
-- `wood_chip_base.png` — battle End Turn chip only, not sim chrome
-- `images/ui/*.svg` — data-panel icons
-- `images/keywords/` — card keyword icons
-- `images/color_*.png` — mana pips
+UI chrome lives under `public/assets/images/ui/`. Card art (`images/cards/`), characters, and places stay in their own folders.
 
-Load via `getAssetPath()`. Do not hardcode `/assets/...`.
+- `images/ui/backgrounds/table.jpg` — sim (and battle) tabletop
+- `images/ui/backgrounds/parchment.png` — book pages, card name bars, crafting sheets
+- `images/ui/backgrounds/data-background.png` — data panel fill
+- `images/ui/backgrounds/cardboard.png` — card frames
+- `images/ui/backgrounds/wood_chip_base.png` — battle End Turn chip only, not sim chrome
+- `images/ui/icons/*.png` — data-panel, action, and battle icons (prefer PNG over SVG)
+- `images/ui/icons/color_*.png` — mana pips
+- `images/ui/decorations/` — borders, corners, tab joins, page ornaments
+- `images/keywords/` — card keyword icons
+
+Load via `getAssetPath()` / `getUiIconPath()`. Do not hardcode `/assets/...`.
 
 ## Components to reuse
 
@@ -84,7 +87,7 @@ Put new tokens in `src/app.css`. Keep component CSS in the Svelte `<style>` bloc
 ## Do
 
 - Left: parchment page, ink text, buttons below on the table
-- Right: `data-background.png`, cream type, brass hairlines, SVG icons
+- Right: `data-background.png`, cream type, brass hairlines, painted PNG icons
 - Brass for chrome; gold only as a highlight accent
 - Small radii (3–6px on panels, ~8px on cards)
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 from PIL import Image
 
-border = np.array(Image.open('public/assets/images/border.png').convert('RGBA'), dtype=np.float32)
+border = np.array(Image.open('public/assets/images/ui/decorations/border.png').convert('RGBA'), dtype=np.float32)
 # Match the top-rail profile exactly (full 15 rows; gold lives in the top ~9)
 prof = border.mean(axis=1)
 rows = len(prof)  # 15
@@ -152,7 +152,7 @@ img[img[..., 3] < 16] = 0
 # Ensure row 0 of image corresponds to outer edge at the left/right exits
 # Currently centerline at y=rail_y=3.5 with outer at y=0 — good if arm_rad covers it.
 
-Image.fromarray(img, 'RGBA').save('public/assets/images/tab-join.png')
+Image.fromarray(img, 'RGBA').save('public/assets/images/ui/decorations/tab-join.png')
 
 # Report alignment diagnostics
 a = img

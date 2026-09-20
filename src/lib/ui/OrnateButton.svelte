@@ -22,8 +22,8 @@
 
   const iconUrl = $derived(icon ? getUiIconPath(icon) : undefined);
   const paintedIcon = $derived(!!icon && isPaintedUiIcon(icon));
-  const borderUrl = getAssetPath('images/border.png');
-  const cornerUrl = getAssetPath('images/corner.png');
+  const borderUrl = getAssetPath('images/ui/decorations/border.png');
+  const cornerUrl = getAssetPath('images/ui/decorations/corner.png');
 </script>
 
 <button

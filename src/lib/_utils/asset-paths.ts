@@ -28,11 +28,11 @@ export function getSoundPath(soundName: string): string {
 }
 
 export function getTableImagePath(): string {
-  return getAssetPath('images/table.jpg');
+  return getAssetPath('images/ui/backgrounds/table.jpg');
 }
 
 export function getDataBackgroundPath(): string {
-  return getAssetPath('images/data-background.png');
+  return getAssetPath('images/ui/backgrounds/data-background.png');
 }
 
 export function getCardBackImagePath(): string {
@@ -47,7 +47,7 @@ export function getPlaceImagePath(placeKey: string): string {
   return getAssetPath(`images/places/${placeKey}.jpg`);
 }
 
-/** Semantic UI icon names → extracted PNG files. Unmapped names stay SVG silhouettes. */
+/** Semantic UI icon names → painted PNG files in images/ui/icons. */
 const PAINTED_UI_ICONS: Record<string, string> = {
   sunrise: 'morning',
   sun: 'afternoon',
@@ -88,7 +88,6 @@ export function isPaintedUiIcon(name: string): boolean {
 }
 
 export function getUiIconPath(name: string): string {
-  const file = PAINTED_UI_ICONS[name];
-  if (file) return getAssetPath(`images/ui/icons/${file}.png`);
-  return getAssetPath(`images/ui/${name}.svg`);
+  const file = PAINTED_UI_ICONS[name] ?? name;
+  return getAssetPath(`images/ui/icons/${file}.png`);
 }

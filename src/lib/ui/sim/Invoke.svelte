@@ -33,9 +33,9 @@
 
   const STAT_MAX = 20;
   const CARD_TYPES = [CardType.Unit, CardType.Spell] as const;
-  const woodPath = getAssetPath('images/wood_chip_base.png');
-  const tablePath = getAssetPath('images/table.jpg');
-  const parchmentPath = getAssetPath('images/parchment.png');
+  const woodPath = getAssetPath('images/ui/backgrounds/wood_chip_base.png');
+  const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
+  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
   function resolveAvailableColors(): CardColor[] {
     const known = Object.values(CardColor).filter(
@@ -158,7 +158,7 @@
   }
 
   function colorPath(color: CardColor): string {
-    return getAssetPath(`images/color_${color}.png`);
+    return getAssetPath(`images/ui/icons/color_${color}.png`);
   }
 
   function clamp(value: number | undefined, min: number, max: number): number {
@@ -411,7 +411,7 @@
               0,
               'Power',
               (next) => (power = next),
-              getAssetPath('images/power-icon.png')
+              getAssetPath('images/ui/icons/power-icon.png')
             )}
           </div>
           <div class="stat">
@@ -421,7 +421,7 @@
               1,
               'Health',
               (next) => (hp = next),
-              getAssetPath('images/health-icon.png')
+              getAssetPath('images/ui/icons/health-icon.png')
             )}
           </div>
           <div class="stat large">
@@ -433,7 +433,7 @@
               0,
               'Retaliate',
               (next) => (retaliate = next),
-              getAssetPath('images/retaliate-icon.png'),
+              getAssetPath('images/ui/icons/retaliate-icon.png'),
               true
             )}
           </div>

@@ -16,9 +16,9 @@
     onDone: () => void;
   } = $props();
 
-  const woodPath = getAssetPath('images/wood_chip_base.png');
-  const tablePath = getAssetPath('images/table.jpg');
-  const parchmentPath = getAssetPath('images/parchment.png');
+  const woodPath = getAssetPath('images/ui/backgrounds/wood_chip_base.png');
+  const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
+  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
   const place = $derived(gs.places[gs.player.placeKey]);
   const stock = $derived(place?.itemsOnSale?.resources ?? {});

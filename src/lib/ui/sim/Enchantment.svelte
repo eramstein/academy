@@ -50,9 +50,9 @@
     onDone: () => void;
   } = $props();
 
-  const woodPath = getAssetPath('images/wood_chip_base.png');
-  const tablePath = getAssetPath('images/table.jpg');
-  const parchmentPath = getAssetPath('images/parchment.png');
+  const woodPath = getAssetPath('images/ui/backgrounds/wood_chip_base.png');
+  const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
+  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
   const isDistill = $derived(action.actionType === ActionType.Distill);
 
@@ -821,7 +821,7 @@
                   canIncPower,
                   'Power',
                   setPower,
-                  getAssetPath('images/power-icon.png')
+                  getAssetPath('images/ui/icons/power-icon.png')
                 )}
               </div>
               <div class="stat">
@@ -832,7 +832,7 @@
                   canIncHealth,
                   'Health',
                   setMaxHealth,
-                  getAssetPath('images/health-icon.png')
+                  getAssetPath('images/ui/icons/health-icon.png')
                 )}
               </div>
               <div class="stat large">
@@ -845,7 +845,7 @@
                   canIncRetaliate,
                   'Retaliate',
                   setRetaliate,
-                  getAssetPath('images/retaliate-icon.png'),
+                  getAssetPath('images/ui/icons/retaliate-icon.png'),
                   true
                 )}
               </div>

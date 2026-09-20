@@ -118,7 +118,7 @@
   }
 
   .health {
-    background: url('/assets/images/health-icon.png') center/cover no-repeat;
+    background: url('/assets/images/ui/icons/health-icon.png') center/cover no-repeat;
     color: white;
     padding: 0;
     border-radius: 4px;
@@ -161,7 +161,7 @@
   }
 
   .retaliate.retaliate-bg {
-    background: url('/assets/images/retaliate-icon.png') center/contain no-repeat;
+    background: url('/assets/images/ui/icons/retaliate-icon.png') center/contain no-repeat;
     border: none;
     box-shadow: none;
     width: 34px;

@@ -6,10 +6,10 @@
   import Scene from './Scene.svelte';
   import SimData from './SimData.svelte';
 
-  const parchmentPath = getAssetPath('images/parchment.png');
+  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
   const tablePath = getTableImagePath();
   const dataBgPath = getDataBackgroundPath();
-  const cornerPath = getAssetPath('images/ui/corner.svg');
+  const cornerPath = getAssetPath('images/ui/decorations/corner.svg');
 </script>
 
 <div

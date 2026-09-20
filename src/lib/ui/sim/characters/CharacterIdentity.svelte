@@ -6,8 +6,8 @@
 
   let { character }: { character: Character } = $props();
 
-  const parchmentPath = getAssetPath('images/parchment.png');
-  const cornerPath = getAssetPath('images/ui/corner.svg');
+  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
+  const cornerPath = getAssetPath('images/ui/decorations/corner.svg');
 
   const place = $derived(gs.places[character.placeKey]);
   const region = $derived(place ? gs.regions[place.regionKey] : undefined);

@@ -31,7 +31,7 @@
   }
 
   function colorPath(color: CardColor): string {
-    return getAssetPath(`images/color_${color}.png`);
+    return getAssetPath(`images/ui/icons/color_${color}.png`);
   }
 
   const cards = $derived(resolveDeckCards(deck.cards, collection));

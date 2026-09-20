@@ -72,7 +72,7 @@
   }
 
   function getAbilityIconPath(exhausts?: boolean): string {
-    return getAssetPath(exhausts ? 'images/tap.png' : 'images/activate.png');
+    return getAssetPath(exhausts ? 'images/ui/icons/tap.png' : 'images/ui/icons/activate.png');
   }
 </script>
 

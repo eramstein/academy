@@ -13,8 +13,8 @@
     onDone: () => void;
   } = $props();
 
-  const tablePath = getAssetPath('images/table.jpg');
-  const parchmentPath = getAssetPath('images/parchment.png');
+  const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
+  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
   $effect(() => {
     function onKey(event: KeyboardEvent) {

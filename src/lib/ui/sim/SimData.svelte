@@ -31,10 +31,10 @@
       (selected === 'characters' && uiState.sim.selectedCharacterKey !== null)
   );
 
-  const paneCornerPath = getAssetPath('images/ui/data-corner.svg');
-  const borderUrl = getAssetPath('images/border.png');
-  const cornerUrl = getAssetPath('images/corner.png');
-  const joinUrl = getAssetPath('images/tab-join.png');
+  const paneCornerPath = getAssetPath('images/ui/decorations/data-corner.svg');
+  const borderUrl = getAssetPath('images/ui/decorations/border.png');
+  const cornerUrl = getAssetPath('images/ui/decorations/corner.png');
+  const joinUrl = getAssetPath('images/ui/decorations/tab-join.png');
 
   function iconUrl(name: string) {
     return getUiIconPath(name);
