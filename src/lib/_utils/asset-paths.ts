@@ -27,6 +27,10 @@ export function getSoundPath(soundName: string): string {
   return getAssetPath(`sounds/battle/${soundName}.mp3`);
 }
 
+export function getSimSoundPath(soundName: string): string {
+  return getAssetPath(`sounds/sim/${soundName}.wav`);
+}
+
 export function getTableImagePath(): string {
   return getAssetPath('images/ui/backgrounds/table.jpg');
 }

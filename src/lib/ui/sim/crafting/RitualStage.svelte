@@ -2,6 +2,7 @@
   import { ResourceType } from '@/lib/_model';
   import { gs } from '@/lib/_state';
   import { getCardCreationBonuses } from '@/lib/sim/actions';
+  import { playAddResourceSound } from '@/lib/sim/sound';
   import { untrack } from 'svelte';
   import type { Snippet } from 'svelte';
   import IngredientPile from './IngredientPile.svelte';
@@ -193,6 +194,7 @@
         });
       }
       fed += 1;
+      playAddResourceSound();
     } else if (to < from) {
       for (let i = 0; i < from - to; i++) {
         const unit = from - 1 - i;

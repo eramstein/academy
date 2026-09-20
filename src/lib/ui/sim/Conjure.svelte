@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ResourceType } from '@/lib/_model';
   import type { CardCreationResult } from '@/lib/sim/actions';
+  import { playSimSound } from '@/lib/sim/sound';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import RitualStage from './crafting/RitualStage.svelte';
@@ -70,10 +71,12 @@
   function begin() {
     if (phase !== 'idle') return;
     phase = 'conjuring';
+    playSimSound('big-swoosh');
     options = onConjure(committedResources());
     const delay = reduceMotion ? 0 : 1500;
     revealTimer = setTimeout(() => {
       phase = 'revealed';
+      playSimSound('glinggling');
     }, delay);
   }
 
