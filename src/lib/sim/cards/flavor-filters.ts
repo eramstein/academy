@@ -64,5 +64,27 @@ function scoreFlavorTemplate(template: FlavorTemplate, parameters: CardCreationP
     }
   }
 
+  const requestedActions = requestedActionKeys(parameters);
+  if (requestedActions.length) {
+    for (const action of requestedActions) {
+      if (template.actions?.includes(action)) {
+        score += DEFAULT_MATCH_WEIGHT;
+      }
+    }
+  }
+
   return score;
+}
+
+function requestedActionKeys(parameters: CardCreationParameters): string[] {
+  const keys = new Set<string>();
+  if (parameters.actions) {
+    for (const action of parameters.actions) {
+      keys.add(action);
+    }
+  }
+  if (parameters.ability?.action) {
+    keys.add(parameters.ability.action);
+  }
+  return [...keys];
 }

@@ -334,12 +334,11 @@ function getUnitTemplate(
 
   // 4. pick name/image/unitTypes from flavor templates
   const flavor = pickFlavorTemplate(flavorTemplates, templateParameters);
-  const unitTypes =
-    parameters.unitTypes?.length
-      ? parameters.unitTypes
-      : flavor.unitTypes?.length
-        ? flavor.unitTypes
-        : randomUnitTypes(colors.map((entry) => entry.color));
+  const unitTypes = parameters.unitTypes?.length
+    ? parameters.unitTypes
+    : flavor.unitTypes?.length
+      ? flavor.unitTypes
+      : randomUnitTypes(colors.map((entry) => entry.color));
   return {
     template: {
       ...conjured,

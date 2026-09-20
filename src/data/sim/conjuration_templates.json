@@ -13,6 +13,9 @@
     ],
     "unitTypes": [
       "construct"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -103,6 +106,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "fight"
     ]
   },
   {
@@ -131,6 +137,9 @@
     "keywords": [],
     "unitTypes": [
       "beast"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -146,6 +155,9 @@
     ],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -159,6 +171,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -185,7 +200,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "addDecayCounters"
+    ]
   },
   {
     "name": "Assassin",
@@ -198,6 +216,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "destroyUnit"
     ]
   },
   {
@@ -215,6 +236,10 @@
     ],
     "unitTypes": [
       "demon"
+    ],
+    "actions": [
+      "mezz",
+      "root"
     ]
   },
   {
@@ -247,6 +272,9 @@
     ],
     "unitTypes": [
       "monster"
+    ],
+    "actions": [
+      "daze"
     ]
   },
   {
@@ -257,7 +285,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Battery",
@@ -358,7 +389,11 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Bison",
@@ -403,6 +438,9 @@
     "keywords": [],
     "unitTypes": [
       "elemental"
+    ],
+    "actions": [
+      "addDecayCounters"
     ]
   },
   {
@@ -432,6 +470,10 @@
     ],
     "unitTypes": [
       "spirit"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
     ]
   },
   {
@@ -472,6 +514,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "healUnit"
     ]
   },
   {
@@ -483,7 +528,11 @@
       "blue",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "fortifyLand",
+      "addDecayCounters"
+    ]
   },
   {
     "name": "Charge!",
@@ -533,6 +582,9 @@
     "keywords": [],
     "unitTypes": [
       "construct"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -609,6 +661,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "addDecayCounters"
     ]
   },
   {
@@ -620,7 +675,10 @@
       "green",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Dark Ritual",
@@ -644,6 +702,9 @@
     "keywords": [],
     "unitTypes": [
       "spirit"
+    ],
+    "actions": [
+      "daze"
     ]
   },
   {
@@ -654,7 +715,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "addDecayCounters"
+    ]
   },
   {
     "name": "Deer",
@@ -683,6 +747,9 @@
     ],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -764,6 +831,9 @@
     ],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "bounceUnit"
     ]
   },
   {
@@ -836,7 +906,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Ebonheart",
@@ -876,7 +949,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "healUnit"
+    ]
   },
   {
     "name": "Emma's Dark Tower",
@@ -884,7 +960,10 @@
     "cardType": "land",
     "cost": 0,
     "colors": [],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "damageOpponent"
+    ]
   },
   {
     "name": "Energy Monster",
@@ -899,6 +978,10 @@
     ],
     "unitTypes": [
       "monster"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
     ]
   },
   {
@@ -951,6 +1034,9 @@
     "keywords": [],
     "unitTypes": [
       "plant"
+    ],
+    "actions": [
+      "root"
     ]
   },
   {
@@ -972,7 +1058,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "destroyUnit"
+    ]
   },
   {
     "name": "Expendable Recruit",
@@ -985,6 +1074,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "drawCards"
     ]
   },
   {
@@ -999,6 +1091,9 @@
     "keywords": [],
     "unitTypes": [
       "building"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -1014,6 +1109,9 @@
     ],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "cycleCards"
     ]
   },
   {
@@ -1030,6 +1128,9 @@
     ],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "mezz"
     ]
   },
   {
@@ -1071,7 +1172,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Fire Elemental",
@@ -1086,6 +1190,9 @@
     ],
     "unitTypes": [
       "elemental"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -1096,7 +1203,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Fisherman's Ifrit",
@@ -1164,7 +1274,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "fortifyLand"
+    ]
   },
   {
     "name": "Frankish Castle",
@@ -1197,6 +1310,9 @@
     ],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "fight"
     ]
   },
   {
@@ -1261,7 +1377,11 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Giant Spider",
@@ -1320,6 +1440,9 @@
     "keywords": [],
     "unitTypes": [
       "halfing"
+    ],
+    "actions": [
+      "healUnit"
     ]
   },
   {
@@ -1333,6 +1456,10 @@
     "keywords": [],
     "unitTypes": [
       "halfing"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
     ]
   },
   {
@@ -1474,6 +1601,10 @@
     ],
     "unitTypes": [
       "dwarf"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
     ]
   },
   {
@@ -1492,7 +1623,10 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "healUnit"
+    ]
   },
   {
     "name": "Henry's Cemetary",
@@ -1500,7 +1634,10 @@
     "cardType": "land",
     "cost": 0,
     "colors": [],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "reanimate"
+    ]
   },
   {
     "name": "Hill Troll",
@@ -1567,6 +1704,10 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
     ]
   },
   {
@@ -1712,7 +1853,10 @@
     "colors": [
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "destroyUnit"
+    ]
   },
   {
     "name": "Leonardo Borgio",
@@ -1738,7 +1882,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Lightning Explosion",
@@ -1748,7 +1895,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Lunging Cougar",
@@ -1776,6 +1926,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "forceMoveUnit"
     ]
   },
   {
@@ -1809,7 +1962,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Malevolent Druid",
@@ -1823,6 +1979,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "damageOpponent"
     ]
   },
   {
@@ -1831,7 +1990,10 @@
     "cardType": "land",
     "cost": 0,
     "colors": [],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Market Beggar",
@@ -1861,6 +2023,9 @@
     ],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "fortifyLand"
     ]
   },
   {
@@ -1871,7 +2036,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Mass Root",
@@ -1881,7 +2049,11 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "root",
+      "drawCards"
+    ]
   },
   {
     "name": "Mass Sleep",
@@ -1891,7 +2063,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "mezz"
+    ]
   },
   {
     "name": "Master of Chains",
@@ -1906,6 +2081,9 @@
     ],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -1980,7 +2158,10 @@
     "cardType": "land",
     "cost": 0,
     "colors": [],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "addMana"
+    ]
   },
   {
     "name": "Mosquito",
@@ -1993,6 +2174,9 @@
     "keywords": [],
     "unitTypes": [
       "beast"
+    ],
+    "actions": [
+      "addDecayCounters"
     ]
   },
   {
@@ -2044,7 +2228,10 @@
       "green",
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "destroyUnit"
+    ]
   },
   {
     "name": "Necessary Sacrifice",
@@ -2055,7 +2242,11 @@
       "blue",
       "black"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "destroyUnit",
+      "drawCards"
+    ]
   },
   {
     "name": "Neutralize",
@@ -2063,7 +2254,10 @@
     "cardType": "spell",
     "cost": 0,
     "colors": [],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "daze"
+    ]
   },
   {
     "name": "Northern Challenger",
@@ -2095,6 +2289,9 @@
     ],
     "unitTypes": [
       "beast"
+    ],
+    "actions": [
+      "damageOpponent"
     ]
   },
   {
@@ -2108,6 +2305,10 @@
     "keywords": [],
     "unitTypes": [
       "beast"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
     ]
   },
   {
@@ -2137,6 +2338,9 @@
     "keywords": [],
     "unitTypes": [
       "monster"
+    ],
+    "actions": [
+      "fight"
     ]
   },
   {
@@ -2152,6 +2356,9 @@
     ],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "daze"
     ]
   },
   {
@@ -2204,6 +2411,10 @@
     ],
     "unitTypes": [
       "beast"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
     ]
   },
   {
@@ -2217,6 +2428,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "cycleCards"
     ]
   },
   {
@@ -2232,6 +2446,9 @@
     ],
     "unitTypes": [
       "spirit"
+    ],
+    "actions": [
+      "mezz"
     ]
   },
   {
@@ -2242,7 +2459,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "bounceUnit"
+    ]
   },
   {
     "name": "Plague Lands",
@@ -2250,7 +2470,10 @@
     "cardType": "land",
     "cost": 0,
     "colors": [],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "addDecayCounters"
+    ]
   },
   {
     "name": "Plague Spreader",
@@ -2264,6 +2487,9 @@
     "unitTypes": [
       "human",
       "demon"
+    ],
+    "actions": [
+      "addDecayCounters"
     ]
   },
   {
@@ -2321,6 +2547,9 @@
     "keywords": [],
     "unitTypes": [
       "elemental"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -2348,7 +2577,10 @@
       "black",
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "reanimate"
+    ]
   },
   {
     "name": "Rebuild",
@@ -2356,7 +2588,10 @@
     "cardType": "spell",
     "cost": 0,
     "colors": [],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "fortifyLand"
+    ]
   },
   {
     "name": "Red Dragon",
@@ -2371,6 +2606,9 @@
     ],
     "unitTypes": [
       "dragon"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -2394,7 +2632,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "damageLand"
+    ]
   },
   {
     "name": "Rock Elemental",
@@ -2464,7 +2705,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Second Breakfast",
@@ -2474,7 +2718,11 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Security Golem",
@@ -2487,6 +2735,10 @@
     "keywords": [],
     "unitTypes": [
       "construct"
+    ],
+    "actions": [
+      "stun",
+      "mezz"
     ]
   },
   {
@@ -2504,6 +2756,10 @@
     ],
     "unitTypes": [
       "construct"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
     ]
   },
   {
@@ -2540,6 +2796,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "drawCards"
     ]
   },
   {
@@ -2571,6 +2830,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "stun"
     ]
   },
   {
@@ -2584,6 +2846,10 @@
     "keywords": [],
     "unitTypes": [
       "mushroom"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
     ]
   },
   {
@@ -2626,6 +2892,9 @@
     "keywords": [],
     "unitTypes": [
       "beast"
+    ],
+    "actions": [
+      "forceMoveUnit"
     ]
   },
   {
@@ -2637,7 +2906,10 @@
       "blue",
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "daze"
+    ]
   },
   {
     "name": "Snow Troll",
@@ -2712,7 +2984,11 @@
     "colors": [
       "green"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Steam Wall",
@@ -2726,6 +3002,9 @@
     "keywords": [],
     "unitTypes": [
       "building"
+    ],
+    "actions": [
+      "bounceUnit"
     ]
   },
   {
@@ -2763,7 +3042,10 @@
       "red",
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "tutorCard"
+    ]
   },
   {
     "name": "Sucker Punch",
@@ -2773,7 +3055,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Swift Drakkar",
@@ -2817,7 +3102,11 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "forceMoveUnit",
+      "drawCards"
+    ]
   },
   {
     "name": "Tesla Tower",
@@ -2905,7 +3194,10 @@
     "cardType": "spell",
     "cost": 0,
     "colors": [],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "destroyUnit"
+    ]
   },
   {
     "name": "Tim",
@@ -2918,6 +3210,9 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -2934,6 +3229,10 @@
     ],
     "unitTypes": [
       "elemental"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
     ]
   },
   {
@@ -2963,6 +3262,9 @@
       "demon",
       "beast",
       "human"
+    ],
+    "actions": [
+      "destroyUnit"
     ]
   },
   {
@@ -2973,7 +3275,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Trap Road",
@@ -2995,6 +3300,9 @@
     "keywords": [],
     "unitTypes": [
       "construct"
+    ],
+    "actions": [
+      "damageOpponent"
     ]
   },
   {
@@ -3015,7 +3323,10 @@
     "colors": [
       "red"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Try Again",
@@ -3025,7 +3336,11 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "bounceUnit",
+      "drawCards"
+    ]
   },
   {
     "name": "Tsunami",
@@ -3035,7 +3350,10 @@
     "colors": [
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Tundra Wolf",
@@ -3064,6 +3382,10 @@
     "keywords": [],
     "unitTypes": [
       "halfing"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
     ]
   },
   {
@@ -3092,7 +3414,10 @@
       "red",
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "bounceUnit"
+    ]
   },
   {
     "name": "Unstable Lab",
@@ -3100,7 +3425,10 @@
     "cardType": "land",
     "cost": 0,
     "colors": [],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "destroyUnit"
+    ]
   },
   {
     "name": "Vengeful Crusader",
@@ -3234,7 +3562,10 @@
       "red",
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "regrowCard"
+    ]
   },
   {
     "name": "Wolf",
@@ -3300,6 +3631,9 @@
     ],
     "unitTypes": [
       "construct"
+    ],
+    "actions": [
+      "directDamage"
     ]
   },
   {
@@ -3311,7 +3645,10 @@
       "red",
       "blue"
     ],
-    "keywords": []
+    "keywords": [],
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Zombie",
