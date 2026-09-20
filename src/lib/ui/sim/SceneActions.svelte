@@ -165,10 +165,11 @@
     }
     if (next.actionType === ActionType.Conjure || next.actionType === ActionType.Invoke) {
       cardCraftAction = next;
-      cardCraftStep = 'recipe';
+      cardCraftStep = next.actionType === ActionType.Conjure ? 'conjure' : 'recipe';
       recipeResources = Array.isArray(next.actionParameters.resources)
         ? next.actionParameters.resources
         : [];
+      conjureOptions = [];
       return;
     }
     commitAction(next);
@@ -184,15 +185,17 @@
   function onRecipeConfirm(resources: { type: ResourceType; count: number }[]) {
     if (!cardCraftAction) return;
     recipeResources = resources;
-    if (cardCraftAction.actionType === ActionType.Conjure) {
-      conjureOptions = getConjurationOtions({
-        ...cardCraftAction.actionParameters,
-        resources,
-      });
-      cardCraftStep = 'conjure';
-      return;
-    }
     cardCraftStep = 'invoke';
+  }
+
+  function generateConjureOptions(resources: { type: ResourceType; count: number }[]) {
+    if (!cardCraftAction) return [];
+    recipeResources = resources;
+    conjureOptions = getConjurationOtions({
+      ...cardCraftAction.actionParameters,
+      resources,
+    });
+    return conjureOptions;
   }
 
   function onConjurePick(result: CardCreationResult) {
@@ -223,15 +226,20 @@
 {/if}
 {#if cardCraftAction && cardCraftStep === 'recipe'}
   <Recipe
-    title={cardCraftAction.actionType === ActionType.Conjure ? 'Conjure' : 'Recipe'}
-    confirmLabel="Next"
+    title="Invocation"
+    confirmLabel="Begin"
     initialResources={recipeResources}
     onConfirm={onRecipeConfirm}
     onDone={closeCardCraft}
   />
 {/if}
 {#if cardCraftAction && cardCraftStep === 'conjure'}
-  <Conjure options={conjureOptions} onPick={onConjurePick} onDone={closeCardCraft} />
+  <Conjure
+    initialResources={recipeResources}
+    onConjure={generateConjureOptions}
+    onPick={onConjurePick}
+    onDone={closeCardCraft}
+  />
 {/if}
 {#if cardCraftAction && cardCraftStep === 'invoke'}
   <Invoke

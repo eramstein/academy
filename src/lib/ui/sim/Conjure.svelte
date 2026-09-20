@@ -1,156 +1,149 @@
 <script lang="ts">
-  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { ResourceType } from '@/lib/_model';
   import type { CardCreationResult } from '@/lib/sim/actions';
+  import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
+  import RitualStage from './crafting/RitualStage.svelte';
+  import WorkbenchShell from './crafting/WorkbenchShell.svelte';
+
+  type ResourceAmount = { type: ResourceType; count: number };
+  type Phase = 'idle' | 'conjuring' | 'revealed';
 
   let {
-    options,
+    initialResources = [],
+    onConjure,
     onPick,
     onDone,
   }: {
-    options: CardCreationResult[];
+    initialResources?: ResourceAmount[];
+    onConjure: (resources: ResourceAmount[]) => CardCreationResult[];
     onPick: (result: CardCreationResult) => void;
     onDone: () => void;
   } = $props();
 
-  const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
-  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
+  const reduceMotion =
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let selected = $state<Record<ResourceType, number>>(countsFrom(initialResources));
+  let phase = $state<Phase>('idle');
+  let options = $state<CardCreationResult[]>([]);
+  let pickedId = $state<string | null>(null);
+  let revealTimer: ReturnType<typeof setTimeout> | undefined;
+  let pickTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const title = $derived(
+    phase === 'idle' ? 'Conjuration' : phase === 'conjuring' ? 'Conjuring' : 'Choose your creation'
+  );
 
   $effect(() => {
     function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') onDone();
+      if (event.key !== 'Escape') return;
+      if (phase === 'idle' || (phase === 'revealed' && options.length === 0 && !pickedId)) {
+        onDone();
+      }
     }
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      if (revealTimer) clearTimeout(revealTimer);
+      if (pickTimer) clearTimeout(pickTimer);
+    };
   });
+
+  function countsFrom(list: ResourceAmount[]): Record<ResourceType, number> {
+    const counts = Object.fromEntries(Object.values(ResourceType).map((type) => [type, 0])) as Record<
+      ResourceType,
+      number
+    >;
+    for (const resource of list) {
+      counts[resource.type] = resource.count;
+    }
+    return counts;
+  }
+
+  function committedResources(): ResourceAmount[] {
+    return Object.values(ResourceType)
+      .map((type) => ({ type, count: selected[type] ?? 0 }))
+      .filter((row) => row.count > 0);
+  }
+
+  function begin() {
+    if (phase !== 'idle') return;
+    phase = 'conjuring';
+    options = onConjure(committedResources());
+    const delay = reduceMotion ? 0 : 1500;
+    revealTimer = setTimeout(() => {
+      phase = 'revealed';
+    }, delay);
+  }
+
+  function pick(option: CardCreationResult) {
+    if (pickedId || phase !== 'revealed') return;
+    pickedId = option.template.id;
+    const delay = reduceMotion ? 0 : 380;
+    pickTimer = setTimeout(() => onPick(option), delay);
+  }
+
+  const tilts = [-2.4, 0.7, 2.2];
+  const lifts = [0, -8, 0];
 </script>
 
-<div class="overlay" role="presentation">
-  <div
-    class="frame"
-    role="dialog"
-    aria-labelledby="conjure-title"
-    style="--table: url('{tablePath}'); --parchment: url('{parchmentPath}')"
+<WorkbenchShell {title} ignite={phase === 'conjuring'}>
+  <RitualStage
+    bind:selected
+    disabled={phase !== 'idle'}
+    ignite={phase === 'conjuring'}
+    dim={phase === 'revealed'}
+    consume={phase !== 'idle'}
   >
-    <div class="panel">
-      <h2 id="conjure-title" class="title">
-        <span class="star" aria-hidden="true"></span>
-        Choose a Template
-        <span class="star" aria-hidden="true"></span>
-      </h2>
-
-      <section class="section cards-section" aria-label="Templates">
+    {#if phase === 'revealed'}
+      <div class="creations">
         {#if options.length === 0}
-          <p class="empty">No templates appeared.</p>
+          <p class="empty">Nothing took form.</p>
         {:else}
-          <div class="card-grid">
-            {#each options as option (option.template.id)}
-              <button type="button" class="card-pick" onclick={() => onPick(option)}>
-                <CardCompact card={option.template} />
-              </button>
-            {/each}
-          </div>
+          {#each options as option, i (option.template.id)}
+            <button
+              type="button"
+              class="card-pick"
+              class:chosen={pickedId === option.template.id}
+              class:picking={pickedId !== null && pickedId !== option.template.id}
+              style="--i: {i}; --tilt: {tilts[i % 3]}deg; --lift: {lifts[i % 3]}px"
+              disabled={pickedId !== null}
+              onclick={() => pick(option)}
+            >
+              <CardCompact card={option.template} />
+            </button>
+          {/each}
         {/if}
-      </section>
-    </div>
-  </div>
-</div>
+      </div>
+    {/if}
+  </RitualStage>
+
+  {#snippet footer()}
+    {#if phase === 'idle'}
+      <button type="button" class="abandon" onclick={onDone}>Abandon ritual</button>
+      <OrnateButton icon="spiral" onclick={begin}>Conjure</OrnateButton>
+    {:else if phase === 'conjuring'}
+      <p class="status">The materials take form…</p>
+    {:else if options.length === 0}
+      <button type="button" class="abandon" onclick={onDone}>Leave</button>
+    {:else}
+      <p class="status">Select a creation</p>
+    {/if}
+  {/snippet}
+</WorkbenchShell>
 
 <style>
-  .overlay {
-    position: fixed;
+  .creations {
+    position: absolute;
     inset: 0;
-    z-index: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    background: rgba(0, 0, 0, 0.72);
-    box-sizing: border-box;
-  }
-
-  .frame {
-    position: relative;
-    width: min(720px, 100%);
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    background: #4a2a18 var(--table) center / cover;
-    border: 2px solid var(--color-deep-brown);
-    border-radius: 4px;
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
-    box-sizing: border-box;
-  }
-
-  .panel {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow: hidden;
-    background: var(--color-parchment) var(--parchment) center / cover;
-    background-blend-mode: multiply;
-    color: var(--color-ink);
-    padding: 16px 16px 12px;
-    box-sizing: border-box;
-    font-family: var(--font-narrative);
-    font-size: 1rem;
-    box-shadow: inset 0 0 28px rgba(90, 75, 60, 0.12);
-  }
-
-  .title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin: 0 0 10px;
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-ink);
-    text-align: center;
-  }
-
-  .star {
-    width: 10px;
-    height: 10px;
-    flex-shrink: 0;
-    background: #4a3f32;
-    clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
-  }
-
-  .section {
-    padding: 10px 12px 12px;
-    margin-bottom: 0;
-    border: 1px solid rgba(44, 37, 29, 0.45);
-    border-radius: 4px;
-    background: rgba(255, 248, 230, 0.18);
-    box-sizing: border-box;
-  }
-
-  .cards-section {
-    flex: 1 1 auto;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    padding: 0;
-  }
-
-  .card-grid {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
-    align-content: flex-start;
-    gap: 12px;
-    min-height: 0;
-    flex: 1 1 auto;
-    overflow-y: auto;
-    /* Room for hover lift / shadow so they aren't clipped */
-    padding: 10px 8px 16px;
-    box-sizing: border-box;
+    gap: 16px;
+    z-index: 4;
+    padding: 8px 4px 12px;
   }
 
   .card-pick {
@@ -162,21 +155,81 @@
     font: inherit;
     line-height: 0;
     cursor: pointer;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    transform: translateY(var(--lift, 0)) rotate(var(--tilt, 0deg));
+    animation: materialize 0.55s ease-out backwards;
+    animation-delay: calc(var(--i) * 0.2s);
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      opacity 0.28s ease,
+      filter 0.28s ease;
   }
 
-  .card-pick:hover,
-  .card-pick:focus-visible {
-    transform: translateY(-2px);
+  .card-pick:hover:not(:disabled),
+  .card-pick:focus-visible:not(:disabled) {
+    transform: translateY(-12px) rotate(var(--tilt, 0deg));
     box-shadow:
-      0 3px 6px rgba(44, 37, 29, 0.22),
-      0 10px 22px rgba(44, 37, 29, 0.38);
+      0 4px 8px rgba(44, 37, 29, 0.22),
+      0 16px 28px rgba(44, 37, 29, 0.38);
+  }
+
+  .card-pick.chosen {
+    transform: translateY(-16px) scale(1.05) rotate(var(--tilt, 0deg));
+    filter: brightness(1.08);
+    z-index: 2;
+  }
+
+  .card-pick.picking {
+    opacity: 0.32;
+    transform: scale(0.92) rotate(var(--tilt, 0deg));
+    pointer-events: none;
   }
 
   .empty {
     margin: 0;
     text-align: center;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: #6a5c4c;
+  }
+
+  .abandon {
+    font-family: var(--font-narrative);
+    font-size: 0.92rem;
+    color: var(--color-muted-label);
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--color-brass) 45%, transparent);
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+
+  .abandon:hover {
+    color: var(--color-cream);
+    border-color: var(--color-brass);
+    background: color-mix(in srgb, var(--color-data) 55%, transparent);
+  }
+
+  .status {
+    margin: 0;
+    font-family: var(--font-narrative);
+    font-size: 0.92rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted-label);
+  }
+
+  @keyframes materialize {
+    from {
+      opacity: 0;
+      transform: translateY(36px) scale(0.55) rotate(var(--tilt, 0deg));
+      filter: brightness(1.8);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-pick {
+      animation: none;
+      transition: none;
+    }
   }
 </style>
