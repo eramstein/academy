@@ -18,7 +18,7 @@ import {
   getActionTemplateMeta,
   getActionTemplateNameForEffect,
 } from '../cards/action-templates';
-import { addKeyword, KEYWORD_KEYS, removeKeyword } from '../cards/keywords';
+import { addKeyword, formatKeywordLabel, KEYWORD_KEYS, removeKeyword } from '../cards/keywords';
 import { narrateCardEncanted } from '../narration';
 
 export type ActionArgDeltas = Record<number, Record<string, number>>;
@@ -292,7 +292,7 @@ function describeKeywordChanges(
     if (oldValue === newValue) {
       continue;
     }
-    const name = formatKeywordName(key);
+    const name = formatKeywordLabel(key);
     if (!oldValue && newValue) {
       parts.push(typeof newValue === 'number' ? `gained ${name} ${newValue}` : `gained ${name}`);
     } else if (oldValue && !newValue) {
@@ -398,10 +398,6 @@ function describeActionArgChanges(
   return parts;
 }
 
-function formatKeywordName(keyword: string): string {
-  return keyword.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
-}
-
 function emptyPreview(error: string): AugmentPreview {
   return {
     error,
@@ -446,10 +442,10 @@ function getDistillCutError(
         if (!value) continue;
         const current = card.keywords?.[keyword];
         if (!current) {
-          return `Card does not have keyword: ${formatKeywordName(keyword)}.`;
+          return `Card does not have keyword: ${formatKeywordLabel(keyword)}.`;
         }
         if (typeof current === 'number' && value > current) {
-          return `Cannot cut more ${formatKeywordName(keyword)} than the card has: ${current}.`;
+          return `Cannot cut more ${formatKeywordLabel(keyword)} than the card has: ${current}.`;
         }
       }
     }

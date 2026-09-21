@@ -1,5 +1,7 @@
 import { CardColor, UnitType, type CardTemplate, type UnitKeywords } from '@/lib/_model';
 import { getRandomFromArray } from '@/lib/_utils/random';
+import { actionTemplates } from './action-templates-data';
+import { KEYWORD_KEYS } from './keywords';
 
 export interface StatsPreference {
   power: number;
@@ -10,10 +12,18 @@ export interface StatsPreference {
 export interface ColorPie {
   statsPreference: StatsPreference;
   unitTypes: UnitType[];
-  // keywordsPreferences: +3: strong, 0: neutral, -3: weak
-  keywordsPreferences: Partial<Record<keyof UnitKeywords, number>>;
-  actionPreferences: Partial<Record<string, number>>;
+  // keywordsPreferences and actionPreferences: +3: strong, 0: neutral, -3: weak
+  keywordsPreferences: Record<keyof UnitKeywords, number>;
+  actionPreferences: Record<string, number>;
 }
+
+const defaultKeywordPreferences: Record<keyof UnitKeywords, number> = Object.fromEntries(
+  KEYWORD_KEYS.map((name) => [name, -1])
+) as Record<keyof UnitKeywords, number>;
+
+const defaultActionPreferences: Record<string, number> = Object.fromEntries(
+  Object.keys(actionTemplates).map((name) => [name, -1])
+);
 
 export const colorPie: Record<CardColor, ColorPie> = {
   [CardColor.Red]: {
@@ -24,28 +34,23 @@ export const colorPie: Record<CardColor, ColorPie> = {
     },
     unitTypes: [UnitType.Dwarf, UnitType.Dragon],
     keywordsPreferences: {
+      ...defaultKeywordPreferences,
       haste: 3,
       moveAndAttack: 1,
       zerk: 1,
       ranged: 0,
-      armor: -1,
-      resist: -1,
-      poisonous: -1,
-      regeneration: -1,
-      trample: -1,
-      cleave: -1,
       lance: 1,
       flying: 0,
-      immobile: -1,
       armorPiercing: 0,
     },
     actionPreferences: {
-      destroyUnit: -1,
+      ...defaultActionPreferences,
       fortifyLand: -3,
       directDamage: 3,
       healUnit: -3,
-      grow: -3,
+      addGrowthCounters: -3,
       damageLand: 3,
+      stun: 1,
     },
   },
   [CardColor.Green]: {
@@ -56,28 +61,27 @@ export const colorPie: Record<CardColor, ColorPie> = {
     },
     unitTypes: [UnitType.Mushroom, UnitType.Plant],
     keywordsPreferences: {
+      ...defaultKeywordPreferences,
       haste: -2,
       moveAndAttack: -2,
-      zerk: -1,
-      ranged: -1,
-      armor: -1,
       resist: 0,
       poisonous: 2,
       regeneration: 3,
       trample: 3,
       cleave: 1,
-      lance: -1,
-      flying: -1,
-      immobile: -1,
-      armorPiercing: -1,
     },
     actionPreferences: {
+      ...defaultActionPreferences,
       destroyUnit: -3,
-      fortifyLand: -1,
       directDamage: -3,
       healUnit: 3,
-      grow: 3,
+      addGrowthCounters: 3,
       damageLand: -3,
+      damageOpponent: -3,
+      root: 3,
+      fight: 3,
+      regrowCard: 3,
+      addMana: 3,
     },
   },
   [CardColor.Blue]: {
@@ -88,28 +92,31 @@ export const colorPie: Record<CardColor, ColorPie> = {
     },
     unitTypes: [UnitType.Construct],
     keywordsPreferences: {
-      haste: -1,
+      ...defaultKeywordPreferences,
       moveAndAttack: 3,
-      zerk: -1,
       ranged: 2,
       armor: 0,
       resist: 1,
-      poisonous: -1,
-      regeneration: -1,
       trample: -3,
-      cleave: -1,
-      lance: -1,
       flying: 2,
       immobile: 0,
       armorPiercing: 1,
     },
     actionPreferences: {
-      destroyUnit: -1,
-      fortifyLand: -1,
+      ...defaultActionPreferences,
       directDamage: 0,
       healUnit: -3,
-      grow: -3,
+      addGrowthCounters: -3,
       damageLand: 0,
+      damageOpponent: 1,
+      drawCards: 3,
+      bounceUnit: 3,
+      mezz: 3,
+      daze: 3,
+      forceMoveUnit: 3,
+      cycleCards: 3,
+      fight: -3,
+      tutorCard: 2,
     },
   },
   [CardColor.Black]: {
@@ -120,28 +127,26 @@ export const colorPie: Record<CardColor, ColorPie> = {
     },
     unitTypes: [UnitType.Demon, UnitType.Construct],
     keywordsPreferences: {
-      haste: -1,
-      moveAndAttack: -1,
-      zerk: -1,
+      ...defaultKeywordPreferences,
       ranged: 3,
       armor: 3,
-      resist: -1,
-      poisonous: -1,
-      regeneration: -1,
-      trample: -1,
-      cleave: -1,
-      lance: -1,
       flying: 1,
       immobile: 2,
       armorPiercing: 0,
     },
     actionPreferences: {
+      ...defaultActionPreferences,
       destroyUnit: 3,
       fortifyLand: 3,
       directDamage: -3,
       healUnit: -3,
-      grow: -3,
+      addGrowthCounters: -3,
       damageLand: 0,
+      reanimate: 3,
+      damageOpponent: 0,
+      addDecayCounters: 3,
+      tutorCard: 2,
+      regrowCard: 2,
     },
   },
 };

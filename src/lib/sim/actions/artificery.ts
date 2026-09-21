@@ -18,6 +18,7 @@ import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
 import { buildSpellCard, buildUnitCard, randomUnitTypes } from '../cards/creation';
 import { filterFlavorTemplates } from '../cards/flavor-filters';
 import { loadFlavorTemplates } from '../cards/flavor-templates';
+import { formatKeywordLabel } from '../cards/keywords';
 import { getActingCharacter } from '../characters';
 import { narrateCardConjured } from '../narration';
 import { spendResources } from '../resources';
@@ -219,7 +220,7 @@ function learnCard(
     }
     const known = character.craftingKnowledge.keywords;
     for (const keyword of Object.keys(template.keywords) as (keyof UnitKeywords)[]) {
-      const name = formatKnowledgeName(keyword);
+      const name = formatKeywordLabel(keyword);
       if (known[keyword] === undefined) {
         known[keyword] = 1;
         learntKeywords.push(name);
@@ -235,7 +236,7 @@ function learnCard(
     }
     const known = character.craftingKnowledge.actions;
     for (const action of actionName) {
-      const name = getActionTemplateMeta(action)?.label ?? formatKnowledgeName(action);
+      const name = getActionTemplateMeta(action)?.label ?? formatKeywordLabel(action);
       if (known[action] === undefined) {
         known[action] = 1;
         learntActions.push(name);
@@ -283,9 +284,6 @@ function narrateCardLearnt(
   narrateCardConjured(template.id, text);
 }
 
-function formatKnowledgeName(keyword: string): string {
-  return keyword.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
-}
 
 function resolveCardType(parameters: CardCreationParameters): CardType.Unit | CardType.Spell {
   if (parameters.cardType === CardType.Spell || parameters.cardType === CardType.Unit) {

@@ -1,4 +1,4 @@
-import { BASE_DECK_BLACK, BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
+import { BASE_DECK_BLACK, BASE_DECK_BLUE, BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
 import {
   CardColor,
   isSpellCard,
@@ -9,6 +9,7 @@ import {
 } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getActionTemplateMeta, getActionTemplateNameForEffect } from '../cards/action-templates';
+import { formatKeywordLabel } from '../cards/keywords';
 import { getActingCharacter } from '../characters';
 import { redeemBaseDeck } from '../deck';
 
@@ -36,6 +37,12 @@ export function getDeck(parameters: GetDeckParameters): string {
     gs.player.craftingKnowledge.colors = {
       ...gs.player.craftingKnowledge.colors,
       [CardColor.Green]: 1,
+    };
+  } else if (parameters.deckKey === 'base_blue') {
+    deck = BASE_DECK_BLUE;
+    gs.player.craftingKnowledge.colors = {
+      ...gs.player.craftingKnowledge.colors,
+      [CardColor.Blue]: 1,
     };
   }
   if (!deck) {
@@ -102,7 +109,7 @@ export function learnFromDeck(cards: CardTemplate[], characterKey = 'player'): s
   }
 
   return [
-    ...learntKeywords,
-    ...learntActions.map((name) => getActionTemplateMeta(name)?.label ?? name),
+    ...learntKeywords.map((keyword) => formatKeywordLabel(keyword)),
+    ...learntActions.map((name) => getActionTemplateMeta(name)?.label ?? formatKeywordLabel(name)),
   ];
 }

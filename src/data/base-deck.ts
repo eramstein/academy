@@ -427,6 +427,281 @@ const rock_drop = {
   ],
 };
 
+// BLUE BASE CARDS
+// ---------------------------------------------------------
+
+const dazing_spirit = {
+  id: 'dazing_spirit',
+  name: 'Dazing Spirit',
+  imageFileName: 'dazing_spirit',
+  type: CardType.Unit,
+  cost: 2,
+  colors: [{ color: CardColor.Blue, count: 1 }],
+  power: 2,
+  maxHealth: 2,
+  retaliate: 1,
+  unitTypes: [UnitType.Spirit],
+};
+
+const born_from_magic = {
+  id: 'born_from_magic',
+  name: 'Born from Magic',
+  imageFileName: 'born_from_magic',
+  type: CardType.Unit,
+  cost: 2,
+  colors: [{ color: CardColor.Blue, count: 1 }],
+  power: 1,
+  maxHealth: 3,
+  retaliate: 2,
+  unitTypes: [UnitType.Elemental],
+};
+
+const gifted_apprentice = {
+  id: 'gifted_apprentice',
+  name: 'Gifted Apprentice',
+  imageFileName: 'gifted_apprentice',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Blue, count: 1 }],
+  power: 1,
+  maxHealth: 4,
+  retaliate: 2,
+  unitTypes: [UnitType.Human],
+  abilities: [
+    {
+      trigger: {
+        type: 'On Deploy',
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'cycleCards',
+            args: {},
+          },
+          targets: [
+            {
+              type: 'hand_card',
+              count: 1,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+const donatello = {
+  id: 'donatello',
+  name: 'Donatello',
+  imageFileName: 'donatello',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Blue, count: 3 }],
+  power: 2,
+  maxHealth: 1,
+  retaliate: 0,
+  unitTypes: [UnitType.Human],
+};
+
+const buffoon = {
+  id: 'buffoon',
+  name: 'Buffoon',
+  imageFileName: 'buffoon',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Black, count: 1 }],
+  power: 0,
+  maxHealth: 10,
+  retaliate: 3,
+  unitTypes: [UnitType.Human],
+  keywords: {
+    immobile: true,
+  },
+  abilities: [
+    {
+      trigger: {
+        type: 'On Deploy',
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'bounceUnit',
+            args: {
+              count: 1,
+            },
+          },
+          targets: [
+            {
+              type: 'units',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+const arcane_sniper = {
+  id: 'arcane_sniper',
+  name: 'Arcane Sniper',
+  imageFileName: 'arcane_sniper',
+  type: CardType.Unit,
+  cost: 4,
+  colors: [{ color: CardColor.Blue, count: 2 }],
+  power: 2,
+  maxHealth: 5,
+  retaliate: 2,
+  unitTypes: [UnitType.Human],
+  keywords: {
+    moveAndAttack: true,
+  },
+};
+
+const shameless_imitator = {
+  id: 'shameless_imitator',
+  name: 'Shameless Imitator',
+  imageFileName: 'shameless_imitator',
+  type: CardType.Unit,
+  cost: 4,
+  colors: [{ color: CardColor.Blue, count: 2 }],
+  power: 3,
+  maxHealth: 3,
+  retaliate: 2,
+  unitTypes: [UnitType.Human],
+  keywords: {
+    ranged: true,
+  },
+};
+
+const luring_enchantress = {
+  id: 'luring_enchantress',
+  name: 'Luring Enchantress',
+  imageFileName: 'luring_enchantress',
+  type: CardType.Unit,
+  cost: 5,
+  colors: [{ color: CardColor.Blue, count: 1 }],
+  power: 4,
+  maxHealth: 4,
+  retaliate: 2,
+};
+
+const professore = {
+  id: 'professore',
+  name: 'Professor',
+  imageFileName: 'professore',
+  type: CardType.Unit,
+  cost: 5,
+  colors: [{ color: CardColor.Blue, count: 3 }],
+  power: 2,
+  maxHealth: 5,
+  retaliate: 2,
+  unitTypes: [UnitType.Human],
+  abilities: [
+    {
+      trigger: {
+        type: 'On Deploy',
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'drawCard',
+            args: {
+              cardCount: 1,
+            },
+          },
+        },
+      ],
+    },
+  ],
+};
+
+const mentalist = {
+  id: 'mentalist',
+  name: 'Mentalist',
+  imageFileName: 'mentalist',
+  type: CardType.Unit,
+  cost: 6,
+  colors: [{ color: CardColor.Blue, count: 1 }],
+  power: 4,
+  maxHealth: 6,
+  retaliate: 3,
+};
+
+const council_envoy = {
+  id: 'council_envoy',
+  name: 'Council Envoy',
+  imageFileName: 'council_envoy',
+  type: CardType.Unit,
+  cost: 7,
+  colors: [{ color: CardColor.Blue, count: 2 }],
+  power: 4,
+  maxHealth: 7,
+  retaliate: 5,
+};
+
+const zeppelin = {
+  id: 'zeppelin',
+  name: 'Zeppelin',
+  imageFileName: 'zeppelin',
+  type: CardType.Unit,
+  cost: 8,
+  colors: [{ color: CardColor.Blue, count: 3 }],
+  power: 4,
+  maxHealth: 9,
+  retaliate: 4,
+  unitTypes: [UnitType.Human, UnitType.Monster],
+  keywords: {
+    flying: true,
+  },
+};
+
+const basic_research = {
+  id: 'basic_research',
+  name: 'Basic Research',
+  imageFileName: 'basic_research',
+  type: CardType.Spell,
+  cost: 3,
+  colors: [{ color: CardColor.Black, count: 2 }],
+  actions: [
+    {
+      effect: {
+        name: 'drawCard',
+        args: {
+          cardCount: 2,
+        },
+      },
+    },
+  ],
+};
+
+const carnival_of_miracles = {
+  id: 'carnival_of_miracles',
+  name: 'Carnival of Miracles',
+  imageFileName: 'carnival_of_miracles',
+  type: CardType.Spell,
+  cost: 2,
+  colors: [{ color: CardColor.Blue, count: 2 }],
+  actions: [
+    {
+      effect: {
+        name: 'forceMoveUnit',
+        args: {
+          count: 1,
+        },
+      },
+    },
+  ],
+};
+
 // BLACK BASE CARDS
 // ---------------------------------------------------------
 
@@ -845,4 +1120,26 @@ export const BASE_DECK_BLACK: DeckBlueprint = {
     expendable_recruit,
   ],
   lands: [city, plains, market, enchanter_lair],
+};
+
+export const BASE_DECK_BLUE: DeckBlueprint = {
+  key: 'base',
+  name: 'Base Blue',
+  cards: [
+    dazing_spirit,
+    born_from_magic,
+    gifted_apprentice,
+    donatello,
+    buffoon,
+    arcane_sniper,
+    shameless_imitator,
+    luring_enchantress,
+    professore,
+    mentalist,
+    council_envoy,
+    zeppelin,
+    basic_research,
+    carnival_of_miracles,
+  ],
+  lands: [island, plains, market, enchanter_lair],
 };

@@ -5,7 +5,7 @@ import type { AttributeCheck, Job, Mentions, Narration } from '../_model/model-s
 import { gs } from '../_state';
 import type { TransactionParameters } from './actions';
 import { actionTemplates, getActionTemplateMeta } from './cards/action-templates';
-import { KEYWORD_KEYS } from './cards/keywords';
+import { formatKeywordLabel, KEYWORD_KEYS } from './cards/keywords';
 import { getWeekDay, WEEK_DAYS } from './time';
 
 export function narrate(narration: Narration) {
@@ -26,16 +26,16 @@ function findMentions(text: string): Mentions {
       word: character.name,
       id: character.key,
     })),
-    ...KEYWORD_KEYS.map((key) => ({
-      type: 'keywords' as const,
-      word: key.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase(),
-      id: key,
-    })),
-    ...Object.keys(actionTemplates).map((key) => ({
-      type: 'actions' as const,
-      word: getActionTemplateMeta(key)?.label ?? key.replace(/([a-z])([A-Z])/g, '$1 $2'),
-      id: key,
-    })),
+    ...KEYWORD_KEYS.flatMap((key) => {
+      const label = formatKeywordLabel(key);
+      const words = label === key ? [key] : [label, key];
+      return words.map((word) => ({ type: 'keywords' as const, word, id: key }));
+    }),
+    ...Object.keys(actionTemplates).flatMap((key) => {
+      const label = getActionTemplateMeta(key)?.label ?? formatKeywordLabel(key);
+      const words = label === key ? [key] : [label, key];
+      return words.map((word) => ({ type: 'actions' as const, word, id: key }));
+    }),
   ].sort((a, b) => b.word.length - a.word.length);
 
   for (const { type, word, id } of candidates) {

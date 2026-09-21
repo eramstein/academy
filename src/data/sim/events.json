@@ -84,6 +84,17 @@
             }
           }
         ]
+      },
+      {
+        "text": "Blue",
+        "effectsTemplates": [
+          {
+            "effectTemplate": "getDeck",
+            "args": {
+              "deckKey": "base_blue"
+            }
+          }
+        ]
       }
     ],
     "triggersOnce": true
@@ -229,9 +240,7 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [
-                      2
-                    ],
+                    "daysOfWeek": [2],
                     "period": "evening"
                   }
                 }
@@ -275,10 +284,7 @@
             "args": {
               "activity": {
                 "type": "date",
-                "participants": [
-                  "player",
-                  "emma"
-                ],
+                "participants": ["player", "emma"],
                 "placeKey": "cafeteria"
               },
               "schedule": {

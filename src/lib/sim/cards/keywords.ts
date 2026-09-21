@@ -73,3 +73,12 @@ export const KEYWORD_KEYS: (keyof UnitKeywords)[] = [
   "immobile",
   "armorPiercing",
 ];
+
+/** e.g. moveAndAttack → "Move And Attack" */
+export function formatKeywordLabel(keyword: string): string {
+  return keyword
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}

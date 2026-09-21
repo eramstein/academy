@@ -3,8 +3,8 @@
   import { gs } from '@/lib/_state';
   import { getCardCreationBonuses } from '@/lib/sim/actions';
   import { playAddResourceSound } from '@/lib/sim/sound';
-  import { untrack } from 'svelte';
   import type { Snippet } from 'svelte';
+  import { untrack } from 'svelte';
   import IngredientPile from './IngredientPile.svelte';
   import RitualCircle from './RitualCircle.svelte';
 
@@ -250,7 +250,8 @@
 
   $effect(() => {
     const reduceMotion =
-      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let raf = 0;
     const loop = (now: number) => {
       untrack(() => paint(now, reduceMotion));
@@ -379,16 +380,14 @@
       <div class="gauge">
         <span class="gauge-label">Learning</span>
         <span class="gauge-track" aria-hidden="true">
-          <span
-            class="gauge-fill"
-            style="transform: scaleX({Math.min(1, bonuses.learningChance)})"
+          <span class="gauge-fill" style="transform: scaleX({Math.min(1, bonuses.learningChance)})"
           ></span>
         </span>
         <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
       </div>
 
       <div class="circle-slot" bind:this={circleEl}>
-        <RitualCircle {charge} {ignite} dim={dim} {fed} />
+        <RitualCircle {charge} {ignite} {dim} {fed} />
       </div>
 
       <div class="gauge">
@@ -534,11 +533,6 @@
       0 0 0 1px rgba(44, 37, 29, 0.5),
       0 1px 2px rgba(42, 24, 16, 0.4),
       0 0 8px var(--color-brass);
-  }
-
-  .bead.flying {
-    z-index: 6;
-    box-shadow: 0 0 12px currentColor;
   }
 
   @media (prefers-reduced-motion: reduce) {

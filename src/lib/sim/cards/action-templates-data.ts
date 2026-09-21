@@ -137,7 +137,7 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
         },
       },
     },
-    budget: (args.damage ?? 0) * 10,
+    budget: (args.damage ?? 0) * 16,
   }),
   addGrowthCounters: (args: { counters: number }) => ({
     name: 'addGrowthCounters',
@@ -289,7 +289,7 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
         },
       ],
     },
-    budget: (args.count ?? 1) * 20,
+    budget: (args.count ?? 1) * 16,
   }),
   forceMoveUnit: () => ({
     name: 'forceMoveUnit',

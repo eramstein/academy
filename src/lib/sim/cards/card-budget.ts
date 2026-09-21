@@ -27,7 +27,7 @@ export const featureCosts: Record<FeatureCostKey, (card: PartialConjuredUnit) =>
   // keywords
   ranged: () => 3,
   haste: (card) => Math.ceil(card.power / 2) * 3,
-  moveAndAttack: (card) => Math.ceil(card.power / 2) * 2,
+  moveAndAttack: (card) => Math.ceil(card.power / 2) * 2 + 1,
   armor: () => 3,
   resist: () => 2,
   poisonous: () => 3,
