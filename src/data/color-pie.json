@@ -1,6 +1,18 @@
 {
   "green": {
-    "description": "green",    
-    "unitTypes": 1
+    "description": "Green is the color of nature, growth, health and savagery.",
+    "unitTypes": "beast, plant, halfing"
+  },
+  "black": {
+    "description": "Black is the color of industry, machines, organization and decay.",
+    "unitTypes": "human, monster, demon, construct, building, undead"
+  },
+  "red": {
+    "description": "Red is the color of chaos, aggression, freedom and speed.",
+    "unitTypes": "human, dwarf, beast, elemental"
+  },
+  "blue": {
+    "description": "Blue is the color of subterfuge, control, magic and knowledge.",
+    "unitTypes": "human, elemental, demon, spirit, construct"
   }
 }

@@ -2,10 +2,12 @@ import type { UnitKeywords } from '@/lib/_model';
 import type { CardCreationParameters } from '../actions';
 import type { FlavorTemplate } from './flavor-templates';
 
-const COLOR_MATCH_WEIGHT = 3;
-const COST_EXACT_MATCH_WEIGHT = 3;
+const COLOR_MATCH_WEIGHT = 9;
+const COST_EXACT_MATCH_WEIGHT = 2;
 const COST_NEAR_MATCH_WEIGHT = 1;
-const DEFAULT_MATCH_WEIGHT = 1;
+const KEYWORD_MATCH_WEIGHT = 3;
+const UNIT_TYPE_MATCH_WEIGHT = 3;
+const ACTION_MATCH_WEIGHT = 3;
 
 export function filterFlavorTemplates(
   templates: FlavorTemplate[],
@@ -51,7 +53,7 @@ function scoreFlavorTemplate(template: FlavorTemplate, parameters: CardCreationP
   if (parameters.keywords) {
     for (const keyword of Object.keys(parameters.keywords) as (keyof UnitKeywords)[]) {
       if (parameters.keywords[keyword] && template.keywords.includes(keyword)) {
-        score += DEFAULT_MATCH_WEIGHT;
+        score += KEYWORD_MATCH_WEIGHT;
       }
     }
   }
@@ -59,7 +61,7 @@ function scoreFlavorTemplate(template: FlavorTemplate, parameters: CardCreationP
   if (parameters.unitTypes) {
     for (const unitType of parameters.unitTypes) {
       if (template.unitTypes?.includes(unitType)) {
-        score += DEFAULT_MATCH_WEIGHT;
+        score += UNIT_TYPE_MATCH_WEIGHT;
       }
     }
   }
@@ -68,7 +70,7 @@ function scoreFlavorTemplate(template: FlavorTemplate, parameters: CardCreationP
   if (requestedActions.length) {
     for (const action of requestedActions) {
       if (template.actions?.includes(action)) {
-        score += DEFAULT_MATCH_WEIGHT;
+        score += ACTION_MATCH_WEIGHT;
       }
     }
   }

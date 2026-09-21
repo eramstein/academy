@@ -345,17 +345,25 @@ function getUnitTemplate(
     maxHealth: cardBase.maxHealth + extraHealth,
     retaliate: cardBase.retaliate + extraRetaliate,
   };
+  const actionName = (conjured.abilities ?? []).flatMap(getAbilityActionNames);
+  // Match flavor to the conjured card's traits, not the (often sparse) input params
   const templateParameters: CardCreationParameters = {
-    ...parameters,
+    resources: parameters.resources,
     cardType: CardType.Unit,
     colors: colors.map((entry) => entry.color),
     cost,
+    power: conjured.power,
+    hp: conjured.maxHealth,
+    retaliate: conjured.retaliate,
+    keywords: conjured.keywords,
+    unitTypes: conjured.unitTypes,
+    actions: actionName.length ? actionName : undefined,
   };
 
   // 4. pick name/image/unitTypes from flavor templates
   const flavor = pickFlavorTemplate(flavorTemplates, templateParameters, usedFlavors);
-  const unitTypes = parameters.unitTypes?.length
-    ? parameters.unitTypes
+  const unitTypes = conjured.unitTypes?.length
+    ? conjured.unitTypes
     : flavor.unitTypes?.length
       ? flavor.unitTypes
       : randomUnitTypes(colors.map((entry) => entry.color));
@@ -368,7 +376,7 @@ function getUnitTemplate(
       unitTypes,
     },
     bonusBudget: sureMastery + extraBudget,
-    actionName: (conjured.abilities ?? []).flatMap(getAbilityActionNames),
+    actionName,
   };
 }
 
@@ -391,11 +399,13 @@ function getSpellTemplate(
     ...card,
     cost,
   };
+  // Match flavor to the conjured spell's traits, not the (often sparse) input params
   const templateParameters: CardCreationParameters = {
-    ...parameters,
+    resources: parameters.resources,
     cardType: CardType.Spell,
-    colors: card.colors.map((entry) => entry.color),
+    colors: conjured.colors.map((entry) => entry.color),
     cost,
+    actions: actionName.length ? actionName : undefined,
   };
   const flavor = pickFlavorTemplate(flavorTemplates, templateParameters, usedFlavors);
   return {
