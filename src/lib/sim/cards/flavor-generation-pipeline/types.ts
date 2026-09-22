@@ -5,6 +5,7 @@ import {
   type UnitKeywords,
 } from '@/lib/_model';
 import type { CardCreationParameters } from '../../actions';
+import { NUMERIC_KEYWORDS } from '../keywords';
 
 export type PowerLevel = 'weak' | 'medium' | 'powerful';
 
@@ -34,6 +35,43 @@ export function costToPowerLevel(cost: number): PowerLevel {
   if (cost <= 3) return 'weak';
   if (cost <= 6) return 'medium';
   return 'powerful';
+}
+
+/** Representative mana cost in each power band (0–3 / 4–6 / 7+). */
+export function powerLevelToCost(powerLevel: PowerLevel): number {
+  if (powerLevel === 'weak') return 2;
+  if (powerLevel === 'medium') return 5;
+  return 8;
+}
+
+function keywordsFromKeys(keys: (keyof UnitKeywords)[]): UnitKeywords {
+  const keywords: UnitKeywords = {};
+  for (const key of keys) {
+    if (NUMERIC_KEYWORDS.has(key)) {
+      (keywords[key] as number) = 1;
+    } else {
+      (keywords[key] as boolean) = true;
+    }
+  }
+  return keywords;
+}
+
+/** Overlay a GameplayTemplate onto CardCreationParameters (gameplay wins on overlap). */
+export function mergeGameplayIntoParameters(
+  parameters: CardCreationParameters,
+  gameplay: GameplayTemplate
+): CardCreationParameters {
+  return {
+    ...parameters,
+    cardType: gameplay.cardType,
+    colors: gameplay.colors.length ? [...gameplay.colors] : parameters.colors,
+    cost: powerLevelToCost(gameplay.powerLevel),
+    ...(gameplay.keywords?.length
+      ? { keywords: keywordsFromKeys(gameplay.keywords) }
+      : {}),
+    ...(gameplay.actions?.length ? { actions: [...gameplay.actions] } : {}),
+    ...(gameplay.unitTypes?.length ? { unitTypes: [...gameplay.unitTypes] } : {}),
+  };
 }
 
 export function toGameplayTemplate(parameters: CardCreationParameters): GameplayTemplate {

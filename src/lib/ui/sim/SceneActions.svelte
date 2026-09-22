@@ -191,7 +191,8 @@
 
   async function generateConjureOptions(
     resources: { type: ResourceType; count: number }[],
-    onProgress: (progress: CardSummonProgress) => void
+    onProgress: (progress: CardSummonProgress) => void,
+    flavorText?: string
   ) {
     if (!cardCraftAction) return [];
     recipeResources = resources;
@@ -201,18 +202,22 @@
         resources,
       },
       'player',
-      onProgress
+      onProgress,
+      flavorText
     );
     return conjureOptions;
   }
 
-  function onConjurePick(result: CardCreationResult) {
+  async function onConjurePick(result: CardCreationResult) {
     if (!cardCraftAction) return;
-    performAction({
+    const action = {
       ...cardCraftAction,
       actionParameters: result,
       missingParameters: {},
-    });
+    };
+    // Finish scene updates before unmounting the overlay so the book doesn't
+    // remeasure against a half-updated page (actions gone, cards not in yet).
+    await performAction(action);
     closeCardCraft();
   }
 

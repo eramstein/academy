@@ -61,3 +61,17 @@ This should be done using some fuzzy search: score flavor templates based on mat
    4.2. Call local Comfy API to generate a cheap image
    4.3. Store the image in the assets folder, and add the flavor template to the JSON file.
 5. Return the generated flavor template so that the conjuration or invocation action can continue and use the name and image file name.
+
+## Flavor -> Gameplay generation
+
+This extra feature is going the other way around: from some flavor text, provided by the user, a function generates a Gampeplay template.
+
+We pass the remote LLM a prompt containing the user input, info about colors, the keywords and the abilities, and the LLM returns a structured Gampeplay template object.
+
+Example: the user passes "a ferocious giant mammoth" and the function returns an object like:
+card type: unit,
+color: green,
+power: powerful,
+keywords: trample,
+action templates: null,
+unit type: beast

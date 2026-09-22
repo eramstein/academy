@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { CardTemplate } from '@/lib/_model';
   import { ResourceType } from '@/lib/_model';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
   import {
     getConjurationOptionCount,
     type CardCreationResult,
@@ -12,6 +13,8 @@
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import RitualStage from './crafting/RitualStage.svelte';
   import WorkbenchShell from './crafting/WorkbenchShell.svelte';
+
+  const flourishPath = getAssetPath('images/ui/decorations/page-flourish.svg');
 
   type ResourceAmount = { type: ResourceType; count: number };
   type Phase = 'idle' | 'conjuring' | 'revealed';
@@ -35,7 +38,8 @@
     initialResources?: ResourceAmount[];
     onConjure: (
       resources: ResourceAmount[],
-      onProgress: (progress: CardSummonProgress) => void
+      onProgress: (progress: CardSummonProgress) => void,
+      flavorText?: string
     ) => CardCreationResult[] | Promise<CardCreationResult[]>;
     onPick: (result: CardCreationResult) => void;
     onDone: () => void;
@@ -45,6 +49,7 @@
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let selected = $state<Record<ResourceType, number>>(countsFrom(initialResources));
+  let flavorText = $state('');
   let phase = $state<Phase>('idle');
   let summonSlots = $state<SummonSlot[]>([]);
   let statusLine = $state('The materials take form…');
@@ -159,7 +164,11 @@
     }));
     statusLine = 'A vessel takes shape…';
 
-    const results = await onConjure(committedResources(), onSummonProgress);
+    const results = await onConjure(
+      committedResources(),
+      onSummonProgress,
+      flavorText.trim() || undefined
+    );
     const next = [...summonSlots];
     for (let i = 0; i < results.length; i++) {
       const slot = next[i] ?? {
@@ -199,6 +208,35 @@
 </script>
 
 <WorkbenchShell {title} ignite={phase === 'conjuring'}>
+  {#if phase === 'idle'}
+    <label
+      class="incantation"
+      class:spoken={flavorText.trim().length > 0}
+      style="--page-flourish: url('{flourishPath}')"
+    >
+      <span class="incantation-mark" aria-hidden="true">
+        <span class="flourish"></span>
+        <span class="rule"></span>
+        <span class="word">Incantation</span>
+        <span class="rule"></span>
+        <span class="flourish mirror"></span>
+      </span>
+      <span class="incantation-field">
+        <span class="quote open" aria-hidden="true">“</span>
+        <input
+          type="text"
+          class="incantation-input"
+          bind:value={flavorText}
+          placeholder="Whisper a form into being…"
+          maxlength="120"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <span class="quote close" aria-hidden="true">”</span>
+      </span>
+      <span class="incantation-hint">Optional — shapes its name and nature</span>
+    </label>
+  {/if}
   <RitualStage
     bind:selected
     disabled={phase !== 'idle'}
@@ -251,6 +289,153 @@
 </WorkbenchShell>
 
 <style>
+  .incantation {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    margin: 2px 0 14px;
+    cursor: text;
+  }
+
+  .incantation-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 2px;
+  }
+
+  .incantation-mark .word {
+    flex: 0 0 auto;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #4a3f32;
+  }
+
+  .incantation-mark .rule {
+    flex: 1 1 auto;
+    max-width: 72px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--color-brown-border) 70%, transparent),
+      transparent
+    );
+  }
+
+  .incantation-mark .flourish {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    opacity: 0.42;
+    background: var(--color-ink-muted);
+    mask: var(--page-flourish) center / contain no-repeat;
+    -webkit-mask: var(--page-flourish) center / contain no-repeat;
+  }
+
+  .incantation-mark .flourish.mirror {
+    transform: scaleX(-1);
+  }
+
+  .incantation-field {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    padding: 6px 4px 10px;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-brown-border) 55%, transparent);
+    transition:
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .incantation-field::after {
+    content: '';
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    bottom: -1px;
+    height: 1px;
+    background: color-mix(in srgb, var(--color-golden) 75%, transparent);
+    opacity: 0;
+    transform: scaleX(0.4);
+    transition:
+      opacity 0.28s ease,
+      transform 0.28s ease;
+  }
+
+  .incantation:focus-within .incantation-field,
+  .incantation.spoken .incantation-field {
+    border-color: color-mix(in srgb, var(--color-golden) 55%, var(--color-brown-border));
+    box-shadow: 0 8px 18px -14px color-mix(in srgb, var(--color-golden) 70%, transparent);
+  }
+
+  .incantation:focus-within .incantation-field::after,
+  .incantation.spoken .incantation-field::after {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  .incantation .quote {
+    flex: 0 0 auto;
+    font-family: var(--font-narrative);
+    font-size: 1.55rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--color-ink-muted) 70%, transparent);
+    user-select: none;
+    transition: color 0.25s ease;
+  }
+
+  .incantation:focus-within .quote,
+  .incantation.spoken .quote {
+    color: color-mix(in srgb, var(--color-golden) 65%, var(--color-ink-muted));
+  }
+
+  .incantation-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 2px 4px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--font-narrative);
+    font-size: 1.12rem;
+    font-style: italic;
+    letter-spacing: 0.02em;
+    line-height: 1.45;
+    text-align: center;
+    color: var(--color-ink);
+    caret-color: var(--color-golden);
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
+  .incantation-input::placeholder {
+    color: color-mix(in srgb, var(--color-ink-muted) 78%, transparent);
+    font-style: italic;
+    letter-spacing: 0.01em;
+    opacity: 1;
+  }
+
+  .incantation:focus-within .incantation-input {
+    text-shadow: 0 0 18px color-mix(in srgb, var(--color-golden) 28%, transparent);
+  }
+
+  .incantation-hint {
+    margin-top: 2px;
+    text-align: center;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: color-mix(in srgb, var(--color-ink-muted) 85%, transparent);
+  }
+
   .creations {
     position: absolute;
     inset: 0;
@@ -378,6 +563,12 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .incantation-field,
+    .incantation-field::after,
+    .incantation .quote {
+      transition: none;
+    }
+
     .card-body.enter,
     .empty-frame {
       animation: none;

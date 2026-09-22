@@ -27,6 +27,8 @@
   let scrolling = $state(false);
   let hideScrollbarTimer: ReturnType<typeof setTimeout> | undefined;
   let narrationDone = $state(false);
+  /** Last measured actions bar height — kept while narration hides the bar. */
+  let reservedActionsHeight = 0;
 
   const reduceMotion =
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -46,9 +48,14 @@
         parseFloat(pageStyles.borderBottomWidth);
       const maxHeight = getMaxBookHeight();
       const natural = Math.ceil(contentEl.scrollHeight + chromeY);
-      const next = Math.min(natural, maxHeight);
       const nowScrollable = natural > maxHeight + 0.5;
       const current = untrack(() => bookHeight);
+      // Grow with content up to max, but never shrink from transient content
+      // churn (prompt swap, conjure reveal) — only yield when maxHeight drops.
+      const next =
+        current === undefined
+          ? Math.min(natural, maxHeight)
+          : Math.min(Math.max(natural, current), maxHeight);
 
       scrollable = nowScrollable;
 
@@ -109,7 +116,13 @@
     const gap = parseFloat(styles.gap) || 0;
     const bottomEl = scene.querySelector('.actions, .place-picker') as HTMLElement | null;
     const bottomH = bottomEl?.offsetHeight ?? 0;
-    return Math.max(0, scene.clientHeight - padY - bottomH - (bottomEl ? gap : 0));
+    if (bottomEl?.classList.contains('actions') && bottomH > 0) {
+      reservedActionsHeight = bottomH;
+    }
+    // While narration hides the action bar, keep reserving its space so the book
+    // doesn't grow then snap shorter when actions return (e.g. after conjure).
+    const effectiveBottom = bottomEl ? bottomH : reservedActionsHeight;
+    return Math.max(0, scene.clientHeight - padY - effectiveBottom - (effectiveBottom > 0 ? gap : 0));
   }
 
   function revealScrollbar() {

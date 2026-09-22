@@ -65,7 +65,9 @@ export function getPossibleActions(): Action[] {
 export async function performAction(action: Action) {
   console.log('performing action', action, gs.scene.actions);
   const result = actionFunctions[action.actionType](action.actionParameters);
-  const resultText = await Promise.resolve(result);
+  // Only yield for real async actions — Promise.resolve(sync) still defers a
+  // microtask and lets the UI paint a half-updated scene (book height bump).
+  const resultText = result instanceof Promise ? await result : result;
   gs.time.usedActions[action.actionType] = (gs.time.usedActions[action.actionType] ?? 0) + 1;
   if (resultText) {
     narrateText(resultText);

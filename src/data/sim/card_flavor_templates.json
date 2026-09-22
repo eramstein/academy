@@ -1,5 +1,22 @@
 [
   {
+    "name": "Abyssal Scholar",
+    "imageName": "abyssal_scholar",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a robed human clad in obsidian-plated armor, holding a floating tome while a spectral demonic hand emerges from their sleeve. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "demon"
+    ]
+  },
+  {
     "name": "Accumulator Cannon",
     "imagePrompt": "Accumulator Cannon",
     "imageName": "accumulator_cannon",
@@ -479,6 +496,40 @@
     ],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Blazefang Archer",
+    "imageName": "blazefang_archer",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a lithe human archer nocking a flaming arrow to a recurve bow, her cloak billowing as embers swirl around her boots. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Blazing Spearhorn",
+    "imageName": "blazing_spearhorn",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a wild red beast with a spiraling horned lance, charging headlong through a field of flames. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "lance"
+    ],
+    "unitTypes": [
+      "beast"
     ]
   },
   {
@@ -1130,6 +1181,26 @@
     ]
   },
   {
+    "name": "Embermaw Titan",
+    "imageName": "embermaw_titan",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering, crimson-scaled beast with molten veins pulsing beneath its flesh, its gaping maw spewing rivers of fire into a stormy sky. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "flying",
+      "trample",
+      "poisonous"
+    ],
+    "unitTypes": [
+      "monster",
+      "elemental"
+    ]
+  },
+  {
     "name": "Emergency Repairs",
     "imagePrompt": "Emergency Repairs",
     "imageName": "emergency_repairs",
@@ -1499,6 +1570,23 @@
     "keywords": []
   },
   {
+    "name": "Forged Rotspawn",
+    "imageName": "forged_rotspawn",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a rusted iron skeleton overgrown with blackened vines, its cracked ribcage stitching itself back together with glowing fungal threads. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": true,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "regeneration"
+    ],
+    "unitTypes": [
+      "undead"
+    ]
+  },
+  {
     "name": "Fortify",
     "imagePrompt": "Fortify",
     "imageName": "fortify",
@@ -1616,6 +1704,41 @@
     ]
   },
   {
+    "name": "Geargrinder Reaper",
+    "imageName": "geargrinder_reaper",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering skeletal construct wielding a massive, spinning drill-blade arm that cracks through armored plating while a smaller, spiked drone bounces off a shattered knight’s shield. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "bounceUnit"
+    ]
+  },
+  {
+    "name": "Gearheart Protocol",
+    "imageName": "gearheart_protocol",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a colossal, half-assembled clockwork heart suspended in a smog-choked factory, its brass veins pulsing with blackened oil and flickering with ghostly blue sparks. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "spell",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "addDecayCounters"
+    ]
+  },
+  {
     "name": "Gearheart’s Last Tick",
     "imageName": "gearheart_s_last_tick",
     "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a rusted clockwork heart suspended in a swarm of tiny, glowing gears, its final tick emitting sparks that coalesce into skeletal fingers. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
@@ -1696,6 +1819,57 @@
     ],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Gloomwarden Sentinel",
+    "imageName": "gloomwarden_sentinel",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a cloaked human scholar in a towering segmented brass shell, hunched over a cracked spellbook while a ghostly inkwell swirls with shadowy runes. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": true,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Glowcap Warden",
+    "imageName": "glowcap_warden",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a tiny luminous mushroom with shimmering arcane runes etched into its cap, standing atop a patch of bioluminescent moss. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "resist"
+    ],
+    "unitTypes": [
+      "mushroom"
+    ]
+  },
+  {
+    "name": "Glowfang Dwarf",
+    "imageName": "glowfang_dwarf",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a snarling dwarf warrior gripping a jagged axe, their armor etched with shimmering arcane runes that pulse like embers while a translucent barrier hums around their shoulders. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "resist"
+    ],
+    "unitTypes": [
+      "dwarf"
     ]
   },
   {
@@ -1823,6 +1997,26 @@
     ],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Groveheart Stomper",
+    "imageName": "groveheart_stomper",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering sentient oak tree with bark like armor, its massive roots churning as it tramples through a clearing, its gnarled limbs dripping with glowing moss that pulses with healing energy. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample"
+    ],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "healUnit"
     ]
   },
   {
@@ -2083,6 +2277,44 @@
     ]
   },
   {
+    "name": "Ironbark Reclaimer",
+    "imageName": "ironbark_reclaimer",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering undead construct with a jagged drill-like horn protruding from its skull, wielding a rusted but gleaming reaping scythe that cracks through its own decaying metal plating. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
+  },
+  {
+    "name": "Ironclad Leaper",
+    "imageName": "ironclad_leaper",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a scuffed but sturdy knight mid-air, charging forward with a cracked shield and dented breastplate, boots kicking up sparks from the cobblestones. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste",
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
     "name": "Ironclad Overseer",
     "imageName": "ironclad_overseer",
     "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering humanoid figure clad in blackened steel plate armor, wielding a rusted but still-deadly greatsword, standing atop a crumbling obsidian fortress. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
@@ -2097,6 +2329,40 @@
     ],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Ironclad Rampager",
+    "imageName": "ironclad_rampager",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering human warrior clad in jagged steel plating, wielding a bloodied axe while charging through a storm of embers. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Ironvault Sentinel",
+    "imageName": "ironvault_sentinel",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering construct with exposed gears and rusted plating, its cracked metal skin sprouting blackened vines that pulse with eerie light as jagged wounds on its chest seal shut. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "regeneration"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -2507,6 +2773,21 @@
     ],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Mirage of the Shattered Tome",
+    "imageName": "mirage_of_the_shattered_tome",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a floating, translucent book whose pages swirl with tiny, shifting hands reaching toward an unseen reader. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "drawCards"
     ]
   },
   {
@@ -3106,6 +3387,23 @@
     ],
     "unitTypes": [
       "elemental"
+    ]
+  },
+  {
+    "name": "Rootbound Rager",
+    "imageName": "rootbound_rager",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a snarling dwarf with bark-like skin fused into the forest floor, arms outstretched as if permanently mid-strike. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "immobile"
+    ],
+    "unitTypes": [
+      "dwarf"
     ]
   },
   {
@@ -3782,6 +4080,58 @@
     ]
   },
   {
+    "name": "Thornroot’s Embrace",
+    "imageName": "thornroot_s_embrace",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a writhing vine erupting from the earth, its barbed tendrils coiling around a struggling stag’s legs. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "root"
+    ]
+  },
+  {
+    "name": "Thornspire Stalker",
+    "imageName": "thornspire_stalker",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a halfing hunter crouched low, wielding a jagged, bone-carved bow tipped with a massive, drill-like thorn. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "halfing"
+    ]
+  },
+  {
+    "name": "Thornspore Titan",
+    "imageName": "thornspore_titan",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering armored mushroom with jagged bark-like plating, its bulbous cap split open to reveal writhing green vines and a mezzanine of thorned branches. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "mezz"
+    ]
+  },
+  {
     "name": "Tim",
     "imagePrompt": "Tim",
     "imageName": "tim",
@@ -3819,6 +4169,26 @@
     "actions": [
       "grow",
       "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Titanroot Juggernaut",
+    "imageName": "titanroot_juggernaut",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a colossal, bark-skinned plant-beast with sprawling roots lashing like whips, its massive, splitting trunk charging forward to crush everything in its path. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample"
+    ],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "regrowCard"
     ]
   },
   {
@@ -4062,6 +4432,27 @@
     ]
   },
   {
+    "name": "Velvet Tempest",
+    "imageName": "velvet_tempest",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a scarlet-winged demoness mid-leap, her tattered silk gown billowing as she clutches a dagger in one hand and a stolen lantern in the other, hovering just above a crumbling marble balcony. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "flying",
+      "haste"
+    ],
+    "unitTypes": [
+      "human",
+      "spirit",
+      "demon"
+    ]
+  },
+  {
     "name": "Vengeful Crusader",
     "imagePrompt": "Vengeful Crusader",
     "imageName": "vengeful_crusader",
@@ -4077,6 +4468,60 @@
     ],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Verdant Rebound",
+    "imageName": "verdant_rebound",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a moss-covered oak sapling sprouting from a cracked stone, its roots entwining a small, startled hare. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "bounceUnit"
+    ]
+  },
+  {
+    "name": "Verdant Skyweaver",
+    "imageName": "verdant_skyweaver",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a half-naiad dryad mid-flight, her emerald skin woven with glowing vines that pulse with life, her wings translucent like morning mist, and her bare feet leaving trails of healing sap as she hovers above a blooming forest clearing. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "flying",
+      "regeneration"
+    ],
+    "unitTypes": [
+      "plant",
+      "spirit"
+    ]
+  },
+  {
+    "name": "Verdant Venomweaver",
+    "imageName": "verdant_venomweaver",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering, vine-wrapped spider with glowing emerald eyes and barbed silk threads dripping with toxic sap. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "flying",
+      "ranged",
+      "poisonous"
+    ],
+    "unitTypes": [
+      "elemental",
+      "spirit"
     ]
   },
   {
@@ -4110,6 +4555,26 @@
     ],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Voidspine Driller",
+    "imageName": "voidspine_driller",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering, gaunt blue-skinned demon with a jagged, spinning drill-horn erupting from its forehead, wreathed in swirling violet mist and clutching a cracked obsidian staff. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "demon"
+    ],
+    "actions": [
+      "mezz"
     ]
   },
   {

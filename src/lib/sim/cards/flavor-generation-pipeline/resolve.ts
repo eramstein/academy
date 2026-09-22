@@ -24,6 +24,10 @@ export type FlavorResolveProgress =
 export interface ResolveFlavorOptions {
   batch?: UsedFlavorsBatch;
   onProgress?: (event: FlavorResolveProgress) => void;
+  /** When set, guides AI name/art and skips catalog reuse so the vision is honored. */
+  flavorText?: string;
+  /** When false, never call AI — reuse or catalog fallback only. Default true. */
+  allowAiGenerate?: boolean;
 }
 
 const LOG_PREFIX = '[flavor-resolve]';
@@ -61,11 +65,12 @@ function catalogFallback(
 
 async function generateAndPersist(
   gameplay: GameplayTemplate,
-  onProgress?: (event: FlavorResolveProgress) => void
+  onProgress?: (event: FlavorResolveProgress) => void,
+  flavorText?: string
 ): Promise<FlavorTemplate> {
   console.log(LOG_PREFIX, 'AI generation starting…');
   onProgress?.({ stage: 'generate_text' });
-  const text = await generateFlavorText(gameplay);
+  const text = await generateFlavorText(gameplay, flavorText);
   console.log(LOG_PREFIX, 'LLM text ready', {
     name: text.name,
     imageName: text.imageName,
@@ -102,12 +107,15 @@ export async function resolveFlavorTemplate(
   batchOrOptions?: UsedFlavorsBatch | ResolveFlavorOptions
 ): Promise<FlavorTemplate> {
   const options = normalizeResolveOptions(batchOrOptions);
-  const { batch, onProgress } = options;
+  const { batch, onProgress, flavorText } = options;
+  const allowAiGenerate = options.allowAiGenerate !== false;
+  const trimmedFlavor = flavorText?.trim() || undefined;
+  const forceGenerate = allowAiGenerate && !!trimmedFlavor;
 
   const all = loadFlavorTemplates();
   const usedImageNames = await getUsedFlavorImageNames();
   const unused = excludeUsed(all, usedImageNames, batch);
-  const ranked = rankBestFlavor(unused, gameplay);
+  const ranked = forceGenerate ? null : rankBestFlavor(unused, gameplay);
   const passesThreshold = !!ranked && ranked.score >= MATCH_SCORE_THRESHOLD;
 
   console.log(LOG_PREFIX, 'Gameplay query', {
@@ -117,6 +125,7 @@ export async function resolveFlavorTemplate(
     keywords: gameplay.keywords ?? [],
     unitTypes: gameplay.unitTypes ?? [],
     actions: gameplay.actions ?? [],
+    flavorText: trimmedFlavor ?? null,
   });
   console.log(LOG_PREFIX, 'Catalog pool', {
     total: all.length,
@@ -124,6 +133,8 @@ export async function resolveFlavorTemplate(
     usedInDb: usedImageNames.size,
     batchBlocked: (batch?.images.size ?? 0) + (batch?.names.size ?? 0),
     threshold: MATCH_SCORE_THRESHOLD,
+    forceGenerate,
+    allowAiGenerate,
   });
 
   if (ranked) {
@@ -142,7 +153,7 @@ export async function resolveFlavorTemplate(
         actions: ranked.template.actions ?? [],
       },
     });
-  } else {
+  } else if (!forceGenerate) {
     console.log(LOG_PREFIX, 'No unused candidates in pool');
   }
 
@@ -156,14 +167,15 @@ export async function resolveFlavorTemplate(
       threshold: MATCH_SCORE_THRESHOLD,
     });
     onProgress?.({ stage: 'reuse', flavor });
-  } else if (import.meta.env.DEV) {
+  } else if (allowAiGenerate && import.meta.env.DEV) {
     console.log(LOG_PREFIX, 'Decision: GENERATE via AI (no candidate above threshold)', {
       bestScore: ranked?.score ?? null,
       threshold: MATCH_SCORE_THRESHOLD,
       gap: ranked ? MATCH_SCORE_THRESHOLD - ranked.score : null,
+      playerVision: !!trimmedFlavor,
     });
     try {
-      flavor = await generateAndPersist(gameplay, onProgress);
+      flavor = await generateAndPersist(gameplay, onProgress, trimmedFlavor);
       decision = 'generate';
     } catch (error) {
       console.warn(LOG_PREFIX, 'AI generation failed, falling back to catalog', error);
@@ -171,9 +183,10 @@ export async function resolveFlavorTemplate(
       decision = 'fallback';
     }
   } else {
-    console.log(LOG_PREFIX, 'Decision: FALLBACK (non-DEV, no AI generation)', {
+    console.log(LOG_PREFIX, 'Decision: FALLBACK (catalog only)', {
       bestScore: ranked?.score ?? null,
       threshold: MATCH_SCORE_THRESHOLD,
+      allowAiGenerate,
     });
     decision = 'fallback';
   }

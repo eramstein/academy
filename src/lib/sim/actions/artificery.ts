@@ -16,6 +16,8 @@ import { getActionTemplateMeta } from '../cards/action-templates';
 import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
 import { buildSpellCard, buildUnitCard, randomUnitTypes } from '../cards/creation';
 import {
+  generateGameplayFromFlavor,
+  mergeGameplayIntoParameters,
   resolveFlavorTemplate,
   toGameplayTemplate,
   type UsedFlavorsBatch,
@@ -70,7 +72,7 @@ export type CardSummonProgressHandler = (progress: CardSummonProgress) => void;
 
 export function getConjurationOptionCount(characterKey = 'player'): number {
   const character = getActingCharacter(characterKey);
-  return 1 + Math.floor(character.craftingSkills.inspiration);
+  return 2 + Math.floor(character.craftingSkills.inspiration);
 }
 
 export async function getNewCardTemplate(
@@ -79,7 +81,9 @@ export async function getNewCardTemplate(
   characterKey = 'player',
   prune = false,
   usedFlavors?: UsedFlavors,
-  onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void
+  onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void,
+  flavorText?: string,
+  allowAiGenerate = true
 ): Promise<CardCreationResult | null> {
   if (!parameters.resources) {
     parameters.resources = [];
@@ -97,7 +101,9 @@ export async function getNewCardTemplate(
       typedParams,
       bonuses,
       usedFlavors,
-      onSummonProgress
+      onSummonProgress,
+      flavorText,
+      allowAiGenerate
     );
     return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
   }
@@ -106,7 +112,9 @@ export async function getNewCardTemplate(
     bonuses,
     character,
     usedFlavors,
-    onSummonProgress
+    onSummonProgress,
+    flavorText,
+    allowAiGenerate
   );
   return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
 }
@@ -141,28 +149,45 @@ export function conjureCard(parameters: CardCreationResult, characterKey = 'play
 export async function getConjurationOtions(
   parameters: CardCreationParameters,
   characterKey = 'player',
-  onProgress?: CardSummonProgressHandler
+  onProgress?: CardSummonProgressHandler,
+  flavorText?: string
 ): Promise<CardCreationResult[]> {
   const character = getActingCharacter(characterKey);
   const optionsCount = getConjurationOptionCount(characterKey);
   if (!spendResources(parameters.resources ?? [])) {
     return [];
   }
+
+  const trimmedFlavor = flavorText?.trim() || undefined;
+  // Each option gets its own gameplay params (LLM ok for all slots).
+  const optionParameters = await Promise.all(
+    Array.from({ length: optionsCount }, async () => {
+      if (!trimmedFlavor) return parameters;
+      const gameplay = await generateGameplayFromFlavor(trimmedFlavor);
+      return mergeGameplayIntoParameters(parameters, gameplay);
+    })
+  );
+
   const usedFlavors: UsedFlavors = {
     names: new Set(character.collection.map((card) => card.name)),
     images: new Set(character.collection.map((card) => card.imageFileName)),
   };
+  // At most one option may use AI for name/image; the rest are catalog picks.
+  const aiOptionIndex = optionsCount > 1 ? Math.floor(Math.random() * optionsCount) : 0;
   const options: CardCreationResult[] = [];
   for (let i = 0; i < optionsCount; i++) {
+    const useAi = i === aiOptionIndex;
     const result = await getNewCardTemplate(
-      parameters,
+      optionParameters[i],
       false,
       characterKey,
       false,
       usedFlavors,
       (stage, template) => {
         onProgress?.({ index: i, total: optionsCount, stage, template });
-      }
+      },
+      useAi ? trimmedFlavor : undefined,
+      useAi
     );
     if (result) {
       usedFlavors.names.add(result.template.name);
@@ -356,7 +381,9 @@ async function getUnitTemplate(
   bonuses: CardCreationBonuses,
   character: Character,
   usedFlavors?: UsedFlavors,
-  onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void
+  onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void,
+  flavorText?: string,
+  allowAiGenerate = true
 ): Promise<{
   template: UnitCardTemplate;
   bonusBudget: number;
@@ -408,6 +435,8 @@ async function getUnitTemplate(
 
   const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), {
     batch: usedFlavors,
+    flavorText,
+    allowAiGenerate,
     onProgress: (event) => {
       if (event.stage === 'name_ready') {
         draft.name = event.name;
@@ -460,7 +489,9 @@ async function getSpellTemplate(
   parameters: CardCreationParameters,
   bonuses: CardCreationBonuses,
   usedFlavors?: UsedFlavors,
-  onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void
+  onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void,
+  flavorText?: string,
+  allowAiGenerate = true
 ): Promise<{
   template: SpellCardTemplate;
   bonusBudget: number;
@@ -495,6 +526,8 @@ async function getSpellTemplate(
 
   const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), {
     batch: usedFlavors,
+    flavorText,
+    allowAiGenerate,
     onProgress: (event) => {
       if (event.stage === 'name_ready') {
         draft.name = event.name;
