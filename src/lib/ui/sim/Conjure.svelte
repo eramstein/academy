@@ -17,7 +17,7 @@
     onDone,
   }: {
     initialResources?: ResourceAmount[];
-    onConjure: (resources: ResourceAmount[]) => CardCreationResult[];
+    onConjure: (resources: ResourceAmount[]) => CardCreationResult[] | Promise<CardCreationResult[]>;
     onPick: (result: CardCreationResult) => void;
     onDone: () => void;
   } = $props();
@@ -68,11 +68,11 @@
       .filter((row) => row.count > 0);
   }
 
-  function begin() {
+  async function begin() {
     if (phase !== 'idle') return;
     phase = 'conjuring';
     playSimSound('big-swoosh');
-    options = onConjure(committedResources());
+    options = await onConjure(committedResources());
     const delay = reduceMotion ? 0 : 1500;
     revealTimer = setTimeout(() => {
       phase = 'revealed';

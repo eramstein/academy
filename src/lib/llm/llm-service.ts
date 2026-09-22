@@ -13,6 +13,8 @@ export interface CompleteChatOptions {
   model?: string;
   temperature?: number;
   maxTokens?: number;
+  /** When true, request Mistral JSON mode (`response_format: json_object`). */
+  json?: boolean;
 }
 
 let client: Mistral | null = null;
@@ -91,6 +93,7 @@ async function requestChatCompletion(
     })),
     temperature: options.temperature,
     maxTokens: options.maxTokens,
+    ...(options.json ? { responseFormat: { type: 'json_object' as const } } : {}),
   });
 
   const text = messageContentToText(result.choices?.[0]?.message?.content);

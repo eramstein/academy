@@ -3,6 +3,7 @@ import { PLACES, REGIONS } from '@/data/sim/places';
 import { DayPeriod, ResourceType, type GameState } from '../_model';
 import { gs } from '../_state';
 import { initNpcDecks } from './deck';
+import { clearUsedFlavors } from './cards/flavor-generation-pipeline/used-flavors';
 import { loadEventTemplates, restoreEventTemplates } from './events';
 import { newLeagueSeason } from './league';
 import { setSceneEvents } from './scene';
@@ -76,6 +77,7 @@ export const defaultGameState: GameState = {
 export const initSim = async () => {
   console.log('initSim');
   Object.assign(gs, defaultGameState);
+  await clearUsedFlavors();
   await restoreEventTemplates();
   await loadEventTemplates();
   setSceneEvents();

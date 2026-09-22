@@ -62,9 +62,10 @@ export function getPossibleActions(): Action[] {
   return filteredActions;
 }
 
-export function performAction(action: Action) {
+export async function performAction(action: Action) {
   console.log('performing action', action, gs.scene.actions);
-  const resultText = actionFunctions[action.actionType](action.actionParameters);
+  const result = actionFunctions[action.actionType](action.actionParameters);
+  const resultText = await Promise.resolve(result);
   gs.time.usedActions[action.actionType] = (gs.time.usedActions[action.actionType] ?? 0) + 1;
   if (resultText) {
     narrateText(resultText);
@@ -91,7 +92,10 @@ export function setPossibleActions() {
   }
 }
 
-const actionFunctions: Record<ActionType, (parameters: Record<string, any>) => string> = {
+const actionFunctions: Record<
+  ActionType,
+  (parameters: Record<string, any>) => string | Promise<string>
+> = {
   [ActionType.Transaction]: (parameters) => transaction(parameters as TransactionParameters),
   [ActionType.Negotiate]: (parameters) => negotiate(parameters as NegotiateParameters),
   [ActionType.Move]: (parameters) => move(parameters as MoveParameters),

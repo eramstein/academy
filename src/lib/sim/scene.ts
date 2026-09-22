@@ -27,7 +27,7 @@ export function setSceneEvents() {
   }
 }
 
-export function selectOption(option: EventOption) {
+export async function selectOption(option: EventOption) {
   console.log('selectOption', option, gs.scene.event);
   if (option.outcome.effects) {
     option.outcome.effects.forEach((effect) => {
@@ -35,7 +35,7 @@ export function selectOption(option: EventOption) {
     });
   }
   if (option.outcome.action) {
-    performAction(option.outcome.action);
+    await performAction(option.outcome.action);
   } else {
     setSceneEvents();
   }

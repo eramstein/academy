@@ -36,7 +36,7 @@ export function getLessonActions(): Action[] {
   }
 
   if (currentActivity.classType === ClassType.Artificery) {
-    makeAllNpcsConjure();
+    void makeAllNpcsConjure();
     lessons.push({
       label: 'Conjure',
       actionType: ActionType.Conjure,
@@ -60,10 +60,10 @@ export function getLessonActions(): Action[] {
   return lessons;
 }
 
-function makeAllNpcsConjure() {
+async function makeAllNpcsConjure() {
   for (const character of Object.values(gs.characters)) {
     if (character.school === SchoolName.Academy) {
-      const options = getConjurationOtions(
+      const options = await getConjurationOtions(
         {
           resources: [],
         },

@@ -1,31 +1,34 @@
-import conjurationTemplatesData from "@/data/sim/conjuration_templates.json";
+import cardFlavorTemplatesData from '@/data/sim/card_flavor_templates.json';
 import {
-  CardColor,
-  CardType,
-  UnitType,
   isSpellCard,
   isUnitCard,
   type CardTemplate,
   type UnitKeywords,
-} from "@/lib/_model";
-import { getActionTemplateNameForEffect } from "./action-templates";
+} from '@/lib/_model';
+import { getActionTemplateNameForEffect } from './action-templates';
+import {
+  costToPowerLevel,
+  type FlavorTemplate,
+} from './flavor-generation-pipeline/types';
 
-export interface FlavorTemplate {
-  name: string;
-  imageName: string;
-  cardType: CardType;
-  cost: number;
-  colors: CardColor[];
-  keywords: (keyof UnitKeywords)[];
-  unitTypes?: UnitType[];
-  /** Action template keys present on the source card (spells + unit/land abilities). */
-  actions?: string[];
-}
+export type { FlavorTemplate } from './flavor-generation-pipeline/types';
 
-const conjurationTemplates = conjurationTemplatesData as FlavorTemplate[];
+const flavorTemplates: FlavorTemplate[] = [
+  ...(cardFlavorTemplatesData as FlavorTemplate[]),
+];
 
 export function loadFlavorTemplates(): FlavorTemplate[] {
-  return conjurationTemplates;
+  return flavorTemplates;
+}
+
+/** Keep the in-memory catalog in sync after DEV generation (before HMR reload). */
+export function registerFlavorTemplate(flavor: FlavorTemplate): void {
+  const index = flavorTemplates.findIndex((row) => row.imageName === flavor.imageName);
+  if (index >= 0) {
+    flavorTemplates[index] = flavor;
+  } else {
+    flavorTemplates.push(flavor);
+  }
 }
 
 export function extractConjurationFromCardTemplate(cardTemplates: CardTemplate[]): FlavorTemplate[] {
@@ -34,8 +37,10 @@ export function extractConjurationFromCardTemplate(cardTemplates: CardTemplate[]
     return {
       name: card.name,
       imageName: card.imageFileName ?? card.id,
+      imagePrompt: card.name,
       cardType: card.type,
-      cost: card.cost,
+      unitSize: costToPowerLevel(card.cost),
+      cheapImage: false,
       colors: card.colors.map((color) => color.color),
       keywords:
         isUnitCard(card) && card.keywords

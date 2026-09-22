@@ -482,6 +482,23 @@
     ]
   },
   {
+    "name": "Bloodfang Marauder",
+    "imageName": "bloodfang_marauder",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a snarling wolf with jagged crimson fangs dripping with frostbite, mid-leap through a storm of shattered ice. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
     "name": "Bob the Blob",
     "imagePrompt": "Bob the Blob",
     "imageName": "bob_the_blob",

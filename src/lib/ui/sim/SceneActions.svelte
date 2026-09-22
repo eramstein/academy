@@ -188,10 +188,10 @@
     cardCraftStep = 'invoke';
   }
 
-  function generateConjureOptions(resources: { type: ResourceType; count: number }[]) {
+  async function generateConjureOptions(resources: { type: ResourceType; count: number }[]) {
     if (!cardCraftAction) return [];
     recipeResources = resources;
-    conjureOptions = getConjurationOtions({
+    conjureOptions = await getConjurationOtions({
       ...cardCraftAction.actionParameters,
       resources,
     });

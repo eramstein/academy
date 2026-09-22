@@ -18,7 +18,12 @@ const llmCache: Table<LlmCacheEntry, string> = db.table('llmCache');
  */
 export async function makePromptKey(
   messages: Array<{ role: string; content: string }>,
-  options: { model?: string; temperature?: number; maxTokens?: number } = {}
+  options: {
+    model?: string;
+    temperature?: number;
+    maxTokens?: number;
+    json?: boolean;
+  } = {}
 ): Promise<string> {
   const payload = JSON.stringify({
     messages: messages.map((message) => ({
@@ -28,6 +33,7 @@ export async function makePromptKey(
     model: options.model ?? LLM_API_CHAT_MODEL,
     temperature: options.temperature ?? null,
     maxTokens: options.maxTokens ?? null,
+    json: options.json ?? false,
   });
   const digest = await sha256Bytes(payload);
   return toHex(digest).slice(0, KEY_HEX_LENGTH);

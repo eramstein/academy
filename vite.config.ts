@@ -102,6 +102,83 @@ export default defineConfig(({ command }) => ({
             return;
           }
 
+          if (req.method === 'POST' && req.url === '/api/save-flavor') {
+            readBody()
+              .then((body) => {
+                const newFlavor = JSON.parse(body);
+                if (!newFlavor?.imageName || typeof newFlavor.imageName !== 'string') {
+                  sendJson(400, { error: 'imageName is required' });
+                  return;
+                }
+
+                const filePath = path.resolve(
+                  __dirname,
+                  'src/data/sim/card_flavor_templates.json'
+                );
+                const fileContent = fs.readFileSync(filePath, 'utf-8');
+                const flavors = JSON.parse(fileContent);
+
+                if (!Array.isArray(flavors)) {
+                  sendJson(500, { error: 'card_flavor_templates.json is not an array' });
+                  return;
+                }
+
+                const existingIndex = flavors.findIndex(
+                  (f: any) => f.imageName === newFlavor.imageName
+                );
+                if (existingIndex !== -1) {
+                  flavors[existingIndex] = newFlavor;
+                } else {
+                  flavors.push(newFlavor);
+                }
+
+                flavors.sort((a: any, b: any) =>
+                  (a.name || a.imageName).localeCompare(b.name || b.imageName)
+                );
+
+                fs.writeFileSync(filePath, JSON.stringify(flavors, null, 2) + '\n', 'utf-8');
+                sendJson(200, { success: true, flavor: newFlavor });
+              })
+              .catch((error) => {
+                console.error('Error saving flavor:', error);
+                sendJson(500, { error: 'Failed to save flavor' });
+              });
+            return;
+          }
+
+          if (req.method === 'POST' && req.url === '/api/save-card-image') {
+            readBody()
+              .then((body) => {
+                const payload = JSON.parse(body) as {
+                  imageName?: string;
+                  imageBase64?: string;
+                };
+                if (!payload.imageName || typeof payload.imageName !== 'string') {
+                  sendJson(400, { error: 'imageName is required' });
+                  return;
+                }
+                if (!payload.imageBase64 || typeof payload.imageBase64 !== 'string') {
+                  sendJson(400, { error: 'imageBase64 is required' });
+                  return;
+                }
+
+                const safeName = payload.imageName.replace(/[^a-zA-Z0-9_-]/g, '_');
+                const dir = path.resolve(__dirname, 'public/assets/images/cards');
+                if (!fs.existsSync(dir)) {
+                  fs.mkdirSync(dir, { recursive: true });
+                }
+                const filePath = path.join(dir, `${safeName}.jpg`);
+                const buffer = Buffer.from(payload.imageBase64, 'base64');
+                fs.writeFileSync(filePath, buffer);
+                sendJson(200, { success: true, path: filePath });
+              })
+              .catch((error) => {
+                console.error('Error saving card image:', error);
+                sendJson(500, { error: 'Failed to save card image' });
+              });
+            return;
+          }
+
           next();
         });
       },
@@ -110,14 +187,33 @@ export default defineConfig(({ command }) => ({
   base: command === 'serve' ? '/' : '/artimine/',
   server: {
     watch: {
-      // Avoid full reloads when the event editor writes this file.
-      ignored: ['**/src/data/sim/events.json'],
+      // Avoid full reloads when editors / flavor pipeline write these files.
+      ignored: [
+        '**/src/data/sim/events.json',
+        '**/src/data/sim/card_flavor_templates.json',
+      ],
     },
     proxy: {
       '/mistral-api': {
         target: 'https://api.mistral.ai',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/mistral-api/, ''),
+      },
+      '/comfy-api': {
+        target: process.env.VITE_COMFY_URL || 'http://127.0.0.1:8188',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/comfy-api/, ''),
+        // ComfyUI rejects cross-origin POSTs when Origin host != Host (403).
+        // Strip browser Origin / Sec-Fetch-* so the loopback CSRF check is skipped.
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.removeHeader('origin');
+            proxyReq.removeHeader('referer');
+            proxyReq.removeHeader('sec-fetch-site');
+            proxyReq.removeHeader('sec-fetch-mode');
+            proxyReq.removeHeader('sec-fetch-dest');
+          });
+        },
       },
     },
   },

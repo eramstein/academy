@@ -15,3 +15,7 @@ db.version(2).stores({
 db.version(3).stores({
   llmCache: 'key',
 });
+
+db.version(4).stores({
+  usedFlavorTemplates: 'imageName',
+});

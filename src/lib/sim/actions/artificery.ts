@@ -11,13 +11,15 @@ import {
   type UnitType,
 } from '@/lib/_model';
 import { gs } from '@/lib/_state';
-import { getRandomFromArray } from '@/lib/_utils/random';
 import { getAbilityActionNames, type AbilityPick } from '../cards/ability-templates';
 import { getActionTemplateMeta } from '../cards/action-templates';
 import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
 import { buildSpellCard, buildUnitCard, randomUnitTypes } from '../cards/creation';
-import { filterFlavorTemplates } from '../cards/flavor-filters';
-import { loadFlavorTemplates } from '../cards/flavor-templates';
+import {
+  resolveFlavorTemplate,
+  toGameplayTemplate,
+  type UsedFlavorsBatch,
+} from '../cards/flavor-generation-pipeline';
 import { formatKeywordLabel } from '../cards/keywords';
 import { getActingCharacter } from '../characters';
 import { narrateCardConjured } from '../narration';
@@ -52,18 +54,15 @@ export interface CardCreationResult {
   actionName?: string[];
 }
 
-export interface UsedFlavors {
-  names: Set<string>;
-  images: Set<string>;
-}
+export type UsedFlavors = UsedFlavorsBatch;
 
-export function getNewCardTemplate(
+export async function getNewCardTemplate(
   parameters: CardCreationParameters,
   spend = true,
   characterKey = 'player',
   prune = false,
   usedFlavors?: UsedFlavors
-): CardCreationResult | null {
+): Promise<CardCreationResult | null> {
   if (!parameters.resources) {
     parameters.resources = [];
   }
@@ -76,14 +75,14 @@ export function getNewCardTemplate(
   const cardType = resolveCardType(prunedParams);
   const typedParams = { ...prunedParams, cardType };
   if (cardType === CardType.Spell) {
-    const { template, bonusBudget, actionName } = getSpellTemplate(
+    const { template, bonusBudget, actionName } = await getSpellTemplate(
       typedParams,
       bonuses,
       usedFlavors
     );
     return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
   }
-  const { template, bonusBudget, actionName } = getUnitTemplate(
+  const { template, bonusBudget, actionName } = await getUnitTemplate(
     typedParams,
     bonuses,
     character,
@@ -92,8 +91,11 @@ export function getNewCardTemplate(
   return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
 }
 
-export function invokeCard(parameters: CardCreationParameters, characterKey = 'player'): string {
-  const result = getNewCardTemplate(parameters, true, characterKey, true);
+export async function invokeCard(
+  parameters: CardCreationParameters,
+  characterKey = 'player'
+): Promise<string> {
+  const result = await getNewCardTemplate(parameters, true, characterKey, true);
   if (!result) {
     return '';
   }
@@ -116,12 +118,12 @@ export function conjureCard(parameters: CardCreationResult, characterKey = 'play
   return '';
 }
 
-export function getConjurationOtions(
+export async function getConjurationOtions(
   parameters: CardCreationParameters,
   characterKey = 'player'
-): CardCreationResult[] {
+): Promise<CardCreationResult[]> {
   const character = getActingCharacter(characterKey);
-  const optionsCount = 3 + Math.floor(character.craftingSkills.inspiration);
+  const optionsCount = 1 + Math.floor(character.craftingSkills.inspiration);
   if (!spendResources(parameters.resources ?? [])) {
     return [];
   }
@@ -131,7 +133,7 @@ export function getConjurationOtions(
   };
   const options: CardCreationResult[] = [];
   for (let i = 0; i < optionsCount; i++) {
-    const result = getNewCardTemplate(parameters, false, characterKey, false, usedFlavors);
+    const result = await getNewCardTemplate(parameters, false, characterKey, false, usedFlavors);
     if (result) {
       usedFlavors.names.add(result.template.name);
       usedFlavors.images.add(result.template.imageFileName);
@@ -284,7 +286,6 @@ function narrateCardLearnt(
   narrateCardConjured(template.id, text);
 }
 
-
 function resolveCardType(parameters: CardCreationParameters): CardType.Unit | CardType.Spell {
   if (parameters.cardType === CardType.Spell || parameters.cardType === CardType.Unit) {
     return parameters.cardType;
@@ -314,17 +315,16 @@ function joinKeywordNames(names: string[]): string {
   return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
 }
 
-function getUnitTemplate(
+async function getUnitTemplate(
   parameters: CardCreationParameters,
   bonuses: CardCreationBonuses,
   character: Character,
   usedFlavors?: UsedFlavors
-): {
+): Promise<{
   template: UnitCardTemplate;
   bonusBudget: number;
   actionName: string[];
-} {
-  const flavorTemplates = loadFlavorTemplates();
+}> {
   const unitParams = { ...parameters };
   delete unitParams.cardType;
 
@@ -360,8 +360,7 @@ function getUnitTemplate(
     actions: actionName.length ? actionName : undefined,
   };
 
-  // 4. pick name/image/unitTypes from flavor templates
-  const flavor = pickFlavorTemplate(flavorTemplates, templateParameters, usedFlavors);
+  const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), usedFlavors);
   const unitTypes = conjured.unitTypes?.length
     ? conjured.unitTypes
     : flavor.unitTypes?.length
@@ -380,16 +379,15 @@ function getUnitTemplate(
   };
 }
 
-function getSpellTemplate(
+async function getSpellTemplate(
   parameters: CardCreationParameters,
   bonuses: CardCreationBonuses,
   usedFlavors?: UsedFlavors
-): {
+): Promise<{
   template: SpellCardTemplate;
   bonusBudget: number;
   actionName: string[];
-} {
-  const flavorTemplates = loadFlavorTemplates();
+}> {
   const { card, actionName } = buildSpellCard(parameters);
   const sureMastery = Math.floor(bonuses.extraBudgetChance);
   const extraBudget = Math.random() < bonuses.extraBudgetChance - sureMastery ? 1 : 0;
@@ -399,7 +397,6 @@ function getSpellTemplate(
     ...card,
     cost,
   };
-  // Match flavor to the conjured spell's traits, not the (often sparse) input params
   const templateParameters: CardCreationParameters = {
     resources: parameters.resources,
     cardType: CardType.Spell,
@@ -407,7 +404,7 @@ function getSpellTemplate(
     cost,
     actions: actionName.length ? actionName : undefined,
   };
-  const flavor = pickFlavorTemplate(flavorTemplates, templateParameters, usedFlavors);
+  const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), usedFlavors);
   return {
     template: {
       ...conjured,
@@ -418,28 +415,4 @@ function getSpellTemplate(
     bonusBudget: sureMastery + extraBudget,
     actionName,
   };
-}
-
-function pickFlavorTemplate(
-  flavorTemplates: ReturnType<typeof loadFlavorTemplates>,
-  parameters: CardCreationParameters,
-  usedFlavors?: UsedFlavors
-) {
-  const unused = (templates: typeof flavorTemplates) => {
-    if (!usedFlavors) return templates;
-    return templates.filter(
-      (template) =>
-        !usedFlavors.names.has(template.name) && !usedFlavors.images.has(template.imageName)
-    );
-  };
-
-  const filteredTemplates = unused(filterFlavorTemplates(flavorTemplates, parameters));
-  if (filteredTemplates.length) {
-    return getRandomFromArray(filteredTemplates);
-  }
-  const typed = parameters.cardType
-    ? flavorTemplates.filter((template) => template.cardType === parameters.cardType)
-    : flavorTemplates;
-  const unusedTyped = unused(typed.length ? typed : flavorTemplates);
-  return getRandomFromArray(unusedTyped.length ? unusedTyped : typed.length ? typed : flavorTemplates);
 }
