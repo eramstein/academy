@@ -1,0 +1,4164 @@
+[
+  {
+    "name": "Accumulator Cannon",
+    "imagePrompt": "Accumulator Cannon",
+    "imageName": "accumulator_cannon",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "armor"
+    ],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Agent of Chaos",
+    "imagePrompt": "Agent of Chaos",
+    "imageName": "agent_of_chaos",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "demon"
+    ]
+  },
+  {
+    "name": "Al-ahmar Djinn",
+    "imagePrompt": "Al-ahmar Djinn",
+    "imageName": "alahmar_djinn",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate",
+      "resist"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
+  },
+  {
+    "name": "Aladin",
+    "imagePrompt": "Aladin",
+    "imageName": "aladin",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Albatros",
+    "imagePrompt": "Albatros",
+    "imageName": "albatros",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "flying"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Ali Baba",
+    "imagePrompt": "Ali Baba",
+    "imageName": "ali_baba",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Alpha Male",
+    "imagePrompt": "Alpha Male",
+    "imageName": "alpha_male",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Ammunition Cart",
+    "imagePrompt": "Ammunition Cart",
+    "imageName": "ammunition_cart",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
+    "name": "Angry Lizard",
+    "imagePrompt": "Angry Lizard",
+    "imageName": "angry_lizard",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Angry Mob",
+    "imagePrompt": "Angry Mob",
+    "imageName": "angry_mob",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Arc Lightning Specialist",
+    "imagePrompt": "Arc Lightning Specialist",
+    "imageName": "arc_lightning_specialist",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Arcane Sniper",
+    "imagePrompt": "Arcane Sniper",
+    "imageName": "arcane_sniper",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Artificial Plague",
+    "imagePrompt": "Artificial Plague",
+    "imageName": "artificial_plague",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "addDecayCounters"
+    ]
+  },
+  {
+    "name": "Assassin",
+    "imagePrompt": "Assassin",
+    "imageName": "assassin",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
+    "name": "Baba Yaga",
+    "imagePrompt": "Baba Yaga",
+    "imageName": "baba_yaga",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "resist",
+      "poisonous"
+    ],
+    "unitTypes": [
+      "demon"
+    ],
+    "actions": [
+      "mezz",
+      "root"
+    ]
+  },
+  {
+    "name": "Ballista",
+    "imagePrompt": "Ballista",
+    "imageName": "ballista",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "building"
+    ]
+  },
+  {
+    "name": "Banshee",
+    "imagePrompt": "Banshee",
+    "imageName": "banshee",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "resist"
+    ],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
+    "name": "Basic Research",
+    "imagePrompt": "Basic Research",
+    "imageName": "basic_research",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Battery",
+    "imagePrompt": "Battery",
+    "imageName": "battery",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
+    "name": "Bear Minimum",
+    "imagePrompt": "Bear Minimum",
+    "imageName": "bear_minimum",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Bear Riders",
+    "imagePrompt": "Bear Riders",
+    "imageName": "bear_riders",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack",
+      "trample"
+    ],
+    "unitTypes": [
+      "human",
+      "beast"
+    ]
+  },
+  {
+    "name": "Benevolent Druid",
+    "imagePrompt": "Benevolent Druid",
+    "imageName": "benevolent_druid",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Benevolent Monk",
+    "imagePrompt": "Benevolent Monk",
+    "imageName": "benevolent_monk",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Big Bertha",
+    "imagePrompt": "Big Bertha",
+    "imageName": "big_bertha",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "cleave",
+      "lance",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Big Mamma's Inn",
+    "imagePrompt": "Big Mamma's Inn",
+    "imageName": "big_mammas_inn",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Bison",
+    "imagePrompt": "Bison",
+    "imageName": "bison",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Blacksmith",
+    "imagePrompt": "Blacksmith",
+    "imageName": "blacksmith",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Bob the Blob",
+    "imagePrompt": "Bob the Blob",
+    "imageName": "bob_the_blob",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "addDecayCounters"
+    ]
+  },
+  {
+    "name": "Boring Boar",
+    "imagePrompt": "Boring Boar",
+    "imageName": "boring_boar",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Born From Magic",
+    "imagePrompt": "Born From Magic",
+    "imageName": "born_from_magic",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "flying"
+    ],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Buffoon",
+    "imagePrompt": "Buffoon",
+    "imageName": "buffoon",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Busy Forge",
+    "imagePrompt": "Busy Forge",
+    "imageName": "busy_forge",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ]
+  },
+  {
+    "name": "Caring Druidess",
+    "imagePrompt": "Caring Druidess",
+    "imageName": "caring_druidess",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "healUnit"
+    ]
+  },
+  {
+    "name": "Carnival of Miracles",
+    "imagePrompt": "Carnival of Miracles",
+    "imageName": "carnival_of_miracles",
+    "cardType": "spell",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "fortifyLand",
+      "addDecayCounters"
+    ]
+  },
+  {
+    "name": "Charge!",
+    "imagePrompt": "Charge!",
+    "imageName": "charge",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "City",
+    "imagePrompt": "City",
+    "imageName": "city",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "City Guard",
+    "imagePrompt": "City Guard",
+    "imageName": "city_guard",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "lance",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Clunky Golem",
+    "imagePrompt": "Clunky Golem",
+    "imageName": "clunky_golem",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Clunky Helicopter",
+    "imagePrompt": "Clunky Helicopter",
+    "imageName": "clunky_helicopter",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
+    "name": "Coal Demon",
+    "imagePrompt": "Coal Demon",
+    "imageName": "coal_demon",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "elemental",
+      "demon"
+    ]
+  },
+  {
+    "name": "Council Envoy",
+    "imagePrompt": "Council Envoy",
+    "imageName": "council_envoy",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black",
+      "blue"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Cowardly Mage",
+    "imagePrompt": "Cowardly Mage",
+    "imageName": "cowardly_mage",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Cursed Artist",
+    "imagePrompt": "Cursed Artist",
+    "imageName": "cursed_artist",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "addDecayCounters"
+    ]
+  },
+  {
+    "name": "Dark Remedy",
+    "imagePrompt": "Dark Remedy",
+    "imageName": "dark_remedy",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Dark Ritual",
+    "imagePrompt": "Dark Ritual",
+    "imageName": "dark_ritual",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Dazing Spirit",
+    "imagePrompt": "Dazing Spirit",
+    "imageName": "dazing_spirit",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
+    "name": "Decaying Ray",
+    "imagePrompt": "Decaying Ray",
+    "imageName": "decaying_ray",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "addDecayCounters"
+    ]
+  },
+  {
+    "name": "Deer",
+    "imagePrompt": "Deer",
+    "imageName": "deer",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Desert Sorcerer",
+    "imagePrompt": "Desert Sorcerer",
+    "imageName": "desert_sorcerer",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Desert Storm",
+    "imagePrompt": "Desert Storm",
+    "imageName": "desert_storm",
+    "cardType": "spell",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Donatello",
+    "imagePrompt": "Donatello",
+    "imageName": "donatello",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Drake",
+    "imagePrompt": "Drake",
+    "imageName": "drake",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "lance",
+      "flying",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "dragon"
+    ]
+  },
+  {
+    "name": "Dryad",
+    "imagePrompt": "Dryad",
+    "imageName": "dryad",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "regeneration"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
+  },
+  {
+    "name": "Dude's Arms Stash",
+    "imagePrompt": "Dude's Arms Stash",
+    "imageName": "dudes_arms_stash",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Dunyazad",
+    "imagePrompt": "Dunyazad",
+    "imageName": "dunyazad",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "bounceUnit"
+    ]
+  },
+  {
+    "name": "Dwarf Berserker",
+    "imagePrompt": "Dwarf Berserker",
+    "imageName": "dwarf_berserker",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "zerk"
+    ],
+    "unitTypes": [
+      "dwarf"
+    ]
+  },
+  {
+    "name": "Dwarf Cadencer",
+    "imagePrompt": "Dwarf Cadencer",
+    "imageName": "dwarf_cadencer",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "dwarf"
+    ]
+  },
+  {
+    "name": "Dwarven Punisher",
+    "imagePrompt": "Dwarven Punisher",
+    "imageName": "dwarven_punisher",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste",
+      "trample"
+    ],
+    "unitTypes": [
+      "dwarf"
+    ]
+  },
+  {
+    "name": "Eagle Mounted Archers",
+    "imagePrompt": "Eagle Mounted Archers",
+    "imageName": "eagle_mounted_archers",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "flying",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human",
+      "beast"
+    ]
+  },
+  {
+    "name": "Earthquake",
+    "imagePrompt": "Earthquake",
+    "imageName": "earthquake",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Ebonheart",
+    "imagePrompt": "Ebonheart",
+    "imageName": "ebonheart",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black",
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "demon"
+    ]
+  },
+  {
+    "name": "Elite Crossbowmen",
+    "imagePrompt": "Elite Crossbowmen",
+    "imageName": "elite_crossbowmen",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Emergency Repairs",
+    "imagePrompt": "Emergency Repairs",
+    "imageName": "emergency_repairs",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "healUnit"
+    ]
+  },
+  {
+    "name": "Emma's Dark Tower",
+    "imagePrompt": "Emma's Dark Tower",
+    "imageName": "emmas_dark_tower",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": [],
+    "actions": [
+      "damageOpponent"
+    ]
+  },
+  {
+    "name": "Energy Monster",
+    "imagePrompt": "Energy Monster",
+    "imageName": "energy_monster",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Energyze",
+    "imagePrompt": "Energyze",
+    "imageName": "energyze",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Enraged Goblin",
+    "imagePrompt": "Enraged Goblin",
+    "imageName": "enraged_goblin",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Ent",
+    "imagePrompt": "Ent",
+    "imageName": "ent",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
+  },
+  {
+    "name": "Entangling Roots",
+    "imagePrompt": "Entangling Roots",
+    "imageName": "entangling_roots",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "root"
+    ]
+  },
+  {
+    "name": "Entrench",
+    "imagePrompt": "Entrench",
+    "imageName": "entrench",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Execution",
+    "imagePrompt": "Execution",
+    "imageName": "execution",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
+    "name": "Expendable Recruit",
+    "imagePrompt": "Expendable Recruit",
+    "imageName": "expendable_recruit",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Explosive Trap",
+    "imagePrompt": "Explosive Trap",
+    "imageName": "explosive_trap",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Fair Trader",
+    "imagePrompt": "Fair Trader",
+    "imageName": "fair_trader",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "cycleCards"
+    ]
+  },
+  {
+    "name": "Fancy Courtesan",
+    "imagePrompt": "Fancy Courtesan",
+    "imageName": "fancy_courtesan",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "mezz"
+    ]
+  },
+  {
+    "name": "Fat Pigeon",
+    "imagePrompt": "Fat Pigeon",
+    "imageName": "fat_pigeon",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "flying"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Ferocious Badger",
+    "imagePrompt": "Ferocious Badger",
+    "imageName": "ferocious_badger",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Fight!",
+    "imagePrompt": "Fight!",
+    "imageName": "fight",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Fire Elemental",
+    "imagePrompt": "Fire Elemental",
+    "imageName": "fire_elemental",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Fireball",
+    "imagePrompt": "Fireball",
+    "imageName": "fireball",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Fisherman's Ifrit",
+    "imagePrompt": "Fisherman's Ifrit",
+    "imageName": "fishermans_ifrit",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
+  },
+  {
+    "name": "Flammen Werfer",
+    "imagePrompt": "Flammen Werfer",
+    "imageName": "flammen_werfer",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "lance"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Flying Carpet",
+    "imagePrompt": "Flying Carpet",
+    "imageName": "flying_carpet",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "flying"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
+    "name": "Forest",
+    "imagePrompt": "Forest",
+    "imageName": "forest",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Fortify",
+    "imagePrompt": "Fortify",
+    "imageName": "fortify",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "fortifyLand"
+    ]
+  },
+  {
+    "name": "Frankish Castle",
+    "imagePrompt": "Frankish Castle",
+    "imageName": "frankish_castle",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "immobile"
+    ],
+    "unitTypes": [
+      "building"
+    ]
+  },
+  {
+    "name": "Franz",
+    "imagePrompt": "Franz",
+    "imageName": "franz",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Frenzied Shaman",
+    "imagePrompt": "Frenzied Shaman",
+    "imageName": "frenzied_shaman",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Gas Station",
+    "imagePrompt": "Gas Station",
+    "imageName": "gas_station",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Gate Keepers",
+    "imagePrompt": "Gate Keepers",
+    "imageName": "gate_keepers",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Gaul Brawler",
+    "imagePrompt": "Gaul Brawler",
+    "imageName": "gaul_brawler",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "cleave",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Giant Growth",
+    "imagePrompt": "Giant Growth",
+    "imageName": "giant_growth",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Giant Spider",
+    "imagePrompt": "Giant Spider",
+    "imageName": "giant_spider",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "poisonous"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Gifted Apprentice",
+    "imagePrompt": "Gifted Apprentice",
+    "imageName": "gifted_apprentice",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Glacial Guard",
+    "imagePrompt": "Glacial Guard",
+    "imageName": "glacial_guard",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Gnome Engineer",
+    "imagePrompt": "Gnome Engineer",
+    "imageName": "gnome_engineer",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "healUnit"
+    ]
+  },
+  {
+    "name": "Gnome Mechanic",
+    "imagePrompt": "Gnome Mechanic",
+    "imageName": "gnome_mechanic",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Goblin Engineer",
+    "imagePrompt": "Goblin Engineer",
+    "imageName": "goblin_engineer",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Golgoth",
+    "imagePrompt": "Golgoth",
+    "imageName": "golgoth",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Greedy Bear",
+    "imagePrompt": "Greedy Bear",
+    "imageName": "greedy_bear",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Grenadier",
+    "imagePrompt": "Grenadier",
+    "imageName": "grenadier",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "cleave",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Grim Guard",
+    "imagePrompt": "Grim Guard",
+    "imageName": "grim_guard",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Guinea Pig",
+    "imagePrompt": "Guinea Pig",
+    "imageName": "guinea_pig",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Hans is Back",
+    "imagePrompt": "Hans is Back",
+    "imageName": "hans_is_back",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [
+      "cleave"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Harpy Huntress",
+    "imagePrompt": "Harpy Huntress",
+    "imageName": "harpy_huntress",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "flying",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Havrhell",
+    "imagePrompt": "Havrhell",
+    "imageName": "havrhell",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack",
+      "cleave",
+      "retaliate",
+      "resist"
+    ],
+    "unitTypes": [
+      "dwarf"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Heal",
+    "imagePrompt": "Heal",
+    "imageName": "heal",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Healing Salve",
+    "imagePrompt": "Healing Salve",
+    "imageName": "healing_salve",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "healUnit"
+    ]
+  },
+  {
+    "name": "Henry's Cemetary",
+    "imagePrompt": "Henry's Cemetary",
+    "imageName": "henrys_cemetary",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": [],
+    "actions": [
+      "reanimate"
+    ]
+  },
+  {
+    "name": "Hill Troll",
+    "imagePrompt": "Hill Troll",
+    "imageName": "hill_troll",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Hobbit Gardener",
+    "imagePrompt": "Hobbit Gardener",
+    "imageName": "hobbit_gardener",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ]
+  },
+  {
+    "name": "Hobbit Villager",
+    "imagePrompt": "Hobbit Villager",
+    "imageName": "hobbit_villager",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "regeneration"
+    ],
+    "unitTypes": [
+      "halfing"
+    ]
+  },
+  {
+    "name": "Hold the Line",
+    "imagePrompt": "Hold the Line",
+    "imageName": "hold_the_line",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Hungry Hermit",
+    "imagePrompt": "Hungry Hermit",
+    "imageName": "hungry_hermit",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Hungry Wolf",
+    "imagePrompt": "Hungry Wolf",
+    "imageName": "hungry_wolf",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Hype Goblin",
+    "imagePrompt": "Hype Goblin",
+    "imageName": "hype_goblin",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Improve Engine",
+    "imagePrompt": "Improve Engine",
+    "imageName": "improve_engine",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Iron Golem",
+    "imagePrompt": "Iron Golem",
+    "imageName": "iron_golem",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
+    "name": "Irresistible Allure",
+    "imagePrompt": "Irresistible Allure",
+    "imageName": "irresistible_allure",
+    "cardType": "spell",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Island",
+    "imagePrompt": "Island",
+    "imageName": "island",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Jumping Hare",
+    "imagePrompt": "Jumping Hare",
+    "imageName": "jumping_hare",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "haste",
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Kobold",
+    "imagePrompt": "Kobold",
+    "imageName": "kobold",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Kobold Slinger",
+    "imagePrompt": "Kobold Slinger",
+    "imageName": "kobold_slinger",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Kobold Undercity",
+    "imagePrompt": "Kobold Undercity",
+    "imageName": "kobold_undercity",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Kolossal Mistake",
+    "imagePrompt": "Kolossal Mistake",
+    "imageName": "kolossal_mistake",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
+    "name": "Leonardo Borgio",
+    "imagePrompt": "Leonardo Borgio",
+    "imageName": "leonardo_borgio",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black",
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Lightning Bolt",
+    "imagePrompt": "Lightning Bolt",
+    "imageName": "lightning_bolt",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Lightning Explosion",
+    "imagePrompt": "Lightning Explosion",
+    "imageName": "lightning_explosion",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Lunging Cougar",
+    "imagePrompt": "Lunging Cougar",
+    "imageName": "lunging_cougar",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Luring Enchantress",
+    "imagePrompt": "Luring Enchantress",
+    "imageName": "luring_enchantress",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "forceMoveUnit"
+    ]
+  },
+  {
+    "name": "Luxurious Growth",
+    "imagePrompt": "Luxurious Growth",
+    "imageName": "luxurious_growth",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Mad Ballooner",
+    "imagePrompt": "Mad Ballooner",
+    "imageName": "mad_ballooner",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Magic Weapons",
+    "imagePrompt": "Magic Weapons",
+    "imageName": "magic_weapons",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Malevolent Druid",
+    "imagePrompt": "Malevolent Druid",
+    "imageName": "malevolent_druid",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "damageOpponent"
+    ]
+  },
+  {
+    "name": "Market",
+    "imagePrompt": "Market",
+    "imageName": "market",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Market Beggar",
+    "imagePrompt": "Market Beggar",
+    "imageName": "market_beggar",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Mason Guilder",
+    "imagePrompt": "Mason Guilder",
+    "imageName": "mason_guilder",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "fortifyLand"
+    ]
+  },
+  {
+    "name": "Mass Enrage",
+    "imagePrompt": "Mass Enrage",
+    "imageName": "mass_enrage",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Mass Root",
+    "imagePrompt": "Mass Root",
+    "imageName": "mass_root",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "root",
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Mass Sleep",
+    "imagePrompt": "Mass Sleep",
+    "imageName": "mass_sleep",
+    "cardType": "spell",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "mezz"
+    ]
+  },
+  {
+    "name": "Master of Chains",
+    "imagePrompt": "Master of Chains",
+    "imageName": "master_of_chains",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Mega Moss Monster",
+    "imagePrompt": "Mega Moss Monster",
+    "imageName": "mega_moss_monster",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ]
+  },
+  {
+    "name": "Melting Spree",
+    "imagePrompt": "Melting Spree",
+    "imageName": "melting_spree",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Mentalist",
+    "imagePrompt": "Mentalist",
+    "imageName": "mentalist",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Modi's Benediction",
+    "imagePrompt": "Modi's Benediction",
+    "imageName": "modis_benediction",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Modi's Chosen",
+    "imagePrompt": "Modi's Chosen",
+    "imageName": "modis_chosen",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste",
+      "zerk"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Molly's Oasis",
+    "imagePrompt": "Molly's Oasis",
+    "imageName": "mollys_oasis",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": [],
+    "actions": [
+      "addMana"
+    ]
+  },
+  {
+    "name": "Mosquito",
+    "imagePrompt": "Mosquito",
+    "imageName": "mosquito",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "addDecayCounters"
+    ]
+  },
+  {
+    "name": "Mountain",
+    "imagePrompt": "Mountain",
+    "imageName": "mountain",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Mountain Giant",
+    "imagePrompt": "Mountain Giant",
+    "imageName": "mountain_giant",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Mycosed Bear",
+    "imagePrompt": "Mycosed Bear",
+    "imageName": "mycosed_bear",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast",
+      "mushroom"
+    ]
+  },
+  {
+    "name": "Nature's Reconquest",
+    "imagePrompt": "Nature's Reconquest",
+    "imageName": "natures_reconquest",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
+    "name": "Necessary Sacrifice",
+    "imagePrompt": "Necessary Sacrifice",
+    "imageName": "necessary_sacrifice",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "destroyUnit",
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Neutralize",
+    "imagePrompt": "Neutralize",
+    "imageName": "neutralize",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": [],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
+    "name": "Northern Challenger",
+    "imagePrompt": "Northern Challenger",
+    "imageName": "northern_challenger",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Not a Fox",
+    "imagePrompt": "Not a Fox",
+    "imageName": "not_a_fox",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black",
+      "green"
+    ],
+    "keywords": [
+      "resist"
+    ],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "damageOpponent"
+    ]
+  },
+  {
+    "name": "Not So Little Pig",
+    "imagePrompt": "Not So Little Pig",
+    "imageName": "not_so_little_pig",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Odin's Chosen",
+    "imagePrompt": "Odin's Chosen",
+    "imageName": "odins_chosen",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "haste"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Ogre Brawler",
+    "imagePrompt": "Ogre Brawler",
+    "imageName": "ogre_brawler",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Opera Singer",
+    "imagePrompt": "Opera Singer",
+    "imageName": "opera_singer",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
+    "name": "Orc Miner",
+    "imagePrompt": "Orc Miner",
+    "imageName": "orc_miner",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Ourssaf",
+    "imagePrompt": "Ourssaf",
+    "imageName": "ourssaf",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "demon"
+    ]
+  },
+  {
+    "name": "Ousmane's Summoning Circle",
+    "imagePrompt": "Ousmane's Summoning Circle",
+    "imageName": "ousmanes_summoning_circle",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Pandy Panda",
+    "imagePrompt": "Pandy Panda",
+    "imageName": "pandy_panda",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "regeneration"
+    ],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Panicked Student",
+    "imagePrompt": "Panicked Student",
+    "imageName": "panicked_student",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "cycleCards"
+    ]
+  },
+  {
+    "name": "Peaceful Faerie",
+    "imagePrompt": "Peaceful Faerie",
+    "imageName": "peaceful_faerie",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "mezz"
+    ]
+  },
+  {
+    "name": "Peasants be gone!",
+    "imagePrompt": "Peasants be gone!",
+    "imageName": "peasants_be_gone",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "bounceUnit"
+    ]
+  },
+  {
+    "name": "Plague Lands",
+    "imagePrompt": "Plague Lands",
+    "imageName": "plague_lands",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": [],
+    "actions": [
+      "addDecayCounters"
+    ]
+  },
+  {
+    "name": "Plague Spreader",
+    "imagePrompt": "Plague Spreader",
+    "imageName": "plague_spreader",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human",
+      "demon"
+    ],
+    "actions": [
+      "addDecayCounters"
+    ]
+  },
+  {
+    "name": "Plains",
+    "imagePrompt": "Plains",
+    "imageName": "plains",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Professore",
+    "imagePrompt": "Professore",
+    "imageName": "professore",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Promising Prototype",
+    "imagePrompt": "Promising Prototype",
+    "imageName": "promising_prototype",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack",
+      "trample",
+      "cleave",
+      "lance",
+      "flying",
+      "retaliate",
+      "armor",
+      "resist"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
+    "name": "Rage Elemental",
+    "imagePrompt": "Rage Elemental",
+    "imageName": "rage_elemental",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Ragnar Lothbrok",
+    "imagePrompt": "Ragnar Lothbrok",
+    "imageName": "ragnar_lothbrok",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Raise Dead",
+    "imagePrompt": "Raise Dead",
+    "imageName": "raise_dead",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black",
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "reanimate"
+    ]
+  },
+  {
+    "name": "Rebuild",
+    "imagePrompt": "Rebuild",
+    "imageName": "rebuild",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": [],
+    "actions": [
+      "fortifyLand"
+    ]
+  },
+  {
+    "name": "Red Dragon",
+    "imagePrompt": "Red Dragon",
+    "imageName": "red_dragon",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "lance"
+    ],
+    "unitTypes": [
+      "dragon"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Red Haired Bard",
+    "imagePrompt": "Red Haired Bard",
+    "imageName": "red_haired_bard",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Rock Drop",
+    "imagePrompt": "Rock Drop",
+    "imageName": "rock_drop",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "damageLand"
+    ]
+  },
+  {
+    "name": "Rock Elemental",
+    "imagePrompt": "Rock Elemental",
+    "imageName": "rock_elemental",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "resist"
+    ],
+    "unitTypes": [
+      "elemental"
+    ]
+  },
+  {
+    "name": "Royal Castle Builder",
+    "imagePrompt": "Royal Castle Builder",
+    "imageName": "royal_castle_builder",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Royal Halberdier",
+    "imagePrompt": "Royal Halberdier",
+    "imageName": "royal_halberdier",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "lance",
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Savannah Lion",
+    "imagePrompt": "Savannah Lion",
+    "imageName": "lion",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Schnell!",
+    "imagePrompt": "Schnell!",
+    "imageName": "schnell",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Second Breakfast",
+    "imagePrompt": "Second Breakfast",
+    "imageName": "second_breakfast",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Security Golem",
+    "imagePrompt": "Security Golem",
+    "imageName": "security_golem",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "stun",
+      "mezz"
+    ]
+  },
+  {
+    "name": "Self Building Tank",
+    "imagePrompt": "Self Building Tank",
+    "imageName": "self_building_tank",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Sewer Rat",
+    "imagePrompt": "Sewer Rat",
+    "imageName": "sewer_rat",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Sewers",
+    "imagePrompt": "Sewers",
+    "imageName": "sewers",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Shameless Imitator",
+    "imagePrompt": "Shameless Imitator",
+    "imageName": "shameless_imitator",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Sherazad",
+    "imagePrompt": "Sherazad",
+    "imageName": "sherazad",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "resist"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Shield Maiden",
+    "imagePrompt": "Shield Maiden",
+    "imageName": "shield_maiden",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "stun"
+    ]
+  },
+  {
+    "name": "Shroomy",
+    "imagePrompt": "Shroomy",
+    "imageName": "shroomy",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "mushroom"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Shroomy Protecs",
+    "imagePrompt": "Shroomy Protecs",
+    "imageName": "shroomy_protecs",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "mushroom"
+    ]
+  },
+  {
+    "name": "Snek",
+    "imagePrompt": "Snek",
+    "imageName": "snek",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "poisonous"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Snow Hare",
+    "imagePrompt": "Snow Hare",
+    "imageName": "snow_hare",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "forceMoveUnit"
+    ]
+  },
+  {
+    "name": "Snow storm",
+    "imagePrompt": "Snow storm",
+    "imageName": "snow_storm",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
+    "name": "Snow Troll",
+    "imagePrompt": "Snow Troll",
+    "imageName": "snow_troll",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "regeneration"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Sortie Specialists",
+    "imagePrompt": "Sortie Specialists",
+    "imageName": "sortie_specialists",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "haste"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Spirit of Speed and Fury",
+    "imagePrompt": "Spirit of Speed and Fury",
+    "imageName": "spirit_of_speed_and_fury",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ]
+  },
+  {
+    "name": "Spirited Train",
+    "imagePrompt": "Spirited Train",
+    "imageName": "spirited_train",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack",
+      "retaliate",
+      "armor",
+      "resist"
+    ],
+    "unitTypes": [
+      "construct",
+      "demon"
+    ]
+  },
+  {
+    "name": "Stampede",
+    "imagePrompt": "Stampede",
+    "imageName": "stampede",
+    "cardType": "spell",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Steam Wall",
+    "imagePrompt": "Steam Wall",
+    "imageName": "steam_wall",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "bounceUnit"
+    ]
+  },
+  {
+    "name": "Stone Skin",
+    "imagePrompt": "Stone Skin",
+    "imageName": "stone_skin",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Street Slinger",
+    "imagePrompt": "Street Slinger",
+    "imageName": "street_slinger",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Stroke of Genius",
+    "imagePrompt": "Stroke of Genius",
+    "imageName": "stroke_of_genius",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "tutorCard"
+    ]
+  },
+  {
+    "name": "Sucker Punch",
+    "imagePrompt": "Sucker Punch",
+    "imageName": "sucker_punch",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Swift Drakkar",
+    "imagePrompt": "Swift Drakkar",
+    "imageName": "swift_drakkar",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "haste",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
+    "name": "Taiga Rangers",
+    "imagePrompt": "Taiga Rangers",
+    "imageName": "taiga_rangers",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "ranged",
+      "poisonous"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Teleport",
+    "imagePrompt": "Teleport",
+    "imageName": "teleport",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "forceMoveUnit",
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Tesla Tower",
+    "imagePrompt": "Tesla Tower",
+    "imageName": "tesla_tower",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "armor"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
+    "name": "Teutonic Knight",
+    "imagePrompt": "Teutonic Knight",
+    "imageName": "teutonic_knight",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "lance",
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "The Arena",
+    "imagePrompt": "The Arena",
+    "imageName": "the_arena",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "The Beast",
+    "imagePrompt": "The Beast",
+    "imageName": "the_beast",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast",
+      "demon"
+    ]
+  },
+  {
+    "name": "The Black Knight",
+    "imagePrompt": "The Black Knight",
+    "imageName": "the_black_knight",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "regeneration"
+    ],
+    "unitTypes": [
+      "human",
+      "demon"
+    ]
+  },
+  {
+    "name": "The Great Reset",
+    "imagePrompt": "The Great Reset",
+    "imageName": "the_great_reset",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": [],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
+    "name": "Tim",
+    "imagePrompt": "Tim",
+    "imageName": "tim",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Time Elemental",
+    "imagePrompt": "Time Elemental",
+    "imageName": "time_elemental",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "To the gates!",
+    "imagePrompt": "To the gates!",
+    "imageName": "to_the_gates",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Todorat",
+    "imagePrompt": "Todorat",
+    "imageName": "todorat",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "armor",
+      "resist"
+    ],
+    "unitTypes": [
+      "demon",
+      "beast",
+      "human"
+    ],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
+    "name": "Transfer Energy",
+    "imagePrompt": "Transfer Energy",
+    "imageName": "transfer_energy",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Trap Road",
+    "imagePrompt": "Trap Road",
+    "imageName": "trap_road",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Trebuchet",
+    "imagePrompt": "Trebuchet",
+    "imageName": "trebuchet",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "damageOpponent"
+    ]
+  },
+  {
+    "name": "Tricky Move",
+    "imagePrompt": "Tricky Move",
+    "imageName": "tricky_move",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Trident",
+    "imagePrompt": "Trident",
+    "imageName": "trident",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Try Again",
+    "imagePrompt": "Try Again",
+    "imageName": "try_again",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "bounceUnit",
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Tsunami",
+    "imagePrompt": "Tsunami",
+    "imageName": "tsunami",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Tundra Wolf",
+    "imagePrompt": "Tundra Wolf",
+    "imageName": "tundra_wolf",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "resist"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Uncle Bobo",
+    "imagePrompt": "Uncle Bobo",
+    "imageName": "uncle_bobo",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Unicorn",
+    "imagePrompt": "Unicorn",
+    "imageName": "unicorn",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate",
+      "resist"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Unstable Bridge",
+    "imagePrompt": "Unstable Bridge",
+    "imageName": "unstable_bridge",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "bounceUnit"
+    ]
+  },
+  {
+    "name": "Unstable Lab",
+    "imagePrompt": "Unstable Lab",
+    "imageName": "unstable_lab",
+    "cardType": "land",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": [],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
+    "name": "Vengeful Crusader",
+    "imagePrompt": "Vengeful Crusader",
+    "imageName": "vengeful_crusader",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Vigilant Knight",
+    "imagePrompt": "Vigilant Knight",
+    "imageName": "vigilant_knight",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Viking Banner",
+    "imagePrompt": "Viking Banner",
+    "imageName": "viking_banner",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Wall of brambles",
+    "imagePrompt": "Wall of brambles",
+    "imageName": "wall_of_brambles",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "plant"
+    ]
+  },
+  {
+    "name": "Watch Tower",
+    "imagePrompt": "Watch Tower",
+    "imageName": "watch_tower",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "immobile",
+      "ranged",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "building"
+    ]
+  },
+  {
+    "name": "What doesn't kill",
+    "imagePrompt": "What doesn't kill",
+    "imageName": "what_doesnt_kill",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Where there is a Whip",
+    "imagePrompt": "Where there is a Whip",
+    "imageName": "where_there_is_a_whip",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Whirling Dervishes",
+    "imagePrompt": "Whirling Dervishes",
+    "imageName": "whirling_dervishes",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Who is fat ???",
+    "imagePrompt": "Who is fat ???",
+    "imageName": "who_is_fat",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": []
+  },
+  {
+    "name": "Wisdom of Old",
+    "imagePrompt": "Wisdom of Old",
+    "imageName": "wisdom_of_old",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "regrowCard"
+    ]
+  },
+  {
+    "name": "Wolf",
+    "imagePrompt": "Wolf",
+    "imageName": "wolf",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Wooden Barricade",
+    "imagePrompt": "Wooden Barricade",
+    "imageName": "wooden_barricade",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [],
+    "keywords": []
+  },
+  {
+    "name": "Young Hobbit",
+    "imagePrompt": "Young Hobbit",
+    "imageName": "young_hobbit",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ]
+  },
+  {
+    "name": "Young Viking",
+    "imagePrompt": "Young Viking",
+    "imageName": "young_viking",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Zeppelin",
+    "imagePrompt": "Zeppelin",
+    "imageName": "zeppelin",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "flying",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Zizany",
+    "imagePrompt": "Zizany",
+    "imageName": "zizany",
+    "cardType": "spell",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Zombie",
+    "imagePrompt": "Zombie",
+    "imageName": "zombie",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ]
+  }
+]
