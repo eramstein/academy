@@ -10,10 +10,17 @@
   import Keywords from '../battle/Keywords.svelte';
   import Stats from '../battle/Stats.svelte';
 
-  let { card }: { card: CardTemplate } = $props();
+  let { card, reveal = 'full' }: { card: CardTemplate; reveal?: 'full' | 'frame' | 'gameplay' | 'name' | 'image' } =
+    $props();
+
+  const showName = $derived(reveal === 'full' || reveal === 'name' || reveal === 'image');
+  const showGameplay = $derived(reveal !== 'frame');
+  const showImage = $derived(
+    (reveal === 'full' || reveal === 'image') && !!card.imageFileName
+  );
 
   // Create the background image path using the card id
-  let cardImagePath = $derived(getCardImagePath(card.imageFileName));
+  let cardImagePath = $derived(showImage ? getCardImagePath(card.imageFileName) : '');
 
   // Calculate font size based on name length
   let nameFontSize = $derived(() => {
@@ -52,6 +59,11 @@
 
 <div
   class="card"
+  class:summoning={reveal !== 'full'}
+  class:reveal-frame={reveal === 'frame'}
+  class:reveal-gameplay={reveal === 'gameplay'}
+  class:reveal-name={reveal === 'name'}
+  class:reveal-image={reveal === 'image'}
   style="--card-width: {CARD_WIDTH}px; --card-height: {CARD_HEIGHT +
     40}px; --name-font-size: {nameFontSize()}rem;"
   oncontextmenu={handleContextMenu}
@@ -63,15 +75,19 @@
       : ''}"
   >
     <div class="name-content">
-      <span class="name-text">{card.name}</span>
+      {#if showName && card.name}
+        <span class="name-text">{card.name}</span>
+      {:else}
+        <span class="name-text name-placeholder">{reveal === 'frame' ? '' : '…'}</span>
+      {/if}
       <!-- Unit types display - only for Unit cards with unitTypes -->
-      {#if isUnitCard(card) && card.unitTypes && card.unitTypes.length > 0}
+      {#if showGameplay && isUnitCard(card) && card.unitTypes && card.unitTypes.length > 0}
         <div class="unit-types-inline">
           {#each card.unitTypes as unitType}
             <span class="unit-type-text">{unitType}</span>
           {/each}
         </div>
-      {:else}
+      {:else if showGameplay}
         <div class="unit-types-inline">
           <span class="unit-type-text">{card.type}</span>
         </div>
@@ -82,71 +98,82 @@
   <!-- Mana Bar (Separator) -->
   <div class="mana-bar">
     <div class="mana-line"></div>
-    <div class="mana-content">
-      {#if card.cost > 0}
-        <div class="mana-cost-circle">
-          {card.cost}
-        </div>
-      {/if}
+    {#if showGameplay}
+      <div class="mana-content">
+        {#if card.cost > 0}
+          <div class="mana-cost-circle">
+            {card.cost}
+          </div>
+        {/if}
 
-      <div class="mana-spacer"></div>
+        <div class="mana-spacer"></div>
 
-      {#if card.colors && card.colors.length > 0}
-        <div class="mana-colors">
-          {#each card.colors as colorInfo}
-            {#each Array(colorInfo.count) as _}
-              <div
-                class="color-indicator"
-                style="background-image: url('{getAssetPath(
-                  `images/ui/icons/color_${colorInfo.color}.png`
-                )}');"
-              ></div>
+        {#if card.colors && card.colors.length > 0}
+          <div class="mana-colors">
+            {#each card.colors as colorInfo}
+              {#each Array(colorInfo.count) as _}
+                <div
+                  class="color-indicator"
+                  style="background-image: url('{getAssetPath(
+                    `images/ui/icons/color_${colorInfo.color}.png`
+                  )}');"
+                ></div>
+              {/each}
             {/each}
-          {/each}
-        </div>
-      {/if}
-    </div>
+          </div>
+        {/if}
+      </div>
+    {/if}
   </div>
 
   <!-- Content area with card image background -->
-  <div class="content" style="background-image: url('{cardImagePath}');">
+  <div
+    class="content"
+    class:awaiting-art={!showImage}
+    style={showImage ? `background-image: url('${cardImagePath}');` : ''}
+  >
+    {#if !showImage}
+      <div class="summon-mist" aria-hidden="true"></div>
+    {/if}
     <!-- Bottom section with abilities and bottom row -->
-    <div class="bottom-section">
-      <!-- Abilities display - only for Unit cards with abilities -->
-      {#if (isUnitCard(card) || isLandCard(card)) && card.abilities && card.abilities.length > 0}
-        <div class="abilities-container">
-          <Abilities abilities={card.abilities} />
-        </div>
-      {/if}
-      {#if isLandCard(card) && card.ruinsAbilities && card.ruinsAbilities.length > 0}
-        <div class="abilities-container">
-          <Abilities abilities={card.ruinsAbilities} />
-        </div>
-      {/if}
+    {#if showGameplay}
+      <div class="bottom-section">
+        <!-- Abilities display - only for Unit cards with abilities -->
+        {#if (isUnitCard(card) || isLandCard(card)) && card.abilities && card.abilities.length > 0}
+          <div class="abilities-container">
+            <Abilities abilities={card.abilities} />
+          </div>
+        {/if}
+        {#if isLandCard(card) && card.ruinsAbilities && card.ruinsAbilities.length > 0}
+          <div class="abilities-container">
+            <Abilities abilities={card.ruinsAbilities} />
+          </div>
+        {/if}
 
-      {#if isUnitCard(card)}
-        <div class="stats-container">
-          <Stats
-            compact
-            power={card.power}
-            health={card.maxHealth}
-            armor={card.keywords?.armor}
-            retaliate={card.retaliate}
-          />
-        </div>
-      {/if}
+        {#if isUnitCard(card)}
+          <div class="stats-container">
+            <Stats
+              compact
+              power={card.power}
+              health={card.maxHealth}
+              armor={card.keywords?.armor}
+              retaliate={card.retaliate}
+            />
+          </div>
+        {/if}
 
-      <!-- Keywords on the right -->
-      {#if isUnitCard(card) && card.keywords}
-        <div class="keywords-container">
-          <Keywords keywords={card.keywords} />
-        </div>
-      {/if}
-    </div>
+        <!-- Keywords on the right -->
+        {#if isUnitCard(card) && card.keywords}
+          <div class="keywords-container">
+            <Keywords keywords={card.keywords} />
+          </div>
+        {/if}
+      </div>
 
-    <!-- Spell effect display for SpellCard -->
-    {#if isSpellCard(card)}
-      <div class="spell-effect">{getSpellText()}</div>
+      <!-- Spell effect display for SpellCard -->
+      {#if isSpellCard(card)}
+        <div class="spell-effect">{getSpellText()}</div>
+      {/if}
     {/if}
   </div>
 </div>
@@ -369,5 +396,69 @@
 
   .color-indicator:first-child {
     margin-left: 0;
+  }
+
+  .name-placeholder {
+    min-height: 1.1em;
+    opacity: 0.45;
+    letter-spacing: 0.2em;
+  }
+
+  .content.awaiting-art {
+    background-color: #1a1520;
+  }
+
+  .summon-mist {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(191, 161, 74, 0.28), transparent 62%),
+      radial-gradient(ellipse at 30% 70%, rgba(175, 142, 103, 0.18), transparent 55%);
+    animation: mist-pulse 2.4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .card.summoning {
+    animation: summon-glow 2.8s ease-in-out infinite;
+  }
+
+  .card.reveal-frame .mana-bar,
+  .card.reveal-frame .bottom-section {
+    opacity: 0;
+  }
+
+  @keyframes mist-pulse {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+  }
+
+  @keyframes summon-glow {
+    0%,
+    100% {
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 0 0 0 rgba(191, 161, 74, 0);
+    }
+    50% {
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+        0 0 18px 2px rgba(191, 161, 74, 0.35);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .summon-mist,
+    .card.summoning {
+      animation: none;
+    }
   }
 </style>

@@ -56,12 +56,30 @@ export interface CardCreationResult {
 
 export type UsedFlavors = UsedFlavorsBatch;
 
+/** Progressive summoning reveal stages for the conjure UI. */
+export type SummonRevealStage = 'frame' | 'gameplay' | 'name' | 'image';
+
+export interface CardSummonProgress {
+  index: number;
+  total: number;
+  stage: SummonRevealStage;
+  template: CardTemplate;
+}
+
+export type CardSummonProgressHandler = (progress: CardSummonProgress) => void;
+
+export function getConjurationOptionCount(characterKey = 'player'): number {
+  const character = getActingCharacter(characterKey);
+  return 1 + Math.floor(character.craftingSkills.inspiration);
+}
+
 export async function getNewCardTemplate(
   parameters: CardCreationParameters,
   spend = true,
   characterKey = 'player',
   prune = false,
-  usedFlavors?: UsedFlavors
+  usedFlavors?: UsedFlavors,
+  onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void
 ): Promise<CardCreationResult | null> {
   if (!parameters.resources) {
     parameters.resources = [];
@@ -78,7 +96,8 @@ export async function getNewCardTemplate(
     const { template, bonusBudget, actionName } = await getSpellTemplate(
       typedParams,
       bonuses,
-      usedFlavors
+      usedFlavors,
+      onSummonProgress
     );
     return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
   }
@@ -86,7 +105,8 @@ export async function getNewCardTemplate(
     typedParams,
     bonuses,
     character,
-    usedFlavors
+    usedFlavors,
+    onSummonProgress
   );
   return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
 }
@@ -120,10 +140,11 @@ export function conjureCard(parameters: CardCreationResult, characterKey = 'play
 
 export async function getConjurationOtions(
   parameters: CardCreationParameters,
-  characterKey = 'player'
+  characterKey = 'player',
+  onProgress?: CardSummonProgressHandler
 ): Promise<CardCreationResult[]> {
   const character = getActingCharacter(characterKey);
-  const optionsCount = 1 + Math.floor(character.craftingSkills.inspiration);
+  const optionsCount = getConjurationOptionCount(characterKey);
   if (!spendResources(parameters.resources ?? [])) {
     return [];
   }
@@ -133,11 +154,26 @@ export async function getConjurationOtions(
   };
   const options: CardCreationResult[] = [];
   for (let i = 0; i < optionsCount; i++) {
-    const result = await getNewCardTemplate(parameters, false, characterKey, false, usedFlavors);
+    const result = await getNewCardTemplate(
+      parameters,
+      false,
+      characterKey,
+      false,
+      usedFlavors,
+      (stage, template) => {
+        onProgress?.({ index: i, total: optionsCount, stage, template });
+      }
+    );
     if (result) {
       usedFlavors.names.add(result.template.name);
       usedFlavors.images.add(result.template.imageFileName);
       options.push(result);
+      onProgress?.({
+        index: i,
+        total: optionsCount,
+        stage: 'image',
+        template: result.template,
+      });
     }
   }
   return options;
@@ -319,7 +355,8 @@ async function getUnitTemplate(
   parameters: CardCreationParameters,
   bonuses: CardCreationBonuses,
   character: Character,
-  usedFlavors?: UsedFlavors
+  usedFlavors?: UsedFlavors,
+  onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void
 ): Promise<{
   template: UnitCardTemplate;
   bonusBudget: number;
@@ -328,13 +365,10 @@ async function getUnitTemplate(
   const unitParams = { ...parameters };
   delete unitParams.cardType;
 
-  // 1. create card template based on parameters (randomize rest)
   const cardBase = buildUnitCard(unitParams, character);
-  // 2. get budget for card
   const sureMastery = Math.floor(bonuses.extraBudgetChance);
   const extraBudget = Math.random() < bonuses.extraBudgetChance - sureMastery ? 1 : 0;
   const budget = getCardBudget(cardBase) - sureMastery - extraBudget;
-  // 3. define mana cost based on budget
   const { cost, extraPower, extraHealth, extraRetaliate } = getCostFromBudget(budget);
   const colors = cardBase.colors.map((entry) => ({ color: entry.color, count: 1 }));
   const conjured: Omit<UnitCardTemplate, 'id' | 'name' | 'imageFileName'> = {
@@ -346,7 +380,6 @@ async function getUnitTemplate(
     retaliate: cardBase.retaliate + extraRetaliate,
   };
   const actionName = (conjured.abilities ?? []).flatMap(getAbilityActionNames);
-  // Match flavor to the conjured card's traits, not the (often sparse) input params
   const templateParameters: CardCreationParameters = {
     resources: parameters.resources,
     cardType: CardType.Unit,
@@ -360,20 +393,64 @@ async function getUnitTemplate(
     actions: actionName.length ? actionName : undefined,
   };
 
-  const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), usedFlavors);
-  const unitTypes = conjured.unitTypes?.length
+  const draftId = `summoning-${crypto.randomUUID()}`;
+  const draft: UnitCardTemplate = {
+    ...conjured,
+    id: draftId,
+    name: '',
+    imageFileName: '',
+    unitTypes: conjured.unitTypes?.length
+      ? conjured.unitTypes
+      : randomUnitTypes(colors.map((entry) => entry.color)),
+  };
+  onSummonProgress?.('frame', draft);
+  onSummonProgress?.('gameplay', draft);
+
+  const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), {
+    batch: usedFlavors,
+    onProgress: (event) => {
+      if (event.stage === 'name_ready') {
+        draft.name = event.name;
+        draft.imageFileName = '';
+        if (!draft.unitTypes?.length && event.unitTypes?.length) {
+          draft.unitTypes = event.unitTypes;
+        }
+        onSummonProgress?.('name', draft);
+        return;
+      }
+      if (event.stage === 'reuse' || event.stage === 'fallback') {
+        draft.name = event.flavor.name;
+        draft.imageFileName = '';
+        if (!draft.unitTypes?.length && event.flavor.unitTypes?.length) {
+          draft.unitTypes = event.flavor.unitTypes;
+        }
+        onSummonProgress?.('name', draft);
+        draft.imageFileName = event.flavor.imageName;
+        onSummonProgress?.('image', draft);
+        return;
+      }
+      if (event.stage === 'image_ready') {
+        draft.name = event.flavor.name;
+        draft.imageFileName = event.flavor.imageName;
+        if (!draft.unitTypes?.length && event.flavor.unitTypes?.length) {
+          draft.unitTypes = event.flavor.unitTypes;
+        }
+        onSummonProgress?.('image', draft);
+      }
+    },
+  });
+
+  draft.id = flavor.name + crypto.randomUUID();
+  draft.name = flavor.name;
+  draft.imageFileName = flavor.imageName;
+  draft.unitTypes = conjured.unitTypes?.length
     ? conjured.unitTypes
     : flavor.unitTypes?.length
       ? flavor.unitTypes
-      : randomUnitTypes(colors.map((entry) => entry.color));
+      : draft.unitTypes;
+  onSummonProgress?.('image', draft);
   return {
-    template: {
-      ...conjured,
-      id: flavor.name + crypto.randomUUID(),
-      imageFileName: flavor.imageName,
-      name: flavor.name,
-      unitTypes,
-    },
+    template: draft,
     bonusBudget: sureMastery + extraBudget,
     actionName,
   };
@@ -382,7 +459,8 @@ async function getUnitTemplate(
 async function getSpellTemplate(
   parameters: CardCreationParameters,
   bonuses: CardCreationBonuses,
-  usedFlavors?: UsedFlavors
+  usedFlavors?: UsedFlavors,
+  onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void
 ): Promise<{
   template: SpellCardTemplate;
   bonusBudget: number;
@@ -404,14 +482,48 @@ async function getSpellTemplate(
     cost,
     actions: actionName.length ? actionName : undefined,
   };
-  const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), usedFlavors);
-  return {
-    template: {
-      ...conjured,
-      id: flavor.name + crypto.randomUUID(),
-      imageFileName: flavor.imageName,
-      name: flavor.name,
+
+  const draftId = `summoning-${crypto.randomUUID()}`;
+  const draft: SpellCardTemplate = {
+    ...conjured,
+    id: draftId,
+    name: '',
+    imageFileName: '',
+  };
+  onSummonProgress?.('frame', draft);
+  onSummonProgress?.('gameplay', draft);
+
+  const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), {
+    batch: usedFlavors,
+    onProgress: (event) => {
+      if (event.stage === 'name_ready') {
+        draft.name = event.name;
+        draft.imageFileName = '';
+        onSummonProgress?.('name', draft);
+        return;
+      }
+      if (event.stage === 'reuse' || event.stage === 'fallback') {
+        draft.name = event.flavor.name;
+        draft.imageFileName = '';
+        onSummonProgress?.('name', draft);
+        draft.imageFileName = event.flavor.imageName;
+        onSummonProgress?.('image', draft);
+        return;
+      }
+      if (event.stage === 'image_ready') {
+        draft.name = event.flavor.name;
+        draft.imageFileName = event.flavor.imageName;
+        onSummonProgress?.('image', draft);
+      }
     },
+  });
+
+  draft.id = flavor.name + crypto.randomUUID();
+  draft.name = flavor.name;
+  draft.imageFileName = flavor.imageName;
+  onSummonProgress?.('image', draft);
+  return {
+    template: draft,
     bonusBudget: sureMastery + extraBudget,
     actionName,
   };

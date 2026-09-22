@@ -8,6 +8,7 @@
     SocializeType,
     TransactionType,
     type CardCreationResult,
+    type CardSummonProgress,
   } from '@/lib/sim/actions';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
@@ -188,13 +189,20 @@
     cardCraftStep = 'invoke';
   }
 
-  async function generateConjureOptions(resources: { type: ResourceType; count: number }[]) {
+  async function generateConjureOptions(
+    resources: { type: ResourceType; count: number }[],
+    onProgress: (progress: CardSummonProgress) => void
+  ) {
     if (!cardCraftAction) return [];
     recipeResources = resources;
-    conjureOptions = await getConjurationOtions({
-      ...cardCraftAction.actionParameters,
-      resources,
-    });
+    conjureOptions = await getConjurationOtions(
+      {
+        ...cardCraftAction.actionParameters,
+        resources,
+      },
+      'player',
+      onProgress
+    );
     return conjureOptions;
   }
 

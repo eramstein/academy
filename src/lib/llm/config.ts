@@ -1,4 +1,5 @@
 export const LLM_API_CHAT_MODEL = 'ministral-14b-2512';
+export const LLM_API_QUICK_MODEL = 'ministral-14b-2512';
 export const LLM_API_EMBEDDING_MODEL = 'mistral-embed';
 export const LLM_API_KEY = import.meta.env.VITE_MISTRAL_API_KEY ?? '';
 export const LLM_TIMEOUT_MS = 20_000;

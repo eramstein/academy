@@ -12,6 +12,20 @@ export interface UsedFlavorsBatch {
   images: Set<string>;
 }
 
+/** Progressive hooks while resolving / generating flavor. */
+export type FlavorResolveProgress =
+  | { stage: 'reuse'; flavor: FlavorTemplate }
+  | { stage: 'generate_text' }
+  | { stage: 'name_ready'; name: string; imageName: string; unitTypes?: FlavorTemplate['unitTypes'] }
+  | { stage: 'generate_image' }
+  | { stage: 'image_ready'; flavor: FlavorTemplate }
+  | { stage: 'fallback'; flavor: FlavorTemplate };
+
+export interface ResolveFlavorOptions {
+  batch?: UsedFlavorsBatch;
+  onProgress?: (event: FlavorResolveProgress) => void;
+}
+
 const LOG_PREFIX = '[flavor-resolve]';
 
 function excludeUsed(
@@ -45,8 +59,12 @@ function catalogFallback(
   throw new Error('No flavor templates available');
 }
 
-async function generateAndPersist(gameplay: GameplayTemplate): Promise<FlavorTemplate> {
+async function generateAndPersist(
+  gameplay: GameplayTemplate,
+  onProgress?: (event: FlavorResolveProgress) => void
+): Promise<FlavorTemplate> {
   console.log(LOG_PREFIX, 'AI generation starting…');
+  onProgress?.({ stage: 'generate_text' });
   const text = await generateFlavorText(gameplay);
   console.log(LOG_PREFIX, 'LLM text ready', {
     name: text.name,
@@ -54,6 +72,14 @@ async function generateAndPersist(gameplay: GameplayTemplate): Promise<FlavorTem
     unitType: text.unitType,
   });
   const flavor = flavorFromGeneratedText(gameplay, text);
+  onProgress?.({
+    stage: 'name_ready',
+    name: flavor.name,
+    imageName: flavor.imageName,
+    unitTypes: flavor.unitTypes,
+  });
+
+  onProgress?.({ stage: 'generate_image' });
   const imageBlob = await generateCheapCardImage(flavor.imagePrompt);
   console.log(LOG_PREFIX, 'Comfy image ready', {
     imageName: flavor.imageName,
@@ -63,6 +89,7 @@ async function generateAndPersist(gameplay: GameplayTemplate): Promise<FlavorTem
   await persistFlavorTemplate(flavor);
   registerFlavorTemplate(flavor);
   console.log(LOG_PREFIX, 'Persisted new flavor template', flavor.name);
+  onProgress?.({ stage: 'image_ready', flavor });
   return flavor;
 }
 
@@ -72,8 +99,11 @@ async function generateAndPersist(gameplay: GameplayTemplate): Promise<FlavorTem
  */
 export async function resolveFlavorTemplate(
   gameplay: GameplayTemplate,
-  batch?: UsedFlavorsBatch
+  batchOrOptions?: UsedFlavorsBatch | ResolveFlavorOptions
 ): Promise<FlavorTemplate> {
+  const options = normalizeResolveOptions(batchOrOptions);
+  const { batch, onProgress } = options;
+
   const all = loadFlavorTemplates();
   const usedImageNames = await getUsedFlavorImageNames();
   const unused = excludeUsed(all, usedImageNames, batch);
@@ -125,6 +155,7 @@ export async function resolveFlavorTemplate(
       score: ranked!.score,
       threshold: MATCH_SCORE_THRESHOLD,
     });
+    onProgress?.({ stage: 'reuse', flavor });
   } else if (import.meta.env.DEV) {
     console.log(LOG_PREFIX, 'Decision: GENERATE via AI (no candidate above threshold)', {
       bestScore: ranked?.score ?? null,
@@ -132,7 +163,7 @@ export async function resolveFlavorTemplate(
       gap: ranked ? MATCH_SCORE_THRESHOLD - ranked.score : null,
     });
     try {
-      flavor = await generateAndPersist(gameplay);
+      flavor = await generateAndPersist(gameplay, onProgress);
       decision = 'generate';
     } catch (error) {
       console.warn(LOG_PREFIX, 'AI generation failed, falling back to catalog', error);
@@ -154,6 +185,7 @@ export async function resolveFlavorTemplate(
       name: flavor.name,
       imageName: flavor.imageName,
     });
+    onProgress?.({ stage: 'fallback', flavor });
   }
 
   console.log(LOG_PREFIX, 'Resolved', {
@@ -164,4 +196,14 @@ export async function resolveFlavorTemplate(
 
   await markFlavorUsed(flavor.imageName, flavor.name);
   return flavor;
+}
+
+function normalizeResolveOptions(
+  batchOrOptions?: UsedFlavorsBatch | ResolveFlavorOptions
+): ResolveFlavorOptions {
+  if (!batchOrOptions) return {};
+  if ('names' in batchOrOptions && 'images' in batchOrOptions) {
+    return { batch: batchOrOptions };
+  }
+  return batchOrOptions;
 }

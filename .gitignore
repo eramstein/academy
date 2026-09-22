@@ -27,3 +27,6 @@ dist-ssr
 chroma
 
 .env
+
+# Generated card artwork
+public/assets/images/cards

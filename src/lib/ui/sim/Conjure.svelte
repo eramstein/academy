@@ -1,6 +1,12 @@
 <script lang="ts">
+  import type { CardTemplate } from '@/lib/_model';
   import { ResourceType } from '@/lib/_model';
-  import type { CardCreationResult } from '@/lib/sim/actions';
+  import {
+    getConjurationOptionCount,
+    type CardCreationResult,
+    type CardSummonProgress,
+    type SummonRevealStage,
+  } from '@/lib/sim/actions';
   import { playSimSound } from '@/lib/sim/sound';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
@@ -10,6 +16,16 @@
   type ResourceAmount = { type: ResourceType; count: number };
   type Phase = 'idle' | 'conjuring' | 'revealed';
 
+  type SummonSlot = {
+    /** Stable for the whole summon; never change after create. */
+    key: string;
+    stage: SummonRevealStage;
+    template: CardTemplate | null;
+    result: CardCreationResult | null;
+    /** True after the first template appears — drives one-shot enter animation. */
+    entered: boolean;
+  };
+
   let {
     initialResources = [],
     onConjure,
@@ -17,7 +33,10 @@
     onDone,
   }: {
     initialResources?: ResourceAmount[];
-    onConjure: (resources: ResourceAmount[]) => CardCreationResult[] | Promise<CardCreationResult[]>;
+    onConjure: (
+      resources: ResourceAmount[],
+      onProgress: (progress: CardSummonProgress) => void
+    ) => CardCreationResult[] | Promise<CardCreationResult[]>;
     onPick: (result: CardCreationResult) => void;
     onDone: () => void;
   } = $props();
@@ -27,7 +46,8 @@
 
   let selected = $state<Record<ResourceType, number>>(countsFrom(initialResources));
   let phase = $state<Phase>('idle');
-  let options = $state<CardCreationResult[]>([]);
+  let summonSlots = $state<SummonSlot[]>([]);
+  let statusLine = $state('The materials take form…');
   let pickedId = $state<string | null>(null);
   let revealTimer: ReturnType<typeof setTimeout> | undefined;
   let pickTimer: ReturnType<typeof setTimeout> | undefined;
@@ -35,11 +55,12 @@
   const title = $derived(
     phase === 'idle' ? 'Conjuration' : phase === 'conjuring' ? 'Conjuring' : 'Choose your creation'
   );
+  const hasAnyOption = $derived(summonSlots.some((slot) => slot.result !== null));
 
   $effect(() => {
     function onKey(event: KeyboardEvent) {
       if (event.key !== 'Escape') return;
-      if (phase === 'idle' || (phase === 'revealed' && options.length === 0 && !pickedId)) {
+      if (phase === 'idle' || (phase === 'revealed' && !hasAnyOption && !pickedId)) {
         onDone();
       }
     }
@@ -68,23 +89,109 @@
       .filter((row) => row.count > 0);
   }
 
+  function statusForStage(stage: SummonRevealStage): string {
+    switch (stage) {
+      case 'frame':
+        return 'A vessel takes shape…';
+      case 'gameplay':
+        return 'Power gathers in the frame…';
+      case 'name':
+        return 'Its true name is spoken…';
+      case 'image':
+        return 'The vision settles…';
+    }
+  }
+
+  function displayReveal(slot: SummonSlot): 'frame' | 'gameplay' | 'name' | 'image' | 'full' {
+    if (phase === 'revealed' || slot.stage === 'image') return 'full';
+    return slot.stage;
+  }
+
+  function ensureSlot(index: number, total: number): SummonSlot[] {
+    const next = [...summonSlots];
+    while (next.length < total) {
+      next.push({
+        key: `slot-${next.length}`,
+        stage: 'frame',
+        template: null,
+        result: null,
+        entered: false,
+      });
+    }
+    if (!next[index]) {
+      next[index] = {
+        key: `slot-${index}`,
+        stage: 'frame',
+        template: null,
+        result: null,
+        entered: false,
+      };
+    }
+    return next;
+  }
+
+  function onSummonProgress(progress: CardSummonProgress) {
+    const next = ensureSlot(progress.index, progress.total);
+    const slot = next[progress.index];
+    next[progress.index] = {
+      ...slot,
+      stage: progress.stage,
+      // Shallow clone so Svelte sees a new card prop when draft fields mutate.
+      template: { ...progress.template },
+      entered: true,
+    };
+    summonSlots = next;
+    statusLine = statusForStage(progress.stage);
+  }
+
   async function begin() {
     if (phase !== 'idle') return;
     phase = 'conjuring';
     playSimSound('big-swoosh');
-    options = await onConjure(committedResources());
-    const delay = reduceMotion ? 0 : 1500;
+    pickedId = null;
+    const expected = getConjurationOptionCount();
+    summonSlots = Array.from({ length: expected }, (_, i) => ({
+      key: `slot-${i}`,
+      stage: 'frame' as SummonRevealStage,
+      template: null,
+      result: null,
+      entered: false,
+    }));
+    statusLine = 'A vessel takes shape…';
+
+    const results = await onConjure(committedResources(), onSummonProgress);
+    const next = [...summonSlots];
+    for (let i = 0; i < results.length; i++) {
+      const slot = next[i] ?? {
+        key: `slot-${i}`,
+        stage: 'image' as SummonRevealStage,
+        template: null,
+        result: null,
+        entered: false,
+      };
+      next[i] = {
+        ...slot,
+        stage: 'image',
+        template: { ...results[i].template },
+        result: results[i],
+        entered: true,
+      };
+    }
+    summonSlots = results.length === 0 ? [] : next.slice(0, results.length);
+
+    const delay = reduceMotion ? 0 : 600;
     revealTimer = setTimeout(() => {
       phase = 'revealed';
       playSimSound('glinggling');
     }, delay);
   }
 
-  function pick(option: CardCreationResult) {
-    if (pickedId || phase !== 'revealed') return;
-    pickedId = option.template.id;
+  function pick(slot: SummonSlot) {
+    if (!slot.result || pickedId || phase !== 'revealed') return;
+    pickedId = slot.result.template.id;
+    const result = slot.result;
     const delay = reduceMotion ? 0 : 380;
-    pickTimer = setTimeout(() => onPick(option), delay);
+    pickTimer = setTimeout(() => onPick(result), delay);
   }
 
   const tilts = [-2.4, 0.7, 2.2];
@@ -96,25 +203,32 @@
     bind:selected
     disabled={phase !== 'idle'}
     ignite={phase === 'conjuring'}
-    dim={phase === 'revealed'}
+    dim={phase === 'revealed' || phase === 'conjuring'}
     consume={phase !== 'idle'}
   >
-    {#if phase === 'revealed'}
-      <div class="creations">
-        {#if options.length === 0}
+    {#if phase === 'conjuring' || phase === 'revealed'}
+      <div class="creations" class:summoning={phase === 'conjuring'}>
+        {#if phase === 'revealed' && !hasAnyOption}
           <p class="empty">Nothing took form.</p>
         {:else}
-          {#each options as option, i (option.template.id)}
+          {#each summonSlots as slot, i (slot.key)}
             <button
               type="button"
               class="card-pick"
-              class:chosen={pickedId === option.template.id}
-              class:picking={pickedId !== null && pickedId !== option.template.id}
+              class:summon-slot={phase === 'conjuring' || !slot.result}
+              class:chosen={!!slot.result && pickedId === slot.result.template.id}
+              class:picking={pickedId !== null && !!slot.result && pickedId !== slot.result.template.id}
               style="--i: {i}; --tilt: {tilts[i % 3]}deg; --lift: {lifts[i % 3]}px"
-              disabled={pickedId !== null}
-              onclick={() => pick(option)}
+              disabled={phase !== 'revealed' || !slot.result || pickedId !== null}
+              onclick={() => pick(slot)}
             >
-              <CardCompact card={option.template} />
+              {#if slot.template}
+                <div class="card-body" class:enter={slot.entered}>
+                  <CardCompact card={slot.template} reveal={displayReveal(slot)} />
+                </div>
+              {:else}
+                <div class="empty-frame" aria-hidden="true"></div>
+              {/if}
             </button>
           {/each}
         {/if}
@@ -127,8 +241,8 @@
       <button type="button" class="abandon" onclick={onDone}>Abandon ritual</button>
       <OrnateButton icon="spiral" onclick={begin}>Conjure</OrnateButton>
     {:else if phase === 'conjuring'}
-      <p class="status">The materials take form…</p>
-    {:else if options.length === 0}
+      <p class="status">{statusLine}</p>
+    {:else if !hasAnyOption}
       <button type="button" class="abandon" onclick={onDone}>Leave</button>
     {:else}
       <p class="status">Select a creation</p>
@@ -159,13 +273,37 @@
     line-height: 0;
     cursor: pointer;
     transform: translateY(var(--lift, 0)) rotate(var(--tilt, 0deg));
-    animation: materialize 0.55s ease-out backwards;
-    animation-delay: calc(var(--i) * 0.2s);
     transition:
       transform 0.18s ease,
       box-shadow 0.18s ease,
       opacity 0.28s ease,
       filter 0.28s ease;
+  }
+
+  .card-pick:disabled {
+    cursor: default;
+  }
+
+  .summon-slot {
+    pointer-events: none;
+  }
+
+  .card-body.enter {
+    animation: materialize 0.55s ease-out backwards;
+    animation-delay: calc(var(--i) * 0.12s);
+  }
+
+  .empty-frame {
+    width: 200px;
+    height: 240px;
+    border-radius: 12px;
+    border: 1px solid #1a1a1a;
+    background: #444 url('/assets/images/ui/backgrounds/cardboard.png') center/cover;
+    background-blend-mode: multiply;
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.5),
+      0 0 16px rgba(191, 161, 74, 0.25);
+    animation: frame-pulse 2s ease-in-out infinite;
   }
 
   .card-pick:hover:not(:disabled),
@@ -229,9 +367,23 @@
     }
   }
 
+  @keyframes frame-pulse {
+    0%,
+    100% {
+      filter: brightness(1);
+    }
+    50% {
+      filter: brightness(1.15);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .card-pick {
+    .card-body.enter,
+    .empty-frame {
       animation: none;
+    }
+
+    .card-pick {
       transition: none;
     }
   }

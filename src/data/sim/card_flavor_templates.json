@@ -499,6 +499,21 @@
     ]
   },
   {
+    "name": "Bloodsong Rush",
+    "imageName": "bloodsong_rush",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a crimson-feathered raven mid-swoop, its wings scattering glowing embers like scattered dice. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
     "name": "Bob the Blob",
     "imagePrompt": "Bob the Blob",
     "imageName": "bob_the_blob",
@@ -1083,6 +1098,38 @@
     ]
   },
   {
+    "name": "Emberclaw the Swift",
+    "imageName": "emberclaw_the_swift",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a crimson-furred fox with smoldering paws mid-leap, flames flickering around its muzzle. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Emberflame Dash",
+    "imageName": "emberflame_dash",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a fleeting, crimson-tipped fox sprinting through a field of wildflowers, flames flickering at its paws. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
     "name": "Emergency Repairs",
     "imagePrompt": "Emergency Repairs",
     "imageName": "emergency_repairs",
@@ -1569,6 +1616,21 @@
     ]
   },
   {
+    "name": "Gearheart’s Last Tick",
+    "imageName": "gearheart_s_last_tick",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a rusted clockwork heart suspended in a swarm of tiny, glowing gears, its final tick emitting sparks that coalesce into skeletal fingers. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "reanimate"
+    ]
+  },
+  {
     "name": "Giant Growth",
     "imagePrompt": "Giant Growth",
     "imageName": "giant_growth",
@@ -2018,6 +2080,23 @@
     ],
     "unitTypes": [
       "construct"
+    ]
+  },
+  {
+    "name": "Ironclad Overseer",
+    "imageName": "ironclad_overseer",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering humanoid figure clad in blackened steel plate armor, wielding a rusted but still-deadly greatsword, standing atop a crumbling obsidian fortress. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -3649,6 +3728,60 @@
     ]
   },
   {
+    "name": "The Iron Sentinel",
+    "imageName": "the_iron_sentinel",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering clockwork guardian with rusted gears and glowing red optics standing atop a crumbling fortress wall. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "fortifyLand"
+    ]
+  },
+  {
+    "name": "The Veiled Oracle",
+    "imageName": "the_veiled_oracle",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a robed figure surrounded by swirling blue spectral hands, whispering secrets into a floating crystal orb. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
+  },
+  {
+    "name": "Thornfang the Verdant",
+    "imageName": "thornfang_the_verdant",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering, vines-wreathed boar with antlers fused from blackthorn, its eyes glowing like emerald embers. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "lance"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
     "name": "Tim",
     "imagePrompt": "Tim",
     "imageName": "tim",
@@ -3842,6 +3975,23 @@
     ],
     "unitTypes": [
       "beast"
+    ]
+  },
+  {
+    "name": "Twigling Scout",
+    "imageName": "twigling_scout",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a tiny halfing child peeking from behind a patch of glowing mushrooms in a sunlit forest glade. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "immobile"
+    ],
+    "unitTypes": [
+      "halfing"
     ]
   },
   {

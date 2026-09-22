@@ -23,6 +23,7 @@ export async function makePromptKey(
     temperature?: number;
     maxTokens?: number;
     json?: boolean;
+    schemaName?: string;
   } = {}
 ): Promise<string> {
   const payload = JSON.stringify({
@@ -34,6 +35,7 @@ export async function makePromptKey(
     temperature: options.temperature ?? null,
     maxTokens: options.maxTokens ?? null,
     json: options.json ?? false,
+    schemaName: options.schemaName ?? null,
   });
   const digest = await sha256Bytes(payload);
   return toHex(digest).slice(0, KEY_HEX_LENGTH);
