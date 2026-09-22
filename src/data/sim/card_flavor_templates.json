@@ -533,6 +533,23 @@
     ]
   },
   {
+    "name": "Bloodfang Cleaver",
+    "imageName": "bloodfang_cleaver",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a battle-hardened dwarf warrior mid-swing with a massive two-handed axe, its jagged blade splitting the air as it arcs toward three snarling beasts simultaneously. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "cleave"
+    ],
+    "unitTypes": [
+      "dwarf"
+    ]
+  },
+  {
     "name": "Bloodfang Marauder",
     "imageName": "bloodfang_marauder",
     "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a snarling wolf with jagged crimson fangs dripping with frostbite, mid-leap through a storm of shattered ice. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
@@ -726,6 +743,26 @@
     ],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Clockwork Sentinel",
+    "imageName": "clockwork_sentinel",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a towering brass automaton with a wound-up spring back, aiming a massive crossbow bolt at a distant foe while its gears glow faintly red. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "fortifyLand"
     ]
   },
   {
@@ -2017,6 +2054,21 @@
     ],
     "actions": [
       "healUnit"
+    ]
+  },
+  {
+    "name": "Groveheart’s Reawakening",
+    "imageName": "groveheart_s_reawakening",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a massive, ancient oak splitting open to release swarms of glowing vines and skeletal hands clawing from its roots. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "spell",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "reanimate"
     ]
   },
   {
