@@ -6,7 +6,16 @@ export {
   powerLevelToCost,
   toGameplayTemplate,
 } from './types';
-export { MATCH_SCORE_THRESHOLD, findBestFlavor, findMatchingFlavor, scoreFlavorTemplate } from './match';
+export {
+  MATCH_SCORE_THRESHOLD,
+  findBestFlavor,
+  findMatchingFlavor,
+  matchRatio,
+  maxFlavorMatchScore,
+  passesMatchThreshold,
+  requiredMatchScore,
+  scoreFlavorTemplate,
+} from './match';
 export { resolveFlavorTemplate, type UsedFlavorsBatch, type FlavorResolveProgress, type ResolveFlavorOptions } from './resolve';
 export { clearUsedFlavors, markFlavorUsed, getUsedFlavorImageNames } from './used-flavors';
 export { upgradeCheapImages, getImageUpgradeProvider, setImageUpgradeProvider } from './upgrade';

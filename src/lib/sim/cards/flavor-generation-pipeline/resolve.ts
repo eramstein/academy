@@ -1,6 +1,13 @@
 import { getRandomFromArray } from '@/lib/_utils/random';
 import { loadFlavorTemplates, registerFlavorTemplate } from '../flavor-templates';
-import { MATCH_SCORE_THRESHOLD, findBestFlavor, rankBestFlavor } from './match';
+import {
+  MATCH_SCORE_THRESHOLD,
+  findBestFlavor,
+  maxFlavorMatchScore,
+  passesMatchThreshold,
+  rankBestFlavor,
+  requiredMatchScore,
+} from './match';
 import { generateCheapCardImage } from './generate-image';
 import { flavorFromGeneratedText, generateFlavorText } from './generate-text';
 import { persistCardImage, persistFlavorTemplate } from './persist';
@@ -116,7 +123,9 @@ export async function resolveFlavorTemplate(
   const usedImageNames = await getUsedFlavorImageNames();
   const unused = excludeUsed(all, usedImageNames, batch);
   const ranked = forceGenerate ? null : rankBestFlavor(unused, gameplay);
-  const passesThreshold = !!ranked && ranked.score >= MATCH_SCORE_THRESHOLD;
+  const maxScore = maxFlavorMatchScore(gameplay);
+  const requiredScore = requiredMatchScore(gameplay);
+  const passesThreshold = !!ranked && passesMatchThreshold(ranked.score, gameplay);
 
   console.log(LOG_PREFIX, 'Gameplay query', {
     cardType: gameplay.cardType,
@@ -132,7 +141,9 @@ export async function resolveFlavorTemplate(
     unused: unused.length,
     usedInDb: usedImageNames.size,
     batchBlocked: (batch?.images.size ?? 0) + (batch?.names.size ?? 0),
-    threshold: MATCH_SCORE_THRESHOLD,
+    thresholdRatio: MATCH_SCORE_THRESHOLD,
+    requiredScore,
+    maxScore,
     forceGenerate,
     allowAiGenerate,
   });
@@ -142,7 +153,10 @@ export async function resolveFlavorTemplate(
       name: ranked.template.name,
       imageName: ranked.template.imageName,
       score: ranked.score,
-      threshold: MATCH_SCORE_THRESHOLD,
+      maxScore: ranked.maxScore,
+      ratio: ranked.ratio,
+      thresholdRatio: MATCH_SCORE_THRESHOLD,
+      requiredScore,
       passesThreshold,
       breakdown: ranked.breakdown,
       candidate: {
@@ -161,17 +175,22 @@ export async function resolveFlavorTemplate(
   let decision: 'reuse' | 'generate' | 'fallback' = flavor ? 'reuse' : 'generate';
 
   if (flavor) {
-    console.log(LOG_PREFIX, 'Decision: REUSE existing template (score >= threshold)', {
+    console.log(LOG_PREFIX, 'Decision: REUSE existing template (ratio >= threshold)', {
       name: flavor.name,
       score: ranked!.score,
-      threshold: MATCH_SCORE_THRESHOLD,
+      maxScore: ranked!.maxScore,
+      ratio: ranked!.ratio,
+      thresholdRatio: MATCH_SCORE_THRESHOLD,
     });
     onProgress?.({ stage: 'reuse', flavor });
   } else if (allowAiGenerate && import.meta.env.DEV) {
     console.log(LOG_PREFIX, 'Decision: GENERATE via AI (no candidate above threshold)', {
       bestScore: ranked?.score ?? null,
-      threshold: MATCH_SCORE_THRESHOLD,
-      gap: ranked ? MATCH_SCORE_THRESHOLD - ranked.score : null,
+      bestRatio: ranked?.ratio ?? null,
+      maxScore: ranked?.maxScore ?? null,
+      thresholdRatio: MATCH_SCORE_THRESHOLD,
+      requiredScore,
+      gap: ranked ? requiredScore - ranked.score : null,
       playerVision: !!trimmedFlavor,
     });
     try {
@@ -185,7 +204,9 @@ export async function resolveFlavorTemplate(
   } else {
     console.log(LOG_PREFIX, 'Decision: FALLBACK (catalog only)', {
       bestScore: ranked?.score ?? null,
-      threshold: MATCH_SCORE_THRESHOLD,
+      bestRatio: ranked?.ratio ?? null,
+      thresholdRatio: MATCH_SCORE_THRESHOLD,
+      requiredScore,
       allowAiGenerate,
     });
     decision = 'fallback';

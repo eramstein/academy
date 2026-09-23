@@ -567,6 +567,21 @@
     ]
   },
   {
+    "name": "Bloodhound’s Howl",
+    "imageName": "bloodhound_s_howl",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a scarred red wolf baying at a storm-wracked horizon with jagged lightning clawing the sky. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": true,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "addMana"
+    ]
+  },
+  {
     "name": "Bloodsong Rush",
     "imageName": "bloodsong_rush",
     "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a crimson-feathered raven mid-swoop, its wings scattering glowing embers like scattered dice. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
@@ -1624,6 +1639,23 @@
     ]
   },
   {
+    "name": "Forged Watchtower",
+    "imageName": "forged_watchtower",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a rusted metal construct standing sentinel atop a crumbling stone foundation, its gears exposed and frozen in time. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": true,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "immobile"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
     "name": "Fortify",
     "imagePrompt": "Fortify",
     "imageName": "fortify",
@@ -1788,6 +1820,21 @@
     "keywords": [],
     "actions": [
       "reanimate"
+    ]
+  },
+  {
+    "name": "Gears of the Abyss",
+    "imageName": "gears_of_the_abyss",
+    "imagePrompt": "Whimsical hand-drawn fantasy illustration of a a colossal, rusted clockwork spider descending into a chasm of broken cogs and flickering lanterns. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.",
+    "cardType": "spell",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "damageLand"
     ]
   },
   {

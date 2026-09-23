@@ -27,6 +27,8 @@ import { getActingCharacter } from '../characters';
 import { narrateCardConjured } from '../narration';
 import { spendResources } from '../resources';
 
+const CONJURATION_OPTION_COUNT_BASE = 2;
+
 export interface CardCreationParameters {
   cardType?: CardType;
   colors?: CardColor[];
@@ -72,7 +74,7 @@ export type CardSummonProgressHandler = (progress: CardSummonProgress) => void;
 
 export function getConjurationOptionCount(characterKey = 'player'): number {
   const character = getActingCharacter(characterKey);
-  return 2 + Math.floor(character.craftingSkills.inspiration);
+  return CONJURATION_OPTION_COUNT_BASE + Math.floor(character.craftingSkills.inspiration);
 }
 
 export async function getNewCardTemplate(

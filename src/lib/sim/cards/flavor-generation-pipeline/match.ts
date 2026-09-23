@@ -1,6 +1,7 @@
 import type { FlavorTemplate, GameplayTemplate, PowerLevel } from './types';
 
-export const MATCH_SCORE_THRESHOLD = 999;
+/** Fraction of max possible match score a candidate must reach to reuse. */
+export const MATCH_SCORE_THRESHOLD = 0.8;
 
 const COLOR_MATCH_WEIGHT = 9;
 const POWER_EXACT_MATCH_WEIGHT = 2;
@@ -18,6 +19,31 @@ export interface FlavorScoreBreakdown {
   keywords: number;
   unitTypes: number;
   actions: number;
+}
+
+/** Perfect-match score for a gameplay template (all factors matched exactly). */
+export function maxFlavorMatchScore(gameplay: GameplayTemplate): number {
+  const colors = gameplay.colors.length * COLOR_MATCH_WEIGHT;
+  const power = POWER_EXACT_MATCH_WEIGHT;
+  const keywords = (gameplay.keywords?.length ?? 0) * KEYWORD_MATCH_WEIGHT;
+  const unitTypes = (gameplay.unitTypes?.length ?? 0) * UNIT_TYPE_MATCH_WEIGHT;
+  const actions = (gameplay.actions?.length ?? 0) * ACTION_MATCH_WEIGHT;
+  return colors + power + keywords + unitTypes + actions;
+}
+
+/** Absolute score a candidate must reach for the given gameplay template. */
+export function requiredMatchScore(gameplay: GameplayTemplate): number {
+  return maxFlavorMatchScore(gameplay) * MATCH_SCORE_THRESHOLD;
+}
+
+export function matchRatio(score: number, gameplay: GameplayTemplate): number {
+  const max = maxFlavorMatchScore(gameplay);
+  if (max <= 0) return score >= 0 ? 1 : 0;
+  return score / max;
+}
+
+export function passesMatchThreshold(score: number, gameplay: GameplayTemplate): boolean {
+  return matchRatio(score, gameplay) >= MATCH_SCORE_THRESHOLD;
 }
 
 export function scoreFlavorTemplateDetailed(
@@ -85,6 +111,8 @@ export function scoreFlavorTemplate(template: FlavorTemplate, gameplay: Gameplay
 export interface RankedFlavor {
   template: FlavorTemplate;
   score: number;
+  maxScore: number;
+  ratio: number;
   breakdown: FlavorScoreBreakdown;
 }
 
@@ -97,11 +125,18 @@ export function rankBestFlavor(
   const pool = typed.length ? typed : templates;
   if (!pool.length) return null;
 
+  const maxScore = maxFlavorMatchScore(gameplay);
   let best: RankedFlavor | null = null;
   for (const template of pool) {
     const breakdown = scoreFlavorTemplateDetailed(template, gameplay);
     if (!best || breakdown.total > best.score) {
-      best = { template, score: breakdown.total, breakdown };
+      best = {
+        template,
+        score: breakdown.total,
+        maxScore,
+        ratio: matchRatio(breakdown.total, gameplay),
+        breakdown,
+      };
     }
   }
   return best;
@@ -113,7 +148,7 @@ export function findMatchingFlavor(
   gameplay: GameplayTemplate
 ): FlavorTemplate | null {
   const best = rankBestFlavor(templates, gameplay);
-  if (best && best.score >= MATCH_SCORE_THRESHOLD) {
+  if (best && passesMatchThreshold(best.score, gameplay)) {
     return best.template;
   }
   return null;
