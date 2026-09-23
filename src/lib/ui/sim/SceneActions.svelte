@@ -15,7 +15,6 @@
   import Conjure from './Conjure.svelte';
   import Enchantment from './Enchantment.svelte';
   import Invoke from './Invoke.svelte';
-  import Recipe from './Recipe.svelte';
   import Shop from './Shop.svelte';
 
   const event = $derived(gs.scene.event);
@@ -46,7 +45,7 @@
   let enchantAction = $state<Action | null>(null);
   let shopAction = $state<Action | null>(null);
   let cardCraftAction = $state<Action | null>(null);
-  let cardCraftStep = $state<'recipe' | 'invoke' | 'conjure'>('recipe');
+  let cardCraftStep = $state<'invoke' | 'conjure'>('invoke');
   let recipeResources = $state<{ type: ResourceType; count: number }[]>([]);
   let conjureOptions = $state<CardCreationResult[]>([]);
 
@@ -164,13 +163,18 @@
       shopAction = next;
       return;
     }
-    if (next.actionType === ActionType.Conjure || next.actionType === ActionType.Invoke) {
+    if (next.actionType === ActionType.Conjure) {
       cardCraftAction = next;
-      cardCraftStep = next.actionType === ActionType.Conjure ? 'conjure' : 'recipe';
+      cardCraftStep = 'conjure';
       recipeResources = Array.isArray(next.actionParameters.resources)
         ? next.actionParameters.resources
         : [];
       conjureOptions = [];
+      return;
+    }
+    if (next.actionType === ActionType.Invoke) {
+      cardCraftAction = next;
+      cardCraftStep = 'invoke';
       return;
     }
     commitAction(next);
@@ -178,15 +182,9 @@
 
   function closeCardCraft() {
     cardCraftAction = null;
-    cardCraftStep = 'recipe';
+    cardCraftStep = 'invoke';
     recipeResources = [];
     conjureOptions = [];
-  }
-
-  function onRecipeConfirm(resources: { type: ResourceType; count: number }[]) {
-    if (!cardCraftAction) return;
-    recipeResources = resources;
-    cardCraftStep = 'invoke';
   }
 
   async function generateConjureOptions(
@@ -237,15 +235,6 @@
 {#if shopAction}
   <Shop action={shopAction} onDone={() => (shopAction = null)} />
 {/if}
-{#if cardCraftAction && cardCraftStep === 'recipe'}
-  <Recipe
-    title="Invocation"
-    confirmLabel="Begin"
-    initialResources={recipeResources}
-    onConfirm={onRecipeConfirm}
-    onDone={closeCardCraft}
-  />
-{/if}
 {#if cardCraftAction && cardCraftStep === 'conjure'}
   <Conjure
     initialResources={recipeResources}
@@ -263,7 +252,6 @@
         resources: recipeResources,
       },
     }}
-    onBack={() => (cardCraftStep = 'recipe')}
     onDone={closeCardCraft}
   />
 {/if}

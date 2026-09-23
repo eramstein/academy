@@ -5,11 +5,13 @@
   let {
     title,
     ignite = false,
+    wide = false,
     children,
     footer,
   }: {
     title: string;
     ignite?: boolean;
+    wide?: boolean;
     children: Snippet;
     footer?: Snippet;
   } = $props();
@@ -22,6 +24,7 @@
   <div
     class="frame"
     class:ignite
+    class:wide
     role="dialog"
     aria-modal="true"
     aria-labelledby="workbench-title"
@@ -66,7 +69,15 @@
     border-radius: 4px;
     box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
     box-sizing: border-box;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .frame.wide {
+    width: min(1180px, calc(100vw - 24px));
+    max-height: min(96vh, 940px);
+    /* Avoid scrollbar flash when vessel / card transitions briefly overflow. */
+    overflow: hidden;
   }
 
   .panel {
@@ -75,7 +86,8 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    overflow: visible;
+    /* overflow-x:hidden + overflow-y:visible computes to auto and flashes scrollbars */
+    overflow: hidden;
     background: var(--color-parchment) var(--parchment) center / cover;
     background-blend-mode: multiply;
     color: var(--color-ink);
@@ -85,6 +97,11 @@
     font-size: 1rem;
     border-radius: 3px;
     box-shadow: inset 0 0 28px rgba(90, 75, 60, 0.12);
+  }
+
+  .frame.wide .panel {
+    overflow: visible;
+    padding: 18px 22px 20px;
   }
 
   .frame.ignite .panel {

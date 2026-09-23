@@ -6,11 +6,14 @@
     ignite = false,
     dim = false,
     fed = 0,
+    /** Hide the rotating core glyph (e.g. when a forming card sits in the circle). */
+    suppressCore = false,
   }: {
     charge?: number;
     ignite?: boolean;
     dim?: boolean;
     fed?: number;
+    suppressCore?: boolean;
   } = $props();
 
   const spiral = getUiIconPath('conjure');
@@ -25,6 +28,7 @@
   class:ignite
   class:dim
   class:unstable
+  class:suppress-core={suppressCore}
   style="--charge: {clamped}; --spiral: url('{spiral}')"
   aria-hidden="true"
 >
@@ -43,8 +47,8 @@
 <style>
   .circle {
     position: relative;
-    width: 200px;
-    height: 200px;
+    width: 100%;
+    height: 100%;
     flex-shrink: 0;
     transition:
       transform 0.45s ease,
@@ -121,7 +125,7 @@
 
   .spiral {
     position: absolute;
-    inset: 68px;
+    inset: 34%;
     background: var(--spiral) center / contain no-repeat;
     opacity: calc(0.45 + var(--charge) * 0.4);
     filter: drop-shadow(
@@ -129,6 +133,14 @@
         color-mix(in srgb, var(--color-golden) calc(var(--charge) * 80%), transparent)
     );
     animation: spin 18s linear infinite reverse;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+
+  .suppress-core .spiral,
+  .suppress-core .core {
+    opacity: 0;
+    transform: scale(0.6);
+    pointer-events: none;
   }
 
   .flash {

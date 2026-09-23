@@ -1,27 +1,27 @@
 <script lang="ts">
-  import { CardColor, CardType, type Action, type UnitKeywords } from '@/lib/_model';
+  import { CardColor, CardType, type Ability, type Action, type UnitKeywords } from '@/lib/_model';
+  import { ResourceType } from '@/lib/_model';
   import { gs } from '@/lib/_state';
-  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
   import { performAction, type CardCreationParameters } from '@/lib/sim/actions';
-  import {
-    buildAbility,
-    getTriggerTemplateAsset,
-    getTriggerTemplateLabel,
-    TRIGGER_TEMPLATE_KEYS,
-  } from '@/lib/sim/cards/ability-templates';
+  import { DataEffectTemplates } from '@/lib/battle/effects/effect-templates';
+  import { buildAbility, getTriggerTemplateLabel } from '@/lib/sim/cards/ability-templates';
   import {
     ACTION_TEMPLATE_KEYS,
-    actionNumericParams,
     createActionTemplate,
     defaultActionFactoryArgs,
-    getActionTemplateMeta,
     getActionTooltip,
   } from '@/lib/sim/cards/action-templates';
   import { getAbilityCost, getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
   import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
   import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
+  import { playAddResourceSound } from '@/lib/sim/sound';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
+  import FormingCard from './crafting/FormingCard.svelte';
+  import IngredientTray, { type EssenceKey } from './crafting/IngredientTray.svelte';
+  import RitualStage, { type RitualCharm } from './crafting/RitualStage.svelte';
+  import WorkbenchShell from './crafting/WorkbenchShell.svelte';
 
   let {
     action,
@@ -33,32 +33,80 @@
     onBack?: () => void;
   } = $props();
 
-  const STAT_MAX = 20;
-  const CARD_TYPES = [CardType.Unit, CardType.Spell] as const;
-  const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
-  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
+  const powerIcon = getAssetPath('images/ui/icons/power-icon.png');
+  const healthIcon = getAssetPath('images/ui/icons/health-icon.png');
+  const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon.png');
+  const incantationIcon = getUiIconPath('conjure');
 
-  function resolveAvailableColors(): CardColor[] {
-    const known = Object.values(CardColor).filter(
-      (color) => !!gs.player.craftingKnowledge.colors?.[color]
-    );
-    return known.length ? known : Object.values(CardColor);
+  const ESSENCE_COST: Record<EssenceKey, number> = { power: 4, hp: 2, retaliate: 1 };
+
+  function countsFrom(list: { type: ResourceType; count: number }[]): Record<ResourceType, number> {
+    const counts = Object.fromEntries(
+      Object.values(ResourceType).map((type) => [type, 0])
+    ) as Record<ResourceType, number>;
+    for (const resource of list) counts[resource.type] = resource.count;
+    return counts;
   }
 
-  const startingColors = resolveAvailableColors();
-  let cardType = $state<CardType.Unit | CardType.Spell>(CardType.Unit);
-  let colors = $state<CardColor[]>(startingColors.length === 1 ? [startingColors[0]] : []);
-  let power = $state(1);
-  let hp = $state(1);
-  let retaliate = $state(0);
-  let keywords = $state<Partial<Record<keyof UnitKeywords, number>>>({});
-  let abilityTrigger = $state<string>('onDeploy');
+  const initialResources = Array.isArray(action.actionParameters.resources)
+    ? action.actionParameters.resources
+    : [];
+
+  let selected = $state<Record<ResourceType, number>>(countsFrom(initialResources));
+  let cardType = $state<CardType.Unit | CardType.Spell | null>(null);
+  /** pick → absorbing (icon flies in) → forming (card appears) → ready (tray). */
+  let revealPhase = $state<'pick' | 'absorbing' | 'forming' | 'ready'>('pick');
+  let colors = $state<CardColor[]>([]);
+  let essences = $state<Record<EssenceKey, number>>({ power: 1, hp: 1, retaliate: 1 });
+  let essenceIn = $state<Record<EssenceKey, boolean>>({
+    power: false,
+    hp: false,
+    retaliate: false,
+  });
+  let runeAmounts = $state<Partial<Record<keyof UnitKeywords, number>>>({});
+  let runeIn = $state<Partial<Record<keyof UnitKeywords, boolean>>>({});
+  let stagedTriggers = $state<Record<string, string>>({});
+  let stagedArgs = $state<Record<string, Record<string, number>>>({});
+  let abilityTrigger = $state('onDeploy');
   let abilityAction = $state<string | null>(null);
   let abilityArgs = $state<Record<string, number>>({});
   let spellAction = $state<string | null>(null);
   let spellArgs = $state<Record<string, number>>({});
+  let landed = $state<string[]>([]);
+
+  const ABSORB_MS = 480;
+  const FORM_MS = 420;
+  const reduceMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let revealTimers: number[] = [];
+
+  function clearRevealTimers() {
+    for (const id of revealTimers) clearTimeout(id);
+    revealTimers = [];
+  }
+
+  function chooseVessel(type: CardType.Unit | CardType.Spell) {
+    if (revealPhase !== 'pick') return;
+    clearRevealTimers();
+    cardType = type;
+    revealPhase = 'absorbing';
+    const absorbMs = reduceMotion ? 0 : ABSORB_MS;
+    const formMs = reduceMotion ? 0 : FORM_MS;
+    revealTimers.push(
+      window.setTimeout(() => {
+        revealPhase = 'forming';
+        revealTimers.push(
+          window.setTimeout(() => {
+            revealPhase = 'ready';
+          }, formMs)
+        );
+      }, absorbMs)
+    );
+  }
 
   function cancel() {
+    clearRevealTimers();
     (onBack ?? onDone)();
   }
 
@@ -67,217 +115,337 @@
       if (event.key === 'Escape') cancel();
     }
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      clearRevealTimers();
+    };
   });
 
-  const availableColors = $derived(resolveAvailableColors());
+  function resolveAvailableColors(): CardColor[] {
+    const known = Object.values(CardColor).filter(
+      (color) => !!gs.player.craftingKnowledge.colors?.[color]
+    );
+    return known.length ? known : Object.values(CardColor);
+  }
 
+  const availableColors = $derived(resolveAvailableColors());
   const knownKeywords = $derived(
     KEYWORD_KEYS.filter((key) => !!gs.player.craftingKnowledge.keywords?.[key])
   );
   const availableKeywords = $derived(knownKeywords.length ? knownKeywords : KEYWORD_KEYS);
-  const knownActions = $derived(
-    ACTION_TEMPLATE_KEYS.filter((name) => !!gs.player.craftingKnowledge.actions?.[name])
-  );
+  const actionNames = $derived.by(() => {
+    const known = ACTION_TEMPLATE_KEYS.filter(
+      (name) => !!gs.player.craftingKnowledge.actions?.[name]
+    );
+    return known.length ? known : ACTION_TEMPLATE_KEYS;
+  });
 
   const isUnit = $derived(cardType === CardType.Unit);
   const selectedColors = $derived(colors.length ? colors : availableColors);
+
+  function activeArgs(name: string, committed: Record<string, number>, active: boolean) {
+    if (active) {
+      return Object.keys(committed).length ? committed : defaultActionFactoryArgs(name);
+    }
+    return stagedArgs[name] ?? defaultActionFactoryArgs(name);
+  }
+
+  function argsFor(name: string): Record<string, number> {
+    if (isUnit) return activeArgs(name, abilityArgs, abilityAction === name);
+    return activeArgs(name, spellArgs, spellAction === name);
+  }
+
+  function triggerFor(name: string): string {
+    return stagedTriggers[name] ?? (abilityAction === name ? abilityTrigger : 'onDeploy');
+  }
+
+  const keywords = $derived.by((): UnitKeywords | undefined => {
+    const result: UnitKeywords = {};
+    for (const key of KEYWORD_KEYS) {
+      if (!runeIn[key]) continue;
+      const amount = runeAmounts[key] ?? 1;
+      if (NUMERIC_KEYWORDS.has(key)) (result[key] as number) = amount;
+      else (result[key] as boolean) = true;
+    }
+    return Object.keys(result).length ? result : undefined;
+  });
+
   const abilityPick = $derived(
     abilityAction
       ? {
           trigger: abilityTrigger,
           action: abilityAction,
-          args: Object.keys(abilityArgs).length ? abilityArgs : defaultActionFactoryArgs(abilityAction),
+          args: activeArgs(abilityAction, abilityArgs, true),
         }
       : undefined
   );
   const draftAbility = $derived(abilityPick ? buildAbility(abilityPick) : null);
 
-  const parameters = $derived.by((): CardCreationParameters => {
-    const resources = Array.isArray(action.actionParameters.resources)
-      ? action.actionParameters.resources
-      : [];
-    if (cardType === CardType.Spell) {
-      return {
-        cardType: CardType.Spell,
-        colors: colors.length ? colors : undefined,
-        actions: spellAction ? [spellAction] : undefined,
-        actionArgs: spellAction
-          ? Object.keys(spellArgs).length
-            ? spellArgs
-            : defaultActionFactoryArgs(spellAction)
-          : undefined,
-        resources,
-      };
-    }
-    return {
-      cardType: CardType.Unit,
-      colors: colors.length ? colors : undefined,
-      power,
-      hp,
-      retaliate,
-      keywords: toUnitKeywords(keywords),
-      ability: abilityPick,
-      resources,
-    };
-  });
-
   const draftUnit = $derived.by((): PartialConjuredUnit => ({
     type: CardType.Unit,
     colors: selectedColors.map((color) => ({ color, count: 1 })),
-    power,
-    maxHealth: hp,
-    retaliate,
-    keywords: toUnitKeywords(keywords) ?? {},
+    power: essenceIn.power ? essences.power : 0,
+    maxHealth: essenceIn.hp ? essences.hp : 1,
+    retaliate: essenceIn.retaliate ? essences.retaliate : 0,
+    keywords: keywords ?? {},
     abilities: draftAbility ? [draftAbility] : undefined,
   }));
-
-  function keywordCost(key: keyof UnitKeywords): number {
-    const amount = NUMERIC_KEYWORDS.has(key) ? keywords[key] || 1 : 1;
-    return getKeywordBudget(key, draftUnit, amount);
-  }
-
-  function abilityCost(): number {
-    if (!draftAbility) return 0;
-    return getAbilityCost(draftAbility, selectedColors);
-  }
-
-  const spellActionCost = $derived.by(() => {
-    if (!spellAction) return 0;
-    const args = Object.keys(spellArgs).length
-      ? spellArgs
-      : defaultActionFactoryArgs(spellAction);
-    const template = createActionTemplate(spellAction, args);
-    return getActionBudget(template.definition, selectedColors);
-  });
 
   function budgetTitle(base: string, cost: number): string {
     return cost ? `${base}\nBudget cost: ${cost}` : base;
   }
 
-  function toUnitKeywords(
-    selected: Partial<Record<keyof UnitKeywords, number>>
-  ): UnitKeywords | undefined {
+  function describeAction(name: string, args: Record<string, number>): string {
+    const resolved = Object.keys(args).length ? args : defaultActionFactoryArgs(name);
+    const template = createActionTemplate(name, resolved);
+    const effect = template.definition.effect;
+    const build = DataEffectTemplates[effect.name];
+    if (!build) return template.label;
+    try {
+      const line = build(effect.args).label(template.definition.targets ?? []);
+      return line?.trim() ? line.trim() : template.label;
+    } catch {
+      return template.label;
+    }
+  }
+
+  const hints = $derived.by(() => {
+    const map: Record<string, string> = {};
+    for (const key of (['power', 'hp', 'retaliate'] as EssenceKey[])) {
+      const value = essences[key];
+      const label =
+        key === 'retaliate'
+          ? getKeywordTooltip('retaliate', value)
+          : key === 'power'
+            ? `Power ${value}`
+            : `Health ${value}`;
+      map[`essence:${key}`] = budgetTitle(label, value * ESSENCE_COST[key]);
+    }
+    for (const key of availableKeywords) {
+      const amount = NUMERIC_KEYWORDS.has(key) ? (runeAmounts[key] ?? 1) : 1;
+      const preview: PartialConjuredUnit = {
+        ...draftUnit,
+        keywords: {
+          ...draftUnit.keywords,
+          [key]: NUMERIC_KEYWORDS.has(key) ? amount : true,
+        },
+      };
+      map[`rune:${key}`] = budgetTitle(
+        getKeywordTooltip(key, amount),
+        getKeywordBudget(key, preview, amount)
+      );
+    }
+    for (const name of actionNames) {
+      const args = argsFor(name);
+      const template = createActionTemplate(name, args);
+      let cost = getActionBudget(template.definition, selectedColors);
+      if (isUnit) {
+        const trigger = triggerFor(name);
+        const ability = buildAbility({ trigger, action: name, args });
+        if (ability) cost = getAbilityCost(ability, selectedColors);
+      }
+      const triggerNote = isUnit ? `\nTrigger: ${getTriggerTemplateLabel(triggerFor(name))}` : '';
+      map[`incantation:${name}`] = budgetTitle(
+        `${getActionTooltip(name)}${triggerNote}`,
+        cost
+      );
+    }
+    return map;
+  });
+
+  const charms = $derived.by((): RitualCharm[] => {
+    if (cardType !== CardType.Unit && cardType !== CardType.Spell) return [];
+    const list: RitualCharm[] = colors.map((color) => ({
+      id: `pigment:${color}`,
+      icon: getAssetPath(`images/ui/icons/color_${color}.png`),
+    }));
+    if (cardType === CardType.Unit) {
+      if (essenceIn.power) list.push({ id: 'essence:power', icon: powerIcon });
+      if (essenceIn.hp) list.push({ id: 'essence:hp', icon: healthIcon });
+      if (essenceIn.retaliate) list.push({ id: 'essence:retaliate', icon: retaliateIcon });
+      for (const key of KEYWORD_KEYS) {
+        if (!runeIn[key]) continue;
+        list.push({
+          id: `rune:${key}`,
+          icon: getAssetPath(`images/keywords/${key}.png`),
+        });
+      }
+      if (abilityAction) list.push({ id: `incantation:${abilityAction}`, icon: incantationIcon });
+    } else if (spellAction) {
+      list.push({ id: `incantation:${spellAction}`, icon: incantationIcon });
+    }
+    return list;
+  });
+
+  function stillMixed(id: string): boolean {
+    if (id.startsWith('pigment:')) return colors.includes(id.slice('pigment:'.length) as CardColor);
+    if (id === 'essence:power') return essenceIn.power;
+    if (id === 'essence:hp') return essenceIn.hp;
+    if (id === 'essence:retaliate') return essenceIn.retaliate;
+    if (id.startsWith('rune:')) return !!runeIn[id.slice('rune:'.length) as keyof UnitKeywords];
+    if (id.startsWith('incantation:')) {
+      const name = id.slice('incantation:'.length);
+      return name === abilityAction || name === spellAction;
+    }
+    return false;
+  }
+
+  function conceal(id: string) {
+    landed = landed.filter((entry) => entry !== id);
+  }
+
+  function onCharmLanded(id: string) {
+    if (!stillMixed(id) || landed.includes(id)) return;
+    landed = [...landed, id];
+  }
+
+  function shown(id: string): boolean {
+    return landed.includes(id) && stillMixed(id);
+  }
+
+  function onPigment(color: CardColor, remove: boolean) {
+    if (remove) {
+      if (!colors.includes(color)) return;
+      colors = colors.filter((entry) => entry !== color);
+      conceal(`pigment:${color}`);
+      return;
+    }
+    if (colors.includes(color)) return;
+    colors = [...colors, color];
+    playAddResourceSound();
+  }
+
+  function onEssenceDial(key: EssenceKey, value: number) {
+    essences = { ...essences, [key]: value };
+  }
+
+  function onEssenceMix(key: EssenceKey, remove: boolean) {
+    if (remove) {
+      if (!essenceIn[key]) return;
+      essenceIn = { ...essenceIn, [key]: false };
+      conceal(`essence:${key}`);
+      return;
+    }
+    if (essenceIn[key]) return;
+    essenceIn = { ...essenceIn, [key]: true };
+    playAddResourceSound();
+  }
+
+  function onRuneDial(key: keyof UnitKeywords, value: number) {
+    runeAmounts = { ...runeAmounts, [key]: value };
+  }
+
+  function onRuneMix(key: keyof UnitKeywords, remove: boolean) {
+    if (remove) {
+      if (!runeIn[key]) return;
+      const next = { ...runeIn };
+      delete next[key];
+      runeIn = next;
+      conceal(`rune:${key}`);
+      return;
+    }
+    if (runeIn[key]) return;
+    runeIn = { ...runeIn, [key]: true };
+    if (!runeAmounts[key]) runeAmounts = { ...runeAmounts, [key]: 1 };
+    playAddResourceSound();
+  }
+
+  function onTriggerDial(name: string, trigger: string) {
+    stagedTriggers = { ...stagedTriggers, [name]: trigger };
+    if (abilityAction === name) abilityTrigger = trigger;
+  }
+
+  function onArgDial(name: string, factoryKey: string, value: number) {
+    const next = { ...argsFor(name), [factoryKey]: value };
+    stagedArgs = { ...stagedArgs, [name]: next };
+    if (isUnit && abilityAction === name) abilityArgs = next;
+    if (!isUnit && spellAction === name) spellArgs = next;
+  }
+
+  function onIncantationMix(name: string, remove: boolean) {
+    if (isUnit) {
+      if (remove) {
+        if (abilityAction !== name) return;
+        conceal(`incantation:${name}`);
+        abilityAction = null;
+        return;
+      }
+      if (abilityAction === name) return;
+      if (abilityAction) conceal(`incantation:${abilityAction}`);
+      const args = { ...argsFor(name) };
+      const trigger = triggerFor(name);
+      abilityAction = name;
+      abilityTrigger = trigger;
+      abilityArgs = args;
+      playAddResourceSound();
+      return;
+    }
+    if (remove) {
+      if (spellAction !== name) return;
+      conceal(`incantation:${spellAction}`);
+      spellAction = null;
+      return;
+    }
+    if (spellAction === name) return;
+    if (spellAction) conceal(`incantation:${spellAction}`);
+    const args = { ...argsFor(name) };
+    spellAction = name;
+    spellArgs = args;
+    playAddResourceSound();
+  }
+
+  const shownKeywords = $derived.by((): UnitKeywords => {
+    if (!isUnit || !keywords) return {};
     const result: UnitKeywords = {};
     for (const key of KEYWORD_KEYS) {
-      const value = selected[key];
-      if (!value) continue;
-      if (NUMERIC_KEYWORDS.has(key)) {
-        (result[key] as number) = value;
-      } else {
-        (result[key] as boolean) = true;
-      }
+      const value = keywords[key];
+      if (!value || !shown(`rune:${key}`)) continue;
+      if (typeof value === 'number') (result[key] as number) = value;
+      else (result[key] as boolean) = true;
     }
-    return Object.keys(result).length ? result : undefined;
-  }
+    return result;
+  });
 
-  function formatKeyword(keyword: string): string {
-    return keyword.replace(/([a-z])([A-Z])/g, '$1 $2');
-  }
+  const shownAbilities = $derived.by((): Ability[] => {
+    if (!isUnit || !draftAbility || !abilityAction) return [];
+    if (!shown(`incantation:${abilityAction}`)) return [];
+    return [draftAbility];
+  });
 
-  function capitalize(value: string): string {
-    return value.charAt(0).toUpperCase() + value.slice(1);
-  }
+  const spellText = $derived.by(() => {
+    if (isUnit) return null;
+    if (!spellAction || !shown(`incantation:${spellAction}`)) return null;
+    return describeAction(spellAction, spellArgs);
+  });
 
-  function colorPath(color: CardColor): string {
-    return getAssetPath(`images/ui/icons/color_${color}.png`);
-  }
-
-  function clamp(value: number | undefined, min: number, max: number): number {
-    if (typeof value !== 'number' || Number.isNaN(value)) return min;
-    return Math.min(max, Math.max(min, value));
-  }
-
-  function toggleColor(color: CardColor) {
-    if (colors.includes(color)) {
-      colors = colors.filter((entry) => entry !== color);
-    } else {
-      colors = [...colors, color];
-    }
-  }
-
-  function setKeyword(key: keyof UnitKeywords, value: number) {
-    const next = { ...keywords };
-    if (value) {
-      next[key] = value;
-    } else {
-      delete next[key];
-    }
-    keywords = next;
-  }
-
-  function toggleKeyword(key: keyof UnitKeywords) {
-    const next = { ...keywords };
-    if (next[key]) {
-      delete next[key];
-    } else {
-      next[key] = 1;
-    }
-    keywords = next;
-  }
-
-  function setAbilityTrigger(key: string) {
-    abilityTrigger = key;
-  }
-
-  function toggleAbilityAction(name: string) {
-    if (abilityAction === name) {
-      abilityAction = null;
-      abilityArgs = {};
-      return;
-    }
-    abilityAction = name;
-    abilityArgs = defaultActionFactoryArgs(name);
-  }
-
-  function toggleSpellAction(name: string) {
-    if (spellAction === name) {
-      spellAction = null;
-      spellArgs = {};
-      return;
-    }
-    spellAction = name;
-    spellArgs = defaultActionFactoryArgs(name);
-  }
-
-  function setAbilityArg(key: string, value: number) {
-    abilityArgs = { ...abilityArgs, [key]: clamp(value, 1, STAT_MAX) };
-  }
-
-  function setSpellArg(key: string, value: number) {
-    spellArgs = { ...spellArgs, [key]: clamp(value, 1, STAT_MAX) };
-  }
-
-  function adjustKeyword(key: keyof UnitKeywords, delta: number) {
-    setKeyword(key, clamp((keywords[key] ?? 0) + delta, 0, STAT_MAX));
-  }
-
-  function adjustFromClick(event: MouseEvent, apply: (delta: number) => void) {
-    if (event.type === 'contextmenu') event.preventDefault();
-    apply(event.type === 'contextmenu' ? -1 : 1);
-  }
-
-  function onKeywordRowClick(event: MouseEvent, key: keyof UnitKeywords, numeric: boolean) {
-    if (numeric) {
-      adjustFromClick(event, (delta) => adjustKeyword(key, delta));
-    } else if (event.type === 'contextmenu') {
-      event.preventDefault();
-      setKeyword(key, 0);
-    } else {
-      toggleKeyword(key);
-    }
-  }
-
-  function onNumberInput(event: Event, min: number, apply: (value: number) => void) {
-    const raw = (event.currentTarget as HTMLInputElement).value;
-    if (raw === '') return;
-    apply(clamp(Number.parseInt(raw, 10), min, STAT_MAX));
-  }
+  const shownColors = $derived(colors.filter((color) => shown(`pigment:${color}`)));
 
   function confirm() {
-    power = clamp(power, 0, STAT_MAX);
-    hp = clamp(hp, 1, STAT_MAX);
-    retaliate = clamp(retaliate, 0, STAT_MAX);
+    if (!cardType) return;
+    const resources = Object.values(ResourceType)
+      .map((type) => ({ type, count: selected[type] ?? 0 }))
+      .filter((row) => row.count > 0);
+
+    const parameters: CardCreationParameters =
+      cardType === CardType.Spell
+        ? {
+            cardType: CardType.Spell,
+            colors: colors.length ? colors : undefined,
+            actions: spellAction ? [spellAction] : undefined,
+            actionArgs: spellAction ? { ...argsFor(spellAction) } : undefined,
+            resources,
+          }
+        : {
+            cardType: CardType.Unit,
+            colors: colors.length ? colors : undefined,
+            power: essenceIn.power ? essences.power : 0,
+            hp: essenceIn.hp ? essences.hp : 1,
+            retaliate: essenceIn.retaliate ? essences.retaliate : 0,
+            keywords,
+            ability: abilityPick,
+            resources,
+          };
+
     performAction({
       ...action,
       actionParameters: {
@@ -290,925 +458,217 @@
   }
 </script>
 
-{#snippet stepper(value: number, min: number, label: string, apply: (next: number) => void)}
-  <div
-    class="num-control"
-    onclick={(event) => event.stopPropagation()}
-    oncontextmenu={(event) => event.stopPropagation()}
+<WorkbenchShell title="Invocation" wide>
+  <RitualStage
+    bind:selected
+    {charms}
+    {onCharmLanded}
+    split
+    showVessel={revealPhase === 'forming' || revealPhase === 'ready'}
+    showFlank={revealPhase === 'ready'}
+    suppressCore={revealPhase !== 'pick'}
   >
-    <input
-      type="number"
-      {min}
-      max={STAT_MAX}
-      {value}
-      aria-label={label}
-      oninput={(event) => onNumberInput(event, min, apply)}
-      onblur={() => apply(clamp(value, min, STAT_MAX))}
-    />
-    <div class="step-arrows">
-      <button
-        type="button"
-        class="step-arrow"
-        disabled={value >= STAT_MAX}
-        aria-label="Increase {label}"
-        onclick={() => apply(clamp(value + 1, min, STAT_MAX))}
-      >
-        ▲
-      </button>
-      <button
-        type="button"
-        class="step-arrow"
-        disabled={value <= min}
-        aria-label="Decrease {label}"
-        onclick={() => apply(clamp(value - 1, min, STAT_MAX))}
-      >
-        ▼
-      </button>
-    </div>
-  </div>
-{/snippet}
-
-{#snippet statControl(
-  value: number,
-  min: number,
-  label: string,
-  apply: (next: number) => void,
-  icon: string,
-  large = false
-)}
-  <div class="stat-control">
-    <div
-      class="stat-well"
-      class:large
-      role="spinbutton"
-      aria-label={label}
-      aria-valuemin={min}
-      aria-valuemax={STAT_MAX}
-      aria-valuenow={value}
-      onclick={(event) =>
-        adjustFromClick(event, (delta) => apply(clamp(value + delta, min, STAT_MAX)))}
-      oncontextmenu={(event) =>
-        adjustFromClick(event, (delta) => apply(clamp(value + delta, min, STAT_MAX)))}
-    >
-      <img class="stat-face" src={icon} alt="" aria-hidden="true" />
-      <span class="stat-value">{value}</span>
-    </div>
-    <div class="step-arrows">
-      <button
-        type="button"
-        class="step-arrow"
-        disabled={value >= STAT_MAX}
-        aria-label="Increase {label}"
-        onclick={() => apply(clamp(value + 1, min, STAT_MAX))}
-      >
-        ▲
-      </button>
-      <button
-        type="button"
-        class="step-arrow"
-        disabled={value <= min}
-        aria-label="Decrease {label}"
-        onclick={() => apply(clamp(value - 1, min, STAT_MAX))}
-      >
-        ▼
-      </button>
-    </div>
-  </div>
-{/snippet}
-
-<div class="overlay" role="presentation">
-  <div
-    class="frame"
-    role="dialog"
-    aria-labelledby="invoke-title"
-    style="--table: url('{tablePath}'); --parchment: url('{parchmentPath}')"
-  >
-    <div class="panel">
-      <h2 id="invoke-title" class="title">
-        <span class="star" aria-hidden="true"></span>
-        Create New Card
-        <span class="star" aria-hidden="true"></span>
-      </h2>
-
-      <section class="section" aria-label="Card type">
-        <h3 class="section-heading">
-          <span class="section-icon star-icon" aria-hidden="true"></span>
-          Type
-        </h3>
-        <div class="type-choices" role="radiogroup" aria-label="Card type">
-          {#each CARD_TYPES as type (type)}
-            {@const selected = cardType === type}
-            <button
-              type="button"
-              class="type-btn"
-              class:selected
-              role="radio"
-              aria-checked={selected}
-              onclick={() => (cardType = type)}
-            >
-              {capitalize(type)}
-            </button>
-          {/each}
+    {#snippet circleContent()}
+      {#if revealPhase === 'pick' || revealPhase === 'absorbing'}
+        <div
+          class="vessel-pick"
+          class:absorbing={revealPhase === 'absorbing'}
+          role="group"
+          aria-label="Choose a vessel"
+        >
+          <button
+            type="button"
+            class="vessel-token unit"
+            class:chosen={cardType === CardType.Unit}
+            class:dismissed={revealPhase === 'absorbing' && cardType !== CardType.Unit}
+            style="--icon: url('{getUiIconPath('page-star')}')"
+            disabled={revealPhase !== 'pick'}
+            onclick={() => chooseVessel(CardType.Unit)}
+          >
+            <span class="token-name">Unit</span>
+            <span class="token-glyph painted" aria-hidden="true"></span>
+          </button>
+          <button
+            type="button"
+            class="vessel-token spell"
+            class:chosen={cardType === CardType.Spell}
+            class:dismissed={revealPhase === 'absorbing' && cardType !== CardType.Spell}
+            style="--icon: url('{getUiIconPath('spiral')}')"
+            disabled={revealPhase !== 'pick'}
+            onclick={() => chooseVessel(CardType.Spell)}
+          >
+            <span class="token-name">Spell</span>
+            <span class="token-glyph painted" aria-hidden="true"></span>
+          </button>
         </div>
-      </section>
-
-      <section class="section" aria-label="Colors">
-        <h3 class="section-heading">
-          <span class="section-icon star-icon" aria-hidden="true"></span>
-          Colors
-        </h3>
-        <div class="colors" role="group">
-          {#each availableColors as color (color)}
-            {@const selected = colors.includes(color)}
-            <button
-              type="button"
-              class="color-btn"
-              class:selected
-              aria-pressed={selected}
-              aria-label={capitalize(color)}
-              onclick={() => toggleColor(color)}
-            >
-              <span class="color-orb-wrap">
-                <span class="color-orb" style="background-image: url('{colorPath(color)}')"></span>
-                {#if selected}
-                  <span class="check" aria-hidden="true">✓</span>
-                {/if}
-              </span>
-            </button>
-          {/each}
-        </div>
-      </section>
-
-      {#if isUnit}
-      <section class="section" aria-label="Stats">
-        <h3 class="section-heading">
-          <span class="section-icon star-icon" aria-hidden="true"></span>
-          Stats
-        </h3>
-        <div class="stats">
-          <div class="stat">
-            <div class="stat-label">Power</div>
-            {@render statControl(
-              power,
-              0,
-              'Power',
-              (next) => (power = next),
-              getAssetPath('images/ui/icons/power-icon.png')
-            )}
-          </div>
-          <div class="stat">
-            <div class="stat-label">Health</div>
-            {@render statControl(
-              hp,
-              1,
-              'Health',
-              (next) => (hp = next),
-              getAssetPath('images/ui/icons/health-icon.png')
-            )}
-          </div>
-          <div class="stat large">
-            <div class="stat-label" title={getKeywordTooltip('retaliate', retaliate || 1)}>
-              Retaliate
-            </div>
-            {@render statControl(
-              retaliate,
-              0,
-              'Retaliate',
-              (next) => (retaliate = next),
-              getAssetPath('images/ui/icons/retaliate-icon.png'),
-              true
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section class="section keywords-section" aria-label="Keywords">
-        <h3 class="section-heading">
-          <span class="section-icon star-icon" aria-hidden="true"></span>
-          Keywords
-        </h3>
-        <div class="keyword-list">
-          {#each availableKeywords as key (key)}
-            {#if NUMERIC_KEYWORDS.has(key)}
-              {@const value = keywords[key] ?? 0}
-              <div
-                class="keyword-row"
-                class:on={value > 0}
-                title={budgetTitle(getKeywordTooltip(key, value || 1), keywordCost(key))}
-                onclick={(event) => onKeywordRowClick(event, key, true)}
-                oncontextmenu={(event) => onKeywordRowClick(event, key, true)}
-              >
-                <img
-                  class="keyword-icon"
-                  src={getAssetPath(`images/keywords/${key}.png`)}
-                  alt=""
-                  aria-hidden="true"
-                />
-                <span class="keyword-name">{formatKeyword(key)}</span>
-                {@render stepper(value, 0, formatKeyword(key), (next) => setKeyword(key, next))}
-              </div>
-            {:else}
-              {@const selected = !!keywords[key]}
-              <div
-                class="keyword-row"
-                class:on={selected}
-                role="switch"
-                aria-checked={selected}
-                title={budgetTitle(getKeywordTooltip(key), keywordCost(key))}
-                onclick={(event) => onKeywordRowClick(event, key, false)}
-                oncontextmenu={(event) => onKeywordRowClick(event, key, false)}
-              >
-                <img
-                  class="keyword-icon"
-                  src={getAssetPath(`images/keywords/${key}.png`)}
-                  alt=""
-                  aria-hidden="true"
-                />
-                <span class="keyword-name">{formatKeyword(key)}</span>
-                <span class="toggle" class:on={selected} aria-hidden="true">
-                  <span class="toggle-knob"></span>
-                </span>
-              </div>
-            {/if}
-          {/each}
-        </div>
-      </section>
-
-      <section class="section abilities-section" aria-label="Ability">
-        <h3 class="section-heading">
-          <span class="section-icon star-icon" aria-hidden="true"></span>
-          Ability
-        </h3>
-        {#if knownActions.length === 0}
-          <p class="empty">No known actions yet.</p>
-        {:else}
-          <div class="ability-group">
-            <div class="ability-label">Trigger</div>
-            <div class="keyword-list">
-              {#each TRIGGER_TEMPLATE_KEYS as key (key)}
-                {@const selected = abilityTrigger === key}
-                <div
-                  class="keyword-row"
-                  class:on={selected}
-                  role="switch"
-                  aria-checked={selected}
-                  title={getTriggerTemplateLabel(key)}
-                  onclick={() => setAbilityTrigger(key)}
-                >
-                  <img
-                    class="keyword-icon"
-                    src={getAssetPath(getTriggerTemplateAsset(key))}
-                    alt=""
-                    aria-hidden="true"
-                  />
-                  <span class="keyword-name">{getTriggerTemplateLabel(key)}</span>
-                  <span class="toggle" class:on={selected} aria-hidden="true">
-                    <span class="toggle-knob"></span>
-                  </span>
-                </div>
-              {/each}
-            </div>
-          </div>
-          <div class="ability-group">
-            <div class="ability-label">Action</div>
-            <div class="keyword-list">
-              {#each knownActions as name (name)}
-                {@const selected = abilityAction === name}
-                {@const meta = getActionTemplateMeta(name)}
-                {@const numeric = actionNumericParams[name] ?? []}
-                <div class="action-block">
-                  <div
-                    class="keyword-row"
-                    class:on={selected}
-                    role="switch"
-                    aria-checked={selected}
-                    title={budgetTitle(
-                      getActionTooltip(name),
-                      selected && draftAbility ? abilityCost() : 0
-                    )}
-                    onclick={() => toggleAbilityAction(name)}
-                  >
-                    <span class="keyword-name">{meta?.label ?? name}</span>
-                    <span class="toggle" class:on={selected} aria-hidden="true">
-                      <span class="toggle-knob"></span>
-                    </span>
-                  </div>
-                  {#if selected && numeric.length}
-                    <div class="param-list">
-                      {#each numeric as param (param.factoryKey)}
-                        <div
-                          class="param-row"
-                          onclick={(event) => event.stopPropagation()}
-                          oncontextmenu={(event) => event.stopPropagation()}
-                        >
-                          <span class="param-label">{param.label}</span>
-                          {@render stepper(
-                            abilityArgs[param.factoryKey] ?? 1,
-                            1,
-                            param.label,
-                            (next) => setAbilityArg(param.factoryKey, next)
-                          )}
-                        </div>
-                      {/each}
-                    </div>
-                  {/if}
-                </div>
-              {/each}
-            </div>
-          </div>
-        {/if}
-      </section>
-      {:else}
-      <section class="section abilities-section" aria-label="Effect">
-        <h3 class="section-heading">
-          <span class="section-icon star-icon" aria-hidden="true"></span>
-          Effect
-        </h3>
-        {#if knownActions.length === 0}
-          <p class="empty">No known actions yet.</p>
-        {:else}
-          <div class="keyword-list">
-            {#each knownActions as name (name)}
-              {@const selected = spellAction === name}
-              {@const meta = getActionTemplateMeta(name)}
-              {@const numeric = actionNumericParams[name] ?? []}
-              <div class="action-block">
-                <div
-                  class="keyword-row"
-                  class:on={selected}
-                  role="switch"
-                  aria-checked={selected}
-                  title={budgetTitle(getActionTooltip(name), selected ? spellActionCost : 0)}
-                  onclick={() => toggleSpellAction(name)}
-                >
-                  <span class="keyword-name">{meta?.label ?? name}</span>
-                  <span class="toggle" class:on={selected} aria-hidden="true">
-                    <span class="toggle-knob"></span>
-                  </span>
-                </div>
-                {#if selected && numeric.length}
-                  <div class="param-list">
-                    {#each numeric as param (param.factoryKey)}
-                      <div
-                        class="param-row"
-                        onclick={(event) => event.stopPropagation()}
-                        oncontextmenu={(event) => event.stopPropagation()}
-                      >
-                        <span class="param-label">{param.label}</span>
-                        {@render stepper(
-                          spellArgs[param.factoryKey] ?? 1,
-                          1,
-                          param.label,
-                          (next) => setSpellArg(param.factoryKey, next)
-                        )}
-                      </div>
-                    {/each}
-                  </div>
-                {/if}
-              </div>
-            {/each}
-          </div>
-        {/if}
-      </section>
       {/if}
-    </div>
+    {/snippet}
+    {#snippet vessel()}
+      <FormingCard
+        colors={shownColors}
+        power={isUnit && shown('essence:power') ? essences.power : null}
+        health={isUnit && shown('essence:hp') ? essences.hp : null}
+        retaliate={isUnit && shown('essence:retaliate') ? essences.retaliate : null}
+        keywords={shownKeywords}
+        abilities={shownAbilities}
+        spellText={spellText}
+      />
+    {/snippet}
+    {#snippet flank()}
+      {#if revealPhase === 'ready' && cardType !== null}
+        <IngredientTray
+          {cardType}
+          {colors}
+          {availableColors}
+          {essences}
+          {essenceIn}
+          {runeAmounts}
+          {runeIn}
+          {availableKeywords}
+          triggers={stagedTriggers}
+          {argsFor}
+          {abilityAction}
+          {spellAction}
+          knownActions={actionNames}
+          {hints}
+          {onPigment}
+          {onEssenceDial}
+          {onEssenceMix}
+          {onRuneDial}
+          {onRuneMix}
+          {onTriggerDial}
+          {onArgDial}
+          {onIncantationMix}
+        />
+      {/if}
+    {/snippet}
+  </RitualStage>
 
-    <footer class="actions">
-      <button type="button" class="abandon" onclick={cancel}>
-        {onBack ? 'Back' : 'Cancel'}
-      </button>
-      <OrnateButton icon="spiral" onclick={confirm}>Invoke</OrnateButton>
-    </footer>
-  </div>
-</div>
+  {#snippet footer()}
+    <button type="button" class="abandon" onclick={cancel}>Abandon ritual</button>
+    <OrnateButton icon="spiral" disabled={cardType === null} onclick={confirm}>Invoke</OrnateButton>
+  {/snippet}
+</WorkbenchShell>
 
 <style>
-  .overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    background: rgba(0, 0, 0, 0.72);
-    box-sizing: border-box;
-  }
-
-  .frame {
-    position: relative;
-    width: min(620px, 100%);
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    padding: 10px 10px 8px;
-    background: var(--color-wood, #4a2a18) var(--table) center / cover;
-    border: 2px solid var(--color-deep-brown, #2a1810);
-    border-radius: 4px;
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
-    box-sizing: border-box;
-  }
-
-  .panel {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow-y: auto;
-    background: #e8dcc4 var(--parchment) center / cover;
-    background-blend-mode: multiply;
-    color: #2c251d;
-    padding: 16px 16px 12px;
-    box-sizing: border-box;
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 1rem;
-    border-radius: 3px;
-    box-shadow: inset 0 0 28px rgba(90, 75, 60, 0.12);
-  }
-
-  .title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin: 0 0 10px;
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #2c251d;
-    text-align: center;
-  }
-
-  .star,
-  .star-icon {
-    width: 10px;
-    height: 10px;
-    flex-shrink: 0;
-    background: #4a3f32;
-    clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
-  }
-
-  .section {
-    padding: 10px 12px 12px;
-    margin-bottom: 10px;
-    border: 1px solid rgba(44, 37, 29, 0.45);
-    border-radius: 4px;
-    background: rgba(255, 248, 230, 0.18);
-    box-sizing: border-box;
-  }
-
-  .section-heading {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 0 12px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #3a3228;
-  }
-
-  .star-icon {
-    width: 12px;
-    height: 12px;
-  }
-
-  .type-choices {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-  }
-
-  .type-btn {
-    min-width: 7.5rem;
-    padding: 8px 20px;
-    color: #2c251d;
-    background: #efe4c8;
-    border: 1px solid rgba(90, 75, 60, 0.45);
-    border-radius: 4px;
-    font-family: inherit;
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  }
-
-  .type-btn:hover {
-    background: #f5ead0;
-  }
-
-  .type-btn.selected {
-    border-color: var(--color-golden);
-    background: rgba(191, 161, 74, 0.22);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.35),
-      0 0 0 1px #8a6a28;
-  }
-
-  .colors {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 18px;
-  }
-
-  .color-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0;
-    color: #2c251d;
-    background: transparent;
-    border: none;
-    font-family: inherit;
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-
-  .color-orb-wrap {
-    position: relative;
-    display: block;
-  }
-
-  .color-orb {
-    display: block;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    border: 3px solid #7a6b5c;
-    box-shadow:
-      inset 0 1px 2px rgba(255, 255, 255, 0.35),
-      inset 0 -2px 4px rgba(0, 0, 0, 0.45),
-      0 2px 6px rgba(0, 0, 0, 0.35);
-    filter: brightness(0.72) saturate(0.85);
-  }
-
-  .color-btn:hover .color-orb,
-  .color-btn.selected .color-orb {
-    filter: none;
-  }
-
-  .color-btn.selected .color-orb {
-    border-color: var(--color-golden);
-    box-shadow:
-      inset 0 1px 2px rgba(255, 255, 255, 0.4),
-      0 0 0 1px #8a6a28,
-      0 3px 8px rgba(0, 0, 0, 0.35);
-  }
-
-  .check {
+  .vessel-pick {
     position: absolute;
-    right: -2px;
-    bottom: -2px;
-    width: 18px;
-    height: 18px;
+    inset: 0;
+  }
+
+  .vessel-token {
+    position: absolute;
+    left: 50%;
+    top: 50%;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--color-golden);
-    color: #2c251d;
-    border: 1px solid #8a6a28;
-    border-radius: 50%;
-    font-size: 0.72rem;
-    font-weight: 700;
-    line-height: 1;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-  }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .stat {
-    display: grid;
-    grid-template-columns: max-content;
-    justify-content: center;
-    justify-items: start;
-    gap: 8px;
-    padding: 0 10px;
-  }
-
-  .stat + .stat {
-    border-left: 1px solid rgba(90, 75, 60, 0.35);
-  }
-
-  .stat-label {
-    width: 40px;
-    font-size: 0.92rem;
-    color: #2c251d;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .stat-control {
-    display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 4px;
-    min-height: 50px;
-  }
-
-  .stat-control .step-arrows {
-    height: 40px;
-    align-self: center;
-  }
-
-  .stat-well {
-    position: relative;
-    width: 40px;
-    height: 40px;
+    width: 5.6rem;
+    padding: 4px;
+    color: var(--color-ink);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-family: var(--font-narrative);
     cursor: pointer;
     user-select: none;
+    transition:
+      border-color 0.18s ease,
+      background 0.18s ease;
   }
 
-  .stat-well.large {
-    width: 55px;
-    height: 55px;
+  .vessel-token.unit {
+    transform: translate(-50%, -50%) translateY(-150px);
   }
 
-  .stat.large .stat-label {
-    width: 50px;
+  .vessel-token.spell {
+    transform: translate(-50%, -50%) translateY(150px);
   }
 
-  .stat-face {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    pointer-events: none;
-  }
-
-  .stat-value {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: 500;
-    font-size: 1.2rem;
-    font-variant-numeric: tabular-nums;
-    text-shadow:
-      0 1px 2px #000,
-      0 0 3px #000;
-    pointer-events: none;
-  }
-
-  .stat-well .stat-value {
-    transform: translateY(-2px);
-  }
-
-  .num-control {
-    display: flex;
-    align-items: stretch;
-    gap: 4px;
-  }
-
-  .num-control input {
-    width: 2.6rem;
-    height: 34px;
-    padding: 0 4px;
-    color: #f0e6c8;
-    background: #2c251d;
-    border: 1px solid #3a3228;
-    border-radius: 3px;
-    font-family: inherit;
-    font-size: 1rem;
-    font-variant-numeric: tabular-nums;
-    text-align: center;
-    outline: none;
-    box-sizing: border-box;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
-    -moz-appearance: textfield;
-  }
-
-  .num-control input:focus {
-    border-color: var(--color-golden);
-  }
-
-  .num-control input::-webkit-inner-spin-button,
-  .num-control input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  .step-arrows {
-    display: flex;
-    flex-direction: column;
-    width: 18px;
-    border-radius: 3px;
-    overflow: hidden;
-    background: #d8c9ad;
-    border: 1px solid rgba(90, 75, 60, 0.35);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
-  }
-
-  .step-arrow {
-    flex: 1;
-    padding: 0;
-    color: #3a3228;
-    background: transparent;
-    border: none;
-    font-size: 0.5rem;
-    line-height: 1;
-    cursor: pointer;
-  }
-
-  .step-arrow + .step-arrow {
-    border-top: 1px solid rgba(90, 75, 60, 0.25);
-  }
-
-  .step-arrow:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.28);
-  }
-
-  .step-arrow:disabled {
-    opacity: 0.35;
+  .vessel-token:disabled {
     cursor: default;
   }
 
-  .keywords-section,
-  .abilities-section {
-    flex: 1 1 auto;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0;
+  .vessel-pick.absorbing .vessel-token.chosen {
+    animation: vessel-absorb 480ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
   }
 
-  .abilities-section {
-    flex: 0 1 auto;
-    margin-top: 10px;
+  .vessel-pick.absorbing .vessel-token.dismissed {
+    animation: vessel-dismiss 280ms ease forwards;
   }
 
-  .empty {
-    margin: 0;
-    text-align: center;
-    font-size: 0.85rem;
-    color: #6a5c4c;
-  }
-
-  .ability-group + .ability-group {
-    margin-top: 10px;
-  }
-
-  .ability-label {
-    margin: 0 0 8px;
-    font-size: 0.72rem;
+  .token-name {
+    font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #5c5146;
+    letter-spacing: 0.06em;
+    text-transform: capitalize;
+    color: var(--color-ink);
+    transition: opacity 0.2s ease;
   }
 
-  .keyword-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px 28px;
-    min-height: 0;
-    overflow-y: auto;
-    padding-right: 2px;
+  .vessel-pick.absorbing .vessel-token.chosen .token-name {
+    opacity: 0;
   }
 
-  @supports not selector(::-webkit-scrollbar) {
-    .keyword-list {
-      scrollbar-width: thin;
-      scrollbar-color: rgba(90, 75, 60, 0.45) transparent;
+  .token-glyph {
+    display: block;
+    width: 48px;
+    height: 48px;
+    background: var(--color-brass);
+    mask: var(--icon) center / contain no-repeat;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    filter: drop-shadow(0 4px 5px rgba(42, 24, 16, 0.4));
+  }
+
+  .token-glyph.painted {
+    background: var(--icon) center / contain no-repeat;
+    mask: none;
+    -webkit-mask: none;
+  }
+
+  .vessel-token:hover:not(:disabled) .token-glyph {
+    filter:
+      drop-shadow(0 4px 5px rgba(42, 24, 16, 0.4))
+      drop-shadow(0 0 10px color-mix(in srgb, var(--color-golden) 55%, transparent));
+  }
+
+  @keyframes vessel-absorb {
+    0% {
+      transform: translate(-50%, -50%) translateY(var(--from-y, 0)) scale(1);
+      opacity: 1;
+    }
+    55% {
+      transform: translate(-50%, -50%) scale(1.08);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(0.28);
+      opacity: 0;
     }
   }
 
-  .keyword-list::-webkit-scrollbar {
-    width: 6px;
+  .vessel-token.unit.chosen {
+    --from-y: -150px;
   }
 
-  .keyword-list::-webkit-scrollbar-button {
-    display: none;
-    width: 0;
-    height: 0;
+  .vessel-token.spell.chosen {
+    --from-y: 150px;
   }
 
-  .keyword-list::-webkit-scrollbar-track {
-    background: transparent;
+  @keyframes vessel-dismiss {
+    to {
+      opacity: 0;
+      transform: translate(-50%, -50%) translateY(var(--from-y, 0)) scale(0.85);
+    }
   }
 
-  .keyword-list::-webkit-scrollbar-thumb {
-    background: rgba(90, 75, 60, 0.45);
-    border-radius: 3px;
+  .vessel-token.unit.dismissed {
+    --from-y: -150px;
   }
 
-  .keyword-row {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    min-width: 0;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .keyword-icon {
-    width: 22px;
-    height: 22px;
-    object-fit: contain;
-    flex-shrink: 0;
-    background: #f3ead4;
-    border: 1px solid rgba(90, 75, 60, 0.35);
-    border-radius: 4px;
-  }
-
-  .keyword-name {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding: 4px 8px;
-    font-size: calc(0.78rem + 2px);
-    text-transform: capitalize;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    background: #efe4c8;
-    border: 1px solid rgba(90, 75, 60, 0.28);
-    border-radius: 6px;
-  }
-
-  .action-block {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-  }
-
-  .param-list {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding-left: 8px;
-  }
-
-  .param-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .param-label {
-    flex: 1 1 auto;
-    min-width: 0;
-    font-size: 0.78rem;
-    color: #5c5146;
-  }
-
-  .keyword-row .num-control input {
-    width: 2rem;
-    height: 26px;
-    font-size: 0.85rem;
-  }
-
-  .keyword-row .step-arrows {
-    width: 14px;
-  }
-
-  .toggle {
-    position: relative;
-    width: 34px;
-    height: 18px;
-    flex-shrink: 0;
-    background: #d8c9ad;
-    border: 1px solid rgba(90, 75, 60, 0.35);
-    border-radius: 999px;
-    pointer-events: none;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
-  }
-
-  .toggle.on {
-    background: #5d8a46;
-    border-color: #4a6f38;
-  }
-
-  .toggle-knob {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 12px;
-    height: 14px;
-    background: #f5eedf;
-    border-radius: 50%;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-    transition: transform 0.15s ease;
-  }
-
-  .toggle.on .toggle-knob {
-    transform: translateX(16px);
-  }
-
-  .actions {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    min-height: 3.2rem;
-    padding: 10px 8px 4px;
+  .vessel-token.spell.dismissed {
+    --from-y: 150px;
   }
 
   .abandon {
@@ -1226,5 +686,13 @@
     color: var(--color-cream);
     border-color: var(--color-brass);
     background: color-mix(in srgb, var(--color-data) 55%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vessel-pick.absorbing .vessel-token.chosen,
+    .vessel-pick.absorbing .vessel-token.dismissed {
+      animation: none;
+      opacity: 0;
+    }
   }
 </style>

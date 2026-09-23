@@ -1,10 +1,17 @@
-import { DayPeriod } from '../../_model';
+import { DayPeriod, ResourceType } from '../../_model';
 import { bs, gs } from '../../_state';
 import { scheduleClassesForCurrentTerm } from '../../sim/academy';
+import { addResource } from '../../sim/effects/resources';
 import { simulateEvent } from '../../sim/events';
 import { goToPeriod } from '../../sim/time';
 
 const PERIODS = [DayPeriod.Morning, DayPeriod.Afternoon, DayPeriod.Evening];
+
+function resolveResource(token: string): ResourceType | undefined {
+  const key = token.toLowerCase();
+  const types = Object.values(ResourceType);
+  return types.find((type) => type === key || type.split('_').at(-1) === key);
+}
 
 export interface CommandResult {
   ok: boolean;
@@ -54,6 +61,17 @@ export function executeCommand(input: string): CommandResult {
         return { ok: false, message: `Event not found: ${eventKey}` };
       }
       return { ok: true, message: `Simulated event ${eventKey}` };
+    }
+
+    case 'res': {
+      // /res <dust|mithril|moxes> <amount>
+      const resourceType = parts[1] ? resolveResource(parts[1]) : undefined;
+      const amount = parseInt(parts[2], 10);
+      if (!resourceType || Number.isNaN(amount)) {
+        return { ok: false, message: 'Usage: /res <dust|mithril|moxes> <amount>' };
+      }
+      const message = addResource({ resourceType, amount });
+      return { ok: true, message };
     }
 
     default:

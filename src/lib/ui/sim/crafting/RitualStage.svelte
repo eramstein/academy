@@ -5,8 +5,23 @@
   import { playAddResourceSound } from '@/lib/sim/sound';
   import type { Snippet } from 'svelte';
   import { untrack } from 'svelte';
+  import { fly, scale } from 'svelte/transition';
+  import { cubicOut } from 'svelte/easing';
   import IngredientPile from './IngredientPile.svelte';
   import RitualCircle from './RitualCircle.svelte';
+
+  export type RitualCharm = { id: string; icon: string };
+
+  type CharmFlight = {
+    id: string;
+    icon: string;
+    dir: 'in' | 'out';
+    fromX: number | null;
+    fromY: number | null;
+    start: number;
+    duration: number;
+    gen: number;
+  };
 
   let {
     selected = $bindable(),
@@ -14,6 +29,15 @@
     ignite = false,
     dim = false,
     consume = false,
+    split = false,
+    charms = [],
+    onCharmLanded,
+    circleContent,
+    vessel,
+    showVessel = false,
+    showFlank = true,
+    suppressCore = false,
+    flank,
     children,
   }: {
     selected: Record<ResourceType, number>;
@@ -21,27 +45,52 @@
     ignite?: boolean;
     dim?: boolean;
     consume?: boolean;
+    /** Resources on one side, tray on the other; vessel sits inside the circle. */
+    split?: boolean;
+    charms?: RitualCharm[];
+    onCharmLanded?: (id: string) => void;
+    /** Overlay inside the ritual circle (e.g. Unit / Spell pick). */
+    circleContent?: Snippet;
+    /** Card preview shown inside the circle. */
+    vessel?: Snippet;
+    showVessel?: boolean;
+    showFlank?: boolean;
+    /** Fade the rotating core glyph (vessel flight / forming card). */
+    suppressCore?: boolean;
+    flank?: Snippet;
     children?: Snippet;
   } = $props();
 
   const TYPES = Object.values(ResourceType);
   const BEAD = 10;
+  const CHARM = 32;
   const FLY_MS = 520;
+  const reduceMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const STAGGER = 52;
   const CONJURE_MS = 1500;
   const MAX_SPIN = 12;
   const SUCTION_START = 900;
   const SUCTION_MS = 600;
-  const RADIUS: Record<ResourceType, number> = {
+  const RADIUS_BASE: Record<ResourceType, number> = {
     [ResourceType.MagicDust]: 86,
     [ResourceType.Mithril]: 70,
     [ResourceType.Moxes]: 54,
+  };
+  /** Wider orbits when the forming card sits in the enlarged split circle. */
+  const RADIUS_SPLIT: Record<ResourceType, number> = {
+    [ResourceType.MagicDust]: 178,
+    [ResourceType.Mithril]: 168,
+    [ResourceType.Moxes]: 158,
   };
   const SPEED: Record<ResourceType, number> = {
     [ResourceType.MagicDust]: 0.0007,
     [ResourceType.Mithril]: -0.00055,
     [ResourceType.Moxes]: 0.00088,
   };
+
+  const orbitRadius = $derived(split ? RADIUS_SPLIT : RADIUS_BASE);
 
   type Token = { id: string; type: ResourceType; unit: number };
   type Flight = {
@@ -56,9 +105,16 @@
   let fed = $state(0);
   let benchEl: HTMLDivElement | undefined = $state();
   let circleEl: HTMLDivElement | undefined = $state();
+  /* eslint-disable svelte/prefer-svelte-reactivity -- mutated every animation frame */
   const tokenEls = new Map<string, HTMLElement>();
+  const charmEls = new Map<string, HTMLElement>();
   const lastPos = new Map<string, { x: number; y: number }>();
+  const lastCharmPos = new Map<string, { x: number; y: number }>();
   const flights = new Map<string, Flight>();
+  const charmGen = new Map<string, number>();
+  let charmFlights = $state<CharmFlight[]>([]);
+  let seenCharms = new Map<string, string>();
+  /* eslint-enable svelte/prefer-svelte-reactivity */
   let prevSelected: Record<ResourceType, number> = { ...selected };
   let consumeAt = 0;
   let orbitClock = 0;
@@ -126,6 +182,47 @@
     };
   }
 
+  function registerCharm(node: HTMLElement, id: string) {
+    charmEls.set(id, node);
+    return {
+      destroy() {
+        charmEls.delete(id);
+      },
+    };
+  }
+
+  function charmNest(id: string, bench: DOMRect): { x: number; y: number } | null {
+    if (!benchEl) return null;
+    for (const node of benchEl.querySelectorAll('[data-charm-nest]')) {
+      if (node.getAttribute('data-charm-nest') === id) return benchPoint(node, bench);
+    }
+    return null;
+  }
+
+  function launchCharm(id: string, icon: string, dir: 'in' | 'out', now: number) {
+    const gen = (charmGen.get(id) ?? 0) + 1;
+    charmGen.set(id, gen);
+    if (reduceMotion) {
+      if (dir === 'in') onCharmLanded?.(id);
+      return;
+    }
+    const from = dir === 'out' ? lastCharmPos.get(id) : undefined;
+    charmFlights = [
+      ...charmFlights.filter((flight) => flight.id !== id),
+      {
+        id,
+        icon,
+        dir,
+        fromX: from?.x ?? null,
+        fromY: from?.y ?? null,
+        start: now,
+        duration: FLY_MS,
+        gen,
+      },
+    ];
+    if (dir === 'in') fed += 1;
+  }
+
   function benchPoint(el: Element, bench: DOMRect): { x: number; y: number } {
     const rect = el.getBoundingClientRect();
     return {
@@ -151,6 +248,27 @@
     return benchPoint(circleEl, bench);
   }
 
+  function charmLandKind(id: string): 'pigment' | 'essence' | 'rune' | null {
+    if (id.startsWith('pigment:')) return 'pigment';
+    if (id.startsWith('essence:')) return 'essence';
+    if (id.startsWith('rune:') || id.startsWith('incantation:')) return 'rune';
+    return null;
+  }
+
+  /** Landing spot on the forming card (or circle center as fallback). */
+  function charmLand(
+    id: string,
+    bench: DOMRect,
+    center: { x: number; y: number } | null
+  ): { x: number; y: number } | null {
+    const kind = charmLandKind(id);
+    if (kind && benchEl) {
+      const nest = benchEl.querySelector(`[data-charm-land="${kind}"]`);
+      if (nest) return benchPoint(nest, bench);
+    }
+    return center;
+  }
+
   function pileTarget(
     type: ResourceType,
     unit: number,
@@ -171,7 +289,7 @@
   ): { x: number; y: number } {
     const n = Math.max(1, selectedCount);
     const angle = orbitClock * SPEED[type] + (unit / n) * Math.PI * 2;
-    const radius = RADIUS[type];
+    const radius = orbitRadius[type];
     return {
       x: center.x + Math.cos(angle) * radius,
       y: center.y + Math.sin(angle) * radius,
@@ -226,6 +344,21 @@
         if (before !== after) startFlights(type, before, after, now);
       }
       prevSelected = { ...next };
+    });
+  });
+
+  $effect(() => {
+    const next = charms;
+    untrack(() => {
+      const now = performance.now();
+      const nextIds = new Set(next.map((charm) => charm.id));
+      for (const [id, icon] of seenCharms) {
+        if (!nextIds.has(id)) launchCharm(id, icon, 'out', now);
+      }
+      for (const charm of next) {
+        if (!seenCharms.has(charm.id)) launchCharm(charm.id, charm.icon, 'in', now);
+      }
+      seenCharms = new Map(next.map((charm) => [charm.id, charm.icon]));
     });
   });
 
@@ -359,48 +492,180 @@
       el.style.opacity = String(opacity);
       el.classList.toggle('flying', flying);
     }
+    paintCharms(now, bench, center);
+  }
+
+  function paintCharms(
+    now: number,
+    bench: DOMRect,
+    center: { x: number; y: number } | null
+  ) {
+    const done: string[] = [];
+    for (const flight of charmFlights) {
+      const el = charmEls.get(flight.id);
+      if (!el) continue;
+      if (charmGen.get(flight.id) !== flight.gen) {
+        done.push(flight.id);
+        continue;
+      }
+
+      let fromX = flight.fromX;
+      let fromY = flight.fromY;
+      if (fromX === null || fromY === null) {
+        const origin =
+          flight.dir === 'in' ? charmNest(flight.id, bench) : charmLand(flight.id, bench, center);
+        if (!origin) continue;
+        fromX = origin.x;
+        fromY = origin.y;
+        flight.fromX = fromX;
+        flight.fromY = fromY;
+        flight.start = now;
+      }
+
+      const dest =
+        flight.dir === 'in' ? charmLand(flight.id, bench, center) : charmNest(flight.id, bench);
+      const t = (now - flight.start) / flight.duration;
+      if (!dest) {
+        if (t >= 1) done.push(flight.id);
+        else el.style.opacity = String(Math.max(0, 1 - ease(Math.max(0, t))));
+        continue;
+      }
+
+      let x: number;
+      let y: number;
+      let scale = 1;
+      let opacity = 1;
+      if (t >= 1) {
+        done.push(flight.id);
+        x = dest.x;
+        y = dest.y;
+        scale = flight.dir === 'in' ? 0.3 : 1;
+        opacity = 0;
+      } else {
+        const k = ease(Math.max(0, t));
+        x = lerp(fromX, dest.x, k);
+        y = lerp(fromY, dest.y, k);
+        scale = flight.dir === 'in' ? lerp(1, 0.4, k) : lerp(0.4, 1, k);
+        opacity = flight.dir === 'in' && k > 0.78 ? 1 - (k - 0.78) / 0.22 : 1;
+      }
+
+      lastCharmPos.set(flight.id, { x, y });
+      el.style.transform = `translate(${x - CHARM / 2}px, ${y - CHARM / 2}px) scale(${scale})`;
+      el.style.opacity = String(opacity);
+    }
+
+    if (!done.length) return;
+    const landed = charmFlights
+      .filter(
+        (flight) =>
+          done.includes(flight.id) &&
+          flight.dir === 'in' &&
+          charmGen.get(flight.id) === flight.gen
+      )
+      .map((flight) => flight.id);
+    charmFlights = charmFlights.filter((flight) => !done.includes(flight.id));
+    for (const id of landed) onCharmLanded?.(id);
   }
 </script>
 
-<div class="bench" class:consume bind:this={benchEl}>
-  <div class="prep">
-    <div class="materials">
-      {#each resourceRows as row (row.type)}
-        <IngredientPile
-          type={row.type}
-          selected={row.selected}
-          owned={row.owned}
-          {disabled}
-          onChange={(next) => feed(row.type, next)}
-        />
-      {/each}
-    </div>
+<div class="bench" class:consume class:split bind:this={benchEl}>
+  <div class="prep" class:split>
+    {#if split}
+      <div class="materials-col">
+        <div class="materials">
+          {#each resourceRows as row (row.type)}
+            <IngredientPile
+              type={row.type}
+              selected={row.selected}
+              owned={row.owned}
+              {disabled}
+              onChange={(next) => feed(row.type, next)}
+            />
+          {/each}
+        </div>
+        <div class="gauge-pair">
+          <div class="gauge">
+            <span class="gauge-label">Learning</span>
+            <span class="gauge-track" aria-hidden="true">
+              <span
+                class="gauge-fill"
+                style="transform: scaleX({Math.min(1, bonuses.learningChance)})"
+              ></span>
+            </span>
+            <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
+          </div>
+          <div class="gauge">
+            <span class="gauge-label">Fortune</span>
+            <span class="gauge-track" aria-hidden="true">
+              <span
+                class="gauge-fill"
+                style="transform: scaleX({Math.min(1, bonuses.extraBudgetChance)})"
+              ></span>
+            </span>
+            <span class="gauge-value">{formatChance(bonuses.extraBudgetChance)}</span>
+          </div>
+        </div>
+      </div>
+    {:else}
+      <div class="materials">
+        {#each resourceRows as row (row.type)}
+          <IngredientPile
+            type={row.type}
+            selected={row.selected}
+            owned={row.owned}
+            {disabled}
+            onChange={(next) => feed(row.type, next)}
+          />
+        {/each}
+      </div>
+    {/if}
 
     <div class="ritual">
-      <div class="gauge">
-        <span class="gauge-label">Learning</span>
-        <span class="gauge-track" aria-hidden="true">
-          <span class="gauge-fill" style="transform: scaleX({Math.min(1, bonuses.learningChance)})"
-          ></span>
-        </span>
-        <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
+      {#if !split}
+        <div class="gauge">
+          <span class="gauge-label">Learning</span>
+          <span class="gauge-track" aria-hidden="true">
+            <span class="gauge-fill" style="transform: scaleX({Math.min(1, bonuses.learningChance)})"
+            ></span>
+          </span>
+          <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
+        </div>
+      {/if}
+
+      <div class="ritual-core">
+        <div class="circle-slot" bind:this={circleEl}>
+          <RitualCircle {charge} {ignite} {dim} {fed} suppressCore={suppressCore || showVessel} />
+          {#if circleContent}
+            <div class="circle-content">{@render circleContent()}</div>
+          {/if}
+          {#if showVessel && vessel}
+            <div class="vessel">
+              <div class="vessel-inner" in:scale={{ start: 0.72, duration: 420, easing: cubicOut }}>
+                {@render vessel()}
+              </div>
+            </div>
+          {/if}
+        </div>
       </div>
 
-      <div class="circle-slot" bind:this={circleEl}>
-        <RitualCircle {charge} {ignite} {dim} {fed} />
-      </div>
-
-      <div class="gauge">
-        <span class="gauge-label">Fortune</span>
-        <span class="gauge-track" aria-hidden="true">
-          <span
-            class="gauge-fill"
-            style="transform: scaleX({Math.min(1, bonuses.extraBudgetChance)})"
-          ></span>
-        </span>
-        <span class="gauge-value">{formatChance(bonuses.extraBudgetChance)}</span>
-      </div>
+      {#if !split}
+        <div class="gauge">
+          <span class="gauge-label">Fortune</span>
+          <span class="gauge-track" aria-hidden="true">
+            <span
+              class="gauge-fill"
+              style="transform: scaleX({Math.min(1, bonuses.extraBudgetChance)})"
+            ></span>
+          </span>
+          <span class="gauge-value">{formatChance(bonuses.extraBudgetChance)}</span>
+        </div>
+      {/if}
     </div>
+    {#if showFlank && flank}
+      <div class="flank" in:fly={{ x: 28, duration: 460, delay: 100 }}>
+        <div class="flank-body">{@render flank()}</div>
+      </div>
+    {/if}
   </div>
 
   {@render children?.()}
@@ -408,6 +673,9 @@
   <div class="beads" aria-hidden="true">
     {#each tokens as token (token.id)}
       <span class="bead" data-type={token.type} use:registerToken={token.id}></span>
+    {/each}
+    {#each charmFlights as flight (flight.id + ':' + flight.gen)}
+      <img class="charm" src={flight.icon} alt="" use:registerCharm={flight.id} />
     {/each}
   </div>
 </div>
@@ -417,6 +685,11 @@
     position: relative;
     min-height: 360px;
     flex: 1 1 auto;
+    overflow: visible;
+  }
+
+  .bench.split {
+    min-height: 400px;
   }
 
   .prep {
@@ -440,6 +713,191 @@
     opacity: 0;
     transform: translateY(36px) scale(0.45);
     pointer-events: none;
+  }
+
+  .prep.split {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+    overflow: visible;
+  }
+
+  .prep.split .materials {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    flex: 0 0 auto;
+    gap: 2px;
+  }
+
+  .materials-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    align-self: stretch;
+    gap: 10px;
+    flex: 0 0 auto;
+    width: 10.5rem;
+  }
+
+  .materials-col .materials {
+    width: 100%;
+  }
+
+  .materials-col .gauge-pair {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(90, 75, 60, 0.28);
+  }
+
+  .materials-col .gauge {
+    display: grid;
+    grid-template-columns: 5.2rem minmax(2rem, 1fr) 2.6rem;
+    align-items: center;
+    column-gap: 8px;
+    flex-direction: row;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .materials-col .gauge-label {
+    width: auto;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-align: left;
+  }
+
+  .materials-col .gauge-track {
+    width: 100%;
+    min-width: 0;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(44, 37, 29, 0.16);
+  }
+
+  .materials-col .gauge-value {
+    width: auto;
+    margin: 0;
+    font-size: 0.95rem;
+    text-align: right;
+  }
+
+  .prep.split .ritual {
+    flex: 0 0 auto;
+    justify-content: center;
+    align-self: center;
+  }
+
+  .prep.split .circle-slot {
+    width: 380px;
+    height: 380px;
+    margin: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .prep.split .circle-slot :global(.circle) {
+    transform: none;
+  }
+
+  .circle-slot {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    overflow: visible;
+  }
+
+  .circle-content {
+    position: absolute;
+    inset: -36px;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .circle-content > :global(*) {
+    pointer-events: auto;
+  }
+
+  .ritual-core {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+  }
+
+  .vessel {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 3;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .vessel-inner {
+    pointer-events: none;
+  }
+
+  .vessel-inner > :global(*) {
+    pointer-events: auto;
+  }
+
+  .prep.split .materials :global(.pile) {
+    width: 6.3rem;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .flank {
+    flex: 1 1 16rem;
+    min-width: 0;
+    max-height: none;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 2px 4px 2px 10px;
+    border-left: 1px solid rgba(90, 75, 60, 0.28);
+    overflow: hidden;
+  }
+
+  .flank-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    .flank-body {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(90, 75, 60, 0.45) transparent;
+    }
+  }
+
+  .flank-body::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .flank-body::-webkit-scrollbar-thumb {
+    background: rgba(90, 75, 60, 0.45);
+    border-radius: 3px;
+  }
+
+  .gauge-pair {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
   }
 
   .ritual {
@@ -533,6 +991,39 @@
       0 0 0 1px rgba(44, 37, 29, 0.5),
       0 1px 2px rgba(42, 24, 16, 0.4),
       0 0 8px var(--color-brass);
+  }
+
+  .charm {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    opacity: 0;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 4px rgba(42, 24, 16, 0.45));
+    will-change: transform, opacity;
+  }
+
+  .bench.split {
+    container-type: inline-size;
+    container-name: invocation;
+  }
+
+  @container invocation (max-width: 620px) {
+    .prep.split {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .flank {
+      width: 100%;
+      max-height: 42vh;
+      border-left: none;
+      border-top: 1px solid rgba(90, 75, 60, 0.28);
+      padding-left: 0;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
