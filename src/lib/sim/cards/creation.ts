@@ -16,7 +16,11 @@ import {
 } from '@/lib/_utils/random';
 import type { CardCreationParameters } from '../actions';
 import { buildAbility, pickRandomAbility } from './ability-templates';
-import { pickRandomActionTemplate } from './action-templates';
+import {
+  createActionTemplate,
+  defaultActionFactoryArgs,
+  pickRandomActionTemplate,
+} from './action-templates';
 import { getBudgetFromCost, getCardBudget } from './card-budget';
 import { colorPie, type StatsPreference } from './color-pie';
 import { KEYWORD_KEYS, NUMERIC_KEYWORDS, keywordConfig } from './keywords';
@@ -77,6 +81,26 @@ export function buildSpellCard(parameters: CardCreationParameters): {
   actionName: string[];
 } {
   const cardColors = resolveCardColors(parameters.colors);
+
+  // Invoke: player picked one action (and optional numeric args) — use it exactly.
+  if (parameters.actions?.length === 1 && parameters.actionArgs !== undefined) {
+    const name = parameters.actions[0];
+    const action = createActionTemplate(
+      name,
+      parameters.actionArgs ?? defaultActionFactoryArgs(name)
+    );
+    const card: PartialConjuredSpell = {
+      type: CardType.Spell,
+      colors: cardColors,
+      actions: [action.definition],
+    };
+    return {
+      card,
+      budget: getCardBudget(card),
+      actionName: [name],
+    };
+  }
+
   const targetCost = Number(getRandomFromObjectWeights(costDistribution));
   const targetBudget = getBudgetFromCost(targetCost, cardColors);
 

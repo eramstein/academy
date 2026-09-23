@@ -39,6 +39,8 @@ export interface CardCreationParameters {
   keywords?: UnitKeywords;
   ability?: AbilityPick;
   actions?: string[];
+  /** Factory args for the selected spell action (Invoke). When set with a single action, that action is used as-is. */
+  actionArgs?: Record<string, number>;
   unitTypes?: UnitType[];
   resources: { type: ResourceType; count: number }[];
 }

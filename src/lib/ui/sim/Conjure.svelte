@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { CardTemplate } from '@/lib/_model';
   import { ResourceType } from '@/lib/_model';
-  import { getAssetPath } from '@/lib/_utils/asset-paths';
   import {
     getConjurationOptionCount,
     type CardCreationResult,
@@ -13,8 +12,6 @@
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import RitualStage from './crafting/RitualStage.svelte';
   import WorkbenchShell from './crafting/WorkbenchShell.svelte';
-
-  const flourishPath = getAssetPath('images/ui/decorations/page-flourish.svg');
 
   type ResourceAmount = { type: ResourceType; count: number };
   type Phase = 'idle' | 'conjuring' | 'revealed';
@@ -56,6 +53,7 @@
   let pickedId = $state<string | null>(null);
   let revealTimer: ReturnType<typeof setTimeout> | undefined;
   let pickTimer: ReturnType<typeof setTimeout> | undefined;
+  let incantationInput: HTMLInputElement | undefined = $state();
 
   const title = $derived(
     phase === 'idle' ? 'Conjuration' : phase === 'conjuring' ? 'Conjuring' : 'Choose your creation'
@@ -75,6 +73,12 @@
       if (revealTimer) clearTimeout(revealTimer);
       if (pickTimer) clearTimeout(pickTimer);
     };
+  });
+
+  $effect(() => {
+    if (phase === 'idle') {
+      incantationInput?.focus();
+    }
   });
 
   function countsFrom(list: ResourceAmount[]): Record<ResourceType, number> {
@@ -209,21 +213,11 @@
 
 <WorkbenchShell {title} ignite={phase === 'conjuring'}>
   {#if phase === 'idle'}
-    <label
-      class="incantation"
-      class:spoken={flavorText.trim().length > 0}
-      style="--page-flourish: url('{flourishPath}')"
-    >
-      <span class="incantation-mark" aria-hidden="true">
-        <span class="flourish"></span>
-        <span class="rule"></span>
-        <span class="word">Incantation</span>
-        <span class="rule"></span>
-        <span class="flourish mirror"></span>
-      </span>
+    <label class="incantation" class:spoken={flavorText.trim().length > 0}>
       <span class="incantation-field">
         <span class="quote open" aria-hidden="true">“</span>
         <input
+          bind:this={incantationInput}
           type="text"
           class="incantation-input"
           bind:value={flavorText}
@@ -231,10 +225,10 @@
           maxlength="120"
           autocomplete="off"
           spellcheck="false"
+          aria-label="Incantation"
         />
         <span class="quote close" aria-hidden="true">”</span>
       </span>
-      <span class="incantation-hint">Optional — shapes its name and nature</span>
     </label>
   {/if}
   <RitualStage
@@ -293,52 +287,8 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 4px;
     margin: 2px 0 14px;
     cursor: text;
-  }
-
-  .incantation-mark {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 2px;
-  }
-
-  .incantation-mark .word {
-    flex: 0 0 auto;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: #4a3f32;
-  }
-
-  .incantation-mark .rule {
-    flex: 1 1 auto;
-    max-width: 72px;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--color-brown-border) 70%, transparent),
-      transparent
-    );
-  }
-
-  .incantation-mark .flourish {
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
-    opacity: 0.42;
-    background: var(--color-ink-muted);
-    mask: var(--page-flourish) center / contain no-repeat;
-    -webkit-mask: var(--page-flourish) center / contain no-repeat;
-  }
-
-  .incantation-mark .flourish.mirror {
-    transform: scaleX(-1);
   }
 
   .incantation-field {
@@ -426,14 +376,6 @@
 
   .incantation:focus-within .incantation-input {
     text-shadow: 0 0 18px color-mix(in srgb, var(--color-golden) 28%, transparent);
-  }
-
-  .incantation-hint {
-    margin-top: 2px;
-    text-align: center;
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
-    color: color-mix(in srgb, var(--color-ink-muted) 85%, transparent);
   }
 
   .creations {

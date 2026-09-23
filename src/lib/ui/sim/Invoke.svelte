@@ -11,6 +11,7 @@
   } from '@/lib/sim/cards/ability-templates';
   import {
     ACTION_TEMPLATE_KEYS,
+    actionNumericParams,
     createActionTemplate,
     defaultActionFactoryArgs,
     getActionTemplateMeta,
@@ -20,6 +21,7 @@
   import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
   import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
+  import OrnateButton from '@/lib/ui/OrnateButton.svelte';
 
   let {
     action,
@@ -33,7 +35,6 @@
 
   const STAT_MAX = 20;
   const CARD_TYPES = [CardType.Unit, CardType.Spell] as const;
-  const woodPath = getAssetPath('images/ui/backgrounds/wood_chip_base.png');
   const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
@@ -53,7 +54,9 @@
   let keywords = $state<Partial<Record<keyof UnitKeywords, number>>>({});
   let abilityTrigger = $state<string>('onDeploy');
   let abilityAction = $state<string | null>(null);
+  let abilityArgs = $state<Record<string, number>>({});
   let spellAction = $state<string | null>(null);
+  let spellArgs = $state<Record<string, number>>({});
 
   function cancel() {
     (onBack ?? onDone)();
@@ -80,7 +83,13 @@
   const isUnit = $derived(cardType === CardType.Unit);
   const selectedColors = $derived(colors.length ? colors : availableColors);
   const abilityPick = $derived(
-    abilityAction ? { trigger: abilityTrigger, action: abilityAction } : undefined
+    abilityAction
+      ? {
+          trigger: abilityTrigger,
+          action: abilityAction,
+          args: Object.keys(abilityArgs).length ? abilityArgs : defaultActionFactoryArgs(abilityAction),
+        }
+      : undefined
   );
   const draftAbility = $derived(abilityPick ? buildAbility(abilityPick) : null);
 
@@ -93,6 +102,11 @@
         cardType: CardType.Spell,
         colors: colors.length ? colors : undefined,
         actions: spellAction ? [spellAction] : undefined,
+        actionArgs: spellAction
+          ? Object.keys(spellArgs).length
+            ? spellArgs
+            : defaultActionFactoryArgs(spellAction)
+          : undefined,
         resources,
       };
     }
@@ -119,7 +133,8 @@
   }));
 
   function keywordCost(key: keyof UnitKeywords): number {
-    return getKeywordBudget(key, draftUnit);
+    const amount = NUMERIC_KEYWORDS.has(key) ? keywords[key] || 1 : 1;
+    return getKeywordBudget(key, draftUnit, amount);
   }
 
   function abilityCost(): number {
@@ -129,9 +144,16 @@
 
   const spellActionCost = $derived.by(() => {
     if (!spellAction) return 0;
-    const template = createActionTemplate(spellAction, defaultActionFactoryArgs(spellAction));
+    const args = Object.keys(spellArgs).length
+      ? spellArgs
+      : defaultActionFactoryArgs(spellAction);
+    const template = createActionTemplate(spellAction, args);
     return getActionBudget(template.definition, selectedColors);
   });
+
+  function budgetTitle(base: string, cost: number): string {
+    return cost ? `${base}\nBudget cost: ${cost}` : base;
+  }
 
   function toUnitKeywords(
     selected: Partial<Record<keyof UnitKeywords, number>>
@@ -199,11 +221,31 @@
   }
 
   function toggleAbilityAction(name: string) {
-    abilityAction = abilityAction === name ? null : name;
+    if (abilityAction === name) {
+      abilityAction = null;
+      abilityArgs = {};
+      return;
+    }
+    abilityAction = name;
+    abilityArgs = defaultActionFactoryArgs(name);
   }
 
   function toggleSpellAction(name: string) {
-    spellAction = spellAction === name ? null : name;
+    if (spellAction === name) {
+      spellAction = null;
+      spellArgs = {};
+      return;
+    }
+    spellAction = name;
+    spellArgs = defaultActionFactoryArgs(name);
+  }
+
+  function setAbilityArg(key: string, value: number) {
+    abilityArgs = { ...abilityArgs, [key]: clamp(value, 1, STAT_MAX) };
+  }
+
+  function setSpellArg(key: string, value: number) {
+    spellArgs = { ...spellArgs, [key]: clamp(value, 1, STAT_MAX) };
   }
 
   function adjustKeyword(key: keyof UnitKeywords, delta: number) {
@@ -339,7 +381,7 @@
     class="frame"
     role="dialog"
     aria-labelledby="invoke-title"
-    style="--wood: url('{woodPath}'); --table: url('{tablePath}'); --parchment: url('{parchmentPath}')"
+    style="--table: url('{tablePath}'); --parchment: url('{parchmentPath}')"
   >
     <div class="panel">
       <h2 id="invoke-title" class="title">
@@ -452,7 +494,7 @@
               <div
                 class="keyword-row"
                 class:on={value > 0}
-                title={getKeywordTooltip(key, value || 1)}
+                title={budgetTitle(getKeywordTooltip(key, value || 1), keywordCost(key))}
                 onclick={(event) => onKeywordRowClick(event, key, true)}
                 oncontextmenu={(event) => onKeywordRowClick(event, key, true)}
               >
@@ -463,7 +505,6 @@
                   aria-hidden="true"
                 />
                 <span class="keyword-name">{formatKeyword(key)}</span>
-                <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
                 {@render stepper(value, 0, formatKeyword(key), (next) => setKeyword(key, next))}
               </div>
             {:else}
@@ -473,7 +514,7 @@
                 class:on={selected}
                 role="switch"
                 aria-checked={selected}
-                title={getKeywordTooltip(key)}
+                title={budgetTitle(getKeywordTooltip(key), keywordCost(key))}
                 onclick={(event) => onKeywordRowClick(event, key, false)}
                 oncontextmenu={(event) => onKeywordRowClick(event, key, false)}
               >
@@ -484,7 +525,6 @@
                   aria-hidden="true"
                 />
                 <span class="keyword-name">{formatKeyword(key)}</span>
-                <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
                 <span class="toggle" class:on={selected} aria-hidden="true">
                   <span class="toggle-knob"></span>
                 </span>
@@ -498,9 +538,6 @@
         <h3 class="section-heading">
           <span class="section-icon star-icon" aria-hidden="true"></span>
           Ability
-          {#if draftAbility}
-            <span class="ability-cost" title="Budget cost">{abilityCost()}</span>
-          {/if}
         </h3>
         {#if knownActions.length === 0}
           <p class="empty">No known actions yet.</p>
@@ -538,18 +575,43 @@
               {#each knownActions as name (name)}
                 {@const selected = abilityAction === name}
                 {@const meta = getActionTemplateMeta(name)}
-                <div
-                  class="keyword-row"
-                  class:on={selected}
-                  role="switch"
-                  aria-checked={selected}
-                  title={getActionTooltip(name)}
-                  onclick={() => toggleAbilityAction(name)}
-                >
-                  <span class="keyword-name">{meta?.label ?? name}</span>
-                  <span class="toggle" class:on={selected} aria-hidden="true">
-                    <span class="toggle-knob"></span>
-                  </span>
+                {@const numeric = actionNumericParams[name] ?? []}
+                <div class="action-block">
+                  <div
+                    class="keyword-row"
+                    class:on={selected}
+                    role="switch"
+                    aria-checked={selected}
+                    title={budgetTitle(
+                      getActionTooltip(name),
+                      selected && draftAbility ? abilityCost() : 0
+                    )}
+                    onclick={() => toggleAbilityAction(name)}
+                  >
+                    <span class="keyword-name">{meta?.label ?? name}</span>
+                    <span class="toggle" class:on={selected} aria-hidden="true">
+                      <span class="toggle-knob"></span>
+                    </span>
+                  </div>
+                  {#if selected && numeric.length}
+                    <div class="param-list">
+                      {#each numeric as param (param.factoryKey)}
+                        <div
+                          class="param-row"
+                          onclick={(event) => event.stopPropagation()}
+                          oncontextmenu={(event) => event.stopPropagation()}
+                        >
+                          <span class="param-label">{param.label}</span>
+                          {@render stepper(
+                            abilityArgs[param.factoryKey] ?? 1,
+                            1,
+                            param.label,
+                            (next) => setAbilityArg(param.factoryKey, next)
+                          )}
+                        </div>
+                      {/each}
+                    </div>
+                  {/if}
                 </div>
               {/each}
             </div>
@@ -561,9 +623,6 @@
         <h3 class="section-heading">
           <span class="section-icon star-icon" aria-hidden="true"></span>
           Effect
-          {#if spellAction}
-            <span class="ability-cost" title="Budget cost">{spellActionCost}</span>
-          {/if}
         </h3>
         {#if knownActions.length === 0}
           <p class="empty">No known actions yet.</p>
@@ -572,32 +631,54 @@
             {#each knownActions as name (name)}
               {@const selected = spellAction === name}
               {@const meta = getActionTemplateMeta(name)}
-              <div
-                class="keyword-row"
-                class:on={selected}
-                role="switch"
-                aria-checked={selected}
-                title={getActionTooltip(name)}
-                onclick={() => toggleSpellAction(name)}
-              >
-                <span class="keyword-name">{meta?.label ?? name}</span>
-                <span class="toggle" class:on={selected} aria-hidden="true">
-                  <span class="toggle-knob"></span>
-                </span>
+              {@const numeric = actionNumericParams[name] ?? []}
+              <div class="action-block">
+                <div
+                  class="keyword-row"
+                  class:on={selected}
+                  role="switch"
+                  aria-checked={selected}
+                  title={budgetTitle(getActionTooltip(name), selected ? spellActionCost : 0)}
+                  onclick={() => toggleSpellAction(name)}
+                >
+                  <span class="keyword-name">{meta?.label ?? name}</span>
+                  <span class="toggle" class:on={selected} aria-hidden="true">
+                    <span class="toggle-knob"></span>
+                  </span>
+                </div>
+                {#if selected && numeric.length}
+                  <div class="param-list">
+                    {#each numeric as param (param.factoryKey)}
+                      <div
+                        class="param-row"
+                        onclick={(event) => event.stopPropagation()}
+                        oncontextmenu={(event) => event.stopPropagation()}
+                      >
+                        <span class="param-label">{param.label}</span>
+                        {@render stepper(
+                          spellArgs[param.factoryKey] ?? 1,
+                          1,
+                          param.label,
+                          (next) => setSpellArg(param.factoryKey, next)
+                        )}
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
               </div>
             {/each}
           </div>
         {/if}
       </section>
       {/if}
-
-      <footer class="actions">
-        <button type="button" class="action-btn cancel" onclick={cancel}>
-          {onBack ? 'Back' : 'Cancel'}
-        </button>
-        <button type="button" class="action-btn confirm" onclick={confirm}>Invoke</button>
-      </footer>
     </div>
+
+    <footer class="actions">
+      <button type="button" class="abandon" onclick={cancel}>
+        {onBack ? 'Back' : 'Cancel'}
+      </button>
+      <OrnateButton icon="spiral" onclick={confirm}>Invoke</OrnateButton>
+    </footer>
   </div>
 </div>
 
@@ -620,9 +701,9 @@
     max-height: 90vh;
     display: flex;
     flex-direction: column;
-    padding: 10px;
-    background: #4a2a18 var(--table) center / cover;
-    border: 2px solid #2a1810;
+    padding: 10px 10px 8px;
+    background: var(--color-wood, #4a2a18) var(--table) center / cover;
+    border: 2px solid var(--color-deep-brown, #2a1810);
     border-radius: 4px;
     box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
     box-sizing: border-box;
@@ -641,6 +722,7 @@
     box-sizing: border-box;
     font-family: Georgia, 'Times New Roman', serif;
     font-size: 1rem;
+    border-radius: 3px;
     box-shadow: inset 0 0 28px rgba(90, 75, 60, 0.12);
   }
 
@@ -982,17 +1064,6 @@
     color: #5c5146;
   }
 
-  .section-heading .ability-cost {
-    margin-left: auto;
-    min-width: 1.4rem;
-    font-size: 0.78rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0;
-    text-transform: none;
-    color: #5c5146;
-    text-align: right;
-  }
-
   .keyword-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1061,13 +1132,31 @@
     border-radius: 6px;
   }
 
-  .keyword-cost {
-    flex-shrink: 0;
-    min-width: 1.4rem;
+  .action-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .param-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 8px;
+  }
+
+  .param-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .param-label {
+    flex: 1 1 auto;
+    min-width: 0;
     font-size: 0.78rem;
-    font-variant-numeric: tabular-nums;
     color: #5c5146;
-    text-align: right;
   }
 
   .keyword-row .num-control input {
@@ -1115,44 +1204,27 @@
 
   .actions {
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 12px;
-    padding-top: 14px;
+    gap: 16px;
+    min-height: 3.2rem;
+    padding: 10px 8px 4px;
   }
 
-  .action-btn {
-    min-width: 7.5rem;
-    font-family: inherit;
-    font-size: 1rem;
-    color: #f0e6c8;
-    background: #3a221f var(--wood) center / cover;
-    border: 1px solid #2a110a;
+  .abandon {
+    font-family: var(--font-narrative);
+    font-size: 0.92rem;
+    color: var(--color-muted-label);
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--color-brass) 45%, transparent);
     border-radius: 4px;
-    padding: 8px 20px;
+    padding: 8px 16px;
     cursor: pointer;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 2px 4px rgba(0, 0, 0, 0.35);
   }
 
-  .action-btn:hover:not(:disabled) {
-    filter: brightness(1.12);
-  }
-
-  .action-btn.confirm {
-    color: #f0e6c8;
-    border: 2px solid #000;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 2px 4px rgba(0, 0, 0, 0.35);
-  }
-
-  .action-btn.cancel {
-    color: #ececec;
-    background: #6e6e6e;
-    border: 1px solid #4a4a4a;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.18),
-      0 2px 4px rgba(0, 0, 0, 0.25);
+  .abandon:hover {
+    color: var(--color-cream);
+    border-color: var(--color-brass);
+    background: color-mix(in srgb, var(--color-data) 55%, transparent);
   }
 </style>
