@@ -3,7 +3,8 @@ import type { FlavorTemplate, GameplayTemplate, PowerLevel } from './types';
 /** Fraction of max possible match score a candidate must reach to reuse. */
 export const MATCH_SCORE_THRESHOLD = 0.8;
 
-const COLOR_MATCH_WEIGHT = 9;
+const CARD_TYPE_MATCH_WEIGHT = 6;
+const COLOR_MATCH_WEIGHT = 6;
 const POWER_EXACT_MATCH_WEIGHT = 2;
 const POWER_NEAR_MATCH_WEIGHT = 1;
 const KEYWORD_MATCH_WEIGHT = 3;
@@ -14,6 +15,7 @@ const POWER_ORDER: PowerLevel[] = ['weak', 'medium', 'powerful'];
 
 export interface FlavorScoreBreakdown {
   total: number;
+  cardType: number;
   colors: number;
   power: number;
   keywords: number;
@@ -23,12 +25,13 @@ export interface FlavorScoreBreakdown {
 
 /** Perfect-match score for a gameplay template (all factors matched exactly). */
 export function maxFlavorMatchScore(gameplay: GameplayTemplate): number {
+  const cardType = CARD_TYPE_MATCH_WEIGHT;
   const colors = gameplay.colors.length * COLOR_MATCH_WEIGHT;
   const power = POWER_EXACT_MATCH_WEIGHT;
   const keywords = (gameplay.keywords?.length ?? 0) * KEYWORD_MATCH_WEIGHT;
   const unitTypes = (gameplay.unitTypes?.length ?? 0) * UNIT_TYPE_MATCH_WEIGHT;
   const actions = (gameplay.actions?.length ?? 0) * ACTION_MATCH_WEIGHT;
-  return colors + power + keywords + unitTypes + actions;
+  return cardType + colors + power + keywords + unitTypes + actions;
 }
 
 /** Absolute score a candidate must reach for the given gameplay template. */
@@ -50,6 +53,9 @@ export function scoreFlavorTemplateDetailed(
   template: FlavorTemplate,
   gameplay: GameplayTemplate
 ): FlavorScoreBreakdown {
+  const cardType =
+    template.cardType === gameplay.cardType ? CARD_TYPE_MATCH_WEIGHT : 0;
+
   let colors = 0;
   for (const color of gameplay.colors) {
     if (template.colors.includes(color)) {
@@ -95,7 +101,8 @@ export function scoreFlavorTemplateDetailed(
   }
 
   return {
-    total: colors + power + keywords + unitTypes + actions,
+    total: cardType + colors + power + keywords + unitTypes + actions,
+    cardType,
     colors,
     power,
     keywords,
