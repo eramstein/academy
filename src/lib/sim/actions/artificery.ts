@@ -176,11 +176,12 @@ export async function getConjurationOtions(
     names: new Set(character.collection.map((card) => card.name)),
     images: new Set(character.collection.map((card) => card.imageFileName)),
   };
-  // At most one option may use AI for name/image; the rest are catalog picks.
+  // Player: at most one option may use AI for name/image. NPCs: catalog only.
+  const allowAiGenerate = characterKey === 'player';
   const aiOptionIndex = optionsCount > 1 ? Math.floor(Math.random() * optionsCount) : 0;
   const options: CardCreationResult[] = [];
   for (let i = 0; i < optionsCount; i++) {
-    const useAi = i === aiOptionIndex;
+    const useAi = allowAiGenerate && i === aiOptionIndex;
     const result = await getNewCardTemplate(
       optionParameters[i],
       false,
