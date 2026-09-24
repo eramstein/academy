@@ -20,7 +20,6 @@
   } = $props();
 
   const spiral = getUiIconPath('conjure');
-  const star = getUiIconPath('star');
   const clamped = $derived(Math.min(1, Math.max(0, charge)));
   const lit = $derived(clamped > 0 || ignite);
   const unstable = $derived(clamped >= 1);
@@ -34,7 +33,7 @@
   class:unstable
   class:suppress-core={suppressCore}
   class:ornate
-  style="--charge: {clamped}; --spiral: url('{spiral}'); --star: url('{star}')"
+  style="--charge: {clamped}; --spiral: url('{spiral}')"
   aria-hidden="true"
 >
   <span class="ring outer"></span>
@@ -49,11 +48,6 @@
     </svg>
     <span class="ticks"></span>
     <span class="dust"></span>
-    {#if suppressCore}
-      <span class="medallion e"></span>
-      <span class="medallion s"></span>
-      <span class="medallion w"></span>
-    {/if}
   {/if}
   <span class="core"></span>
   <span class="spiral"></span>
@@ -303,36 +297,6 @@
     filter: drop-shadow(0 0 3px rgba(191, 161, 74, 0.8));
     animation: spin 36s linear infinite reverse;
     pointer-events: none;
-  }
-
-  .medallion {
-    position: absolute;
-    width: 36px;
-    height: 36px;
-    margin: -18px 0 0 -18px;
-    border-radius: 50%;
-    background: #1a2433 var(--star) center / 18px 18px no-repeat;
-    border: 1.5px solid #c6a15a;
-    box-shadow:
-      0 0 0 1px rgba(42, 24, 16, 0.65),
-      0 0 12px rgba(191, 161, 74, 0.55);
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  .medallion.e {
-    top: 50%;
-    left: 98%;
-  }
-
-  .medallion.s {
-    top: 98%;
-    left: 50%;
-  }
-
-  .medallion.w {
-    top: 50%;
-    left: 2%;
   }
 
   @media (prefers-reduced-motion: reduce) {

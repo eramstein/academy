@@ -145,6 +145,10 @@
     flex: 0 0 auto;
   }
 
+  .frame.invocation .heading {
+    transform: translateX(-150px);
+  }
+
   .frame.invocation .title {
     margin: 0;
     font-size: 1.55rem;

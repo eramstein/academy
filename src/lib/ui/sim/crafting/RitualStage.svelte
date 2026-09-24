@@ -6,8 +6,8 @@
   import { playAddResourceSound } from '@/lib/sim/sound';
   import type { Snippet } from 'svelte';
   import { untrack } from 'svelte';
-  import { fly, scale } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
+  import { fly, scale } from 'svelte/transition';
   import IngredientPile from './IngredientPile.svelte';
   import RitualCircle from './RitualCircle.svelte';
 
@@ -67,27 +67,31 @@
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
   const bookIcon = getUiIconPath('book');
   const starIcon = getUiIconPath('star');
-  const BEAD = 10;
+  const RESOURCE_ICONS: Record<ResourceType, string> = {
+    [ResourceType.MagicDust]: getUiIconPath('magic_dust'),
+    [ResourceType.Mithril]: getUiIconPath('metal_bar'),
+    [ResourceType.Moxes]: getUiIconPath('gem'),
+  };
+  const BEAD = 28;
   const CHARM = 32;
   const FLY_MS = 520;
   const reduceMotion =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const STAGGER = 52;
   const CONJURE_MS = 1500;
   const MAX_SPIN = 12;
   const SUCTION_START = 900;
   const SUCTION_MS = 600;
   const RADIUS_BASE: Record<ResourceType, number> = {
-    [ResourceType.MagicDust]: 86,
-    [ResourceType.Mithril]: 70,
-    [ResourceType.Moxes]: 54,
+    [ResourceType.MagicDust]: 103,
+    [ResourceType.Mithril]: 84,
+    [ResourceType.Moxes]: 65,
   };
   /** Wider orbits when the forming card sits in the enlarged split circle. */
   const RADIUS_SPLIT: Record<ResourceType, number> = {
-    [ResourceType.MagicDust]: 178,
-    [ResourceType.Mithril]: 168,
-    [ResourceType.Moxes]: 158,
+    [ResourceType.MagicDust]: 214,
+    [ResourceType.Mithril]: 202,
+    [ResourceType.Moxes]: 190,
   };
   const SPEED: Record<ResourceType, number> = {
     [ResourceType.MagicDust]: 0.0007,
@@ -500,11 +504,7 @@
     paintCharms(now, bench, center);
   }
 
-  function paintCharms(
-    now: number,
-    bench: DOMRect,
-    center: { x: number; y: number } | null
-  ) {
+  function paintCharms(now: number, bench: DOMRect, center: { x: number; y: number } | null) {
     const done: string[] = [];
     for (const flight of charmFlights) {
       const el = charmEls.get(flight.id);
@@ -563,9 +563,7 @@
     const landed = charmFlights
       .filter(
         (flight) =>
-          done.includes(flight.id) &&
-          flight.dir === 'in' &&
-          charmGen.get(flight.id) === flight.gen
+          done.includes(flight.id) && flight.dir === 'in' && charmGen.get(flight.id) === flight.gen
       )
       .map((flight) => flight.id);
     charmFlights = charmFlights.filter((flight) => !done.includes(flight.id));
@@ -592,6 +590,7 @@
               owned={row.owned}
               {disabled}
               showCount
+              showIcon={false}
               layout="row"
               onChange={(next) => feed(row.type, next)}
             />
@@ -605,9 +604,7 @@
               <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
             </div>
             <span class="gauge-track" aria-hidden="true">
-              <span
-                class="gauge-fill"
-                style="width: {Math.min(1, bonuses.learningChance) * 100}%"
+              <span class="gauge-fill" style="width: {Math.min(1, bonuses.learningChance) * 100}%"
               ></span>
             </span>
           </div>
@@ -645,7 +642,9 @@
         <div class="gauge">
           <span class="gauge-label">Learning</span>
           <span class="gauge-track" aria-hidden="true">
-            <span class="gauge-fill" style="transform: scaleX({Math.min(1, bonuses.learningChance)})"
+            <span
+              class="gauge-fill"
+              style="transform: scaleX({Math.min(1, bonuses.learningChance)})"
             ></span>
           </span>
           <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
@@ -675,8 +674,10 @@
         </div>
       </div>
 
-      {#if split && showVessel}
-        <p class="shape-hint">Add ingredients to shape your card</p>
+      {#if split}
+        <p class="shape-hint" class:ready={showVessel} aria-hidden={!showVessel}>
+          Add ingredients to shape your card
+        </p>
       {/if}
 
       {#if !split}
@@ -703,7 +704,13 @@
 
   <div class="beads" aria-hidden="true">
     {#each tokens as token (token.id)}
-      <span class="bead" data-type={token.type} use:registerToken={token.id}></span>
+      <img
+        class="bead"
+        data-type={token.type}
+        src={RESOURCE_ICONS[token.type]}
+        alt=""
+        use:registerToken={token.id}
+      />
     {/each}
     {#each charmFlights as flight (flight.id + ':' + flight.gen)}
       <img class="charm" src={flight.icon} alt="" use:registerCharm={flight.id} />
@@ -914,9 +921,7 @@
     height: 100%;
     max-width: 100%;
     border-radius: inherit;
-    background:
-      linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.35) 100%),
-      #1a2433;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.35) 100%), #1a2433;
     transform: none;
     transform-origin: left center;
     transition: width 0.28s ease;
@@ -926,6 +931,7 @@
     justify-self: center;
     align-self: center;
     justify-content: center;
+    transform: translateX(-150px);
   }
 
   .prep.split .circle-slot {
@@ -946,6 +952,12 @@
     line-height: 1.3;
     color: var(--color-ink-muted);
     text-shadow: 0 1px 0 rgba(244, 232, 208, 0.45);
+    /* Keep layout height from pick → ready so the circle does not jump. */
+    visibility: hidden;
+  }
+
+  .shape-hint.ready {
+    visibility: visible;
   }
 
   .prep.split .circle-slot :global(.circle) {
@@ -1020,9 +1032,12 @@
     border-left: none;
     gap: 0;
     /* Inset so ingredient labels clear the page's corner ornaments. */
-    padding: 36px 26px 28px 30px;
+    padding: 46px 26px 28px 40px;
+    margin-bottom: 20px;
     background: var(--page) center / 100% 100% no-repeat;
-    transform: translateX(40px);
+    width: 100%;
+    max-width: none;
+    transform: translateX(-60px);
   }
 
   .flank-body {
@@ -1118,33 +1133,21 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--color-golden);
-    box-shadow:
-      0 0 0 1px rgba(44, 37, 29, 0.5),
-      0 1px 2px rgba(42, 24, 16, 0.4),
-      0 0 8px var(--color-golden);
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    filter: drop-shadow(0 2px 3px rgba(42, 24, 16, 0.45));
     transform: translate(-999px, -999px);
     opacity: 0;
     will-change: transform, opacity;
   }
 
-  .bead[data-type='mithril'] {
-    background: var(--color-cream);
-    box-shadow:
-      0 0 0 1px rgba(44, 37, 29, 0.5),
-      0 1px 2px rgba(42, 24, 16, 0.4),
-      0 0 8px var(--color-cream);
-  }
-
-  .bead[data-type='moxes'] {
-    background: var(--color-brass);
-    box-shadow:
-      0 0 0 1px rgba(44, 37, 29, 0.5),
-      0 1px 2px rgba(42, 24, 16, 0.4),
-      0 0 8px var(--color-brass);
+  .bead.flying {
+    filter: drop-shadow(0 2px 3px rgba(42, 24, 16, 0.45))
+      drop-shadow(0 0 8px rgba(191, 161, 74, 0.55));
   }
 
   .charm {

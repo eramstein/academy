@@ -8,6 +8,7 @@
     owned,
     disabled = false,
     showCount = false,
+    showIcon = true,
     layout = 'stack',
     onChange,
   }: {
@@ -17,6 +18,8 @@
     disabled?: boolean;
     /** Show how many are owned, and how many are in the circle. */
     showCount?: boolean;
+    /** When false, only the name / count remain (orbit icons carry the art). */
+    showIcon?: boolean;
     /** `row` puts the name and count beside the icon. */
     layout?: 'stack' | 'row';
     onChange: (next: number, event: MouseEvent) => void;
@@ -62,6 +65,7 @@
   type="button"
   class="pile"
   class:row={layout === 'row'}
+  class:iconless={!showIcon}
   class:on={selected > 0}
   class:empty
   class:bump
@@ -73,12 +77,16 @@
   oncontextmenu={(event) => commit(event, true)}
   onanimationend={() => (bump = false)}
 >
-  <span class="glyph-col">
-    <span class="glyph-wrap">
-      <span class="glyph" class:painted aria-hidden="true"></span>
+  {#if showIcon}
+    <span class="glyph-col">
+      <span class="glyph-wrap">
+        <span class="glyph" class:painted aria-hidden="true"></span>
+      </span>
+      <span class="well" data-token-nest={type} aria-hidden="true"></span>
     </span>
-    <span class="well" data-token-nest={type} aria-hidden="true"></span>
-  </span>
+  {:else}
+    <span class="well nest-only" data-token-nest={type} aria-hidden="true"></span>
+  {/if}
   <span class="meta">
     <span class="name">{label}</span>
     {#if showCount}
@@ -182,6 +190,38 @@
   .pile.row .well {
     width: 28px;
     height: 8px;
+  }
+
+  .pile.iconless {
+    gap: 0;
+    position: relative;
+  }
+
+  .pile.iconless.row {
+    padding: 8px 12px 8px 60px;
+  }
+
+  .well.nest-only {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    margin-top: -6px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pile.iconless .meta {
+    width: 100%;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .pile.iconless .stock {
+    margin-top: 0;
   }
 
   .glyph {
