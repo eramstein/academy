@@ -23,8 +23,10 @@
     spellText?: string | null;
   } = $props();
 
-  const cardboard = getAssetPath('images/ui/backgrounds/cardboard.png');
   const parchment = getAssetPath('images/ui/backgrounds/parchment.png');
+  const contour = getAssetPath('images/ui/decorations/gold-contour.png');
+  const corner = getAssetPath('images/ui/decorations/corner.png');
+  const star = getAssetPath('images/ui/icons/star.png');
   const powerIcon = getAssetPath('images/ui/icons/power-icon.png');
   const healthIcon = getAssetPath('images/ui/icons/health-icon.png');
   const armorIcon = getAssetPath('images/ui/icons/armor-icon.png');
@@ -43,8 +45,14 @@
 <div
   class="forming-card"
   style="--card-width: {CARD_WIDTH}px; --card-height: {CARD_HEIGHT +
-    40}px; --cardboard: url('{cardboard}'); --parchment: url('{parchment}'); --left-margin: 12px; --power-icon: url('{powerIcon}'); --health-icon: url('{healthIcon}'); --armor-icon: url('{armorIcon}'); --retaliate-icon: url('{retaliateIcon}')"
+    40}px; --parchment: url('{parchment}'); --contour: url('{contour}'); --corner: url('{corner}'); --star: url('{star}'); --left-margin: 12px; --power-icon: url('{powerIcon}'); --health-icon: url('{healthIcon}'); --armor-icon: url('{armorIcon}'); --retaliate-icon: url('{retaliateIcon}')"
 >
+  <span class="filigree" aria-hidden="true">
+    <span class="corner tl"></span>
+    <span class="corner tr"></span>
+    <span class="corner bl"></span>
+    <span class="corner br"></span>
+  </span>
   <!-- Charm flight landing spots (always present so ingredients can fly in before content appears). -->
   <span class="land pigment" data-charm-land="pigment" aria-hidden="true"></span>
   <span class="land essence" data-charm-land="essence" aria-hidden="true"></span>
@@ -73,6 +81,7 @@
 
   <div class="content">
     <div class="summon-mist" aria-hidden="true"></div>
+    <div class="compass" class:quiet={hasStats || hasKeywords || hasAbilities || !!spellText} aria-hidden="true"></div>
 
     {#if hasAbilities || hasStats || hasKeywords}
       <div class="bottom-section">
@@ -114,22 +123,61 @@
 
 <style>
   .forming-card {
+    --corner-size: 22px;
     width: var(--card-width);
     height: var(--card-height);
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    padding: 6px;
-    border-radius: 8px;
-    border: 1px solid #1a1a1a;
-    background: #444 var(--cardboard) center / cover;
-    background-blend-mode: multiply;
+    padding: 10px 8px 8px;
+    border-radius: 4px;
+    border: 2px solid #c6a15a;
+    background: #121820;
     box-shadow:
-      0 8px 18px rgba(0, 0, 0, 0.45),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      0 0 0 1px #5a3e1b,
+      inset 0 0 0 1px rgba(198, 161, 90, 0.45),
+      0 0 22px rgba(191, 161, 74, 0.38),
+      0 14px 22px rgba(0, 0, 0, 0.5);
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     position: relative;
     z-index: 1;
+  }
+
+  .filigree {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  .corner {
+    position: absolute;
+    width: var(--corner-size);
+    height: var(--corner-size);
+    background: var(--corner) center / 100% 100% no-repeat;
+  }
+
+  .corner.tl {
+    top: 0;
+    left: 0;
+  }
+
+  .corner.tr {
+    top: 0;
+    right: 0;
+    transform: rotate(90deg);
+  }
+
+  .corner.bl {
+    bottom: 0;
+    left: 0;
+    transform: rotate(270deg);
+  }
+
+  .corner.br {
+    bottom: 0;
+    right: 0;
+    transform: rotate(180deg);
   }
 
   .land {
@@ -160,14 +208,17 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    min-height: 28px;
-    padding: 6px 10px 4px;
-    border-radius: 6px 6px 0 0;
-    border: 1px solid #5a4b3c;
+    min-height: 26px;
+    margin: 0 6px;
+    padding: 5px 10px 4px;
+    border-radius: 2px 2px 0 0;
+    border: 1px solid #8a6a32;
     border-bottom: 2px solid #2c251d;
     background: #e8dcc4 var(--parchment) center / cover;
     background-blend-mode: multiply;
-    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.4);
+    box-shadow: inset 0 1px 2px rgba(255, 248, 230, 0.45);
+    position: relative;
+    z-index: 1;
   }
 
   .fog-name {
@@ -236,10 +287,30 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    margin: 0 4px 2px;
     padding: 8px var(--left-margin);
     overflow: hidden;
-    background: #1a1520;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    background: #141c28;
+    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.55);
+  }
+
+  .compass {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 64%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    background:
+      var(--star) center / 22% no-repeat,
+      var(--contour) center / contain no-repeat;
+    opacity: 0.32;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .compass.quiet {
+    opacity: 0.16;
   }
 
   .summon-mist {

@@ -4,20 +4,26 @@
 
   let {
     title,
+    subtitle = '',
     ignite = false,
     wide = false,
+    scene = 'parchment',
     children,
     footer,
   }: {
     title: string;
+    subtitle?: string;
     ignite?: boolean;
     wide?: boolean;
+    /** `invocation` paints the card-creation scene instead of a plain parchment sheet. */
+    scene?: 'parchment' | 'invocation';
     children: Snippet;
     footer?: Snippet;
   } = $props();
 
   const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
+  const scenePath = getAssetPath('images/ui/backgrounds/card-creation.png');
 </script>
 
 <div class="overlay" role="presentation">
@@ -25,17 +31,23 @@
     class="frame"
     class:ignite
     class:wide
+    class:invocation={scene === 'invocation'}
     role="dialog"
     aria-modal="true"
     aria-labelledby="workbench-title"
-    style="--table: url('{tablePath}'); --parchment: url('{parchmentPath}')"
+    style="--table: url('{tablePath}'); --parchment: url('{parchmentPath}'); --scene: url('{scenePath}')"
   >
     <div class="panel">
-      <h2 id="workbench-title" class="title">
-        <span class="star" aria-hidden="true"></span>
-        {title}
-        <span class="star" aria-hidden="true"></span>
-      </h2>
+      <header class="heading">
+        <h2 id="workbench-title" class="title">
+          <span class="star" aria-hidden="true"></span>
+          {title}
+          <span class="star" aria-hidden="true"></span>
+        </h2>
+        {#if subtitle}
+          <p class="subtitle">{subtitle}</p>
+        {/if}
+      </header>
       {@render children()}
     </div>
     {#if footer}
@@ -102,6 +114,73 @@
   .frame.wide .panel {
     overflow: visible;
     padding: 18px 22px 20px;
+  }
+
+  .frame.invocation {
+    width: min(1600px, calc(100vw - 20px));
+    height: min(1000px, calc(100vh - 16px));
+    max-height: calc(100vh - 16px);
+    padding: 0;
+    /* Outer wood sits under the footer; the scene lives on .panel. */
+    background: var(--color-wood) var(--table) center / cover;
+    border: 2px solid var(--color-deep-brown);
+    border-radius: 3px;
+    box-shadow: 0 22px 56px rgba(0, 0, 0, 0.62);
+    overflow: hidden;
+  }
+
+  .frame.invocation .panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 0;
+    box-shadow: none;
+    /* Painted scene fills only the main area — never the footer. */
+    background: var(--scene) center / 100% 100% no-repeat;
+    padding: 4.2% 4.5% 1.2% 4%;
+    color: var(--color-ink);
+  }
+
+  .heading {
+    flex: 0 0 auto;
+  }
+
+  .frame.invocation .title {
+    margin: 0;
+    font-size: 1.55rem;
+    font-weight: 600;
+    letter-spacing: 0.26em;
+    color: var(--color-ink);
+  }
+
+  .frame.invocation .star {
+    width: 9px;
+    height: 9px;
+    background: #5c4632;
+  }
+
+  .subtitle {
+    margin: 2px 0 0;
+    text-align: center;
+    font-family: var(--font-narrative);
+    font-size: 0.95rem;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    color: var(--color-ink-muted);
+  }
+
+  .frame.invocation .actions {
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    gap: 14px;
+    min-height: 3.4rem;
+    margin: 0;
+    padding: 10px 22px 12px;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(90, 75, 60, 0.55);
+    border-radius: 0;
+    box-shadow: inset 0 1px 0 rgba(240, 230, 200, 0.06);
   }
 
   .frame.ignite .panel {

@@ -458,7 +458,12 @@
   }
 </script>
 
-<WorkbenchShell title="Invocation" wide>
+<WorkbenchShell
+  title="Invocation"
+  subtitle="Weave the elements. Bring your card to life."
+  wide
+  scene="invocation"
+>
   <RitualStage
     bind:selected
     {charms}
@@ -469,6 +474,16 @@
     suppressCore={revealPhase !== 'pick'}
   >
     {#snippet circleContent()}
+      {#if revealPhase === 'forming' || revealPhase === 'ready'}
+        <div class="vessel-badge">
+          <span
+            class="badge-mark"
+            style="--icon: url('{cardType === CardType.Unit ? getUiIconPath('page-star') : getUiIconPath('spiral')}')"
+            aria-hidden="true"
+          ></span>
+          {cardType === CardType.Unit ? 'Unit' : 'Spell'}
+        </div>
+      {/if}
       {#if revealPhase === 'pick' || revealPhase === 'absorbing'}
         <div
           class="vessel-pick"
@@ -545,7 +560,10 @@
   </RitualStage>
 
   {#snippet footer()}
-    <button type="button" class="abandon" onclick={cancel}>Abandon ritual</button>
+    <button type="button" class="abandon" onclick={cancel}>
+      <span class="abandon-mark" aria-hidden="true"></span>
+      Abandon ritual
+    </button>
     <OrnateButton icon="spiral" disabled={cardType === null} onclick={confirm}>Invoke</OrnateButton>
   {/snippet}
 </WorkbenchShell>
@@ -671,21 +689,84 @@
     --from-y: 150px;
   }
 
-  .abandon {
+  .vessel-badge {
+    position: absolute;
+    left: 50%;
+    top: -50px;
+    transform: translateX(-50%);
+    z-index: 6;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 16px 4px 10px;
+    border-radius: 999px;
+    border: 1px solid #c6a15a;
+    background: var(--color-data);
+    color: var(--color-cream);
     font-family: var(--font-narrative);
     font-size: 0.92rem;
-    color: var(--color-muted-label);
-    background: transparent;
-    border: 1px solid color-mix(in srgb, var(--color-brass) 45%, transparent);
+    letter-spacing: 0.04em;
+    box-shadow:
+      0 0 0 1px rgba(42, 24, 16, 0.65),
+      0 6px 14px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+  }
+
+  .badge-mark {
+    width: 16px;
+    height: 16px;
+    background: var(--icon) center / contain no-repeat;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
+  }
+
+  .abandon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-narrative);
+    font-size: 0.95rem;
+    color: var(--color-cream);
+    background: color-mix(in srgb, var(--color-data) 82%, #000);
+    border: 1px solid color-mix(in srgb, var(--color-brass) 55%, transparent);
     border-radius: 4px;
-    padding: 8px 16px;
+    padding: 8px 16px 8px 12px;
     cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(240, 230, 200, 0.08),
+      0 2px 4px rgba(0, 0, 0, 0.35);
+  }
+
+  .abandon-mark {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    background: var(--color-cream);
+    clip-path: polygon(
+      35% 0%,
+      65% 0%,
+      65% 35%,
+      100% 35%,
+      100% 65%,
+      65% 65%,
+      65% 100%,
+      35% 100%,
+      35% 65%,
+      0% 65%,
+      0% 35%,
+      35% 35%
+    );
+    opacity: 0.85;
   }
 
   .abandon:hover {
     color: var(--color-cream);
     border-color: var(--color-brass);
-    background: color-mix(in srgb, var(--color-data) 55%, transparent);
+    background: var(--color-data-hover);
+  }
+
+  .abandon:hover .abandon-mark {
+    background: var(--color-golden);
+    opacity: 1;
   }
 
   @media (prefers-reduced-motion: reduce) {

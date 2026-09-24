@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ResourceType } from '@/lib/_model';
   import { gs } from '@/lib/_state';
+  import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
   import { getCardCreationBonuses } from '@/lib/sim/actions';
   import { playAddResourceSound } from '@/lib/sim/sound';
   import type { Snippet } from 'svelte';
@@ -62,6 +63,10 @@
   } = $props();
 
   const TYPES = Object.values(ResourceType);
+  const pagePath = getAssetPath('images/ui/backgrounds/book-page.png');
+  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
+  const bookIcon = getUiIconPath('book');
+  const starIcon = getUiIconPath('star');
   const BEAD = 10;
   const CHARM = 32;
   const FLY_MS = 520;
@@ -568,41 +573,56 @@
   }
 </script>
 
-<div class="bench" class:consume class:split bind:this={benchEl}>
+<div
+  class="bench"
+  class:consume
+  class:split
+  bind:this={benchEl}
+  style="--page: url('{pagePath}'); --plaque: url('{parchmentPath}')"
+>
   <div class="prep" class:split>
     {#if split}
       <div class="materials-col">
-        <div class="materials">
+        <h3 class="col-title">Resources</h3>
+        <div class="materials resources-board">
           {#each resourceRows as row (row.type)}
             <IngredientPile
               type={row.type}
               selected={row.selected}
               owned={row.owned}
               {disabled}
+              showCount
+              layout="row"
               onChange={(next) => feed(row.type, next)}
             />
           {/each}
         </div>
         <div class="gauge-pair">
-          <div class="gauge">
-            <span class="gauge-label">Learning</span>
+          <div class="gauge chart">
+            <img class="gauge-icon" src={bookIcon} alt="" />
+            <div class="gauge-head">
+              <span class="gauge-label">Learning</span>
+              <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
+            </div>
             <span class="gauge-track" aria-hidden="true">
               <span
                 class="gauge-fill"
-                style="transform: scaleX({Math.min(1, bonuses.learningChance)})"
+                style="width: {Math.min(1, bonuses.learningChance) * 100}%"
               ></span>
             </span>
-            <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
           </div>
-          <div class="gauge">
-            <span class="gauge-label">Fortune</span>
+          <div class="gauge chart">
+            <img class="gauge-icon" src={starIcon} alt="" />
+            <div class="gauge-head">
+              <span class="gauge-label">Fortune</span>
+              <span class="gauge-value">{formatChance(bonuses.extraBudgetChance)}</span>
+            </div>
             <span class="gauge-track" aria-hidden="true">
               <span
                 class="gauge-fill"
-                style="transform: scaleX({Math.min(1, bonuses.extraBudgetChance)})"
+                style="width: {Math.min(1, bonuses.extraBudgetChance) * 100}%"
               ></span>
             </span>
-            <span class="gauge-value">{formatChance(bonuses.extraBudgetChance)}</span>
           </div>
         </div>
       </div>
@@ -634,7 +654,14 @@
 
       <div class="ritual-core">
         <div class="circle-slot" bind:this={circleEl}>
-          <RitualCircle {charge} {ignite} {dim} {fed} suppressCore={suppressCore || showVessel} />
+          <RitualCircle
+            {charge}
+            {ignite}
+            {dim}
+            {fed}
+            ornate={split}
+            suppressCore={suppressCore || showVessel}
+          />
           {#if circleContent}
             <div class="circle-content">{@render circleContent()}</div>
           {/if}
@@ -647,6 +674,10 @@
           {/if}
         </div>
       </div>
+
+      {#if split && showVessel}
+        <p class="shape-hint">Add ingredients to shape your card</p>
+      {/if}
 
       {#if !split}
         <div class="gauge">
@@ -689,7 +720,9 @@
   }
 
   .bench.split {
-    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
   }
 
   .prep {
@@ -716,33 +749,86 @@
   }
 
   .prep.split {
-    flex-direction: row;
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: stretch;
-    justify-content: flex-start;
-    gap: 12px;
+    justify-content: stretch;
+    gap: 18px;
     width: 100%;
+    min-height: 0;
     overflow: visible;
+  }
+
+  .col-title {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin: 0 0 6px;
+    width: 100%;
+    font-family: var(--font-narrative);
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+
+  .diamond {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    background: #5c4632;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   }
 
   .prep.split .materials {
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: flex-start;
-    align-items: center;
+    align-items: stretch;
     width: 100%;
     flex: 0 0 auto;
-    gap: 2px;
+    gap: 8px;
+  }
+
+  .resources-board {
+    padding: 8px;
+    border: 1px solid var(--color-brown-border);
+    border-radius: 4px;
+    background: rgba(255, 248, 230, 0.42);
+    box-shadow:
+      0 6px 14px rgba(42, 24, 16, 0.16),
+      inset 0 0 0 1px rgba(255, 248, 230, 0.3);
+  }
+
+  .resources-board :global(.pile.row) {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .resources-board :global(.pile.row:hover:not(:disabled):not(.empty)) {
+    border-color: rgba(90, 75, 60, 0.35);
+    background: rgba(255, 248, 230, 0.35);
+  }
+
+  .resources-board :global(.pile.row.on) {
+    border-color: color-mix(in srgb, var(--color-golden) 65%, transparent);
+    background: rgba(191, 161, 74, 0.12);
   }
 
   .materials-col {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: flex-start;
     align-self: stretch;
-    gap: 10px;
-    flex: 0 0 auto;
-    width: 10.5rem;
+    justify-self: start;
+    gap: 8px;
+    width: min(14.5rem, 100%);
+    max-width: 15rem;
   }
 
   .materials-col .materials {
@@ -755,55 +841,111 @@
     width: 100%;
     gap: 10px;
     margin-top: auto;
-    padding-top: 10px;
-    border-top: 1px solid rgba(90, 75, 60, 0.28);
+    transform: translateY(-10px);
+    padding: 10px 12px 12px;
+    border: 1px solid var(--color-brown-border);
+    border-radius: 3px;
+    background: var(--color-parchment) var(--plaque) center / cover;
+    background-blend-mode: multiply;
+    box-shadow:
+      0 8px 16px rgba(42, 24, 16, 0.22),
+      inset 0 0 0 1px rgba(255, 248, 230, 0.35);
   }
 
-  .materials-col .gauge {
+  .materials-col .gauge.chart {
     display: grid;
-    grid-template-columns: 5.2rem minmax(2rem, 1fr) 2.6rem;
-    align-items: center;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
     column-gap: 8px;
-    flex-direction: row;
+    row-gap: 3px;
+    align-items: center;
     min-width: 0;
     width: 100%;
   }
 
-  .materials-col .gauge-label {
-    width: auto;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-align: left;
+  .materials-col .gauge.chart .gauge-icon {
+    grid-row: 1 / span 2;
+    align-self: center;
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 1px rgba(42, 24, 16, 0.35));
   }
 
-  .materials-col .gauge-track {
-    width: 100%;
+  .materials-col .gauge.chart .gauge-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
     min-width: 0;
-    height: 4px;
-    border-radius: 2px;
-    background: rgba(44, 37, 29, 0.16);
   }
 
-  .materials-col .gauge-value {
-    width: auto;
+  .materials-col .gauge.chart .gauge-label {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-align: left;
+    color: var(--color-ink);
+  }
+
+  .materials-col .gauge.chart .gauge-value {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink);
     text-align: right;
   }
 
+  .materials-col .gauge.chart .gauge-track {
+    grid-column: 2;
+    width: 100%;
+    min-width: 0;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(74, 58, 42, 0.22);
+    box-shadow: inset 0 1px 2px rgba(42, 24, 16, 0.28);
+    overflow: hidden;
+  }
+
+  .materials-col .gauge.chart .gauge-fill {
+    display: block;
+    height: 100%;
+    max-width: 100%;
+    border-radius: inherit;
+    background:
+      linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.35) 100%),
+      #1a2433;
+    transform: none;
+    transform-origin: left center;
+    transition: width 0.28s ease;
+  }
+
   .prep.split .ritual {
-    flex: 0 0 auto;
-    justify-content: center;
+    justify-self: center;
     align-self: center;
+    justify-content: center;
   }
 
   .prep.split .circle-slot {
-    width: 380px;
-    height: 380px;
+    width: min(400px, 42vh);
+    height: min(400px, 42vh);
     margin: 0;
     display: grid;
     place-items: center;
+  }
+
+  .shape-hint {
+    margin: 100px 0 0;
+    max-width: 16rem;
+    text-align: center;
+    font-family: var(--font-narrative);
+    font-size: 0.82rem;
+    font-style: italic;
+    line-height: 1.3;
+    color: var(--color-ink-muted);
+    text-shadow: 0 1px 0 rgba(244, 232, 208, 0.45);
   }
 
   .prep.split .circle-slot :global(.circle) {
@@ -852,23 +994,35 @@
     pointer-events: auto;
   }
 
-  .prep.split .materials :global(.pile) {
-    width: 6.3rem;
-    padding-left: 2px;
-    padding-right: 2px;
+  .prep.split .materials :global(.pile.row) {
+    width: 100%;
+  }
+
+  .prep.split .materials :global(.name),
+  .prep.split .materials :global(.stock) {
+    text-shadow: 0 1px 0 rgba(244, 232, 208, 0.55);
   }
 
   .flank {
-    flex: 1 1 16rem;
     min-width: 0;
     max-height: none;
     align-self: stretch;
+    justify-self: stretch;
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 2px 4px 2px 10px;
     border-left: 1px solid rgba(90, 75, 60, 0.28);
     overflow: hidden;
+  }
+
+  .prep.split .flank {
+    border-left: none;
+    gap: 0;
+    /* Inset so ingredient labels clear the page's corner ornaments. */
+    padding: 36px 26px 28px 30px;
+    background: var(--page) center / 100% 100% no-repeat;
+    transform: translateX(40px);
   }
 
   .flank-body {
@@ -1013,8 +1167,14 @@
 
   @container invocation (max-width: 620px) {
     .prep.split {
+      display: flex;
       flex-direction: column;
       align-items: center;
+    }
+
+    .materials-col {
+      width: min(16rem, 100%);
+      max-width: none;
     }
 
     .flank {
@@ -1023,6 +1183,12 @@
       border-left: none;
       border-top: 1px solid rgba(90, 75, 60, 0.28);
       padding-left: 0;
+    }
+
+    .prep.split .flank {
+      max-height: 46vh;
+      padding: 32px 24px 26px;
+      border-top: none;
     }
   }
 

@@ -282,6 +282,7 @@
 {/snippet}
 
 <div class="tray" style="--parchment: url('{parchment}')">
+  <h3 class="page-title">Ingredients</h3>
   <section class="group" aria-label="Pigments">
     <h3 class="group-label">Pigments</h3>
     <div class="cluster">
@@ -480,20 +481,34 @@
   .tray {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 2px;
     color: var(--color-ink);
     font-family: var(--font-narrative);
   }
 
+  .page-title,
   .group-label {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 8px;
-    margin: 8px 0 8px;
-    font-size: 0.72rem;
+    margin: 0;
+    font-family: var(--font-narrative);
     font-weight: 700;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
+    color: #3a3128;
+    text-align: left;
+  }
+
+  .page-title {
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+  }
+
+  .group-label {
+    margin: 10px 0 8px;
+    font-size: 0.82rem;
     color: #4a3f32;
   }
 
@@ -501,7 +516,15 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: rgba(90, 75, 60, 0.35);
+    background: rgba(90, 75, 60, 0.4);
+  }
+
+  .diamond {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    background: #5c4632;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   }
 
   .cluster {
@@ -596,19 +619,18 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    min-height: 34px;
-    padding: 4px 6px;
-    background: #efe4c8 var(--parchment) center / cover;
-    border: 1px solid #5a4b3c;
-    border-radius: 2px 10px 2px 10px;
-    box-shadow: 0 2px 3px rgba(42, 24, 16, 0.25);
+    min-height: 32px;
+    padding: 3px 6px;
+    background: rgba(255, 248, 230, 0.28);
+    border: 1px solid rgba(90, 75, 60, 0.28);
+    border-radius: 3px;
+    box-shadow: none;
   }
 
   .scroll.in-mix {
-    border-color: var(--color-golden);
-    box-shadow:
-      0 0 0 1px #8a6a28,
-      0 0 10px rgba(191, 161, 74, 0.5);
+    border-color: #8a6a28;
+    background: rgba(191, 161, 74, 0.16);
+    box-shadow: 0 0 0 1px rgba(191, 161, 74, 0.45);
   }
 
   .scroll.in-mix .scroll-mark {

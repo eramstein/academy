@@ -8,15 +8,19 @@
     fed = 0,
     /** Hide the rotating core glyph (e.g. when a forming card sits in the circle). */
     suppressCore = false,
+    /** Gold constellation used by the invocation scene. */
+    ornate = false,
   }: {
     charge?: number;
     ignite?: boolean;
     dim?: boolean;
     fed?: number;
     suppressCore?: boolean;
+    ornate?: boolean;
   } = $props();
 
   const spiral = getUiIconPath('conjure');
+  const star = getUiIconPath('star');
   const clamped = $derived(Math.min(1, Math.max(0, charge)));
   const lit = $derived(clamped > 0 || ignite);
   const unstable = $derived(clamped >= 1);
@@ -29,12 +33,28 @@
   class:dim
   class:unstable
   class:suppress-core={suppressCore}
-  style="--charge: {clamped}; --spiral: url('{spiral}')"
+  class:ornate
+  style="--charge: {clamped}; --spiral: url('{spiral}'); --star: url('{star}')"
   aria-hidden="true"
 >
   <span class="ring outer"></span>
   <span class="ring mid"></span>
   <span class="ring inner"></span>
+  {#if ornate}
+    <svg class="chart" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="47.5" />
+      <circle cx="50" cy="50" r="39" />
+      <circle cx="50" cy="50" r="31" class="dashed" />
+      <path d="M50 3.5 V14 M50 86 V96.5 M3.5 50 H14 M86 50 H96.5" />
+    </svg>
+    <span class="ticks"></span>
+    <span class="dust"></span>
+    {#if suppressCore}
+      <span class="medallion e"></span>
+      <span class="medallion s"></span>
+      <span class="medallion w"></span>
+    {/if}
+  {/if}
   <span class="core"></span>
   <span class="spiral"></span>
   {#key fed}
@@ -194,9 +214,132 @@
     }
   }
 
+  .circle.ornate::before {
+    content: '';
+    position: absolute;
+    inset: -5%;
+    border-radius: 50%;
+    border: 2px solid rgba(226, 194, 122, 0.9);
+    box-shadow:
+      0 0 14px rgba(191, 161, 74, 0.7),
+      0 0 36px rgba(191, 161, 74, 0.35),
+      inset 0 0 18px rgba(191, 161, 74, 0.2);
+    pointer-events: none;
+  }
+
+  .chart {
+    position: absolute;
+    inset: -6%;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .chart circle,
+  .chart path {
+    fill: none;
+    stroke: #e2c27a;
+    stroke-width: 0.45;
+  }
+
+  .chart circle.dashed {
+    stroke-width: 0.35;
+    stroke-dasharray: 0.6 1.35;
+  }
+
+  .circle.ornate .ring.outer {
+    inset: -2%;
+    border: 1.5px solid rgba(226, 194, 122, 0.95);
+    box-shadow:
+      0 0 12px rgba(191, 161, 74, 0.7),
+      0 0 32px rgba(191, 161, 74, 0.35),
+      inset 0 0 16px rgba(191, 161, 74, 0.18);
+    opacity: 1;
+    animation-duration: 80s;
+  }
+
+  .circle.ornate .ring.mid {
+    inset: 9%;
+    border: 1px solid rgba(198, 161, 90, 0.55);
+    opacity: 0.8;
+    animation-duration: 56s;
+  }
+
+  .circle.ornate .ring.inner {
+    inset: 18%;
+    border: 1px dashed rgba(232, 196, 122, 0.55);
+    opacity: 0.7;
+    animation-duration: 40s;
+  }
+
+  .ticks {
+    position: absolute;
+    inset: -2%;
+    border-radius: 50%;
+    background: repeating-conic-gradient(
+      from 0deg,
+      rgba(240, 230, 200, 0.95) 0 1.4deg,
+      transparent 1.4deg 10deg
+    );
+    mask: radial-gradient(circle, transparent 63%, #000 64.2%, #000 66.2%, transparent 67.4%);
+    -webkit-mask: radial-gradient(circle, transparent 63%, #000 64.2%, #000 66.2%, transparent 67.4%);
+    opacity: 0.75;
+    animation: spin 90s linear infinite;
+    pointer-events: none;
+  }
+
+  .dust {
+    position: absolute;
+    inset: -8%;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 18% 22%, rgba(240, 230, 200, 0.95) 0 1.5px, transparent 2.2px),
+      radial-gradient(circle at 78% 12%, rgba(198, 161, 90, 0.9) 0 1.2px, transparent 2px),
+      radial-gradient(circle at 92% 48%, rgba(240, 230, 200, 0.8) 0 1.4px, transparent 2.1px),
+      radial-gradient(circle at 70% 86%, rgba(198, 161, 90, 0.85) 0 1.3px, transparent 2px),
+      radial-gradient(circle at 28% 78%, rgba(240, 230, 200, 0.75) 0 1.1px, transparent 1.8px),
+      radial-gradient(circle at 8% 58%, rgba(198, 161, 90, 0.7) 0 1.2px, transparent 1.9px);
+    filter: drop-shadow(0 0 3px rgba(191, 161, 74, 0.8));
+    animation: spin 36s linear infinite reverse;
+    pointer-events: none;
+  }
+
+  .medallion {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    margin: -18px 0 0 -18px;
+    border-radius: 50%;
+    background: #1a2433 var(--star) center / 18px 18px no-repeat;
+    border: 1.5px solid #c6a15a;
+    box-shadow:
+      0 0 0 1px rgba(42, 24, 16, 0.65),
+      0 0 12px rgba(191, 161, 74, 0.55);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .medallion.e {
+    top: 50%;
+    left: 98%;
+  }
+
+  .medallion.s {
+    top: 98%;
+    left: 50%;
+  }
+
+  .medallion.w {
+    top: 50%;
+    left: 2%;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .ring,
     .spiral,
+    .ticks,
+    .dust,
     .circle.unstable,
     .ignite .core {
       animation: none;

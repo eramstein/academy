@@ -7,12 +7,18 @@
     selected,
     owned,
     disabled = false,
+    showCount = false,
+    layout = 'stack',
     onChange,
   }: {
     type: ResourceType;
     selected: number;
     owned: number;
     disabled?: boolean;
+    /** Show how many are owned, and how many are in the circle. */
+    showCount?: boolean;
+    /** `row` puts the name and count beside the icon. */
+    layout?: 'stack' | 'row';
     onChange: (next: number, event: MouseEvent) => void;
   } = $props();
 
@@ -55,6 +61,7 @@
 <button
   type="button"
   class="pile"
+  class:row={layout === 'row'}
   class:on={selected > 0}
   class:empty
   class:bump
@@ -66,11 +73,20 @@
   oncontextmenu={(event) => commit(event, true)}
   onanimationend={() => (bump = false)}
 >
-  <span class="name">{label}</span>
-  <span class="glyph-wrap">
-    <span class="glyph" class:painted aria-hidden="true"></span>
+  <span class="glyph-col">
+    <span class="glyph-wrap">
+      <span class="glyph" class:painted aria-hidden="true"></span>
+    </span>
+    <span class="well" data-token-nest={type} aria-hidden="true"></span>
   </span>
-  <span class="well" data-token-nest={type} aria-hidden="true"></span>
+  <span class="meta">
+    <span class="name">{label}</span>
+    {#if showCount}
+      <span class="stock">
+        {#if selected > 0}<span class="in">{selected}</span><span class="of">/</span>{/if}{owned}
+      </span>
+    {/if}
+  </span>
 </button>
 
 <style>
@@ -93,14 +109,37 @@
       background 0.18s ease;
   }
 
+  .pile.row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    width: 100%;
+    padding: 6px 10px 6px 8px;
+    border: 1px solid var(--color-brown-border);
+    border-radius: 4px;
+    background: rgba(255, 248, 230, 0.22);
+    box-shadow: inset 0 0 0 1px rgba(255, 248, 230, 0.28);
+  }
+
   .pile:hover:not(:disabled):not(.empty) {
     background: rgba(255, 248, 230, 0.28);
     border-color: rgba(90, 75, 60, 0.28);
   }
 
+  .pile.row:hover:not(:disabled):not(.empty) {
+    border-color: var(--color-brass);
+    background: rgba(255, 248, 230, 0.4);
+  }
+
   .pile.on {
     border-color: color-mix(in srgb, var(--color-golden) 65%, transparent);
     background: rgba(191, 161, 74, 0.08);
+  }
+
+  .pile.row.on {
+    border-color: color-mix(in srgb, var(--color-golden) 70%, transparent);
+    background: rgba(191, 161, 74, 0.14);
   }
 
   .pile.bump .glyph {
@@ -117,15 +156,32 @@
     opacity: 1;
   }
 
+  .glyph-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
   .glyph-wrap {
     position: relative;
     width: 64px;
     height: 64px;
   }
 
+  .pile.row .glyph-wrap {
+    width: 44px;
+    height: 44px;
+  }
+
   .well {
     width: 48px;
     height: 18px;
+  }
+
+  .pile.row .well {
+    width: 28px;
+    height: 8px;
   }
 
   .glyph {
@@ -137,6 +193,11 @@
     -webkit-mask: var(--icon) center / contain no-repeat;
     filter: drop-shadow(0 4px 5px rgba(42, 24, 16, 0.4));
     animation: float 3.4s ease-in-out infinite;
+  }
+
+  .pile.row .glyph {
+    width: 44px;
+    height: 44px;
   }
 
   .glyph.painted {
@@ -151,12 +212,53 @@
       drop-shadow(0 0 10px color-mix(in srgb, var(--color-golden) 55%, transparent));
   }
 
+  .meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .pile.row .meta {
+    align-items: flex-start;
+    flex: 1 1 auto;
+  }
+
   .name {
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: capitalize;
     color: var(--color-ink);
+  }
+
+  .pile.row .name {
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+  }
+
+  .stock {
+    margin-top: -2px;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.95rem;
+    line-height: 1;
+    color: var(--color-ink);
+  }
+
+  .pile.row .stock {
+    margin-top: 0;
+    font-size: 0.9rem;
+  }
+
+  .stock .in {
+    color: #8a6a28;
+    font-weight: 700;
+  }
+
+  .stock .of {
+    margin: 0 1px;
+    color: var(--color-ink-muted);
   }
 
   @keyframes float {
