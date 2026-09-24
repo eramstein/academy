@@ -23,10 +23,7 @@
     spellText?: string | null;
   } = $props();
 
-  const parchment = getAssetPath('images/ui/backgrounds/parchment.png');
-  const contour = getAssetPath('images/ui/decorations/gold-contour.png');
-  const corner = getAssetPath('images/ui/decorations/corner.png');
-  const star = getAssetPath('images/ui/icons/star.png');
+  const formingBg = getAssetPath('images/ui/backgrounds/card-forming.png');
   const powerIcon = getAssetPath('images/ui/icons/power-icon.png');
   const healthIcon = getAssetPath('images/ui/icons/health-icon.png');
   const armorIcon = getAssetPath('images/ui/icons/armor-icon.png');
@@ -45,43 +42,28 @@
 <div
   class="forming-card"
   style="--card-width: {CARD_WIDTH}px; --card-height: {CARD_HEIGHT +
-    40}px; --parchment: url('{parchment}'); --contour: url('{contour}'); --corner: url('{corner}'); --star: url('{star}'); --left-margin: 12px; --power-icon: url('{powerIcon}'); --health-icon: url('{healthIcon}'); --armor-icon: url('{armorIcon}'); --retaliate-icon: url('{retaliateIcon}')"
+    70}px; --forming-bg: url('{formingBg}'); --left-margin: 12px; --power-icon: url('{powerIcon}'); --health-icon: url('{healthIcon}'); --armor-icon: url('{armorIcon}'); --retaliate-icon: url('{retaliateIcon}')"
 >
-  <span class="filigree" aria-hidden="true">
-    <span class="corner tl"></span>
-    <span class="corner tr"></span>
-    <span class="corner bl"></span>
-    <span class="corner br"></span>
-  </span>
   <!-- Charm flight landing spots (always present so ingredients can fly in before content appears). -->
   <span class="land pigment" data-charm-land="pigment" aria-hidden="true"></span>
   <span class="land essence" data-charm-land="essence" aria-hidden="true"></span>
   <span class="land rune" data-charm-land="rune" aria-hidden="true"></span>
 
-  <div class="name">
-    <span class="fog-name" aria-hidden="true"></span>
-  </div>
-
-  <div class="mana-bar">
-    <div class="mana-line"></div>
-    {#if colors.length}
-      <div class="mana-content">
-        <div class="mana-spacer"></div>
-        <div class="mana-colors">
-          {#each colors as color (color)}
-            <div
-              class="color-pip emerge"
-              style="background-image: url('{colorPath(color)}')"
-            ></div>
-          {/each}
-        </div>
+  {#if colors.length}
+    <div class="mana-bar">
+      <div class="mana-colors">
+        {#each colors as color (color)}
+          <div
+            class="color-pip emerge"
+            style="background-image: url('{colorPath(color)}')"
+          ></div>
+        {/each}
       </div>
-    {/if}
-  </div>
+    </div>
+  {/if}
 
   <div class="content">
     <div class="summon-mist" aria-hidden="true"></div>
-    <div class="compass" class:quiet={hasStats || hasKeywords || hasAbilities || !!spellText} aria-hidden="true"></div>
 
     {#if hasAbilities || hasStats || hasKeywords}
       <div class="bottom-section">
@@ -123,61 +105,17 @@
 
 <style>
   .forming-card {
-    --corner-size: 22px;
     width: var(--card-width);
     height: var(--card-height);
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    padding: 10px 8px 8px;
-    border-radius: 4px;
-    border: 2px solid #c6a15a;
-    background: #121820;
-    box-shadow:
-      0 0 0 1px #5a3e1b,
-      inset 0 0 0 1px rgba(198, 161, 90, 0.45),
-      0 0 22px rgba(191, 161, 74, 0.38),
-      0 14px 22px rgba(0, 0, 0, 0.5);
+    padding: 18px 16px 16px;
+    border: none;
+    background: var(--forming-bg) center / 100% 100% no-repeat;
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     position: relative;
     z-index: 1;
-  }
-
-  .filigree {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 4;
-  }
-
-  .corner {
-    position: absolute;
-    width: var(--corner-size);
-    height: var(--corner-size);
-    background: var(--corner) center / 100% 100% no-repeat;
-  }
-
-  .corner.tl {
-    top: 0;
-    left: 0;
-  }
-
-  .corner.tr {
-    top: 0;
-    right: 0;
-    transform: rotate(90deg);
-  }
-
-  .corner.bl {
-    bottom: 0;
-    left: 0;
-    transform: rotate(270deg);
-  }
-
-  .corner.br {
-    bottom: 0;
-    right: 0;
-    transform: rotate(180deg);
   }
 
   .land {
@@ -203,61 +141,11 @@
     right: 18px;
   }
 
-  .name {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    min-height: 26px;
-    margin: 0 6px;
-    padding: 5px 10px 4px;
-    border-radius: 2px 2px 0 0;
-    border: 1px solid #8a6a32;
-    border-bottom: 2px solid #2c251d;
-    background: #e8dcc4 var(--parchment) center / cover;
-    background-blend-mode: multiply;
-    box-shadow: inset 0 1px 2px rgba(255, 248, 230, 0.45);
-    position: relative;
-    z-index: 1;
-  }
-
-  .fog-name {
-    width: 68%;
-    height: 0.72rem;
-    border-radius: 2px;
-    background: rgba(44, 37, 29, 0.16);
-    filter: blur(0.4px);
-  }
-
   .mana-bar {
-    position: relative;
-    height: 0;
+    position: absolute;
+    top: 22px;
+    right: 22px;
     z-index: 2;
-  }
-
-  .mana-line {
-    position: absolute;
-    top: -1px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: #2c251d;
-  }
-
-  .mana-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    padding: 0 8px;
-    box-sizing: border-box;
-  }
-
-  .mana-spacer {
-    flex: 1;
   }
 
   .mana-colors {
@@ -290,27 +178,7 @@
     margin: 0 4px 2px;
     padding: 8px var(--left-margin);
     overflow: hidden;
-    background: #141c28;
-    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.55);
-  }
-
-  .compass {
-    position: absolute;
-    left: 50%;
-    top: 46%;
-    width: 64%;
-    aspect-ratio: 1;
-    transform: translate(-50%, -50%);
-    background:
-      var(--star) center / 22% no-repeat,
-      var(--contour) center / contain no-repeat;
-    opacity: 0.32;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-
-  .compass.quiet {
-    opacity: 0.16;
+    background: transparent;
   }
 
   .summon-mist {

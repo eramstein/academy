@@ -631,6 +631,8 @@
             selected={row.selected}
             owned={row.owned}
             {disabled}
+            showCount
+            showIcon={false}
             onChange={(next) => feed(row.type, next)}
           />
         {/each}
@@ -1032,7 +1034,7 @@
     border-left: none;
     gap: 0;
     /* Inset so ingredient labels clear the page's corner ornaments. */
-    padding: 46px 26px 28px 40px;
+    padding: 52px 30px 32px 44px;
     margin-bottom: 20px;
     background: var(--page) center / 100% 100% no-repeat;
     width: 100%;
@@ -1190,7 +1192,7 @@
 
     .prep.split .flank {
       max-height: 46vh;
-      padding: 32px 24px 26px;
+      padding: 36px 28px 30px;
       border-top: none;
     }
   }

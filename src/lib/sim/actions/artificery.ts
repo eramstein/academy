@@ -28,6 +28,7 @@ import { narrateCardConjured } from '../narration';
 import { spendResources } from '../resources';
 
 const CONJURATION_OPTION_COUNT_BASE = 2;
+const LEARNING_CHANCE_BASE = 1;
 
 export interface CardCreationParameters {
   cardType?: CardType;
@@ -282,7 +283,11 @@ function learnCard(
   const improvedKeywords: string[] = [];
   const learntActions: string[] = [];
   const improvedActions: string[] = [];
-  if (isUnitCard(template) && template.keywords && Math.random() < learningChance) {
+  if (
+    isUnitCard(template) &&
+    template.keywords &&
+    Math.random() < LEARNING_CHANCE_BASE + learningChance
+  ) {
     if (!character.craftingKnowledge.keywords) {
       character.craftingKnowledge.keywords = {};
     }
@@ -298,7 +303,7 @@ function learnCard(
       }
     }
   }
-  if (actionName?.length && Math.random() < learningChance) {
+  if (actionName?.length && Math.random() < LEARNING_CHANCE_BASE + learningChance) {
     if (!character.craftingKnowledge.actions) {
       character.craftingKnowledge.actions = {};
     }

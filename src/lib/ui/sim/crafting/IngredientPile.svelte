@@ -193,34 +193,45 @@
   }
 
   .pile.iconless {
-    gap: 0;
+    gap: 4px;
     position: relative;
   }
 
   .pile.iconless.row {
+    gap: 0;
     padding: 8px 12px 8px 60px;
   }
 
+  /* Anchor for bead tokens — sits where the big glyph used to be. */
   .well.nest-only {
+    flex-shrink: 0;
+    width: 64px;
+    height: 48px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pile.iconless.row .well.nest-only {
     position: absolute;
     left: 10px;
     top: 50%;
     width: 12px;
     height: 12px;
     margin-top: -6px;
-    opacity: 0;
-    pointer-events: none;
   }
 
   .pile.iconless .meta {
     width: 100%;
+  }
+
+  .pile.iconless.row .meta {
     flex-direction: row;
     align-items: baseline;
     justify-content: space-between;
     gap: 8px;
   }
 
-  .pile.iconless .stock {
+  .pile.iconless.row .stock {
     margin-top: 0;
   }
 

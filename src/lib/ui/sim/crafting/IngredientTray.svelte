@@ -212,48 +212,45 @@
   label: string,
   apply: (next: number) => void,
   display: string,
-  wrap: boolean
+  wrap: boolean,
+  corner = false
 )}
-  <div
+  <button
+    type="button"
     class="dial"
-    class:wide={wrap}
-    role="group"
-    aria-label={label}
-    title="{label}: scroll to adjust"
-    use:wheelDial={{ value, min, max, wrap, apply }}
-    onclick={(event) => event.stopPropagation()}
-    oncontextmenu={(event) => event.stopPropagation()}
+    class:corner
+    aria-label="{label}: {display}. Click to increase, right-click to decrease"
+    title="{label}: click + · right-click − · scroll to adjust"
+    use:wheelDial={corner ? null : { value, min, max, wrap, apply }}
+    onclick={(event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const step = !wrap && event.shiftKey ? 5 : 1;
+      const next = dialStep(value, min, max, wrap, step);
+      if (next !== value) apply(next);
+    }}
+    oncontextmenu={(event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const step = !wrap && event.shiftKey ? 5 : 1;
+      const next = dialStep(value, min, max, wrap, -step);
+      if (next !== value) apply(next);
+    }}
   >
-    <button
-      type="button"
-      class="dial-nub"
-      aria-label="Decrease {label}"
-      disabled={!wrap && value <= min}
-      onclick={(event) => {
-        const step = !wrap && event.shiftKey ? 5 : 1;
-        apply(dialStep(value, min, max, wrap, -step));
-      }}
-      oncontextmenu={(event) => {
-        event.preventDefault();
-        apply(dialStep(value, min, max, wrap, -1));
-      }}
-    >
-      ‹
-    </button>
-    <span class="dial-face">{display}</span>
-    <button
-      type="button"
-      class="dial-nub"
-      aria-label="Increase {label}"
-      disabled={!wrap && value >= max}
-      onclick={(event) => {
-        const step = !wrap && event.shiftKey ? 5 : 1;
-        apply(dialStep(value, min, max, wrap, step));
-      }}
-    >
-      ›
-    </button>
-  </div>
+    {display}
+  </button>
+{/snippet}
+
+{#snippet star()}
+  <span class="star" aria-hidden="true"></span>
+{/snippet}
+
+{#snippet sectionLabel(text: string)}
+  <h3 class="group-label">
+    {@render star()}
+    {text}
+    {@render star()}
+  </h3>
 {/snippet}
 
 {#snippet stone(
@@ -262,12 +259,14 @@
   label: string,
   inMix: boolean,
   onMix: (remove: boolean) => void,
-  spiky = false
+  spiky = false,
+  showLabel = true
 )}
   <button
     type="button"
     class="stone-btn"
     aria-pressed={inMix}
+    aria-label={showLabel ? undefined : label}
     title={hints[id]
       ? `${hints[id]}\nClick to add · Right-click to remove`
       : 'Click to add · Right-click to remove'}
@@ -277,21 +276,33 @@
     <span class="stone" class:spiky data-charm-nest={id}>
       <img src={icon} alt="" />
     </span>
-    <span class="token-name">{label}</span>
+    {#if showLabel}
+      <span class="token-name">{label}</span>
+    {/if}
   </button>
 {/snippet}
 
 <div class="tray" style="--parchment: url('{parchment}')">
-  <h3 class="page-title">Ingredients</h3>
+  <h3 class="page-title">
+    {@render star()}
+    Ingredients
+    {@render star()}
+  </h3>
   <section class="group" aria-label="Pigments">
-    <h3 class="group-label">Pigments</h3>
+    {@render sectionLabel('Pigments')}
     <div class="cluster">
       {#each availableColors as color (color)}
         {@const id = `pigment:${color}`}
         {@const inMix = colors.includes(color)}
-        <div class="token" class:in-mix={inMix}>
-          {@render stone(id, colorPath(color), capitalize(color), inMix, (remove) =>
-            onPigment(color, remove)
+        <div class="token icon-only" class:in-mix={inMix}>
+          {@render stone(
+            id,
+            colorPath(color),
+            capitalize(color),
+            inMix,
+            (remove) => onPigment(color, remove),
+            false,
+            false
           )}
         </div>
       {/each}
@@ -300,7 +311,7 @@
 
   {#if isUnit}
     <section class="group" aria-label="Essences">
-      <h3 class="group-label">Essences</h3>
+      {@render sectionLabel('Essences')}
       <div class="cluster">
         {#each ESSENCES as essence (essence.key)}
           {@const id = `essence:${essence.key}`}
@@ -331,7 +342,8 @@
               essence.label,
               (next) => onEssenceDial(essence.key, next),
               String(essences[essence.key]),
-              false
+              false,
+              true
             )}
           </div>
         {/each}
@@ -339,7 +351,7 @@
     </section>
 
     <section class="group" aria-label="Runes">
-      <h3 class="group-label">Runes</h3>
+      {@render sectionLabel('Runes')}
       <div class="cluster">
         {#each availableKeywords as key (key)}
           {@const id = `rune:${key}`}
@@ -374,7 +386,8 @@
                 formatKeywordLabel(key),
                 (next) => onRuneDial(key, next),
                 String(amount),
-                false
+                false,
+                true
               )}
             {/if}
           </div>
@@ -384,7 +397,7 @@
   {/if}
 
   <section class="group" aria-label="Incantations">
-    <h3 class="group-label">Incantations</h3>
+    {@render sectionLabel('Incantations')}
     {#if knownActions.length === 0}
       <p class="empty">No known incantations yet.</p>
     {:else}
@@ -481,7 +494,8 @@
   .tray {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 6px;
+    padding: 4px 2px 8px;
     color: var(--color-ink);
     font-family: var(--font-narrative);
   }
@@ -502,12 +516,13 @@
   }
 
   .page-title {
-    margin: 0 0 8px;
+    margin: 0 0 10px;
     font-size: 0.95rem;
+    gap: 10px;
   }
 
   .group-label {
-    margin: 10px 0 8px;
+    margin: 12px 0 10px;
     font-size: 0.82rem;
     color: #4a3f32;
   }
@@ -519,35 +534,45 @@
     background: rgba(90, 75, 60, 0.4);
   }
 
-  .diamond {
-    width: 7px;
-    height: 7px;
+  .star {
+    width: 8px;
+    height: 8px;
     flex-shrink: 0;
     background: #5c4632;
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
+  }
+
+  .page-title .star {
+    width: 9px;
+    height: 9px;
   }
 
   .cluster {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px 12px;
+    gap: 12px 14px;
   }
 
   .cluster.scrolls {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 6px 8px;
+    gap: 8px 10px;
     align-items: start;
     /* Keep the left column's border/shadow inside the clipped flank. */
     padding-left: 3px;
   }
 
   .token {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
     width: 4.7rem;
+  }
+
+  .token.icon-only {
+    width: 3.2rem;
   }
 
   .stone-btn {
@@ -755,70 +780,48 @@
   }
 
   .dial {
-    display: flex;
-    align-items: center;
-    height: 22px;
-    border-radius: 11px;
-    background: #c4a574;
-    border: 1px solid #6d5433;
+    display: grid;
+    place-items: center;
+    min-width: 1.55rem;
+    height: 1.55rem;
+    /* Extra bottom padding optically centers serif digits. */
+    padding: 0 4px 0.14em;
+    box-sizing: border-box;
+    border-radius: 999px;
+    border: 1px solid #5a4b3c;
+    background: #f3e6c8;
     box-shadow:
-      inset 0 1px 0 rgba(255, 248, 230, 0.55),
-      0 1px 2px rgba(42, 24, 16, 0.35);
-    overflow: hidden;
+      inset 0 1px 0 rgba(255, 252, 245, 0.9),
+      0 1px 2px rgba(42, 24, 16, 0.4);
+    font-family: inherit;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #1a1510;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .dial.corner {
+    position: absolute;
+    top: -4px;
+    left: calc(50% + 6px);
+    z-index: 2;
+    min-width: 1.45rem;
+    height: 1.45rem;
+    font-size: 0.78rem;
   }
 
   .scroll .dial {
-    height: 20px;
-    border-radius: 10px;
-  }
-
-  .dial-face {
-    min-width: 1.35rem;
-    padding: 0 2px;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
+    min-width: 1.4rem;
+    height: 1.4rem;
     font-size: 0.78rem;
-    font-weight: 700;
-    color: #2c251d;
   }
 
-  .scroll .dial-face {
-    min-width: 1.1rem;
-    font-size: 0.72rem;
-  }
-
-  .dial.wide .dial-face {
-    min-width: 3.2rem;
-    font-size: 0.68rem;
-    letter-spacing: 0.03em;
-  }
-
-  .dial-nub {
-    width: 16px;
-    height: 22px;
-    padding: 0;
-    border: none;
-    background: transparent;
-    color: #3a2a18;
-    font-family: inherit;
-    font-size: 0.95rem;
-    line-height: 1;
-    cursor: pointer;
-  }
-
-  .scroll .dial-nub {
-    width: 14px;
-    height: 20px;
-    font-size: 0.85rem;
-  }
-
-  .dial-nub:hover:not(:disabled) {
-    background: rgba(255, 248, 230, 0.35);
-  }
-
-  .dial-nub:disabled {
-    opacity: 0.35;
-    cursor: default;
+  .dial:hover {
+    background: #faf0d4;
+    border-color: #3a3128;
   }
 
   .empty {
