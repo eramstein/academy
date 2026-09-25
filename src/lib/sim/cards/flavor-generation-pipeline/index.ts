@@ -8,6 +8,7 @@ export {
 } from './types';
 export {
   MATCH_SCORE_THRESHOLD,
+  eligibleFlavorPool,
   findBestFlavor,
   findMatchingFlavor,
   matchRatio,

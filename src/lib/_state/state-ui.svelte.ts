@@ -8,6 +8,7 @@ export const defaultUiState: UiState = {
     selectedCharacterKey: null,
     characterBackTab: null,
     selectedPlaceKey: null,
+    invokeCommitted: false,
   },
   battle: {
     selectedUnit: null,

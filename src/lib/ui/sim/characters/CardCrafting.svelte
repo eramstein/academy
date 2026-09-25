@@ -12,6 +12,8 @@
   let { character }: { character: Character } = $props();
   let hoveredLabel = $state<string | null>(null);
   let labelTruncated = $state(false);
+  let keywordsExpanded = $state(false);
+  let actionsExpanded = $state(false);
 
   function onLabelEnter(id: string, event: MouseEvent) {
     const el = event.currentTarget as HTMLElement;
@@ -136,46 +138,68 @@
     {/if}
   </div>
   {#if craftingKeywords.length > 0}
-    <h4 class="subsection-title">Keywords</h4>
-    <ul class="kv-grid">
-      {#each craftingKeywords as { keyword, level } (keyword)}
-        {@const label = formatKeyword(keyword)}
-        <li class="kv-pair">
-          <Tooltip content={label} show={hoveredLabel === keyword && labelTruncated}>
-            <span
-              class="kv-name keyword"
-              class:truncated={hoveredLabel === keyword && labelTruncated}
-              onmouseenter={(e) => onLabelEnter(keyword, e)}
-              onmouseleave={onLabelLeave}
-            >
-              {label}
-            </span>
-          </Tooltip>
-          <span class="kv-value">{level}</span>
-        </li>
-      {/each}
-    </ul>
+    <button
+      type="button"
+      class="subsection-toggle"
+      aria-expanded={keywordsExpanded}
+      onclick={() => (keywordsExpanded = !keywordsExpanded)}
+    >
+      <span class="caret" class:open={keywordsExpanded} aria-hidden="true"></span>
+      <h4 class="subsection-title">Keywords</h4>
+      <span class="count">{craftingKeywords.length}</span>
+    </button>
+    {#if keywordsExpanded}
+      <ul class="kv-grid">
+        {#each craftingKeywords as { keyword, level } (keyword)}
+          {@const label = formatKeyword(keyword)}
+          <li class="kv-pair">
+            <Tooltip content={label} show={hoveredLabel === keyword && labelTruncated}>
+              <span
+                class="kv-name keyword"
+                class:truncated={hoveredLabel === keyword && labelTruncated}
+                onmouseenter={(e) => onLabelEnter(keyword, e)}
+                onmouseleave={onLabelLeave}
+              >
+                {label}
+              </span>
+            </Tooltip>
+            <span class="kv-value">{level}</span>
+          </li>
+        {/each}
+      </ul>
+    {/if}
   {/if}
   {#if craftingActions.length > 0}
-    <h4 class="subsection-title">Actions</h4>
-    <ul class="kv-grid">
-      {#each craftingActions as { name, level, label, description } (name)}
-        {@const tip = actionTooltip(label, description, labelTruncated && hoveredLabel === name)}
-        <li class="kv-pair">
-          <Tooltip content={tip} show={hoveredLabel === name && (!!tip)}>
-            <span
-              class="kv-name action"
-              class:truncated={hoveredLabel === name && labelTruncated}
-              onmouseenter={(e) => onLabelEnter(name, e)}
-              onmouseleave={onLabelLeave}
-            >
-              {label}
-            </span>
-          </Tooltip>
-          <span class="kv-value">{level}</span>
-        </li>
-      {/each}
-    </ul>
+    <button
+      type="button"
+      class="subsection-toggle"
+      aria-expanded={actionsExpanded}
+      onclick={() => (actionsExpanded = !actionsExpanded)}
+    >
+      <span class="caret" class:open={actionsExpanded} aria-hidden="true"></span>
+      <h4 class="subsection-title">Actions</h4>
+      <span class="count">{craftingActions.length}</span>
+    </button>
+    {#if actionsExpanded}
+      <ul class="kv-grid">
+        {#each craftingActions as { name, level, label, description } (name)}
+          {@const tip = actionTooltip(label, description, labelTruncated && hoveredLabel === name)}
+          <li class="kv-pair">
+            <Tooltip content={tip} show={hoveredLabel === name && (!!tip)}>
+              <span
+                class="kv-name action"
+                class:truncated={hoveredLabel === name && labelTruncated}
+                onmouseenter={(e) => onLabelEnter(name, e)}
+                onmouseleave={onLabelLeave}
+              >
+                {label}
+              </span>
+            </Tooltip>
+            <span class="kv-value">{level}</span>
+          </li>
+        {/each}
+      </ul>
+    {/if}
   {/if}
 </section>
 
@@ -279,6 +303,47 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--color-brass);
+  }
+
+  .subsection-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--color-brass);
+    font: inherit;
+    text-align: left;
+  }
+
+  .subsection-toggle:hover .subsection-title,
+  .subsection-toggle:hover .count,
+  .subsection-toggle:hover .caret {
+    color: var(--color-golden);
+  }
+
+  .subsection-toggle .count {
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-muted-label);
+  }
+
+  .subsection-toggle .caret {
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 5px solid currentColor;
+    opacity: 0.7;
+    transition: transform 0.15s ease;
+  }
+
+  .subsection-toggle .caret.open {
+    transform: rotate(90deg);
   }
 
   .kv-list,

@@ -10,7 +10,7 @@ import { NUMERIC_KEYWORDS } from '../keywords';
 export type PowerLevel = 'weak' | 'medium' | 'powerful';
 
 export interface GameplayTemplate {
-  cardType: CardType.Unit | CardType.Spell;
+  cardType: CardType.Unit | CardType.Spell | CardType.Land;
   colors: CardColor[];
   powerLevel: PowerLevel;
   keywords?: (keyof UnitKeywords)[];
@@ -76,7 +76,11 @@ export function mergeGameplayIntoParameters(
 
 export function toGameplayTemplate(parameters: CardCreationParameters): GameplayTemplate {
   const cardType =
-    parameters.cardType === CardType.Spell ? CardType.Spell : CardType.Unit;
+    parameters.cardType === CardType.Spell
+      ? CardType.Spell
+      : parameters.cardType === CardType.Land
+        ? CardType.Land
+        : CardType.Unit;
   const cost = parameters.cost ?? 0;
   const keywordKeys = parameters.keywords
     ? (Object.keys(parameters.keywords) as (keyof UnitKeywords)[]).filter(

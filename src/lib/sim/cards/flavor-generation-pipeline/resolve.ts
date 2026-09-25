@@ -2,6 +2,7 @@ import { getRandomFromArray } from '@/lib/_utils/random';
 import { loadFlavorTemplates, registerFlavorTemplate } from '../flavor-templates';
 import {
   MATCH_SCORE_THRESHOLD,
+  eligibleFlavorPool,
   findBestFlavor,
   maxFlavorMatchScore,
   passesMatchThreshold,
@@ -60,13 +61,12 @@ function catalogFallback(
   const bestUnused = findBestFlavor(unused, gameplay);
   if (bestUnused) return bestUnused;
 
-  const typedUnused = unused.filter((t) => t.cardType === gameplay.cardType);
-  if (typedUnused.length) return getRandomFromArray(typedUnused);
+  const poolUnused = eligibleFlavorPool(unused, gameplay);
+  if (poolUnused.length) return getRandomFromArray(poolUnused);
 
-  const typedAll = all.filter((t) => t.cardType === gameplay.cardType);
-  if (typedAll.length) return getRandomFromArray(typedAll);
+  const poolAll = eligibleFlavorPool(all, gameplay);
+  if (poolAll.length) return getRandomFromArray(poolAll);
 
-  if (all.length) return getRandomFromArray(all);
   throw new Error('No flavor templates available');
 }
 

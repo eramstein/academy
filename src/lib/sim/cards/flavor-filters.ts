@@ -2,6 +2,7 @@ import type { CardCreationParameters } from '../actions';
 import type { FlavorTemplate } from './flavor-generation-pipeline/types';
 import { toGameplayTemplate } from './flavor-generation-pipeline/types';
 import {
+  eligibleFlavorPool,
   findMatchingFlavor,
   scoreFlavorTemplate,
 } from './flavor-generation-pipeline/match';
@@ -16,8 +17,7 @@ export function filterFlavorTemplates(
   parameters: CardCreationParameters
 ): FlavorTemplate[] {
   const gameplay = toGameplayTemplate(parameters);
-  const typed = templates.filter((template) => template.cardType === gameplay.cardType);
-  const pool = typed.length ? typed : templates;
+  const pool = eligibleFlavorPool(templates, gameplay);
 
   let highestScore = 0;
   const scored = pool.map((template) => {

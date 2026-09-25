@@ -1,3 +1,4 @@
+import { CardType } from '@/lib/_model';
 import type { FlavorTemplate, GameplayTemplate, PowerLevel } from './types';
 
 /** Fraction of max possible match score a candidate must reach to reuse. */
@@ -115,6 +116,23 @@ export function scoreFlavorTemplate(template: FlavorTemplate, gameplay: Gameplay
   return scoreFlavorTemplateDetailed(template, gameplay).total;
 }
 
+/**
+ * Candidate pool for matching.
+ * Lands are exclusive both ways: never reuse a land flavor unless gameplay asks for land,
+ * and when it does, only consider land flavors. Within that, prefer exact cardType.
+ */
+export function eligibleFlavorPool(
+  templates: FlavorTemplate[],
+  gameplay: GameplayTemplate
+): FlavorTemplate[] {
+  const wantsLand = gameplay.cardType === CardType.Land;
+  const landSafe = templates.filter((template) =>
+    wantsLand ? template.cardType === CardType.Land : template.cardType !== CardType.Land
+  );
+  const typed = landSafe.filter((template) => template.cardType === gameplay.cardType);
+  return typed.length ? typed : landSafe;
+}
+
 export interface RankedFlavor {
   template: FlavorTemplate;
   score: number;
@@ -128,8 +146,7 @@ export function rankBestFlavor(
   templates: FlavorTemplate[],
   gameplay: GameplayTemplate
 ): RankedFlavor | null {
-  const typed = templates.filter((template) => template.cardType === gameplay.cardType);
-  const pool = typed.length ? typed : templates;
+  const pool = eligibleFlavorPool(templates, gameplay);
   if (!pool.length) return null;
 
   const maxScore = maxFlavorMatchScore(gameplay);
@@ -166,15 +183,16 @@ export function findBestFlavor(
   templates: FlavorTemplate[],
   gameplay: GameplayTemplate
 ): FlavorTemplate | null {
-  if (!templates.length) return null;
+  const pool = eligibleFlavorPool(templates, gameplay);
+  if (!pool.length) return null;
 
-  let best = templates[0];
+  let best = pool[0];
   let bestScore = scoreFlavorTemplate(best, gameplay);
-  for (let i = 1; i < templates.length; i++) {
-    const score = scoreFlavorTemplate(templates[i], gameplay);
+  for (let i = 1; i < pool.length; i++) {
+    const score = scoreFlavorTemplate(pool[i], gameplay);
     if (score > bestScore) {
       bestScore = score;
-      best = templates[i];
+      best = pool[i];
     }
   }
   return best;

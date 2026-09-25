@@ -1240,7 +1240,7 @@
     border-left: none;
     gap: 0;
     /* Inset so ingredient labels clear the page's corner ornaments. */
-    padding: 52px 30px 32px 44px;
+    padding: 26px 30px 32px 44px;
     margin-bottom: 20px;
     background: var(--page) center / 100% 100% no-repeat;
     width: 100%;
@@ -1415,7 +1415,7 @@
 
     .prep.split .flank {
       max-height: 46vh;
-      padding: 36px 28px 30px;
+      padding: 18px 28px 30px;
       border-top: none;
     }
   }

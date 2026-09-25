@@ -29,6 +29,8 @@ export type UiState = {
     selectedCharacterKey: string | null;
     characterBackTab: SimDataTab | null;
     selectedPlaceKey: string | null;
+    /** Invoke UI already summoned the card; action only advances the scene. */
+    invokeCommitted: boolean;
   };
   battle: {
     selectedUnit: UnitDeployed | null;

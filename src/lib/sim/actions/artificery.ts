@@ -10,7 +10,7 @@ import {
   type UnitKeywords,
   type UnitType,
 } from '@/lib/_model';
-import { gs } from '@/lib/_state';
+import { gs, uiState } from '@/lib/_state';
 import { getAbilityActionNames, type AbilityPick } from '../cards/ability-templates';
 import { getActionTemplateMeta } from '../cards/action-templates';
 import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
@@ -44,8 +44,6 @@ export interface CardCreationParameters {
   actionArgs?: Record<string, number>;
   unitTypes?: UnitType[];
   resources: { type: ResourceType; count: number }[];
-  /** The card was already summoned; only advance the scene. */
-  alreadyInvoked?: boolean;
 }
 
 export interface CardCreationBonuses {
@@ -150,7 +148,10 @@ export async function invokeCard(
   parameters: CardCreationParameters,
   characterKey = 'player'
 ): Promise<string> {
-  if (parameters.alreadyInvoked) return '';
+  if (uiState.sim.invokeCommitted) {
+    uiState.sim.invokeCommitted = false;
+    return '';
+  }
   const result = await summonInvokedCard(parameters, characterKey);
   if (result) commitInvokedCard(result, characterKey);
   return '';

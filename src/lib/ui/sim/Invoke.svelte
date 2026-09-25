@@ -8,7 +8,7 @@
     type UnitKeywords,
   } from '@/lib/_model';
   import { ResourceType } from '@/lib/_model';
-  import { gs } from '@/lib/_state';
+  import { gs, uiState } from '@/lib/_state';
   import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
   import {
     commitInvokedCard,
@@ -338,7 +338,7 @@
         if (!runeIn[key]) continue;
         list.push({
           id: `rune:${key}`,
-          icon: getAssetPath(`images/keywords/${key}.png`),
+          icon: getAssetPath(`images/keywords/material-icons/${key}.png`),
         });
       }
       if (abilityAction) list.push({ id: `incantation:${abilityAction}`, icon: incantationIcon });
@@ -584,12 +584,12 @@
     abandoned = true;
     clearManifestTimers();
     commitInvokedCard(creationResult);
+    uiState.sim.invokeCommitted = true;
     performAction({
       ...action,
       actionParameters: {
         ...action.actionParameters,
         ...buildParameters(),
-        alreadyInvoked: true,
       },
       missingParameters: {},
     });

@@ -356,8 +356,8 @@
   <span class="star" aria-hidden="true"></span>
 {/snippet}
 
-{#snippet sectionLabel(text: string)}
-  <h3 class="group-label">
+{#snippet sectionLabel(text: string, withRule = true)}
+  <h3 class="group-label" class:no-rule={!withRule}>
     {@render star()}
     {text}
     {@render star()}
@@ -388,7 +388,7 @@
       if (inMix) onMix(true);
     }}
   >
-    <span class="stone" class:spiky data-charm-nest={id}>
+    <span class="stone" class:spiky class:rune={id.startsWith('rune:')} data-charm-nest={id}>
       <img src={icon} alt="" draggable="false" />
     </span>
     {#if showLabel}
@@ -399,12 +399,13 @@
 
 <div class="tray" class:locked style="--parchment: url('{parchment}')">
   <h3 class="page-title">
-    {@render star()}
-    Ingredients
-    {@render star()}
+    <span class="title-rule" aria-hidden="true"></span>
+    <span class="title-text">Ingredients</span>
+    <span class="title-rule" aria-hidden="true"></span>
+    <span class="title-flourish" aria-hidden="true"></span>
   </h3>
   <section class="group" aria-label="Pigments">
-    {@render sectionLabel('Pigments')}
+    {@render sectionLabel('Pigments', false)}
     <div class="cluster">
       {#each availableColors as color (color)}
         {@const id = `pigment:${color}`}
@@ -494,7 +495,7 @@
           >
             {@render stone(
               id,
-              getAssetPath(`images/keywords/${key}.png`),
+              getAssetPath(`images/keywords/material-icons/${key}.png`),
               formatKeywordLabel(key),
               inMix,
               (remove) => onRuneMix(key, remove),
@@ -650,31 +651,103 @@
     opacity: 0.72;
   }
 
-  .page-title,
+  .page-title {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    justify-content: center;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 8px;
+    margin: 0 0 6px;
+    padding: 0 4px 10px;
+    font-family: var(--font-narrative);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #2c251d;
+    text-align: center;
+  }
+
+  .title-text {
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+
+  .title-rule {
+    position: relative;
+    width: 1.6rem;
+    height: 1px;
+    background: rgba(90, 75, 60, 0.55);
+  }
+
+  .title-rule::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    background: #5c4632;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .title-flourish {
+    grid-column: 1 / -1;
+    position: relative;
+    width: min(12rem, 70%);
+    justify-self: center;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(90, 75, 60, 0.5) 12%,
+      rgba(90, 75, 60, 0.5) 88%,
+      transparent 100%
+    );
+  }
+
+  .title-flourish::before,
+  .title-flourish::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+  }
+
+  .title-flourish::before {
+    width: 7px;
+    height: 7px;
+    background: #5c4632;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .title-flourish::after {
+    width: 22px;
+    height: 5px;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      #5c4632 18%,
+      #5c4632 82%,
+      transparent 100%
+    );
+    clip-path: polygon(0 50%, 28% 0, 50% 35%, 72% 0, 100% 50%, 72% 100%, 50% 65%, 28% 100%);
+  }
+
   .group-label {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 8px;
-    margin: 0;
+    margin: 12px 0 10px;
     font-family: var(--font-narrative);
+    font-size: 0.82rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #3a3128;
-    text-align: left;
-  }
-
-  .page-title {
-    margin: 0 0 10px;
-    font-size: 0.95rem;
-    gap: 10px;
-  }
-
-  .group-label {
-    margin: 12px 0 10px;
-    font-size: 0.82rem;
     color: #4a3f32;
+    text-align: left;
   }
 
   .group-label::after {
@@ -684,17 +757,16 @@
     background: rgba(90, 75, 60, 0.4);
   }
 
+  .group-label.no-rule::after {
+    display: none;
+  }
+
   .star {
     width: 8px;
     height: 8px;
     flex-shrink: 0;
     background: #5c4632;
     clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
-  }
-
-  .page-title .star {
-    width: 9px;
-    height: 9px;
   }
 
   .cluster {
@@ -744,6 +816,10 @@
     cursor: pointer;
   }
 
+  .stone-btn:has(.stone.rune) {
+    gap: 1px;
+  }
+
   .stone {
     position: relative;
     display: grid;
@@ -769,6 +845,19 @@
       filter 0.18s ease;
   }
 
+  /* Material rune tiles read small at 36px — ~1/3 larger. */
+  .stone.rune {
+    width: 64px;
+    height: 64px;
+    min-height: 64px;
+  }
+
+  .stone.rune img {
+    width: 48px;
+    height: 48px;
+    filter: drop-shadow(3px 4px 3px rgba(42, 24, 16, 0.5));
+  }
+
   /* Draw larger without affecting the shared 48px layout box. */
   .stone.spiky img {
     position: absolute;
@@ -783,6 +872,12 @@
     opacity: 0.45;
     filter:
       drop-shadow(0 2px 3px rgba(42, 24, 16, 0.35))
+      drop-shadow(0 0 6px color-mix(in srgb, var(--color-golden) 55%, transparent));
+  }
+
+  .token.in-mix .stone.rune img {
+    filter:
+      drop-shadow(3px 4px 3px rgba(42, 24, 16, 0.5))
       drop-shadow(0 0 6px color-mix(in srgb, var(--color-golden) 55%, transparent));
   }
 
@@ -942,23 +1037,32 @@
   .dial {
     display: grid;
     place-items: center;
-    min-width: 1.55rem;
-    height: 1.55rem;
+    min-width: 1.6rem;
+    height: 1.6rem;
     /* Extra bottom padding optically centers serif digits. */
-    padding: 0 4px 0.14em;
+    padding: 0 5px 0.12em;
     box-sizing: border-box;
     border-radius: 999px;
-    border: 1px solid #5a4b3c;
-    background: #f3e6c8;
+    border: 1px solid #6a5644;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(255, 248, 230, 0.45) 0%,
+        transparent 38%,
+        rgba(42, 24, 16, 0.22) 100%
+      ),
+      #c4ae8a;
     box-shadow:
-      inset 0 1px 0 rgba(255, 252, 245, 0.9),
-      0 1px 2px rgba(42, 24, 16, 0.4);
+      inset 1px 1px 0 rgba(255, 250, 235, 0.7),
+      inset -1px -1px 0 rgba(42, 24, 16, 0.4),
+      2px 3px 3px rgba(42, 24, 16, 0.45);
     font-family: inherit;
     font-variant-numeric: tabular-nums;
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     font-weight: 700;
     line-height: 1;
     color: #1a1510;
+    text-shadow: 0 1px 0 rgba(255, 248, 230, 0.35);
     cursor: pointer;
     user-select: none;
   }
@@ -966,22 +1070,36 @@
   .dial.corner {
     position: absolute;
     top: -4px;
-    left: calc(50% + 6px);
+    left: calc(50% + 8px);
     z-index: 2;
-    min-width: 1.45rem;
-    height: 1.45rem;
-    font-size: 0.78rem;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.8rem;
   }
 
   .scroll .dial {
-    min-width: 1.4rem;
-    height: 1.4rem;
-    font-size: 0.78rem;
+    min-width: 1.45rem;
+    height: 1.45rem;
+    font-size: 0.8rem;
   }
 
   .dial:hover {
-    background: #faf0d4;
-    border-color: #3a3128;
+    background:
+      linear-gradient(
+        145deg,
+        rgba(255, 250, 235, 0.55) 0%,
+        transparent 38%,
+        rgba(42, 24, 16, 0.18) 100%
+      ),
+      #d0bb96;
+    border-color: #4a3c30;
+  }
+
+  .dial:active {
+    box-shadow:
+      inset 1px 1px 0 rgba(42, 24, 16, 0.35),
+      inset -1px -1px 0 rgba(255, 248, 230, 0.25),
+      1px 1px 2px rgba(42, 24, 16, 0.35);
   }
 
   .empty {
