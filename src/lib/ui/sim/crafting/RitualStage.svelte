@@ -537,7 +537,18 @@
   });
 
   $effect(() => {
-    if (!seal) return;
+    if (!seal) {
+      untrack(() => {
+        sealStarted = false;
+        sealFinished = false;
+        sealPending = 0;
+        if (sealTimer) {
+          clearTimeout(sealTimer);
+          sealTimer = 0;
+        }
+      });
+      return;
+    }
     untrack(() => beginSeal(charms, performance.now()));
   });
 

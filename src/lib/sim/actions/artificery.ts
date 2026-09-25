@@ -44,6 +44,8 @@ export interface CardCreationParameters {
   actionArgs?: Record<string, number>;
   unitTypes?: UnitType[];
   resources: { type: ResourceType; count: number }[];
+  /** The card was already summoned; only advance the scene. */
+  alreadyInvoked?: boolean;
 }
 
 export interface CardCreationBonuses {
@@ -124,19 +126,33 @@ export async function getNewCardTemplate(
   return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
 }
 
+/** Spend resources and build the card. Learning is deferred so the ritual can show it first. */
+export async function summonInvokedCard(
+  parameters: CardCreationParameters,
+  characterKey = 'player'
+): Promise<CardCreationResult | null> {
+  const result = await getNewCardTemplate(parameters, true, characterKey, true);
+  if (!result?.template) return null;
+  return result;
+}
+
+export function commitInvokedCard(result: CardCreationResult, characterKey = 'player') {
+  learnCard(
+    result.template,
+    result.learningChance,
+    result.bonusBudget,
+    getActingCharacter(characterKey),
+    result.actionName
+  );
+}
+
 export async function invokeCard(
   parameters: CardCreationParameters,
   characterKey = 'player'
 ): Promise<string> {
-  const result = await getNewCardTemplate(parameters, true, characterKey, true);
-  if (!result) {
-    return '';
-  }
-  const { template, bonusBudget, learningChance, actionName } = result;
-  if (!template) {
-    return '';
-  }
-  learnCard(template, learningChance, bonusBudget, getActingCharacter(characterKey), actionName);
+  if (parameters.alreadyInvoked) return '';
+  const result = await summonInvokedCard(parameters, characterKey);
+  if (result) commitInvokedCard(result, characterKey);
   return '';
 }
 

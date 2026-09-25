@@ -1,9 +1,23 @@
 <script lang="ts">
-  import { CardColor, CardType, type Ability, type Action, type UnitKeywords } from '@/lib/_model';
+  import {
+    CardColor,
+    CardType,
+    type Ability,
+    type Action,
+    type CardTemplate,
+    type UnitKeywords,
+  } from '@/lib/_model';
   import { ResourceType } from '@/lib/_model';
   import { gs } from '@/lib/_state';
   import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
-  import { performAction, type CardCreationParameters } from '@/lib/sim/actions';
+  import {
+    commitInvokedCard,
+    performAction,
+    summonInvokedCard,
+    type CardCreationParameters,
+    type CardCreationResult,
+  } from '@/lib/sim/actions';
+  import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import { DataEffectTemplates } from '@/lib/battle/effects/effect-templates';
   import { buildAbility, getTriggerTemplateLabel } from '@/lib/sim/cards/ability-templates';
   import {
@@ -77,6 +91,12 @@
   let draggingIngredient = $state(false);
   let charmEntry = $state<{ id: string; x: number; y: number } | null>(null);
   let abandoned = false;
+  /** idle → fog thickens → swap under the fog → fog lifts. */
+  let manifest = $state<'idle' | 'shrouding' | 'veiled' | 'revealed'>('idle');
+  let createdCard = $state<CardTemplate | null>(null);
+  let summon: Promise<CardCreationResult | null> | null = null;
+  let creationResult: CardCreationResult | null = null;
+  let alive = true;
 
   const ABSORB_MS = 480;
   const FORM_MS = 420;
@@ -84,10 +104,18 @@
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let revealTimers: number[] = [];
+  let manifestTimers: number[] = [];
+  const FOG_MS = 720;
+  const REVEAL_HOLD_MS = 280;
 
   function clearRevealTimers() {
     for (const id of revealTimers) clearTimeout(id);
     revealTimers = [];
+  }
+
+  function clearManifestTimers() {
+    for (const id of manifestTimers) clearTimeout(id);
+    manifestTimers = [];
   }
 
   function chooseVessel(type: CardType.Unit | CardType.Spell) {
@@ -110,20 +138,27 @@
   }
 
   function cancel() {
+    if (manifest !== 'idle' || sealing) return;
     abandoned = true;
     clearRevealTimers();
+    clearManifestTimers();
     (onBack ?? onDone)();
   }
 
   $effect(() => {
     function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') cancel();
+      if (event.key !== 'Escape') return;
+      if (manifest === 'revealed') leave();
+      else if (manifest === 'idle' && !sealing) cancel();
     }
     window.addEventListener('keydown', onKey);
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      clearRevealTimers();
-    };
+    return () => window.removeEventListener('keydown', onKey);
+  });
+
+  $effect(() => () => {
+    alive = false;
+    clearRevealTimers();
+    clearManifestTimers();
   });
 
   function resolveAvailableColors(): CardColor[] {
@@ -284,6 +319,10 @@
     }
     return parts.join(', ');
   });
+
+  const inscription = $derived(
+    manifest === 'revealed' && createdCard?.name ? createdCard.name : shapeSummary
+  );
 
   const charms = $derived.by((): RitualCharm[] => {
     if (cardType !== CardType.Unit && cardType !== CardType.Spell) return [];
@@ -470,51 +509,87 @@
     if (id.startsWith('incantation:')) onIncantationMix(id.slice('incantation:'.length), false);
   }
 
-  function invoke() {
-    if (!cardType || sealing || abandoned) return;
-    if (charms.length === 0) {
-      confirm();
-      return;
-    }
-    sealing = true;
-  }
-
-  function onSealComplete() {
-    if (abandoned) return;
-    confirm();
-  }
-
-  function confirm() {
-    if (!cardType) return;
+  function buildParameters(): CardCreationParameters {
     const resources = Object.values(ResourceType)
       .map((type) => ({ type, count: selected[type] ?? 0 }))
       .filter((row) => row.count > 0);
 
-    const parameters: CardCreationParameters =
-      cardType === CardType.Spell
-        ? {
-            cardType: CardType.Spell,
-            colors: colors.length ? colors : undefined,
-            actions: spellAction ? [spellAction] : undefined,
-            actionArgs: spellAction ? { ...argsFor(spellAction) } : undefined,
-            resources,
-          }
-        : {
-            cardType: CardType.Unit,
-            colors: colors.length ? colors : undefined,
-            power: essenceIn.power ? essences.power : 0,
-            hp: essenceIn.hp ? essences.hp : 1,
-            retaliate: essenceIn.retaliate ? essences.retaliate : 0,
-            keywords,
-            ability: abilityPick,
-            resources,
-          };
+    if (cardType === CardType.Spell) {
+      return {
+        cardType: CardType.Spell,
+        colors: colors.length ? colors : undefined,
+        actions: spellAction ? [spellAction] : undefined,
+        actionArgs: spellAction ? { ...argsFor(spellAction) } : undefined,
+        resources,
+      };
+    }
+    return {
+      cardType: CardType.Unit,
+      colors: colors.length ? colors : undefined,
+      power: essenceIn.power ? essences.power : 0,
+      hp: essenceIn.hp ? essences.hp : 1,
+      retaliate: essenceIn.retaliate ? essences.retaliate : 0,
+      keywords,
+      ability: abilityPick,
+      resources,
+    };
+  }
 
+  function beginShroud() {
+    if (abandoned || manifest !== 'idle') return;
+    manifest = 'shrouding';
+    const cover = reduceMotion ? 0 : FOG_MS;
+    manifestTimers.push(window.setTimeout(() => void unveil(), cover));
+  }
+
+  async function unveil() {
+    if (!alive || abandoned) return;
+    manifest = 'veiled';
+    let result: CardCreationResult | null = null;
+    try {
+      result = summon ? await summon : null;
+    } catch {
+      result = null;
+    }
+    if (!alive || abandoned) return;
+    if (!result?.template) {
+      manifest = 'idle';
+      sealing = false;
+      return;
+    }
+    creationResult = result;
+    createdCard = result.template;
+    const hold = reduceMotion ? 0 : REVEAL_HOLD_MS;
+    manifestTimers.push(
+      window.setTimeout(() => {
+        if (!alive || abandoned) return;
+        manifest = 'revealed';
+      }, hold)
+    );
+  }
+
+  function invoke() {
+    if (!cardType || sealing || manifest !== 'idle' || abandoned) return;
+    sealing = true;
+    summon = summonInvokedCard(buildParameters());
+  }
+
+  function onSealComplete() {
+    if (abandoned) return;
+    beginShroud();
+  }
+
+  function leave() {
+    if (!createdCard || !creationResult || abandoned) return;
+    abandoned = true;
+    clearManifestTimers();
+    commitInvokedCard(creationResult);
     performAction({
       ...action,
       actionParameters: {
         ...action.actionParameters,
-        ...parameters,
+        ...buildParameters(),
+        alreadyInvoked: true,
       },
       missingParameters: {},
     });
@@ -534,7 +609,7 @@
     {onCharmLanded}
     {onSealComplete}
     seal={sealing}
-    shapeText={shapeSummary}
+    shapeText={inscription}
     {charmEntry}
     acceptingDrop={draggingIngredient}
     disabled={sealing}
@@ -544,7 +619,7 @@
     suppressCore={revealPhase !== 'pick'}
   >
     {#snippet circleContent()}
-      {#if revealPhase === 'forming' || revealPhase === 'ready'}
+      {#if (revealPhase === 'forming' || revealPhase === 'ready') && manifest === 'idle'}
         <div class="vessel-badge">
           <span
             class="badge-mark"
@@ -589,15 +664,28 @@
       {/if}
     {/snippet}
     {#snippet vessel()}
-      <FormingCard
-        colors={shownColors}
-        power={isUnit && shown('essence:power') ? essences.power : null}
-        health={isUnit && shown('essence:hp') ? essences.hp : null}
-        retaliate={isUnit && shown('essence:retaliate') ? essences.retaliate : null}
-        keywords={shownKeywords}
-        abilities={shownAbilities}
-        spellText={spellText}
-      />
+      <div class="manifest">
+        {#if createdCard && (manifest === 'veiled' || manifest === 'revealed')}
+          <div class="real-card">
+            <CardCompact card={createdCard} />
+          </div>
+        {:else}
+          <FormingCard
+            colors={shownColors}
+            power={isUnit && shown('essence:power') ? essences.power : null}
+            health={isUnit && shown('essence:hp') ? essences.hp : null}
+            retaliate={isUnit && shown('essence:retaliate') ? essences.retaliate : null}
+            keywords={shownKeywords}
+            abilities={shownAbilities}
+            spellText={spellText}
+          />
+        {/if}
+        <div
+          class="fog"
+          class:thick={manifest === 'shrouding' || manifest === 'veiled'}
+          aria-hidden="true"
+        ></div>
+      </div>
     {/snippet}
     {#snippet flank()}
       {#if revealPhase === 'ready' && cardType !== null}
@@ -633,15 +721,90 @@
   </RitualStage>
 
   {#snippet footer()}
-    <button type="button" class="abandon" onclick={cancel}>
-      <span class="abandon-mark" aria-hidden="true"></span>
-      Abandon ritual
-    </button>
-    <OrnateButton icon="spiral" disabled={cardType === null || sealing} onclick={invoke}>Invoke</OrnateButton>
+    {#if manifest === 'revealed'}
+      <OrnateButton icon="spiral" onclick={leave}>Take the card</OrnateButton>
+    {:else}
+      <button type="button" class="abandon" disabled={manifest !== 'idle' || sealing} onclick={cancel}>
+        <span class="abandon-mark" aria-hidden="true"></span>
+        Abandon ritual
+      </button>
+      <OrnateButton icon="spiral" disabled={cardType === null || sealing || manifest !== 'idle'} onclick={invoke}>
+        Invoke
+      </OrnateButton>
+    {/if}
   {/snippet}
 </WorkbenchShell>
 
 <style>
+  .manifest {
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+
+  .manifest > :global(.forming-card),
+  .real-card {
+    grid-area: 1 / 1;
+  }
+
+  .fog {
+    position: absolute;
+    inset: -16% -12%;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0;
+    border-radius: 48% 52% 50% 50%;
+    background:
+      radial-gradient(
+        ellipse at 50% 46%,
+        rgba(244, 236, 214, 0.97) 0%,
+        rgba(214, 190, 150, 0.9) 36%,
+        rgba(120, 96, 64, 0.42) 64%,
+        transparent 78%
+      );
+    filter: blur(1px);
+    transition: opacity 0.72s ease;
+  }
+
+  .fog.thick {
+    opacity: 1;
+  }
+
+  .fog::before,
+  .fog::after {
+    content: '';
+    position: absolute;
+    inset: -6%;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.72s ease;
+  }
+
+  .fog.thick::before,
+  .fog.thick::after {
+    opacity: 1;
+  }
+
+  .fog::before {
+    background: radial-gradient(ellipse at 32% 42%, rgba(255, 250, 236, 0.75), transparent 58%);
+    animation: fog-drift 3.4s ease-in-out infinite;
+  }
+
+  .fog::after {
+    background: radial-gradient(ellipse at 70% 60%, rgba(175, 142, 103, 0.55), transparent 60%);
+    animation: fog-drift 4.2s ease-in-out infinite reverse;
+  }
+
+  @keyframes fog-drift {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(8px, -10px) scale(1.05);
+    }
+  }
+
   .vessel-pick {
     position: absolute;
     inset: 0;
@@ -842,11 +1005,23 @@
     opacity: 1;
   }
 
+  .abandon:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .vessel-pick.absorbing .vessel-token.chosen,
     .vessel-pick.absorbing .vessel-token.dismissed {
       animation: none;
       opacity: 0;
+    }
+
+    .fog,
+    .fog::before,
+    .fog::after {
+      animation: none;
+      transition: none;
     }
   }
 </style>
