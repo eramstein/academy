@@ -10,7 +10,25 @@
   import Tooltip from '@/lib/ui/Tooltip.svelte';
 
   let { character }: { character: Character } = $props();
-  let hoveredAction = $state<string | null>(null);
+  let hoveredLabel = $state<string | null>(null);
+  let labelTruncated = $state(false);
+
+  function onLabelEnter(id: string, event: MouseEvent) {
+    const el = event.currentTarget as HTMLElement;
+    hoveredLabel = id;
+    labelTruncated = el.scrollWidth > el.clientWidth + 1;
+  }
+
+  function onLabelLeave() {
+    hoveredLabel = null;
+    labelTruncated = false;
+  }
+
+  function actionTooltip(label: string, description: string, truncated: boolean): string {
+    if (truncated && description) return `${label} — ${description}`;
+    if (truncated) return label;
+    return description;
+  }
 
   const CRAFTING_SKILL_ORDER: (keyof CardCraftingSkills)[] = [
     'mastery',
@@ -119,10 +137,20 @@
   </div>
   {#if craftingKeywords.length > 0}
     <h4 class="subsection-title">Keywords</h4>
-    <ul class="kv-list">
+    <ul class="kv-grid">
       {#each craftingKeywords as { keyword, level } (keyword)}
-        <li class="kv-row">
-          <span class="kv-name keyword">{formatKeyword(keyword)}</span>
+        {@const label = formatKeyword(keyword)}
+        <li class="kv-pair">
+          <Tooltip content={label} show={hoveredLabel === keyword && labelTruncated}>
+            <span
+              class="kv-name keyword"
+              class:truncated={hoveredLabel === keyword && labelTruncated}
+              onmouseenter={(e) => onLabelEnter(keyword, e)}
+              onmouseleave={onLabelLeave}
+            >
+              {label}
+            </span>
+          </Tooltip>
           <span class="kv-value">{level}</span>
         </li>
       {/each}
@@ -130,14 +158,16 @@
   {/if}
   {#if craftingActions.length > 0}
     <h4 class="subsection-title">Actions</h4>
-    <ul class="kv-list">
+    <ul class="kv-grid">
       {#each craftingActions as { name, level, label, description } (name)}
-        <li class="kv-row">
-          <Tooltip content={description} show={hoveredAction === name}>
+        {@const tip = actionTooltip(label, description, labelTruncated && hoveredLabel === name)}
+        <li class="kv-pair">
+          <Tooltip content={tip} show={hoveredLabel === name && (!!tip)}>
             <span
               class="kv-name action"
-              onmouseenter={() => (hoveredAction = name)}
-              onmouseleave={() => (hoveredAction = null)}
+              class:truncated={hoveredLabel === name && labelTruncated}
+              onmouseenter={(e) => onLabelEnter(name, e)}
+              onmouseleave={onLabelLeave}
             >
               {label}
             </span>
@@ -252,6 +282,7 @@
   }
 
   .kv-list,
+  .kv-grid,
   .chip-list {
     margin: 0;
     padding: 0;
@@ -264,6 +295,13 @@
     gap: 0.55rem;
   }
 
+  .kv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+    column-gap: 0.85rem;
+    row-gap: 0.3rem;
+  }
+
   .kv-row {
     display: flex;
     justify-content: space-between;
@@ -272,10 +310,35 @@
     font-size: 0.95rem;
   }
 
+  .kv-pair {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 0.85rem;
+  }
+
+  .kv-pair :global(.tooltip-reference) {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+    display: block;
+    overflow: hidden;
+  }
+
   .kv-name {
     font-size: 0.9rem;
     text-transform: capitalize;
     color: var(--color-cream);
+  }
+
+  .kv-pair .kv-name {
+    display: block;
+    font-size: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .kv-value {
@@ -283,12 +346,16 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .keyword,
+  .kv-pair .kv-value {
+    flex-shrink: 0;
+  }
+
   .action {
     text-transform: none;
   }
 
-  .action {
+  .action,
+  .kv-name.truncated {
     cursor: help;
   }
 

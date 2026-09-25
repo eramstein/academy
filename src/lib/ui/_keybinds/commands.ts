@@ -1,6 +1,9 @@
 import { DayPeriod, ResourceType } from '../../_model';
+import type { UnitKeywords } from '../../_model/model-battle';
 import { bs, gs } from '../../_state';
 import { scheduleClassesForCurrentTerm } from '../../sim/academy';
+import { ACTION_TEMPLATE_KEYS } from '../../sim/cards/action-templates';
+import { KEYWORD_KEYS } from '../../sim/cards/keywords';
 import { addResource } from '../../sim/effects/resources';
 import { simulateEvent } from '../../sim/events';
 import { goToPeriod } from '../../sim/time';
@@ -72,6 +75,23 @@ export function executeCommand(input: string): CommandResult {
       }
       const message = addResource({ resourceType, amount });
       return { ok: true, message };
+    }
+
+    case 'learn-all': {
+      // /learn-all
+      const keywords = Object.fromEntries(KEYWORD_KEYS.map((key) => [key, 1])) as Partial<
+        Record<keyof UnitKeywords, number>
+      >;
+      const actions = Object.fromEntries(ACTION_TEMPLATE_KEYS.map((name) => [name, 1]));
+      gs.player.craftingKnowledge = {
+        ...gs.player.craftingKnowledge,
+        keywords: { ...keywords, ...gs.player.craftingKnowledge.keywords },
+        actions: { ...actions, ...gs.player.craftingKnowledge.actions },
+      };
+      return {
+        ok: true,
+        message: `Learnt all ${KEYWORD_KEYS.length} keywords and ${ACTION_TEMPLATE_KEYS.length} actions`,
+      };
     }
 
     default:

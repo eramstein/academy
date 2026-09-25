@@ -1147,7 +1147,7 @@
     will-change: transform, opacity;
   }
 
-  .bead.flying {
+  .bead:global(.flying) {
     filter: drop-shadow(0 2px 3px rgba(42, 24, 16, 0.45))
       drop-shadow(0 0 8px rgba(191, 161, 74, 0.55));
   }
