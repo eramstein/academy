@@ -37,11 +37,14 @@
     dim = false,
     consume = false,
     split = false,
+    hideMaterials = false,
     charms = [],
     onCharmLanded,
     onSealComplete,
     seal = false,
     shapeText = '',
+    shapeCost = null,
+    atManaLimit = false,
     charmEntry = null,
     acceptingDrop = false,
     circleContent,
@@ -59,6 +62,8 @@
     consume?: boolean;
     /** Resources on one side, tray on the other; vessel sits inside the circle. */
     split?: boolean;
+    /** Hide the resources column (enchanting uses the card's own mana). */
+    hideMaterials?: boolean;
     charms?: RitualCharm[];
     onCharmLanded?: (id: string) => void;
     /** Fired after sealed charms have flown into the card. */
@@ -67,6 +72,10 @@
     seal?: boolean;
     /** Line under the circle (ingredient summary). */
     shapeText?: string;
+    /** Mana cost delta shown in bold before the shape summary (enchanting). */
+    shapeCost?: number | null;
+    /** When true, show a red "at mana limit" label under the circle. */
+    atManaLimit?: boolean;
     /** Drop point for a charm that is about to join the orbit. */
     charmEntry?: { id: string; x: number; y: number } | null;
     /** Ingredient drag is in progress; highlight the circle. */
@@ -780,14 +789,58 @@
   class="bench"
   class:consume
   class:split
+  class:no-materials={hideMaterials}
   bind:this={benchEl}
   style="--page: url('{pagePath}'); --plaque: url('{parchmentPath}')"
 >
-  <div class="prep" class:split>
-    {#if split}
-      <div class="materials-col">
-        <h3 class="col-title">Resources</h3>
-        <div class="materials resources-board">
+  <div class="prep" class:split class:no-materials={hideMaterials}>
+    {#if !hideMaterials}
+      {#if split}
+        <div class="materials-col">
+          <h3 class="col-title">Resources</h3>
+          <div class="materials resources-board">
+            {#each resourceRows as row (row.type)}
+              <IngredientPile
+                type={row.type}
+                selected={row.selected}
+                owned={row.owned}
+                {disabled}
+                showCount
+                showIcon={false}
+                layout="row"
+                onChange={(next) => feed(row.type, next)}
+              />
+            {/each}
+          </div>
+          <div class="gauge-pair">
+            <div class="gauge chart">
+              <img class="gauge-icon" src={bookIcon} alt="" />
+              <div class="gauge-head">
+                <span class="gauge-label">Learning</span>
+                <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
+              </div>
+              <span class="gauge-track" aria-hidden="true">
+                <span class="gauge-fill" style="width: {Math.min(1, bonuses.learningChance) * 100}%"
+                ></span>
+              </span>
+            </div>
+            <div class="gauge chart">
+              <img class="gauge-icon" src={starIcon} alt="" />
+              <div class="gauge-head">
+                <span class="gauge-label">Fortune</span>
+                <span class="gauge-value">{formatChance(bonuses.extraBudgetChance)}</span>
+              </div>
+              <span class="gauge-track" aria-hidden="true">
+                <span
+                  class="gauge-fill"
+                  style="width: {Math.min(1, bonuses.extraBudgetChance) * 100}%"
+                ></span>
+              </span>
+            </div>
+          </div>
+        </div>
+      {:else}
+        <div class="materials">
           {#each resourceRows as row (row.type)}
             <IngredientPile
               type={row.type}
@@ -796,52 +849,11 @@
               {disabled}
               showCount
               showIcon={false}
-              layout="row"
               onChange={(next) => feed(row.type, next)}
             />
           {/each}
         </div>
-        <div class="gauge-pair">
-          <div class="gauge chart">
-            <img class="gauge-icon" src={bookIcon} alt="" />
-            <div class="gauge-head">
-              <span class="gauge-label">Learning</span>
-              <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
-            </div>
-            <span class="gauge-track" aria-hidden="true">
-              <span class="gauge-fill" style="width: {Math.min(1, bonuses.learningChance) * 100}%"
-              ></span>
-            </span>
-          </div>
-          <div class="gauge chart">
-            <img class="gauge-icon" src={starIcon} alt="" />
-            <div class="gauge-head">
-              <span class="gauge-label">Fortune</span>
-              <span class="gauge-value">{formatChance(bonuses.extraBudgetChance)}</span>
-            </div>
-            <span class="gauge-track" aria-hidden="true">
-              <span
-                class="gauge-fill"
-                style="width: {Math.min(1, bonuses.extraBudgetChance) * 100}%"
-              ></span>
-            </span>
-          </div>
-        </div>
-      </div>
-    {:else}
-      <div class="materials">
-        {#each resourceRows as row (row.type)}
-          <IngredientPile
-            type={row.type}
-            selected={row.selected}
-            owned={row.owned}
-            {disabled}
-            showCount
-            showIcon={false}
-            onChange={(next) => feed(row.type, next)}
-          />
-        {/each}
-      </div>
+      {/if}
     {/if}
 
     <div class="ritual" class:drop-hot={acceptingDrop} data-ingredient-drop>
@@ -882,8 +894,20 @@
       </div>
 
       {#if split}
-        <p class="shape-hint" class:ready={showVessel} aria-hidden={!showVessel || !shapeText}>
+        <p
+          class="shape-hint"
+          class:ready={showVessel}
+          aria-hidden={!showVessel || !(shapeText || shapeCost)}
+        >
+          {#if shapeCost != null && shapeCost !== 0}
+            <strong class="shape-cost" class:cut={shapeCost < 0}
+              >{shapeCost > 0 ? '+' : ''}{shapeCost} mana</strong
+            >{shapeText ? ' · ' : ''}
+          {/if}
           {shapeText || '\u00a0'}
+          {#if atManaLimit}
+            <span class="mana-limit">Mana limit</span>
+          {/if}
         </p>
       {/if}
 
@@ -972,6 +996,11 @@
     width: 100%;
     min-height: 0;
     overflow: visible;
+  }
+
+  .prep.split.no-materials {
+    grid-template-columns: auto 1fr;
+    justify-content: center;
   }
 
   .col-title {
@@ -1166,6 +1195,34 @@
 
   .shape-hint.ready {
     visibility: visible;
+  }
+
+  .shape-cost {
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .shape-cost.cut {
+    color: #3d6b3a;
+    text-shadow: 0 1px 0 rgba(244, 232, 208, 0.55);
+  }
+
+  .mana-limit {
+    display: inline-block;
+    margin-left: 0.55rem;
+    padding: 2px 8px;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #f5e6e0;
+    background: #8a3a32;
+    border: 1px solid #6a2a24;
+    border-radius: 3px;
+    text-shadow: none;
+    vertical-align: middle;
   }
 
   .prep.split .circle-slot :global(.circle) {

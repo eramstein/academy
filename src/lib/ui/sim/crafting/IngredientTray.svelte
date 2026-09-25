@@ -49,6 +49,8 @@
     knownActions,
     hints,
     locked = false,
+    showPigments = true,
+    canAdd = () => true,
     onPigment,
     onEssenceDial,
     onEssenceMix,
@@ -75,6 +77,10 @@
     knownActions: string[];
     hints: Record<string, string>;
     locked?: boolean;
+    /** When false, pigment stones are hidden (e.g. enchanting an existing card). */
+    showPigments?: boolean;
+    /** Return false to gray out and block dropping this ingredient. */
+    canAdd?: (id: string) => boolean;
     onPigment: (color: CardColor, remove: boolean) => void;
     onEssenceDial: (key: EssenceKey, value: number) => void;
     onEssenceMix: (key: EssenceKey, remove: boolean) => void;
@@ -198,6 +204,11 @@
   }
 
   function stoneTitle(id: string, numeric: boolean, inMix: boolean): string {
+    if (!inMix && !canAdd(id)) {
+      return hints[id]
+        ? `${hints[id]}\nToo expensive for this enchantment`
+        : 'Too expensive for this enchantment';
+    }
     const how = inMix
       ? numeric
         ? 'Click to increase · Right-click to remove'
@@ -374,15 +385,24 @@
   spiky = false,
   showLabel = true
 )}
+  {@const blocked = !inMix && !canAdd(id)}
   <button
     type="button"
     class="stone-btn"
     class:added={inMix}
+    class:blocked
     aria-pressed={inMix}
+    aria-disabled={blocked}
     aria-label={showLabel ? undefined : label}
     title={stoneTitle(id, increment !== null, inMix)}
     draggable="false"
-    onpointerdown={(event) => startGesture(event, id, icon, !inMix, increment)}
+    onpointerdown={(event) => {
+      if (blocked) {
+        event.preventDefault();
+        return;
+      }
+      startGesture(event, id, icon, !inMix, increment);
+    }}
     oncontextmenu={(event) => {
       event.preventDefault();
       if (inMix) onMix(true);
@@ -404,27 +424,29 @@
     <span class="title-rule" aria-hidden="true"></span>
     <span class="title-flourish" aria-hidden="true"></span>
   </h3>
-  <section class="group" aria-label="Pigments">
-    {@render sectionLabel('Pigments', false)}
-    <div class="cluster">
-      {#each availableColors as color (color)}
-        {@const id = `pigment:${color}`}
-        {@const inMix = colors.includes(color)}
-        <div class="token icon-only" class:in-mix={inMix}>
-          {@render stone(
-            id,
-            colorPath(color),
-            capitalize(color),
-            inMix,
-            (remove) => onPigment(color, remove),
-            null,
-            false,
-            false
-          )}
-        </div>
-      {/each}
-    </div>
-  </section>
+  {#if showPigments}
+    <section class="group" aria-label="Pigments">
+      {@render sectionLabel('Pigments', false)}
+      <div class="cluster">
+        {#each availableColors as color (color)}
+          {@const id = `pigment:${color}`}
+          {@const inMix = colors.includes(color)}
+          <div class="token icon-only" class:in-mix={inMix}>
+            {@render stone(
+              id,
+              colorPath(color),
+              capitalize(color),
+              inMix,
+              (remove) => onPigment(color, remove),
+              null,
+              false,
+              false
+            )}
+          </div>
+        {/each}
+      </div>
+    </section>
+  {/if}
 
   {#if isUnit}
     <section class="group" aria-label="Essences">
@@ -536,20 +558,27 @@
           {@const id = `incantation:${name}`}
           {@const meta = getActionTemplateMeta(name)}
           {@const inMix = isUnit ? abilityAction === name : spellAction === name}
+          {@const blocked = !inMix && !canAdd(id)}
           {@const numeric = actionNumericParams[name] ?? []}
           {@const args = argsFor(name)}
           {@const trigger = triggers[name] ?? 'onDeploy'}
-          <div class="scroll" class:in-mix={inMix}>
+          <div class="scroll" class:in-mix={inMix} class:blocked>
             <button
               type="button"
               class="scroll-main"
               aria-pressed={inMix}
+              aria-disabled={blocked}
               title={stoneTitle(id, numeric.length > 0, inMix)}
               draggable="false"
-              onpointerdown={(event) =>
+              onpointerdown={(event) => {
+                if (blocked) {
+                  event.preventDefault();
+                  return;
+                }
                 startGesture(event, id, getUiIconPath('conjure'), !inMix, (pointer) =>
                   incrementIncantation(name, pointer)
-                )}
+                );
+              }}
               oncontextmenu={(event) => {
                 event.preventDefault();
                 if (inMix) onIncantationMix(name, true);
@@ -816,6 +845,12 @@
     cursor: pointer;
   }
 
+  .stone-btn.blocked {
+    opacity: 0.38;
+    cursor: not-allowed;
+    filter: grayscale(0.55);
+  }
+
   .stone-btn:has(.stone.rune) {
     gap: 1px;
   }
@@ -906,6 +941,15 @@
     border-color: #8a6a28;
     background: rgba(191, 161, 74, 0.16);
     box-shadow: 0 0 0 1px rgba(191, 161, 74, 0.45);
+  }
+
+  .scroll.blocked {
+    opacity: 0.38;
+    filter: grayscale(0.55);
+  }
+
+  .scroll.blocked .scroll-main {
+    cursor: not-allowed;
   }
 
   .scroll.in-mix .scroll-mark {

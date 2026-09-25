@@ -1,6 +1,7 @@
 import {
   isSpellCard,
   isUnitCard,
+  ResourceType,
   type Ability,
   type ActionDefinition,
   type CardTemplate,
@@ -34,12 +35,15 @@ export interface AugmentParameters {
   ability?: AbilityPick;
   abilityArgs?: ActionArgDeltas;
   removeAbilities?: number[];
+  /** Offered materials; bonuses TBD. */
+  resources: { type: ResourceType; count: number }[];
 }
 
 export interface AugmentPreview {
   error: string;
   card: UnitCardTemplate | SpellCardTemplate | null;
-  preview: UnitCardTemplate | SpellCardTemplate | null;
+  /** Auto-computed mana cost increase required to fund `spent`. */
+  costIncrease: number;
   upgradeBudget: number;
   spent: number;
   extraBudget: number;
@@ -56,18 +60,43 @@ export interface DistillParameters {
   ability?: AbilityPick;
   abilityArgs?: ActionArgDeltas;
   removeAbilities?: number[];
+  /** Offered materials; bonuses TBD. */
+  resources: { type: ResourceType; count: number }[];
 }
 
 export interface DistillPreview {
   error: string;
   card: UnitCardTemplate | SpellCardTemplate | null;
   preview: UnitCardTemplate | SpellCardTemplate | null;
+  /** Mana cost reduction funded by the cuts (0 if not enough yet). */
+  costDecrease: number;
   downgradeBudget: number;
   saved: number;
   extraCut: number;
 }
 
 const MIN_ACTION_ARG = 1;
+
+/** Minimum mana cost increase that funds `spent`, or null if it would exceed 9. */
+export function requiredCostIncrease(baseCost: number, spent: number): number | null {
+  const maxIncrease = 9 - baseCost;
+  if (maxIncrease < 0) return null;
+  for (let n = 0; n <= maxIncrease; n++) {
+    if (cardBudget[baseCost + n] - cardBudget[baseCost] >= spent) return n;
+  }
+  return null;
+}
+
+/** Maximum mana cost decrease that `saved` budget can fund (0 if not enough for −1). */
+export function requiredCostDecrease(baseCost: number, saved: number): number {
+  let best = 0;
+  for (let n = 1; n <= baseCost; n++) {
+    const need = cardBudget[baseCost] - cardBudget[baseCost - n];
+    if (saved >= need) best = n;
+    else break;
+  }
+  return best;
+}
 
 export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview {
   const card = gs.player.collection.find((c) => c.id === parameters.cardId);
@@ -78,27 +107,41 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
   if (!isEnchantableCard(card)) {
     return emptyPreview(`Card cannot be enchanted: ${parameters.cardId}.`);
   }
-
-  const costIncrease = parameters.costIncrease || 1;
-  if (card.cost > 9 - costIncrease) {
+  if (card.cost >= 9) {
     return {
       error: `Card is already at max cost: ${card.cost}.`,
       card,
-      preview: null,
+      costIncrease: 0,
       upgradeBudget: 0,
       spent: 0,
       extraBudget: 0,
     };
   }
 
+  const features = makeNewCardTemplate(card, { ...parameters, costIncrease: 0 });
+  const spent = getCardBudget(features) - getCardBudget(card);
+  const costIncrease =
+    parameters.costIncrease != null
+      ? parameters.costIncrease
+      : requiredCostIncrease(card.cost, spent);
+
+  if (costIncrease === null || card.cost + costIncrease > 9) {
+    return {
+      error: 'Enchantment would raise mana cost above 9.',
+      card,
+      costIncrease: 0,
+      upgradeBudget: 0,
+      spent,
+      extraBudget: 0,
+    };
+  }
+
   const upgradeBudget = cardBudget[card.cost + costIncrease] - cardBudget[card.cost];
-  const preview = makeNewCardTemplate(card, { ...parameters, costIncrease });
-  const spent = getCardBudget(preview) - getCardBudget(card);
   if (spent > upgradeBudget) {
     return {
-      error: `New card budget is greater than upgrade budget: ${getCardBudget(preview)} > ${upgradeBudget}.`,
+      error: `New card budget is greater than upgrade budget: ${spent} > ${upgradeBudget}.`,
       card,
-      preview,
+      costIncrease,
       upgradeBudget,
       spent,
       extraBudget: 0,
@@ -108,7 +151,7 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
   return {
     error: '',
     card,
-    preview,
+    costIncrease,
     upgradeBudget,
     spent,
     extraBudget: upgradeBudget - spent,
@@ -120,9 +163,7 @@ export function augmentCard(parameters: AugmentParameters): string {
   if (result.error || !result.card) {
     return result.error;
   }
-  if (!parameters.costIncrease) {
-    parameters.costIncrease = 1;
-  }
+  parameters.costIncrease = result.costIncrease;
 
   const card = result.card;
   const oldCard = cloneCardTemplate(card);
@@ -151,13 +192,12 @@ export function getDistillPreview(parameters: DistillParameters): DistillPreview
   if (!isEnchantableCard(card)) {
     return emptyDistillPreview(`Card cannot be distilled: ${parameters.cardId}.`);
   }
-
-  const costDecrease = parameters.costDecrease || 1;
-  if (card.cost < costDecrease) {
+  if (card.cost < 1) {
     return {
       error: `Card cost is too low to distill: ${card.cost}.`,
       card,
       preview: null,
+      costDecrease: 0,
       downgradeBudget: 0,
       saved: 0,
       extraCut: 0,
@@ -170,30 +210,52 @@ export function getDistillPreview(parameters: DistillParameters): DistillPreview
       error: cutError,
       card,
       preview: null,
+      costDecrease: 0,
       downgradeBudget: 0,
       saved: 0,
       extraCut: 0,
     };
   }
 
+  const cutPreview = makeDistilledCardTemplate(card, { ...parameters, costDecrease: 0 });
+  const saved = getCardBudget(card) - getCardBudget(cutPreview);
+  const costDecrease =
+    parameters.costDecrease != null
+      ? parameters.costDecrease
+      : requiredCostDecrease(card.cost, saved);
+
+  if (costDecrease < 1 || card.cost < costDecrease) {
+    const needForOne = cardBudget[card.cost] - cardBudget[card.cost - 1];
+    return {
+      error: `Need to cut more budget: ${saved} < ${needForOne}.`,
+      card,
+      preview: cutPreview,
+      costDecrease: 0,
+      downgradeBudget: needForOne,
+      saved,
+      extraCut: 0,
+    };
+  }
+
   const downgradeBudget = cardBudget[card.cost] - cardBudget[card.cost - costDecrease];
-  const preview = makeDistilledCardTemplate(card, { ...parameters, costDecrease });
-  const saved = getCardBudget(card) - getCardBudget(preview);
   if (saved < downgradeBudget) {
     return {
       error: `Need to cut more budget: ${saved} < ${downgradeBudget}.`,
       card,
-      preview,
+      preview: cutPreview,
+      costDecrease: 0,
       downgradeBudget,
       saved,
       extraCut: 0,
     };
   }
 
+  const preview = makeDistilledCardTemplate(card, { ...parameters, costDecrease });
   return {
     error: '',
     card,
     preview,
+    costDecrease,
     downgradeBudget,
     saved,
     extraCut: saved - downgradeBudget,
@@ -205,9 +267,7 @@ export function distillCard(parameters: DistillParameters): string {
   if (result.error || !result.card) {
     return result.error;
   }
-  if (!parameters.costDecrease) {
-    parameters.costDecrease = 1;
-  }
+  parameters.costDecrease = result.costDecrease;
 
   const card = result.card;
   const oldCard = cloneCardTemplate(card);
@@ -402,7 +462,7 @@ function emptyPreview(error: string): AugmentPreview {
   return {
     error,
     card: null,
-    preview: null,
+    costIncrease: 0,
     upgradeBudget: 0,
     spent: 0,
     extraBudget: 0,
@@ -414,6 +474,7 @@ function emptyDistillPreview(error: string): DistillPreview {
     error,
     card: null,
     preview: null,
+    costDecrease: 0,
     downgradeBudget: 0,
     saved: 0,
     extraCut: 0,

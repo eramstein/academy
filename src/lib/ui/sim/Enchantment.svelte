@@ -3,44 +3,46 @@
     ActionType,
     CardColor,
     CardType,
+    ResourceType,
     isSpellCard,
     isUnitCard,
-    type Ability,
     type Action,
     type UnitKeywords,
   } from '@/lib/_model';
   import { gs } from '@/lib/_state';
-  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
   import {
     performAction,
     getAugmentPreview,
-    getDistillPreview,
     getEnchantableCards,
     type ActionArgDeltas,
     type AugmentParameters,
-    type DistillParameters,
   } from '@/lib/sim/actions';
   import {
     buildAbility,
-    getAbilityActionNames,
-    getTriggerTemplateAsset,
-    getTriggerTemplateKey,
     getTriggerTemplateLabel,
-    TRIGGER_TEMPLATE_KEYS,
   } from '@/lib/sim/cards/ability-templates';
   import {
     ACTION_TEMPLATE_KEYS,
+    defaultActionFactoryArgs,
     getActionNumericParams,
     getActionTemplateMeta,
     getActionTemplateNameForEffect,
     getActionTooltip,
   } from '@/lib/sim/cards/action-templates';
-  import { getAbilityCost, getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
-  import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
+  import { getAbilityCost, getKeywordBudget } from '@/lib/sim/cards/card-budget';
+  import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
+  import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
+  import { playAddResourceSound } from '@/lib/sim/sound';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import CardFilters from '@/lib/ui/cards/CardFilters.svelte';
   import { hasActiveCardFilters, matchesCardFilters } from '@/lib/ui/cards/card-filters';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
+  import OrnateButton from '@/lib/ui/OrnateButton.svelte';
+  import IngredientTray, { type EssenceKey } from './crafting/IngredientTray.svelte';
+  import RitualStage, { type RitualCharm } from './crafting/RitualStage.svelte';
+  import WorkbenchShell from './crafting/WorkbenchShell.svelte';
+  import Distill from './Distill.svelte';
 
   let {
     action,
@@ -50,26 +52,44 @@
     onDone: () => void;
   } = $props();
 
-  const woodPath = getAssetPath('images/ui/backgrounds/wood_chip_base.png');
-  const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
+  const powerIcon = getAssetPath('images/ui/icons/power-icon.png');
+  const healthIcon = getAssetPath('images/ui/icons/health-icon.png');
+  const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon.png');
+  const incantationIcon = getUiIconPath('conjure');
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
+
+  const ESSENCE_COST: Record<EssenceKey, number> = { power: 4, hp: 2, retaliate: 1 };
 
   const isDistill = $derived(action.actionType === ActionType.Distill);
 
   let cardId = $state<string | null>(initialCardId(action));
-  let costIncrease = $state(1);
-  let power = $state(0);
-  let maxHealth = $state(0);
-  let retaliate = $state(0);
-  let keywords = $state<Partial<Record<keyof UnitKeywords, number>>>({});
-  let actionArgs = $state<ActionArgDeltas>({});
-  let abilityTrigger = $state<string | null>(null);
-  let abilityAction = $state<string | null>(null);
-  let abilityArgs = $state<ActionArgDeltas>({});
-  let removeAbilities = $state<number[]>([]);
   let colorFilter = $state<CardColor | null>(null);
   let costFilter = $state<number | null>(null);
   let typeFilter = $state<CardType | null>(null);
+
+  let essences = $state<Record<EssenceKey, number>>({ power: 1, hp: 1, retaliate: 1 });
+  let essenceIn = $state<Record<EssenceKey, boolean>>({
+    power: false,
+    hp: false,
+    retaliate: false,
+  });
+  let runeAmounts = $state<Partial<Record<keyof UnitKeywords, number>>>({});
+  let runeIn = $state<Partial<Record<keyof UnitKeywords, boolean>>>({});
+  let stagedTriggers = $state<Record<string, string>>({});
+  let stagedArgs = $state<Record<string, Record<string, number>>>({});
+  let abilityTrigger = $state('onDeploy');
+  let abilityAction = $state<string | null>(null);
+  let abilityArgs = $state<Record<string, number>>({});
+  let spellArgDeltas = $state<ActionArgDeltas>({});
+  let selected = $state<Record<ResourceType, number>>(
+    Object.fromEntries(Object.values(ResourceType).map((type) => [type, 0])) as Record<
+      ResourceType,
+      number
+    >
+  );
+  let draggingIngredient = $state(false);
+  let charmEntry = $state<{ id: string; x: number; y: number } | null>(null);
+  let sealing = $state(false);
 
   $effect(() => {
     function onKey(event: KeyboardEvent) {
@@ -87,68 +107,30 @@
   const hasActiveFilters = $derived(hasActiveCardFilters(cardFilters));
   const selectingCard = $derived(!cardId);
   const canChangeCard = $derived(availableCards.length > 1);
+
+  const sourceCard = $derived(
+    cardId ? (gs.player.collection.find((c) => c.id === cardId) ?? null) : null
+  );
+  const unitCard = $derived(sourceCard && isUnitCard(sourceCard) ? sourceCard : null);
+  const spellCard = $derived(sourceCard && isSpellCard(sourceCard) ? sourceCard : null);
+  const cardType = $derived(
+    unitCard ? CardType.Unit : spellCard ? CardType.Spell : null
+  );
+
   const knownKeywords = $derived(
     KEYWORD_KEYS.filter((key) => !!gs.player.craftingKnowledge.keywords?.[key])
   );
-  const knownActions = $derived(
+  const availableKeywords = $derived.by(() => {
+    if (!unitCard) return knownKeywords;
+    return knownKeywords.filter((key) => {
+      if (NUMERIC_KEYWORDS.has(key)) return true;
+      return !unitCard.keywords?.[key];
+    });
+  });
+  const actionNames = $derived(
     ACTION_TEMPLATE_KEYS.filter((name) => !!gs.player.craftingKnowledge.actions?.[name])
   );
 
-  const parameters = $derived.by((): AugmentParameters | DistillParameters | null => {
-    if (!cardId) return null;
-    const selectedKeywords = Object.fromEntries(
-      Object.entries(keywords).filter(([, value]) => value)
-    ) as Partial<Record<keyof UnitKeywords, number>>;
-    const selectedActionArgs = compactActionArgs(actionArgs);
-    const selectedAbilityArgs = compactActionArgs(abilityArgs);
-    const abilityPick =
-      !isDistill && abilityTrigger && abilityAction
-        ? { trigger: abilityTrigger, action: abilityAction }
-        : undefined;
-    const shared = {
-      cardId,
-      power: power || undefined,
-      maxHealth: maxHealth || undefined,
-      retaliate: retaliate || undefined,
-      keywords: Object.keys(selectedKeywords).length ? selectedKeywords : undefined,
-      actionArgs: selectedActionArgs,
-      ability: abilityPick,
-      abilityArgs: selectedAbilityArgs,
-      removeAbilities: isDistill && removeAbilities.length ? removeAbilities : undefined,
-    };
-    if (isDistill) {
-      return { ...shared, costDecrease: 1 };
-    }
-    return { ...shared, costIncrease };
-  });
-
-  const preview = $derived(
-    parameters
-      ? isDistill
-        ? getDistillPreview(parameters as DistillParameters)
-        : getAugmentPreview(parameters as AugmentParameters)
-      : null
-  );
-  const card = $derived(preview?.card ?? null);
-  const unitCard = $derived(card && isUnitCard(card) ? card : null);
-  const spellCard = $derived(card && isSpellCard(card) ? card : null);
-  const budgetUnit = $derived(
-    preview?.preview && isUnitCard(preview.preview)
-      ? preview.preview
-      : unitCard
-  );
-  const budgetSpell = $derived(
-    preview?.preview && isSpellCard(preview.preview)
-      ? preview.preview
-      : spellCard
-  );
-  const maxCostIncrease = $derived(card ? 9 - card.cost : 1);
-  const maxPowerCut = $derived(unitCard?.power ?? 0);
-  const maxHealthCut = $derived(unitCard ? Math.max(0, unitCard.maxHealth - 1) : 0);
-  const maxRetaliateCut = $derived(unitCard?.retaliate ?? 0);
-  const ownedKeywords = $derived(
-    unitCard ? KEYWORD_KEYS.filter((key) => !!unitCard.keywords?.[key]) : []
-  );
   const spellParams = $derived.by(() => {
     if (!spellCard) return [];
     return spellCard.actions.flatMap((spellAction, index) => {
@@ -165,78 +147,187 @@
       }));
     });
   });
-  const unitAbilityParams = $derived.by(() => {
-    if (!unitCard?.abilities) return [];
-    return unitCard.abilities.flatMap((ability, index) => {
-      const abilityActionDef = ability.actions[0];
-      if (!abilityActionDef) return [];
-      const templateName = getActionTemplateNameForEffect(abilityActionDef.effect.name);
-      const actionLabel = templateName
-        ? (getActionTemplateMeta(templateName)?.label ?? templateName)
-        : abilityActionDef.effect.name;
-      return getActionNumericParams(abilityActionDef).map((param) => ({
-        index,
-        key: param.definitionKey,
-        label: param.label,
-        abilityLabel: `${ability.trigger.type}: ${actionLabel}`,
-        current: Number(abilityActionDef.effect.args[param.definitionKey]) || 0,
-      }));
-    });
+
+  function activeArgs(name: string, committed: Record<string, number>, active: boolean) {
+    if (active) {
+      return Object.keys(committed).length ? committed : defaultActionFactoryArgs(name);
+    }
+    return stagedArgs[name] ?? defaultActionFactoryArgs(name);
+  }
+
+  function argsFor(name: string): Record<string, number> {
+    return activeArgs(name, abilityArgs, abilityAction === name);
+  }
+
+  function triggerFor(name: string): string {
+    return stagedTriggers[name] ?? (abilityAction === name ? abilityTrigger : 'onDeploy');
+  }
+
+  const augmentKeywords = $derived.by((): UnitKeywords | undefined => {
+    const result: UnitKeywords = {};
+    for (const key of KEYWORD_KEYS) {
+      if (!runeIn[key]) continue;
+      const amount = runeAmounts[key] ?? 1;
+      if (NUMERIC_KEYWORDS.has(key)) (result[key] as number) = amount;
+      else (result[key] as boolean) = true;
+    }
+    return Object.keys(result).length ? result : undefined;
   });
 
-  const canDecCost = $derived(
-    !isDistill &&
-      !!parameters &&
-      costIncrease > 1 &&
-      fits({ ...(parameters as AugmentParameters), costIncrease: costIncrease - 1 })
-  );
-  const canIncCost = $derived(!isDistill && costIncrease < maxCostIncrease);
-  const canDecPower = $derived(!!unitCard && power > 0);
-  const canIncPower = $derived(
-    !!unitCard &&
-      !!parameters &&
-      (isDistill
-        ? power < maxPowerCut
-        : fits({ ...(parameters as AugmentParameters), power: power + 1 }))
-  );
-  const canDecHealth = $derived(!!unitCard && maxHealth > 0);
-  const canIncHealth = $derived(
-    !!unitCard &&
-      !!parameters &&
-      (isDistill
-        ? maxHealth < maxHealthCut
-        : fits({ ...(parameters as AugmentParameters), maxHealth: maxHealth + 1 }))
-  );
-  const canDecRetaliate = $derived(!!unitCard && retaliate > 0);
-  const canIncRetaliate = $derived(
-    !!unitCard &&
-      !!parameters &&
-      (isDistill
-        ? retaliate < maxRetaliateCut
-        : fits({ ...(parameters as AugmentParameters), retaliate: retaliate + 1 }))
+  const abilityPick = $derived(
+    abilityAction
+      ? {
+          trigger: abilityTrigger,
+          action: abilityAction,
+          args: activeArgs(abilityAction, abilityArgs, true),
+        }
+      : undefined
   );
 
-  const budgetUsed = $derived.by(() => {
-    if (!preview) return 0;
-    return isDistill
-      ? (preview as ReturnType<typeof getDistillPreview>).saved
-      : (preview as ReturnType<typeof getAugmentPreview>).spent;
+  const augmentParameters = $derived.by((): AugmentParameters | null => {
+    if (!cardId || isDistill) return null;
+    const selectedKeywords = augmentKeywords
+      ? (Object.fromEntries(
+          Object.entries(augmentKeywords).map(([key, value]) => [
+            key,
+            typeof value === 'number' ? value : 1,
+          ])
+        ) as Partial<Record<keyof UnitKeywords, number>>)
+      : undefined;
+    const selectedSpellArgs = compactActionArgs(spellArgDeltas);
+    return {
+      cardId,
+      power: essenceIn.power ? essences.power : undefined,
+      maxHealth: essenceIn.hp ? essences.hp : undefined,
+      retaliate: essenceIn.retaliate ? essences.retaliate : undefined,
+      keywords: selectedKeywords && Object.keys(selectedKeywords).length ? selectedKeywords : undefined,
+      ability: abilityPick,
+      actionArgs: selectedSpellArgs,
+      resources: selectedResources(),
+    };
   });
-  const budgetCap = $derived.by(() => {
-    if (!preview) return 0;
-    return isDistill
-      ? (preview as ReturnType<typeof getDistillPreview>).downgradeBudget
-      : (preview as ReturnType<typeof getAugmentPreview>).upgradeBudget;
+
+  const hasAugmentIngredients = $derived.by(() => {
+    if (!augmentParameters) return false;
+    const p = augmentParameters;
+    return !!(
+      p.power ||
+      p.maxHealth ||
+      p.retaliate ||
+      (p.keywords && Object.keys(p.keywords).length) ||
+      p.ability ||
+      (p.actionArgs && Object.keys(p.actionArgs).length)
+    );
   });
-  const budgetRemainder = $derived.by(() => {
-    if (!preview || preview.error) return 0;
-    return isDistill
-      ? (preview as ReturnType<typeof getDistillPreview>).extraCut
-      : (preview as ReturnType<typeof getAugmentPreview>).extraBudget;
-  });
-  const budgetShort = $derived(
-    isDistill && preview?.error ? Math.max(0, budgetCap - budgetUsed) : 0
+
+  const augmentPreview = $derived(
+    augmentParameters ? getAugmentPreview(augmentParameters) : null
   );
+
+  const budgetUnit = $derived.by((): PartialConjuredUnit | null => {
+    if (!unitCard) return null;
+    return {
+      type: CardType.Unit,
+      colors: unitCard.colors,
+      power: unitCard.power + (essenceIn.power ? essences.power : 0),
+      maxHealth: unitCard.maxHealth + (essenceIn.hp ? essences.hp : 0),
+      retaliate: (unitCard.retaliate || 0) + (essenceIn.retaliate ? essences.retaliate : 0),
+      keywords: { ...(unitCard.keywords ?? {}), ...(augmentKeywords ?? {}) },
+      abilities: unitCard.abilities,
+    };
+  });
+
+  function budgetTitle(base: string, cost: number): string {
+    return cost ? `${base}\nBudget cost: ${cost}` : base;
+  }
+
+  const hints = $derived.by(() => {
+    const map: Record<string, string> = {};
+    for (const key of ['power', 'hp', 'retaliate'] as EssenceKey[]) {
+      const value = essences[key];
+      const label =
+        key === 'retaliate'
+          ? getKeywordTooltip('retaliate', value)
+          : key === 'power'
+            ? `Power +${value}`
+            : `Health +${value}`;
+      map[`essence:${key}`] = budgetTitle(label, value * ESSENCE_COST[key]);
+    }
+    for (const key of availableKeywords) {
+      const amount = NUMERIC_KEYWORDS.has(key) ? (runeAmounts[key] ?? 1) : 1;
+      if (budgetUnit) {
+        map[`rune:${key}`] = budgetTitle(
+          getKeywordTooltip(key, amount),
+          getKeywordBudget(key, budgetUnit, amount)
+        );
+      }
+    }
+    for (const name of actionNames) {
+      const args = argsFor(name);
+      const trigger = triggerFor(name);
+      const ability = buildAbility({ trigger, action: name, args });
+      const colors = (unitCard ?? spellCard)?.colors.map((entry) => entry.color) ?? [];
+      const cost = ability ? getAbilityCost(ability, colors) : 0;
+      map[`incantation:${name}`] = budgetTitle(
+        `${getActionTooltip(name)}\nTrigger: ${getTriggerTemplateLabel(trigger)}`,
+        cost
+      );
+    }
+    return map;
+  });
+
+  const shapeSummary = $derived.by(() => {
+    if (!hasAugmentIngredients) return 'Add ingredients to enchant this card.';
+    const parts: string[] = [];
+    if (essenceIn.power) parts.push(`+${essences.power} power`);
+    if (essenceIn.hp) parts.push(`+${essences.hp} health`);
+    if (essenceIn.retaliate) parts.push(`+${essences.retaliate} retaliate`);
+    for (const key of KEYWORD_KEYS) {
+      if (!runeIn[key]) continue;
+      const label = formatKeywordLabel(key);
+      if (NUMERIC_KEYWORDS.has(key)) parts.push(`+${runeAmounts[key] ?? 1} ${label.toLowerCase()}`);
+      else parts.push(label);
+    }
+    if (abilityAction) {
+      parts.push(`${getTriggerTemplateLabel(abilityTrigger)}: ${abilityAction}`);
+    }
+    if (spellCard && spellArgDeltas) {
+      for (const [indexKey, args] of Object.entries(spellArgDeltas)) {
+        const spellAction = spellCard.actions[Number(indexKey)];
+        if (!spellAction) continue;
+        for (const [key, value] of Object.entries(args)) {
+          if (!value) continue;
+          parts.push(`+${value} ${key}`);
+        }
+      }
+    }
+    return parts.join(', ');
+  });
+
+  const charms = $derived.by((): RitualCharm[] => {
+    if (isDistill || !cardType) return [];
+    const list: RitualCharm[] = [];
+    if (cardType === CardType.Unit) {
+      if (essenceIn.power) list.push({ id: 'essence:power', icon: powerIcon });
+      if (essenceIn.hp) list.push({ id: 'essence:hp', icon: healthIcon });
+      if (essenceIn.retaliate) list.push({ id: 'essence:retaliate', icon: retaliateIcon });
+      for (const key of KEYWORD_KEYS) {
+        if (!runeIn[key]) continue;
+        list.push({
+          id: `rune:${key}`,
+          icon: getAssetPath(`images/keywords/material-icons/${key}.png`),
+        });
+      }
+      if (abilityAction) list.push({ id: `incantation:${abilityAction}`, icon: incantationIcon });
+    } else if (spellCard) {
+      for (const [indexKey, args] of Object.entries(spellArgDeltas)) {
+        if (Object.values(args).some((value) => value > 0)) {
+          list.push({ id: `spell:${indexKey}`, icon: incantationIcon });
+        }
+      }
+    }
+    return list;
+  });
 
   function initialCardId(source: Action): string | null {
     if (typeof source.actionParameters.cardId === 'string') {
@@ -257,351 +348,247 @@
     return Object.keys(next).length ? next : undefined;
   }
 
-  function resetForm() {
-    costIncrease = 1;
-    power = 0;
-    maxHealth = 0;
-    retaliate = 0;
-    keywords = {};
-    actionArgs = {};
-    abilityTrigger = null;
+  function selectedResources(): { type: ResourceType; count: number }[] {
+    return Object.values(ResourceType)
+      .map((type) => ({ type, count: selected[type] ?? 0 }))
+      .filter((row) => row.count > 0);
+  }
+
+  function resetAugmentForm() {
+    essences = { power: 1, hp: 1, retaliate: 1 };
+    essenceIn = { power: false, hp: false, retaliate: false };
+    runeAmounts = {};
+    runeIn = {};
+    stagedTriggers = {};
+    stagedArgs = {};
+    abilityTrigger = 'onDeploy';
     abilityAction = null;
     abilityArgs = {};
-    removeAbilities = [];
+    spellArgDeltas = {};
+    selected = Object.fromEntries(Object.values(ResourceType).map((type) => [type, 0])) as Record<
+      ResourceType,
+      number
+    >;
+    sealing = false;
+    charmEntry = null;
   }
 
   function selectCard(id: string) {
     cardId = id;
-    resetForm();
+    resetAugmentForm();
   }
 
   function back() {
+    if (sealing) return;
     if (cardId && canChangeCard) {
       cardId = null;
-      resetForm();
+      resetAugmentForm();
       return;
     }
     onDone();
   }
 
-  function fits(next: AugmentParameters | DistillParameters): boolean {
-    return isDistill
-      ? getDistillPreview(next as DistillParameters).error === ''
-      : getAugmentPreview(next as AugmentParameters).error === '';
+  function fitsAugment(next: AugmentParameters): boolean {
+    return getAugmentPreview(next).error === '';
   }
 
-  function formatKeyword(keyword: string): string {
-    return keyword.replace(/([a-z])([A-Z])/g, '$1 $2');
+  function withAugmentPatch(patch: Partial<AugmentParameters>): AugmentParameters | null {
+    if (!augmentParameters) return null;
+    return { ...augmentParameters, ...patch };
   }
 
-  function keywordCost(key: keyof UnitKeywords): number {
-    if (!budgetUnit) return 0;
-    return getKeywordBudget(key, budgetUnit);
+  const atManaLimit = $derived.by(() => {
+    if (!sourceCard || !hasAugmentIngredients || !augmentPreview) return false;
+    return sourceCard.cost + augmentPreview.costIncrease >= 9;
+  });
+
+  function canAddIngredient(id: string): boolean {
+    if (!augmentParameters) return false;
+    if (id.startsWith('essence:')) {
+      const key = id.slice('essence:'.length) as EssenceKey;
+      if (essenceIn[key]) return true;
+      const patch: Partial<AugmentParameters> = {};
+      if (key === 'power') patch.power = essences.power;
+      if (key === 'hp') patch.maxHealth = essences.hp;
+      if (key === 'retaliate') patch.retaliate = essences.retaliate;
+      const trial = withAugmentPatch(patch);
+      return !!trial && fitsAugment(trial);
+    }
+    if (id.startsWith('rune:')) {
+      const key = id.slice('rune:'.length) as keyof UnitKeywords;
+      if (runeIn[key]) return true;
+      const amount = runeAmounts[key] ?? 1;
+      const nextKeywords = { ...(augmentParameters.keywords ?? {}), [key]: amount };
+      const trial = withAugmentPatch({ keywords: nextKeywords });
+      return !!trial && fitsAugment(trial);
+    }
+    if (id.startsWith('incantation:')) {
+      const name = id.slice('incantation:'.length);
+      if (abilityAction === name) return true;
+      const args = { ...argsFor(name) };
+      const trigger = triggerFor(name);
+      const trial = withAugmentPatch({ ability: { trigger, action: name, args } });
+      return !!trial && fitsAugment(trial);
+    }
+    return true;
   }
 
-  function actionParamCost(index: number, key: string): number {
-    if (!budgetSpell) return 0;
-    const action = budgetSpell.actions[index];
-    if (!action) return 0;
-    const colors = budgetSpell.colors.map((entry) => entry.color);
-    const current = Number(action.effect.args[key]) || 0;
-    const next = {
-      ...action,
-      effect: {
-        ...action.effect,
-        args: {
-          ...action.effect.args,
-          [key]: current + (isDistill ? -1 : 1),
-        },
-      },
-    };
-    return Math.abs(getActionBudget(next, colors) - getActionBudget(action, colors));
-  }
-
-  function abilityParamCost(index: number, key: string): number {
-    if (!budgetUnit) return 0;
-    const action = budgetUnit.abilities?.[index]?.actions[0];
-    if (!action) return 0;
-    const colors = budgetUnit.colors.map((entry) => entry.color);
-    const current = Number(action.effect.args[key]) || 0;
-    const next = {
-      ...action,
-      effect: {
-        ...action.effect,
-        args: {
-          ...action.effect.args,
-          [key]: current + (isDistill ? -1 : 1),
-        },
-      },
-    };
-    return Math.abs(getActionBudget(next, colors) - getActionBudget(action, colors));
-  }
-
-  function addAbilityCost(): number {
-    if (!abilityTrigger || !abilityAction || !budgetUnit) return 0;
-    const ability = buildAbility({ trigger: abilityTrigger, action: abilityAction });
-    if (!ability) return 0;
-    return getAbilityCost(
-      ability,
-      budgetUnit.colors.map((entry) => entry.color)
-    );
-  }
-
-  function formatAbility(ability: Ability): string {
-    const actionName = getAbilityActionNames(ability)[0];
-    const actionLabel = actionName
-      ? (getActionTemplateMeta(actionName)?.label ?? actionName)
-      : (ability.actions[0]?.effect.name ?? 'Ability');
-    return `${ability.trigger.type}: ${actionLabel}`;
-  }
-
-  function hasBooleanKeyword(key: keyof UnitKeywords): boolean {
-    if (!unitCard || NUMERIC_KEYWORDS.has(key)) return false;
-    return !!unitCard.keywords?.[key];
-  }
-
-  function keywordOwnedValue(key: keyof UnitKeywords): number {
-    const current = unitCard?.keywords?.[key];
-    if (typeof current === 'number') return current;
-    return current ? 1 : 0;
-  }
-
-  function actionArgValue(index: number, key: string): number {
-    return actionArgs[index]?.[key] ?? 0;
-  }
-
-  function maxActionArgCut(index: number, key: string): number {
-    const param = spellParams.find((entry) => entry.index === index && entry.key === key);
-    return Math.max(0, (param?.current ?? 0) - 1);
-  }
-
-  function withActionArg(index: number, key: string, value: number): ActionArgDeltas {
+  function canIncSpellArg(index: number, key: string): boolean {
+    if (!augmentParameters) return false;
+    const value = (spellArgDeltas[index]?.[key] ?? 0) + 1;
     const next: ActionArgDeltas = {
-      ...actionArgs,
-      [index]: { ...actionArgs[index], [key]: value },
+      ...spellArgDeltas,
+      [index]: { ...spellArgDeltas[index], [key]: value },
     };
-    if (!value) {
-      delete next[index][key];
+    const trial = withAugmentPatch({ actionArgs: compactActionArgs(next) });
+    return !!trial && fitsAugment(trial);
+  }
+
+  function onEssenceDial(key: EssenceKey, value: number) {
+    if (essenceIn[key] && augmentParameters) {
+      const patch: Partial<AugmentParameters> = {};
+      if (key === 'power') patch.power = value;
+      if (key === 'hp') patch.maxHealth = value;
+      if (key === 'retaliate') patch.retaliate = value;
+      const trial = withAugmentPatch(patch);
+      if (!trial || !fitsAugment(trial)) return;
     }
-    return next;
+    essences = { ...essences, [key]: value };
   }
 
-  function canIncActionArg(index: number, key: string): boolean {
-    if (!parameters) return false;
-    const value = actionArgValue(index, key);
-    if (isDistill) {
-      return value < maxActionArgCut(index, key);
-    }
-    return fits({ ...parameters, actionArgs: withActionArg(index, key, value + 1) });
-  }
-
-  function setActionArg(index: number, key: string, next: number) {
-    if (!parameters || !Number.isFinite(next) || next < 0) return;
-    const value = Math.round(next);
-    if (isDistill && value > maxActionArgCut(index, key)) return;
-    const current = actionArgValue(index, key);
-    if (value > current && !canIncActionArg(index, key)) return;
-    actionArgs = withActionArg(index, key, value);
-  }
-
-  function abilityArgValue(index: number, key: string): number {
-    return abilityArgs[index]?.[key] ?? 0;
-  }
-
-  function maxAbilityArgCut(index: number, key: string): number {
-    const param = unitAbilityParams.find((entry) => entry.index === index && entry.key === key);
-    return Math.max(0, (param?.current ?? 0) - 1);
-  }
-
-  function withAbilityArg(index: number, key: string, value: number): ActionArgDeltas {
-    const next: ActionArgDeltas = {
-      ...abilityArgs,
-      [index]: { ...abilityArgs[index], [key]: value },
-    };
-    if (!value) {
-      delete next[index][key];
-    }
-    return next;
-  }
-
-  function canIncAbilityArg(index: number, key: string): boolean {
-    if (!parameters) return false;
-    const value = abilityArgValue(index, key);
-    if (isDistill) {
-      return value < maxAbilityArgCut(index, key);
-    }
-    return fits({ ...parameters, abilityArgs: withAbilityArg(index, key, value + 1) });
-  }
-
-  function setAbilityArg(index: number, key: string, next: number) {
-    if (!parameters || !Number.isFinite(next) || next < 0) return;
-    const value = Math.round(next);
-    if (isDistill && value > maxAbilityArgCut(index, key)) return;
-    const current = abilityArgValue(index, key);
-    if (value > current && !canIncAbilityArg(index, key)) return;
-    abilityArgs = withAbilityArg(index, key, value);
-  }
-
-  function isAbilityRemoved(index: number): boolean {
-    return removeAbilities.includes(index);
-  }
-
-  function toggleRemoveAbility(index: number) {
-    if (!isDistill) return;
-    if (isAbilityRemoved(index)) {
-      removeAbilities = removeAbilities.filter((entry) => entry !== index);
+  function onEssenceMix(key: EssenceKey, remove: boolean) {
+    if (remove) {
+      if (!essenceIn[key]) return;
+      essenceIn = { ...essenceIn, [key]: false };
       return;
     }
-    removeAbilities = [...removeAbilities, index];
-    if (abilityArgs[index]) {
-      const next = { ...abilityArgs };
-      delete next[index];
+    if (essenceIn[key] || !augmentParameters) return;
+    const patch: Partial<AugmentParameters> = {};
+    if (key === 'power') patch.power = essences.power;
+    if (key === 'hp') patch.maxHealth = essences.hp;
+    if (key === 'retaliate') patch.retaliate = essences.retaliate;
+    const trial = withAugmentPatch(patch);
+    if (!trial || !fitsAugment(trial)) return;
+    essenceIn = { ...essenceIn, [key]: true };
+    playAddResourceSound();
+  }
+
+  function onRuneDial(key: keyof UnitKeywords, value: number) {
+    if (runeIn[key] && augmentParameters) {
+      const nextKeywords = { ...(augmentParameters.keywords ?? {}), [key]: value };
+      const trial = withAugmentPatch({ keywords: nextKeywords });
+      if (!trial || !fitsAugment(trial)) return;
+    }
+    runeAmounts = { ...runeAmounts, [key]: value };
+  }
+
+  function onRuneMix(key: keyof UnitKeywords, remove: boolean) {
+    if (remove) {
+      if (!runeIn[key]) return;
+      const next = { ...runeIn };
+      delete next[key];
+      runeIn = next;
+      return;
+    }
+    if (runeIn[key] || !augmentParameters) return;
+    const amount = runeAmounts[key] ?? 1;
+    const nextKeywords = { ...(augmentParameters.keywords ?? {}), [key]: amount };
+    const trial = withAugmentPatch({ keywords: nextKeywords });
+    if (!trial || !fitsAugment(trial)) return;
+    runeIn = { ...runeIn, [key]: true };
+    if (!runeAmounts[key]) runeAmounts = { ...runeAmounts, [key]: 1 };
+    playAddResourceSound();
+  }
+
+  function onTriggerDial(name: string, trigger: string) {
+    if (abilityAction === name && augmentParameters) {
+      const trial = withAugmentPatch({
+        ability: { trigger, action: name, args: abilityArgs },
+      });
+      if (!trial || !fitsAugment(trial)) return;
+      abilityTrigger = trigger;
+    }
+    stagedTriggers = { ...stagedTriggers, [name]: trigger };
+  }
+
+  function onArgDial(name: string, factoryKey: string, value: number) {
+    const next = { ...argsFor(name), [factoryKey]: value };
+    if (abilityAction === name && augmentParameters) {
+      const trial = withAugmentPatch({
+        ability: { trigger: abilityTrigger, action: name, args: next },
+      });
+      if (!trial || !fitsAugment(trial)) return;
       abilityArgs = next;
     }
+    stagedArgs = { ...stagedArgs, [name]: next };
   }
 
-  function setAbilityTrigger(key: string) {
-    if (isDistill || !parameters) return;
-    const nextTrigger = abilityTrigger === key ? null : key;
-    if (
-      nextTrigger &&
-      abilityAction &&
-      !fits({ ...parameters, ability: { trigger: nextTrigger, action: abilityAction } })
-    ) {
+  function onIncantationMix(name: string, remove: boolean) {
+    if (remove) {
+      if (abilityAction !== name) return;
+      abilityAction = null;
       return;
     }
-    abilityTrigger = nextTrigger;
+    if (abilityAction === name || !augmentParameters) return;
+    const args = { ...argsFor(name) };
+    const trigger = triggerFor(name);
+    const trial = withAugmentPatch({ ability: { trigger, action: name, args } });
+    if (!trial || !fitsAugment(trial)) return;
+    abilityAction = name;
+    abilityTrigger = trigger;
+    abilityArgs = args;
+    playAddResourceSound();
   }
 
-  function setAbilityAction(name: string) {
-    if (isDistill || !parameters) return;
-    const nextAction = abilityAction === name ? null : name;
-    if (
-      nextAction &&
-      abilityTrigger &&
-      !fits({ ...parameters, ability: { trigger: abilityTrigger, action: nextAction } })
-    ) {
+  function onPigment() {
+    /* pigments disabled for enchanting */
+  }
+
+  function onIngredientDrop(id: string, x: number, y: number) {
+    if (sealing) return;
+    charmEntry = { id, x, y };
+    if (id.startsWith('essence:')) {
+      onEssenceMix(id.slice('essence:'.length) as EssenceKey, false);
       return;
     }
-    abilityAction = nextAction;
-  }
-
-  function setKeyword(key: keyof UnitKeywords, value: number) {
-    if (!parameters) return;
-    const next = Math.max(0, value);
-    const maxCut = isDistill ? keywordOwnedValue(key) : Infinity;
-    const clamped = Math.min(next, maxCut);
-    const nextKeywords = { ...keywords };
-    if (clamped) {
-      nextKeywords[key] = clamped;
-    } else {
-      delete nextKeywords[key];
-    }
-    if (
-      !isDistill &&
-      clamped > (keywords[key] ?? 0) &&
-      !fits({ ...parameters, keywords: nextKeywords })
-    ) {
+    if (id.startsWith('rune:')) {
+      onRuneMix(id.slice('rune:'.length) as keyof UnitKeywords, false);
       return;
     }
-    keywords = nextKeywords;
+    if (id.startsWith('incantation:')) onIncantationMix(id.slice('incantation:'.length), false);
   }
 
-  function toggleKeyword(key: keyof UnitKeywords) {
-    if (!parameters) return;
-    if (!isDistill && hasBooleanKeyword(key)) return;
-    if (isDistill && !hasBooleanKeyword(key) && !NUMERIC_KEYWORDS.has(key)) return;
-
-    const enabled = !keywords[key];
-    const nextKeywords = { ...keywords };
-    if (enabled) {
-      nextKeywords[key] = 1;
-      if (!isDistill && !fits({ ...parameters, keywords: nextKeywords })) return;
-    } else {
-      delete nextKeywords[key];
+  function setSpellArg(index: number, key: string, value: number) {
+    if (!augmentParameters || value < 0) return;
+    const next: ActionArgDeltas = {
+      ...spellArgDeltas,
+      [index]: { ...spellArgDeltas[index], [key]: value },
+    };
+    if (!value) {
+      delete next[index][key];
+      if (!Object.keys(next[index]).length) delete next[index];
     }
-    keywords = nextKeywords;
+    const trial = withAugmentPatch({ actionArgs: compactActionArgs(next) });
+    if (value > (spellArgDeltas[index]?.[key] ?? 0) && (!trial || !fitsAugment(trial))) return;
+    spellArgDeltas = next;
+    if (value > 0) playAddResourceSound();
   }
 
-  function canIncKeyword(key: keyof UnitKeywords): boolean {
-    if (!parameters) return false;
-    if (isDistill) {
-      return (keywords[key] ?? 0) < keywordOwnedValue(key);
-    }
-    const nextKeywords = { ...keywords, [key]: (keywords[key] ?? 0) + 1 };
-    return fits({ ...parameters, keywords: nextKeywords });
+  function confirmAugment() {
+    if (!augmentParameters || !hasAugmentIngredients || augmentPreview?.error || sealing) return;
+    sealing = true;
   }
 
-  function setCostIncrease(next: number) {
-    if (isDistill || !Number.isFinite(next)) return;
-    const value = Math.round(next);
-    if (value < 1 || value > maxCostIncrease) return;
-    if (value < costIncrease && parameters && !fits({ ...parameters, costIncrease: value })) return;
-    costIncrease = value;
-  }
-
-  function setPower(next: number) {
-    if (!Number.isFinite(next) || next < 0) return;
-    const value = Math.round(next);
-    if (isDistill && value > maxPowerCut) return;
-    if (value > power && !canIncPower) return;
-    if (value < power && !canDecPower) return;
-    power = value;
-  }
-
-  function setMaxHealth(next: number) {
-    if (!Number.isFinite(next) || next < 0) return;
-    const value = Math.round(next);
-    if (isDistill && value > maxHealthCut) return;
-    if (value > maxHealth && !canIncHealth) return;
-    if (value < maxHealth && !canDecHealth) return;
-    maxHealth = value;
-  }
-
-  function setRetaliate(next: number) {
-    if (!Number.isFinite(next) || next < 0) return;
-    const value = Math.round(next);
-    if (isDistill && value > maxRetaliateCut) return;
-    if (value > retaliate && !canIncRetaliate) return;
-    if (value < retaliate && !canDecRetaliate) return;
-    retaliate = value;
-  }
-
-  function adjustFromClick(event: MouseEvent, canDec: boolean, canInc: boolean, apply: () => void) {
-    if (event.type === 'contextmenu') event.preventDefault();
-    const increase = event.type !== 'contextmenu';
-    if (increase && !canInc) return;
-    if (!increase && !canDec) return;
-    apply();
-  }
-
-  function onKeywordRowClick(event: MouseEvent, key: keyof UnitKeywords, numeric: boolean) {
-    if (numeric) {
-      if (event.type === 'contextmenu') {
-        event.preventDefault();
-        setKeyword(key, (keywords[key] ?? 0) - 1);
-      } else {
-        setKeyword(key, (keywords[key] ?? 0) + 1);
-      }
+  function onSealComplete() {
+    if (!augmentParameters) {
+      sealing = false;
       return;
     }
-    if (event.type === 'contextmenu') event.preventDefault();
-    toggleKeyword(key);
-  }
-
-  function onNumberInput(event: Event, apply: (value: number) => void) {
-    const raw = (event.currentTarget as HTMLInputElement).value;
-    if (raw === '') return;
-    apply(Number.parseInt(raw, 10));
-  }
-
-  function confirm() {
-    if (!parameters || preview?.error) return;
     performAction({
       ...action,
       actionParameters: {
         ...action.actionParameters,
-        ...parameters,
+        ...augmentParameters,
       },
       missingParameters: {},
     });
@@ -609,683 +596,195 @@
   }
 </script>
 
-{#snippet stepper(
-  value: number,
-  canDec: boolean,
-  canInc: boolean,
-  label: string,
-  apply: (next: number) => void,
-  min = 0
-)}
-  <div
-    class="num-control"
-    onclick={(event) => event.stopPropagation()}
-    oncontextmenu={(event) => event.stopPropagation()}
+{#if selectingCard}
+  <WorkbenchShell
+    title={isDistill ? 'Distill a Card' : 'Enchant a Card'}
+    subtitle={isDistill ? 'Choose a card to distill.' : 'Choose a card to enchant.'}
+    wide
+    scene="invocation"
   >
-    <input
-      type="number"
-      {min}
-      {value}
-      aria-label={label}
-      oninput={(event) => onNumberInput(event, apply)}
-    />
-    <div class="step-arrows">
-      <button
-        type="button"
-        class="step-arrow"
-        disabled={!canInc}
-        aria-label="Increase {label}"
-        onclick={() => apply(value + 1)}
-      >
-        ▲
-      </button>
-      <button
-        type="button"
-        class="step-arrow"
-        disabled={!canDec}
-        aria-label="Decrease {label}"
-        onclick={() => apply(value - 1)}
-      >
-        ▼
-      </button>
-    </div>
-  </div>
-{/snippet}
-
-{#snippet statControl(
-  value: number,
-  canDec: boolean,
-  canInc: boolean,
-  label: string,
-  apply: (next: number) => void,
-  icon: string,
-  large = false
-)}
-  <div class="stat-control">
-    <div
-      class="stat-well"
-      class:large
-      role="spinbutton"
-      aria-label={label}
-      aria-valuemin={0}
-      aria-valuenow={value}
-      onclick={(event) => adjustFromClick(event, canDec, canInc, () => apply(value + 1))}
-      oncontextmenu={(event) => adjustFromClick(event, canDec, canInc, () => apply(value - 1))}
-    >
-      <img class="stat-face" src={icon} alt="" aria-hidden="true" />
-      <span class="stat-value">{value}</span>
-    </div>
-    <div class="step-arrows">
-      <button
-        type="button"
-        class="step-arrow"
-        disabled={!canInc}
-        aria-label="Increase {label}"
-        onclick={() => apply(value + 1)}
-      >
-        ▲
-      </button>
-      <button
-        type="button"
-        class="step-arrow"
-        disabled={!canDec}
-        aria-label="Decrease {label}"
-        onclick={() => apply(value - 1)}
-      >
-        ▼
-      </button>
-    </div>
-  </div>
-{/snippet}
-
-<div class="overlay" role="presentation">
-  <div
-    class="frame"
-    class:wide={selectingCard}
-    role="dialog"
-    aria-labelledby="enchant-title"
-    style="--wood: url('{woodPath}'); --table: url('{tablePath}'); --parchment: url('{parchmentPath}')"
-  >
-    <div class="panel">
-      <h2 id="enchant-title" class="title">
-        <span class="star" aria-hidden="true"></span>
-        {#if cardId}
-          {isDistill ? 'Distill' : 'Enchant'} {card?.name ?? 'Card'}
-        {:else}
-          {isDistill ? 'Distill a Card' : 'Enchant a Card'}
-        {/if}
-        <span class="star" aria-hidden="true"></span>
-      </h2>
-
-      {#if selectingCard}
-        <section class="section cards-section" aria-label="Cards">
-          <h3 class="section-heading">
-            <span class="section-icon star-icon" aria-hidden="true"></span>
-            Which card?
-          </h3>
-          {#if availableCards.length === 0}
-            <p class="empty">No cards available to enchant.</p>
-          {:else}
-            <CardFilters
-              cards={availableCards}
-              bind:colorFilter
-              bind:costFilter
-              bind:typeFilter
-              tone="parchment"
-            />
-            {#if filteredCards.length === 0}
-              <p class="empty">
-                {hasActiveFilters
-                  ? 'No cards match these filters.'
-                  : 'No cards available to enchant.'}
-              </p>
-            {:else}
-              <div class="card-grid">
-                {#each filteredCards as option (option.id)}
-                  <button type="button" class="card-pick" onclick={() => selectCard(option.id)}>
-                    <CardCompact card={option} />
-                  </button>
-                {/each}
-              </div>
-            {/if}
-          {/if}
-        </section>
-      {:else if !card || !preview}
-        <p class="empty">{preview?.error || 'Card not found.'}</p>
+    <section class="picker" aria-label="Cards">
+      {#if availableCards.length === 0}
+        <p class="empty">No cards available.</p>
       {:else}
-        <section class="section preview-section" aria-label="Preview">
-          <div class="preview-row">
-            <CardCompact {card} />
-            <span class="arrow" aria-hidden="true">→</span>
-            {#if preview.preview}
-              <CardCompact card={preview.preview} />
-            {/if}
+        <CardFilters
+          cards={availableCards}
+          bind:colorFilter
+          bind:costFilter
+          bind:typeFilter
+          tone="parchment"
+        />
+        {#if filteredCards.length === 0}
+          <p class="empty">
+            {hasActiveFilters ? 'No cards match these filters.' : 'No cards available.'}
+          </p>
+        {:else}
+          <div class="card-grid">
+            {#each filteredCards as option (option.id)}
+              <button type="button" class="card-pick" onclick={() => selectCard(option.id)}>
+                <CardCompact card={option} />
+              </button>
+            {/each}
           </div>
-        </section>
-
-        <section class="section" aria-label="Budget">
-          <h3 class="section-heading">
-            <span class="section-icon star-icon" aria-hidden="true"></span>
-            Budget
-          </h3>
-          <div class="budget">
-            <div class="budget-stat">
-              <div class="stat-label">{isDistill ? 'Cut' : 'Spent'}</div>
-              <div class="bonus-well" class:over={!!preview.error}>
-                {budgetUsed} / {budgetCap}
-              </div>
-            </div>
-            <div class="budget-stat">
-              <div class="stat-label">{isDistill ? 'Cost −' : 'Cost +'}</div>
-              {#if isDistill}
-                <div class="bonus-well">1</div>
-              {:else}
-                {@render stepper(
-                  costIncrease,
-                  canDecCost,
-                  canIncCost,
-                  'Cost increase',
-                  setCostIncrease,
-                  1
-                )}
-              {/if}
-            </div>
-          </div>
-          {#if preview.error}
-            <p class="budget-note error-note">
-              {#if isDistill && budgetShort > 0}
-                Need to cut {budgetShort} more
-              {:else}
-                {preview.error}
-              {/if}
-            </p>
-          {:else if !isDistill && budgetRemainder > 0}
-            <p class="budget-note">{budgetRemainder} remaining will be spent automatically</p>
-          {:else if isDistill && budgetRemainder > 0}
-            <p class="budget-note">Cutting {budgetRemainder} more than required</p>
-          {/if}
-        </section>
-
-        {#if unitCard}
-          <section class="section" aria-label="Stats">
-            <h3 class="section-heading">
-              <span class="section-icon star-icon" aria-hidden="true"></span>
-              Stats
-            </h3>
-            <div class="stats">
-              <div class="stat">
-                <div class="stat-label">Power {isDistill ? '−' : '+'}</div>
-                {@render statControl(
-                  power,
-                  canDecPower,
-                  canIncPower,
-                  'Power',
-                  setPower,
-                  getAssetPath('images/ui/icons/power-icon.png')
-                )}
-              </div>
-              <div class="stat">
-                <div class="stat-label">Health {isDistill ? '−' : '+'}</div>
-                {@render statControl(
-                  maxHealth,
-                  canDecHealth,
-                  canIncHealth,
-                  'Health',
-                  setMaxHealth,
-                  getAssetPath('images/ui/icons/health-icon.png')
-                )}
-              </div>
-              <div class="stat large">
-                <div class="stat-label" title={getKeywordTooltip('retaliate', retaliate || 1)}>
-                  Retaliate {isDistill ? '−' : '+'}
-                </div>
-                {@render statControl(
-                  retaliate,
-                  canDecRetaliate,
-                  canIncRetaliate,
-                  'Retaliate',
-                  setRetaliate,
-                  getAssetPath('images/ui/icons/retaliate-icon.png'),
-                  true
-                )}
-              </div>
-            </div>
-          </section>
-
-          <section class="section keywords-section" aria-label="Keywords">
-            <h3 class="section-heading">
-              <span class="section-icon star-icon" aria-hidden="true"></span>
-              Keywords
-            </h3>
-            {#if isDistill}
-              {#if ownedKeywords.length === 0}
-                <p class="empty">This card has no keywords to remove.</p>
-              {:else}
-                <div class="keyword-list">
-                  {#each ownedKeywords as key (key)}
-                    {#if NUMERIC_KEYWORDS.has(key)}
-                      {@const value = keywords[key] ?? 0}
-                      <div
-                        class="keyword-row"
-                        class:on={value > 0}
-                        title={getKeywordTooltip(key, keywordOwnedValue(key))}
-                        onclick={(event) => onKeywordRowClick(event, key, true)}
-                        oncontextmenu={(event) => onKeywordRowClick(event, key, true)}
-                      >
-                        <img
-                          class="keyword-icon"
-                          src={getAssetPath(`images/keywords/${key}.png`)}
-                          alt=""
-                          aria-hidden="true"
-                        />
-                        <span class="keyword-name">{formatKeyword(key)}</span>
-                        <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
-                        {@render stepper(
-                          value,
-                          value > 0,
-                          canIncKeyword(key),
-                          formatKeyword(key),
-                          (next) => setKeyword(key, next)
-                        )}
-                      </div>
-                    {:else}
-                      {@const selected = !!keywords[key]}
-                      <div
-                        class="keyword-row"
-                        class:on={selected}
-                        role="switch"
-                        aria-checked={selected}
-                        title={getKeywordTooltip(key)}
-                        onclick={(event) => onKeywordRowClick(event, key, false)}
-                        oncontextmenu={(event) => onKeywordRowClick(event, key, false)}
-                      >
-                        <img
-                          class="keyword-icon"
-                          src={getAssetPath(`images/keywords/${key}.png`)}
-                          alt=""
-                          aria-hidden="true"
-                        />
-                        <span class="keyword-name">{formatKeyword(key)}</span>
-                        <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
-                        <span class="toggle" class:on={selected} aria-hidden="true">
-                          <span class="toggle-knob"></span>
-                        </span>
-                      </div>
-                    {/if}
-                  {/each}
-                </div>
-              {/if}
-            {:else if knownKeywords.length === 0}
-              <p class="empty">No known keywords yet.</p>
-            {:else}
-              <div class="keyword-list">
-                {#each knownKeywords as key (key)}
-                  {#if NUMERIC_KEYWORDS.has(key)}
-                    {@const value = keywords[key] ?? 0}
-                    <div
-                      class="keyword-row"
-                      class:on={value > 0}
-                      title={getKeywordTooltip(key, value || 1)}
-                      onclick={(event) => onKeywordRowClick(event, key, true)}
-                      oncontextmenu={(event) => onKeywordRowClick(event, key, true)}
-                    >
-                      <img
-                        class="keyword-icon"
-                        src={getAssetPath(`images/keywords/${key}.png`)}
-                        alt=""
-                        aria-hidden="true"
-                      />
-                      <span class="keyword-name">{formatKeyword(key)}</span>
-                      <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
-                      {@render stepper(
-                        value,
-                        value > 0,
-                        canIncKeyword(key),
-                        formatKeyword(key),
-                        (next) => setKeyword(key, next)
-                      )}
-                    </div>
-                  {:else}
-                    {@const owned = hasBooleanKeyword(key)}
-                    {@const selected = !!keywords[key]}
-                    {@const on = owned || selected}
-                    <div
-                      class="keyword-row"
-                      class:on
-                      class:owned
-                      role="switch"
-                      aria-checked={on}
-                      aria-disabled={owned || (!selected && !canIncKeyword(key))}
-                      title={getKeywordTooltip(key)}
-                      onclick={(event) => onKeywordRowClick(event, key, false)}
-                      oncontextmenu={(event) => onKeywordRowClick(event, key, false)}
-                    >
-                      <img
-                        class="keyword-icon"
-                        src={getAssetPath(`images/keywords/${key}.png`)}
-                        alt=""
-                        aria-hidden="true"
-                      />
-                      <span class="keyword-name">{formatKeyword(key)}</span>
-                      <span class="keyword-cost" title="Budget cost">{keywordCost(key)}</span>
-                      {#if owned}
-                        <span class="owned-label">has</span>
-                      {/if}
-                      <span class="toggle" class:on aria-hidden="true">
-                        <span class="toggle-knob"></span>
-                      </span>
-                    </div>
-                  {/if}
-                {/each}
-              </div>
-            {/if}
-          </section>
-
-          <section class="section abilities-section" aria-label="Abilities">
-            <h3 class="section-heading">
-              <span class="section-icon star-icon" aria-hidden="true"></span>
-              Abilities
-            </h3>
-            {#if unitCard.abilities?.length}
-              <div class="ability-owned">
-                {#each unitCard.abilities as ability, index (index)}
-                  {@const removed = isAbilityRemoved(index)}
-                  <div class="ability-owned-row" class:on={removed} class:removed>
-                    {#if isDistill}
-                      <div
-                        class="keyword-row"
-                        class:on={removed}
-                        role="switch"
-                        aria-checked={removed}
-                        title={formatAbility(ability)}
-                        onclick={() => toggleRemoveAbility(index)}
-                      >
-                        <img
-                          class="keyword-icon"
-                          src={getAssetPath(
-                            getTriggerTemplateAsset(
-                              getTriggerTemplateKey(ability.trigger.type) ?? 'onDeploy'
-                            )
-                          )}
-                          alt=""
-                          aria-hidden="true"
-                        />
-                        <span class="keyword-name">{formatAbility(ability)}</span>
-                        <span class="owned-label">{removed ? 'remove' : 'has'}</span>
-                        <span class="toggle" class:on={removed} aria-hidden="true">
-                          <span class="toggle-knob"></span>
-                        </span>
-                      </div>
-                    {:else}
-                      <div class="ability-name-row">
-                        <img
-                          class="keyword-icon"
-                          src={getAssetPath(
-                            getTriggerTemplateAsset(
-                              getTriggerTemplateKey(ability.trigger.type) ?? 'onDeploy'
-                            )
-                          )}
-                          alt=""
-                          aria-hidden="true"
-                        />
-                        <span class="keyword-name">{formatAbility(ability)}</span>
-                      </div>
-                    {/if}
-                    {#if !removed}
-                      {#each unitAbilityParams.filter((param) => param.index === index) as param (`${param.index}-${param.key}`)}
-                        {@const value = abilityArgValue(param.index, param.key)}
-                        <div class="ability-param">
-                          <span class="stat-label">
-                            {param.label}
-                            {isDistill ? '−' : '+'}
-                            <span class="effect-cost" title="Budget cost of one step"
-                              >{abilityParamCost(param.index, param.key)}</span
-                            >
-                          </span>
-                          {@render stepper(
-                            value,
-                            value > 0,
-                            canIncAbilityArg(param.index, param.key),
-                            param.label,
-                            (next) => setAbilityArg(param.index, param.key, next)
-                          )}
-                        </div>
-                      {/each}
-                    {/if}
-                  </div>
-                {/each}
-              </div>
-            {:else if isDistill}
-              <p class="empty">This card has no abilities to remove.</p>
-            {/if}
-
-            {#if !isDistill}
-              <div class="ability-group" class:spaced={!!unitCard.abilities?.length}>
-                <div class="ability-label">
-                  Add ability
-                  {#if abilityTrigger && abilityAction}
-                    <span class="effect-cost" title="Budget cost">{addAbilityCost()}</span>
-                  {/if}
-                </div>
-                {#if knownActions.length === 0}
-                  <p class="empty">No known actions yet.</p>
-                {:else}
-                  <div class="keyword-list">
-                    {#each TRIGGER_TEMPLATE_KEYS as key (key)}
-                      {@const selected = abilityTrigger === key}
-                      <div
-                        class="keyword-row"
-                        class:on={selected}
-                        role="switch"
-                        aria-checked={selected}
-                        title={getTriggerTemplateLabel(key)}
-                        onclick={() => setAbilityTrigger(key)}
-                      >
-                        <img
-                          class="keyword-icon"
-                          src={getAssetPath(getTriggerTemplateAsset(key))}
-                          alt=""
-                          aria-hidden="true"
-                        />
-                        <span class="keyword-name">{getTriggerTemplateLabel(key)}</span>
-                        <span class="toggle" class:on={selected} aria-hidden="true">
-                          <span class="toggle-knob"></span>
-                        </span>
-                      </div>
-                    {/each}
-                  </div>
-                  <div class="keyword-list action-list">
-                    {#each knownActions as name (name)}
-                      {@const selected = abilityAction === name}
-                      {@const meta = getActionTemplateMeta(name)}
-                      <div
-                        class="keyword-row"
-                        class:on={selected}
-                        role="switch"
-                        aria-checked={selected}
-                        title={getActionTooltip(name)}
-                        onclick={() => setAbilityAction(name)}
-                      >
-                        <span class="keyword-name">{meta?.label ?? name}</span>
-                        <span class="toggle" class:on={selected} aria-hidden="true">
-                          <span class="toggle-knob"></span>
-                        </span>
-                      </div>
-                    {/each}
-                  </div>
-                {/if}
-              </div>
-            {/if}
-          </section>
+        {/if}
+      {/if}
+    </section>
+    {#snippet footer()}
+      <button type="button" class="abandon" onclick={back}>
+        <span class="abandon-mark" aria-hidden="true"></span>
+        Cancel
+      </button>
+    {/snippet}
+  </WorkbenchShell>
+{:else if isDistill && sourceCard}
+  <Distill
+    {action}
+    {sourceCard}
+    {canChangeCard}
+    onBack={back}
+    {onDone}
+  />
+{:else if sourceCard && cardType}
+  <WorkbenchShell
+    title="Enchant {sourceCard.name}"
+    subtitle="Infuse ingredients. Cost rises to match the power you add."
+    wide
+    scene="invocation"
+  >
+    <RitualStage
+      bind:selected
+      {charms}
+      {onSealComplete}
+      seal={sealing}
+      shapeText={shapeSummary}
+      shapeCost={hasAugmentIngredients ? (augmentPreview?.costIncrease ?? null) : null}
+      atManaLimit={atManaLimit}
+      {charmEntry}
+      acceptingDrop={draggingIngredient}
+      disabled={sealing}
+      split
+      showVessel
+      showFlank
+      suppressCore
+    >
+      {#snippet vessel()}
+        <div class="enchant-vessel">
+          <span class="land pigment" data-charm-land="pigment" aria-hidden="true"></span>
+          <span class="land essence" data-charm-land="essence" aria-hidden="true"></span>
+          <span class="land rune" data-charm-land="rune" aria-hidden="true"></span>
+          <CardCompact card={sourceCard} />
+        </div>
+      {/snippet}
+      {#snippet flank()}
+        {#if cardType === CardType.Unit}
+          <IngredientTray
+            {cardType}
+            colors={[]}
+            availableColors={[]}
+            {essences}
+            {essenceIn}
+            {runeAmounts}
+            {runeIn}
+            {availableKeywords}
+            triggers={stagedTriggers}
+            {argsFor}
+            {abilityAction}
+            spellAction={null}
+            knownActions={actionNames}
+            {hints}
+            showPigments={false}
+            canAdd={canAddIngredient}
+            locked={sealing}
+            {onPigment}
+            {onEssenceDial}
+            {onEssenceMix}
+            {onRuneDial}
+            {onRuneMix}
+            {onTriggerDial}
+            {onArgDial}
+            {onIncantationMix}
+            onDrop={onIngredientDrop}
+            onDragChange={(active) => (draggingIngredient = active)}
+          />
         {:else if spellCard}
-          <section class="section" aria-label="Effects">
-            <h3 class="section-heading">
-              <span class="section-icon star-icon" aria-hidden="true"></span>
-              Effects
-            </h3>
+          <div class="spell-tray" style="--parchment: url('{parchmentPath}')">
+            <h3 class="spell-title">Effects</h3>
             {#if spellParams.length === 0}
               <p class="empty">This spell has no adjustable effects.</p>
             {:else}
-              <div class="stats spell-stats">
+              <div class="spell-params">
                 {#each spellParams as param (`${param.index}-${param.key}`)}
-                  {@const value = actionArgValue(param.index, param.key)}
-                  <div class="stat">
-                    <div class="stat-label">
-                      {param.actionLabel}:
-                      {param.label}
-                      {isDistill ? '−' : '+'}
-                      <span class="effect-cost" title="Budget cost of one step"
-                        >{actionParamCost(param.index, param.key)}</span
-                      >
-                    </div>
-                    {@render stepper(
-                      value,
-                      value > 0,
-                      canIncActionArg(param.index, param.key),
-                      param.label,
-                      (next) => setActionArg(param.index, param.key, next)
-                    )}
-                  </div>
+                  {@const value = spellArgDeltas[param.index]?.[param.key] ?? 0}
+                  {@const blocked = value === 0 && !canIncSpellArg(param.index, param.key)}
+                  <label class="spell-param" class:blocked>
+                    <span>{param.actionLabel}: {param.label} +</span>
+                    <input
+                      type="number"
+                      min="0"
+                      {value}
+                      disabled={sealing || blocked}
+                      title={blocked ? 'Too expensive for this enchantment' : undefined}
+                      oninput={(event) =>
+                        setSpellArg(
+                          param.index,
+                          param.key,
+                          Number.parseInt((event.currentTarget as HTMLInputElement).value, 10) || 0
+                        )}
+                    />
+                  </label>
                 {/each}
               </div>
             {/if}
-          </section>
+          </div>
         {/if}
-      {/if}
+      {/snippet}
+    </RitualStage>
 
-      <footer class="actions">
-        <button type="button" class="action-btn cancel" onclick={back}>
-          {cardId && canChangeCard ? 'Back' : 'Cancel'}
-        </button>
-        {#if cardId}
-          <button
-            type="button"
-            class="action-btn confirm"
-            disabled={!card || !!preview?.error}
-            onclick={confirm}
-          >
-            {isDistill ? 'Distill' : 'Enchant'}
-          </button>
+    {#snippet footer()}
+      <div class="budget-footer" class:over={!!augmentPreview?.error}>
+        {#if augmentPreview}
+          <span class="budget-stat">
+            Spent {augmentPreview.spent}
+            {#if augmentPreview.upgradeBudget > 0}
+              / {augmentPreview.upgradeBudget}
+            {/if}
+          </span>
+          <span class="budget-stat">Cost +{augmentPreview.costIncrease}</span>
+          {#if augmentPreview.error}
+            <span class="budget-error">{augmentPreview.error}</span>
+          {:else if augmentPreview.extraBudget > 0 && hasAugmentIngredients}
+            <span class="budget-note">{augmentPreview.extraBudget} leftover spent automatically</span>
+          {/if}
         {/if}
-      </footer>
-    </div>
-  </div>
-</div>
+      </div>
+      <button type="button" class="abandon" disabled={sealing} onclick={back}>
+        <span class="abandon-mark" aria-hidden="true"></span>
+        {canChangeCard ? 'Back' : 'Abandon'}
+      </button>
+      <OrnateButton
+        icon="leaf"
+        disabled={!hasAugmentIngredients || !!augmentPreview?.error || sealing}
+        onclick={confirmAugment}
+      >
+        Enchant
+      </OrnateButton>
+    {/snippet}
+  </WorkbenchShell>
+{/if}
 
 <style>
-  .overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    background: rgba(0, 0, 0, 0.72);
-    box-sizing: border-box;
-  }
-
-  .frame {
-    position: relative;
-    width: min(620px, 100%);
-    max-height: 90vh;
+  .picker {
     display: flex;
     flex-direction: column;
-    padding: 10px;
-    background: #4a2a18 var(--table) center / cover;
-    border: 2px solid #2a1810;
-    border-radius: 4px;
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
-    box-sizing: border-box;
-  }
-
-  .frame.wide {
-    width: min(1000px, 100%);
-  }
-
-  .panel {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow-y: auto;
-    background: #e8dcc4 var(--parchment) center / cover;
-    background-blend-mode: multiply;
-    color: #2c251d;
-    padding: 16px 16px 12px;
-    box-sizing: border-box;
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 1rem;
-    box-shadow: inset 0 0 28px rgba(90, 75, 60, 0.12);
-  }
-
-  .title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 12px;
-    margin: 0 0 10px;
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #2c251d;
-    text-align: center;
-  }
-
-  .star,
-  .star-icon {
-    width: 10px;
-    height: 10px;
-    flex-shrink: 0;
-    background: #4a3f32;
-    clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
-  }
-
-  .section {
-    padding: 10px 12px 12px;
-    margin-bottom: 10px;
-    border: 1px solid rgba(44, 37, 29, 0.45);
-    border-radius: 4px;
-    background: rgba(255, 248, 230, 0.18);
-    box-sizing: border-box;
-  }
-
-  .section-heading {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 0 12px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #3a3228;
-  }
-
-  .star-icon {
-    width: 12px;
-    height: 12px;
-  }
-
-  .cards-section {
-    flex: 1 1 auto;
     min-height: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 0;
+    flex: 1 1 auto;
     overflow: hidden;
-  }
-
-  .cards-section .section-heading {
-    margin-bottom: 0;
   }
 
   .card-grid {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
     gap: 12px;
     min-height: 0;
     flex: 1 1 auto;
@@ -1307,24 +806,6 @@
     border-color: var(--color-golden);
   }
 
-  .preview-section {
-    padding: 8px;
-  }
-
-  .preview-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-  }
-
-  .arrow {
-    flex-shrink: 0;
-    font-size: 1.6rem;
-    color: #4a3f32;
-  }
-
   .empty {
     margin: 0;
     text-align: center;
@@ -1332,460 +813,160 @@
     color: #6a5c4c;
   }
 
-  .budget {
+  .enchant-vessel {
+    position: relative;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    place-items: center;
+  }
+
+  .land {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .land.pigment {
+    top: 36px;
+    right: 18px;
+  }
+
+  .land.essence {
+    bottom: 18px;
+    left: 16px;
+  }
+
+  .land.rune {
+    bottom: 18px;
+    right: 18px;
+  }
+
+  .budget-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-right: auto;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
+    font-size: 0.95rem;
   }
 
   .budget-stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 0 10px;
-  }
-
-  .budget-stat + .budget-stat {
-    border-left: 1px solid rgba(90, 75, 60, 0.35);
-  }
-
-  .bonus-well {
-    min-width: 4.5rem;
-    padding: 8px 12px;
-    color: #f0e6c8;
-    background: #2c251d;
-    border: 1px solid #3a3228;
+    min-width: 5rem;
+    padding: 4px 10px;
+    background: color-mix(in srgb, var(--color-data) 88%, #000);
+    border: 1px solid color-mix(in srgb, var(--color-brass) 55%, transparent);
     border-radius: 3px;
     font-variant-numeric: tabular-nums;
-    text-align: center;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
   }
 
-  .bonus-well.over {
+  .budget-footer.over .budget-stat {
     border-color: #8a4a3c;
     color: #e0a090;
   }
 
-  .budget-note {
-    margin: 10px 0 0;
-    text-align: center;
-    font-size: 0.8rem;
-    color: #6a5c4c;
-  }
-
-  .error-note {
-    color: #8a4a3c;
-  }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .spell-stats {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  }
-
-  .stat {
-    display: grid;
-    grid-template-columns: max-content;
-    justify-content: center;
-    justify-items: start;
-    gap: 8px;
-    padding: 0 10px;
-  }
-
-  .stat + .stat {
-    border-left: 1px solid rgba(90, 75, 60, 0.35);
-  }
-
-  .stat-label {
-    width: auto;
-    min-width: 40px;
-    font-size: 0.92rem;
-    color: #2c251d;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .stat-control {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    min-height: 50px;
-  }
-
-  .stat-control .step-arrows {
-    height: 40px;
-    align-self: center;
-  }
-
-  .stat-well {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .stat-well.large {
-    width: 55px;
-    height: 55px;
-  }
-
-  .stat.large .stat-label {
-    min-width: 4.5rem;
-  }
-
-  .stat-face {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    pointer-events: none;
-  }
-
-  .stat-value {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: 500;
-    font-size: 1.2rem;
-    font-variant-numeric: tabular-nums;
-    text-shadow:
-      0 1px 2px #000,
-      0 0 3px #000;
-    pointer-events: none;
-  }
-
-  .stat-well .stat-value {
-    transform: translateY(-2px);
-  }
-
-  .num-control {
-    display: flex;
-    align-items: stretch;
-    gap: 4px;
-  }
-
-  .num-control input {
-    width: 2.6rem;
-    height: 34px;
-    padding: 0 4px;
-    color: #f0e6c8;
-    background: #2c251d;
-    border: 1px solid #3a3228;
-    border-radius: 3px;
-    font-family: inherit;
-    font-size: 1rem;
-    font-variant-numeric: tabular-nums;
-    text-align: center;
-    outline: none;
-    box-sizing: border-box;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
-    -moz-appearance: textfield;
-  }
-
-  .num-control input:focus {
-    border-color: var(--color-golden);
-  }
-
-  .num-control input::-webkit-inner-spin-button,
-  .num-control input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  .step-arrows {
-    display: flex;
-    flex-direction: column;
-    width: 18px;
-    border-radius: 3px;
-    overflow: hidden;
-    background: #d8c9ad;
-    border: 1px solid rgba(90, 75, 60, 0.35);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
-  }
-
-  .step-arrow {
-    flex: 1;
-    padding: 0;
-    color: #3a3228;
-    background: transparent;
-    border: none;
-    font-size: 0.5rem;
-    line-height: 1;
-    cursor: pointer;
-  }
-
-  .step-arrow + .step-arrow {
-    border-top: 1px solid rgba(90, 75, 60, 0.25);
-  }
-
-  .step-arrow:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.28);
-  }
-
-  .step-arrow:disabled {
-    opacity: 0.35;
-    cursor: default;
-  }
-
-  .keywords-section {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0;
-  }
-
-  .abilities-section {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0;
-    margin-top: 10px;
-  }
-
-  .ability-owned {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .ability-owned-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .ability-owned-row.removed {
-    opacity: 0.55;
-  }
-
-  .ability-name-row {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .ability-param {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding-left: 27px;
-  }
-
-  .ability-group.spaced {
-    margin-top: 12px;
-  }
-
-  .ability-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 0 8px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #5c5146;
-  }
-
-  .action-list {
-    margin-top: 8px;
-  }
-
-  .keyword-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px 28px;
-    min-height: 0;
-    overflow-y: auto;
-    padding-right: 2px;
-  }
-
-  @supports not selector(::-webkit-scrollbar) {
-    .keyword-list,
-    .card-grid {
-      scrollbar-width: thin;
-      scrollbar-color: rgba(90, 75, 60, 0.45) transparent;
-    }
-  }
-
-  .keyword-list::-webkit-scrollbar,
-  .card-grid::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .keyword-list::-webkit-scrollbar-button,
-  .card-grid::-webkit-scrollbar-button {
-    display: none;
-    width: 0;
-    height: 0;
-  }
-
-  .keyword-list::-webkit-scrollbar-track,
-  .card-grid::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .keyword-list::-webkit-scrollbar-thumb,
-  .card-grid::-webkit-scrollbar-thumb {
-    background: rgba(90, 75, 60, 0.45);
-    border-radius: 3px;
-  }
-
-  .keyword-row {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    min-width: 0;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .keyword-row.owned {
-    opacity: 0.55;
-    cursor: default;
-  }
-
-  .keyword-icon {
-    width: 22px;
-    height: 22px;
-    object-fit: contain;
-    flex-shrink: 0;
-    background: #f3ead4;
-    border: 1px solid rgba(90, 75, 60, 0.35);
-    border-radius: 4px;
-  }
-
-  .keyword-name {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding: 4px 8px;
-    font-size: calc(0.78rem + 2px);
-    text-transform: capitalize;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    background: #efe4c8;
-    border: 1px solid rgba(90, 75, 60, 0.28);
-    border-radius: 6px;
-  }
-
-  .keyword-cost,
-  .effect-cost {
-    flex-shrink: 0;
-    min-width: 1.4rem;
-    font-size: 0.78rem;
-    font-variant-numeric: tabular-nums;
-    color: #5c5146;
-    text-align: right;
-  }
-
-  .effect-cost {
-    margin-left: 0.35rem;
-  }
-
-  .owned-label {
-    flex-shrink: 0;
-    font-size: 0.7rem;
-    color: #6a5c4c;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .keyword-row .num-control input {
-    width: 2rem;
-    height: 26px;
+  .budget-error {
+    color: #e0a090;
     font-size: 0.85rem;
   }
 
-  .keyword-row .step-arrows {
-    width: 14px;
+  .budget-note {
+    color: var(--color-muted-label, #a89880);
+    font-size: 0.85rem;
   }
 
-  .toggle {
-    position: relative;
-    width: 34px;
-    height: 18px;
-    flex-shrink: 0;
-    background: #d8c9ad;
-    border: 1px solid rgba(90, 75, 60, 0.35);
-    border-radius: 999px;
-    pointer-events: none;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+  .spell-tray {
+    padding: 8px 4px;
+    color: var(--color-ink);
+    font-family: var(--font-narrative);
   }
 
-  .toggle.on {
-    background: #5d8a46;
-    border-color: #4a6f38;
+  .spell-title {
+    margin: 0 0 12px;
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
   }
 
-  .toggle-knob {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 12px;
-    height: 14px;
-    background: #f5eedf;
-    border-radius: 50%;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-    transition: transform 0.15s ease;
-  }
-
-  .toggle.on .toggle-knob {
-    transform: translateX(16px);
-  }
-
-  .actions {
+  .spell-params {
     display: flex;
-    justify-content: center;
-    gap: 12px;
-    padding-top: 14px;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  .action-btn {
-    min-width: 7.5rem;
-    font-family: inherit;
-    font-size: 1rem;
-    color: #f0e6c8;
-    background: #3a221f var(--wood) center / cover;
-    border: 1px solid #2a110a;
+  .spell-param {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 0.9rem;
+  }
+
+  .spell-param.blocked {
+    opacity: 0.38;
+    filter: grayscale(0.55);
+  }
+
+  .spell-param input {
+    width: 3rem;
+    padding: 4px 6px;
+    color: var(--color-cream);
+    background: #2c251d;
+    border: 1px solid #3a3228;
+    border-radius: 3px;
+    font: inherit;
+    text-align: center;
+  }
+
+  .abandon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-narrative);
+    font-size: 0.95rem;
+    color: var(--color-cream);
+    background: color-mix(in srgb, var(--color-data) 82%, #000);
+    border: 1px solid color-mix(in srgb, var(--color-brass) 55%, transparent);
     border-radius: 4px;
-    padding: 8px 20px;
+    padding: 8px 16px 8px 12px;
     cursor: pointer;
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 1px 0 rgba(240, 230, 200, 0.08),
       0 2px 4px rgba(0, 0, 0, 0.35);
   }
 
-  .action-btn:hover:not(:disabled) {
-    filter: brightness(1.12);
+  .abandon-mark {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    background: var(--color-cream);
+    clip-path: polygon(
+      35% 0%,
+      65% 0%,
+      65% 35%,
+      100% 35%,
+      100% 65%,
+      65% 65%,
+      65% 100%,
+      35% 100%,
+      35% 65%,
+      0% 65%,
+      0% 35%,
+      35% 35%
+    );
+    opacity: 0.85;
   }
 
-  .action-btn.confirm {
-    color: #f0e6c8;
-    border: 2px solid #000;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 2px 4px rgba(0, 0, 0, 0.35);
+  .abandon:hover:not(:disabled) {
+    border-color: var(--color-brass);
+    background: var(--color-data-hover);
   }
 
-  .action-btn.cancel {
-    color: #ececec;
-    background: #6e6e6e;
-    border: 1px solid #4a4a4a;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.18),
-      0 2px 4px rgba(0, 0, 0, 0.25);
-  }
-
-  .action-btn:disabled {
+  .abandon:disabled {
     opacity: 0.45;
     cursor: default;
-    filter: none;
   }
 </style>
