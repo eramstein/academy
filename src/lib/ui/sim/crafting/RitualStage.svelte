@@ -13,15 +13,21 @@
 
   export type RitualCharm = { id: string; icon: string };
 
-  type CharmFlight = {
-    id: string;
-    icon: string;
-    dir: 'in' | 'out';
+  type CharmPhase = 'enter' | 'orbit' | 'exit' | 'seal';
+
+  type CharmMotion = {
+    phase: CharmPhase;
     fromX: number | null;
     fromY: number | null;
     start: number;
+    delay: number;
     duration: number;
-    gen: number;
+    /** Viewport point where the ingredient was dropped. */
+    entryX: number | null;
+    entryY: number | null;
+    launched: boolean;
+    slot: number;
+    slotCount: number;
   };
 
   let {
@@ -33,6 +39,11 @@
     split = false,
     charms = [],
     onCharmLanded,
+    onSealComplete,
+    seal = false,
+    shapeText = '',
+    charmEntry = null,
+    acceptingDrop = false,
     circleContent,
     vessel,
     showVessel = false,
@@ -50,6 +61,16 @@
     split?: boolean;
     charms?: RitualCharm[];
     onCharmLanded?: (id: string) => void;
+    /** Fired after sealed charms have flown into the card. */
+    onSealComplete?: () => void;
+    /** Orbiting charms fly into the card, staggered. */
+    seal?: boolean;
+    /** Line under the circle (ingredient summary). */
+    shapeText?: string;
+    /** Drop point for a charm that is about to join the orbit. */
+    charmEntry?: { id: string; x: number; y: number } | null;
+    /** Ingredient drag is in progress; highlight the circle. */
+    acceptingDrop?: boolean;
     /** Overlay inside the ritual circle (e.g. Unit / Spell pick). */
     circleContent?: Snippet;
     /** Card preview shown inside the circle. */
@@ -98,6 +119,10 @@
     [ResourceType.Mithril]: -0.00055,
     [ResourceType.Moxes]: 0.00088,
   };
+  const CHARM_RADIUS = { base: 88, split: 172 };
+  const CHARM_SPEED = 0.00052;
+  const CHARM_STAGGER = 120;
+  const SEAL_HOLD_MS = 640;
 
   const orbitRadius = $derived(split ? RADIUS_SPLIT : RADIUS_BASE);
 
@@ -120,10 +145,13 @@
   const lastPos = new Map<string, { x: number; y: number }>();
   const lastCharmPos = new Map<string, { x: number; y: number }>();
   const flights = new Map<string, Flight>();
-  const charmGen = new Map<string, number>();
-  let charmFlights = $state<CharmFlight[]>([]);
-  let seenCharms = new Map<string, string>();
+  const motions = new Map<string, CharmMotion>();
   /* eslint-enable svelte/prefer-svelte-reactivity */
+  let orbitIds = $state<{ id: string; icon: string }[]>([]);
+  let sealStarted = false;
+  let sealFinished = false;
+  let sealPending = 0;
+  let sealTimer = 0;
   let prevSelected: Record<ResourceType, number> = { ...selected };
   let consumeAt = 0;
   let orbitClock = 0;
@@ -208,28 +236,174 @@
     return null;
   }
 
-  function launchCharm(id: string, icon: string, dir: 'in' | 'out', now: number) {
-    const gen = (charmGen.get(id) ?? 0) + 1;
-    charmGen.set(id, gen);
+  function blankMotion(now: number, phase: CharmPhase): CharmMotion {
+    return {
+      phase,
+      fromX: null,
+      fromY: null,
+      start: now,
+      delay: 0,
+      duration: FLY_MS,
+      entryX: null,
+      entryY: null,
+      launched: false,
+      slot: 0,
+      slotCount: 1,
+    };
+  }
+
+  function beginEnter(
+    charm: RitualCharm,
+    entry: { id: string; x: number; y: number } | null,
+    now: number
+  ) {
+    const dropped = entry?.id === charm.id ? entry : null;
+    motions.set(charm.id, {
+      ...blankMotion(now, reduceMotion ? 'orbit' : 'enter'),
+      entryX: dropped?.x ?? null,
+      entryY: dropped?.y ?? null,
+    });
+    if (orbitIds.some((actor) => actor.id === charm.id)) {
+      orbitIds = orbitIds.map((actor) =>
+        actor.id === charm.id ? { id: charm.id, icon: charm.icon } : actor
+      );
+    } else {
+      orbitIds = [...orbitIds, { id: charm.id, icon: charm.icon }];
+      fed += 1;
+    }
+  }
+
+  function beginExit(id: string, now: number) {
     if (reduceMotion) {
-      if (dir === 'in') onCharmLanded?.(id);
+      motions.delete(id);
+      lastCharmPos.delete(id);
+      orbitIds = orbitIds.filter((actor) => actor.id !== id);
       return;
     }
-    const from = dir === 'out' ? lastCharmPos.get(id) : undefined;
-    charmFlights = [
-      ...charmFlights.filter((flight) => flight.id !== id),
-      {
-        id,
-        icon,
-        dir,
-        fromX: from?.x ?? null,
-        fromY: from?.y ?? null,
-        start: now,
-        duration: FLY_MS,
-        gen,
-      },
-    ];
-    if (dir === 'in') fed += 1;
+    const pos = lastCharmPos.get(id);
+    motions.set(id, {
+      ...blankMotion(now, 'exit'),
+      fromX: pos?.x ?? null,
+      fromY: pos?.y ?? null,
+      duration: Math.round(FLY_MS * 0.75),
+      launched: true,
+    });
+  }
+
+  function syncCharms(next: RitualCharm[], entry: { id: string; x: number; y: number } | null) {
+    if (sealStarted) return;
+    const now = performance.now();
+    const nextIds = new Set(next.map((charm) => charm.id));
+    for (const actor of orbitIds) {
+      const motion = motions.get(actor.id);
+      if (!nextIds.has(actor.id) && motion && motion.phase !== 'exit') beginExit(actor.id, now);
+    }
+    for (const charm of next) {
+      const motion = motions.get(charm.id);
+      if (!motion || motion.phase === 'exit') beginEnter(charm, entry, now);
+      else {
+        const actor = orbitIds.find((item) => item.id === charm.id);
+        if (actor && actor.icon !== charm.icon) {
+          orbitIds = orbitIds.map((item) =>
+            item.id === charm.id ? { id: charm.id, icon: charm.icon } : item
+          );
+        }
+      }
+    }
+  }
+
+  function armFinish(delay: number, force: boolean) {
+    if (sealFinished) return;
+    if (sealTimer) {
+      clearTimeout(sealTimer);
+      sealTimer = 0;
+    }
+    sealTimer = window.setTimeout(() => {
+      sealTimer = 0;
+      if (sealFinished) return;
+      if (force) {
+        for (const actor of orbitIds) {
+          if (motions.get(actor.id)?.phase === 'seal') onCharmLanded?.(actor.id);
+        }
+        motions.clear();
+        orbitIds = [];
+      }
+      sealFinished = true;
+      onSealComplete?.();
+    }, delay);
+  }
+
+  function beginSeal(list: RitualCharm[], now: number) {
+    if (sealStarted) return;
+    sealStarted = true;
+    const active = list.filter((charm) => {
+      const motion = motions.get(charm.id);
+      return motion && motion.phase !== 'exit';
+    });
+    if (reduceMotion || active.length === 0) {
+      for (const charm of active) onCharmLanded?.(charm.id);
+      motions.clear();
+      orbitIds = [];
+      armFinish(0, false);
+      return;
+    }
+    sealPending = active.length;
+    active.forEach((charm, index) => {
+      motions.set(charm.id, {
+        ...blankMotion(now, 'seal'),
+        delay: index * CHARM_STAGGER,
+        slot: index,
+        slotCount: active.length,
+      });
+    });
+    armFinish((active.length - 1) * CHARM_STAGGER + FLY_MS + 1100, true);
+  }
+
+  function charmOrbitPoint(
+    slot: number,
+    count: number,
+    center: { x: number; y: number }
+  ): { x: number; y: number } {
+    const n = Math.max(1, count);
+    const angle = orbitClock * CHARM_SPEED + (slot / n) * Math.PI * 2;
+    const radius = split ? CHARM_RADIUS.split : CHARM_RADIUS.base;
+    return {
+      x: center.x + Math.cos(angle) * radius,
+      y: center.y + Math.sin(angle) * radius,
+    };
+  }
+
+  function liveCharmOrbit(id: string, center: { x: number; y: number }): { x: number; y: number } {
+    const ring = orbitIds.filter((actor) => {
+      const motion = motions.get(actor.id);
+      return motion && (motion.phase === 'enter' || motion.phase === 'orbit');
+    });
+    const index = Math.max(
+      0,
+      ring.findIndex((actor) => actor.id === id)
+    );
+    return charmOrbitPoint(index, ring.length, center);
+  }
+
+  function charmDropPoint(motion: CharmMotion, bench: DOMRect): { x: number; y: number } | null {
+    if (motion.entryX == null || motion.entryY == null) return null;
+    return { x: motion.entryX - bench.left, y: motion.entryY - bench.top };
+  }
+
+  function placeCharm(
+    id: string,
+    x: number,
+    y: number,
+    scale: number,
+    opacity: number,
+    flying: boolean
+  ) {
+    const el = charmEls.get(id);
+    if (!el) return;
+    lastCharmPos.set(id, { x, y });
+    el.style.transform = `translate(${x - CHARM / 2}px, ${y - CHARM / 2}px) scale(${scale})`;
+    el.style.opacity = String(opacity);
+    el.classList.toggle('flying', flying);
   }
 
   function benchPoint(el: Element, bench: DOMRect): { x: number; y: number } {
@@ -358,17 +532,13 @@
 
   $effect(() => {
     const next = charms;
-    untrack(() => {
-      const now = performance.now();
-      const nextIds = new Set(next.map((charm) => charm.id));
-      for (const [id, icon] of seenCharms) {
-        if (!nextIds.has(id)) launchCharm(id, icon, 'out', now);
-      }
-      for (const charm of next) {
-        if (!seenCharms.has(charm.id)) launchCharm(charm.id, charm.icon, 'in', now);
-      }
-      seenCharms = new Map(next.map((charm) => [charm.id, charm.icon]));
-    });
+    const entry = charmEntry;
+    untrack(() => syncCharms(next, entry));
+  });
+
+  $effect(() => {
+    if (!seal) return;
+    untrack(() => beginSeal(charms, performance.now()));
   });
 
   $effect(() => {
@@ -400,7 +570,10 @@
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      if (sealTimer) clearTimeout(sealTimer);
+    };
   });
 
   function paint(now: number, reduceMotion: boolean) {
@@ -505,69 +678,90 @@
   }
 
   function paintCharms(now: number, bench: DOMRect, center: { x: number; y: number } | null) {
-    const done: string[] = [];
-    for (const flight of charmFlights) {
-      const el = charmEls.get(flight.id);
-      if (!el) continue;
-      if (charmGen.get(flight.id) !== flight.gen) {
-        done.push(flight.id);
+    if (!center) return;
+    const removed: string[] = [];
+    const landed: string[] = [];
+
+    for (const actor of orbitIds) {
+      const motion = motions.get(actor.id);
+      const el = charmEls.get(actor.id);
+      if (!motion || !el) continue;
+
+      if (motion.phase === 'orbit') {
+        const orbit = liveCharmOrbit(actor.id, center);
+        placeCharm(actor.id, orbit.x, orbit.y, 1, 1, false);
         continue;
       }
 
-      let fromX = flight.fromX;
-      let fromY = flight.fromY;
-      if (fromX === null || fromY === null) {
+      if (motion.phase === 'seal' && !motion.launched) {
+        const orbit = charmOrbitPoint(motion.slot, motion.slotCount, center);
+        if (now - motion.start - motion.delay < 0) {
+          placeCharm(actor.id, orbit.x, orbit.y, 1, 1, false);
+          continue;
+        }
+        motion.launched = true;
+        motion.fromX = orbit.x;
+        motion.fromY = orbit.y;
+        motion.start = now;
+        motion.delay = 0;
+      }
+
+      if (motion.fromX == null || motion.fromY == null) {
         const origin =
-          flight.dir === 'in' ? charmNest(flight.id, bench) : charmLand(flight.id, bench, center);
-        if (!origin) continue;
-        fromX = origin.x;
-        fromY = origin.y;
-        flight.fromX = fromX;
-        flight.fromY = fromY;
-        flight.start = now;
+          motion.phase === 'exit'
+            ? (lastCharmPos.get(actor.id) ?? center)
+            : (charmDropPoint(motion, bench) ?? charmNest(actor.id, bench) ?? center);
+        motion.fromX = origin.x;
+        motion.fromY = origin.y;
+        if (motion.phase === 'enter') motion.start = now;
       }
 
       const dest =
-        flight.dir === 'in' ? charmLand(flight.id, bench, center) : charmNest(flight.id, bench);
-      const t = (now - flight.start) / flight.duration;
-      if (!dest) {
-        if (t >= 1) done.push(flight.id);
-        else el.style.opacity = String(Math.max(0, 1 - ease(Math.max(0, t))));
+        motion.phase === 'seal'
+          ? (charmLand(actor.id, bench, center) ?? center)
+          : motion.phase === 'exit'
+            ? (charmNest(actor.id, bench) ?? center)
+            : liveCharmOrbit(actor.id, center);
+
+      const t = (now - motion.start - motion.delay) / motion.duration;
+      if (t >= 1) {
+        if (motion.phase === 'enter') {
+          motion.phase = 'orbit';
+          placeCharm(actor.id, dest.x, dest.y, 1, 1, false);
+        } else {
+          removed.push(actor.id);
+          if (motion.phase === 'seal') landed.push(actor.id);
+        }
         continue;
       }
 
-      let x: number;
-      let y: number;
+      const k = ease(Math.max(0, t));
+      const x = lerp(motion.fromX, dest.x, k);
+      const y = lerp(motion.fromY, dest.y, k);
       let scale = 1;
       let opacity = 1;
-      if (t >= 1) {
-        done.push(flight.id);
-        x = dest.x;
-        y = dest.y;
-        scale = flight.dir === 'in' ? 0.3 : 1;
-        opacity = 0;
-      } else {
-        const k = ease(Math.max(0, t));
-        x = lerp(fromX, dest.x, k);
-        y = lerp(fromY, dest.y, k);
-        scale = flight.dir === 'in' ? lerp(1, 0.4, k) : lerp(0.4, 1, k);
-        opacity = flight.dir === 'in' && k > 0.78 ? 1 - (k - 0.78) / 0.22 : 1;
+      if (motion.phase === 'seal') {
+        scale = lerp(1, 0.4, k);
+        opacity = k > 0.78 ? 1 - (k - 0.78) / 0.22 : 1;
+      } else if (motion.phase === 'exit') {
+        scale = lerp(1, 0.7, k);
+        opacity = 1 - k;
       }
-
-      lastCharmPos.set(flight.id, { x, y });
-      el.style.transform = `translate(${x - CHARM / 2}px, ${y - CHARM / 2}px) scale(${scale})`;
-      el.style.opacity = String(opacity);
+      placeCharm(actor.id, x, y, scale, opacity, motion.phase !== 'exit');
     }
 
-    if (!done.length) return;
-    const landed = charmFlights
-      .filter(
-        (flight) =>
-          done.includes(flight.id) && flight.dir === 'in' && charmGen.get(flight.id) === flight.gen
-      )
-      .map((flight) => flight.id);
-    charmFlights = charmFlights.filter((flight) => !done.includes(flight.id));
+    if (removed.length) {
+      for (const id of removed) {
+        motions.delete(id);
+        lastCharmPos.delete(id);
+      }
+      orbitIds = orbitIds.filter((actor) => !removed.includes(actor.id));
+    }
     for (const id of landed) onCharmLanded?.(id);
+    if (sealStarted && landed.length) {
+      sealPending -= landed.length;
+      if (sealPending <= 0) armFinish(SEAL_HOLD_MS, false);
+    }
   }
 </script>
 
@@ -639,7 +833,7 @@
       </div>
     {/if}
 
-    <div class="ritual">
+    <div class="ritual" class:drop-hot={acceptingDrop} data-ingredient-drop>
       {#if !split}
         <div class="gauge">
           <span class="gauge-label">Learning</span>
@@ -677,8 +871,8 @@
       </div>
 
       {#if split}
-        <p class="shape-hint" class:ready={showVessel} aria-hidden={!showVessel}>
-          Add ingredients to shape your card
+        <p class="shape-hint" class:ready={showVessel} aria-hidden={!showVessel || !shapeText}>
+          {shapeText || '\u00a0'}
         </p>
       {/if}
 
@@ -714,8 +908,8 @@
         use:registerToken={token.id}
       />
     {/each}
-    {#each charmFlights as flight (flight.id + ':' + flight.gen)}
-      <img class="charm" src={flight.icon} alt="" use:registerCharm={flight.id} />
+    {#each orbitIds as charm (charm.id)}
+      <img class="charm" src={charm.icon} alt="" use:registerCharm={charm.id} />
     {/each}
   </div>
 </div>
@@ -946,13 +1140,14 @@
 
   .shape-hint {
     margin: 100px 0 0;
-    max-width: 16rem;
+    max-width: min(24rem, 100%);
+    min-height: 2.6em;
     text-align: center;
     font-family: var(--font-narrative);
-    font-size: 0.82rem;
+    font-size: 0.95rem;
     font-style: italic;
-    line-height: 1.3;
-    color: var(--color-ink-muted);
+    line-height: 1.35;
+    color: var(--color-ink);
     text-shadow: 0 1px 0 rgba(244, 232, 208, 0.45);
     /* Keep layout height from pick → ready so the circle does not jump. */
     visibility: hidden;
@@ -1161,8 +1356,25 @@
     object-fit: contain;
     opacity: 0;
     pointer-events: none;
+    transform: translate(-999px, -999px);
     filter: drop-shadow(0 3px 4px rgba(42, 24, 16, 0.45));
     will-change: transform, opacity;
+  }
+
+  .charm:global(.flying) {
+    filter: drop-shadow(0 3px 4px rgba(42, 24, 16, 0.45))
+      drop-shadow(0 0 8px rgba(191, 161, 74, 0.55));
+  }
+
+  .ritual.drop-hot .circle-slot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--color-golden) 75%, transparent);
+    box-shadow: 0 0 16px rgba(191, 161, 74, 0.4);
+    pointer-events: none;
+    z-index: 6;
   }
 
   .bench.split {

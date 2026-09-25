@@ -48,6 +48,7 @@
     spellAction,
     knownActions,
     hints,
+    locked = false,
     onPigment,
     onEssenceDial,
     onEssenceMix,
@@ -56,6 +57,8 @@
     onTriggerDial,
     onArgDial,
     onIncantationMix,
+    onDrop,
+    onDragChange,
   }: {
     cardType: CardType.Unit | CardType.Spell;
     colors: CardColor[];
@@ -71,6 +74,7 @@
     spellAction: string | null;
     knownActions: string[];
     hints: Record<string, string>;
+    locked?: boolean;
     onPigment: (color: CardColor, remove: boolean) => void;
     onEssenceDial: (key: EssenceKey, value: number) => void;
     onEssenceMix: (key: EssenceKey, remove: boolean) => void;
@@ -79,6 +83,8 @@
     onTriggerDial: (name: string, trigger: string) => void;
     onArgDial: (name: string, factoryKey: string, value: number) => void;
     onIncantationMix: (name: string, remove: boolean) => void;
+    onDrop: (id: string, clientX: number, clientY: number) => void;
+    onDragChange?: (active: boolean) => void;
   } = $props();
 
   const parchment = getAssetPath('images/ui/backgrounds/parchment.png');
@@ -104,14 +110,119 @@
       .trim();
   }
 
-  function mixClick(event: MouseEvent, inMix: boolean, apply: (remove: boolean) => void) {
+  type Gesture = {
+    id: string;
+    icon: string;
+    pointerId: number;
+    startX: number;
+    startY: number;
+    moved: boolean;
+    canDrop: boolean;
+    increment: ((event: PointerEvent) => void) | null;
+  };
+
+  let gesture: Gesture | null = null;
+  let ghost = $state<{ icon: string; x: number; y: number } | null>(null);
+
+  function portal(node: HTMLElement) {
+    document.body.appendChild(node);
+    return {
+      destroy() {
+        node.remove();
+      },
+    };
+  }
+
+  function clearGesture() {
+    const notify = !!gesture?.moved && !!gesture?.canDrop;
+    gesture = null;
+    ghost = null;
+    document.body.style.cursor = '';
+    if (notify) onDragChange?.(false);
+    window.removeEventListener('pointermove', moveGesture);
+    window.removeEventListener('pointerup', finishGesture);
+    window.removeEventListener('pointercancel', clearGesture);
+  }
+
+  function startGesture(
+    event: PointerEvent,
+    id: string,
+    icon: string,
+    canDrop: boolean,
+    increment: ((event: PointerEvent) => void) | null
+  ) {
+    if (locked || event.button !== 0) return;
     event.preventDefault();
-    if (event.type === 'contextmenu' || event.button === 2) {
-      if (inMix) apply(true);
+    if (gesture) clearGesture();
+    gesture = {
+      id,
+      icon,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      moved: false,
+      canDrop,
+      increment,
+    };
+    window.addEventListener('pointermove', moveGesture);
+    window.addEventListener('pointerup', finishGesture);
+    window.addEventListener('pointercancel', clearGesture);
+  }
+
+  function moveGesture(event: PointerEvent) {
+    if (!gesture || event.pointerId !== gesture.pointerId) return;
+    const dx = event.clientX - gesture.startX;
+    const dy = event.clientY - gesture.startY;
+    if (!gesture.moved && dx * dx + dy * dy < 36) return;
+    gesture.moved = true;
+    if (!gesture.canDrop) return;
+    if (!ghost) onDragChange?.(true);
+    ghost = { icon: gesture.icon, x: event.clientX, y: event.clientY };
+    document.body.style.cursor = 'grabbing';
+  }
+
+  function finishGesture(event: PointerEvent) {
+    if (!gesture || event.pointerId !== gesture.pointerId) return;
+    const current = gesture;
+    const moved = current.moved;
+    clearGesture();
+    if (!moved) {
+      current.increment?.(event);
       return;
     }
-    if (!inMix) apply(false);
+    if (!current.canDrop) return;
+    const hit = document.elementFromPoint(event.clientX, event.clientY);
+    if (hit?.closest('[data-ingredient-drop]')) {
+      onDrop(current.id, event.clientX, event.clientY);
+    }
   }
+
+  function stoneTitle(id: string, numeric: boolean, inMix: boolean): string {
+    const how = inMix
+      ? numeric
+        ? 'Click to increase · Right-click to remove'
+        : 'Right-click to remove'
+      : numeric
+        ? 'Drag onto the card to add · Click to increase · Right-click to remove'
+        : 'Drag onto the card to add · Right-click to remove';
+    return hints[id] ? `${hints[id]}\n${how}` : how;
+  }
+
+  function incrementIncantation(name: string, event: PointerEvent) {
+    const param = (actionNumericParams[name] ?? [])[0];
+    if (!param) return;
+    const value = argsFor(name)[param.factoryKey] ?? 1;
+    const step = event.shiftKey ? 5 : 1;
+    const next = dialStep(value, 1, STAT_MAX, false, step);
+    if (next !== value) onArgDial(name, param.factoryKey, next);
+  }
+
+  $effect(() => {
+    if (!locked) return;
+    clearGesture();
+  });
+
+  $effect(() => () => clearGesture());
 
   function toggleTriggerMenu(name: string, event: MouseEvent) {
     event.stopPropagation();
@@ -259,22 +370,26 @@
   label: string,
   inMix: boolean,
   onMix: (remove: boolean) => void,
+  increment: ((event: PointerEvent) => void) | null,
   spiky = false,
   showLabel = true
 )}
   <button
     type="button"
     class="stone-btn"
+    class:added={inMix}
     aria-pressed={inMix}
     aria-label={showLabel ? undefined : label}
-    title={hints[id]
-      ? `${hints[id]}\nClick to add · Right-click to remove`
-      : 'Click to add · Right-click to remove'}
-    onclick={(event) => mixClick(event, inMix, onMix)}
-    oncontextmenu={(event) => mixClick(event, inMix, onMix)}
+    title={stoneTitle(id, increment !== null, inMix)}
+    draggable="false"
+    onpointerdown={(event) => startGesture(event, id, icon, !inMix, increment)}
+    oncontextmenu={(event) => {
+      event.preventDefault();
+      if (inMix) onMix(true);
+    }}
   >
     <span class="stone" class:spiky data-charm-nest={id}>
-      <img src={icon} alt="" />
+      <img src={icon} alt="" draggable="false" />
     </span>
     {#if showLabel}
       <span class="token-name">{label}</span>
@@ -282,7 +397,7 @@
   </button>
 {/snippet}
 
-<div class="tray" style="--parchment: url('{parchment}')">
+<div class="tray" class:locked style="--parchment: url('{parchment}')">
   <h3 class="page-title">
     {@render star()}
     Ingredients
@@ -301,6 +416,7 @@
             capitalize(color),
             inMix,
             (remove) => onPigment(color, remove),
+            null,
             false,
             false
           )}
@@ -333,6 +449,11 @@
               essence.label,
               inMix,
               (remove) => onEssenceMix(essence.key, remove),
+              (event) => {
+                const step = event.shiftKey ? 5 : 1;
+                const next = dialStep(essences[essence.key], essence.min, STAT_MAX, false, step);
+                if (next !== essences[essence.key]) onEssenceDial(essence.key, next);
+              },
               essence.key === 'retaliate'
             )}
             {@render dial(
@@ -376,7 +497,15 @@
               getAssetPath(`images/keywords/${key}.png`),
               formatKeywordLabel(key),
               inMix,
-              (remove) => onRuneMix(key, remove)
+              (remove) => onRuneMix(key, remove),
+              numeric
+                ? (event) => {
+                    const step = event.shiftKey ? 5 : 1;
+                    const value = runeAmounts[key] ?? 1;
+                    const next = dialStep(value, 1, STAT_MAX, false, step);
+                    if (next !== value) onRuneDial(key, next);
+                  }
+                : null
             )}
             {#if numeric}
               {@render dial(
@@ -414,18 +543,23 @@
               type="button"
               class="scroll-main"
               aria-pressed={inMix}
-              title={hints[id]
-                ? `${hints[id]}\nClick to add · Right-click to remove`
-                : 'Click to add · Right-click to remove'}
-              onclick={(event) => mixClick(event, inMix, (remove) => onIncantationMix(name, remove))}
-              oncontextmenu={(event) =>
-                mixClick(event, inMix, (remove) => onIncantationMix(name, remove))}
+              title={stoneTitle(id, numeric.length > 0, inMix)}
+              draggable="false"
+              onpointerdown={(event) =>
+                startGesture(event, id, getUiIconPath('conjure'), !inMix, (pointer) =>
+                  incrementIncantation(name, pointer)
+                )}
+              oncontextmenu={(event) => {
+                event.preventDefault();
+                if (inMix) onIncantationMix(name, true);
+              }}
             >
               <img
                 class="scroll-mark"
                 data-charm-nest={id}
                 src={getUiIconPath('conjure')}
                 alt=""
+                draggable="false"
               />
               <span class="token-name">{meta?.label ?? name}</span>
             </button>
@@ -490,6 +624,17 @@
   </section>
 </div>
 
+{#if ghost}
+  <img
+    class="drag-ghost"
+    use:portal
+    src={ghost.icon}
+    alt=""
+    draggable="false"
+    style="left: {ghost.x}px; top: {ghost.y}px"
+  />
+{/if}
+
 <style>
   .tray {
     display: flex;
@@ -498,6 +643,11 @@
     padding: 4px 2px 8px;
     color: var(--color-ink);
     font-family: var(--font-narrative);
+  }
+
+  .tray.locked {
+    pointer-events: none;
+    opacity: 0.72;
   }
 
   .page-title,
@@ -586,6 +736,11 @@
     background: transparent;
     border: none;
     font-family: inherit;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .stone-btn.added {
     cursor: pointer;
   }
 
@@ -676,8 +831,13 @@
     background: transparent;
     border: none;
     font-family: inherit;
-    cursor: pointer;
+    cursor: grab;
     text-align: left;
+    touch-action: none;
+  }
+
+  .scroll.in-mix .scroll-main {
+    cursor: pointer;
   }
 
   .scroll-main .token-name {
@@ -829,5 +989,16 @@
     text-align: center;
     font-size: 0.85rem;
     color: var(--color-ink-muted);
+  }
+
+  .drag-ghost {
+    position: fixed;
+    z-index: 4000;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 4px 6px rgba(42, 24, 16, 0.5));
   }
 </style>

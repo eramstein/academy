@@ -14,7 +14,7 @@
   } from '@/lib/sim/cards/action-templates';
   import { getAbilityCost, getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
   import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
-  import { KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
+  import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
   import { playAddResourceSound } from '@/lib/sim/sound';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
@@ -73,6 +73,10 @@
   let spellAction = $state<string | null>(null);
   let spellArgs = $state<Record<string, number>>({});
   let landed = $state<string[]>([]);
+  let sealing = $state(false);
+  let draggingIngredient = $state(false);
+  let charmEntry = $state<{ id: string; x: number; y: number } | null>(null);
+  let abandoned = false;
 
   const ABSORB_MS = 480;
   const FORM_MS = 420;
@@ -106,6 +110,7 @@
   }
 
   function cancel() {
+    abandoned = true;
     clearRevealTimers();
     (onBack ?? onDone)();
   }
@@ -251,6 +256,33 @@
       );
     }
     return map;
+  });
+
+  const shapeSummary = $derived.by(() => {
+    if (cardType !== CardType.Unit && cardType !== CardType.Spell) return '';
+    const parts: string[] = [];
+    for (const color of colors) {
+      parts.push(color.charAt(0).toUpperCase() + color.slice(1));
+    }
+    if (cardType === CardType.Unit) {
+      if (essenceIn.power) parts.push(`${essences.power} power`);
+      if (essenceIn.hp) parts.push(`${essences.hp} hp`);
+      if (essenceIn.retaliate) parts.push(`${essences.retaliate} retaliate`);
+      for (const key of KEYWORD_KEYS) {
+        if (!runeIn[key]) continue;
+        const label = formatKeywordLabel(key);
+        if (NUMERIC_KEYWORDS.has(key)) parts.push(`${runeAmounts[key] ?? 1} ${label.toLowerCase()}`);
+        else parts.push(label);
+      }
+      if (abilityAction) {
+        parts.push(
+          `${getTriggerTemplateLabel(abilityTrigger)}: ${describeAction(abilityAction, abilityArgs)}`
+        );
+      }
+    } else if (spellAction) {
+      parts.push(describeAction(spellAction, spellArgs));
+    }
+    return parts.join(', ');
   });
 
   const charms = $derived.by((): RitualCharm[] => {
@@ -420,6 +452,38 @@
 
   const shownColors = $derived(colors.filter((color) => shown(`pigment:${color}`)));
 
+  function onIngredientDrop(id: string, x: number, y: number) {
+    if (sealing) return;
+    charmEntry = { id, x, y };
+    if (id.startsWith('pigment:')) {
+      onPigment(id.slice('pigment:'.length) as CardColor, false);
+      return;
+    }
+    if (id.startsWith('essence:')) {
+      onEssenceMix(id.slice('essence:'.length) as EssenceKey, false);
+      return;
+    }
+    if (id.startsWith('rune:')) {
+      onRuneMix(id.slice('rune:'.length) as keyof UnitKeywords, false);
+      return;
+    }
+    if (id.startsWith('incantation:')) onIncantationMix(id.slice('incantation:'.length), false);
+  }
+
+  function invoke() {
+    if (!cardType || sealing || abandoned) return;
+    if (charms.length === 0) {
+      confirm();
+      return;
+    }
+    sealing = true;
+  }
+
+  function onSealComplete() {
+    if (abandoned) return;
+    confirm();
+  }
+
   function confirm() {
     if (!cardType) return;
     const resources = Object.values(ResourceType)
@@ -468,6 +532,12 @@
     bind:selected
     {charms}
     {onCharmLanded}
+    {onSealComplete}
+    seal={sealing}
+    shapeText={shapeSummary}
+    {charmEntry}
+    acceptingDrop={draggingIngredient}
+    disabled={sealing}
     split
     showVessel={revealPhase === 'forming' || revealPhase === 'ready'}
     showFlank={revealPhase === 'ready'}
@@ -554,6 +624,9 @@
           {onTriggerDial}
           {onArgDial}
           {onIncantationMix}
+          locked={sealing}
+          onDrop={onIngredientDrop}
+          onDragChange={(active) => (draggingIngredient = active)}
         />
       {/if}
     {/snippet}
@@ -564,7 +637,7 @@
       <span class="abandon-mark" aria-hidden="true"></span>
       Abandon ritual
     </button>
-    <OrnateButton icon="spiral" disabled={cardType === null} onclick={confirm}>Invoke</OrnateButton>
+    <OrnateButton icon="spiral" disabled={cardType === null || sealing} onclick={invoke}>Invoke</OrnateButton>
   {/snippet}
 </WorkbenchShell>
 
