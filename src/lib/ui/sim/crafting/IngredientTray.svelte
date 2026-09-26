@@ -579,13 +579,7 @@
                 if (inMix) onIncantationMix(name, true);
               }}
             >
-              <img
-                class="scroll-mark"
-                data-charm-nest={id}
-                src={icon}
-                alt=""
-                draggable="false"
-              />
+              <img class="scroll-mark" data-charm-nest={id} src={icon} alt="" draggable="false" />
               <span class="token-name">{meta?.label ?? name}</span>
             </button>
 
@@ -972,8 +966,8 @@
   }
 
   .scroll-mark {
-    width: 22px;
-    height: 22px;
+    width: 36px;
+    height: 36px;
     flex-shrink: 0;
     object-fit: contain;
     pointer-events: none;
