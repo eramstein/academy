@@ -95,3 +95,8 @@ export function getUiIconPath(name: string): string {
   const file = PAINTED_UI_ICONS[name] ?? name;
   return getAssetPath(`images/ui/icons/${file}.png`);
 }
+
+/** Per-action-type icons for crafting incantations (images/ui/icons/action_types). */
+export function getActionTypeIconPath(actionName: string): string {
+  return getAssetPath(`images/ui/icons/action_types/${actionName}.png`);
+}

@@ -1,9 +1,9 @@
 <script lang="ts">
   import {
     CardType,
-    ResourceType,
     isSpellCard,
     isUnitCard,
+    ResourceType,
     type Ability,
     type Action,
     type CardTemplate,
@@ -11,8 +11,8 @@
   } from '@/lib/_model';
   import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
   import {
-    performAction,
     getDistillPreview,
+    performAction,
     type ActionArgDeltas,
     type DistillParameters,
   } from '@/lib/sim/actions';
@@ -44,9 +44,9 @@
     onDone: () => void;
   } = $props();
 
-  const powerIcon = getAssetPath('images/ui/icons/power-icon.png');
-  const healthIcon = getAssetPath('images/ui/icons/health-icon.png');
-  const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon.png');
+  const powerIcon = getAssetPath('images/ui/icons/power-icon-decorated.png');
+  const healthIcon = getAssetPath('images/ui/icons/health-icon-decorated.png');
+  const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon-decorated.png');
   const abilityIcon = getUiIconPath('conjure');
 
   let power = $state(0);
@@ -65,9 +65,7 @@
 
   const unitCard = $derived(isUnitCard(sourceCard) ? sourceCard : null);
   const spellCard = $derived(isSpellCard(sourceCard) ? sourceCard : null);
-  const cardType = $derived(
-    unitCard ? CardType.Unit : spellCard ? CardType.Spell : null
-  );
+  const cardType = $derived(unitCard ? CardType.Unit : spellCard ? CardType.Spell : null);
 
   const maxPowerCut = $derived(unitCard?.power ?? 0);
   const maxHealthCut = $derived(unitCard ? Math.max(0, unitCard.maxHealth - 1) : 0);
@@ -130,7 +128,9 @@
     );
   });
 
-  const distillReady = $derived(hasCuts && !distillPreview.error && distillPreview.costDecrease > 0);
+  const distillReady = $derived(
+    hasCuts && !distillPreview.error && distillPreview.costDecrease > 0
+  );
   const previewCard = $derived(distillPreview.preview ?? sourceCard);
   const costDecrease = $derived(distillPreview.costDecrease);
 

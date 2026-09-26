@@ -1,3 +1,5 @@
+// TODO: resource and skill bonuses
+
 import {
   isSpellCard,
   isUnitCard,
@@ -12,13 +14,13 @@ import {
 import { gs } from '@/lib/_state';
 import { getRandomFromObjectWeights } from '@/lib/_utils/random';
 import { buildAbility, getAbilityActionNames, type AbilityPick } from '../cards/ability-templates';
-import { cardBudget, featureCosts, getActionBudget, getCardBudget } from '../cards/card-budget';
-import { colorPie, getCardDominantColor } from '../cards/color-pie';
 import {
   getActionNumericParams,
   getActionTemplateMeta,
   getActionTemplateNameForEffect,
 } from '../cards/action-templates';
+import { cardBudget, featureCosts, getActionBudget, getCardBudget } from '../cards/card-budget';
+import { colorPie, getCardDominantColor } from '../cards/color-pie';
 import { addKeyword, formatKeywordLabel, KEYWORD_KEYS, removeKeyword } from '../cards/keywords';
 import { narrateCardEncanted } from '../narration';
 
@@ -280,7 +282,9 @@ export function distillCard(parameters: DistillParameters): string {
 
 export const distillUnit = distillCard;
 
-export function isEnchantableCard(card: CardTemplate): card is UnitCardTemplate | SpellCardTemplate {
+export function isEnchantableCard(
+  card: CardTemplate
+): card is UnitCardTemplate | SpellCardTemplate {
   return isUnitCard(card) || isSpellCard(card);
 }
 
@@ -626,8 +630,7 @@ function spendSpellExtraBudget(card: SpellCardTemplate, extraBudget: number): nu
               ...action.effect,
               args: {
                 ...action.effect.args,
-                [param.definitionKey]:
-                  (Number(action.effect.args[param.definitionKey]) || 0) + 1,
+                [param.definitionKey]: (Number(action.effect.args[param.definitionKey]) || 0) + 1,
               },
             },
           };
@@ -759,11 +762,7 @@ function applyAbilityArgDeltas(
   }
 }
 
-function applyArgDeltas(
-  action: ActionDefinition,
-  args: Record<string, number>,
-  sign: 1 | -1
-) {
+function applyArgDeltas(action: ActionDefinition, args: Record<string, number>, sign: 1 | -1) {
   for (const [argKey, value] of Object.entries(args)) {
     if (!value) continue;
     const current = Number(action.effect.args[argKey]) || 0;

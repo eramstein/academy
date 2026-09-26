@@ -1,6 +1,6 @@
 <script lang="ts">
   import { CardColor, CardType, type UnitKeywords } from '@/lib/_model';
-  import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
+  import { getActionTypeIconPath, getAssetPath } from '@/lib/_utils/asset-paths';
   import {
     getTriggerTemplateAsset,
     TRIGGER_TEMPLATE_KEYS,
@@ -16,19 +16,19 @@
     {
       key: 'power',
       label: 'Power',
-      icon: getAssetPath('images/ui/icons/power-icon.png'),
+      icon: getAssetPath('images/ui/icons/power-icon-decorated.png'),
       min: 0,
     },
     {
       key: 'hp',
       label: 'Health',
-      icon: getAssetPath('images/ui/icons/health-icon.png'),
+      icon: getAssetPath('images/ui/icons/health-icon-decorated.png'),
       min: 1,
     },
     {
       key: 'retaliate',
       label: 'Retaliate',
-      icon: getAssetPath('images/ui/icons/retaliate-icon.png'),
+      icon: getAssetPath('images/ui/icons/retaliate-icon-decorated.png'),
       min: 1,
     },
   ];
@@ -248,13 +248,7 @@
     openTrigger = null;
   }
 
-  function dialStep(
-    value: number,
-    min: number,
-    max: number,
-    wrap: boolean,
-    delta: number
-  ): number {
+  function dialStep(value: number, min: number, max: number, wrap: boolean, delta: number): number {
     const span = max - min + 1;
     return wrap
       ? ((((value - min + delta) % span) + span) % span) + min
@@ -557,6 +551,7 @@
         {#each knownActions as name (name)}
           {@const id = `incantation:${name}`}
           {@const meta = getActionTemplateMeta(name)}
+          {@const icon = getActionTypeIconPath(name)}
           {@const inMix = isUnit ? abilityAction === name : spellAction === name}
           {@const blocked = !inMix && !canAdd(id)}
           {@const numeric = actionNumericParams[name] ?? []}
@@ -575,7 +570,7 @@
                   event.preventDefault();
                   return;
                 }
-                startGesture(event, id, getUiIconPath('conjure'), !inMix, (pointer) =>
+                startGesture(event, id, icon, !inMix, (pointer) =>
                   incrementIncantation(name, pointer)
                 );
               }}
@@ -587,7 +582,7 @@
               <img
                 class="scroll-mark"
                 data-charm-nest={id}
-                src={getUiIconPath('conjure')}
+                src={icon}
                 alt=""
                 draggable="false"
               />
@@ -623,10 +618,7 @@
                           aria-selected={key === trigger}
                           onclick={(event) => pickTrigger(name, key, event)}
                         >
-                          <img
-                            src={getAssetPath(getTriggerTemplateAsset(key))}
-                            alt=""
-                          />
+                          <img src={getAssetPath(getTriggerTemplateAsset(key))} alt="" />
                           <span>{triggerLabel(key)}</span>
                         </button>
                       {/each}
@@ -754,13 +746,7 @@
     width: 22px;
     height: 5px;
     transform: translate(-50%, -50%);
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      #5c4632 18%,
-      #5c4632 82%,
-      transparent 100%
-    );
+    background: linear-gradient(90deg, transparent 0%, #5c4632 18%, #5c4632 82%, transparent 100%);
     clip-path: polygon(0 50%, 28% 0, 50% 35%, 72% 0, 100% 50%, 72% 100%, 50% 65%, 28% 100%);
   }
 
@@ -905,14 +891,12 @@
 
   .token.in-mix .stone img {
     opacity: 0.45;
-    filter:
-      drop-shadow(0 2px 3px rgba(42, 24, 16, 0.35))
+    filter: drop-shadow(0 2px 3px rgba(42, 24, 16, 0.35))
       drop-shadow(0 0 6px color-mix(in srgb, var(--color-golden) 55%, transparent));
   }
 
   .token.in-mix .stone.rune img {
-    filter:
-      drop-shadow(3px 4px 3px rgba(42, 24, 16, 0.5))
+    filter: drop-shadow(3px 4px 3px rgba(42, 24, 16, 0.5))
       drop-shadow(0 0 6px color-mix(in srgb, var(--color-golden) 55%, transparent));
   }
 
@@ -954,8 +938,7 @@
 
   .scroll.in-mix .scroll-mark {
     opacity: 0.45;
-    filter:
-      drop-shadow(0 1px 2px rgba(42, 24, 16, 0.35))
+    filter: drop-shadow(0 1px 2px rgba(42, 24, 16, 0.35))
       drop-shadow(0 0 6px color-mix(in srgb, var(--color-golden) 55%, transparent));
   }
 
@@ -989,8 +972,8 @@
   }
 
   .scroll-mark {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     flex-shrink: 0;
     object-fit: contain;
     pointer-events: none;

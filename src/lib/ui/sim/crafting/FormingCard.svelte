@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { CardColor, type Ability, type UnitKeywords } from '@/lib/_model';
   import { CARD_HEIGHT, CARD_WIDTH } from '@/lib/_config/ui-config';
+  import { CardColor, type Ability, type UnitKeywords } from '@/lib/_model';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import Abilities from '@/lib/ui/battle/Abilities.svelte';
   import Keywords from '@/lib/ui/battle/Keywords.svelte';
@@ -53,10 +53,7 @@
     <div class="mana-bar">
       <div class="mana-colors">
         {#each colors as color (color)}
-          <div
-            class="color-pip emerge"
-            style="background-image: url('{colorPath(color)}')"
-          ></div>
+          <div class="color-pip emerge" style="background-image: url('{colorPath(color)}')"></div>
         {/each}
       </div>
     </div>
@@ -234,11 +231,11 @@
   }
 
   .power {
-    background: var(--power-icon) center / contain no-repeat rgba(19, 16, 16, 0.8);
+    background: var(--power-icon-decorated) center / contain no-repeat rgba(19, 16, 16, 0.8);
   }
 
   .retaliate {
-    background: var(--retaliate-icon) center / contain no-repeat;
+    background: var(--retaliate-icon-decorated) center / contain no-repeat;
     border: none;
     box-shadow: none;
     width: 28px;
@@ -248,7 +245,7 @@
 
   .health {
     background:
-      var(--health-icon) center / contain no-repeat,
+      var(--health-icon-decorated) center / contain no-repeat,
       rgba(139, 0, 0, 0.8);
   }
 

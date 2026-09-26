@@ -2,14 +2,15 @@
   import {
     CardColor,
     CardType,
+    ResourceType,
     type Ability,
     type Action,
     type CardTemplate,
     type UnitKeywords,
   } from '@/lib/_model';
-  import { ResourceType } from '@/lib/_model';
   import { gs, uiState } from '@/lib/_state';
-  import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
+  import { getActionTypeIconPath, getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
+  import { DataEffectTemplates } from '@/lib/battle/effects/effect-templates';
   import {
     commitInvokedCard,
     performAction,
@@ -17,8 +18,6 @@
     type CardCreationParameters,
     type CardCreationResult,
   } from '@/lib/sim/actions';
-  import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
-  import { DataEffectTemplates } from '@/lib/battle/effects/effect-templates';
   import { buildAbility, getTriggerTemplateLabel } from '@/lib/sim/cards/ability-templates';
   import {
     ACTION_TEMPLATE_KEYS,
@@ -29,8 +28,9 @@
   import { getAbilityCost, getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
   import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
   import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
-  import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
   import { playAddResourceSound } from '@/lib/sim/sound';
+  import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
+  import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import FormingCard from './crafting/FormingCard.svelte';
   import IngredientTray, { type EssenceKey } from './crafting/IngredientTray.svelte';
@@ -47,10 +47,9 @@
     onBack?: () => void;
   } = $props();
 
-  const powerIcon = getAssetPath('images/ui/icons/power-icon.png');
-  const healthIcon = getAssetPath('images/ui/icons/health-icon.png');
-  const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon.png');
-  const incantationIcon = getUiIconPath('conjure');
+  const powerIcon = getAssetPath('images/ui/icons/power-icon-decorated.png');
+  const healthIcon = getAssetPath('images/ui/icons/health-icon-decorated.png');
+  const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon-decorated.png');
 
   const ESSENCE_COST: Record<EssenceKey, number> = { power: 4, hp: 2, retaliate: 1 };
 
@@ -101,8 +100,7 @@
   const ABSORB_MS = 480;
   const FORM_MS = 420;
   const reduceMotion =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let revealTimers: number[] = [];
   let manifestTimers: number[] = [];
   const FOG_MS = 720;
@@ -221,15 +219,17 @@
   );
   const draftAbility = $derived(abilityPick ? buildAbility(abilityPick) : null);
 
-  const draftUnit = $derived.by((): PartialConjuredUnit => ({
-    type: CardType.Unit,
-    colors: selectedColors.map((color) => ({ color, count: 1 })),
-    power: essenceIn.power ? essences.power : 0,
-    maxHealth: essenceIn.hp ? essences.hp : 1,
-    retaliate: essenceIn.retaliate ? essences.retaliate : 0,
-    keywords: keywords ?? {},
-    abilities: draftAbility ? [draftAbility] : undefined,
-  }));
+  const draftUnit = $derived.by(
+    (): PartialConjuredUnit => ({
+      type: CardType.Unit,
+      colors: selectedColors.map((color) => ({ color, count: 1 })),
+      power: essenceIn.power ? essences.power : 0,
+      maxHealth: essenceIn.hp ? essences.hp : 1,
+      retaliate: essenceIn.retaliate ? essences.retaliate : 0,
+      keywords: keywords ?? {},
+      abilities: draftAbility ? [draftAbility] : undefined,
+    })
+  );
 
   function budgetTitle(base: string, cost: number): string {
     return cost ? `${base}\nBudget cost: ${cost}` : base;
@@ -251,7 +251,7 @@
 
   const hints = $derived.by(() => {
     const map: Record<string, string> = {};
-    for (const key of (['power', 'hp', 'retaliate'] as EssenceKey[])) {
+    for (const key of ['power', 'hp', 'retaliate'] as EssenceKey[]) {
       const value = essences[key];
       const label =
         key === 'retaliate'
@@ -285,10 +285,7 @@
         if (ability) cost = getAbilityCost(ability, selectedColors);
       }
       const triggerNote = isUnit ? `\nTrigger: ${getTriggerTemplateLabel(triggerFor(name))}` : '';
-      map[`incantation:${name}`] = budgetTitle(
-        `${getActionTooltip(name)}${triggerNote}`,
-        cost
-      );
+      map[`incantation:${name}`] = budgetTitle(`${getActionTooltip(name)}${triggerNote}`, cost);
     }
     return map;
   });
@@ -306,7 +303,8 @@
       for (const key of KEYWORD_KEYS) {
         if (!runeIn[key]) continue;
         const label = formatKeywordLabel(key);
-        if (NUMERIC_KEYWORDS.has(key)) parts.push(`${runeAmounts[key] ?? 1} ${label.toLowerCase()}`);
+        if (NUMERIC_KEYWORDS.has(key))
+          parts.push(`${runeAmounts[key] ?? 1} ${label.toLowerCase()}`);
         else parts.push(label);
       }
       if (abilityAction) {
@@ -341,9 +339,11 @@
           icon: getAssetPath(`images/keywords/material-icons/${key}.png`),
         });
       }
-      if (abilityAction) list.push({ id: `incantation:${abilityAction}`, icon: incantationIcon });
+      if (abilityAction) {
+        list.push({ id: `incantation:${abilityAction}`, icon: getActionTypeIconPath(abilityAction) });
+      }
     } else if (spellAction) {
-      list.push({ id: `incantation:${spellAction}`, icon: incantationIcon });
+      list.push({ id: `incantation:${spellAction}`, icon: getActionTypeIconPath(spellAction) });
     }
     return list;
   });
@@ -623,7 +623,9 @@
         <div class="vessel-badge">
           <span
             class="badge-mark"
-            style="--icon: url('{cardType === CardType.Unit ? getUiIconPath('page-star') : getUiIconPath('spiral')}')"
+            style="--icon: url('{cardType === CardType.Unit
+              ? getUiIconPath('page-star')
+              : getUiIconPath('spiral')}')"
             aria-hidden="true"
           ></span>
           {cardType === CardType.Unit ? 'Unit' : 'Spell'}
@@ -677,7 +679,7 @@
             retaliate={isUnit && shown('essence:retaliate') ? essences.retaliate : null}
             keywords={shownKeywords}
             abilities={shownAbilities}
-            spellText={spellText}
+            {spellText}
           />
         {/if}
         <div
@@ -724,11 +726,20 @@
     {#if manifest === 'revealed'}
       <OrnateButton icon="spiral" onclick={leave}>Take the card</OrnateButton>
     {:else}
-      <button type="button" class="abandon" disabled={manifest !== 'idle' || sealing} onclick={cancel}>
+      <button
+        type="button"
+        class="abandon"
+        disabled={manifest !== 'idle' || sealing}
+        onclick={cancel}
+      >
         <span class="abandon-mark" aria-hidden="true"></span>
         Abandon ritual
       </button>
-      <OrnateButton icon="spiral" disabled={cardType === null || sealing || manifest !== 'idle'} onclick={invoke}>
+      <OrnateButton
+        icon="spiral"
+        disabled={cardType === null || sealing || manifest !== 'idle'}
+        onclick={invoke}
+      >
         Invoke
       </OrnateButton>
     {/if}
@@ -754,14 +765,13 @@
     pointer-events: none;
     opacity: 0;
     border-radius: 48% 52% 50% 50%;
-    background:
-      radial-gradient(
-        ellipse at 50% 46%,
-        rgba(244, 236, 214, 0.97) 0%,
-        rgba(214, 190, 150, 0.9) 36%,
-        rgba(120, 96, 64, 0.42) 64%,
-        transparent 78%
-      );
+    background: radial-gradient(
+      ellipse at 50% 46%,
+      rgba(244, 236, 214, 0.97) 0%,
+      rgba(214, 190, 150, 0.9) 36%,
+      rgba(120, 96, 64, 0.42) 64%,
+      transparent 78%
+    );
     filter: blur(1px);
     transition: opacity 0.72s ease;
   }
@@ -882,8 +892,7 @@
   }
 
   .vessel-token:hover:not(:disabled) .token-glyph {
-    filter:
-      drop-shadow(0 4px 5px rgba(42, 24, 16, 0.4))
+    filter: drop-shadow(0 4px 5px rgba(42, 24, 16, 0.4))
       drop-shadow(0 0 10px color-mix(in srgb, var(--color-golden) 55%, transparent));
   }
 

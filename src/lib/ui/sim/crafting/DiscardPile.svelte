@@ -62,9 +62,9 @@
   } = $props();
 
   const parchment = getAssetPath('images/ui/backgrounds/parchment.png');
-  const powerIcon = getAssetPath('images/ui/icons/power-icon.png');
-  const healthIcon = getAssetPath('images/ui/icons/health-icon.png');
-  const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon.png');
+  const powerIcon = getAssetPath('images/ui/icons/power-icon-decorated.png');
+  const healthIcon = getAssetPath('images/ui/icons/health-icon-decorated.png');
+  const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon-decorated.png');
   const abilityIcon = getUiIconPath('conjure');
   const isUnit = $derived(cardType === CardType.Unit);
 
@@ -507,13 +507,7 @@
     width: 22px;
     height: 5px;
     transform: translate(-50%, -50%);
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      #5c4632 18%,
-      #5c4632 82%,
-      transparent 100%
-    );
+    background: linear-gradient(90deg, transparent 0%, #5c4632 18%, #5c4632 82%, transparent 100%);
     clip-path: polygon(0 50%, 28% 0, 50% 35%, 72% 0, 100% 50%, 72% 100%, 50% 65%, 28% 100%);
   }
 
@@ -636,16 +630,12 @@
   .token.shed .stone img,
   .stone-btn.shed .stone img {
     opacity: 0.4;
-    filter:
-      drop-shadow(0 2px 3px rgba(42, 24, 16, 0.35))
-      grayscale(0.35)
+    filter: drop-shadow(0 2px 3px rgba(42, 24, 16, 0.35)) grayscale(0.35)
       drop-shadow(0 0 5px rgba(90, 50, 40, 0.45));
   }
 
   .token.shed .stone.rune img {
-    filter:
-      drop-shadow(3px 4px 3px rgba(42, 24, 16, 0.5))
-      grayscale(0.35)
+    filter: drop-shadow(3px 4px 3px rgba(42, 24, 16, 0.5)) grayscale(0.35)
       drop-shadow(0 0 5px rgba(90, 50, 40, 0.45));
   }
 

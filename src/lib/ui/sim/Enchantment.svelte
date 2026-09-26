@@ -3,25 +3,22 @@
     ActionType,
     CardColor,
     CardType,
-    ResourceType,
     isSpellCard,
     isUnitCard,
+    ResourceType,
     type Action,
     type UnitKeywords,
   } from '@/lib/_model';
   import { gs } from '@/lib/_state';
-  import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
+  import { getActionTypeIconPath, getAssetPath } from '@/lib/_utils/asset-paths';
   import {
-    performAction,
     getAugmentPreview,
     getEnchantableCards,
+    performAction,
     type ActionArgDeltas,
     type AugmentParameters,
   } from '@/lib/sim/actions';
-  import {
-    buildAbility,
-    getTriggerTemplateLabel,
-  } from '@/lib/sim/cards/ability-templates';
+  import { buildAbility, getTriggerTemplateLabel } from '@/lib/sim/cards/ability-templates';
   import {
     ACTION_TEMPLATE_KEYS,
     defaultActionFactoryArgs,
@@ -34,10 +31,10 @@
   import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
   import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import { playAddResourceSound } from '@/lib/sim/sound';
+  import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
+  import { hasActiveCardFilters, matchesCardFilters } from '@/lib/ui/cards/card-filters';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import CardFilters from '@/lib/ui/cards/CardFilters.svelte';
-  import { hasActiveCardFilters, matchesCardFilters } from '@/lib/ui/cards/card-filters';
-  import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import IngredientTray, { type EssenceKey } from './crafting/IngredientTray.svelte';
   import RitualStage, { type RitualCharm } from './crafting/RitualStage.svelte';
@@ -52,10 +49,9 @@
     onDone: () => void;
   } = $props();
 
-  const powerIcon = getAssetPath('images/ui/icons/power-icon.png');
-  const healthIcon = getAssetPath('images/ui/icons/health-icon.png');
-  const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon.png');
-  const incantationIcon = getUiIconPath('conjure');
+  const powerIcon = getAssetPath('images/ui/icons/power-icon-decorated.png');
+  const healthIcon = getAssetPath('images/ui/icons/health-icon-decorated.png');
+  const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon-decorated.png');
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
   const ESSENCE_COST: Record<EssenceKey, number> = { power: 4, hp: 2, retaliate: 1 };
@@ -113,9 +109,7 @@
   );
   const unitCard = $derived(sourceCard && isUnitCard(sourceCard) ? sourceCard : null);
   const spellCard = $derived(sourceCard && isSpellCard(sourceCard) ? sourceCard : null);
-  const cardType = $derived(
-    unitCard ? CardType.Unit : spellCard ? CardType.Spell : null
-  );
+  const cardType = $derived(unitCard ? CardType.Unit : spellCard ? CardType.Spell : null);
 
   const knownKeywords = $derived(
     KEYWORD_KEYS.filter((key) => !!gs.player.craftingKnowledge.keywords?.[key])
@@ -200,7 +194,8 @@
       power: essenceIn.power ? essences.power : undefined,
       maxHealth: essenceIn.hp ? essences.hp : undefined,
       retaliate: essenceIn.retaliate ? essences.retaliate : undefined,
-      keywords: selectedKeywords && Object.keys(selectedKeywords).length ? selectedKeywords : undefined,
+      keywords:
+        selectedKeywords && Object.keys(selectedKeywords).length ? selectedKeywords : undefined,
       ability: abilityPick,
       actionArgs: selectedSpellArgs,
       resources: selectedResources(),
@@ -220,9 +215,7 @@
     );
   });
 
-  const augmentPreview = $derived(
-    augmentParameters ? getAugmentPreview(augmentParameters) : null
-  );
+  const augmentPreview = $derived(augmentParameters ? getAugmentPreview(augmentParameters) : null);
 
   const budgetUnit = $derived.by((): PartialConjuredUnit | null => {
     if (!unitCard) return null;
@@ -318,11 +311,18 @@
           icon: getAssetPath(`images/keywords/material-icons/${key}.png`),
         });
       }
-      if (abilityAction) list.push({ id: `incantation:${abilityAction}`, icon: incantationIcon });
+      if (abilityAction) {
+        list.push({ id: `incantation:${abilityAction}`, icon: getActionTypeIconPath(abilityAction) });
+      }
     } else if (spellCard) {
       for (const [indexKey, args] of Object.entries(spellArgDeltas)) {
         if (Object.values(args).some((value) => value > 0)) {
-          list.push({ id: `spell:${indexKey}`, icon: incantationIcon });
+          const spellAction = spellCard.actions[Number(indexKey)];
+          const templateName = getActionTemplateNameForEffect(spellAction?.effect.name ?? '');
+          list.push({
+            id: `spell:${indexKey}`,
+            icon: getActionTypeIconPath(templateName ?? spellAction?.effect.name ?? 'directDamage'),
+          });
         }
       }
     }
@@ -637,13 +637,7 @@
     {/snippet}
   </WorkbenchShell>
 {:else if isDistill && sourceCard}
-  <Distill
-    {action}
-    {sourceCard}
-    {canChangeCard}
-    onBack={back}
-    {onDone}
-  />
+  <Distill {action} {sourceCard} {canChangeCard} onBack={back} {onDone} />
 {:else if sourceCard && cardType}
   <WorkbenchShell
     title="Enchant {sourceCard.name}"
@@ -658,7 +652,7 @@
       seal={sealing}
       shapeText={shapeSummary}
       shapeCost={hasAugmentIngredients ? (augmentPreview?.costIncrease ?? null) : null}
-      atManaLimit={atManaLimit}
+      {atManaLimit}
       {charmEntry}
       acceptingDrop={draggingIngredient}
       disabled={sealing}
@@ -753,7 +747,9 @@
           {#if augmentPreview.error}
             <span class="budget-error">{augmentPreview.error}</span>
           {:else if augmentPreview.extraBudget > 0 && hasAugmentIngredients}
-            <span class="budget-note">{augmentPreview.extraBudget} leftover spent automatically</span>
+            <span class="budget-note"
+              >{augmentPreview.extraBudget} leftover spent automatically</span
+            >
           {/if}
         {/if}
       </div>

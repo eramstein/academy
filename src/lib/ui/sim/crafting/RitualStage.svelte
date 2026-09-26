@@ -1018,14 +1018,6 @@
     color: var(--color-ink);
   }
 
-  .diamond {
-    width: 7px;
-    height: 7px;
-    flex-shrink: 0;
-    background: #5c4632;
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  }
-
   .prep.split .materials {
     flex-direction: column;
     flex-wrap: nowrap;
