@@ -10,8 +10,26 @@
   import Keywords from '../battle/Keywords.svelte';
   import Stats from '../battle/Stats.svelte';
 
-  let { card, reveal = 'full' }: { card: CardTemplate; reveal?: 'full' | 'frame' | 'gameplay' | 'name' | 'image' } =
-    $props();
+  export type CardChangeHighlight = {
+    cost?: boolean;
+    power?: boolean;
+    health?: boolean;
+    retaliate?: boolean;
+    keywords?: string[];
+    abilities?: boolean;
+    spell?: boolean;
+  };
+
+  let {
+    card,
+    reveal = 'full',
+    changed = null,
+  }: {
+    card: CardTemplate;
+    reveal?: 'full' | 'frame' | 'gameplay' | 'name' | 'image';
+    /** Parts that just changed; they pulse once. */
+    changed?: CardChangeHighlight | null;
+  } = $props();
 
   const showName = $derived(reveal === 'full' || reveal === 'name' || reveal === 'image');
   const showGameplay = $derived(reveal !== 'frame');
@@ -101,7 +119,7 @@
     {#if showGameplay}
       <div class="mana-content">
         {#if card.cost > 0}
-          <div class="mana-cost-circle">
+          <div class="mana-cost-circle" class:enchant-pulse={changed?.cost}>
             {card.cost}
           </div>
         {/if}
@@ -141,7 +159,7 @@
         <!-- Abilities display - only for Unit cards with abilities -->
         {#if (isUnitCard(card) || isLandCard(card)) && card.abilities && card.abilities.length > 0}
           <div class="abilities-container">
-            <Abilities abilities={card.abilities} />
+            <Abilities abilities={card.abilities} pulse={changed?.abilities} />
           </div>
         {/if}
         {#if isLandCard(card) && card.ruinsAbilities && card.ruinsAbilities.length > 0}
@@ -158,6 +176,9 @@
               health={card.maxHealth}
               armor={card.keywords?.armor}
               retaliate={card.retaliate}
+              pulsePower={changed?.power}
+              pulseHealth={changed?.health}
+              pulseRetaliate={changed?.retaliate}
             />
           </div>
         {/if}
@@ -165,14 +186,14 @@
         <!-- Keywords on the right -->
         {#if isUnitCard(card) && card.keywords}
           <div class="keywords-container">
-            <Keywords keywords={card.keywords} />
+            <Keywords keywords={card.keywords} pulse={changed?.keywords} />
           </div>
         {/if}
       </div>
 
       <!-- Spell effect display for SpellCard -->
       {#if isSpellCard(card)}
-        <div class="spell-effect">{getSpellText()}</div>
+        <div class="spell-effect" class:enchant-pulse={changed?.spell}>{getSpellText()}</div>
       {/if}
     {/if}
   </div>
@@ -455,9 +476,26 @@
     }
   }
 
+  .card :global(.enchant-pulse) {
+    outline: 2px solid transparent;
+    outline-offset: 1px;
+    animation: enchant-pulse 0.7s ease 2;
+  }
+
+  @keyframes enchant-pulse {
+    0%,
+    100% {
+      outline-color: transparent;
+    }
+    40% {
+      outline-color: #bfa14a;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .summon-mist,
-    .card.summoning {
+    .card.summoning,
+    .card :global(.enchant-pulse) {
       animation: none;
     }
   }

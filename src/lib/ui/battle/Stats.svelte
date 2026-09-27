@@ -6,6 +6,9 @@
     armor = 0,
     retaliate = 0,
     compact = false,
+    pulsePower = false,
+    pulseHealth = false,
+    pulseRetaliate = false,
   }: {
     power: number;
     health?: number;
@@ -13,13 +16,16 @@
     armor?: number;
     retaliate?: number;
     compact?: boolean;
+    pulsePower?: boolean;
+    pulseHealth?: boolean;
+    pulseRetaliate?: boolean;
   } = $props();
 </script>
 
 <div class="stats" class:compact>
-  <div class="stat power">{power}</div>
-  <div class="stat retaliate">{retaliate}</div>
-  <div class="stat health" class:armor-bg={armor > 0}>
+  <div class="stat power" class:enchant-pulse={pulsePower}>{power}</div>
+  <div class="stat retaliate" class:enchant-pulse={pulseRetaliate}>{retaliate}</div>
+  <div class="stat health" class:armor-bg={armor > 0} class:enchant-pulse={pulseHealth}>
     {health || maxHealth || '0'}
   </div>
 </div>

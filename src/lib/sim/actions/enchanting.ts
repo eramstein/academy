@@ -254,6 +254,22 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
   };
 }
 
+/** Final enchanted card, including leftover budget and Fortune, without mutating the collection. */
+export function previewAugmentedCard(
+  parameters: AugmentParameters
+): UnitCardTemplate | SpellCardTemplate | null {
+  const result = getAugmentPreview(parameters);
+  if (result.error || !result.card) return null;
+  const card = makeNewCardTemplate(result.card, {
+    ...parameters,
+    costIncrease: result.costIncrease,
+  });
+  if (isUnitCard(card)) spendUnitExtraBudget(card, result.extraBudget);
+  else if (isSpellCard(card)) spendSpellExtraBudget(card, result.extraBudget);
+  applyEnchantmentFortune(card, parameters.resources, parameters.fortuneBudget);
+  return card;
+}
+
 export function augmentCard(parameters: AugmentParameters): string {
   const result = getAugmentPreview(parameters);
   if (result.error || !result.card) {

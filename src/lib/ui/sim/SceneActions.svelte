@@ -9,6 +9,7 @@
     TransactionType,
     type CardCreationResult,
     type CardSummonProgress,
+    type ConjurationAugury,
   } from '@/lib/sim/actions';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
@@ -190,7 +191,8 @@
   async function generateConjureOptions(
     resources: { type: ResourceType; count: number }[],
     onProgress: (progress: CardSummonProgress) => void,
-    flavorText?: string
+    flavorText?: string,
+    augury?: ConjurationAugury
   ) {
     if (!cardCraftAction) return [];
     recipeResources = resources;
@@ -201,7 +203,8 @@
       },
       'player',
       onProgress,
-      flavorText
+      flavorText,
+      augury
     );
     return conjureOptions;
   }

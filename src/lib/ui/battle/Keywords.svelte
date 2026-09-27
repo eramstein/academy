@@ -3,7 +3,7 @@
   import Tooltip from '../Tooltip.svelte';
   import { KEYWORD_TOOLTIPS } from '../_helpers/keywordTooltips';
 
-  let { keywords }: { keywords: UnitKeywords } = $props();
+  let { keywords, pulse = [] }: { keywords: UnitKeywords; pulse?: string[] } = $props();
 
   // Tooltip state
   let hoveredKeyword = $state<string | null>(null);
@@ -45,6 +45,7 @@
     >
       <div
         class="keyword"
+        class:enchant-pulse={pulse.includes(key)}
         onmouseenter={() => handleMouseEnter(key)}
         onmouseleave={handleMouseLeave}
       >

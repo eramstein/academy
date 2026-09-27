@@ -26,6 +26,7 @@ import { formatKeywordLabel } from '../cards/keywords';
 import { getActingCharacter } from '../characters';
 import { narrateCardConjured } from '../narration';
 import { spendResources } from '../resources';
+import { rollExtraBudget } from './enchanting';
 
 const CONJURATION_OPTION_COUNT_BASE = 2;
 const LEARNING_CHANCE_BASE = 1;
@@ -59,6 +60,14 @@ export interface CardCreationResult {
   bonusBudget: number;
   learningChance: number;
   actionName?: string[];
+  /** Pre-rolled learning points. When set, commit uses this instead of rolling again. */
+  learningRoll?: number;
+}
+
+/** Learning and fortune results shown before conjured cards appear. */
+export interface ConjurationAugury {
+  learning: number;
+  fortuneBudget: number;
 }
 
 export type UsedFlavors = UsedFlavorsBatch;
@@ -88,7 +97,8 @@ export async function getNewCardTemplate(
   usedFlavors?: UsedFlavors,
   onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void,
   flavorText?: string,
-  allowAiGenerate = true
+  allowAiGenerate = true,
+  fortuneBudget?: number
 ): Promise<CardCreationResult | null> {
   if (!parameters.resources) {
     parameters.resources = [];
@@ -108,7 +118,8 @@ export async function getNewCardTemplate(
       usedFlavors,
       onSummonProgress,
       flavorText,
-      allowAiGenerate
+      allowAiGenerate,
+      fortuneBudget
     );
     return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
   }
@@ -119,7 +130,8 @@ export async function getNewCardTemplate(
     usedFlavors,
     onSummonProgress,
     flavorText,
-    allowAiGenerate
+    allowAiGenerate,
+    fortuneBudget
   );
   return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
 }
@@ -127,11 +139,23 @@ export async function getNewCardTemplate(
 /** Spend resources and build the card. Learning is deferred so the ritual can show it first. */
 export async function summonInvokedCard(
   parameters: CardCreationParameters,
-  characterKey = 'player'
+  characterKey = 'player',
+  augury?: ConjurationAugury
 ): Promise<CardCreationResult | null> {
-  const result = await getNewCardTemplate(parameters, true, characterKey, true);
+  const result = await getNewCardTemplate(
+    parameters,
+    true,
+    characterKey,
+    true,
+    undefined,
+    undefined,
+    undefined,
+    true,
+    augury?.fortuneBudget
+  );
   if (!result?.template) return null;
-  return result;
+  if (!augury) return result;
+  return { ...result, learningRoll: augury.learning };
 }
 
 export function commitInvokedCard(result: CardCreationResult, characterKey = 'player') {
@@ -140,7 +164,8 @@ export function commitInvokedCard(result: CardCreationResult, characterKey = 'pl
     result.learningChance,
     result.bonusBudget,
     getActingCharacter(characterKey),
-    result.actionName
+    result.actionName,
+    result.learningRoll
   );
 }
 
@@ -163,7 +188,8 @@ export function conjureCard(parameters: CardCreationResult, characterKey = 'play
     parameters.learningChance,
     parameters.bonusBudget,
     getActingCharacter(characterKey),
-    parameters.actionName
+    parameters.actionName,
+    parameters.learningRoll
   );
   return '';
 }
@@ -172,7 +198,8 @@ export async function getConjurationOtions(
   parameters: CardCreationParameters,
   characterKey = 'player',
   onProgress?: CardSummonProgressHandler,
-  flavorText?: string
+  flavorText?: string,
+  augury?: ConjurationAugury
 ): Promise<CardCreationResult[]> {
   const character = getActingCharacter(characterKey);
   const optionsCount = getConjurationOptionCount(characterKey);
@@ -210,12 +237,13 @@ export async function getConjurationOtions(
         onProgress?.({ index: i, total: optionsCount, stage, template });
       },
       useAi ? trimmedFlavor : undefined,
-      useAi
+      useAi,
+      augury?.fortuneBudget
     );
     if (result) {
       usedFlavors.names.add(result.template.name);
       usedFlavors.images.add(result.template.imageFileName);
-      options.push(result);
+      options.push(augury ? { ...result, learningRoll: augury.learning } : result);
       onProgress?.({
         index: i,
         total: optionsCount,
@@ -289,22 +317,27 @@ export function getCardCreationBonuses(
   return { learningChance, extraBudgetChance };
 }
 
+function learningHits(learningChance: number, learningRoll: number | undefined): boolean {
+  if (learningRoll !== undefined) return learningRoll > 0;
+  return Math.random() < LEARNING_CHANCE_BASE + learningChance;
+}
+
 function learnCard(
   template: CardTemplate,
   learningChance: number,
   bonusBudget: number,
   character: Character,
-  actionName?: string[]
+  actionName?: string[],
+  learningRoll?: number
 ) {
   const learntKeywords: string[] = [];
   const improvedKeywords: string[] = [];
   const learntActions: string[] = [];
   const improvedActions: string[] = [];
-  if (
-    isUnitCard(template) &&
-    template.keywords &&
-    Math.random() < LEARNING_CHANCE_BASE + learningChance
-  ) {
+  const learnKeywords = learningHits(learningChance, learningRoll);
+  const learnActions =
+    learningRoll !== undefined ? learnKeywords : learningHits(learningChance, undefined);
+  if (isUnitCard(template) && template.keywords && learnKeywords) {
     if (!character.craftingKnowledge.keywords) {
       character.craftingKnowledge.keywords = {};
     }
@@ -320,7 +353,7 @@ function learnCard(
       }
     }
   }
-  if (actionName?.length && Math.random() < LEARNING_CHANCE_BASE + learningChance) {
+  if (actionName?.length && learnActions) {
     if (!character.craftingKnowledge.actions) {
       character.craftingKnowledge.actions = {};
     }
@@ -410,7 +443,8 @@ async function getUnitTemplate(
   usedFlavors?: UsedFlavors,
   onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void,
   flavorText?: string,
-  allowAiGenerate = true
+  allowAiGenerate = true,
+  fortuneBudget?: number
 ): Promise<{
   template: UnitCardTemplate;
   bonusBudget: number;
@@ -420,9 +454,8 @@ async function getUnitTemplate(
   delete unitParams.cardType;
 
   const cardBase = buildUnitCard(unitParams, character);
-  const sureMastery = Math.floor(bonuses.extraBudgetChance);
-  const extraBudget = Math.random() < bonuses.extraBudgetChance - sureMastery ? 1 : 0;
-  const budget = getCardBudget(cardBase) - sureMastery - extraBudget;
+  const bonusBudget = fortuneBudget ?? rollExtraBudget(bonuses.extraBudgetChance);
+  const budget = getCardBudget(cardBase) - bonusBudget;
   const { cost, extraPower, extraHealth, extraRetaliate } = getCostFromBudget(budget);
   const colors = cardBase.colors.map((entry) => ({ color: entry.color, count: 1 }));
   const conjured: Omit<UnitCardTemplate, 'id' | 'name' | 'imageFileName'> = {
@@ -507,7 +540,7 @@ async function getUnitTemplate(
   onSummonProgress?.('image', draft);
   return {
     template: draft,
-    bonusBudget: sureMastery + extraBudget,
+    bonusBudget,
     actionName,
   };
 }
@@ -518,16 +551,16 @@ async function getSpellTemplate(
   usedFlavors?: UsedFlavors,
   onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void,
   flavorText?: string,
-  allowAiGenerate = true
+  allowAiGenerate = true,
+  fortuneBudget?: number
 ): Promise<{
   template: SpellCardTemplate;
   bonusBudget: number;
   actionName: string[];
 }> {
   const { card, actionName } = buildSpellCard(parameters);
-  const sureMastery = Math.floor(bonuses.extraBudgetChance);
-  const extraBudget = Math.random() < bonuses.extraBudgetChance - sureMastery ? 1 : 0;
-  const budget = getCardBudget(card) - sureMastery - extraBudget;
+  const bonusBudget = fortuneBudget ?? rollExtraBudget(bonuses.extraBudgetChance);
+  const budget = getCardBudget(card) - bonusBudget;
   const { cost } = getCostFromBudget(budget);
   const conjured: Omit<SpellCardTemplate, 'id' | 'name' | 'imageFileName'> = {
     ...card,
@@ -584,7 +617,7 @@ async function getSpellTemplate(
   onSummonProgress?.('image', draft);
   return {
     template: draft,
-    bonusBudget: sureMastery + extraBudget,
+    bonusBudget,
     actionName,
   };
 }

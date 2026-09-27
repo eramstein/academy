@@ -2,7 +2,15 @@
   import { ResourceType } from '@/lib/_model';
   import { gs } from '@/lib/_state';
   import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
-  import { getCardCreationBonuses, getCardEnchantmentBonuses, fortuneBudgetToStats, rollExtraBudget } from '@/lib/sim/actions';
+  import {
+  describeFortuneBudget,
+  fortuneBudgetToStats,
+  getCardCreationBonuses,
+  getCardEnchantmentBonuses,
+  getMaxManaCostDelta,
+  rollExtraBudget,
+  type ConjurationAugury,
+} from '@/lib/sim/actions';
   import { playAddResourceSound } from '@/lib/sim/sound';
   import type { Snippet } from 'svelte';
   import { untrack } from 'svelte';
@@ -12,6 +20,14 @@
   import RitualCircle from './RitualCircle.svelte';
 
   export type RitualCharm = { id: string; icon: string };
+
+export type AuguryBeat = {
+  stage: 'learning' | 'insight' | 'fortune' | 'shown';
+  learning: number | null;
+  fortune: number | null;
+};
+
+type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
 
   type CharmPhase = 'enter' | 'orbit' | 'exit' | 'seal';
 
@@ -40,6 +56,8 @@
     hideMaterials = false,
     charms = [],
     onCharmLanded,
+    onIngredientsSealed,
+    onFortuneLanded,
     onSealComplete,
     seal = false,
     shapeText = '',
@@ -47,6 +65,11 @@
     atManaLimit = false,
     budgetRemaining = null,
     rollFortune = false,
+    rollAugury = false,
+    bonusKind = 'enchantment',
+    onAuguryBeat,
+    onAuguryPrepared,
+    onAuguryComplete,
     charmEntry = null,
     acceptingDrop = false,
     circleContent,
@@ -68,8 +91,12 @@
     hideMaterials?: boolean;
     charms?: RitualCharm[];
     onCharmLanded?: (id: string) => void;
-    /** Fired after sealed charms (and optional fortune reveal) finish. */
-    onSealComplete?: (result: { fortuneBudget: number }) => void;
+    /** Fired once ingredient charms have entered the card, before Fortune rolls. */
+    onIngredientsSealed?: () => void;
+    /** Fired when Fortune gifts reach the card. */
+    onFortuneLanded?: (fortuneBudget: number) => void;
+    /** Fired after sealed charms (and optional fortune or augury reveal) finish. */
+    onSealComplete?: (result: { fortuneBudget: number; learning?: number }) => void;
     /** Orbiting charms fly into the card, staggered. */
     seal?: boolean;
     /** Line under the circle (ingredient summary). */
@@ -82,6 +109,14 @@
     budgetRemaining?: number | null;
     /** When true, roll Fortune during seal and reveal a positive result. */
     rollFortune?: boolean;
+    /** When true, roll Learning then Fortune before conjured cards appear. */
+    rollAugury?: boolean;
+    /** Split-layout gauges. Enchantment shows Scope and Fortune; creation shows Learning and Fortune. */
+    bonusKind?: 'enchantment' | 'creation';
+    onAuguryBeat?: (beat: AuguryBeat) => void;
+    /** Fired as soon as Learning and Fortune are rolled, before the dice finish. */
+    onAuguryPrepared?: (result: ConjurationAugury) => void;
+    onAuguryComplete?: (result: ConjurationAugury) => void;
     /** Drop point for a charm that is about to join the orbit. */
     charmEntry?: { id: string; x: number; y: number } | null;
     /** Ingredient drag is in progress; highlight the circle. */
@@ -171,14 +206,24 @@
   let orbitIds = $state<{ id: string; icon: string }[]>([]);
   let sealStarted = false;
   let sealFinished = false;
+  let sealWasOn = false;
   let sealPending = 0;
   let sealTimer = 0;
-  let fortunePhase = $state<'idle' | 'rolling' | 'hit' | 'miss'>('idle');
+  let fortunePhase = $state<DiePhase>('idle');
   let fortuneFace = $state(0);
   let fortuneAnchorEl: HTMLDivElement | undefined = $state();
   let fortuneTarget = 0;
   let fortunePending = 0;
   let fortuneSpinAt = 0;
+  let learningPhase = $state<DiePhase>('idle');
+  let learningFace = $state(0);
+  let learningSpinAt = 0;
+  let auguryFortunePhase = $state<DiePhase>('idle');
+  let auguryFortuneFace = $state(0);
+  let auguryFortuneSpinAt = 0;
+  let auguryStarted = false;
+  let auguryFinished = false;
+  let auguryTimer = 0;
   let prevSelected: Record<ResourceType, number> = { ...selected };
   let consumeAt = 0;
   let orbitClock = 0;
@@ -218,6 +263,29 @@
 
   function formatChance(value: number): string {
     return `${Math.round(value * 100)}%`;
+  }
+
+  function learningCaption(): string {
+    if (learningPhase === 'hit') return 'Insight';
+    if (learningPhase === 'miss') return 'No insight';
+    return 'Chance of knowledge';
+  }
+
+  function fortuneCaption(): string {
+    if (auguryFortunePhase === 'hit') return `+${auguryFortuneFace} budget`;
+    if (auguryFortunePhase === 'miss') return 'No bonus';
+    return 'Chance of a card bonus';
+  }
+
+  function scopeCaption(): string {
+    const mana = getMaxManaCostDelta(enchantmentBonuses.extraMana);
+    return `Change up to ${mana} Mana`;
+  }
+
+  function enchantFortuneCaption(): string {
+    if (fortunePhase === 'hit') return describeFortuneBudget(fortuneFace) || 'No bonus';
+    if (fortunePhase === 'miss') return 'No bonus';
+    return 'Chance of a card bonus';
   }
 
   function formatScope(value: number): string {
@@ -365,6 +433,11 @@
   }
 
   function beginFortuneOrFinish() {
+    if (bonusKind === 'creation') {
+      beginAugury();
+      return;
+    }
+    onIngredientsSealed?.();
     if (!rollFortune) {
       finishSeal(0);
       return;
@@ -374,6 +447,7 @@
     if (reduceMotion) {
       fortuneFace = rolled;
       fortunePhase = rolled > 0 ? 'hit' : 'miss';
+      if (rolled > 0) onFortuneLanded?.(rolled);
       finishSeal(rolled);
       return;
     }
@@ -404,6 +478,7 @@
     if (sealFinished) return;
     const { health, retaliate } = fortuneBudgetToStats(budget);
     if (!benchEl || health + retaliate <= 0) {
+      if (budget > 0) onFortuneLanded?.(budget);
       finishSeal(budget);
       return;
     }
@@ -434,10 +509,84 @@
     playAddResourceSound();
   }
 
-  function finishSeal(budget: number) {
+  function publishAugury(beat: AuguryBeat) {
+    onAuguryBeat?.(beat);
+  }
+
+  function finishAugury(learning: number, fortuneBudget: number) {
+    if (auguryFinished) return;
+    auguryFinished = true;
+    onAuguryComplete?.({ learning, fortuneBudget });
+    if (sealStarted && !sealFinished) finishSeal(fortuneBudget, learning);
+  }
+
+  function armAugury(delay: number, next: () => void) {
+    if (auguryTimer) clearTimeout(auguryTimer);
+    auguryTimer = window.setTimeout(() => {
+      auguryTimer = 0;
+      if (auguryFinished) return;
+      next();
+    }, delay);
+  }
+
+  function settleLearning(learning: number, fortune: number) {
+    learningFace = learning;
+    learningPhase = learning > 0 ? 'hit' : 'miss';
+    if (learning > 0) playAddResourceSound();
+    publishAugury({ stage: 'insight', learning, fortune: null });
+    const hold = reduceMotion ? 0 : learning > 0 ? 720 : FORTUNE_MISS_MS;
+    armAugury(hold, () => startAuguryFortune(learning, fortune));
+  }
+
+  function startAuguryFortune(learning: number, fortune: number) {
+    publishAugury({ stage: 'fortune', learning, fortune: null });
+    if (reduceMotion) {
+      settleAuguryFortune(learning, fortune);
+      return;
+    }
+    auguryFortuneFace = Math.floor(Math.random() * 10);
+    auguryFortuneSpinAt = performance.now();
+    auguryFortunePhase = 'rolling';
+    armAugury(FORTUNE_ROLL_MS, () => settleAuguryFortune(learning, fortune));
+  }
+
+  function settleAuguryFortune(learning: number, fortune: number) {
+    auguryFortuneFace = fortune;
+    auguryFortunePhase = fortune > 0 ? 'hit' : 'miss';
+    if (fortune > 0) playAddResourceSound();
+    publishAugury({ stage: 'shown', learning, fortune });
+    armAugury(FORTUNE_SEE_MS, () => finishAugury(learning, fortune));
+  }
+
+  function beginAugury() {
+    if (auguryStarted || auguryFinished) return;
+    auguryStarted = true;
+    const learning = rollExtraBudget(creationBonuses.learningChance);
+    const fortune = rollExtraBudget(creationBonuses.extraBudgetChance);
+    onAuguryPrepared?.({ learning, fortuneBudget: fortune });
+    publishAugury({ stage: 'learning', learning: null, fortune: null });
+    if (reduceMotion) {
+      learningFace = learning;
+      learningPhase = learning > 0 ? 'hit' : 'miss';
+      if (learning > 0) playAddResourceSound();
+      publishAugury({ stage: 'insight', learning, fortune: null });
+      auguryFortuneFace = fortune;
+      auguryFortunePhase = fortune > 0 ? 'hit' : 'miss';
+      if (fortune > 0) playAddResourceSound();
+      publishAugury({ stage: 'shown', learning, fortune });
+      armAugury(FORTUNE_SEE_MS, () => finishAugury(learning, fortune));
+      return;
+    }
+    learningFace = Math.floor(Math.random() * 10);
+    learningSpinAt = performance.now();
+    learningPhase = 'rolling';
+    armAugury(FORTUNE_ROLL_MS, () => settleLearning(learning, fortune));
+  }
+
+  function finishSeal(budget: number, learning = 0) {
     if (sealFinished) return;
     sealFinished = true;
-    onSealComplete?.({ fortuneBudget: budget });
+    onSealComplete?.({ fortuneBudget: budget, learning });
   }
 
   function beginSeal(list: RitualCharm[], now: number) {
@@ -643,6 +792,19 @@
     untrack(() => syncCharms(next, entry));
   });
 
+  function resetAugury() {
+    learningPhase = 'idle';
+    learningFace = 0;
+    auguryFortunePhase = 'idle';
+    auguryFortuneFace = 0;
+    auguryStarted = false;
+    auguryFinished = false;
+    if (auguryTimer) {
+      clearTimeout(auguryTimer);
+      auguryTimer = 0;
+    }
+  }
+
   $effect(() => {
     if (!seal) {
       untrack(() => {
@@ -657,10 +819,18 @@
           clearTimeout(sealTimer);
           sealTimer = 0;
         }
+        if (sealWasOn) resetAugury();
+        sealWasOn = false;
       });
       return;
     }
+    sealWasOn = true;
     untrack(() => beginSeal(charms, performance.now()));
+  });
+
+  $effect(() => {
+    if (!rollAugury) return;
+    untrack(() => beginAugury());
   });
 
   $effect(() => {
@@ -695,6 +865,7 @@
     return () => {
       cancelAnimationFrame(raf);
       if (sealTimer) clearTimeout(sealTimer);
+      if (auguryTimer) clearTimeout(auguryTimer);
     };
   });
 
@@ -705,6 +876,14 @@
     if (fortunePhase === 'rolling' && now - fortuneSpinAt > 55) {
       fortuneSpinAt = now;
       fortuneFace = Math.floor(Math.random() * 10);
+    }
+    if (learningPhase === 'rolling' && now - learningSpinAt > 55) {
+      learningSpinAt = now;
+      learningFace = Math.floor(Math.random() * 10);
+    }
+    if (auguryFortunePhase === 'rolling' && now - auguryFortuneSpinAt > 55) {
+      auguryFortuneSpinAt = now;
+      auguryFortuneFace = Math.floor(Math.random() * 10);
     }
     const boost = reduceMotion ? 1 : spinBoost(now);
     orbitClock += dt * boost;
@@ -894,6 +1073,7 @@
       if (fortuneLands.length) {
         fortunePending -= fortuneLands.length;
         if (fortunePending <= 0) {
+          onFortuneLanded?.(fortuneTarget);
           sealTimer = window.setTimeout(() => {
             sealTimer = 0;
             finishSeal(fortuneTarget);
@@ -907,6 +1087,8 @@
 <div
   class="bench"
   class:consume
+  class:auguring={rollAugury}
+  class:settled={dim && !ignite}
   class:split
   class:no-materials={hideMaterials}
   bind:this={benchEl}
@@ -933,52 +1115,125 @@
           </div>
           <div class="fortune-stage">
             <div class="gauge-pair">
-              <div class="gauge chart">
-                <img class="gauge-icon" src={bookIcon} alt="" />
-                <div class="gauge-head">
-                  <span class="gauge-label">Scope</span>
-                  <span class="gauge-value">{formatScope(enchantmentBonuses.extraMana)}</span>
+              {#if bonusKind === 'creation'}
+                <div
+                  class="gauge chart"
+                  class:fortune-live={learningPhase === 'rolling' || learningPhase === 'hit'}
+                >
+                  <img class="gauge-icon" src={bookIcon} alt="" />
+                  <div class="gauge-head">
+                    <span class="gauge-label">Learning</span>
+                    <span class="gauge-value">{formatChance(creationBonuses.learningChance)}</span>
+                  </div>
+                  <span class="gauge-track" aria-hidden="true">
+                    <span
+                      class="gauge-fill"
+                      style="width: {Math.min(1, creationBonuses.learningChance) * 100}%"
+                    ></span>
+                  </span>
+                  <span class="augury-note" class:miss={learningPhase !== 'hit'}>{learningCaption()}</span>
+                  {#if learningPhase !== 'idle'}
+                    <div class="fortune-die-slot">
+                      <span
+                        class="fortune-die"
+                        class:rolling={learningPhase === 'rolling'}
+                        class:hit={learningPhase === 'hit'}
+                        class:miss={learningPhase === 'miss'}
+                        aria-live="polite"
+                        aria-label={learningPhase === 'rolling'
+                          ? 'Rolling learning'
+                          : `Learning ${learningFace}`}
+                      >{learningFace}</span>
+                    </div>
+                  {/if}
                 </div>
-                <span class="gauge-track" aria-hidden="true">
-                  <span
-                    class="gauge-fill"
-                    style="width: {Math.min(1, enchantmentBonuses.extraMana / 3) * 100}%"
-                  ></span>
-                </span>
-              </div>
-              <div
-                class="gauge chart"
-                class:fortune-live={fortunePhase === 'rolling' || fortunePhase === 'hit'}
-              >
-                <img class="gauge-icon" src={starIcon} alt="" />
-                <div class="gauge-head">
-                  <span class="gauge-label">Fortune</span>
-                  <span class="gauge-value"
-                    >{formatChance(enchantmentBonuses.extraBudgetChance)}</span
+                <div
+                  class="gauge chart"
+                  class:fortune-live={auguryFortunePhase === 'rolling' || auguryFortunePhase === 'hit'}
+                >
+                  <img class="gauge-icon" src={starIcon} alt="" />
+                  <div class="gauge-head">
+                    <span class="gauge-label">Fortune</span>
+                    <span class="gauge-value"
+                      >{formatChance(creationBonuses.extraBudgetChance)}</span
+                    >
+                  </div>
+                  <span class="gauge-track" aria-hidden="true">
+                    <span
+                      class="gauge-fill"
+                      style="width: {Math.min(1, creationBonuses.extraBudgetChance) * 100}%"
+                    ></span>
+                  </span>
+                  <span class="augury-note" class:miss={auguryFortunePhase !== 'hit'}
+                    >{fortuneCaption()}</span
                   >
+                  {#if auguryFortunePhase !== 'idle'}
+                    <div class="fortune-die-slot">
+                      <span
+                        class="fortune-die"
+                        class:rolling={auguryFortunePhase === 'rolling'}
+                        class:hit={auguryFortunePhase === 'hit'}
+                        class:miss={auguryFortunePhase === 'miss'}
+                        aria-live="polite"
+                        aria-label={auguryFortunePhase === 'rolling'
+                          ? 'Rolling fortune'
+                          : `Fortune ${auguryFortuneFace}`}
+                      >{auguryFortuneFace}</span>
+                    </div>
+                  {/if}
                 </div>
-                <span class="gauge-track" aria-hidden="true">
-                  <span
-                    class="gauge-fill"
-                    style="width: {Math.min(1, enchantmentBonuses.extraBudgetChance) * 100}%"
-                  ></span>
-                </span>
-              </div>
+              {:else}
+                <div class="gauge chart">
+                  <img class="gauge-icon" src={bookIcon} alt="" />
+                  <div class="gauge-head">
+                    <span class="gauge-label">Scope</span>
+                    <span class="gauge-value">{formatScope(enchantmentBonuses.extraMana)}</span>
+                  </div>
+                  <span class="gauge-track" aria-hidden="true">
+                    <span
+                      class="gauge-fill"
+                      style="width: {Math.min(1, enchantmentBonuses.extraMana / 3) * 100}%"
+                    ></span>
+                  </span>
+                  <span class="augury-note miss">{scopeCaption()}</span>
+                </div>
+                <div
+                  class="gauge chart"
+                  class:fortune-live={fortunePhase === 'rolling' || fortunePhase === 'hit'}
+                >
+                  <img class="gauge-icon" src={starIcon} alt="" />
+                  <div class="gauge-head">
+                    <span class="gauge-label">Fortune</span>
+                    <span class="gauge-value"
+                      >{formatChance(enchantmentBonuses.extraBudgetChance)}</span
+                    >
+                  </div>
+                  <span class="gauge-track" aria-hidden="true">
+                    <span
+                      class="gauge-fill"
+                      style="width: {Math.min(1, enchantmentBonuses.extraBudgetChance) * 100}%"
+                    ></span>
+                  </span>
+                  <span class="augury-note" class:miss={fortunePhase !== 'hit'}
+                    >{enchantFortuneCaption()}</span
+                  >
+                  {#if fortunePhase !== 'idle'}
+                    <div class="fortune-die-slot" bind:this={fortuneAnchorEl}>
+                      <span
+                        class="fortune-die"
+                        class:rolling={fortunePhase === 'rolling'}
+                        class:hit={fortunePhase === 'hit'}
+                        class:miss={fortunePhase === 'miss'}
+                        aria-live="polite"
+                        aria-label={fortunePhase === 'rolling'
+                          ? 'Rolling fortune'
+                          : `Fortune ${fortuneFace}`}
+                      >{fortuneFace}</span>
+                    </div>
+                  {/if}
+                </div>
+              {/if}
             </div>
-            {#if fortunePhase !== 'idle'}
-              <div class="fortune-die-slot" bind:this={fortuneAnchorEl}>
-                <span
-                  class="fortune-die"
-                  class:rolling={fortunePhase === 'rolling'}
-                  class:hit={fortunePhase === 'hit'}
-                  class:miss={fortunePhase === 'miss'}
-                  aria-live="polite"
-                  aria-label={fortunePhase === 'rolling'
-                    ? 'Rolling fortune'
-                    : `Fortune ${fortuneFace}`}
-                >{fortuneFace}</span>
-              </div>
-            {/if}
           </div>
         </div>
       {:else}
@@ -998,17 +1253,39 @@
       {/if}
     {/if}
 
-    <div class="ritual" class:drop-hot={acceptingDrop} data-ingredient-drop>
+    <div class="ritual" class:flanked={!split} class:drop-hot={acceptingDrop} data-ingredient-drop>
       {#if !split}
-        <div class="gauge">
-          <span class="gauge-label">Learning</span>
-          <span class="gauge-track" aria-hidden="true">
-            <span
-              class="gauge-fill"
-              style="transform: scaleX({Math.min(1, creationBonuses.learningChance)})"
-            ></span>
-          </span>
-          <span class="gauge-value">{formatChance(creationBonuses.learningChance)}</span>
+        <div class="gauge-row">
+          <div
+            class="gauge"
+            class:fortune-live={learningPhase === 'rolling' || learningPhase === 'hit'}
+          >
+            <span class="gauge-label">Learning</span>
+            <span class="gauge-track" aria-hidden="true">
+              <span
+                class="gauge-fill"
+                style="transform: scaleX({Math.min(1, creationBonuses.learningChance)})"
+              ></span>
+            </span>
+            <span class="gauge-value">{formatChance(creationBonuses.learningChance)}</span>
+          </div>
+          {#if learningPhase === 'hit'}
+            <span class="augury-note">Insight</span>
+          {:else if learningPhase === 'miss'}
+            <span class="augury-note miss">No insight</span>
+          {/if}
+          {#if learningPhase !== 'idle'}
+            <div class="fortune-die-slot">
+              <span
+                class="fortune-die"
+                class:rolling={learningPhase === 'rolling'}
+                class:hit={learningPhase === 'hit'}
+                class:miss={learningPhase === 'miss'}
+                aria-live="polite"
+                aria-label={learningPhase === 'rolling' ? 'Rolling learning' : `Learning ${learningFace}`}
+              >{learningFace}</span>
+            </div>
+          {/if}
         </div>
       {/if}
 
@@ -1064,15 +1341,39 @@
       {/if}
 
       {#if !split}
-        <div class="gauge">
-          <span class="gauge-label">Fortune</span>
-          <span class="gauge-track" aria-hidden="true">
-            <span
-              class="gauge-fill"
-              style="transform: scaleX({Math.min(1, creationBonuses.extraBudgetChance)})"
-            ></span>
-          </span>
-          <span class="gauge-value">{formatChance(creationBonuses.extraBudgetChance)}</span>
+        <div class="gauge-row">
+          <div
+            class="gauge"
+            class:fortune-live={auguryFortunePhase === 'rolling' || auguryFortunePhase === 'hit'}
+          >
+            <span class="gauge-label">Fortune</span>
+            <span class="gauge-track" aria-hidden="true">
+              <span
+                class="gauge-fill"
+                style="transform: scaleX({Math.min(1, creationBonuses.extraBudgetChance)})"
+              ></span>
+            </span>
+            <span class="gauge-value">{formatChance(creationBonuses.extraBudgetChance)}</span>
+          </div>
+          {#if auguryFortunePhase === 'hit'}
+            <span class="augury-note">+{auguryFortuneFace} budget</span>
+          {:else if auguryFortunePhase === 'miss'}
+            <span class="augury-note miss">No bonus</span>
+          {/if}
+          {#if auguryFortunePhase !== 'idle'}
+            <div class="fortune-die-slot">
+              <span
+                class="fortune-die"
+                class:rolling={auguryFortunePhase === 'rolling'}
+                class:hit={auguryFortunePhase === 'hit'}
+                class:miss={auguryFortunePhase === 'miss'}
+                aria-live="polite"
+                aria-label={auguryFortunePhase === 'rolling'
+                  ? 'Rolling fortune'
+                  : `Fortune ${auguryFortuneFace}`}
+              >{auguryFortuneFace}</span>
+            </div>
+          {/if}
         </div>
       {/if}
     </div>
@@ -1246,6 +1547,7 @@
   }
 
   .materials-col .gauge.chart {
+    position: relative;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto auto;
@@ -1254,6 +1556,13 @@
     align-items: center;
     min-width: 0;
     width: 100%;
+  }
+
+  .materials-col .gauge.chart .fortune-die-slot {
+    top: 50%;
+    bottom: auto;
+    left: calc(100% + 8px);
+    transform: translateY(-50%);
   }
 
   .materials-col .gauge.chart .gauge-icon {
@@ -1421,6 +1730,18 @@
     bottom: 2px;
     z-index: 6;
     perspective: 120px;
+  }
+
+  .materials-col .gauge.chart .augury-note {
+    grid-column: 2;
+    margin: 0;
+    min-height: 1.15em;
+    font-size: 0.68rem;
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-align: left;
+    white-space: nowrap;
   }
 
   .fortune-die {
@@ -1616,6 +1937,13 @@
     gap: 6px;
   }
 
+  .ritual.flanked {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 22px;
+  }
+
   .gauge {
     display: flex;
     flex-direction: column;
@@ -1625,8 +1953,55 @@
     transition: opacity 0.4s ease;
   }
 
-  .bench.consume .gauge {
+  .bench.consume:not(.auguring) .gauge,
+  .bench.consume:not(.auguring) .gauge-row {
     opacity: 0;
+  }
+
+  .bench.consume:not(.auguring) .beads,
+  .bench.settled .beads {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .gauge-row {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: opacity 0.4s ease;
+  }
+
+  .ritual.flanked .gauge-row {
+    flex: 0 0 7.5rem;
+  }
+
+  .gauge-row .fortune-die-slot {
+    top: 50%;
+    bottom: auto;
+    left: calc(100% + 10px);
+    transform: translateY(-50%);
+  }
+
+  .ritual.flanked .gauge-row:first-child .fortune-die-slot {
+    left: auto;
+    right: calc(100% + 10px);
+  }
+
+  .augury-note {
+    margin-top: 1px;
+    font-family: var(--font-narrative);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--color-ink);
+    text-align: center;
+  }
+
+  .augury-note.miss {
+    font-weight: 500;
+    color: #6a5c4c;
   }
 
   .gauge-label {

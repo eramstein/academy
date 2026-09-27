@@ -8,7 +8,11 @@
   import Tooltip from '../Tooltip.svelte';
   import { activateAbility } from '../_helpers/targetting';
   import { TRIGGER_ICONS } from '../_helpers/triggerIcons';
-  let { abilities, unit }: { abilities: Ability[]; unit?: UnitDeployed } = $props();
+  let {
+    abilities,
+    unit,
+    pulse = false,
+  }: { abilities: Ability[]; unit?: UnitDeployed; pulse?: boolean } = $props();
 
   // Tooltip state
   let hoveredAbility = $state<string | null>(null);
@@ -81,6 +85,7 @@
     <Tooltip content={getTooltipContent(text, cost, exhausts)} show={hoveredAbility === text}>
       <div
         class="ability"
+        class:enchant-pulse={pulse}
         class:activated={isActivated}
         class:pending={isPending}
         class:has-trigger-icon={triggerIcon}

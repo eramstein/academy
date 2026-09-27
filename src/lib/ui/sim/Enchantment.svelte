@@ -7,6 +7,7 @@
     isUnitCard,
     ResourceType,
     type Action,
+    type CardTemplate,
     type UnitKeywords,
   } from '@/lib/_model';
   import { gs } from '@/lib/_state';
@@ -15,6 +16,7 @@
     getAugmentPreview,
     getEnchantableCards,
     performAction,
+    previewAugmentedCard,
     type ActionArgDeltas,
     type AugmentParameters,
   } from '@/lib/sim/actions';
@@ -34,7 +36,7 @@
   import { playAddResourceSound } from '@/lib/sim/sound';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
   import { hasActiveCardFilters, matchesCardFilters } from '@/lib/ui/cards/card-filters';
-  import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
+  import CardCompact, { type CardChangeHighlight } from '@/lib/ui/cards/CardCompact.svelte';
   import CardFilters from '@/lib/ui/cards/CardFilters.svelte';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import IngredientTray, { type EssenceKey } from './crafting/IngredientTray.svelte';
@@ -88,10 +90,19 @@
   let draggingIngredient = $state(false);
   let charmEntry = $state<{ id: string; x: number; y: number } | null>(null);
   let sealing = $state(false);
+  let finished = $state(false);
+  let resultCard = $state<CardTemplate | null>(null);
+  let infusedCard = $state<CardTemplate | null>(null);
+  let highlight = $state<CardChangeHighlight | null>(null);
+  let fortuneBudget = 0;
+  let fortuneShown = false;
+  let pulseToken = 0;
 
   $effect(() => {
     function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') back();
+      if (event.key !== 'Escape') return;
+      if (finished) takeCard();
+      else back();
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -372,6 +383,13 @@
       number
     >;
     sealing = false;
+    finished = false;
+    resultCard = null;
+    infusedCard = null;
+    highlight = null;
+    fortuneBudget = 0;
+    fortuneShown = false;
+    pulseToken += 1;
     charmEntry = null;
   }
 
@@ -380,8 +398,34 @@
     resetAugmentForm();
   }
 
+  function cardHighlight(before: CardTemplate, after: CardTemplate): CardChangeHighlight {
+    const next: CardChangeHighlight = { cost: before.cost !== after.cost };
+    if (isUnitCard(before) && isUnitCard(after)) {
+      next.power = before.power !== after.power;
+      next.health =
+        before.maxHealth !== after.maxHealth ||
+        (before.keywords?.armor ?? 0) !== (after.keywords?.armor ?? 0);
+      next.retaliate = (before.retaliate || 0) !== (after.retaliate || 0);
+      const keys = new Set([
+        ...Object.keys(before.keywords ?? {}),
+        ...Object.keys(after.keywords ?? {}),
+      ]);
+      next.keywords = [...keys].filter(
+        (key) =>
+          (before.keywords as Record<string, unknown> | undefined)?.[key] !==
+          (after.keywords as Record<string, unknown> | undefined)?.[key]
+      );
+      next.abilities =
+        JSON.stringify(before.abilities ?? null) !== JSON.stringify(after.abilities ?? null);
+    }
+    if (isSpellCard(before) && isSpellCard(after)) {
+      next.spell = JSON.stringify(before.actions) !== JSON.stringify(after.actions);
+    }
+    return next;
+  }
+
   function back() {
-    if (sealing) return;
+    if (sealing || finished) return;
     if (cardId && canChangeCard) {
       cardId = null;
       resetAugmentForm();
@@ -606,17 +650,57 @@
     sealing = true;
   }
 
+  function revealCard(before: CardTemplate, after: CardTemplate) {
+    resultCard = after;
+    highlight = null;
+    const token = ++pulseToken;
+    requestAnimationFrame(() => {
+      if (token !== pulseToken) return;
+      highlight = cardHighlight(before, after);
+    });
+  }
+
+  function onIngredientsSealed() {
+    if (!augmentParameters || !sourceCard || infusedCard) return;
+    const preview = previewAugmentedCard({
+      ...augmentParameters,
+      fortuneBudget: 0,
+    });
+    if (!preview) return;
+    infusedCard = preview;
+    revealCard(sourceCard, preview);
+  }
+
+  function onFortuneLanded(budget: number) {
+    if (!augmentParameters || !sourceCard || fortuneShown || budget <= 0) return;
+    fortuneShown = true;
+    const preview = previewAugmentedCard({
+      ...augmentParameters,
+      fortuneBudget: budget,
+    });
+    if (!preview) return;
+    revealCard(infusedCard ?? sourceCard, preview);
+  }
+
   function onSealComplete(result: { fortuneBudget: number }) {
-    if (!augmentParameters) {
+    if (!augmentParameters || !sourceCard || finished) {
       sealing = false;
       return;
     }
+    fortuneBudget = result.fortuneBudget;
+    if (!infusedCard) onIngredientsSealed();
+    if (result.fortuneBudget > 0) onFortuneLanded(result.fortuneBudget);
+    finished = true;
+  }
+
+  function takeCard() {
+    if (!finished || !augmentParameters) return;
     performAction({
       ...action,
       actionParameters: {
         ...action.actionParameters,
         ...augmentParameters,
-        fortuneBudget: result.fortuneBudget,
+        fortuneBudget,
       },
       missingParameters: {},
     });
@@ -755,6 +839,8 @@
     <RitualStage
       bind:selected
       {charms}
+      {onIngredientsSealed}
+      {onFortuneLanded}
       {onSealComplete}
       seal={sealing}
       shapeText={shapeSummary}
@@ -775,7 +861,7 @@
           <span class="land pigment" data-charm-land="pigment" aria-hidden="true"></span>
           <span class="land essence" data-charm-land="essence" aria-hidden="true"></span>
           <span class="land rune" data-charm-land="rune" aria-hidden="true"></span>
-          <CardCompact card={sourceCard} />
+          <CardCompact card={resultCard ?? sourceCard} changed={highlight} />
         </div>
       {/snippet}
       {#snippet flank()}
@@ -852,17 +938,21 @@
           <span class="budget-error">{augmentPreview.error}</span>
         </div>
       {/if}
-      <button type="button" class="abandon" disabled={sealing} onclick={back}>
+      <button type="button" class="abandon" disabled={sealing || finished} onclick={back}>
         <span class="abandon-mark" aria-hidden="true"></span>
         {canChangeCard ? 'Back' : 'Abandon'}
       </button>
-      <OrnateButton
-        icon="leaf"
-        disabled={!hasAugmentIngredients || !!augmentPreview?.error || sealing}
-        onclick={confirmAugment}
-      >
-        Enchant
-      </OrnateButton>
+      {#if finished}
+        <OrnateButton icon="leaf" onclick={takeCard}>Take card</OrnateButton>
+      {:else}
+        <OrnateButton
+          icon="leaf"
+          disabled={!hasAugmentIngredients || !!augmentPreview?.error || sealing}
+          onclick={confirmAugment}
+        >
+          Enchant
+        </OrnateButton>
+      {/if}
     {/snippet}
   </WorkbenchShell>
 {/if}

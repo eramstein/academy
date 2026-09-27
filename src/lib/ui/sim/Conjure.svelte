@@ -5,16 +5,17 @@
     getConjurationOptionCount,
     type CardCreationResult,
     type CardSummonProgress,
+    type ConjurationAugury,
     type SummonRevealStage,
   } from '@/lib/sim/actions';
   import { playSimSound } from '@/lib/sim/sound';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
-  import RitualStage from './crafting/RitualStage.svelte';
+  import RitualStage, { type AuguryBeat as RitualAuguryBeat } from './crafting/RitualStage.svelte';
   import WorkbenchShell from './crafting/WorkbenchShell.svelte';
 
   type ResourceAmount = { type: ResourceType; count: number };
-  type Phase = 'idle' | 'conjuring' | 'revealed';
+  type Phase = 'idle' | 'augury' | 'conjuring' | 'revealed';
 
   type SummonSlot = {
     /** Stable for the whole summon; never change after create. */
@@ -36,7 +37,8 @@
     onConjure: (
       resources: ResourceAmount[],
       onProgress: (progress: CardSummonProgress) => void,
-      flavorText?: string
+      flavorText?: string,
+      augury?: ConjurationAugury
     ) => CardCreationResult[] | Promise<CardCreationResult[]>;
     onPick: (result: CardCreationResult) => void;
     onDone: () => void;
@@ -50,14 +52,31 @@
   let phase = $state<Phase>('idle');
   let summonSlots = $state<SummonSlot[]>([]);
   let statusLine = $state('The materials take form…');
+  let auguryBeat = $state<RitualAuguryBeat>({ stage: 'learning', learning: null, fortune: null });
   let pickedId = $state<string | null>(null);
+  let absorbStartedAt = 0;
   let revealTimer: ReturnType<typeof setTimeout> | undefined;
   let pickTimer: ReturnType<typeof setTimeout> | undefined;
   let incantationInput: HTMLInputElement | undefined = $state();
 
+  /** Matches RitualStage SUCTION_START + SUCTION_MS. */
+  const ABSORB_MS = 1500;
+
   const title = $derived(
-    phase === 'idle' ? 'Conjuration' : phase === 'conjuring' ? 'Conjuring' : 'Choose your creation'
+    phase === 'idle' ? 'Conjuration' : phase === 'revealed' ? 'Choose your creation' : 'Conjuring'
   );
+  const auguryStatus = $derived.by(() => {
+    if (auguryBeat.stage === 'learning') return 'Learning stirs…';
+    const insight =
+      auguryBeat.learning && auguryBeat.learning > 0 ? 'Insight takes hold.' : 'No insight.';
+    if (auguryBeat.stage === 'insight') return insight;
+    if (auguryBeat.stage === 'fortune') return `${insight} Fortune turns…`;
+    const bonus =
+      auguryBeat.fortune && auguryBeat.fortune > 0
+        ? `Fortune grants +${auguryBeat.fortune} bonus budget.`
+        : 'Fortune grants no bonus budget.';
+    return `${insight} ${bonus}`;
+  });
   const hasAnyOption = $derived(summonSlots.some((slot) => slot.result !== null));
 
   $effect(() => {
@@ -153,10 +172,17 @@
     statusLine = statusForStage(progress.stage);
   }
 
-  async function begin() {
+  function begin() {
     if (phase !== 'idle') return;
-    phase = 'conjuring';
+    phase = 'augury';
+    absorbStartedAt = performance.now();
+    auguryBeat = { stage: 'learning', learning: null, fortune: null };
     playSimSound('big-swoosh');
+  }
+
+  async function onAuguryComplete(augury: ConjurationAugury) {
+    if (phase !== 'augury') return;
+    phase = 'conjuring';
     pickedId = null;
     const expected = getConjurationOptionCount();
     summonSlots = Array.from({ length: expected }, (_, i) => ({
@@ -171,7 +197,8 @@
     const results = await onConjure(
       committedResources(),
       onSummonProgress,
-      flavorText.trim() || undefined
+      flavorText.trim() || undefined,
+      augury
     );
     const next = [...summonSlots];
     for (let i = 0; i < results.length; i++) {
@@ -192,7 +219,9 @@
     }
     summonSlots = results.length === 0 ? [] : next.slice(0, results.length);
 
-    const delay = reduceMotion ? 0 : 600;
+    // Absorb starts with Conjure; wait until beads are gone before the choice step.
+    const remaining = ABSORB_MS - (performance.now() - absorbStartedAt);
+    const delay = reduceMotion ? 0 : Math.max(420, remaining);
     revealTimer = setTimeout(() => {
       phase = 'revealed';
       playSimSound('glinggling');
@@ -211,7 +240,7 @@
   const lifts = [0, -8, 0];
 </script>
 
-<WorkbenchShell {title} ignite={phase === 'conjuring'}>
+<WorkbenchShell {title} ignite={phase === 'augury' || phase === 'conjuring'}>
   {#if phase === 'idle'}
     <label class="incantation" class:spoken={flavorText.trim().length > 0}>
       <span class="incantation-field">
@@ -234,9 +263,12 @@
   <RitualStage
     bind:selected
     disabled={phase !== 'idle'}
-    ignite={phase === 'conjuring'}
+    ignite={phase === 'augury' || phase === 'conjuring'}
     dim={phase === 'revealed' || phase === 'conjuring'}
     consume={phase !== 'idle'}
+    rollAugury={phase === 'augury'}
+    onAuguryBeat={(beat) => (auguryBeat = beat)}
+    onAuguryComplete={onAuguryComplete}
   >
     {#if phase === 'conjuring' || phase === 'revealed'}
       <div class="creations" class:summoning={phase === 'conjuring'}>
@@ -272,12 +304,21 @@
     {#if phase === 'idle'}
       <button type="button" class="abandon" onclick={onDone}>Abandon ritual</button>
       <OrnateButton icon="spiral" onclick={begin}>Conjure</OrnateButton>
+    {:else if phase === 'augury'}
+      <p class="status">{auguryStatus}</p>
     {:else if phase === 'conjuring'}
       <p class="status">{statusLine}</p>
     {:else if !hasAnyOption}
       <button type="button" class="abandon" onclick={onDone}>Leave</button>
     {:else}
-      <p class="status">Select a creation</p>
+      <p class="status">
+        Select a creation
+        {#if auguryBeat.learning != null}
+          <span class="insight-mark" class:hit={auguryBeat.learning > 0}>
+            {auguryBeat.learning > 0 ? 'Insight takes hold' : 'No insight'}
+          </span>
+        {/if}
+      </p>
     {/if}
   {/snippet}
 </WorkbenchShell>
@@ -484,6 +525,16 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-muted-label);
+  }
+
+  .insight-mark {
+    margin-left: 0.7em;
+    padding-left: 0.7em;
+    border-left: 1px solid color-mix(in srgb, var(--color-brass) 45%, transparent);
+  }
+
+  .insight-mark.hit {
+    color: var(--color-golden);
   }
 
   @keyframes materialize {

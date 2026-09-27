@@ -17,6 +17,7 @@
     summonInvokedCard,
     type CardCreationParameters,
     type CardCreationResult,
+    type ConjurationAugury,
   } from '@/lib/sim/actions';
   import { buildAbility, getTriggerTemplateLabel } from '@/lib/sim/cards/ability-templates';
   import {
@@ -555,6 +556,7 @@
     if (!result?.template) {
       manifest = 'idle';
       sealing = false;
+      summon = null;
       return;
     }
     creationResult = result;
@@ -568,14 +570,26 @@
     );
   }
 
+  function ensureSummon(augury: ConjurationAugury) {
+    if (summon || abandoned) return;
+    summon = summonInvokedCard(buildParameters(), 'player', augury);
+  }
+
+  function onAuguryPrepared(augury: ConjurationAugury) {
+    ensureSummon(augury);
+  }
+
   function invoke() {
     if (!cardType || sealing || manifest !== 'idle' || abandoned) return;
     sealing = true;
-    summon = summonInvokedCard(buildParameters());
   }
 
-  function onSealComplete() {
+  function onSealComplete(result: { fortuneBudget: number; learning?: number }) {
     if (abandoned) return;
+    ensureSummon({
+      learning: result.learning ?? 0,
+      fortuneBudget: result.fortuneBudget,
+    });
     beginShroud();
   }
 
@@ -608,6 +622,8 @@
     {charms}
     {onCharmLanded}
     {onSealComplete}
+    {onAuguryPrepared}
+    bonusKind="creation"
     seal={sealing}
     shapeText={inscription}
     {charmEntry}
