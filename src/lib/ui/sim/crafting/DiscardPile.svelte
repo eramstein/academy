@@ -27,6 +27,7 @@
     spellParams = [],
     actionArgs = {},
     locked = false,
+    atCostLimit = false,
     onPower,
     onMaxHealth,
     onRetaliate,
@@ -51,6 +52,8 @@
     spellParams?: SpellParam[];
     actionArgs?: Record<number, Record<string, number>>;
     locked?: boolean;
+    /** When true, further shedding is blocked (cost decrease already maxed). */
+    atCostLimit?: boolean;
     onPower: (value: number) => void;
     onMaxHealth: (value: number) => void;
     onRetaliate: (value: number) => void;
@@ -74,6 +77,11 @@
 
   function dialStep(value: number, min: number, max: number, delta: number): number {
     return clamp(value + delta, min, max);
+  }
+
+  /** Cap increases when the mana discount is already unlocked. */
+  function cutMax(current: number, absoluteMax: number): number {
+    return atCostLimit ? current : absoluteMax;
   }
 
   function wheelDial(
@@ -169,14 +177,20 @@
   </h3>
 {/snippet}
 
-<div class="pile" class:locked style="--parchment: url('{parchment}')">
+<div class="pile" class:locked class:at-limit={atCostLimit} style="--parchment: url('{parchment}')">
   <h3 class="page-title">
     <span class="title-rule" aria-hidden="true"></span>
     <span class="title-text">Discard</span>
     <span class="title-rule" aria-hidden="true"></span>
     <span class="title-flourish" aria-hidden="true"></span>
   </h3>
-  <p class="hint">Shed traits from the card. Right-click to restore.</p>
+  <p class="hint">
+    {#if atCostLimit}
+      Cost limit reached. Right-click to restore traits.
+    {:else}
+      Shed traits from the card. Right-click to restore.
+    {/if}
+  </p>
 
   {#if isUnit}
     {#if maxPower > 0 || maxHealthCut > 0 || maxRetaliate > 0}
@@ -184,13 +198,15 @@
         {@render sectionLabel('Essences')}
         <div class="cluster">
           {#if maxPower > 0}
+            {@const powerMax = cutMax(power, maxPower)}
             <div
               class="token"
               class:shed={power > 0}
+              class:capped={atCostLimit && power <= 0}
               use:wheelDial={{
                 value: power,
                 min: 0,
-                max: maxPower,
+                max: powerMax,
                 apply: onPower,
               }}
             >
@@ -199,8 +215,9 @@
                 class="stone-btn"
                 class:shed={power > 0}
                 aria-pressed={power > 0}
+                disabled={atCostLimit && power <= 0}
                 title="Power −{power || 0}. Click to shed · right-click to restore"
-                onclick={() => onPower(power > 0 ? dialStep(power, 0, maxPower, 1) : 1)}
+                onclick={() => onPower(power > 0 ? dialStep(power, 0, powerMax, 1) : 1)}
                 oncontextmenu={(event) => {
                   event.preventDefault();
                   onPower(0);
@@ -212,18 +229,20 @@
                 <span class="token-name">Power</span>
               </button>
               {#if power > 0}
-                {@render dial(power, 0, maxPower, 'Power', onPower)}
+                {@render dial(power, 0, powerMax, 'Power', onPower)}
               {/if}
             </div>
           {/if}
           {#if maxHealthCut > 0}
+            {@const healthMax = cutMax(maxHealth, maxHealthCut)}
             <div
               class="token"
               class:shed={maxHealth > 0}
+              class:capped={atCostLimit && maxHealth <= 0}
               use:wheelDial={{
                 value: maxHealth,
                 min: 0,
-                max: maxHealthCut,
+                max: healthMax,
                 apply: onMaxHealth,
               }}
             >
@@ -232,9 +251,10 @@
                 class="stone-btn"
                 class:shed={maxHealth > 0}
                 aria-pressed={maxHealth > 0}
+                disabled={atCostLimit && maxHealth <= 0}
                 title="Health −{maxHealth || 0}. Click to shed · right-click to restore"
                 onclick={() =>
-                  onMaxHealth(maxHealth > 0 ? dialStep(maxHealth, 0, maxHealthCut, 1) : 1)}
+                  onMaxHealth(maxHealth > 0 ? dialStep(maxHealth, 0, healthMax, 1) : 1)}
                 oncontextmenu={(event) => {
                   event.preventDefault();
                   onMaxHealth(0);
@@ -246,18 +266,20 @@
                 <span class="token-name">Health</span>
               </button>
               {#if maxHealth > 0}
-                {@render dial(maxHealth, 0, maxHealthCut, 'Health', onMaxHealth)}
+                {@render dial(maxHealth, 0, healthMax, 'Health', onMaxHealth)}
               {/if}
             </div>
           {/if}
           {#if maxRetaliate > 0}
+            {@const retaliateMax = cutMax(retaliate, maxRetaliate)}
             <div
               class="token"
               class:shed={retaliate > 0}
+              class:capped={atCostLimit && retaliate <= 0}
               use:wheelDial={{
                 value: retaliate,
                 min: 0,
-                max: maxRetaliate,
+                max: retaliateMax,
                 apply: onRetaliate,
               }}
             >
@@ -266,9 +288,10 @@
                 class="stone-btn"
                 class:shed={retaliate > 0}
                 aria-pressed={retaliate > 0}
+                disabled={atCostLimit && retaliate <= 0}
                 title="Retaliate −{retaliate || 0}. Click to shed · right-click to restore"
                 onclick={() =>
-                  onRetaliate(retaliate > 0 ? dialStep(retaliate, 0, maxRetaliate, 1) : 1)}
+                  onRetaliate(retaliate > 0 ? dialStep(retaliate, 0, retaliateMax, 1) : 1)}
                 oncontextmenu={(event) => {
                   event.preventDefault();
                   onRetaliate(0);
@@ -280,7 +303,7 @@
                 <span class="token-name">Retaliate</span>
               </button>
               {#if retaliate > 0}
-                {@render dial(retaliate, 0, maxRetaliate, 'Retaliate', onRetaliate)}
+                {@render dial(retaliate, 0, retaliateMax, 'Retaliate', onRetaliate)}
               {/if}
             </div>
           {/if}
@@ -296,14 +319,16 @@
             {@const numeric = NUMERIC_KEYWORDS.has(key)}
             {@const amount = keywords[key] ?? 0}
             {@const shed = amount > 0}
+            {@const keywordMax = cutMax(amount, maxForKeyword(key))}
             <div
               class="token"
               class:shed
+              class:capped={atCostLimit && !shed}
               use:wheelDial={numeric
                 ? {
                     value: amount,
                     min: 0,
-                    max: maxForKeyword(key),
+                    max: keywordMax,
                     apply: (next: number) => onKeyword(key, next),
                   }
                 : undefined}
@@ -313,10 +338,12 @@
                 class="stone-btn"
                 class:shed
                 aria-pressed={shed}
+                disabled={atCostLimit && !shed}
                 title="{formatKeywordLabel(key)}{numeric
                   ? ` −${amount}`
                   : ''}. Click to shed · right-click to restore"
                 onclick={() => {
+                  if (atCostLimit && !shed) return;
                   if (numeric) onKeyword(key, amount > 0 ? amount + 1 : 1);
                   else onToggleKeyword(key);
                 }}
@@ -332,7 +359,7 @@
                 <span class="token-name">{formatKeywordLabel(key)}</span>
               </button>
               {#if numeric && amount > 0}
-                {@render dial(amount, 0, maxForKeyword(key), formatKeywordLabel(key), (next) =>
+                {@render dial(amount, 0, keywordMax, formatKeywordLabel(key), (next) =>
                   onKeyword(key, next)
                 )}
               {/if}
@@ -348,13 +375,17 @@
         <div class="cluster scrolls">
           {#each abilities as ability, index (index)}
             {@const shed = removeAbilities.includes(index)}
-            <div class="scroll" class:shed>
+            <div class="scroll" class:shed class:capped={atCostLimit && !shed}>
               <button
                 type="button"
                 class="scroll-main"
                 aria-pressed={shed}
+                disabled={atCostLimit && !shed}
                 title="{formatAbility(ability)}. Click to shed · right-click to restore"
-                onclick={() => onToggleAbility(index)}
+                onclick={() => {
+                  if (atCostLimit && !shed) return;
+                  onToggleAbility(index);
+                }}
                 oncontextmenu={(event) => {
                   event.preventDefault();
                   if (shed) onToggleAbility(index);
@@ -378,11 +409,13 @@
       <div class="cluster scrolls">
         {#each spellParams as param (`${param.index}-${param.key}`)}
           {@const value = actionArgs[param.index]?.[param.key] ?? 0}
-          {@const max = Math.max(0, param.current - 1)}
+          {@const absoluteMax = Math.max(0, param.current - 1)}
+          {@const max = cutMax(value, absoluteMax)}
           {@const shed = value > 0}
           <div
             class="scroll"
             class:shed
+            class:capped={atCostLimit && !shed}
             use:wheelDial={{
               value,
               min: 0,
@@ -394,8 +427,12 @@
               type="button"
               class="scroll-main"
               aria-pressed={shed}
+              disabled={atCostLimit && !shed}
               title="{param.actionLabel}: {param.label} −{value}. Click to shed · right-click to restore"
-              onclick={() => onSpellArg(param.index, param.key, value > 0 ? value + 1 : 1)}
+              onclick={() => {
+                if (atCostLimit && !shed) return;
+                onSpellArg(param.index, param.key, value > 0 ? value + 1 : 1);
+              }}
               oncontextmenu={(event) => {
                 event.preventDefault();
                 onSpellArg(param.index, param.key, 0);
@@ -431,6 +468,16 @@
   .pile.locked {
     pointer-events: none;
     opacity: 0.72;
+  }
+
+  .token.capped,
+  .scroll.capped {
+    opacity: 0.45;
+  }
+
+  .stone-btn:disabled,
+  .scroll-main:disabled {
+    cursor: default;
   }
 
   .page-title {

@@ -21,6 +21,7 @@
   import { buildAbility, getTriggerTemplateLabel } from '@/lib/sim/cards/ability-templates';
   import {
     ACTION_TEMPLATE_KEYS,
+    actionNumericParams,
     defaultActionFactoryArgs,
     getActionNumericParams,
     getActionTemplateMeta,
@@ -55,6 +56,7 @@
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
   const ESSENCE_COST: Record<EssenceKey, number> = { power: 4, hp: 2, retaliate: 1 };
+  const STAT_ESSENCE_MAX = 20;
 
   const isDistill = $derived(action.actionType === ActionType.Distill);
 
@@ -397,11 +399,6 @@
     return { ...augmentParameters, ...patch };
   }
 
-  const atManaLimit = $derived.by(() => {
-    if (!sourceCard || !hasAugmentIngredients || !augmentPreview) return false;
-    return sourceCard.cost + augmentPreview.costIncrease >= 9;
-  });
-
   function canAddIngredient(id: string): boolean {
     if (!augmentParameters) return false;
     if (id.startsWith('essence:')) {
@@ -462,7 +459,14 @@
       essenceIn = { ...essenceIn, [key]: false };
       return;
     }
-    if (essenceIn[key] || !augmentParameters) return;
+    if (!augmentParameters) return;
+    if (essenceIn[key]) {
+      const next = essences[key] + 1;
+      if (next > essenceMaxes[key]) return;
+      onEssenceDial(key, next);
+      playAddResourceSound();
+      return;
+    }
     const patch: Partial<AugmentParameters> = {};
     if (key === 'power') patch.power = essences.power;
     if (key === 'hp') patch.maxHealth = essences.hp;
@@ -490,7 +494,15 @@
       runeIn = next;
       return;
     }
-    if (runeIn[key] || !augmentParameters) return;
+    if (!augmentParameters) return;
+    if (runeIn[key]) {
+      if (!NUMERIC_KEYWORDS.has(key)) return;
+      const amount = (runeAmounts[key] ?? 1) + 1;
+      if (amount > (runeMaxes[key] ?? amount)) return;
+      onRuneDial(key, amount);
+      playAddResourceSound();
+      return;
+    }
     const amount = runeAmounts[key] ?? 1;
     const nextKeywords = { ...(augmentParameters.keywords ?? {}), [key]: amount };
     const trial = withAugmentPatch({ keywords: nextKeywords });
@@ -529,7 +541,22 @@
       abilityAction = null;
       return;
     }
-    if (abilityAction === name || !augmentParameters) return;
+    if (!augmentParameters) return;
+    if (abilityAction === name) {
+      const params = actionNumericParams[name] ?? [];
+      const param = params[0];
+      if (!param) return;
+      const current = argsFor(name)[param.factoryKey] ?? 1;
+      const nextArgs = { ...argsFor(name), [param.factoryKey]: current + 1 };
+      const trial = withAugmentPatch({
+        ability: { trigger: abilityTrigger, action: name, args: nextArgs },
+      });
+      if (!trial || !fitsAugment(trial)) return;
+      abilityArgs = nextArgs;
+      stagedArgs = { ...stagedArgs, [name]: nextArgs };
+      playAddResourceSound();
+      return;
+    }
     const args = { ...argsFor(name) };
     const trigger = triggerFor(name);
     const trial = withAugmentPatch({ ability: { trigger, action: name, args } });
@@ -579,7 +606,7 @@
     sealing = true;
   }
 
-  function onSealComplete() {
+  function onSealComplete(result: { fortuneBudget: number }) {
     if (!augmentParameters) {
       sealing = false;
       return;
@@ -589,10 +616,90 @@
       actionParameters: {
         ...action.actionParameters,
         ...augmentParameters,
+        fortuneBudget: result.fortuneBudget,
       },
       missingParameters: {},
     });
     onDone();
+  }
+
+  const budgetRemaining = $derived.by(() => {
+    if (!augmentPreview) return null;
+    return Math.max(0, augmentPreview.scopeBudget - augmentPreview.spent);
+  });
+
+  const atBudgetLimit = $derived(budgetRemaining === 0);
+
+  function maxAffordableEssence(key: EssenceKey): number {
+    const current = essences[key];
+    if (!essenceIn[key] || !augmentParameters) return STAT_ESSENCE_MAX;
+    let best = current;
+    for (let value = current + 1; value <= STAT_ESSENCE_MAX; value++) {
+      const patch: Partial<AugmentParameters> = {};
+      if (key === 'power') patch.power = value;
+      if (key === 'hp') patch.maxHealth = value;
+      if (key === 'retaliate') patch.retaliate = value;
+      const trial = withAugmentPatch(patch);
+      if (!trial || !fitsAugment(trial)) break;
+      best = value;
+    }
+    return best;
+  }
+
+  function maxAffordableRune(key: keyof UnitKeywords): number {
+    const current = runeAmounts[key] ?? 1;
+    if (!runeIn[key] || !augmentParameters) return STAT_ESSENCE_MAX;
+    let best = current;
+    for (let value = current + 1; value <= STAT_ESSENCE_MAX; value++) {
+      const nextKeywords = { ...(augmentParameters.keywords ?? {}), [key]: value };
+      const trial = withAugmentPatch({ keywords: nextKeywords });
+      if (!trial || !fitsAugment(trial)) break;
+      best = value;
+    }
+    return best;
+  }
+
+  const essenceMaxes = $derived.by((): Record<EssenceKey, number> => ({
+    power: maxAffordableEssence('power'),
+    hp: maxAffordableEssence('hp'),
+    retaliate: maxAffordableEssence('retaliate'),
+  }));
+
+  const runeMaxes = $derived.by((): Partial<Record<keyof UnitKeywords, number>> => {
+    const maxes: Partial<Record<keyof UnitKeywords, number>> = {};
+    for (const key of availableKeywords) {
+      if (NUMERIC_KEYWORDS.has(key)) maxes[key] = maxAffordableRune(key);
+    }
+    return maxes;
+  });
+
+  function canIncreaseIngredient(id: string): boolean {
+    if (!augmentParameters) return false;
+    if (id.startsWith('essence:')) {
+      const key = id.slice('essence:'.length) as EssenceKey;
+      if (!essenceIn[key]) return canAddIngredient(id);
+      return essenceMaxes[key] > essences[key];
+    }
+    if (id.startsWith('rune:')) {
+      const key = id.slice('rune:'.length) as keyof UnitKeywords;
+      if (!NUMERIC_KEYWORDS.has(key)) return false;
+      if (!runeIn[key]) return canAddIngredient(id);
+      return (runeMaxes[key] ?? 1) > (runeAmounts[key] ?? 1);
+    }
+    if (id.startsWith('incantation:')) {
+      const name = id.slice('incantation:'.length);
+      if (abilityAction !== name) return canAddIngredient(id);
+      const params = actionNumericParams[name] ?? [];
+      for (const param of params) {
+        const next = { ...argsFor(name), [param.factoryKey]: (argsFor(name)[param.factoryKey] ?? 1) + 1 };
+        const trial = withAugmentPatch({
+          ability: { trigger: abilityTrigger, action: name, args: next },
+        });
+        if (trial && fitsAugment(trial)) return true;
+      }
+      return params.length === 0;
+    }
+    return false;
   }
 </script>
 
@@ -652,7 +759,9 @@
       seal={sealing}
       shapeText={shapeSummary}
       shapeCost={hasAugmentIngredients ? (augmentPreview?.costIncrease ?? null) : null}
-      {atManaLimit}
+      atManaLimit={atBudgetLimit}
+      {budgetRemaining}
+      rollFortune
       {charmEntry}
       acceptingDrop={draggingIngredient}
       disabled={sealing}
@@ -677,8 +786,10 @@
             availableColors={[]}
             {essences}
             {essenceIn}
+            {essenceMaxes}
             {runeAmounts}
             {runeIn}
+            {runeMaxes}
             {availableKeywords}
             triggers={stagedTriggers}
             {argsFor}
@@ -688,6 +799,7 @@
             {hints}
             showPigments={false}
             canAdd={canAddIngredient}
+            canIncrease={canIncreaseIngredient}
             locked={sealing}
             {onPigment}
             {onEssenceDial}
@@ -735,24 +847,11 @@
     </RitualStage>
 
     {#snippet footer()}
-      <div class="budget-footer" class:over={!!augmentPreview?.error}>
-        {#if augmentPreview}
-          <span class="budget-stat">
-            Spent {augmentPreview.spent}
-            {#if augmentPreview.upgradeBudget > 0}
-              / {augmentPreview.upgradeBudget}
-            {/if}
-          </span>
-          <span class="budget-stat">Cost +{augmentPreview.costIncrease}</span>
-          {#if augmentPreview.error}
-            <span class="budget-error">{augmentPreview.error}</span>
-          {:else if augmentPreview.extraBudget > 0 && hasAugmentIngredients}
-            <span class="budget-note"
-              >{augmentPreview.extraBudget} leftover spent automatically</span
-            >
-          {/if}
-        {/if}
-      </div>
+      {#if augmentPreview?.error}
+        <div class="budget-footer">
+          <span class="budget-error">{augmentPreview.error}</span>
+        </div>
+      {/if}
       <button type="button" class="abandon" disabled={sealing} onclick={back}>
         <span class="abandon-mark" aria-hidden="true"></span>
         {canChangeCard ? 'Back' : 'Abandon'}
@@ -849,27 +948,8 @@
     font-size: 0.95rem;
   }
 
-  .budget-stat {
-    min-width: 5rem;
-    padding: 4px 10px;
-    background: color-mix(in srgb, var(--color-data) 88%, #000);
-    border: 1px solid color-mix(in srgb, var(--color-brass) 55%, transparent);
-    border-radius: 3px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .budget-footer.over .budget-stat {
-    border-color: #8a4a3c;
-    color: #e0a090;
-  }
-
   .budget-error {
     color: #e0a090;
-    font-size: 0.85rem;
-  }
-
-  .budget-note {
-    color: var(--color-muted-label, #a89880);
     font-size: 0.85rem;
   }
 

@@ -2,7 +2,7 @@
   import { ResourceType } from '@/lib/_model';
   import { gs } from '@/lib/_state';
   import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
-  import { getCardCreationBonuses } from '@/lib/sim/actions';
+  import { getCardCreationBonuses, getCardEnchantmentBonuses, fortuneBudgetToStats, rollExtraBudget } from '@/lib/sim/actions';
   import { playAddResourceSound } from '@/lib/sim/sound';
   import type { Snippet } from 'svelte';
   import { untrack } from 'svelte';
@@ -45,6 +45,8 @@
     shapeText = '',
     shapeCost = null,
     atManaLimit = false,
+    budgetRemaining = null,
+    rollFortune = false,
     charmEntry = null,
     acceptingDrop = false,
     circleContent,
@@ -66,8 +68,8 @@
     hideMaterials?: boolean;
     charms?: RitualCharm[];
     onCharmLanded?: (id: string) => void;
-    /** Fired after sealed charms have flown into the card. */
-    onSealComplete?: () => void;
+    /** Fired after sealed charms (and optional fortune reveal) finish. */
+    onSealComplete?: (result: { fortuneBudget: number }) => void;
     /** Orbiting charms fly into the card, staggered. */
     seal?: boolean;
     /** Line under the circle (ingredient summary). */
@@ -76,6 +78,10 @@
     shapeCost?: number | null;
     /** When true, show a red "at mana limit" label under the circle. */
     atManaLimit?: boolean;
+    /** Remaining Scope budget points; shown as diamonds under the formula. */
+    budgetRemaining?: number | null;
+    /** When true, roll Fortune during seal and reveal a positive result. */
+    rollFortune?: boolean;
     /** Drop point for a charm that is about to join the orbit. */
     charmEntry?: { id: string; x: number; y: number } | null;
     /** Ingredient drag is in progress; highlight the circle. */
@@ -131,7 +137,13 @@
   const CHARM_RADIUS = { base: 88, split: 172 };
   const CHARM_SPEED = 0.00052;
   const CHARM_STAGGER = 120;
-  const SEAL_HOLD_MS = 640;
+  const SEAL_HOLD_MS = 180;
+  const FORTUNE_ROLL_MS = 980;
+  const FORTUNE_MISS_MS = 420;
+  /** Linger after bonus icons reach the card, before the form closes. */
+  const FORTUNE_SEE_MS = 1100;
+  const healthIcon = getAssetPath('images/ui/icons/health-icon-decorated.png');
+  const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon-decorated.png');
 
   const orbitRadius = $derived(split ? RADIUS_SPLIT : RADIUS_BASE);
 
@@ -161,6 +173,12 @@
   let sealFinished = false;
   let sealPending = 0;
   let sealTimer = 0;
+  let fortunePhase = $state<'idle' | 'rolling' | 'hit' | 'miss'>('idle');
+  let fortuneFace = $state(0);
+  let fortuneAnchorEl: HTMLDivElement | undefined = $state();
+  let fortuneTarget = 0;
+  let fortunePending = 0;
+  let fortuneSpinAt = 0;
   let prevSelected: Record<ResourceType, number> = { ...selected };
   let consumeAt = 0;
   let orbitClock = 0;
@@ -180,7 +198,8 @@
       .map((row) => ({ type: row.type, count: row.selected }))
   );
 
-  const bonuses = $derived(getCardCreationBonuses(resources));
+  const creationBonuses = $derived(getCardCreationBonuses(resources));
+  const enchantmentBonuses = $derived(getCardEnchantmentBonuses(resources));
   const charge = $derived(
     Math.min(1, resourceRows.reduce((sum, row) => sum + row.selected, 0) / 8)
   );
@@ -199,6 +218,10 @@
 
   function formatChance(value: number): string {
     return `${Math.round(value * 100)}%`;
+  }
+
+  function formatScope(value: number): string {
+    return value > 0 ? `+${value}` : '0';
   }
 
   function setCount(type: ResourceType, value: number) {
@@ -337,9 +360,84 @@
         motions.clear();
         orbitIds = [];
       }
-      sealFinished = true;
-      onSealComplete?.();
+      beginFortuneOrFinish();
     }, delay);
+  }
+
+  function beginFortuneOrFinish() {
+    if (!rollFortune) {
+      finishSeal(0);
+      return;
+    }
+    const rolled = rollExtraBudget(enchantmentBonuses.extraBudgetChance);
+    fortuneTarget = rolled;
+    if (reduceMotion) {
+      fortuneFace = rolled;
+      fortunePhase = rolled > 0 ? 'hit' : 'miss';
+      finishSeal(rolled);
+      return;
+    }
+    fortuneFace = Math.floor(Math.random() * 10);
+    fortuneSpinAt = performance.now();
+    fortunePhase = 'rolling';
+    sealTimer = window.setTimeout(() => {
+      sealTimer = 0;
+      if (sealFinished) return;
+      fortuneFace = rolled;
+      if (rolled > 0) {
+        fortunePhase = 'hit';
+        sealTimer = window.setTimeout(() => {
+          sealTimer = 0;
+          launchFortuneGifts(rolled);
+        }, 220);
+      } else {
+        fortunePhase = 'miss';
+        sealTimer = window.setTimeout(() => {
+          sealTimer = 0;
+          finishSeal(0);
+        }, FORTUNE_MISS_MS);
+      }
+    }, FORTUNE_ROLL_MS);
+  }
+
+  function launchFortuneGifts(budget: number) {
+    if (sealFinished) return;
+    const { health, retaliate } = fortuneBudgetToStats(budget);
+    if (!benchEl || health + retaliate <= 0) {
+      finishSeal(budget);
+      return;
+    }
+    const bench = benchEl.getBoundingClientRect();
+    const origin = benchPoint(fortuneAnchorEl ?? benchEl, bench);
+    const gifts: { id: string; icon: string }[] = [];
+    for (let i = 0; i < health; i++) {
+      gifts.push({ id: `fortune:hp:${i}`, icon: healthIcon });
+    }
+    for (let i = 0; i < retaliate; i++) {
+      gifts.push({ id: `fortune:ret:${i}`, icon: retaliateIcon });
+    }
+    const now = performance.now();
+    fortunePending = gifts.length;
+    gifts.forEach((gift, index) => {
+      motions.set(gift.id, {
+        ...blankMotion(now, 'seal'),
+        fromX: origin.x,
+        fromY: origin.y,
+        delay: index * 110,
+        duration: 680,
+        launched: true,
+        slot: index,
+        slotCount: gifts.length,
+      });
+    });
+    orbitIds = [...orbitIds, ...gifts];
+    playAddResourceSound();
+  }
+
+  function finishSeal(budget: number) {
+    if (sealFinished) return;
+    sealFinished = true;
+    onSealComplete?.({ fortuneBudget: budget });
   }
 
   function beginSeal(list: RitualCharm[], now: number) {
@@ -365,7 +463,7 @@
         slotCount: active.length,
       });
     });
-    armFinish((active.length - 1) * CHARM_STAGGER + FLY_MS + 1100, true);
+    armFinish((active.length - 1) * CHARM_STAGGER + FLY_MS + 480, true);
   }
 
   function charmOrbitPoint(
@@ -551,6 +649,10 @@
         sealStarted = false;
         sealFinished = false;
         sealPending = 0;
+        fortunePhase = 'idle';
+        fortuneFace = 0;
+        fortuneTarget = 0;
+        fortunePending = 0;
         if (sealTimer) {
           clearTimeout(sealTimer);
           sealTimer = 0;
@@ -600,6 +702,10 @@
     if (!benchEl) return;
     const dt = lastTick ? Math.min(48, now - lastTick) : 0;
     lastTick = now;
+    if (fortunePhase === 'rolling' && now - fortuneSpinAt > 55) {
+      fortuneSpinAt = now;
+      fortuneFace = Math.floor(Math.random() * 10);
+    }
     const boost = reduceMotion ? 1 : spinBoost(now);
     orbitClock += dt * boost;
     if (circleEl) {
@@ -779,8 +885,21 @@
     }
     for (const id of landed) onCharmLanded?.(id);
     if (sealStarted && landed.length) {
-      sealPending -= landed.length;
-      if (sealPending <= 0) armFinish(SEAL_HOLD_MS, false);
+      const ritualLands = landed.filter((id) => !id.startsWith('fortune:'));
+      const fortuneLands = landed.filter((id) => id.startsWith('fortune:'));
+      if (ritualLands.length) {
+        sealPending -= ritualLands.length;
+        if (sealPending <= 0) armFinish(SEAL_HOLD_MS, false);
+      }
+      if (fortuneLands.length) {
+        fortunePending -= fortuneLands.length;
+        if (fortunePending <= 0) {
+          sealTimer = window.setTimeout(() => {
+            sealTimer = 0;
+            finishSeal(fortuneTarget);
+          }, FORTUNE_SEE_MS);
+        }
+      }
     }
   }
 </script>
@@ -812,31 +931,54 @@
               />
             {/each}
           </div>
-          <div class="gauge-pair">
-            <div class="gauge chart">
-              <img class="gauge-icon" src={bookIcon} alt="" />
-              <div class="gauge-head">
-                <span class="gauge-label">Learning</span>
-                <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
+          <div class="fortune-stage">
+            <div class="gauge-pair">
+              <div class="gauge chart">
+                <img class="gauge-icon" src={bookIcon} alt="" />
+                <div class="gauge-head">
+                  <span class="gauge-label">Scope</span>
+                  <span class="gauge-value">{formatScope(enchantmentBonuses.extraMana)}</span>
+                </div>
+                <span class="gauge-track" aria-hidden="true">
+                  <span
+                    class="gauge-fill"
+                    style="width: {Math.min(1, enchantmentBonuses.extraMana / 3) * 100}%"
+                  ></span>
+                </span>
               </div>
-              <span class="gauge-track" aria-hidden="true">
-                <span class="gauge-fill" style="width: {Math.min(1, bonuses.learningChance) * 100}%"
-                ></span>
-              </span>
+              <div
+                class="gauge chart"
+                class:fortune-live={fortunePhase === 'rolling' || fortunePhase === 'hit'}
+              >
+                <img class="gauge-icon" src={starIcon} alt="" />
+                <div class="gauge-head">
+                  <span class="gauge-label">Fortune</span>
+                  <span class="gauge-value"
+                    >{formatChance(enchantmentBonuses.extraBudgetChance)}</span
+                  >
+                </div>
+                <span class="gauge-track" aria-hidden="true">
+                  <span
+                    class="gauge-fill"
+                    style="width: {Math.min(1, enchantmentBonuses.extraBudgetChance) * 100}%"
+                  ></span>
+                </span>
+              </div>
             </div>
-            <div class="gauge chart">
-              <img class="gauge-icon" src={starIcon} alt="" />
-              <div class="gauge-head">
-                <span class="gauge-label">Fortune</span>
-                <span class="gauge-value">{formatChance(bonuses.extraBudgetChance)}</span>
-              </div>
-              <span class="gauge-track" aria-hidden="true">
+            {#if fortunePhase !== 'idle'}
+              <div class="fortune-die-slot" bind:this={fortuneAnchorEl}>
                 <span
-                  class="gauge-fill"
-                  style="width: {Math.min(1, bonuses.extraBudgetChance) * 100}%"
-                ></span>
-              </span>
-            </div>
+                  class="fortune-die"
+                  class:rolling={fortunePhase === 'rolling'}
+                  class:hit={fortunePhase === 'hit'}
+                  class:miss={fortunePhase === 'miss'}
+                  aria-live="polite"
+                  aria-label={fortunePhase === 'rolling'
+                    ? 'Rolling fortune'
+                    : `Fortune ${fortuneFace}`}
+                >{fortuneFace}</span>
+              </div>
+            {/if}
           </div>
         </div>
       {:else}
@@ -863,10 +1005,10 @@
           <span class="gauge-track" aria-hidden="true">
             <span
               class="gauge-fill"
-              style="transform: scaleX({Math.min(1, bonuses.learningChance)})"
+              style="transform: scaleX({Math.min(1, creationBonuses.learningChance)})"
             ></span>
           </span>
-          <span class="gauge-value">{formatChance(bonuses.learningChance)}</span>
+          <span class="gauge-value">{formatChance(creationBonuses.learningChance)}</span>
         </div>
       {/if}
 
@@ -894,21 +1036,31 @@
       </div>
 
       {#if split}
-        <p
-          class="shape-hint"
-          class:ready={showVessel}
-          aria-hidden={!showVessel || !(shapeText || shapeCost)}
-        >
-          {#if shapeCost != null && shapeCost !== 0}
-            <strong class="shape-cost" class:cut={shapeCost < 0}
-              >{shapeCost > 0 ? '+' : ''}{shapeCost} mana</strong
-            >{shapeText ? ' · ' : ''}
-          {/if}
-          {shapeText || '\u00a0'}
-          {#if atManaLimit}
+        <div class="shape-block" class:ready={showVessel}>
+          <p
+            class="shape-hint"
+            aria-hidden={!showVessel || !(shapeText || shapeCost)}
+          >
+            {#if shapeCost != null && shapeCost !== 0}
+              <strong class="shape-cost" class:cut={shapeCost < 0}
+                >{shapeCost > 0 ? '+' : ''}{shapeCost} mana</strong
+              >{shapeText ? ' · ' : ''}
+            {/if}
+            {shapeText || '\u00a0'}
+          </p>
+          {#if budgetRemaining != null && budgetRemaining > 0}
+            <div
+              class="budget-remaining"
+              aria-label="{budgetRemaining} budget remaining"
+            >
+              {#each Array(budgetRemaining) as _, i (i)}
+                <span class="budget-pip" aria-hidden="true"></span>
+              {/each}
+            </div>
+          {:else if atManaLimit}
             <span class="mana-limit">Mana limit</span>
           {/if}
-        </p>
+        </div>
       {/if}
 
       {#if !split}
@@ -917,10 +1069,10 @@
           <span class="gauge-track" aria-hidden="true">
             <span
               class="gauge-fill"
-              style="transform: scaleX({Math.min(1, bonuses.extraBudgetChance)})"
+              style="transform: scaleX({Math.min(1, creationBonuses.extraBudgetChance)})"
             ></span>
           </span>
-          <span class="gauge-value">{formatChance(bonuses.extraBudgetChance)}</span>
+          <span class="gauge-value">{formatChance(creationBonuses.extraBudgetChance)}</span>
         </div>
       {/if}
     </div>
@@ -1064,6 +1216,13 @@
     gap: 8px;
     width: min(14.5rem, 100%);
     max-width: 15rem;
+    overflow: visible;
+  }
+
+  .fortune-stage {
+    position: relative;
+    margin-top: auto;
+    overflow: visible;
   }
 
   .materials-col .materials {
@@ -1075,7 +1234,6 @@
     align-items: stretch;
     width: 100%;
     gap: 10px;
-    margin-top: auto;
     transform: translateY(-10px);
     padding: 10px 12px 12px;
     border: 1px solid var(--color-brown-border);
@@ -1185,8 +1343,48 @@
     visibility: hidden;
   }
 
+  .shape-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .shape-block .shape-hint {
+    margin: 100px 0 0;
+  }
+
+  .shape-block.ready .shape-hint,
+  .shape-block.ready .budget-remaining,
+  .shape-block.ready .mana-limit {
+    visibility: visible;
+  }
+
   .shape-hint.ready {
     visibility: visible;
+  }
+
+  .budget-remaining {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: 2px 0 0;
+    max-width: min(22rem, 100%);
+    min-height: 0.7rem;
+    visibility: hidden;
+  }
+
+  .budget-pip {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    background: var(--color-brass, #af8e67);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-golden, #bfa14a) 35%, transparent),
+      0 1px 2px rgba(0, 0, 0, 0.25);
+    transform: rotate(45deg);
   }
 
   .shape-cost {
@@ -1202,8 +1400,9 @@
 
   .mana-limit {
     display: inline-block;
-    margin-left: 0.55rem;
+    margin: 2px 0 0;
     padding: 2px 8px;
+    visibility: hidden;
     font-style: normal;
     font-weight: 700;
     font-size: 0.78rem;
@@ -1214,7 +1413,91 @@
     border: 1px solid #6a2a24;
     border-radius: 3px;
     text-shadow: none;
-    vertical-align: middle;
+  }
+
+  .fortune-die-slot {
+    position: absolute;
+    left: calc(100% + 14px);
+    bottom: 2px;
+    z-index: 6;
+    perspective: 120px;
+  }
+
+  .fortune-die {
+    width: 2.55rem;
+    height: 2.55rem;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-narrative);
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: #2c251d;
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255, 248, 230, 0.85), transparent 42%),
+      linear-gradient(155deg, #f3e6c8 0%, #d4bc8e 46%, #8f7348 100%);
+    border: 1px solid #5c4632;
+    border-radius: 5px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 248, 230, 0.85),
+      inset 0 -3px 4px rgba(70, 48, 24, 0.35),
+      0 2px 0 #6a5338,
+      0 5px 8px rgba(0, 0, 0, 0.38);
+    transform: rotate(-6deg);
+  }
+
+  .fortune-die.rolling {
+    animation: fortune-tumble 0.16s linear infinite;
+  }
+
+  .fortune-die.hit {
+    animation: fortune-settle 0.42s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+  }
+
+  .fortune-die.miss {
+    opacity: 0.55;
+    filter: grayscale(0.45);
+    transform: rotate(-6deg);
+  }
+
+  .gauge.fortune-live {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-golden, #bfa14a) 55%, transparent);
+  }
+
+  .gauge.fortune-live .gauge-fill {
+    background: var(--color-golden, #bfa14a);
+  }
+
+  @keyframes fortune-tumble {
+    0% {
+      transform: rotateX(0deg) rotateZ(-8deg) translateY(0);
+    }
+    45% {
+      transform: rotateX(78deg) rotateZ(10deg) translateY(-3px) scaleY(0.82);
+    }
+    100% {
+      transform: rotateX(0deg) rotateZ(-8deg) translateY(0);
+    }
+  }
+
+  @keyframes fortune-settle {
+    0% {
+      transform: rotateX(70deg) rotateZ(12deg) scale(1.18);
+    }
+    55% {
+      transform: rotateX(-8deg) rotateZ(-10deg) scale(1.04);
+    }
+    100% {
+      transform: rotate(-6deg) scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fortune-die.rolling,
+    .fortune-die.hit {
+      animation: none;
+    }
   }
 
   .prep.split .circle-slot :global(.circle) {

@@ -12,6 +12,8 @@
   import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
   import {
     getDistillPreview,
+    getCardEnchantmentBonuses,
+    getMaxManaCostDelta,
     performAction,
     type ActionArgDeltas,
     type DistillParameters,
@@ -133,6 +135,12 @@
   );
   const previewCard = $derived(distillPreview.preview ?? sourceCard);
   const costDecrease = $derived(distillPreview.costDecrease);
+  const enchantmentBonuses = $derived(getCardEnchantmentBonuses(selectedResources()));
+  const maxManaDelta = $derived(getMaxManaCostDelta(enchantmentBonuses.extraMana));
+  /** Further cuts cannot lower cost beyond Scope (1 + extraMana). */
+  const atCostLimit = $derived(
+    costDecrease > 0 && costDecrease >= Math.min(maxManaDelta, sourceCard.cost)
+  );
 
   const shapeSummary = $derived.by(() => {
     if (!hasCuts) return 'Shed traits into the discard to lower the cost.';
@@ -233,6 +241,7 @@
       removeAbilities = removeAbilities.filter((entry) => entry !== index);
       return;
     }
+    if (atCostLimit) return;
     removeAbilities = [...removeAbilities, index];
     playAddResourceSound();
   }
@@ -240,6 +249,7 @@
   function setKeyword(key: keyof UnitKeywords, value: number) {
     const next = Math.max(0, Math.min(value, keywordOwnedValue(key)));
     const prev = keywords[key] ?? 0;
+    if (next > prev && atCostLimit) return;
     const nextKeywords = { ...keywords };
     if (next) nextKeywords[key] = next;
     else delete nextKeywords[key];
@@ -250,6 +260,7 @@
   function toggleKeyword(key: keyof UnitKeywords) {
     if (!hasBooleanKeyword(key) && !NUMERIC_KEYWORDS.has(key)) return;
     const enabled = !keywords[key];
+    if (enabled && atCostLimit) return;
     const nextKeywords = { ...keywords };
     if (enabled) {
       nextKeywords[key] = 1;
@@ -260,18 +271,21 @@
 
   function setPower(value: number) {
     const next = Math.max(0, Math.min(value, maxPowerCut));
+    if (next > power && atCostLimit) return;
     if (next > power) playAddResourceSound();
     power = next;
   }
 
   function setMaxHealth(value: number) {
     const next = Math.max(0, Math.min(value, maxHealthCut));
+    if (next > maxHealth && atCostLimit) return;
     if (next > maxHealth) playAddResourceSound();
     maxHealth = next;
   }
 
   function setRetaliate(value: number) {
     const next = Math.max(0, Math.min(value, maxRetaliateCut));
+    if (next > retaliate && atCostLimit) return;
     if (next > retaliate) playAddResourceSound();
     retaliate = next;
   }
@@ -281,6 +295,7 @@
     const max = param ? Math.max(0, param.current - 1) : 0;
     const next = Math.max(0, Math.min(value, max));
     const prev = actionArgs[index]?.[key] ?? 0;
+    if (next > prev && atCostLimit) return;
     const nextArgs = {
       ...actionArgs,
       [index]: { ...actionArgs[index], [key]: next },
@@ -298,17 +313,23 @@
     sealing = true;
   }
 
-  function onSealComplete() {
+  function onSealComplete(result: { fortuneBudget: number }) {
     performAction({
       ...action,
       actionParameters: {
         ...action.actionParameters,
         ...distillParameters,
+        fortuneBudget: result.fortuneBudget,
       },
       missingParameters: {},
     });
     onDone();
   }
+
+  const budgetRemaining = $derived.by(() => {
+    if (!cardType) return null;
+    return Math.max(0, distillPreview.scopeBudget - distillPreview.saved);
+  });
 </script>
 
 {#if cardType}
@@ -325,6 +346,9 @@
       seal={sealing}
       shapeText={shapeSummary}
       shapeCost={distillReady ? -costDecrease : null}
+      atManaLimit={budgetRemaining === 0}
+      {budgetRemaining}
+      rollFortune
       disabled={sealing}
       split
       showVessel
@@ -358,6 +382,7 @@
           {spellParams}
           {actionArgs}
           locked={sealing}
+          {atCostLimit}
           onPower={setPower}
           onMaxHealth={setMaxHealth}
           onRetaliate={setRetaliate}
@@ -371,26 +396,11 @@
     </RitualStage>
 
     {#snippet footer()}
-      <div class="budget-footer" class:over={!!distillPreview.error && hasCuts}>
-        {#if distillPreview}
-          <span class="budget-stat">
-            Cut {distillPreview.saved}
-            {#if distillPreview.downgradeBudget > 0}
-              / {distillPreview.downgradeBudget}
-            {/if}
-          </span>
-          {#if costDecrease > 0}
-            <span class="budget-stat cost-stat" class:lit={distillReady}>
-              Cost −{costDecrease}
-            </span>
-          {/if}
-          {#if distillPreview.error && hasCuts}
-            <span class="budget-error">{distillPreview.error}</span>
-          {:else if distillReady && distillPreview.extraCut > 0}
-            <span class="budget-note">{distillPreview.extraCut} extra cut</span>
-          {/if}
-        {/if}
-      </div>
+      {#if distillPreview.error && hasCuts}
+        <div class="budget-footer">
+          <span class="budget-error">{distillPreview.error}</span>
+        </div>
+      {/if}
       <button type="button" class="abandon" disabled={sealing} onclick={onBack}>
         <span class="abandon-mark" aria-hidden="true"></span>
         {canChangeCard ? 'Back' : 'Cancel'}
@@ -460,33 +470,8 @@
     font-size: 0.95rem;
   }
 
-  .budget-stat {
-    min-width: 5rem;
-    padding: 4px 10px;
-    background: color-mix(in srgb, var(--color-data) 88%, #000);
-    border: 1px solid color-mix(in srgb, var(--color-brass) 55%, transparent);
-    border-radius: 3px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .budget-footer.over .budget-stat {
-    border-color: #8a4a3c;
-    color: #e0a090;
-  }
-
-  .budget-stat.cost-stat.lit {
-    border-color: var(--color-golden);
-    color: #d8ecce;
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-golden) 40%, transparent);
-  }
-
   .budget-error {
     color: #e0a090;
-    font-size: 0.85rem;
-  }
-
-  .budget-note {
-    color: var(--color-muted-label, #a89880);
     font-size: 0.85rem;
   }
 

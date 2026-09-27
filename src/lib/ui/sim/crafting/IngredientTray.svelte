@@ -39,8 +39,10 @@
     availableColors,
     essences,
     essenceIn,
+    essenceMaxes = {},
     runeAmounts,
     runeIn,
+    runeMaxes = {},
     availableKeywords,
     triggers,
     argsFor,
@@ -51,6 +53,7 @@
     locked = false,
     showPigments = true,
     canAdd = () => true,
+    canIncrease = () => true,
     onPigment,
     onEssenceDial,
     onEssenceMix,
@@ -67,8 +70,10 @@
     availableColors: CardColor[];
     essences: Record<EssenceKey, number>;
     essenceIn: Record<EssenceKey, boolean>;
+    essenceMaxes?: Partial<Record<EssenceKey, number>>;
     runeAmounts: Partial<Record<keyof UnitKeywords, number>>;
     runeIn: Partial<Record<keyof UnitKeywords, boolean>>;
+    runeMaxes?: Partial<Record<keyof UnitKeywords, number>>;
     availableKeywords: (keyof UnitKeywords)[];
     triggers: Record<string, string>;
     argsFor: (name: string) => Record<string, number>;
@@ -81,6 +86,8 @@
     showPigments?: boolean;
     /** Return false to gray out and block dropping this ingredient. */
     canAdd?: (id: string) => boolean;
+    /** Return false when an in-mix numeric ingredient cannot be increased further. */
+    canIncrease?: (id: string) => boolean;
     onPigment: (color: CardColor, remove: boolean) => void;
     onEssenceDial: (key: EssenceKey, value: number) => void;
     onEssenceMix: (key: EssenceKey, remove: boolean) => void;
@@ -209,14 +216,26 @@
         ? `${hints[id]}\nToo expensive for this enchantment`
         : 'Too expensive for this enchantment';
     }
+    if (inMix && numeric && !canIncrease(id)) {
+      return hints[id]
+        ? `${hints[id]}\nNo budget left to increase · Right-click to remove`
+        : 'No budget left to increase · Right-click to remove';
+    }
     const how = inMix
       ? numeric
-        ? 'Click to increase · Right-click to remove'
+        ? 'Drag or click to increase · Right-click to remove'
         : 'Right-click to remove'
       : numeric
         ? 'Drag onto the card to add · Click to increase · Right-click to remove'
         : 'Drag onto the card to add · Right-click to remove';
     return hints[id] ? `${hints[id]}\n${how}` : how;
+  }
+
+  function incremental(
+    id: string,
+    increment: ((event: PointerEvent) => void) | null
+  ): boolean {
+    return !!increment && canIncrease(id);
   }
 
   function incrementIncantation(name: string, event: PointerEvent) {
@@ -380,6 +399,7 @@
   showLabel = true
 )}
   {@const blocked = !inMix && !canAdd(id)}
+  {@const canDrag = (!inMix && canAdd(id)) || (inMix && incremental(id, increment))}
   <button
     type="button"
     class="stone-btn"
@@ -395,7 +415,7 @@
         event.preventDefault();
         return;
       }
-      startGesture(event, id, icon, !inMix, increment);
+      startGesture(event, id, icon, canDrag, increment);
     }}
     oncontextmenu={(event) => {
       event.preventDefault();
@@ -449,13 +469,16 @@
         {#each ESSENCES as essence (essence.key)}
           {@const id = `essence:${essence.key}`}
           {@const inMix = essenceIn[essence.key]}
+          {@const max = essenceMaxes[essence.key] ?? STAT_MAX}
+          {@const maxed = inMix && !canIncrease(id)}
           <div
             class="token"
             class:in-mix={inMix}
+            class:maxed
             use:wheelDial={{
               value: essences[essence.key],
               min: essence.min,
-              max: STAT_MAX,
+              max,
               wrap: false,
               apply: (next) => onEssenceDial(essence.key, next),
             }}
@@ -467,8 +490,9 @@
               inMix,
               (remove) => onEssenceMix(essence.key, remove),
               (event) => {
+                if (maxed) return;
                 const step = event.shiftKey ? 5 : 1;
-                const next = dialStep(essences[essence.key], essence.min, STAT_MAX, false, step);
+                const next = dialStep(essences[essence.key], essence.min, max, false, step);
                 if (next !== essences[essence.key]) onEssenceDial(essence.key, next);
               },
               essence.key === 'retaliate'
@@ -476,7 +500,7 @@
             {@render dial(
               essences[essence.key],
               essence.min,
-              STAT_MAX,
+              max,
               essence.label,
               (next) => onEssenceDial(essence.key, next),
               String(essences[essence.key]),
@@ -496,14 +520,17 @@
           {@const numeric = NUMERIC_KEYWORDS.has(key)}
           {@const amount = runeAmounts[key] ?? 1}
           {@const inMix = !!runeIn[key]}
+          {@const max = runeMaxes[key] ?? STAT_MAX}
+          {@const maxed = inMix && numeric && !canIncrease(id)}
           <div
             class="token"
             class:in-mix={inMix}
+            class:maxed
             use:wheelDial={numeric
               ? {
                   value: amount,
                   min: 1,
-                  max: STAT_MAX,
+                  max,
                   wrap: false,
                   apply: (next: number) => onRuneDial(key, next),
                 }
@@ -517,9 +544,10 @@
               (remove) => onRuneMix(key, remove),
               numeric
                 ? (event) => {
+                    if (maxed) return;
                     const step = event.shiftKey ? 5 : 1;
                     const value = runeAmounts[key] ?? 1;
-                    const next = dialStep(value, 1, STAT_MAX, false, step);
+                    const next = dialStep(value, 1, max, false, step);
                     if (next !== value) onRuneDial(key, next);
                   }
                 : null
@@ -528,7 +556,7 @@
               {@render dial(
                 amount,
                 1,
-                STAT_MAX,
+                max,
                 formatKeywordLabel(key),
                 (next) => onRuneDial(key, next),
                 String(amount),
@@ -557,7 +585,8 @@
           {@const numeric = actionNumericParams[name] ?? []}
           {@const args = argsFor(name)}
           {@const trigger = triggers[name] ?? 'onDeploy'}
-          <div class="scroll" class:in-mix={inMix} class:blocked>
+          {@const maxed = inMix && numeric.length > 0 && !canIncrease(id)}
+          <div class="scroll" class:in-mix={inMix} class:blocked class:maxed>
             <button
               type="button"
               class="scroll-main"
@@ -570,7 +599,9 @@
                   event.preventDefault();
                   return;
                 }
-                startGesture(event, id, icon, !inMix, (pointer) =>
+                const canDrag =
+                  (!inMix && canAdd(id)) || (inMix && !maxed && numeric.length > 0);
+                startGesture(event, id, icon, canDrag, (pointer) =>
                   incrementIncantation(name, pointer)
                 );
               }}
@@ -884,7 +915,6 @@
   }
 
   .token.in-mix .stone img {
-    opacity: 0.45;
     filter: drop-shadow(0 2px 3px rgba(42, 24, 16, 0.35))
       drop-shadow(0 0 6px color-mix(in srgb, var(--color-golden) 55%, transparent));
   }
@@ -892,6 +922,10 @@
   .token.in-mix .stone.rune img {
     filter: drop-shadow(3px 4px 3px rgba(42, 24, 16, 0.5))
       drop-shadow(0 0 6px color-mix(in srgb, var(--color-golden) 55%, transparent));
+  }
+
+  .token.in-mix.maxed .stone img {
+    opacity: 0.45;
   }
 
   .token-name {
@@ -931,9 +965,12 @@
   }
 
   .scroll.in-mix .scroll-mark {
-    opacity: 0.45;
     filter: drop-shadow(0 1px 2px rgba(42, 24, 16, 0.35))
       drop-shadow(0 0 6px color-mix(in srgb, var(--color-golden) 55%, transparent));
+  }
+
+  .scroll.in-mix.maxed .scroll-mark {
+    opacity: 0.45;
   }
 
   .scroll-main {

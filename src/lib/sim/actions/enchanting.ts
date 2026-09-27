@@ -1,5 +1,3 @@
-// TODO: resource and skill bonuses
-
 import {
   isSpellCard,
   isUnitCard,
@@ -22,6 +20,7 @@ import {
 import { cardBudget, featureCosts, getActionBudget, getCardBudget } from '../cards/card-budget';
 import { colorPie, getCardDominantColor } from '../cards/color-pie';
 import { addKeyword, formatKeywordLabel, KEYWORD_KEYS, removeKeyword } from '../cards/keywords';
+import { getActingCharacter } from '../characters';
 import { narrateCardEncanted } from '../narration';
 
 export type ActionArgDeltas = Record<number, Record<string, number>>;
@@ -37,8 +36,15 @@ export interface AugmentParameters {
   ability?: AbilityPick;
   abilityArgs?: ActionArgDeltas;
   removeAbilities?: number[];
-  /** Offered materials; bonuses TBD. */
+  /** Offered materials; feed Scope (mithril) and Fortune (magic dust). */
   resources: { type: ResourceType; count: number }[];
+  /** Pre-rolled fortune budget from the seal animation; rolled on apply if omitted. */
+  fortuneBudget?: number;
+}
+
+export interface CardEnchantmentBonuses {
+  extraBudgetChance: number; // chance of adding extra stats to the card
+  extraMana: number; // this increases the limit of how by much mana we can increase of decrease the cost
 }
 
 export interface AugmentPreview {
@@ -46,8 +52,12 @@ export interface AugmentPreview {
   card: UnitCardTemplate | SpellCardTemplate | null;
   /** Auto-computed mana cost increase required to fund `spent`. */
   costIncrease: number;
+  /** Budget unlocked by the applied `costIncrease` (leftover is auto-spent). */
   upgradeBudget: number;
+  /** Budget capacity under current Scope (1 + extraMana), capped by max cost 9. */
+  scopeBudget: number;
   spent: number;
+  /** Leftover within the applied cost tier; spent automatically on seal. */
   extraBudget: number;
 }
 
@@ -62,8 +72,10 @@ export interface DistillParameters {
   ability?: AbilityPick;
   abilityArgs?: ActionArgDeltas;
   removeAbilities?: number[];
-  /** Offered materials; bonuses TBD. */
+  /** Offered materials; feed Scope (mithril) and Fortune (magic dust). */
   resources: { type: ResourceType; count: number }[];
+  /** Pre-rolled fortune budget from the seal animation; rolled on apply if omitted. */
+  fortuneBudget?: number;
 }
 
 export interface DistillPreview {
@@ -72,16 +84,29 @@ export interface DistillPreview {
   preview: UnitCardTemplate | SpellCardTemplate | null;
   /** Mana cost reduction funded by the cuts (0 if not enough yet). */
   costDecrease: number;
+  /** Budget that must be cut to fund the applied `costDecrease`. */
   downgradeBudget: number;
+  /** Cut capacity under current Scope (1 + extraMana), capped by card cost. */
+  scopeBudget: number;
   saved: number;
   extraCut: number;
 }
 
 const MIN_ACTION_ARG = 1;
+/** Base augment/distill mana cost change; raised by CardEnchantmentBonuses.extraMana. */
+const BASE_MANA_COST_DELTA = 1;
 
-/** Minimum mana cost increase that funds `spent`, or null if it would exceed 9. */
-export function requiredCostIncrease(baseCost: number, spent: number): number | null {
-  const maxIncrease = 9 - baseCost;
+export function getMaxManaCostDelta(extraMana: number): number {
+  return BASE_MANA_COST_DELTA + Math.max(0, extraMana);
+}
+
+/** Minimum mana cost increase that funds `spent`, or null if it would exceed maxDelta or 9. */
+export function requiredCostIncrease(
+  baseCost: number,
+  spent: number,
+  maxDelta: number = BASE_MANA_COST_DELTA
+): number | null {
+  const maxIncrease = Math.min(maxDelta, 9 - baseCost);
   if (maxIncrease < 0) return null;
   for (let n = 0; n <= maxIncrease; n++) {
     if (cardBudget[baseCost + n] - cardBudget[baseCost] >= spent) return n;
@@ -89,15 +114,68 @@ export function requiredCostIncrease(baseCost: number, spent: number): number | 
   return null;
 }
 
-/** Maximum mana cost decrease that `saved` budget can fund (0 if not enough for −1). */
-export function requiredCostDecrease(baseCost: number, saved: number): number {
+/** Maximum mana cost decrease that `saved` can fund (0 if not enough for −1), capped by maxDelta. */
+export function requiredCostDecrease(
+  baseCost: number,
+  saved: number,
+  maxDelta: number = BASE_MANA_COST_DELTA
+): number {
   let best = 0;
-  for (let n = 1; n <= baseCost; n++) {
+  const maxDecrease = Math.min(maxDelta, baseCost);
+  for (let n = 1; n <= maxDecrease; n++) {
     const need = cardBudget[baseCost] - cardBudget[baseCost - n];
     if (saved >= need) best = n;
     else break;
   }
   return best;
+}
+
+/** Deterministic floor + fractional roll, matching artificery mastery. */
+export function rollExtraBudget(extraBudgetChance: number): number {
+  const sure = Math.floor(extraBudgetChance);
+  const bonus = Math.random() < extraBudgetChance - sure ? 1 : 0;
+  return sure + bonus;
+}
+
+/** How fortune budget converts to +health / +retaliate. */
+export function fortuneBudgetToStats(budget: number): { health: number; retaliate: number } {
+  let rest = Math.max(0, budget);
+  const health = Math.floor(rest / 2);
+  rest -= health * 2;
+  const retaliate = Math.floor(rest / 1);
+  return { health, retaliate };
+}
+
+export function describeFortuneBudget(budget: number): string {
+  if (budget <= 0) return '';
+  const { health, retaliate } = fortuneBudgetToStats(budget);
+  const parts: string[] = [];
+  if (health) parts.push(`+${health} Health`);
+  if (retaliate) parts.push(`+${retaliate} Retaliate`);
+  if (!parts.length) return `+${budget} fortune`;
+  return parts.join(' · ');
+}
+
+export function getCardEnchantmentBonuses(
+  resources: { type: ResourceType; count: number }[],
+  characterKey: string = 'player'
+): CardEnchantmentBonuses {
+  const character = getActingCharacter(characterKey);
+  let extraMana = 0;
+  let extraBudgetChance = 0.1;
+  // skills bonuses
+  extraMana += character.craftingSkills.inspiration;
+  extraBudgetChance += character.craftingSkills.mastery * 0.1;
+  // resources bonuses
+  for (const resource of resources) {
+    if (resource.type === ResourceType.MagicDust) {
+      extraBudgetChance += resource.count * 0.1;
+    }
+    if (resource.type === ResourceType.Mithril) {
+      extraMana += resource.count * 1;
+    }
+  }
+  return { extraMana, extraBudgetChance };
 }
 
 export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview {
@@ -115,36 +193,51 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
       card,
       costIncrease: 0,
       upgradeBudget: 0,
+      scopeBudget: 0,
       spent: 0,
       extraBudget: 0,
     };
   }
+
+  const bonuses = getCardEnchantmentBonuses(parameters.resources);
+  const maxDelta = getMaxManaCostDelta(bonuses.extraMana);
+  const maxCostIncrease = Math.min(maxDelta, 9 - card.cost);
+  const scopeBudget = cardBudget[card.cost + maxCostIncrease] - cardBudget[card.cost];
 
   const features = makeNewCardTemplate(card, { ...parameters, costIncrease: 0 });
   const spent = getCardBudget(features) - getCardBudget(card);
   const costIncrease =
     parameters.costIncrease != null
       ? parameters.costIncrease
-      : requiredCostIncrease(card.cost, spent);
+      : requiredCostIncrease(card.cost, spent, maxDelta);
 
-  if (costIncrease === null || card.cost + costIncrease > 9) {
+  if (
+    costIncrease === null ||
+    costIncrease > maxDelta ||
+    card.cost + costIncrease > 9
+  ) {
     return {
-      error: 'Enchantment would raise mana cost above 9.',
+      error:
+        costIncrease !== null && card.cost + costIncrease > 9
+          ? 'Enchantment would raise mana cost above 9.'
+          : `Enchantment cannot raise mana cost by more than ${maxDelta}.`,
       card,
       costIncrease: 0,
       upgradeBudget: 0,
+      scopeBudget,
       spent,
       extraBudget: 0,
     };
   }
 
   const upgradeBudget = cardBudget[card.cost + costIncrease] - cardBudget[card.cost];
-  if (spent > upgradeBudget) {
+  if (spent > scopeBudget) {
     return {
-      error: `New card budget is greater than upgrade budget: ${spent} > ${upgradeBudget}.`,
+      error: `New card budget is greater than Scope budget: ${spent} > ${scopeBudget}.`,
       card,
       costIncrease,
       upgradeBudget,
+      scopeBudget,
       spent,
       extraBudget: 0,
     };
@@ -155,6 +248,7 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
     card,
     costIncrease,
     upgradeBudget,
+    scopeBudget,
     spent,
     extraBudget: upgradeBudget - spent,
   };
@@ -177,6 +271,8 @@ export function augmentCard(parameters: AugmentParameters): string {
   } else if (isSpellCard(card)) {
     spendSpellExtraBudget(card, result.extraBudget);
   }
+
+  applyEnchantmentFortune(card, parameters.resources, parameters.fortuneBudget);
 
   narrateCardEncanted(oldCard, card, describeAugment(oldCard, card));
 
@@ -201,10 +297,16 @@ export function getDistillPreview(parameters: DistillParameters): DistillPreview
       preview: null,
       costDecrease: 0,
       downgradeBudget: 0,
+      scopeBudget: 0,
       saved: 0,
       extraCut: 0,
     };
   }
+
+  const bonuses = getCardEnchantmentBonuses(parameters.resources);
+  const maxDelta = getMaxManaCostDelta(bonuses.extraMana);
+  const maxCostDecrease = Math.min(maxDelta, card.cost);
+  const scopeBudget = cardBudget[card.cost] - cardBudget[card.cost - maxCostDecrease];
 
   const cutError = getDistillCutError(card, parameters);
   if (cutError) {
@@ -214,6 +316,7 @@ export function getDistillPreview(parameters: DistillParameters): DistillPreview
       preview: null,
       costDecrease: 0,
       downgradeBudget: 0,
+      scopeBudget,
       saved: 0,
       extraCut: 0,
     };
@@ -224,7 +327,20 @@ export function getDistillPreview(parameters: DistillParameters): DistillPreview
   const costDecrease =
     parameters.costDecrease != null
       ? parameters.costDecrease
-      : requiredCostDecrease(card.cost, saved);
+      : requiredCostDecrease(card.cost, saved, maxDelta);
+
+  if (costDecrease > maxDelta) {
+    return {
+      error: `Distill cannot lower mana cost by more than ${maxDelta}.`,
+      card,
+      preview: cutPreview,
+      costDecrease: 0,
+      downgradeBudget: 0,
+      scopeBudget,
+      saved,
+      extraCut: 0,
+    };
+  }
 
   if (costDecrease < 1 || card.cost < costDecrease) {
     const needForOne = cardBudget[card.cost] - cardBudget[card.cost - 1];
@@ -234,6 +350,7 @@ export function getDistillPreview(parameters: DistillParameters): DistillPreview
       preview: cutPreview,
       costDecrease: 0,
       downgradeBudget: needForOne,
+      scopeBudget,
       saved,
       extraCut: 0,
     };
@@ -247,6 +364,7 @@ export function getDistillPreview(parameters: DistillParameters): DistillPreview
       preview: cutPreview,
       costDecrease: 0,
       downgradeBudget,
+      scopeBudget,
       saved,
       extraCut: 0,
     };
@@ -259,6 +377,7 @@ export function getDistillPreview(parameters: DistillParameters): DistillPreview
     preview,
     costDecrease,
     downgradeBudget,
+    scopeBudget,
     saved,
     extraCut: saved - downgradeBudget,
   };
@@ -275,6 +394,7 @@ export function distillCard(parameters: DistillParameters): string {
   const oldCard = cloneCardTemplate(card);
 
   makeDistilledCardTemplate(card, parameters, true);
+  applyEnchantmentFortune(card, parameters.resources, parameters.fortuneBudget);
   narrateCardEncanted(oldCard, card, describeDistill(oldCard, card));
 
   return '';
@@ -468,6 +588,7 @@ function emptyPreview(error: string): AugmentPreview {
     card: null,
     costIncrease: 0,
     upgradeBudget: 0,
+    scopeBudget: 0,
     spent: 0,
     extraBudget: 0,
   };
@@ -480,6 +601,7 @@ function emptyDistillPreview(error: string): DistillPreview {
     preview: null,
     costDecrease: 0,
     downgradeBudget: 0,
+    scopeBudget: 0,
     saved: 0,
     extraCut: 0,
   };
@@ -616,6 +738,31 @@ function spendUnitExtraBudget(card: UnitCardTemplate, extraBudget: number): numb
   }
 
   return extraBudget;
+}
+
+/** Fortune bonus: spend budget as +health (2 pts) then +retaliate (1 pt). */
+function applyFortuneBudgetToUnit(card: UnitCardTemplate, budget: number): void {
+  if (budget <= 0) return;
+  const { health, retaliate } = fortuneBudgetToStats(budget);
+  card.maxHealth += health;
+  card.retaliate = (card.retaliate || 0) + retaliate;
+}
+
+function applyEnchantmentFortune(
+  card: UnitCardTemplate | SpellCardTemplate,
+  resources: { type: ResourceType; count: number }[],
+  preRolled?: number
+): void {
+  const fortuneBudget =
+    preRolled != null
+      ? preRolled
+      : rollExtraBudget(getCardEnchantmentBonuses(resources).extraBudgetChance);
+  if (fortuneBudget <= 0) return;
+  if (isUnitCard(card)) {
+    applyFortuneBudgetToUnit(card, fortuneBudget);
+  } else if (isSpellCard(card)) {
+    spendSpellExtraBudget(card, fortuneBudget);
+  }
 }
 
 function spendSpellExtraBudget(card: SpellCardTemplate, extraBudget: number): number {
