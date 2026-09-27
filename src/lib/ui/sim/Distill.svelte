@@ -326,6 +326,37 @@
     onDone();
   }
 
+  function onCharmDismiss(id: string) {
+    if (sealing) return;
+    if (id === 'essence:power') {
+      setPower(0);
+      return;
+    }
+    if (id === 'essence:hp') {
+      setMaxHealth(0);
+      return;
+    }
+    if (id === 'essence:retaliate') {
+      setRetaliate(0);
+      return;
+    }
+    if (id.startsWith('rune:')) {
+      setKeyword(id.slice('rune:'.length) as keyof UnitKeywords, 0);
+      return;
+    }
+    if (id.startsWith('ability:')) {
+      toggleRemoveAbility(Number(id.slice('ability:'.length)));
+      return;
+    }
+    if (id.startsWith('spell:')) {
+      const index = Number(id.slice('spell:'.length));
+      if (Number.isNaN(index)) return;
+      const next = { ...actionArgs };
+      delete next[index];
+      actionArgs = next;
+    }
+  }
+
   const budgetRemaining = $derived.by(() => {
     if (!cardType) return null;
     return Math.max(0, distillPreview.scopeBudget - distillPreview.saved);
@@ -342,6 +373,7 @@
     <RitualStage
       bind:selected
       {charms}
+      {onCharmDismiss}
       {onSealComplete}
       seal={sealing}
       shapeText={shapeSummary}

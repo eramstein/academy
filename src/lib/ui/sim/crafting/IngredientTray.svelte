@@ -218,15 +218,15 @@
     }
     if (inMix && numeric && !canIncrease(id)) {
       return hints[id]
-        ? `${hints[id]}\nNo budget left to increase · Right-click to remove`
-        : 'No budget left to increase · Right-click to remove';
+        ? `${hints[id]}\nNo budget left to increase · Right-click to decrease`
+        : 'No budget left to increase · Right-click to decrease';
     }
     const how = inMix
       ? numeric
-        ? 'Drag or click to increase · Right-click to remove'
+        ? 'Drag or click to increase · Right-click to decrease'
         : 'Right-click to remove'
       : numeric
-        ? 'Drag onto the card to add · Click to increase · Right-click to remove'
+        ? 'Drag onto the card to add · Click to increase · Right-click to decrease'
         : 'Drag onto the card to add · Right-click to remove';
     return hints[id] ? `${hints[id]}\n${how}` : how;
   }
@@ -396,7 +396,8 @@
   onMix: (remove: boolean) => void,
   increment: ((event: PointerEvent) => void) | null,
   spiky = false,
-  showLabel = true
+  showLabel = true,
+  onDecrease: ((event: MouseEvent) => void) | null = null
 )}
   {@const blocked = !inMix && !canAdd(id)}
   {@const canDrag = (!inMix && canAdd(id)) || (inMix && incremental(id, increment))}
@@ -408,7 +409,7 @@
     aria-pressed={inMix}
     aria-disabled={blocked}
     aria-label={showLabel ? undefined : label}
-    title={stoneTitle(id, increment !== null, inMix)}
+    title={stoneTitle(id, increment !== null || onDecrease !== null, inMix)}
     draggable="false"
     onpointerdown={(event) => {
       if (blocked) {
@@ -419,6 +420,10 @@
     }}
     oncontextmenu={(event) => {
       event.preventDefault();
+      if (onDecrease) {
+        onDecrease(event);
+        return;
+      }
       if (inMix) onMix(true);
     }}
   >
@@ -495,7 +500,15 @@
                 const next = dialStep(essences[essence.key], essence.min, max, false, step);
                 if (next !== essences[essence.key]) onEssenceDial(essence.key, next);
               },
-              essence.key === 'retaliate'
+              essence.key === 'retaliate',
+              true,
+              (event) => {
+                const step = event.shiftKey ? 5 : 1;
+                const current = essences[essence.key];
+                const next = dialStep(current, essence.min, max, false, -step);
+                if (next !== current) onEssenceDial(essence.key, next);
+                else onEssenceMix(essence.key, true);
+              }
             )}
             {@render dial(
               essences[essence.key],
@@ -549,6 +562,17 @@
                     const value = runeAmounts[key] ?? 1;
                     const next = dialStep(value, 1, max, false, step);
                     if (next !== value) onRuneDial(key, next);
+                  }
+                : null,
+              false,
+              true,
+              numeric
+                ? (event) => {
+                    const step = event.shiftKey ? 5 : 1;
+                    const value = runeAmounts[key] ?? 1;
+                    const next = dialStep(value, 1, max, false, -step);
+                    if (next !== value) onRuneDial(key, next);
+                    else onRuneMix(key, true);
                   }
                 : null
             )}

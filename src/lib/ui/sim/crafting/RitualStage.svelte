@@ -56,6 +56,7 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     hideMaterials = false,
     charms = [],
     onCharmLanded,
+    onCharmDismiss,
     onIngredientsSealed,
     onFortuneLanded,
     onSealComplete,
@@ -91,6 +92,8 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     hideMaterials?: boolean;
     charms?: RitualCharm[];
     onCharmLanded?: (id: string) => void;
+    /** Click an orbiting charm to send it back to the ingredient tray. */
+    onCharmDismiss?: (id: string) => void;
     /** Fired once ingredient charms have entered the card, before Fortune rolls. */
     onIngredientsSealed?: () => void;
     /** Fired when Fortune gifts reach the card. */
@@ -660,6 +663,24 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     el.style.transform = `translate(${x - CHARM / 2}px, ${y - CHARM / 2}px) scale(${scale})`;
     el.style.opacity = String(opacity);
     el.classList.toggle('flying', flying);
+    const motion = motions.get(id);
+    const canDismiss =
+      !!onCharmDismiss &&
+      !sealStarted &&
+      !disabled &&
+      !id.startsWith('fortune:') &&
+      !!motion &&
+      (motion.phase === 'orbit' || motion.phase === 'enter');
+    el.classList.toggle('interactive', canDismiss);
+    el.style.pointerEvents = canDismiss ? 'auto' : 'none';
+    el.style.cursor = canDismiss ? 'pointer' : '';
+  }
+
+  function dismissCharm(id: string) {
+    if (!onCharmDismiss || sealStarted || disabled || id.startsWith('fortune:')) return;
+    const motion = motions.get(id);
+    if (!motion || (motion.phase !== 'orbit' && motion.phase !== 'enter')) return;
+    onCharmDismiss(id);
   }
 
   function benchPoint(el: Element, bench: DOMRect): { x: number; y: number } {
@@ -1397,7 +1418,22 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
       />
     {/each}
     {#each orbitIds as charm (charm.id)}
-      <img class="charm" src={charm.icon} alt="" use:registerCharm={charm.id} />
+      <img
+        class="charm"
+        src={charm.icon}
+        alt=""
+        role={onCharmDismiss && !charm.id.startsWith('fortune:') ? 'button' : undefined}
+        tabindex={onCharmDismiss && !charm.id.startsWith('fortune:') ? 0 : undefined}
+        title={onCharmDismiss && !charm.id.startsWith('fortune:') ? 'Click to remove' : undefined}
+        use:registerCharm={charm.id}
+        onclick={() => dismissCharm(charm.id)}
+        onkeydown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            dismissCharm(charm.id);
+          }
+        }}
+      />
     {/each}
   </div>
 </div>
@@ -2077,6 +2113,15 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     transform: translate(-999px, -999px);
     filter: drop-shadow(0 3px 4px rgba(42, 24, 16, 0.45));
     will-change: transform, opacity;
+  }
+
+  .charm.interactive {
+    z-index: 8;
+  }
+
+  .charm.interactive:hover {
+    filter: drop-shadow(0 3px 4px rgba(42, 24, 16, 0.45))
+      drop-shadow(0 0 8px rgba(191, 161, 74, 0.7));
   }
 
   .charm:global(.flying) {

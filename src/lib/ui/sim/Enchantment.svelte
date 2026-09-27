@@ -629,6 +629,26 @@
     if (id.startsWith('incantation:')) onIncantationMix(id.slice('incantation:'.length), false);
   }
 
+  function onCharmDismiss(id: string) {
+    if (sealing || finished) return;
+    if (id.startsWith('essence:')) {
+      onEssenceMix(id.slice('essence:'.length) as EssenceKey, true);
+      return;
+    }
+    if (id.startsWith('rune:')) {
+      onRuneMix(id.slice('rune:'.length) as keyof UnitKeywords, true);
+      return;
+    }
+    if (id.startsWith('incantation:')) onIncantationMix(id.slice('incantation:'.length), true);
+    if (id.startsWith('spell:')) {
+      const index = Number(id.slice('spell:'.length));
+      if (Number.isNaN(index)) return;
+      const next = { ...spellArgDeltas };
+      delete next[index];
+      spellArgDeltas = next;
+    }
+  }
+
   function setSpellArg(index: number, key: string, value: number) {
     if (!augmentParameters || value < 0) return;
     const next: ActionArgDeltas = {
@@ -839,6 +859,7 @@
     <RitualStage
       bind:selected
       {charms}
+      {onCharmDismiss}
       {onIngredientsSealed}
       {onFortuneLanded}
       {onSealComplete}

@@ -371,6 +371,23 @@
     landed = [...landed, id];
   }
 
+  function onCharmDismiss(id: string) {
+    if (sealing || manifest !== 'idle') return;
+    if (id.startsWith('pigment:')) {
+      onPigment(id.slice('pigment:'.length) as CardColor, true);
+      return;
+    }
+    if (id.startsWith('essence:')) {
+      onEssenceMix(id.slice('essence:'.length) as EssenceKey, true);
+      return;
+    }
+    if (id.startsWith('rune:')) {
+      onRuneMix(id.slice('rune:'.length) as keyof UnitKeywords, true);
+      return;
+    }
+    if (id.startsWith('incantation:')) onIncantationMix(id.slice('incantation:'.length), true);
+  }
+
   function shown(id: string): boolean {
     return landed.includes(id) && stillMixed(id);
   }
@@ -621,6 +638,7 @@
     bind:selected
     {charms}
     {onCharmLanded}
+    {onCharmDismiss}
     {onSealComplete}
     {onAuguryPrepared}
     bonusKind="creation"
