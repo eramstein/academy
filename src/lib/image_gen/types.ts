@@ -6,7 +6,7 @@
 export type ImageBackendId = 'comfy';
 
 /** Known workflow ids. Extend as new graphs / providers are added. */
-export type ImageWorkflowId = 'flux2-klein-text-to-image';
+export type ImageWorkflowId = 'flux2-klein-text-to-image' | 'flux2-klein-narration';
 
 export interface ImageGenConfig {
   /** Active backend. Default: `'comfy'`. */
@@ -38,6 +38,8 @@ export interface GenerateImageOptions {
   /** Override config.outputJpeg for this call. */
   outputJpeg?: boolean;
   jpegQuality?: number;
+  /** Reference portrait uploaded to Comfy and wired into LoadImage (narration workflow). */
+  referenceImage?: Blob;
 }
 
 export interface GenerateImageResult {
@@ -53,6 +55,8 @@ export interface ComfyWorkflowBuildParams {
   seed: number;
   size: number;
   filenamePrefix: string;
+  /** Comfy input filename from /upload/image, when the workflow has a LoadImage node. */
+  referenceImageName?: string;
 }
 
 export type ComfyPromptGraph = Record<

@@ -1,8 +1,9 @@
+import { getCharacterImagePath } from '@/lib/_utils/asset-paths';
 import { generateImage } from '@/lib/image_gen';
 import { generateAttributeCheckNarration } from '@/lib/llm/prompts';
 import type { CardTemplate, DayPeriod } from '../_model';
 import { NarrationType } from '../_model/enums-sim';
-import type { AttributeCheck, Job, Mentions, Narration } from '../_model/model-sim';
+import type { Action, AttributeCheck, Job, Mentions, Narration } from '../_model/model-sim';
 import { gs } from '../_state';
 import type { TransactionParameters } from './actions';
 import { actionTemplates, getActionTemplateMeta } from './cards/action-templates';
@@ -27,21 +28,54 @@ function revokeNarrationImage(narration: Narration) {
 }
 
 async function fillNarrationImage(id: string, imagePrompt: string) {
+  const entry = gs.scene.narration.find((narration) => narration.id === id);
+  if (!entry || entry.imagePrompt !== imagePrompt) return;
   try {
-    const { blob } = await generateImage(imagePrompt, { filenamePrefix: 'academy_scene' });
-    const entry = gs.scene.narration.find((narration) => narration.id === id);
-    if (!entry || entry.imagePrompt !== imagePrompt) {
-      return;
-    }
-    revokeNarrationImage(entry);
-    entry.imageUrl = URL.createObjectURL(blob);
+    const referenceImage = await loadCharacterPortrait(portraitKeyForNarration(entry));
+    const { blob } = await generateImage(imagePrompt, {
+      workflow: 'flux2-klein-narration',
+      filenamePrefix: 'academy_scene',
+      referenceImage,
+    });
+    const current = gs.scene.narration.find((narration) => narration.id === id);
+    if (!current || current.imagePrompt !== imagePrompt) return;
+    revokeNarrationImage(current);
+    current.imageUrl = URL.createObjectURL(blob);
   } catch (error) {
     console.error('Failed to generate narration image', error);
-    const entry = gs.scene.narration.find((narration) => narration.id === id);
-    if (entry && entry.imagePrompt === imagePrompt && !entry.imageUrl) {
-      entry.imagePrompt = undefined;
+    const current = gs.scene.narration.find((narration) => narration.id === id);
+    if (current && current.imagePrompt === imagePrompt && !current.imageUrl) {
+      current.imagePrompt = undefined;
     }
   }
+}
+
+function portraitKeyForNarration(entry: Narration): string {
+  const fromAction = focusCharacterKey(entry.attributeCheck?.attemptedAction);
+  if (fromAction && (gs.characters[fromAction] || fromAction === gs.player.key)) {
+    return fromAction;
+  }
+  const mentioned = entry.mentions?.characters.find(([, id]) => Boolean(gs.characters[id]));
+  if (mentioned) return mentioned[1];
+  return gs.player.key;
+}
+
+function focusCharacterKey(action?: Action): string | undefined {
+  if (!action) return undefined;
+  const params = action.actionParameters ?? {};
+  if (typeof params.characterKey === 'string') return params.characterKey;
+  if (typeof params.partner === 'string') return params.partner;
+  if (typeof params.opponentKey === 'string') return params.opponentKey;
+  if (params.job && typeof params.job.employerKey === 'string') return params.job.employerKey;
+  return undefined;
+}
+
+async function loadCharacterPortrait(characterKey: string): Promise<Blob> {
+  const response = await fetch(getCharacterImagePath(characterKey));
+  if (!response.ok) {
+    throw new Error(`Character portrait not found: ${characterKey}`);
+  }
+  return response.blob();
 }
 
 function findMentions(text: string): Mentions {

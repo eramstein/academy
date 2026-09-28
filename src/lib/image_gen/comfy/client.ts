@@ -31,6 +31,28 @@ export function firstHistoryImage(
   return null;
 }
 
+/** Upload a reference image into Comfy's input folder. Returns the LoadImage filename. */
+export async function uploadComfyImage(blob: Blob, filename: string): Promise<string> {
+  const base = getComfyBaseUrl();
+  const form = new FormData();
+  form.append('image', blob, filename);
+  form.append('type', 'input');
+  form.append('overwrite', 'true');
+  const uploadRes = await fetch(`${base}/upload/image`, {
+    method: 'POST',
+    body: form,
+  });
+  if (!uploadRes.ok) {
+    const detail = await uploadRes.text().catch(() => '');
+    throw new Error(`Comfy /upload/image failed: ${uploadRes.status} ${detail}`);
+  }
+  const uploaded = (await uploadRes.json()) as { name?: string; subfolder?: string };
+  if (!uploaded.name) {
+    throw new Error('Comfy /upload/image returned no filename');
+  }
+  return uploaded.subfolder ? `${uploaded.subfolder}/${uploaded.name}` : uploaded.name;
+}
+
 export async function queueComfyPrompt(graph: ComfyPromptGraph): Promise<string> {
   const base = getComfyBaseUrl();
   const queueRes = await fetch(`${base}/prompt`, {

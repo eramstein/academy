@@ -1,8 +1,10 @@
 import type { ImageWorkflowDefinition, ImageWorkflowId } from '../types';
+import { flux2KleinNarration } from './flux2-klein-narration';
 import { flux2KleinTextToImage } from './flux2-klein-text-to-image';
 
 const WORKFLOWS: Record<ImageWorkflowId, ImageWorkflowDefinition> = {
   'flux2-klein-text-to-image': flux2KleinTextToImage,
+  'flux2-klein-narration': flux2KleinNarration,
 };
 
 export function getWorkflow(id: ImageWorkflowId): ImageWorkflowDefinition {

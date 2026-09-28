@@ -1,5 +1,5 @@
 import { getImageGenConfig } from './config';
-import { runComfyWorkflow } from './comfy/client';
+import { runComfyWorkflow, uploadComfyImage } from './comfy/client';
 import type { GenerateImageOptions, GenerateImageResult } from './types';
 import { getWorkflow } from './workflows';
 
@@ -26,7 +26,14 @@ export async function generateImage(
     );
   }
 
-  const graph = workflow.build({ prompt, seed, size, filenamePrefix });
+  const referenceImageName = options.referenceImage
+    ? await uploadComfyImage(
+        options.referenceImage,
+        `academy_ref_${seed}.${options.referenceImage.type === 'image/png' ? 'png' : 'jpg'}`
+      )
+    : undefined;
+
+  const graph = workflow.build({ prompt, seed, size, filenamePrefix, referenceImageName });
   const blob = await runComfyWorkflow(graph, workflow.saveNodeId, {
     outputJpeg,
     jpegQuality,
