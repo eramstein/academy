@@ -302,14 +302,14 @@
 
   {#snippet footer()}
     {#if phase === 'idle'}
-      <button type="button" class="abandon" onclick={onDone}>Abandon ritual</button>
+      <OrnateButton icon="arrow-left" onclick={onDone}>Abandon ritual</OrnateButton>
       <OrnateButton icon="spiral" onclick={begin}>Conjure</OrnateButton>
     {:else if phase === 'augury'}
       <p class="status">{auguryStatus}</p>
     {:else if phase === 'conjuring'}
       <p class="status">{statusLine}</p>
     {:else if !hasAnyOption}
-      <button type="button" class="abandon" onclick={onDone}>Leave</button>
+      <OrnateButton icon="arrow-left" onclick={onDone}>Leave</OrnateButton>
     {:else}
       <p class="status">
         Select a creation
@@ -499,23 +499,6 @@
     text-align: center;
     font-size: 0.95rem;
     color: #6a5c4c;
-  }
-
-  .abandon {
-    font-family: var(--font-narrative);
-    font-size: 0.92rem;
-    color: var(--color-muted-label);
-    background: transparent;
-    border: 1px solid color-mix(in srgb, var(--color-brass) 45%, transparent);
-    border-radius: 4px;
-    padding: 8px 16px;
-    cursor: pointer;
-  }
-
-  .abandon:hover {
-    color: var(--color-cream);
-    border-color: var(--color-brass);
-    background: color-mix(in srgb, var(--color-data) 55%, transparent);
   }
 
   .status {

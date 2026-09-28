@@ -3343,6 +3343,25 @@
     ]
   },
   {
+    "name": "Spectral Spore Slinger",
+    "imageName": "spectral_spore_slinger",
+    "imagePrompt": "glowing blue-lensed mushroom with oversized spectacles leaping mid-air, hurling a swarm of luminous spores from a gaping cap toward distant foes",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": true,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "ranged",
+      "haste"
+    ],
+    "unitTypes": [
+      "mushroom"
+    ]
+  },
+  {
     "name": "Spirit of Speed and Fury",
     "imagePrompt": "Spirit of Speed and Fury",
     "imageName": "spirit_of_speed_and_fury",

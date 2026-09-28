@@ -760,15 +760,13 @@
     {#if manifest === 'revealed'}
       <OrnateButton icon="spiral" onclick={leave}>Take the card</OrnateButton>
     {:else}
-      <button
-        type="button"
-        class="abandon"
+      <OrnateButton
+        icon="arrow-left"
         disabled={manifest !== 'idle' || sealing}
         onclick={cancel}
       >
-        <span class="abandon-mark" aria-hidden="true"></span>
         Abandon ritual
-      </button>
+      </OrnateButton>
       <OrnateButton
         icon="spiral"
         disabled={cardType === null || sealing || manifest !== 'idle'}
@@ -996,61 +994,6 @@
     height: 16px;
     background: var(--icon) center / contain no-repeat;
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
-  }
-
-  .abandon {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-narrative);
-    font-size: 0.95rem;
-    color: var(--color-cream);
-    background: color-mix(in srgb, var(--color-data) 82%, #000);
-    border: 1px solid color-mix(in srgb, var(--color-brass) 55%, transparent);
-    border-radius: 4px;
-    padding: 8px 16px 8px 12px;
-    cursor: pointer;
-    box-shadow:
-      inset 0 1px 0 rgba(240, 230, 200, 0.08),
-      0 2px 4px rgba(0, 0, 0, 0.35);
-  }
-
-  .abandon-mark {
-    width: 12px;
-    height: 12px;
-    flex-shrink: 0;
-    background: var(--color-cream);
-    clip-path: polygon(
-      35% 0%,
-      65% 0%,
-      65% 35%,
-      100% 35%,
-      100% 65%,
-      65% 65%,
-      65% 100%,
-      35% 100%,
-      35% 65%,
-      0% 65%,
-      0% 35%,
-      35% 35%
-    );
-    opacity: 0.85;
-  }
-
-  .abandon:hover {
-    color: var(--color-cream);
-    border-color: var(--color-brass);
-    background: var(--color-data-hover);
-  }
-
-  .abandon:hover .abandon-mark {
-    background: var(--color-golden);
-    opacity: 1;
-  }
-
-  .abandon:disabled {
-    opacity: 0.45;
-    cursor: default;
   }
 
   @media (prefers-reduced-motion: reduce) {

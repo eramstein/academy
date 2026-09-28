@@ -7,7 +7,7 @@
 | Phase 1 — Threshold match + IndexedDB used tracking | done | `match.ts`, `used-flavors.ts`, `initSim` clear |
 | Phase 2 — Async artificery + callers | done | `resolveFlavorTemplate` wired |
 | Phase 3 — DEV LLM text generation | done | `generate-text.ts` |
-| Phase 4 — Comfy + Vite persist | done | `generate-image.ts`, `persist.ts`, vite middleware |
+| Phase 4 — Comfy + Vite persist | done | `src/lib/image_gen`, `persist.ts`, vite middleware |
 | Phase 5 — Mock image upgrade | done | `upgrade.ts` no-op provider |
 
 ## Follow-ups (not started)

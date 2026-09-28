@@ -77,12 +77,13 @@ Dexie table `usedFlavorTemplates` (key: `imageName`).
 | Step | Module | Notes |
 | --- | --- | --- |
 | Text | [`generate-text.ts`](generate-text.ts) | Mistral via `completeChat`; JSON `{ name, depiction, unitType? }`. Catalog stores depiction only in `imagePrompt`; full style template is assembled at image time. |
-| Image | [`generate-image.ts`](generate-image.ts) | Comfy Desktop Flux.2 Klein (`image_flux2_klein_text_to_image` API graph, 512×512); `cheapImage: true` |
+| Image | [`@/lib/image_gen`](../../../image_gen) | Comfy Desktop Flux.2 Klein (`flux2-klein-text-to-image`, 512×512); `cheapImage: true` |
 | Persist | [`persist.ts`](persist.ts) | `POST /api/save-flavor`, `POST /api/save-card-image` |
 
 Comfy notes:
 
-- Workflow API JSON: [`workflows/image_flux2_klein_text_to_image_api.json`](workflows/image_flux2_klein_text_to_image_api.json) (flattened base-4B path from the default template).
+- Shared service: [`src/lib/image_gen`](../../../image_gen) (configurable backend/workflow; default Comfy + Klein).
+- Workflow API JSON: [`image_gen/workflows/image_flux2_klein_text_to_image_api.json`](../../../image_gen/workflows/image_flux2_klein_text_to_image_api.json).
 - Models: `flux-2-klein-base-4b.safetensors`, `flux-klein-u.safetensors`, `flux2-vae.safetensors`.
 - DEV browser calls use Vite proxy `/comfy-api` → `http://127.0.0.1:8188` (override with `VITE_COMFY_URL`).
 - Comfy writes to its configured output dir (Desktop shared: `ComfyUI-Shared/output`); we fetch via `/view`, then copy into `public/assets/images/cards`.
@@ -120,7 +121,6 @@ Vite watch ignores `card_flavor_templates.json` to avoid full reloads on append 
 | `match.ts` | Threshold scoring |
 | `used-flavors.ts` | IndexedDB helpers |
 | `generate-text.ts` | LLM step |
-| `generate-image.ts` | Comfy cheap image |
 | `persist.ts` | Dev save APIs |
 | `upgrade.ts` | Mock upgrade provider |
 | `resolve.ts` | Match → generate → persist → mark used |
