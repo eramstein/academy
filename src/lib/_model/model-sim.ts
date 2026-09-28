@@ -110,6 +110,10 @@ export interface Narration {
   type: NarrationType;
   mentions?: Mentions;
   attributeCheck?: AttributeCheck;
+  /** Short visual description for generating an image of this scene. */
+  imagePrompt?: string;
+  /** Object URL for a generated scene illustration. */
+  imageUrl?: string;
   cardIds?: string[];
   cardTemplates?: CardTemplate[];
   day?: number;

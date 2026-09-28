@@ -1,3 +1,4 @@
+import { generateImage } from '@/lib/image_gen';
 import { generateAttributeCheckNarration } from '@/lib/llm/prompts';
 import type { CardTemplate, DayPeriod } from '../_model';
 import { NarrationType } from '../_model/enums-sim';
@@ -14,6 +15,33 @@ export function narrate(narration: Narration) {
     mentions: narration.mentions ?? findMentions(narration.text),
   };
   gs.scene.narration.push(expandedNarration);
+  if (expandedNarration.imagePrompt && !expandedNarration.imageUrl) {
+    void fillNarrationImage(expandedNarration.id, expandedNarration.imagePrompt);
+  }
+}
+
+function revokeNarrationImage(narration: Narration) {
+  if (!narration.imageUrl) return;
+  URL.revokeObjectURL(narration.imageUrl);
+  narration.imageUrl = undefined;
+}
+
+async function fillNarrationImage(id: string, imagePrompt: string) {
+  try {
+    const { blob } = await generateImage(imagePrompt, { filenamePrefix: 'academy_scene' });
+    const entry = gs.scene.narration.find((narration) => narration.id === id);
+    if (!entry || entry.imagePrompt !== imagePrompt) {
+      return;
+    }
+    revokeNarrationImage(entry);
+    entry.imageUrl = URL.createObjectURL(blob);
+  } catch (error) {
+    console.error('Failed to generate narration image', error);
+    const entry = gs.scene.narration.find((narration) => narration.id === id);
+    if (entry && entry.imagePrompt === imagePrompt && !entry.imageUrl) {
+      entry.imagePrompt = undefined;
+    }
+  }
 }
 
 function findMentions(text: string): Mentions {
@@ -54,9 +82,15 @@ function escapeRegExp(value: string): string {
 }
 
 export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
-  gs.scene.narration = gs.scene.narration.filter(
-    (narration) => narration.type !== NarrationType.AttributeCheck
-  );
+  const kept: Narration[] = [];
+  for (const narration of gs.scene.narration) {
+    if (narration.type === NarrationType.AttributeCheck) {
+      revokeNarrationImage(narration);
+    } else {
+      kept.push(narration);
+    }
+  }
+  gs.scene.narration = kept;
   const id = crypto.randomUUID();
   narrate({
     id,
@@ -69,8 +103,11 @@ export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
 
 async function fillAttributeCheckNarration(id: string, attributeCheck: AttributeCheck) {
   let text: string;
+  let imagePrompt: string | undefined;
   try {
-    text = await generateAttributeCheckNarration(attributeCheck);
+    const result = await generateAttributeCheckNarration(attributeCheck);
+    text = result.text;
+    imagePrompt = result.imagePrompt;
   } catch (error) {
     console.error('Failed to generate attribute check narration', error);
     text = fallbackAttributeCheckText(attributeCheck);
@@ -78,7 +115,11 @@ async function fillAttributeCheckNarration(id: string, attributeCheck: Attribute
   const entry = gs.scene.narration.find((narration) => narration.id === id);
   if (!entry) return;
   entry.text = text;
+  entry.imagePrompt = imagePrompt;
   entry.mentions = findMentions(text);
+  if (imagePrompt) {
+    void fillNarrationImage(id, imagePrompt);
+  }
 }
 
 function fallbackAttributeCheckText(attributeCheck: AttributeCheck): string {

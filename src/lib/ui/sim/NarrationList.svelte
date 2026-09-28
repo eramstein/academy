@@ -205,6 +205,9 @@
         onDone={() => onCheckDone(entry)}
       />
     {/if}
+    {#if entry.imageUrl || entry.imagePrompt}
+      {@render narrationImage(entry)}
+    {/if}
     {#if entry.text}
       <NarrationText
         class="narration"
@@ -252,6 +255,18 @@
       </div>
     {/if}
   {/if}
+{/snippet}
+
+{#snippet narrationImage(entry: Narration)}
+  <figure class="narration-image">
+    {#if entry.imageUrl}
+      <img src={entry.imageUrl} alt="" onload={() => onProgress?.('smooth')} />
+    {:else}
+      <div class="narration-image-pending" aria-hidden="true">
+        <span>Illustrating…</span>
+      </div>
+    {/if}
+  </figure>
 {/snippet}
 
 {#snippet periodSeparator(entry: Narration)}
@@ -334,6 +349,37 @@
 <style>
   .narration-list :global(.narration) {
     margin: 0 0 1.25em;
+  }
+
+  .narration-image {
+    margin: 0 0 1.25em;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .narration-image img,
+  .narration-image-pending {
+    display: block;
+    width: min(100%, 280px);
+    aspect-ratio: 1;
+    object-fit: cover;
+    border: 1px solid var(--color-brown-border);
+    border-radius: 4px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 248, 230, 0.2),
+      0 2px 8px rgba(42, 24, 16, 0.18);
+  }
+
+  .narration-image-pending {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(90, 75, 60, 0.08);
+    color: var(--color-ink-muted);
+    font-family: var(--font-narrative);
+    font-size: 0.95rem;
+    font-style: italic;
   }
 
   .narration-pending {

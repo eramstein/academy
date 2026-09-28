@@ -1,23 +1,45 @@
 import type { AttributeCheck } from '@/lib/_model/model-sim';
+import { z } from 'zod';
 import { NARRATION_SYSTEM_PROMPT } from './config';
 import { buildLlmContext } from './context-builder';
 import { completeChat } from './llm-service';
 
-export async function generateAttributeCheckNarration(check: AttributeCheck): Promise<string> {
+const AttributeCheckNarrationSchema = z.object({
+  text: z.string().min(1),
+  imagePrompt: z.string().min(1),
+});
+
+export type AttributeCheckNarration = z.infer<typeof AttributeCheckNarrationSchema>;
+
+export async function generateAttributeCheckNarration(
+  check: AttributeCheck
+): Promise<AttributeCheckNarration> {
   const userPrompt = [
     buildLlmContext({ attributeCheck: check }),
-    'Write one short paragraph describing what happens.',
+    [
+      'Return JSON with:',
+      '- text: one short paragraph describing what happens.',
+      '- imagePrompt: a short image description focused on one NPC, the location, and what that NPC does or feels.',
+    ].join('\n'),
   ].join('\n\n');
 
-  const text = await completeChat(
+  const parsed = await completeChat(
     [
       { role: 'system', content: NARRATION_SYSTEM_PROMPT },
       { role: 'user', content: userPrompt },
     ],
-    { temperature: 0.8, maxTokens: 220 }
+    {
+      temperature: 0.8,
+      maxTokens: 320,
+      schema: AttributeCheckNarrationSchema,
+      schemaName: 'attribute-check-narration',
+    }
   );
 
-  return trimIncompleteSentence(text.replace(/^["']+|["']+$/g, '').trim());
+  return {
+    text: trimIncompleteSentence(parsed.text.replace(/^["']+|["']+$/g, '').trim()),
+    imagePrompt: parsed.imagePrompt.replace(/^["']+|["']+$/g, '').trim(),
+  };
 }
 
 function trimIncompleteSentence(text: string): string {
