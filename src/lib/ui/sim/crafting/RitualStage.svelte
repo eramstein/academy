@@ -1705,10 +1705,6 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     visibility: visible;
   }
 
-  .shape-hint.ready {
-    visibility: visible;
-  }
-
   .budget-remaining {
     display: flex;
     flex-wrap: wrap;
@@ -2115,11 +2111,11 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     will-change: transform, opacity;
   }
 
-  .charm.interactive {
+  .charm:global(.interactive) {
     z-index: 8;
   }
 
-  .charm.interactive:hover {
+  .charm:global(.interactive):hover {
     filter: drop-shadow(0 3px 4px rgba(42, 24, 16, 0.45))
       drop-shadow(0 0 8px rgba(191, 161, 74, 0.7));
   }

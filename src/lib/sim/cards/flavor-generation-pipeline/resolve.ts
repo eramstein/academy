@@ -10,7 +10,11 @@ import {
   requiredMatchScore,
 } from './match';
 import { generateCheapCardImage } from './generate-image';
-import { flavorFromGeneratedText, generateFlavorText } from './generate-text';
+import {
+  assembleImagePrompt,
+  flavorFromGeneratedText,
+  generateFlavorText,
+} from './generate-text';
 import { persistCardImage, persistFlavorTemplate } from './persist';
 import type { FlavorTemplate, GameplayTemplate } from './types';
 import { getUsedFlavorImageNames, markFlavorUsed } from './used-flavors';
@@ -92,7 +96,7 @@ async function generateAndPersist(
   });
 
   onProgress?.({ stage: 'generate_image' });
-  const imageBlob = await generateCheapCardImage(flavor.imagePrompt);
+  const imageBlob = await generateCheapCardImage(assembleImagePrompt(flavor.imagePrompt));
   console.log(LOG_PREFIX, 'Comfy image ready', {
     imageName: flavor.imageName,
     bytes: imageBlob.size,

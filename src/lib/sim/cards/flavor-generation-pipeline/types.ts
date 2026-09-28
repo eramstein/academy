@@ -21,6 +21,7 @@ export interface GameplayTemplate {
 export interface FlavorTemplate {
   name: string;
   imageName: string;
+  /** Subject depiction only; full style prompt is assembled via `assembleImagePrompt`. */
   imagePrompt: string;
   cardType: CardType;
   unitSize: PowerLevel;

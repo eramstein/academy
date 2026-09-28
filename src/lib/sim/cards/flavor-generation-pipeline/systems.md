@@ -76,7 +76,7 @@ Dexie table `usedFlavorTemplates` (key: `imageName`).
 
 | Step | Module | Notes |
 | --- | --- | --- |
-| Text | [`generate-text.ts`](generate-text.ts) | Mistral via `completeChat`; JSON `{ name, imagePrompt, unitType? }` |
+| Text | [`generate-text.ts`](generate-text.ts) | Mistral via `completeChat`; JSON `{ name, depiction, unitType? }`. Catalog stores depiction only in `imagePrompt`; full style template is assembled at image time. |
 | Image | [`generate-image.ts`](generate-image.ts) | Comfy Desktop Flux.2 Klein (`image_flux2_klein_text_to_image` API graph, 512×512); `cheapImage: true` |
 | Persist | [`persist.ts`](persist.ts) | `POST /api/save-flavor`, `POST /api/save-card-image` |
 

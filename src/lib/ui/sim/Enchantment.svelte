@@ -841,10 +841,7 @@
       {/if}
     </section>
     {#snippet footer()}
-      <button type="button" class="abandon" onclick={back}>
-        <span class="abandon-mark" aria-hidden="true"></span>
-        Cancel
-      </button>
+      <OrnateButton icon="arrow-left" onclick={back}>Cancel</OrnateButton>
     {/snippet}
   </WorkbenchShell>
 {:else if isDistill && sourceCard}
@@ -959,10 +956,9 @@
           <span class="budget-error">{augmentPreview.error}</span>
         </div>
       {/if}
-      <button type="button" class="abandon" disabled={sealing || finished} onclick={back}>
-        <span class="abandon-mark" aria-hidden="true"></span>
-        {canChangeCard ? 'Back' : 'Abandon'}
-      </button>
+      <OrnateButton icon="arrow-left" disabled={sealing || finished} onclick={back}>
+        {canChangeCard ? 'Back' : 'Cancel'}
+      </OrnateButton>
       {#if finished}
         <OrnateButton icon="leaf" onclick={takeCard}>Take card</OrnateButton>
       {:else}
@@ -1108,52 +1104,4 @@
     text-align: center;
   }
 
-  .abandon {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-narrative);
-    font-size: 0.95rem;
-    color: var(--color-cream);
-    background: color-mix(in srgb, var(--color-data) 82%, #000);
-    border: 1px solid color-mix(in srgb, var(--color-brass) 55%, transparent);
-    border-radius: 4px;
-    padding: 8px 16px 8px 12px;
-    cursor: pointer;
-    box-shadow:
-      inset 0 1px 0 rgba(240, 230, 200, 0.08),
-      0 2px 4px rgba(0, 0, 0, 0.35);
-  }
-
-  .abandon-mark {
-    width: 12px;
-    height: 12px;
-    flex-shrink: 0;
-    background: var(--color-cream);
-    clip-path: polygon(
-      35% 0%,
-      65% 0%,
-      65% 35%,
-      100% 35%,
-      100% 65%,
-      65% 65%,
-      65% 100%,
-      35% 100%,
-      35% 65%,
-      0% 65%,
-      0% 35%,
-      35% 35%
-    );
-    opacity: 0.85;
-  }
-
-  .abandon:hover:not(:disabled) {
-    border-color: var(--color-brass);
-    background: var(--color-data-hover);
-  }
-
-  .abandon:disabled {
-    opacity: 0.45;
-    cursor: default;
-  }
 </style>

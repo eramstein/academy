@@ -13,14 +13,22 @@ export interface GeneratedFlavorText {
   unitType?: UnitType;
 }
 
-const IMAGE_PROMPT_TEMPLATE =
-  'Whimsical hand-drawn fantasy illustration of a <DEPICTION>. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image. Simplified background with only a few readable forest elements. Rich watercolor and ink, clean varied linework, subtle hatching, vivid layered colors, expressive cartoon-like proportions, detailed but not cluttered. Strong shapes, clear lighting, high contrast, designed to remain readable at 300×300 pixels. Square 1:1. No text, border, UI, or padding.';
+const IMAGE_PROMPT_TEMPLATE = `Whimsical hand-painted storybook fantasy illustration of <DEPICTION>.
+
+Traditional watercolor and expressive ink illustration, visibly hand-drawn with organic, slightly irregular ink contours, varied line weight, delicate cross-hatching, fine ink details, and rich translucent watercolor washes. Subtle pigment texture and natural watercolor granulation, subtle pigment blooms, layered brush strokes, imperfect hand-painted edges, and natural color variation.
+
+Expressive character design, charming proportions, carefully rendered facial expression, intricate details. Warm natural lighting, rich earthy colors, strong shapes and a clear silhouette.
+
+The appearance of a professionally illustrated page from a traditional European fantasy storybook, painted by hand with watercolor and pen and ink. Not a digital painting, not 3D, not vector art.
+
+Square composition, close-up subject, highly detailed, suitable for a small 300x300 game illustration. FULL-BLEED ARTWORK: the illustration completely fills the entire image from edge to edge. No text, no border, no UI.`;
 
 const UNIT_TYPE_VALUES = Object.values(UnitType) as [UnitType, ...UnitType[]];
 
 /** How each keyword must read in the card art (silhouette / pose / creature choice). */
 const KEYWORD_VISUAL_CUES: Partial<Record<keyof UnitKeywords, string>> = {
-  flying: 'show the subject airborne — wings, mid-flight, or hovering above the ground (e.g. dragon, bird, winged beast)',
+  flying:
+    'show the subject airborne — wings, mid-flight, or hovering above the ground (e.g. dragon, bird, winged beast)',
   ranged: 'show a projectile weapon, bow, or spell cast at distance',
   haste: 'dynamic leaping or charging pose — motion and urgency',
   moveAndAttack: 'subject mid-stride or charging into a strike',
@@ -70,19 +78,23 @@ function describeKeywords(keywords: (keyof UnitKeywords)[]): string {
     .map((key) => {
       const rules = getKeywordTooltip(key);
       const visual = KEYWORD_VISUAL_CUES[key];
-      return visual
-        ? `- ${key}: ${rules} Art MUST show: ${visual}.`
-        : `- ${key}: ${rules}`;
+      return visual ? `- ${key}: ${rules} Art MUST show: ${visual}.` : `- ${key}: ${rules}`;
     })
     .join('\n');
 }
 
-function assembleImagePrompt(depiction: string): string {
-  const cleaned = depiction
+/** Clean a depiction phrase for storage / template insertion. */
+export function cleanDepiction(depiction: string): string {
+  return depiction
     .trim()
     .replace(/^of\s+/i, '')
+    .replace(/^an?\s+/i, '')
     .replace(/\.$/, '');
-  return IMAGE_PROMPT_TEMPLATE.replace('<DEPICTION>', cleaned);
+}
+
+/** Expand a stored depiction into the full Comfy image prompt. */
+export function assembleImagePrompt(depiction: string): string {
+  return IMAGE_PROMPT_TEMPLATE.replace('<DEPICTION>', cleanDepiction(depiction));
 }
 
 function buildPrompt(
@@ -178,7 +190,7 @@ export async function generateFlavorText(
     }
     return {
       name,
-      imagePrompt: assembleImagePrompt(depiction),
+      imagePrompt: cleanDepiction(depiction),
       imageName: nameToImageName(name),
       unitType: parsed.unitType,
     };
@@ -197,7 +209,7 @@ export async function generateFlavorText(
   }
   return {
     name,
-    imagePrompt: assembleImagePrompt(depiction),
+    imagePrompt: cleanDepiction(depiction),
     imageName: nameToImageName(name),
   };
 }
