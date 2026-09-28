@@ -179,6 +179,39 @@ export default defineConfig(({ command }) => ({
             return;
           }
 
+          if (req.method === 'POST' && req.url === '/api/save-scene-image') {
+            readBody()
+              .then((body) => {
+                const payload = JSON.parse(body) as {
+                  imageName?: string;
+                  imageBase64?: string;
+                };
+                if (!payload.imageName || typeof payload.imageName !== 'string') {
+                  sendJson(400, { error: 'imageName is required' });
+                  return;
+                }
+                if (!payload.imageBase64 || typeof payload.imageBase64 !== 'string') {
+                  sendJson(400, { error: 'imageBase64 is required' });
+                  return;
+                }
+
+                const safeName = payload.imageName.replace(/[^a-zA-Z0-9_-]/g, '_');
+                const dir = path.resolve(__dirname, 'public/assets/images/scenes');
+                if (!fs.existsSync(dir)) {
+                  fs.mkdirSync(dir, { recursive: true });
+                }
+                const filePath = path.join(dir, `${safeName}.jpg`);
+                const buffer = Buffer.from(payload.imageBase64, 'base64');
+                fs.writeFileSync(filePath, buffer);
+                sendJson(200, { success: true, path: filePath });
+              })
+              .catch((error) => {
+                console.error('Error saving scene image:', error);
+                sendJson(500, { error: 'Failed to save scene image' });
+              });
+            return;
+          }
+
           next();
         });
       },

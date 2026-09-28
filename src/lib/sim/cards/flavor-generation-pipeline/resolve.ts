@@ -9,7 +9,7 @@ import {
   rankBestFlavor,
   requiredMatchScore,
 } from './match';
-import { generateImage } from '@/lib/image_gen';
+import { generateImage, isImageGenAvailable } from '@/lib/image_gen';
 import {
   assembleImagePrompt,
   flavorFromGeneratedText,
@@ -189,7 +189,7 @@ export async function resolveFlavorTemplate(
       thresholdRatio: MATCH_SCORE_THRESHOLD,
     });
     onProgress?.({ stage: 'reuse', flavor });
-  } else if (allowAiGenerate && import.meta.env.DEV) {
+  } else if (allowAiGenerate && import.meta.env.DEV && isImageGenAvailable()) {
     console.log(LOG_PREFIX, 'Decision: GENERATE via AI (no candidate above threshold)', {
       bestScore: ranked?.score ?? null,
       bestRatio: ranked?.ratio ?? null,
@@ -214,6 +214,7 @@ export async function resolveFlavorTemplate(
       thresholdRatio: MATCH_SCORE_THRESHOLD,
       requiredScore,
       allowAiGenerate,
+      imageGen: isImageGenAvailable(),
     });
     decision = 'fallback';
   }

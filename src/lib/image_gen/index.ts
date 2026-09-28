@@ -7,8 +7,12 @@
  *
  * Configure at runtime with `configureImageGen(...)` while experimenting
  * with models and hosts. Register additional workflows under `./workflows`.
+ *
+ * Call `initImageGen()` at startup. If ComfyUI does not answer, image
+ * generation stays off for the session.
  */
 
+export { initImageGen, isImageGenAvailable } from './availability';
 export {
   configureImageGen,
   getComfyBaseUrl,

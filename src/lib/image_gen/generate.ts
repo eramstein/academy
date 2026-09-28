@@ -1,3 +1,4 @@
+import { initImageGen } from './availability';
 import { getImageGenConfig } from './config';
 import { runComfyWorkflow, uploadComfyImage } from './comfy/client';
 import type { GenerateImageOptions, GenerateImageResult } from './types';
@@ -11,6 +12,9 @@ export async function generateImage(
   prompt: string,
   options: GenerateImageOptions = {}
 ): Promise<GenerateImageResult> {
+  if (!(await initImageGen())) {
+    throw new Error('ComfyUI is not reachable');
+  }
   const config = getImageGenConfig();
   const workflowId = options.workflow ?? config.defaultWorkflow;
   const workflow = getWorkflow(workflowId);

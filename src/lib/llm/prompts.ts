@@ -6,7 +6,13 @@ import { completeChat } from './llm-service';
 
 const AttributeCheckNarrationSchema = z.object({
   text: z.string().min(1),
-  imagePrompt: z.string().min(1),
+  imagePrompt: z
+    .string()
+    .min(1)
+    .max(320)
+    .describe(
+      'One or two short sentences: the focus character\'s physical action, a visible expression such as laughing or scowling, and the place with two or three concrete objects. No appearance, clothing, or inner feelings.'
+    ),
 });
 
 export type AttributeCheckNarration = z.infer<typeof AttributeCheckNarrationSchema>;
@@ -19,7 +25,7 @@ export async function generateAttributeCheckNarration(
     [
       'Return JSON with:',
       '- text: one short paragraph describing what happens.',
-      '- imagePrompt: a short image description focused on one NPC, the location, and what that NPC does or feels.',
+      '- imagePrompt: one or two short sentences. The focus character\'s activity, a visible expression (laughing, scowling, smiling, shouting), and the place with a few concrete objects. Example: "Laughing while pouring tea behind the inn bar, wooden mugs and bottles on the shelves, firelight on the counter."',
     ].join('\n'),
   ].join('\n\n');
 

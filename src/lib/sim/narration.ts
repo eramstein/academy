@@ -1,5 +1,5 @@
 import { getCharacterImagePath } from '@/lib/_utils/asset-paths';
-import { generateImage } from '@/lib/image_gen';
+import { generateImage, isImageGenAvailable } from '@/lib/image_gen';
 import { generateAttributeCheckNarration } from '@/lib/llm/prompts';
 import type { CardTemplate, DayPeriod } from '../_model';
 import { NarrationType } from '../_model/enums-sim';
@@ -8,39 +8,68 @@ import { gs } from '../_state';
 import type { TransactionParameters } from './actions';
 import { actionTemplates, getActionTemplateMeta } from './cards/action-templates';
 import { formatKeywordLabel, KEYWORD_KEYS } from './cards/keywords';
+import { getCachedSceneImageUrl, saveCachedSceneImage } from './scene-image-cache';
 import { getWeekDay, WEEK_DAYS } from './time';
 
 export function narrate(narration: Narration) {
+  const imagePrompt = narration.imageUrl ? undefined : narration.imagePrompt;
   const expandedNarration = {
     ...narration,
+    imagePrompt: narration.imageUrl ? narration.imagePrompt : undefined,
     mentions: narration.mentions ?? findMentions(narration.text),
   };
   gs.scene.narration.push(expandedNarration);
-  if (expandedNarration.imagePrompt && !expandedNarration.imageUrl) {
-    void fillNarrationImage(expandedNarration.id, expandedNarration.imagePrompt);
+  if (imagePrompt) {
+    void fillNarrationImage(expandedNarration.id, imagePrompt);
   }
 }
 
 function revokeNarrationImage(narration: Narration) {
-  if (!narration.imageUrl) return;
+  if (!narration.imageUrl?.startsWith('blob:')) return;
   URL.revokeObjectURL(narration.imageUrl);
   narration.imageUrl = undefined;
 }
 
+export async function cacheNarrationSceneImage(id: string): Promise<void> {
+  const entry = gs.scene.narration.find((narration) => narration.id === id);
+  if (!entry?.imagePrompt || !entry.imageUrl) return;
+  const response = await fetch(entry.imageUrl);
+  if (!response.ok) {
+    throw new Error('Could not read scene image');
+  }
+  await saveCachedSceneImage(entry.imagePrompt, await response.blob());
+}
+
+function narrationAcceptsPrompt(entry: Narration | undefined, imagePrompt: string): entry is Narration {
+  if (!entry) return false;
+  return !entry.imagePrompt || entry.imagePrompt === imagePrompt;
+}
+
 async function fillNarrationImage(id: string, imagePrompt: string) {
   const entry = gs.scene.narration.find((narration) => narration.id === id);
-  if (!entry || entry.imagePrompt !== imagePrompt) return;
+  if (!narrationAcceptsPrompt(entry, imagePrompt)) return;
   try {
-    const referenceImage = await loadCharacterPortrait(portraitKeyForNarration(entry));
+    const cachedUrl = await getCachedSceneImageUrl(imagePrompt);
+    const current = gs.scene.narration.find((narration) => narration.id === id);
+    if (!narrationAcceptsPrompt(current, imagePrompt)) return;
+    if (cachedUrl) {
+      current.imagePrompt = imagePrompt;
+      revokeNarrationImage(current);
+      current.imageUrl = cachedUrl;
+      return;
+    }
+    if (!isImageGenAvailable()) return;
+    current.imagePrompt = imagePrompt;
+    const referenceImage = await loadCharacterPortrait(portraitKeyForNarration(current));
     const { blob } = await generateImage(imagePrompt, {
       workflow: 'flux2-klein-narration',
       filenamePrefix: 'academy_scene',
       referenceImage,
     });
-    const current = gs.scene.narration.find((narration) => narration.id === id);
-    if (!current || current.imagePrompt !== imagePrompt) return;
-    revokeNarrationImage(current);
-    current.imageUrl = URL.createObjectURL(blob);
+    const illustrated = gs.scene.narration.find((narration) => narration.id === id);
+    if (!illustrated || illustrated.imagePrompt !== imagePrompt) return;
+    revokeNarrationImage(illustrated);
+    illustrated.imageUrl = URL.createObjectURL(blob);
   } catch (error) {
     console.error('Failed to generate narration image', error);
     const current = gs.scene.narration.find((narration) => narration.id === id);
@@ -149,7 +178,6 @@ async function fillAttributeCheckNarration(id: string, attributeCheck: Attribute
   const entry = gs.scene.narration.find((narration) => narration.id === id);
   if (!entry) return;
   entry.text = text;
-  entry.imagePrompt = imagePrompt;
   entry.mentions = findMentions(text);
   if (imagePrompt) {
     void fillNarrationImage(id, imagePrompt);

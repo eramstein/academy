@@ -4,6 +4,7 @@
   import { gs } from '@/lib/_state/main.svelte';
   import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import { addCardToDeck } from '@/lib/sim/deck';
+  import { cacheNarrationSceneImage } from '@/lib/sim/narration';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import { untrack } from 'svelte';
   import AttributeCheckEntry from './AttributeCheckEntry.svelte';
@@ -33,6 +34,7 @@
   const narration = $derived(gs.scene.narration);
 
   let completedIds = $state<string[]>([]);
+  let cacheAskId = $state<string | null>(null);
   let checkDoneIds = $state<string[]>([]);
   let textDoneIds = $state<string[]>([]);
 
@@ -147,6 +149,20 @@
     completeEntry(entry.id);
   }
 
+  function askCacheScene(entry: Narration) {
+    if (!entry.imageUrl || !entry.imagePrompt) return;
+    cacheAskId = entry.id;
+  }
+
+  async function confirmCacheScene(entry: Narration) {
+    cacheAskId = null;
+    try {
+      await cacheNarrationSceneImage(entry.id);
+    } catch (error) {
+      console.error('Failed to cache scene image', error);
+    }
+  }
+
   function periodIconPath(period?: DayPeriod) {
     const key = period ?? gs.time.period;
     return getUiIconPath(periodIcon[key]);
@@ -258,11 +274,28 @@
 {/snippet}
 
 {#snippet narrationImage(entry: Narration)}
-  <figure class="narration-image">
+  <figure class="narration-image" title={entry.imagePrompt}>
     {#if entry.imageUrl}
-      <img src={entry.imageUrl} alt="" onload={() => onProgress?.('smooth')} />
+      <div class="scene-frame">
+        <img
+          src={entry.imageUrl}
+          alt=""
+          title={entry.imagePrompt}
+          onload={() => onProgress?.('smooth')}
+          onclick={() => askCacheScene(entry)}
+        />
+        {#if cacheAskId === entry.id}
+          <div class="cache-ask">
+            <p>Cache?</p>
+            <div class="cache-ask-actions">
+              <button type="button" onclick={() => confirmCacheScene(entry)}>Yes</button>
+              <button type="button" onclick={() => (cacheAskId = null)}>No</button>
+            </div>
+          </div>
+        {/if}
+      </div>
     {:else}
-      <div class="narration-image-pending" aria-hidden="true">
+      <div class="narration-image-pending" title={entry.imagePrompt}>
         <span>Illustrating…</span>
       </div>
     {/if}
@@ -358,6 +391,11 @@
     justify-content: center;
   }
 
+  .scene-frame {
+    position: relative;
+    width: min(100%, 280px);
+  }
+
   .narration-image img,
   .narration-image-pending {
     display: block;
@@ -369,6 +407,50 @@
     box-shadow:
       inset 0 1px 0 rgba(255, 248, 230, 0.2),
       0 2px 8px rgba(42, 24, 16, 0.18);
+  }
+
+  .narration-image img {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .cache-ask {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(232, 220, 196, 0.92);
+    color: var(--color-ink);
+    font-family: var(--font-narrative);
+    border-radius: 4px;
+  }
+
+  .cache-ask p {
+    margin: 0;
+    font-style: italic;
+  }
+
+  .cache-ask-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .cache-ask button {
+    font-family: var(--font-narrative);
+    font-size: 0.95rem;
+    color: var(--color-ink);
+    background: transparent;
+    border: 1px solid var(--color-brown-border);
+    border-radius: 4px;
+    padding: 4px 14px;
+    cursor: pointer;
+  }
+
+  .cache-ask button:hover {
+    background: rgba(90, 75, 60, 0.12);
   }
 
   .narration-image-pending {

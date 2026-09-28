@@ -16,6 +16,20 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+const COMFY_PROBE_TIMEOUT_MS = 1_500;
+
+/** True when ComfyUI's HTTP server answers. `/system_stats` is up as soon as the server is. */
+export async function probeComfy(timeoutMs = COMFY_PROBE_TIMEOUT_MS): Promise<boolean> {
+  try {
+    const response = await fetch(`${getComfyBaseUrl()}/system_stats`, {
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 export function firstHistoryImage(
   entry: ComfyHistoryEntry | undefined,
   preferredSaveNodeId?: string

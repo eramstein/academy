@@ -29,14 +29,14 @@ const NARRATION_STYLE = [
   'Colorful, rich, and atmospheric, with warm ochres, deep greens, muted reds, copper, amber, and occasional vibrant accents.',
   'Painterly and organic, realistic but not photorealistic.',
   'Soft edges, natural lighting, understated ink details.',
-  'Simple atmospheric background, strong personality, elegant fantasy RPG art-book aesthetic.',
+  'The described place fills the frame around the character, with a few clear objects. Strong personality, elegant fantasy RPG art-book aesthetic.',
   'No excessive mechanical details, no visual clutter, no hard outlines, no text, no UI.',
 ].join(' ');
 
 export function buildNarrationImagePrompt(scene: string): string {
   return [
     scene.trim(),
-    'The subject is the person in the reference portrait. Keep that face.',
+    'The subject is the person in the reference portrait. Keep their face, and show them acting in the described place, with the room visible around them.',
     NARRATION_STYLE,
   ].join('\n\n');
 }

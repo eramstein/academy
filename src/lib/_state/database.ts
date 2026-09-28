@@ -19,3 +19,7 @@ db.version(3).stores({
 db.version(4).stores({
   usedFlavorTemplates: 'imageName',
 });
+
+db.version(5).stores({
+  sceneImages: 'prompt',
+});
