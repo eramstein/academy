@@ -2,8 +2,10 @@ import { uiState } from '../../_state';
 import { isAttackingLand, isAttackingPlayer, isAttackingUnitDeployed, type UnitDeployed } from '../../_model';
 import { canAttack, validAttackTargets } from '@/lib/battle/combat';
 import { canMove, validMoveTargets } from '@/lib/battle/move';
+import { isUnitsTurn } from '@/lib/battle/player';
 
 export function toggleUnitSelection(unit: UnitDeployed) {
+  if (!isUnitsTurn(unit)) return;
   if (uiState.battle.selectedUnit?.instanceId === unit.instanceId) {
     uiState.battle.selectedUnit = null;
     uiState.battle.validTargets = null;

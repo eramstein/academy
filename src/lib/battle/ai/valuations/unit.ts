@@ -1,20 +1,9 @@
-import { TriggerType, type SpellCard, type UnitDeployed } from '@/lib/_model';
+import { type SpellCard, type UnitDeployed } from '@/lib/_model';
 import { bs } from '@/lib/_state';
-import { getCardBudget } from '@/lib/sim/cards/card-budget';
+import { valueUnit } from '../evaluate';
 import { simulatedNextTurn } from '../ai';
 
-export function valueUnit(unit: UnitDeployed) {
-  const baseValue = getCardBudget(unit);
-  // damaged units are worth less
-  const damageDiscount = (unit.maxHealth - unit.health) / (unit.maxHealth || 1) < 0.5 ? 0.5 : 1;
-  // units which already used onDeploy effects are worth less
-  const onDeployDiscount = unit.abilities?.some(
-    (ability) => ability.trigger.type === TriggerType.OnDeploy
-  )
-    ? 0.5
-    : 1;
-  return baseValue * damageDiscount * onDeployDiscount;
-}
+export { valueUnit };
 
 export function getDamagePotential(unit: UnitDeployed): number {
   return getNonUnitDamagePotential(unit) + (unit.keywords?.poisonous || 0);
@@ -65,8 +54,9 @@ export function valueBoard(): { abs: number; rel: number } {
   );
   const aiUnitsValue = aiUnits.reduce((acc, unit) => acc + valueUnit(unit), 0);
   const playerUnitsValue = playerUnits.reduce((acc, unit) => acc + valueUnit(unit), 0);
+  const total = aiUnitsValue + playerUnitsValue;
   return {
     abs: aiUnitsValue - playerUnitsValue,
-    rel: aiUnitsValue / (aiUnitsValue + playerUnitsValue),
+    rel: total === 0 ? 0.5 : aiUnitsValue / total,
   };
 }

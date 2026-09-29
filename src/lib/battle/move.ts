@@ -2,10 +2,11 @@ import { config } from '../_config';
 import type { Position, UnitDeployed } from '../_model/model-battle';
 import { getPositionKey, isCellFree } from './boards';
 import { onAfterMoveUnit, onBeforeMoveUnit } from './listeners';
-import { isHumanPlayer } from './player';
+import { isHumanPlayer, isUnitsTurn } from './player';
 
 export function canMove(unit: UnitDeployed) {
   return (
+    isUnitsTurn(unit) &&
     !unit.exhausted &&
     !unit.hasMoved &&
     !unit.statuses.stun &&

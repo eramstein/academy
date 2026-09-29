@@ -20,13 +20,13 @@
     uiState.consoleCommand.visible = false;
   }
 
-  function submit(keepOpen = false) {
+  async function submit(keepOpen = false) {
     const trimmed = inputValue.trim();
     if (!trimmed || trimmed === '/') {
       close();
       return;
     }
-    const result = executeCommand(inputValue);
+    const result = await executeCommand(inputValue);
     resultOk = result.ok;
     resultMessage = result.message;
     if (result.ok && !keepOpen) {

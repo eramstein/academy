@@ -22,6 +22,11 @@ export function playSpell(spell: SpellCard, targets: EffectTargets[][]) {
     return;
   }
 
+  if (uiState.isHeadless) {
+    resolveSpell(spell, targets);
+    return;
+  }
+
   // Do effects after a short time to play the animation
   const aiNextActionBuffer = bs.isPlayersTurn ? 0 : 250;
   const spellDelay = bs.isPlayersTurn ? 0 : 250;
@@ -34,18 +39,24 @@ export function playSpell(spell: SpellCard, targets: EffectTargets[][]) {
   }, animationDuration);
   setTimeout(
     () => {
-      const player = bs.players[spell.ownerPlayerId];
-      spell.actions.forEach((actionDef, actionIndex) => {
-        DataEffectTemplates[actionDef.effect.name](actionDef.effect.args).fn({
-          targets: targets[actionIndex],
-          triggerParams: {},
-          player,
-        });
-      });
-      discard(spell.instanceId, spell.ownerPlayerId);
+      resolveSpell(spell, targets);
     },
     animationDuration + spellDelay - aiNextActionBuffer
   );
+}
+
+function resolveSpell(spell: SpellCard, targets: EffectTargets[][]) {
+  const player = bs.players[spell.ownerPlayerId];
+  let targetIndex = 0;
+  spell.actions.forEach((actionDef) => {
+    const effectTargets = actionDef.targets?.length ? (targets[targetIndex++] ?? []) : [];
+    DataEffectTemplates[actionDef.effect.name](actionDef.effect.args).fn({
+      targets: effectTargets,
+      triggerParams: {},
+      player,
+    });
+  });
+  discard(spell.instanceId, spell.ownerPlayerId);
 }
 
 function paySpellCost(spell: SpellCard): boolean {

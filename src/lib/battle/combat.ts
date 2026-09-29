@@ -9,13 +9,14 @@ import { bs } from '../_state';
 import { uiState } from '../_state/state-ui.svelte';
 import { damageLand } from './land';
 import { onCombatResolution, onUnitReach } from './listeners';
-import { damagePlayer, getOpposingPlayer } from './player';
+import { damagePlayer, getOpposingPlayer, isUnitsTurn } from './player';
 import { soundManager } from './sound';
 import { applyTemporaryEffect } from './temporary-effects';
 import { damageUnit, getAdjacentAlliesInRow, getAdjacentUnitsInColumn } from './unit';
 
 export function canAttack(unit: UnitDeployed) {
   return (
+    isUnitsTurn(unit) &&
     !unit.exhausted &&
     !unit.hasAttacked &&
     !unit.statuses.stun &&

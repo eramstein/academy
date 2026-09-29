@@ -41,7 +41,7 @@ function triggerAbilities(type: TriggerType, { ...rest }) {
         } else {
           // If no targeting is required, execute immediately
           a.actions.forEach((actionDef) => {
-            let targets: EffectTargets = [];
+            const targets: EffectTargets = [];
             const params: EffectArgs = {
               targets: [targets],
               triggerParams,
@@ -84,9 +84,7 @@ function checkTriggerCondition(
 
   // case triggerer is a player, here Self means the player
   if (
-    [TriggerType.OnCardDrawn, TriggerType.OnTurnStart, TriggerType.OnGoldGained].includes(
-      ability.trigger.type
-    ) &&
+    [TriggerType.OnCardDrawn, TriggerType.OnTurnStart].includes(ability.trigger.type) &&
     ability.trigger.range.self
   ) {
     return triggerArgs.player.id === permanentWithAbility.ownerPlayerId;

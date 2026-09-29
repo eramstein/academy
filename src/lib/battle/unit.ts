@@ -5,6 +5,7 @@ import { uiState } from '../_state/state-ui.svelte';
 import { clearUnitStaticAbilities } from './ability-static';
 import { isCellFree, isOnPlayersSide } from './boards';
 import { isPayable, payCost } from './cost';
+import { isUnitsTurn } from './player';
 import { onDamageUnit, onDeployUnit, onUnitDeath } from './listeners';
 import { soundManager } from './sound';
 
@@ -62,7 +63,7 @@ export function makeDeployedUnit(unit: UnitCard, position: Position) {
 }
 
 export function isUnitActive(unit: UnitDeployed) {
-  return !unit.exhausted;
+  return isUnitsTurn(unit) && !unit.exhausted;
 }
 
 export function damageUnit(unit: UnitDeployed, damage: number, isCombatDamage = false): boolean {

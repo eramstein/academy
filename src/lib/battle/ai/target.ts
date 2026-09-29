@@ -14,29 +14,14 @@ import { getRandomFromArray } from '@/lib/_utils/random';
 import { getUnitsInRange, type UnitFilterArgs } from '../effects/unit-filters';
 import { getEligibleTargets } from '../target';
 import { valueUnit, wouldBeDestroyedBySpell } from './valuations/unit';
+import { chooseTriggerTargets } from './trigger-targets';
 
-// random for now
-export function selectAiAbilityTargets(unit: UnitDeployed, ability: Ability): EffectTargets[][] {
-  const actions = ability.actions.map((action) => action.targets);
-  if (actions.length === 0) {
-    return [];
-  }
-  const effectTargets: EffectTargets[][] = [];
-  actions.forEach((targetsDefinition, actionIndex) => {
-    effectTargets.push([]);
-    if (targetsDefinition) {
-      targetsDefinition.forEach((targetDefinition, effectIndex) => {
-        effectTargets[actionIndex].push([]);
-        const potentialTargets = getEligibleTargets(unit, targetDefinition);
-        const count = targetDefinition.count || 1;
-        for (let i = 0; i < count; i++) {
-          const t = getRandomFromArray(potentialTargets);
-          effectTargets[actionIndex][effectIndex].push(t);
-        }
-      });
-    }
-  });
-  return effectTargets;
+export function selectAiAbilityTargets(
+  unit: UnitDeployed,
+  ability: Ability,
+  triggerParams: unknown = {}
+): EffectTargets[][] {
+  return chooseTriggerTargets(unit, ability, triggerParams);
 }
 
 export function selectAiSpellTargets(spell: SpellCard): EffectTargets[][] | null {

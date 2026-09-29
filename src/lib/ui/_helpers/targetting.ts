@@ -106,7 +106,7 @@ export function activateTriggeredAbility(unit: UnitDeployed, ability: Ability, t
     ability.actions.length > 0 &&
     ability.actions.some((action) => action.targets && action.targets.length > 0)
   ) {
-    const targets = selectAiAbilityTargets(unit, ability);
+    const targets = selectAiAbilityTargets(unit, ability, triggerParams);
     playTriggeredAbility(unit, ability, targets, triggerParams);
     return;
   }
@@ -133,7 +133,7 @@ export function activateTriggeredAbility(unit: UnitDeployed, ability: Ability, t
   }
 }
 
-function playTriggeredAbility(
+export function playTriggeredAbility(
   unit: UnitDeployed,
   ability: Ability,
   targets: EffectTargets[][],

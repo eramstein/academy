@@ -52,7 +52,7 @@ const bear_minimum = {
 
 const hungry_wolf = {
   id: 'hungry_wolf',
-  name: 'Wall of Brambles',
+  name: 'Hungry Wolf',
   imageFileName: 'hungry_wolf',
   type: CardType.Unit,
   cost: 3,

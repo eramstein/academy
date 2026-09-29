@@ -6,6 +6,7 @@ import { canAttack } from '../../combat';
 import { isPayable } from '../../cost';
 import { canMove } from '../../move';
 import { getAiPlayer } from '../../player';
+import { simulatedNextTurn } from '../ai';
 import { getDangerLevelPerRow, getOpponentCountPerRow, getOpponentUnitDamagePerRow } from '../rows';
 import { landDestructionValue } from './config';
 import { valueUnit } from './unit';
@@ -14,9 +15,10 @@ export function getHighestMoveValue(unit: UnitDeployed): {
   value: number;
   cell: Position;
 } | null {
-  const ennemyPowerPerRow = getOpponentUnitDamagePerRow();
-  const dangerLevelPerRow = getDangerLevelPerRow(unit);
-  const ennemyCountPerRow = getOpponentCountPerRow();
+  const state = simulatedNextTurn ?? bs;
+  const ennemyPowerPerRow = getOpponentUnitDamagePerRow(state);
+  const dangerLevelPerRow = getDangerLevelPerRow(state, unit);
+  const ennemyCountPerRow = getOpponentCountPerRow(state);
   const cells = getEmptyCells(false);
   const moveValues = cells.map((cell) =>
     getMoveValue(unit, cell, dangerLevelPerRow, ennemyPowerPerRow, ennemyCountPerRow)
@@ -44,9 +46,10 @@ export function getHighestMoveValueInRow(
     return getHighestMoveValue(unit);
   }
 
-  const ennemyPowerPerRow = getOpponentUnitDamagePerRow();
-  const dangerLevelPerRow = getDangerLevelPerRow();
-  const ennemyCountPerRow = getOpponentCountPerRow();
+  const state = simulatedNextTurn ?? bs;
+  const ennemyPowerPerRow = getOpponentUnitDamagePerRow(state);
+  const dangerLevelPerRow = getDangerLevelPerRow(state);
+  const ennemyCountPerRow = getOpponentCountPerRow(state);
   const moveValues = rowCells.map((cell) =>
     getMoveValue(unit, cell, dangerLevelPerRow, ennemyPowerPerRow, ennemyCountPerRow)
   );

@@ -11,6 +11,7 @@ import {
 } from '../_model';
 import { bs } from '../_state';
 import { DataEffectTemplates } from './effects/effect-templates';
+import { isUnitsTurn } from './player';
 import { checkTargets } from './target';
 
 export function playAbility(
@@ -18,6 +19,7 @@ export function playAbility(
   ability: Ability,
   targets: EffectTargets[][]
 ) {
+  if ('exhausted' in source && !isUnitsTurn(source)) return;
   const sourceName = 'name' in source ? source.name : 'Land';
   console.log(
     sourceName + ' uses ability on ' + (targets && targets.map((t) => JSON.stringify(t)).join(', '))

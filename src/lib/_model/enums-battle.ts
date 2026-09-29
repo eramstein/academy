@@ -24,7 +24,6 @@ export enum TriggerType {
   OnReach = 'On Reach',
   OnCardDrawn = 'On Card Drawn',
   OnLandDestroyed = 'On Land Destroyed',
-  OnGoldGained = 'On Gold Gained',
 }
 
 export enum TargetType {

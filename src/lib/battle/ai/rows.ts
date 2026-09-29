@@ -1,119 +1,108 @@
 import { config } from '@/lib/_config/config';
-import { isUnitCard, type UnitCard, type UnitDeployed } from '@/lib/_model';
-import { bs } from '@/lib/_state';
+import { isUnitCard, type BattleState, type UnitCard, type UnitDeployed } from '@/lib/_model';
 import { canAttack } from '../combat';
 import { canMove } from '../move';
-import { getAiPlayer } from '../player';
-import { simulatedNextTurn } from './ai';
+import { AI_PLAYER_ID, HUMAN_PLAYER_ID } from './model';
 import { landDestructionValue, landLifeValue, playerLifeValue } from './valuations/config';
 import { getDamagePotential, getNonUnitDamagePotential } from './valuations/unit';
 
-function getPowerPerRow(opponent: boolean = true): Record<number, number> {
-  const units = opponent
-    ? (simulatedNextTurn ?? bs).units.filter((u) => u.ownerPlayerId === 0)
-    : (simulatedNextTurn ?? bs).units.filter((u) => u.ownerPlayerId !== 0);
-  const powerPerRow = units.reduce(
-    (acc, u) => {
-      acc[u.position.row] = (acc[u.position.row] || 0) + getNonUnitDamagePotential(u);
-      return acc;
-    },
-    {} as Record<number, number>
+function unitsOf(state: BattleState, playerId: number, except?: UnitDeployed): UnitDeployed[] {
+  return state.units.filter(
+    (unit) => unit.ownerPlayerId === playerId && (!except || unit.instanceId !== except.instanceId)
   );
-  return powerPerRow;
 }
 
-// this one takes poison and cleave into account
-export function getOpponentUnitDamagePerRow(): Record<number, number> {
-  const units = (simulatedNextTurn ?? bs).units.filter((u) => u.ownerPlayerId === 0);
-  const powerPerRow = units.reduce(
-    (acc, u) => {
-      const damage = getDamagePotential(u);
-      acc[u.position.row] = (acc[u.position.row] || 0) + damage;
-      if (u.keywords?.cleave) {
-        acc[u.position.row - 1] = (acc[u.position.row - 1] || 0) + damage;
-        acc[u.position.row + 1] = (acc[u.position.row + 1] || 0) + damage;
+function powerByRow(units: UnitDeployed[], includeCleave: boolean): Record<number, number> {
+  return units.reduce(
+    (acc, unit) => {
+      const damage = includeCleave ? getDamagePotential(unit) : getNonUnitDamagePotential(unit);
+      acc[unit.position.row] = (acc[unit.position.row] || 0) + damage;
+      if (includeCleave && unit.keywords?.cleave) {
+        acc[unit.position.row - 1] = (acc[unit.position.row - 1] || 0) + damage;
+        acc[unit.position.row + 1] = (acc[unit.position.row + 1] || 0) + damage;
       }
       return acc;
     },
     {} as Record<number, number>
   );
-  return powerPerRow;
 }
 
-export function getOpponentCountPerRow(): Record<number, number> {
-  const units = (simulatedNextTurn ?? bs).units.filter((u) => u.ownerPlayerId === 0);
-  const countPerRow = units.reduce(
-    (acc, u) => {
-      acc[u.position.row] = (acc[u.position.row] || 0) + 1;
+export function getOpponentUnitDamagePerRow(state: BattleState): Record<number, number> {
+  return powerByRow(unitsOf(state, HUMAN_PLAYER_ID), true);
+}
+
+export function getOpponentCountPerRow(state: BattleState): Record<number, number> {
+  return unitsOf(state, HUMAN_PLAYER_ID).reduce(
+    (acc, unit) => {
+      acc[unit.position.row] = (acc[unit.position.row] || 0) + 1;
       return acc;
     },
     {} as Record<number, number>
   );
-  return countPerRow;
 }
 
-export function getAlliedHealthPerRow(unitWhoWouldMove?: UnitDeployed): Record<number, number> {
-  const units = (simulatedNextTurn ?? bs).units.filter(
-    (u) =>
-      u.ownerPlayerId !== 0 && (!unitWhoWouldMove || u.instanceId !== unitWhoWouldMove.instanceId)
-  );
-  const healthPerRow = units.reduce(
-    (acc, u) => {
-      acc[u.position.row] = (acc[u.position.row] || 0) + u.health;
+export function getAlliedHealthPerRow(
+  state: BattleState,
+  unitWhoWouldMove?: UnitDeployed
+): Record<number, number> {
+  return unitsOf(state, AI_PLAYER_ID, unitWhoWouldMove).reduce(
+    (acc, unit) => {
+      acc[unit.position.row] = (acc[unit.position.row] || 0) + unit.health;
       return acc;
     },
     {} as Record<number, number>
   );
-  return healthPerRow;
 }
 
-export function getDangerLevelPerRow(unitWhoWouldMove?: UnitDeployed): Record<number, number> {
+/** Queue hint only. Compares total power to total health on `state`. */
+export function getDangerLevelPerRow(
+  state: BattleState,
+  unitWhoWouldMove?: UnitDeployed
+): Record<number, number> {
+  const health = getAlliedHealthPerRow(state, unitWhoWouldMove);
+  const power = powerByRow(unitsOf(state, HUMAN_PLAYER_ID), false);
+  const player = state.players[AI_PLAYER_ID];
   const dangerLevels: Record<number, number> = {};
   for (let row = 0; row < config.boardRows; row++) {
-    const alliedHealth = getAlliedHealthPerRow(unitWhoWouldMove)[row] ?? 0;
-    const opponentPower = getPowerPerRow()[row];
-    const diff = opponentPower - alliedHealth;
+    const diff = (power[row] ?? 0) - (health[row] ?? 0);
     if (diff <= 0) {
       dangerLevels[row] = 0;
+      continue;
+    }
+    const landInRow = player.lands.find((land) => land.position === row && !land.isRuined);
+    if (landInRow) {
+      dangerLevels[row] =
+        landInRow.health <= (power[row] ?? 0) ? landDestructionValue : landLifeValue;
     } else {
-      const player = bs.players[1];
-      const landInRow = player.lands.find((l) => l.position === row && !l.isRuined);
-      if (landInRow) {
-        dangerLevels[row] =
-          landInRow.health <= opponentPower ? landDestructionValue : landLifeValue;
-      } else {
-        dangerLevels[row] = player.life <= opponentPower ? Infinity : playerLifeValue;
-      }
+      dangerLevels[row] = player.life <= (power[row] ?? 0) ? Infinity : playerLifeValue;
     }
   }
   return dangerLevels;
 }
 
-// look for a row where we have enough power to win if we clear the blockers
-// take into account units with moveAndAttack in other rows and haste units in hand
-export function lookForLethalRow(): number | null {
-  const opponent = bs.players[0];
+export function lookForLethalRow(state: BattleState): number | null {
+  const opponent = state.players[HUMAN_PLAYER_ID];
+  const ai = state.players[AI_PLAYER_ID];
+  const alliedPower = powerByRow(unitsOf(state, AI_PLAYER_ID), false);
   for (let row = 0; row < config.boardRows; row++) {
-    const powerInRow = getPowerPerRow(false)[row];
-    const hasteUnitsMaxPower = getAiPlayer()
-      .hand.filter((u) => isUnitCard(u) && u.keywords?.haste)
-      .reduce((max, u) => Math.max(max, (u as UnitCard).power), 0);
-    const moveAndAttackUnitsMaxPower = bs.units
+    const hasteUnitsMaxPower = ai.hand
+      .filter((card) => isUnitCard(card) && card.keywords?.haste)
+      .reduce((max, card) => Math.max(max, (card as UnitCard).power), 0);
+    const moveAndAttackUnitsMaxPower = state.units
       .filter(
-        (u) => u.ownerPlayerId !== 0 && u.keywords?.moveAndAttack && canMove(u) && canAttack(u)
+        (unit) =>
+          unit.ownerPlayerId === AI_PLAYER_ID &&
+          unit.keywords?.moveAndAttack &&
+          canMove(unit) &&
+          canAttack(unit)
       )
-      .reduce((max, u) => Math.max(max, (u as UnitCard).power), 0);
+      .reduce((max, unit) => Math.max(max, unit.power), 0);
+    const powerInRow = alliedPower[row] ?? 0;
     if (powerInRow + hasteUnitsMaxPower + moveAndAttackUnitsMaxPower < opponent.life) {
       continue;
     }
-    const land = opponent.lands.find((l) => l.position === row);
-    if (!land) {
-      return row;
-    } else {
-      if (land.health + opponent.life <= powerInRow) {
-        return row;
-      }
-    }
+    const land = opponent.lands.find((entry) => entry.position === row);
+    if (!land || land.health + opponent.life <= powerInRow) return row;
   }
   return null;
 }

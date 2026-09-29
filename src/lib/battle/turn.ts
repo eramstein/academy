@@ -19,8 +19,8 @@ export function nextTurn() {
   const player = bs.isPlayersTurn ? bs.players[0] : bs.players[1];
   initPlayerTurn(player);
   onTurnStart(player);
-  if (!bs.isPlayersTurn) {
-    if (!uiState.isHeadless) soundManager.playSound('button');
+  if (!bs.isPlayersTurn && !uiState.isHeadless) {
+    soundManager.playSound('button');
     playAiTurn();
   }
 }
@@ -55,7 +55,7 @@ function updateUnits(player: Player) {
 }
 
 function hotAndDot(unit: UnitDeployed) {
-  let hpChange = (unit.keywords?.regeneration || 0) - (unit.statuses.poison || 0);
+  const hpChange = (unit.keywords?.regeneration || 0) - (unit.statuses.poison || 0);
   if (hpChange < 0) {
     damageUnit(unit, -hpChange);
   }

@@ -1,6 +1,6 @@
 import { DayPeriod, ResourceType } from '../../_model';
 import type { UnitKeywords } from '../../_model/model-battle';
-import { bs, gs } from '../../_state';
+import { bs, getCurrentBattleState, gs, saveStateToLocalStorage } from '../../_state';
 import { scheduleClassesForCurrentTerm } from '../../sim/academy';
 import { ACTION_TEMPLATE_KEYS } from '../../sim/cards/action-templates';
 import { KEYWORD_KEYS } from '../../sim/cards/keywords';
@@ -21,7 +21,7 @@ export interface CommandResult {
   message: string;
 }
 
-export function executeCommand(input: string): CommandResult {
+export async function executeCommand(input: string): Promise<CommandResult> {
   const trimmed = input.trim();
   if (!trimmed.startsWith('/')) {
     return { ok: false, message: 'Commands must start with /' };
@@ -91,6 +91,25 @@ export function executeCommand(input: string): CommandResult {
       return {
         ok: true,
         message: `Learnt all ${KEYWORD_KEYS.length} keywords and ${ACTION_TEMPLATE_KEYS.length} actions`,
+      };
+    }
+
+    case 'dump': {
+      // /dump — quicksave + battle state JSON on clipboard
+      saveStateToLocalStorage('quicksave');
+      const json = JSON.stringify(getCurrentBattleState());
+      try {
+        await navigator.clipboard.writeText(json);
+      } catch {
+        return {
+          ok: false,
+          message: 'Quicksaved, but clipboard failed (try again from a user gesture or HTTPS)',
+        };
+      }
+      const kb = (json.length / 1024).toFixed(1);
+      return {
+        ok: true,
+        message: `Quicksaved; copied battle state (${kb} KB) to clipboard`,
       };
     }
 

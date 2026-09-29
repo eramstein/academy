@@ -1,4 +1,5 @@
 // Sound effects for battle actions
+import { uiState } from '@/lib/_state';
 import { getSoundPath } from '@lib/_utils/asset-paths';
 
 class SoundManager {
@@ -35,6 +36,7 @@ class SoundManager {
   }
 
   playSound(soundName: string) {
+    if (uiState.isHeadless) return;
     if (typeof Audio === 'undefined') return;
     const sound = this.sounds.get(soundName);
     if (sound) {
@@ -63,6 +65,7 @@ class SoundManager {
   }
 
   playGoldSound() {
+    if (uiState.isHeadless) return;
     if (typeof window === 'undefined') {
       this.playSound('gold');
       return;

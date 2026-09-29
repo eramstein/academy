@@ -16,6 +16,12 @@ export function isHumanPlayer(playerId: number): boolean {
   return playerId === 0;
 }
 
+/** The unit's controller is the player who may move, attack, and activate right now. */
+export function isUnitsTurn(unit: { ownerPlayerId: number }): boolean {
+  const activeId = bs.isPlayersTurn ? 0 : 1;
+  return unit.ownerPlayerId === activeId;
+}
+
 export function getHumanPlayer(): Player {
   return bs.players[0];
 }

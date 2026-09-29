@@ -13,7 +13,7 @@ export function getAiGoals(persona: PersonaType): { goal: AiTurnGoal; args: any 
     return [];
   }
   // 1st priority: look for a lethal row
-  const lethalRow = lookForLethalRow();
+  const lethalRow = lookForLethalRow(bs);
   if (lethalRow !== null) {
     const blockers = bs.units.filter((u) => u.position.row === lethalRow && u.ownerPlayerId === 0);
     // Clear path: commit to attacking for the win (don't divert to block)
