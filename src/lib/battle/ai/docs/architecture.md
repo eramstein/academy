@@ -1,245 +1,313 @@
-# Battle AI — Architecture
+# Battle AI — Proposed Architecture
 
-This document describes the AI as it works today. The replacement design is [proposed-architecture.md](proposed-architecture.md). The migration steps are [implementation-plan.md](implementation-plan.md).
+This replaces the decision procedure in [architecture.md](architecture.md). The match entry points stay: `playAiTurn()` is still called from [`init.ts`](../../init.ts) and [`turn.ts`](../../turn.ts), the AI is still player id `1`, and the UI still shows one action at a time.
 
-The battle AI plays the opponent (player id `1`) during a match. The human is always player id `0`. It does not search a game tree. Each turn it picks a stance and a short list of goals, then repeatedly chooses one legal action until nothing useful remains, and passes.
+The goal is a bot that plays decently. It should take an obvious win, avoid a death that the opponent's board can already deliver, and otherwise spend mana on actions that leave a better position. It does not need a long-term plan.
 
-Game rules live in [`src/doc/game_rules/tcg-design.md`](../../../../doc/game_rules/tcg-design.md). This document describes the code, including behavior that is defined but not yet used by action selection.
+Cards and effects are data, and new ones appear at runtime. The AI does not learn what an ability does. It applies a concrete action through the battle engine, fast-forwards the consequences that are already determined, then scores the position from life, board, lands, mana, and cards. Hand-written code lists legal actions, decides which of them are worth simulating, and scores a position. The queue ranker is part of the policy: with a cap of 24 simulations, the bot can only play a line the ranker let through.
 
-## How a turn starts
+## Decision loop
 
-`playAiTurn()` in [`ai.ts`](../ai.ts) is called from two places:
-
-- [`init.ts`](../../init.ts), when the AI wins the opening coin flip
-- [`turn.ts`](../../turn.ts) `nextTurn()`, when the turn flips to the AI
-
-The live persona is the constant `AI_PERSONA` in `ai.ts`. It is `PersonaType.Normal`. `PersonaType.Aggro` exists and is mapped, but nothing selects it at runtime.
-
-At the start of the turn the loop writes three fields on `bs.aiState` (`AiState` in [`model-battle.ts`](../../../_model/model-battle.ts)):
-
-| Field | Set by | Used by action choice |
-| --- | --- | --- |
-| `strategy` | `getAiStrategy` | Stored only. Personas do not read it. |
-| `goals` | `getAiGoals` | Yes. Normal persona and move valuation. |
-| `dismissedCards` | Cleared to `{}` | Yes. Cards that cannot be targeted are skipped for the rest of the turn. |
-
-`strategy` and `goals` are computed once per turn. They are not refreshed after each action.
-
-## Turn loop
-
-`playAiTurn` waits 500ms, then `loopAiActions` runs until the AI passes or the game ends. Between actions it waits `config.aiActionInterval` (1s) so the UI can show each play.
+Each live action is chosen from scratch. The AI does not commit to a script for the rest of the turn, because a random effect can change the board before the next play.
 
 ```mermaid
 flowchart TD
-  start[playAiTurn] --> plan[Write strategy, goals, clear dismissed cards]
-  plan --> wait[Wait 500ms]
-  wait --> loop[loopAiActions]
-  loop --> legal[Enumerate legal actions]
-  legal --> sim[Worker: pass the turn, store simulatedNextTurn]
-  sim --> empty{No actions or safety net?}
-  empty -->|yes| pass[nextTurn]
-  empty -->|no| ability{Player ability unused?}
-  ability -->|yes| spend[Color increment or land ability]
-  ability -->|no| persona[persona.executeAction]
-  spend --> won{Game over?}
-  persona --> won
-  won -->|yes| stop[Stop]
+  start[playAiTurn] --> weights[Pick weight preset]
+  weights --> loop[Next decision]
+  loop --> gen[Generate concrete candidates]
+  gen --> rank[Rank with a cheap heuristic]
+  rank --> cap[Keep the quota, forcing lethal and answers]
+  cap --> sim[Worker: apply, then epilogue]
+  sim --> score[Score in budget points]
+  score --> pick[Wins first, then best finite score]
+  pick --> play[Play that one action on the live board]
+  play --> won{Game over, or nothing left worth doing?}
+  won -->|yes| pass[nextTurn]
   won -->|no| delay[Wait aiActionInterval]
   delay --> loop
 ```
 
-Each iteration does exactly one of: spend the once-per-turn player ability, or let the persona play one card / move / attack. The player ability is outside the persona. If `abilityUsed` is false, the loop spends it before any card or attack, every turn.
+`actionsPlayedthisTurn` resets at the start of `playAiTurn`. The existing safety net still forces `nextTurn()` if a turn somehow loops. That counter is per turn, not per match.
 
-`actionsPlayedthisTurn` is a module-level counter. It is not reset in `playAiTurn`, so `MAX_ACTIONS_SAFETY_NET` (100) counts actions across the match, not within one turn. Hitting it forces `nextTurn()`.
+The once-per-turn player ability is a candidate, same as a spell or an attack. It is not spent automatically before the search. Skipping it is allowed when every way to spend it scores worse.
 
-## Legal actions
+## Candidates
 
-`getPossibleActions(false)` always inspects player 1. The `isLeaderPlayer` argument is unused by the loop. An action is legal when:
+A candidate is one concrete action, including its targets. Two different targets for the same spell are two candidates. Entities are stored by `instanceId` (and a position key for cells), never by object reference. The worker's clone is a different object graph.
 
-- **Deploy** — unit in hand, payable, board not full, not dismissed
-- **Spell** — spell in hand, payable, not dismissed
-- **Move** — deployed unit that `canMove`, and the board is not full
-- **Attack** — deployed unit that `canAttack` and has `power > 0`
-- **Player ability** — `abilityUsed` is false (color threshold or one land activation)
+| Kind | What is fixed on the candidate |
+| --- | --- |
+| Pass | Nothing further |
+| Attack | Unit, and the legal target from `validAttackTargets` |
+| Move | Unit and one destination cell on the AI half |
+| Deploy | Unit card and one destination cell |
+| Spell | Spell card and a full target assignment |
+| Activate | Unit or land, ability index, and a full target assignment |
+| Color | Which color threshold to raise |
 
-Activated abilities on units are not in this set. The AI never chooses to activate them. When a triggered ability on an AI unit needs targets, [`targetting.ts`](../../../ui/_helpers/targetting.ts) calls `selectAiAbilityTargets`, which picks eligible targets at random.
+Generation uses the rules that already exist: `isPayable`, `canAttack`, `canMove`, `getEmptyCells(false)`, `getEligibleTargets`, `validAttackTargets`. A candidate the rules reject is not generated.
+
+Activated abilities on units are included when they are payable. Today they are missing from `getPossibleActions`.
+
+Cells are collapsed before ranking. Each unit that can move contributes one candidate, whose destination is the best empty cell from the heuristic. Each deployable card contributes one candidate, the same way. Further cells of that unit fill leftover slots only. A quota of three moves is three units, not one unit on three irrelevant cells.
+
+Target assignments are capped before ranking:
+
+- At most **4** assignments per spell, ability, or flying/ranged attacker.
+- Assignments are built greedily from the cheap heuristic (best target, then the next distinct one), not from the full cartesian product.
+- The assignment that fills a quota slot is the best one. The other three enter only through leftover slots.
+- Pass and the four color increments are not subject to this cap.
+
+## Caps
+
+Engine simulation is the expensive step. Generation and the cheap ranker are not. Defaults live next to the other AI settings in [`config.ts`](../../../_config/config.ts):
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `maxSimulations` | 24 | How many candidates are cloned and resolved per decision |
+| `maxAbsoluteSimulations` | 32 | Ceiling after forced lethal and survival inserts |
+| `maxTargetAssignments` | 4 | Assignments considered per spell, ability, or multi-target attack |
+| `randomSamples` | 1 | Resolutions averaged for a candidate. Stays 1 until a card is known to be random |
+
+24 is the sum of the reserved quotas below, plus one leftover slot. Raising it is not the fix when one category fills the list; tightening that category's quota is.
+
+A quota slot is one candidate. Unused reserved slots go back to the global rank list.
+
+| Reserved | Count | What one slot is |
+| --- | --- | --- |
+| Pass | 1 | Always included |
+| Color | 4 | One per color. All four are simulated. The ranker cannot tell which threshold unlocks a card; the score can. |
+| Land ability | 2 | Best payable land activations |
+| Spell | 4 | Best assignment of each of the four best spells |
+| Deploy | 3 | Best cell of each of the three best cards |
+| Move | 3 | Best cell of each of the three best units |
+| Attack | 4 | Best legal target of each of the four best attackers |
+| Unit activation | 2 | Best assignment of each of the two best abilities |
+
+Equal heuristic ranks break by mana cost, highest first, then by stable `instanceId`. An unrecognized spell still receives a slot through the spell quota, and the expensive unknown is preferred over a cheap one.
+
+Forced in even when the quota is full, counting toward the ceiling of 32:
+
+- Every stats-obvious lethal attack.
+- When the pass candidate's epilogue leaves the AI dead: at least one move or deploy into the row that kills them, and the spell and activation quotas fill with answers first (see the heuristic). A removal or a stun has to be inside the simulated set, or the survival pick has nothing to choose.
+- A land that would be razed uses the same answer priority inside the normal cap. Only a player death raises the ceiling.
+
+The AI plays the best candidate among those it actually simulated.
+
+One worker handles the whole decision. It receives the baseline snapshot and the capped candidate list, clones the baseline once per candidate, and returns score breakdowns. It does not spawn a new worker per action.
+
+## Cheap heuristic
+
+The heuristic decides who receives a simulation slot. It does not choose the action that gets played among the lines that were simulated.
+
+It may look at numbers already on the cards and the board: power, health, armor, card budget, whether an attack would kill its target, and whether a `damageUnit` or `destroyUnit` spell would kill a unit. It may use row danger from [`rows.ts`](../rows.ts) to order blocks. Effects it does not recognize share a neutral rank; the mana-cost tie-break then orders them. That peek at two effect names is only a sort. The position score never branches on effect names.
+
+`rows.ts` reads the position it is given. It stops reading the global `simulatedNextTurn`. Its danger figure compares total power to total health, so it is only good enough to order the queue. The epilogue, not this number, decides whether a line actually dies.
+
+### Stats-obvious lethal
+
+Before the queue is trimmed, mark an attack as obvious lethal when combat stats alone say it wins this turn:
+
+- The legal target is the opposing player and `power` is at least their life.
+- Or the attack kills the only blocker in its row, and the ready power behind that trade is at least the land's health plus the opponent's life.
+
+This check does not read spell text. Spell lethal is found by simulating the spell. Obvious lethal attacks are forced into the simulated set.
+
+### Survival inserts
+
+The pass candidate is always simulated, so the search knows what "do nothing" already loses. When that epilogue kills the AI, the forced set gains:
+
+- one move or deploy into the killing row, when a legal cell exists
+- spell and activation slots ordered as answers: a recognized kill spell first, then any other spell by mana cost, so an unrecognized stun or burn still gets resolved
+
+Land-razing uses that same order inside the normal cap.
+
+## Simulation
+
+For each kept candidate the worker:
+
+1. Replaces its battle state with a deep clone of the baseline. `populateBattleState` merges, so a fresh assign onto a reset state is required between candidates. Reset `uiState.battle` pending fields too.
+2. Sets `uiState.isHeadless`.
+3. Re-finds every unit, card, and land on that clone by `instanceId`, then applies the action through the engine with those references.
+4. Resolves triggers (see below).
+5. If either player is already dead, scores a terminal and stops. The epilogue does not run after the game is over.
+6. Records latent attacks and unspent mana. Both expire if the turn ends, so they are measured here.
+7. Runs the epilogue.
+8. Scores the resulting position and adds the latent and mana credit back.
+
+Each candidate is wrapped so one thrown action returns a loss for that candidate and the batch continues.
+
+The winning action is played again on the live state. The simulated state is not copied back. Re-resolving on the live board keeps animations and real random rolls. `randomSamples` stays 1, so a card that rolls can score one outcome and live a different one. A later change can average several resolutions; each extra sample counts toward `maxSimulations`.
+
+### Apply has to be synchronous and id-based
+
+`apply.ts` is the only way a candidate is executed, in the worker and on the live board. It takes ids, resolves them on the current `bs`, and calls the engine.
+
+`playSpell` pays the cost and then resolves the effect inside a `setTimeout` of about 750ms on the AI's turn. `isHeadless` does not bypass that. A search that scores when `playSpell` returns will see mana spent, the card still in hand, and the board unchanged, and the timer will mutate whichever candidate is running next. Headless apply resolves the effect and the discard in place, with no timer and no write to `uiState.battle.playedSpell`.
+
+`attackUnit` checks the target with object identity (`t === target`). After `postMessage` the candidate's target is a different object, so the lookup by `instanceId` has to happen before the call. Effect code mutates the object it is given; that object has to be the one living on the worker's `bs`.
+
+`nextTurn` calls `playAiTurn` whenever the turn flips to the AI. Headless mode only skips the sound. The epilogue will schedule a second AI loop on the worker unless `playAiTurn` is gated on `!uiState.isHeadless`.
+
+## Trigger targets
+
+Triggers that fire during apply need targets. Those targets are committed; they are not left to the queue heuristic, and they are not sampled at random.
+
+Inside the candidate, the worker tries up to `maxTargetAssignments` legal targets. For each one it runs the same epilogue and score, and keeps the best result for the player who owns the trigger. An AI trigger maximizes the AI score. An opponent trigger maximizes the opponent's score, using the same formula with the weights swapped, so the search assumes the human aims it well. This is one extra ply on a short list, not a tree search, and it does not read effect names. That is what lets a trigger that draws, stuns, or buffs aim itself.
+
+The same picker is used when the live AI resolves its own triggers, so the played line matches the searched one. Human triggers on the live board are still chosen by the human. `selectAiAbilityTargets` stops sampling at random.
+
+## Epilogue
+
+The score is taken after the consequences that are already on the board, not on the raw post-action snapshot. Otherwise a stun, a poison, a zerk, or a start-of-turn trigger is invisible, and a ritual's mana has nowhere to appear.
+
+After the action and its triggers:
+
+1. Remember latent attacks still legal this turn, and the mana credit below.
+2. Fast-forward the end of the AI turn and the start of the opponent's turn: status ticks, mana growth, draw, poison and regeneration on the opponent's units, temporary effects that expire on them, zerk auto-attacks, start-of-turn triggers. Do not call `playAiTurn`.
+3. Each opponent unit that `canAttack` swings **only when some legal target would die**: destroy a unit, raze a land, or reduce the AI to 0 life. Among those lethal targets it picks the greediest (player, then highest `valueUnit`, then land)—not merely `validAttackTargets()[0]`. That way a ranged unit that can kill a 2-HP body is not skipped because a healthier blocker appears first in the list. Non-lethal chips are skipped so inevitable counterswings do not punish trading. Row then column order among attackers. Lethal swings still use real combat: stun, armor, retaliate, trample.
+4. Score that position. Add the latent credit and the mana credit from step 1.
+
+Terminal checks happen twice. A kill during the AI action is a win before the epilogue, so their attackers do not get a turn. A death during the epilogue is a loss.
+
+The epilogue does not cast the opponent's spells, deploy their hand, or move a unit into a new row. A haste card in their hand, and a unit that still has to move before it can reach, are outside this model. Poison on the AI's own units ticks at the start of the AI's following turn, after the opponent has played a full turn, so it is not applied here. Poison on their units is applied, because it ticks before they attack. Non-lethal combat damage the opponent could deal next turn is also outside this model; only lethal attacks are applied.
+
+There is no separate `incomingDamage` term. Material a lethal attack sweep destroys is already gone. A second threat penalty would count it twice.
+
+## Position score
+
+`valuePosition` is a weighted sum in **budget points**, the same scale as `getCardBudget` (roughly 5–80 for a card). It does not branch on effect names. A buff, a stun, or a kill shows up because the epilogue changed life, stats, or who is on the board.
+
+Terminals are sort keys, not terms in the sum. A win sorts above every finite score. A loss sorts below every finite score. Several wins are ordered by the finite score underneath, so two lethal lines still prefer the better board. Putting `+Infinity` and `-Infinity` in the same addition produces `NaN` when a line wins while attackers are still on the board.
+
+```
+score =
+  opponentLifeWeight * opponentLifeLost
+  - aiLifeWeight     * aiLifeLost
+  + boardWeight      * (ownUnitWeight * aiUnitValue - enemyUnitWeight * opponentUnitValue)
+  + landWeight       * (aiLandValue - opponentLandValue)
+  + handWeight       * ownHandValue
+  + colorWeight      * colorProgress
+  + manaCredit
+  + latentCredit
+```
+
+Life is measured as points lost from the start of the decision, so face damage is positive for the AI when the opponent loses it. The two life weights are independent. One coefficient on `aiLife - opponentLife` cannot express "care more about their life and less about mine."
+
+The board term is asymmetric on purpose. Retaliate has no separate line item: it only shows up as lost own durability (or a dead attacker). With `ownUnitWeight < 1` and `enemyUnitWeight > 1`, chipping a retaliate blocker is favored over a pure equal trade on the board, without searching future turns for the cleanup attack.
+
+### Exchange rates
+
+These are the starting weights. They are the play policy. Tune them from whole games. Do not add an effect-name case to make one card look right.
+
+| Outcome | Budget points |
+| --- | --- |
+| 1 point of opponent life | **4**, matching the power feature cost |
+| 1 point of AI life, Normal | **4** |
+| 1 point of AI life, Aggro | **2**, and opponent life **6** |
+| 1 point of AI life, Defend | **6**, and opponent life **3** |
+| Standing land | **22**, about a 4-mana card |
+| Ruined land | **4**. A ruin can still have abilities, and it can no longer be attacked |
+| Card in the AI hand | **0.35** of its full budget, including OnDeploy |
+| Card in the opponent's hand | **4** flat. The scorer does not read their hand or the deck order |
+| 1 unspent mana that still pays toward a card in hand | **3** |
+| Unspent mana that pays nothing currently in hand | **0** |
+| A hand card that this action newly makes payable | **0.25** of that card's budget, as color progress |
+| A hand card still short of its colors | **0.10** of its budget times the fraction of thresholds this action closed |
+
+`boardWeight`, `landWeight`, `handWeight`, and `colorWeight` start at **1**. Normal also uses `ownUnitWeight` **0.85** and `enemyUnitWeight` **1.2** (Aggro **0.7** / **1.35**, Defend **1** / **1**). The numbers above are already in budget points. Aggro also lowers `boardWeight` to **0.7**. Defend leaves it at **1**.
+
+Developing a body is the large swing: a card leaves the hand at 0.35 of budget and arrives on the board near full `valueUnit`. With opponent life at 4 per point, a 4-damage face hit is 16, and a medium body is often more than that. That is intentional for Normal. Aggro's life weight of 6, and its lower board weight, is what makes the race win the comparison. If games show Normal never attacking until lethal, raise `enemyUnitWeight` or opponent life before adding multi-step search.
+
+Mana is credited from the post-action state, before the epilogue ends the turn and wipes it. A ritual that only adds mana the hand can spend therefore beats pass. Mana that enables nothing in hand does not.
+
+Color progress is only the change in payability. The hand term already counts every card at 0.35 whether or not it can be cast. A color bump that unlocks nothing adds about zero, so the bot will pass rather than spend the ability on a random color.
+
+### Unit value
+
+`valueUnit` is the body on the board. It is not a linear fraction of the printed budget.
+
+OnDeploy is a one-shot. Once the unit is deployed, the engine has already applied it, and the epilogue scores whatever that effect did. Counting the ability again treats the enter text as permanent stats. Subtract `getAbilityCost` for every ability whose trigger is `OnDeploy`. Other triggers, including `OnTurnStart`, stay in the budget, because they will keep firing. The current halving of any unit that merely has an OnDeploy ability goes away.
+
+Missing health reduces value, and only the health portion. A unit at 1 health attacks for its full power, so the rest of the budget is unchanged. Health is priced at the existing feature cost, 2 per point of `maxHealth`. Current power is repriced at 4 per point, so a buff that changed power shows up on the body even when the unit cannot attack yet.
+
+```
+onDeployCost   = sum of getAbilityCost for OnDeploy abilities
+printed        = getCardBudget(unit) - onDeployCost
+healthBudget   = maxHealth * 2
+printedPower   = printedPowerStat * 4
+threat         = printed - healthBudget - printedPower + currentPower * 4
+durability     = healthBudget * sqrt(currentHealth / maxHealth)
+valueUnit      = threat + durability
+```
+
+`sqrt` is the curve. A 4-health body keeps about 70% of its health budget at half health, and half of it at 1 health. A linear `current / max` would cut that 1-health body to a quarter, and scaling the whole budget would also throw away its attack. Threat stays whole at every health total.
+
+A card in hand uses the full `getCardBudget`, OnDeploy included, times 0.35. The enter effect has not happened yet. After a simulated deploy, the body is `valueUnit` (OnDeploy removed) and the effect itself is whatever the engine changed.
+
+`valueBoard().rel` uses this `valueUnit`. An empty board is ratio 0.5, so the preset picker does not see `NaN`.
+
+### Latent attacks
+
+This is how a one-step search sees "remove the blocker, then hit" without simulating the attack that follows. It is computed after the action, before the epilogue gives the turn away.
+
+Walk ready AI units that `canAttack`, highest current power first. Each one looks at its current legal target, then at the next target as if bodies already killed by an earlier latent swing were gone. One body is killed once. The credit is `latentFactor` times the same delta `valuePosition` would get if the swing had already landed:
+
+- Player: `power * opponentLifeWeight * latentFactor`
+- Unit: the drop in `valueUnit`, times `latentFactor`. A kill is the whole value. A chip is only the durability change, because threat does not shrink with health. If retaliate would kill the attacker, subtract `latentFactor * valueUnit(attacker)`.
+- Land: the fraction of `(standingLand - ruinedLand)` equal to damage over land health, times `latentFactor`. A swing that razes the land takes the whole gap.
+
+`latentFactor` starts at **0.85**. Because the credit uses the same budget points as an immediate swing, attacking now outranks leaving the same swing for later. The estimate uses combat stats and `validAttackTargets` only. It does not cast spells.
+
+The **pass** candidate does not receive latent credit: passing ends the turn, so those attacks will not happen. Other candidates still get it, so a deploy or color play is not punished for deferring a swing the loop can take next.
+
+Latent value misses "move, then attack" when the move is what opens the attack, and it misses a second spell. Those lines are the job of greedy continuation, which stays off.
 
 ## Personas
 
-A persona is an `AiPersona`: one method, `executeAction(possibleActions)`. The registry is [`personas/mappings.ts`](../personas/mappings.ts).
+Persona is a weight preset, not a separate policy. `getAiStrategy` selects it from board share, using `valueUnit`: below 0.3 defend, above 0.7 attack, otherwise normal. Aggro as a persona is the Aggro preset for the whole match. `Turtle` and `Reach` stay unused until a preset exists for them.
 
-### Normal
+| Preset | Bias |
+| --- | --- |
+| Normal | Life at 4 per point on both sides, board weight 1 |
+| Aggro | Opponent life at 6, own life at 2, board weight 0.7 |
+| Defend | Own life at 6, opponent life at 3, board weight 1 |
 
-[`personas/normal.ts`](../personas/normal.ts) is a fixed priority list. The first match plays and returns. Cards in hand are considered before units already on the board.
+## Greedy continuation (later, off by default)
 
-**Hand**
+One-step search plus latent attacks still misses a kill that needs two non-attack actions, or a move that only pays off because of the attack after it. Continuation would ask: "If I take this first action, and then keep playing greedily until I would pass, how good is the end of my turn?"
 
-1. If the goal is `LethalAttackRow`, deploy the highest-power haste unit into that row.
-2. For each goal, play the best spell whose `aiHints` include that goal, then the highest-cost unit whose `aiHints` include it. `BreachRow` and `LethalAttackRow` deploy into the goal's row; other goals use the best cell on the board.
-3. Otherwise play the highest mana-cost card that is currently playable. Spells hinted `Reset` are excluded here so a board wipe is only cast when it was chosen as a goal. Ties are not broken beyond sort order.
+It stays behind `continuationEnabled = false`. The branch it would explore is the heuristic's top few, so it finds a second step the ranker already liked. It does not find the spell the ranker left outside the quota. Turn it on only when real games show a two-step line (move then attack, or two spells) that latent attacks and the epilogue both miss. Defaults if that happens: `continuationSteps = 6`, `continuationBranch = 4`, latent credit off on the final score so the same future damage is not counted twice. The live loop still plays only the first action, then replans.
 
-A spell with no legal targets is written into `dismissedCards` and the function returns false, so the same iteration does not fall through to a unit. The next loop skips that card.
+## What this retires
 
-**Board**
+Once search is the live policy, these stop driving decisions:
 
-1. If the goal is `BreachRow` or `LethalAttackRow`, move the strongest `moveAndAttack` unit that is not already in that row into it.
-2. Otherwise pick one attacker (see attack order below) and compare attacking with moving. Attack unless the best move scores higher than the attack after counter-attack cost.
-3. If nobody can attack, move a random legal unit to its best cell.
+- The priority list in [`personas/normal.ts`](../personas/normal.ts) and the random policy in [`personas/aggro.ts`](../personas/aggro.ts)
+- Card `aiHints`, goal matching on those hints, and `AiTurnGoal` as an input to play
+- Effect-name scoring in [`spells.ts`](../spells.ts) as a way to choose a spell
+- Spending the player ability before any search, including `incrementRandomColor` as a default
+- The global `simulatedNextTurn` snapshot, which today is recomputed before every action and does not try the AI's own moves
 
-Attack order in a row, when several units can attack the same blockers:
+Card budget, combat legality, and headless clones stay. Row danger stays as a queue hint. The per-candidate epilogue replaces the pass snapshot as the way the bot looks one turn ahead.
 
-- A `lance` attacker, if there is more than one blocker
-- A `cleave` attacker, if the closest blocker has a neighbor in its column
-- The smallest attacker that would kill the front blocker, otherwise the biggest
-
-`attackOrMove` has a note that `AiTurnStrategy` should weight this comparison. It does not today.
-
-### Aggro
-
-[`personas/aggro.ts`](../personas/aggro.ts) ignores goals, spells, and valuations. It auto-attacks a random ready unit, otherwise deploys a random unit on a random empty cell, otherwise moves a random unit to a random empty cell.
-
-## Strategy and goals
-
-Both are functions of `PersonaType` plus the current board. Aggro always gets `AiTurnStrategy.Attack` and an empty goal list.
-
-### Strategy
-
-[`strategy.ts`](../strategy.ts) reads `valueBoard().rel`, the AI's share of total unit value:
-
-- below `0.3` → `Defend`
-- above `0.7` → `Attack`
-- otherwise → `Normal`
-
-`AiTurnStrategy` also defines `Turtle` and `Reach`. Nothing returns them. Because personas never read `bs.aiState.strategy`, changing this function does not change play until a persona starts using it.
-
-### Goals
-
-[`goals.ts`](../goals.ts) returns the first match:
-
-1. **Lethal row.** [`lookForLethalRow`](../rows.ts) finds a row where AI power, plus the best haste unit in hand and the best `moveAndAttack` unit elsewhere, can kill the opponent through that row's land. If the row has no blockers, the only goal is `LethalAttackRow`. If it has blockers, the goals are `BreachRow` plus one `RemoveUnit` per blocker.
-2. **Board wipe.** If `valueBoard().abs` is at or below `-baordWipeThreshold` (about two 4-mana cards), the goal is `Reset`.
-3. Otherwise no goals. The Normal persona then plays its highest-cost card and attacks by local value.
-
-`AiTurnGoal.BlockRow` and `DestroyLand` are defined on the enum and are not assigned.
-
-Goals carry `args`: `{ row }` for row goals, `{ unit }` for `RemoveUnit`.
-
-### Card hints
-
-`BaseCardTemplate.aiHints` is an optional list of `AiTurnGoal` values. It is how a card tells the AI what job it can do. The Normal persona matches hints with `includes(goal)`. In [`base-deck.ts`](../../../../data/base-deck.ts) the only hint in use is `RemoveUnit`. A removal spell with no hint is treated as a generic high-cost play, not as a tool for `RemoveUnit`.
-
-## Valuations
-
-Numbers are heuristics, not win probabilities. Weights live in [`valuations/config.ts`](../valuations/config.ts). Unit values come from the sim card budget (`getCardBudget`), which is typically on the order of 5–80. The large constants (`landDestructionValue` is `1000000`, a lethal face attack is `Infinity`) exist so blocking a dying land or killing the opponent outranks ordinary trades.
-
-Several readers use `simulatedNextTurn ?? bs`. When the worker has finished, row danger, board value, and counter-attack look at the board after a pass, not at the live board. See [Pass simulation](#pass-simulation).
-
-### Units and the board — `valuations/unit.ts`
-
-`valueUnit` is card budget, halved when the unit is missing at least half its health, and halved again when it still has an `OnDeploy` ability (the enter effect has not been spent).
-
-`valueBoard` sums AI unit values minus human unit values:
-
-- `abs` — the difference. Goals use this for the wipe check.
-- `rel` — AI value divided by the total. Strategy uses this. If both sides have no units the ratio is `NaN`, and strategy falls through to `Normal` because both comparisons fail.
-
-`wouldBeDestroyed` is attacker damage (power + poison + rage) against health + armor. `wouldBeDestroyedBySpell` treats `destroyUnit` as a kill, and `damageUnit` as a kill when `args.damage` meets health + resist.
-
-### Attacks — `valuations/attack.ts`
-
-`getHighestValueTarget` scores every target `validAttackTargets` returns and keeps the max:
-
-- **Player** — `Infinity` if this swing is lethal, otherwise `power * playerLifeValue`
-- **Land** — `landDestructionValue` if this swing razes it, otherwise `power * landLifeValue`
-- **Unit** — `valueUnit`, doubled if the swing would destroy it
-
-Retaliate and armor are not part of this score. Counter-attack cost is applied later, in `attackOrMove`.
-
-### Moves — `valuations/move.ts`
-
-`getHighestMoveValue` scores every empty cell on the AI half and picks one of the cells tied for the best score at random. `getHighestMoveValueInRow` restricts that search to one row, and falls back to the full board if the row is full or every cell there scores `-Infinity`.
-
-Per-row inputs come from [`rows.ts`](../rows.ts):
-
-- enemy damage in the row (power + rage, and cleave copied into adjacent rows)
-- allied health in the row
-- `getDangerLevelPerRow`: `0` if allied health covers the damage; otherwise `landDestructionValue` or `landLifeValue` if a land would be hit, and `Infinity` or `playerLifeValue` if the land is already ruined and the player would be hit
-
-Cell score, first match wins:
-
-- `LethalAttackRow` and this unit is the one that should deliver it: `Infinity` on that row, `-Infinity` elsewhere. A stronger haste or `moveAndAttack` unit is allowed to leave.
-- Standing in a row that is already `Infinity` danger: `-Infinity` (do not move off the block)
-- Moving into an `Infinity` row: `Infinity` (must block)
-- Moving onto a land that would be destroyed, if this unit survives: `landDestructionValue`
-- Otherwise a small integer: minus `valueUnit` if the unit would die there, plus one for a favorable power matchup, plus one for a high-health unit blocking, plus half the value of an allied unit behind the cell that the enemy could kill
-
-### Counter-attack — `valuations/counter-attack.ts`
-
-`getCounterAttackValue` is the value the attacker loses by staying in the row. If the defenders (excluding a target this swing would kill) destroy it, the cost is `valueUnit(attacker)`. If the attacker has retaliate and a target, the function returns a negative number, which increases the attack's net value. Otherwise the cost is `0`.
-
-`attackOrMove` then uses:
-
-```
-attackValue = bestAttackValue - counterAttackValue
-```
-
-and attacks when that is at least as good as the negative of the counter-attack it would face after the best move. A move scored `Infinity` (must block) always wins this comparison.
-
-### Spells — `spells.ts` and `target.ts`
-
-`spellWouldKillUnit` returns `1` for `destroyUnit`, `damage / health` for `damageUnit` (field `args.amount`), and `0` otherwise. `selectBestSpellForRemoveUnit` prefers the cheapest spell that returns `>= 1`, otherwise the spell with the highest ratio.
-
-`selectAiSpellTargets` asks the battle targeting rules for eligible targets, then:
-
-- Drops friendly units for spells hinted `RemoveUnit`, and enemy units for every other spell. A buff with no hint is aimed at friendly units. A non-removal spell with no `ownerPlayerId` on the target (a cell, for example) is kept.
-- Returns `null` if a target group cannot be filled. The persona dismisses the card.
-- For removal, prefers units named by current `RemoveUnit` goals, then the highest `valueUnit` among targets the spell would destroy, then the highest-value unit anyway.
-- If the spell has a single `effect.args.range`, scores each candidate by the sum of `valueUnit` over units in that range.
-- Anything else is random.
-
-`selectAiAbilityTargets` does not use goals or value. It samples `count` eligible targets at random for each target definition.
-
-## Mana: colors and lands
-
-Spending the player ability is mandatory in the loop, before the persona runs. [`ai.ts`](../ai.ts) `usePlayerAbility`:
-
-1. [`getColorToIncrement`](../colors.ts). If some card in hand becomes payable after exactly one color threshold increase, return that color. Otherwise return the color the AI has least of, if that threshold is still below `2` or below the highest requirement of that color in hand. Otherwise return `null`.
-2. If a color was chosen, `usePlayerColorAbility` increments it and sets `abilityUsed`.
-3. If not, [`usePlayerLandAbility`](../lands.ts) activates the first payable activated ability on a land, but only when mana left after that cost still covers the most expensive card in hand. It walks lands in order and can activate only one, because `abilityUsed` flips.
-4. If no land qualifies, `incrementRandomColor` spends the ability on a random color anyway. The ability is never saved for later in the turn.
-
-## Pass simulation
-
-[`ai.worker.ts`](../ai.worker.ts) is a separate module instance of battle state. The only message it handles is `EVALUATE_PASS_TURN`:
-
-1. `populateBattleState` from a JSON clone of `bs`
-2. `uiState.isHeadless = true` so `nextTurn` does not touch the UI, and so it does not call `playAiTurn` again after the flip (the turn becomes the human's)
-3. Post back the resulting `bs`
-
-`evaluateMove` stores that snapshot on `simulatedNextTurn`. The snapshot is the start of the human turn if the AI passed immediately: end-of-turn statuses, mana growth, draw, and start-of-turn triggers. It is not a prediction of how the human will play, and it is not a search over the AI's own actions. The loop still recomputes it before every action, on the pre-action state, so it stays "what if I pass right now" rather than "what if I pass after the action I am about to take."
+`config.aiPolicy` stays `'heuristic' | 'search'` after search is the default, so a bad match can be flipped back and compared. Delete the old persona only after a few real games under `'search'`.
 
 ## File map
 
 | File | Role |
 | --- | --- |
-| `ai.ts` | Turn entry, action loop, legal-action list, worker client |
-| `ai.worker.ts` | Headless pass-the-turn snapshot |
-| `model.ts` | `AiPersona`, `PersonaType`, `PossibleActions` |
-| `strategy.ts` | Stance from board share. Written, not read. |
-| `goals.ts` | Lethal row, then board wipe, else nothing |
-| `personas/normal.ts` | Priority policy used in matches |
-| `personas/aggro.ts` | Random policy, not selected |
-| `personas/mappings.ts` | Persona enum to implementation |
-| `rows.ts` | Per-row power, count, health, danger, lethal row |
-| `valuations/config.ts` | Scalar weights and the wipe threshold |
-| `valuations/unit.ts` | Unit value, board value, destroy checks |
-| `valuations/attack.ts` | Best attack target |
-| `valuations/move.ts` | Best cell |
-| `valuations/counter-attack.ts` | Cost of staying in a row |
-| `spells.ts` | Fraction of a unit's health a spell removes |
-| `target.ts` | Spell targets by goal and value; ability targets at random |
-| `colors.ts` | Which color threshold to raise |
-| `lands.ts` | Which land ability to activate |
-| `type-checks.ts` | Narrow an attack target to unit, land, or player |
+| `ai.ts` | Turn entry and the live loop. Asks the search for one action, plays it, repeats. |
+| `search.ts` | Generate, rank, cap, dispatch, pick the winner |
+| `candidates.ts` | Concrete action objects from the battle rules, stored by id |
+| `heuristic.ts` | Queue order, cell choice, obvious lethal, survival inserts |
+| `apply.ts` | Resolve ids on the current `bs` and apply one candidate synchronously |
+| `epilogue.ts` | Fast-forward turn end, opponent turn start, and their attacks |
+| `evaluate.ts` | `valueUnit`, `valuePosition`, weight presets, exchange rates |
+| `latent.ts` | Discounted value of attacks still available this turn, in budget points |
+| `ai.worker.ts` | Batch-evaluate candidates from one snapshot, return score breakdowns |
+| `valuations/config.ts` | The exchange-rate numbers and `latentFactor` |
+| `rows.ts` | Queue-only row danger. Takes a state. Does not feed the score |
+| `config.ts` | `maxSimulations` and the other caps |
 
-Shared enums `AiTurnStrategy` and `AiTurnGoal` live in [`enums-battle.ts`](../../../_model/enums-battle.ts). Persisted turn memory is `BattleState.aiState`.
+[`model.ts`](../model.ts) holds the candidate type and the weight-preset enum. `PersonaType` becomes that preset. `PossibleActions` is replaced by the candidate list.

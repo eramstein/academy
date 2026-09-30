@@ -18,7 +18,7 @@ import { deployUnit, getAdjacentUnitsInColumn, getClosestEnnemyInRow } from '../
 import type { PossibleActions } from '../model';
 import { type AiPersona } from '../model';
 import { spellWouldKillUnit } from '../spells';
-import { selectAiSpellTargets } from '../target';
+import { isHostileUnitSpell, selectAiSpellTargets } from '../target';
 import { isAttackTargetLand, isAttackTargetPlayer, isAttackTargetUnit } from '../type-checks';
 import { getHighestValueTarget } from '../valuations/attack';
 import { getCounterAttackValue } from '../valuations/counter-attack';
@@ -55,47 +55,23 @@ function handleCardsToPlay(possibleActions: PossibleActions): boolean {
     }
   }
 
-  // priority 1: cards that match a goal
-  if (bs.aiState.goals.length > 0) {
-    for (const goalEntry of bs.aiState.goals) {
-      const matchingSpells = possibleActions.playableSpells.filter((spell) =>
-        spell.aiHints?.includes(goalEntry.goal)
-      );
-      const best = selectBestSpellForGoal(goalEntry.goal, goalEntry.args, matchingSpells);
-      if (best) {
-        const targets = selectAiSpellTargets(best);
-        if (targets) {
-          playSpell(best, targets);
-          return true;
-        } else {
-          bs.aiState.dismissedCards[best.id] = true;
-        }
+  // priority 1: removal spells when clearing a blocker is a goal
+  for (const goalEntry of bs.aiState.goals) {
+    if (goalEntry.goal !== AiTurnGoal.RemoveUnit) continue;
+    const matchingSpells = possibleActions.playableSpells.filter(isHostileUnitSpell);
+    const best = selectBestSpellForGoal(goalEntry.goal, goalEntry.args, matchingSpells);
+    if (best) {
+      const targets = selectAiSpellTargets(best);
+      if (targets) {
+        playSpell(best, targets);
+        return true;
       }
-    }
-    for (const goalEntry of bs.aiState.goals) {
-      const matchingUnits = possibleActions.deployableUnits
-        .filter((unit) => unit.aiHints?.includes(goalEntry.goal))
-        .sort((a, b) => b.cost - a.cost);
-      for (const unit of matchingUnits) {
-        const bestPosition =
-          goalEntry.goal === AiTurnGoal.BreachRow ||
-          goalEntry.goal === AiTurnGoal.LethalAttackRow
-            ? getHighestMoveValueInRow(unit as UnitDeployed, goalEntry.args.row)
-            : getHighestMoveValue(unit as UnitDeployed);
-        if (bestPosition) {
-          deployUnit(unit, bestPosition.cell);
-          return true;
-        }
-      }
+      bs.aiState.dismissedCards[best.id] = true;
     }
   }
   // priority 2: highest mana cost card (we assume for now it's the best value)
   const possiblePositions = getEmptyCells(false);
-  // for board clear spells we do them only in the step before if it was a goal
-  const spellsToConsider = possibleActions.playableSpells.filter((spell) => {
-    return !spell.aiHints?.some((hint) => hint === AiTurnGoal.Reset);
-  });
-  let cardsToConsider: Card[] = [...spellsToConsider];
+  let cardsToConsider: Card[] = [...possibleActions.playableSpells];
   if (possiblePositions.length > 0) {
     cardsToConsider = cardsToConsider.concat(possibleActions.deployableUnits);
   }

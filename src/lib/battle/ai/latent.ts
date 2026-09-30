@@ -1,7 +1,7 @@
 import type { Land, UnitDeployed } from '@/lib/_model';
 import { bs } from '@/lib/_state';
 import { canAttack, validAttackTargets } from '../combat';
-import { valueUnit, type PositionWeights } from './evaluate';
+import { valueUnit, getActivePreset, weightsFor, type PositionWeights } from './evaluate';
 import { AI_PLAYER_ID } from './model';
 import { exchange } from './valuations/config';
 
@@ -42,11 +42,11 @@ export function latentCredit(weights: PositionWeights): { total: number; hits: L
         credit += amount;
         hits.push({ kind: 'player', id: String(target.id), credit: amount });
       } else if ('isRuined' in target) {
-        const amount = latentLand(attacker, target, swing, landDamage, ruined);
+        const amount = latentLand(attacker, target, swing, landDamage, ruined, weights);
         credit += amount;
         hits.push({ kind: 'land', id: target.instanceId, credit: amount });
       } else if ('hasAttacked' in target) {
-        const amount = latentUnit(attacker, target, swing, unitHealth, dead);
+        const amount = latentUnit(attacker, target, swing, unitHealth, dead, weights);
         credit += amount;
         hits.push({ kind: 'unit', id: target.instanceId, credit: amount });
       }
@@ -64,6 +64,7 @@ export function latentCredit(weights: PositionWeights): { total: number; hits: L
  * look better than taking the attack.
  */
 export function reconcileLatent(hits: LatentHit[], healthBefore: Map<string, number>): number {
+  const enemyWeight = weightsFor(getActivePreset()).enemyUnitWeight;
   let total = 0;
   for (const hit of hits) {
     if (hit.kind !== 'unit') {
@@ -75,7 +76,9 @@ export function reconcileLatent(hits: LatentHit[], healthBefore: Map<string, num
     if (!live || live.health <= 0 || before === undefined) continue;
     if (live.health < before) {
       const overlapped =
-        (durability(live, before) - durability(live, live.health)) * exchange.latentFactor;
+        (durability(live, before) - durability(live, live.health)) *
+        exchange.latentFactor *
+        enemyWeight;
       total += Math.max(0, hit.credit - overlapped);
       continue;
     }
@@ -89,7 +92,8 @@ function latentUnit(
   target: UnitDeployed,
   swing: number,
   unitHealth: Map<string, number>,
-  dead: Set<string>
+  dead: Set<string>,
+  weights: PositionWeights
 ): number {
   const armor = attacker.keywords?.armorPiercing ? 0 : (target.keywords?.armor ?? 0);
   const dealt = Math.max(0, swing - armor);
@@ -97,16 +101,16 @@ function latentUnit(
   const next = current - dealt;
   let credit = 0;
   if (next <= 0) {
-    credit += valueAtHealth(target, current) * exchange.latentFactor;
+    credit += valueAtHealth(target, current) * exchange.latentFactor * weights.enemyUnitWeight;
     dead.add(target.instanceId);
   } else {
     unitHealth.set(target.instanceId, next);
     const drop = durability(target, current) - durability(target, next);
-    credit += drop * exchange.latentFactor;
+    credit += drop * exchange.latentFactor * weights.enemyUnitWeight;
   }
   const retaliate = !attacker.keywords?.ranged && (target.retaliate ?? 0) >= attacker.health;
   if (retaliate) {
-    credit -= valueUnit(attacker) * exchange.latentFactor;
+    credit -= valueUnit(attacker) * exchange.latentFactor * weights.ownUnitWeight;
     dead.add(attacker.instanceId);
   }
   return credit;
@@ -117,7 +121,8 @@ function latentLand(
   land: Land,
   swing: number,
   landDamage: Map<string, number>,
-  ruined: Land[]
+  ruined: Land[],
+  weights: PositionWeights
 ): number {
   const gap = exchange.standingLand - exchange.ruinedLand;
   const already = landDamage.get(land.instanceId) ?? 0;
@@ -133,7 +138,7 @@ function latentLand(
   }
   let credit = gap * (after - before) * exchange.latentFactor;
   if ((land.retaliate ?? 0) >= attacker.health) {
-    credit -= valueUnit(attacker) * exchange.latentFactor;
+    credit -= valueUnit(attacker) * exchange.latentFactor * weights.ownUnitWeight;
   }
   return credit;
 }

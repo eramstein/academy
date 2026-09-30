@@ -42,7 +42,6 @@ export interface BaseCardTemplate {
   type: CardType;
   cost: number;
   colors: { color: CardColor; count: number }[];
-  aiHints?: AiTurnGoal[];
 }
 
 export interface UnitCardTemplate extends BaseCardTemplate {

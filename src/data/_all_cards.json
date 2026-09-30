@@ -558,9 +558,6 @@
         }
       }
     ],
-    "aiHints": [
-      "Reset"
-    ],
     "cardSet": "alpha"
   },
   {
@@ -2425,9 +2422,6 @@
         }
       }
     ],
-    "aiHints": [
-      "Reset"
-    ],
     "cardSet": "alpha"
   },
   {
@@ -2825,9 +2819,6 @@
         ]
       }
     ],
-    "aiHints": [
-      "Remove Unit"
-    ],
     "cardSet": "alpha"
   },
   {
@@ -3159,9 +3150,6 @@
           }
         ]
       }
-    ],
-    "aiHints": [
-      "Remove Unit"
     ],
     "cardSet": "alpha"
   },
@@ -4690,9 +4678,6 @@
         }
       }
     ],
-    "aiHints": [
-      "Reset"
-    ],
     "cardSet": "alpha"
   },
   {
@@ -4796,9 +4781,6 @@
         ]
       }
     ],
-    "aiHints": [
-      "Remove Unit"
-    ],
     "cardSet": "alpha"
   },
   {
@@ -4831,9 +4813,6 @@
           }
         ]
       }
-    ],
-    "aiHints": [
-      "Remove Unit"
     ],
     "cardSet": "alpha"
   },
@@ -8523,9 +8502,6 @@
         }
       }
     ],
-    "aiHints": [
-      "Remove Unit"
-    ],
     "cardSet": "alpha"
   },
   {
@@ -8558,9 +8534,6 @@
           }
         ]
       }
-    ],
-    "aiHints": [
-      "Remove Unit"
     ],
     "cardSet": "alpha"
   },

@@ -30,6 +30,17 @@ export const exchange = {
   latentFactor: 0.85,
   boardWeight: 1,
   boardWeightAggro: 0.7,
+  /**
+   * Board term is boardWeight * (ownUnitWeight * aiUnits - enemyUnitWeight * theirUnits).
+   * own < 1 / enemy > 1 makes chipping into retaliate look better without multi-turn search
+   * (retaliate is just own durability loss; there is no separate counterattack term).
+   */
+  ownUnitWeight: 0.85,
+  enemyUnitWeight: 1.2,
+  ownUnitWeightAggro: 0.7,
+  enemyUnitWeightAggro: 1.35,
+  ownUnitWeightDefend: 1,
+  enemyUnitWeightDefend: 1,
   landWeight: 1,
   handWeight: 1,
   colorWeight: 1,

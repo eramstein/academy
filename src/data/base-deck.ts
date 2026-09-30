@@ -1,5 +1,4 @@
 import {
-  AiTurnGoal,
   CardColor,
   CardType,
   TargetType,
@@ -399,7 +398,6 @@ const lightning_bolt = {
       ],
     },
   ],
-  aiHints: [AiTurnGoal.RemoveUnit],
 };
 
 const rock_drop = {
@@ -890,7 +888,6 @@ const execution = {
       ],
     },
   ],
-  aiHints: [AiTurnGoal.RemoveUnit],
 };
 
 const fortify = {
@@ -1053,7 +1050,6 @@ const enchanter_lair = {
       exhausts: true,
     },
   ],
-  aiHints: [AiTurnGoal.RemoveUnit],
 };
 
 export const BASE_DECK_GREEN: DeckBlueprint = {

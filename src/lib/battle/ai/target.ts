@@ -13,8 +13,22 @@ import { bs } from '@/lib/_state';
 import { getRandomFromArray } from '@/lib/_utils/random';
 import { getUnitsInRange, type UnitFilterArgs } from '../effects/unit-filters';
 import { getEligibleTargets } from '../target';
-import { valueUnit, wouldBeDestroyedBySpell } from './valuations/unit';
 import { chooseTriggerTargets } from './trigger-targets';
+import { valueUnit, wouldBeDestroyedBySpell } from './valuations/unit';
+
+/** Effects that should aim at the opponent's side under the heuristic policy. */
+const HOSTILE_UNIT_EFFECTS = new Set([
+  'damageUnit',
+  'destroyUnit',
+  'stun',
+  'mezz',
+  'daze',
+  'root',
+  'bounceUnit',
+  'addDecayCounters',
+  'forceMoveUnit',
+  'fight',
+]);
 
 export function selectAiAbilityTargets(
   unit: UnitDeployed,
@@ -27,6 +41,7 @@ export function selectAiAbilityTargets(
 export function selectAiSpellTargets(spell: SpellCard): EffectTargets[][] | null {
   const targets: EffectTargets[][] = [];
   let notEnoughTargets = false;
+  const hostile = isHostileUnitSpell(spell);
   spell.actions
     .filter((action) => action.targets)
     .forEach((action) => {
@@ -35,11 +50,10 @@ export function selectAiSpellTargets(spell: SpellCard): EffectTargets[][] | null
         action.targets.forEach((targetDefinition) => {
           const actionTargetGroup: UnitDeployed[] | Position[] | Land[] | Player[] | Card[] = [];
           const eligibleTargets = getEligibleTargets(spell, targetDefinition).filter((target) => {
-            const isSpellPositive = !spell.aiHints?.some((hint) => hint === AiTurnGoal.RemoveUnit);
             return (
               !('ownerPlayerId' in target) ||
-              (isSpellPositive && target.ownerPlayerId === spell.ownerPlayerId) ||
-              (!isSpellPositive && target.ownerPlayerId !== spell.ownerPlayerId)
+              (hostile && target.ownerPlayerId !== spell.ownerPlayerId) ||
+              (!hostile && target.ownerPlayerId === spell.ownerPlayerId)
             );
           });
           const count = targetDefinition.count || 1;
@@ -48,7 +62,7 @@ export function selectAiSpellTargets(spell: SpellCard): EffectTargets[][] | null
             return;
           }
           for (let i = 0; i < count; i++) {
-            const t: any = selectTarget(spell, eligibleTargets);
+            const t: any = selectTarget(spell, eligibleTargets, hostile);
             actionTargetGroup.push(t);
           }
           actionTargets.push(actionTargetGroup);
@@ -62,16 +76,18 @@ export function selectAiSpellTargets(spell: SpellCard): EffectTargets[][] | null
   return targets;
 }
 
+export function isHostileUnitSpell(spell: SpellCard): boolean {
+  return spell.actions.some((action) => HOSTILE_UNIT_EFFECTS.has(action.effect.name));
+}
+
 function selectTarget(
   spell: SpellCard,
-  potentialTargets: (UnitDeployed | Position | Land | Player | Card)[]
+  potentialTargets: (UnitDeployed | Position | Land | Player | Card)[],
+  hostile: boolean
 ): UnitDeployed | Position | Land | Player | Card {
-  const spellIsRemoval = spell.aiHints?.some((hint) => hint === AiTurnGoal.RemoveUnit);
-
-  // Removal (single target or zone)
-  if (spellIsRemoval) {
+  if (hostile) {
     const creaturesToRemoveIds = bs.aiState.goals
-      .filter((goal) => goal.goal === AiTurnGoal.RemoveUnit)
+      .filter((goal) => goal.goal === 'Remove Unit')
       .map((goal) => goal.args.unit.instanceId);
     const creaturesToRemove: UnitDeployed[] = potentialTargets.filter(
       (t) => 'instanceId' in t && creaturesToRemoveIds.includes(t.instanceId)
@@ -81,17 +97,13 @@ function selectTarget(
     }
     return getHighestKillValueTarget(spell, potentialTargets as (UnitDeployed | Position)[]);
   }
-  // by default, pick at random
   return getRandomFromArray(potentialTargets);
 }
 
-// get which target would yield the best value, including ranges
 function getHighestKillValueTarget(
   spell: SpellCard,
   potentialTargets: (UnitDeployed | Position)[]
 ): UnitDeployed | Position {
-  console.log(spell, potentialTargets);
-
   let range: UnitFilterArgs | null = null;
   spell.actions.forEach((action) => {
     if (action.effect.args.range) {
@@ -104,7 +116,6 @@ function getHighestKillValueTarget(
   return getBestRangeTarget(spell, potentialTargets, range);
 }
 
-// if the spell only affects one target (no range), simply pick the highest value target that would be killed
 function getBestSingleTarget(
   spell: SpellCard,
   potentialTargets: (UnitDeployed | Position)[]
@@ -120,14 +131,12 @@ function getBestSingleTarget(
   return killableTargets.sort((b, a) => valueUnit(a) - valueUnit(b))[0];
 }
 
-// if the spell has a range, add up the value of the targets in range
-// TODO: for now it only works if the spell has only one range
 function getBestRangeTarget(
   spell: SpellCard,
   potentialTargets: (UnitDeployed | Position)[],
   range: UnitFilterArgs
 ): UnitDeployed | Position {
-  const targetValues: Record<string, number> = {}; // target key to damage value
+  const targetValues: Record<string, number> = {};
   potentialTargets.forEach((t) => {
     const targetsInRange = getUnitsInRange(
       [[t]] as any,

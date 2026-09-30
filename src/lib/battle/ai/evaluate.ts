@@ -8,6 +8,10 @@ export interface PositionWeights {
   aiLifeWeight: number;
   opponentLifeWeight: number;
   boardWeight: number;
+  /** Scales the AI's unit total inside the board term. Lower → happier to take retaliate. */
+  ownUnitWeight: number;
+  /** Scales the opponent's unit total. Higher → happier to chip/kill blockers. */
+  enemyUnitWeight: number;
   landWeight: number;
   handWeight: number;
   colorWeight: number;
@@ -35,6 +39,8 @@ export function weightsFor(preset: WeightPreset): PositionWeights {
       aiLifeWeight: exchange.aiLifeAggro,
       opponentLifeWeight: exchange.opponentLifeAggro,
       boardWeight: exchange.boardWeightAggro,
+      ownUnitWeight: exchange.ownUnitWeightAggro,
+      enemyUnitWeight: exchange.enemyUnitWeightAggro,
       landWeight: exchange.landWeight,
       handWeight: exchange.handWeight,
       colorWeight: exchange.colorWeight,
@@ -45,6 +51,8 @@ export function weightsFor(preset: WeightPreset): PositionWeights {
       aiLifeWeight: exchange.aiLifeDefend,
       opponentLifeWeight: exchange.opponentLifeDefend,
       boardWeight: exchange.boardWeight,
+      ownUnitWeight: exchange.ownUnitWeightDefend,
+      enemyUnitWeight: exchange.enemyUnitWeightDefend,
       landWeight: exchange.landWeight,
       handWeight: exchange.handWeight,
       colorWeight: exchange.colorWeight,
@@ -54,6 +62,8 @@ export function weightsFor(preset: WeightPreset): PositionWeights {
     aiLifeWeight: exchange.aiLifeNormal,
     opponentLifeWeight: exchange.opponentLife,
     boardWeight: exchange.boardWeight,
+    ownUnitWeight: exchange.ownUnitWeight,
+    enemyUnitWeight: exchange.enemyUnitWeight,
     landWeight: exchange.landWeight,
     handWeight: exchange.handWeight,
     colorWeight: exchange.colorWeight,
@@ -145,7 +155,9 @@ export function scorePosition(
   const otherLost = baseOther.life - other.life;
   const life = weights.opponentLifeWeight * otherLost - weights.aiLifeWeight * selfLost;
   const board =
-    weights.boardWeight * (unitValue(favoringPlayerId) - unitValue(otherId));
+    weights.boardWeight *
+    (weights.ownUnitWeight * unitValue(favoringPlayerId) -
+      weights.enemyUnitWeight * unitValue(otherId));
   const lands = weights.landWeight * (landValue(self) - landValue(other));
   const hand = weights.handWeight * handTerm(favoringPlayerId);
   const color = weights.colorWeight * credits.color;
