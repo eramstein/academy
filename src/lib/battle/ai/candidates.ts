@@ -19,6 +19,7 @@ import { canMove } from '../move';
 import { buildAssignments, recognizedKillValue } from './assignments';
 import { valueUnit } from './evaluate';
 import { cellScore, isObviousLethal } from './heuristic';
+import { type LaneBody } from './lane';
 import {
   AI_PLAYER_ID,
   type Candidate,
@@ -68,7 +69,14 @@ export function generateCandidates(): RankedCandidate[] {
             row,
             column,
           }),
-          null
+          {
+            instanceId: card.instanceId,
+            ownerPlayerId: AI_PLAYER_ID,
+            power: card.power,
+            health: card.maxHealth,
+            retaliate: card.retaliate,
+            keywords: card.keywords,
+          }
         )
       );
     }
@@ -190,7 +198,7 @@ function cellCandidates(
   manaCost: number,
   cells: { row: number; column: number }[],
   make: (row: number, column: number) => Candidate,
-  unit: UnitDeployed | null
+  unit: (LaneBody & { position?: { row: number; column: number } }) | null
 ): RankedCandidate[] {
   if (cells.length === 0) return [];
   const scored = cells

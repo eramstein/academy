@@ -4,9 +4,10 @@
 import { CardColor } from '@/lib/_model';
 import { getBudgetFromCost } from '@/lib/sim/cards/card-budget';
 
-// Queue-only weights for the old heuristic and for ordering blocks. Not used in the position score.
+// Queue-only weights for the old heuristic and for ordering blocks.
 export const landDestructionValue = 1000000;
 export const playerLifeValue = 20;
+/** Budget points per point of land health in the position score (and queue ranks). */
 export const landLifeValue = 10;
 export const unitLifeValue = 2;
 // how much unit value the opponent needs to be ahead of us to consider board wiping
@@ -28,6 +29,12 @@ export const exchange = {
   colorUnlockFraction: 0.25,
   colorPartialFraction: 0.1,
   latentFactor: 0.85,
+  /**
+   * Budget points per point of power that can actually reach, and per point of
+   * enemy power a body is effectively walling. Small on purpose: it breaks
+   * "this square is the same as passing" ties, and it loses to a real deploy or trade.
+   */
+  lanePoint: 1,
   boardWeight: 1,
   boardWeightAggro: 0.7,
   /**

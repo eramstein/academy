@@ -2,6 +2,8 @@ import { config } from '@/lib/_config';
 import type { BattleState, Land, Player, Position, UnitDeployed } from '@/lib/_model';
 import { bs } from '@/lib/_state';
 import { canAttack } from '../combat';
+import { getActivePreset, weightsFor } from './evaluate';
+import { type LaneBody, laneSides } from './lane';
 import { AI_PLAYER_ID, HUMAN_PLAYER_ID, type Candidate, type RankedCandidate } from './model';
 import { getDangerLevelPerRow } from './rows';
 import { landDestructionValue } from './valuations/config';
@@ -18,11 +20,11 @@ const QUOTAS: Record<string, number> = {
 };
 
 export function cellScore(
-  unit: UnitDeployed | null,
+  unit: (LaneBody & { position?: Position }) | null,
   cell: Position,
   state: BattleState = bs
 ): number {
-  const danger = getDangerLevelPerRow(state, unit ?? undefined);
+  const danger = getDangerLevelPerRow(state, standingUnit(unit));
   const dest = danger[cell.row] ?? 0;
   const origin = unit?.position ? (danger[unit.position.row] ?? 0) : 0;
   let score = 0;
@@ -30,8 +32,20 @@ export function cellScore(
   else if (dest === Infinity) score = 1e9;
   else if (origin === landDestructionValue && dest < landDestructionValue) score = -1e6;
   else if (dest === landDestructionValue) score = 1e6;
+  if (unit) {
+    const weights = weightsFor(getActivePreset());
+    const sides = laneSides(unit, cell);
+    score +=
+      weights.boardWeight *
+      (weights.ownUnitWeight * sides.own - weights.enemyUnitWeight * sides.enemy);
+  }
   score += (config.boardRows - cell.row) * 0.01 + (config.boardColumns - cell.column) * 0.001;
   return score;
+}
+
+function standingUnit(unit: (LaneBody & { position?: Position }) | null): UnitDeployed | undefined {
+  if (!unit?.position) return undefined;
+  return bs.units.find((entry) => entry.instanceId === unit.instanceId);
 }
 
 export function isObviousLethal(unit: UnitDeployed, target: UnitDeployed | Land | Player): boolean {

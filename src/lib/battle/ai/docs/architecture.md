@@ -245,7 +245,17 @@ valueUnit      = threat + durability
 
 A card in hand uses the full `getCardBudget`, OnDeploy included, times 0.35. The enter effect has not happened yet. After a simulated deploy, the body is `valueUnit` (OnDeploy removed) and the effect itself is whatever the engine changed.
 
-`valueBoard().rel` uses this `valueUnit`. An empty board is ratio 0.5, so the preset picker does not see `NaN`.
+`valueBoard().rel` uses this `valueUnit`. An empty board is ratio 0.5, so the preset picker does not see `NaN`. Lane placement is not part of `valueUnit`, so it does not move the persona threshold.
+
+### Lane
+
+`laneValue` is added on top of `valueUnit` inside the board term. It is the only place the score looks at which row a body occupies. One point of power that can reach, or one point of enemy power a front body is actually walling, is `lanePoint` (1) budget point, then the usual own/enemy unit weights.
+
+- Open row, or a blocker this unit can chip: offense is the unit's power, scaled down by how much health is in the way. A friend in front does not stop the swing.
+- Non-ranged into retaliate that would kill the attacker: offense is 0. Ranged still chips (it does not take that retaliate). Flying treats the row as open.
+- A front body walls only when it survives the row's power, or its retaliate kills the attacker. The credit is the power it catches, not its whole health. An empty row gives a wall nothing. A body behind a friend does not wall.
+
+The same numbers rank which cell is the primary move or deploy, so the reserved slot is the useful row. The term is small next to a deploy or a trade. It exists so a free step off a brick, or a wall stepping into a real threat, beats passing.
 
 ### Latent attacks
 
@@ -304,6 +314,7 @@ Card budget, combat legality, and headless clones stay. Row danger stays as a qu
 | `apply.ts` | Resolve ids on the current `bs` and apply one candidate synchronously |
 | `epilogue.ts` | Fast-forward turn end, opponent turn start, and their attacks |
 | `evaluate.ts` | `valueUnit`, `valuePosition`, weight presets, exchange rates |
+| `lane.ts` | Row placement added to the board term: live power, and walls that actually catch a threat |
 | `latent.ts` | Discounted value of attacks still available this turn, in budget points |
 | `ai.worker.ts` | Batch-evaluate candidates from one snapshot, return score breakdowns |
 | `valuations/config.ts` | The exchange-rate numbers and `latentFactor` |

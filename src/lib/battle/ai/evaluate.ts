@@ -1,7 +1,8 @@
 import { TriggerType, type BattleState, type Card, type CardColor, type Player, type UnitDeployed } from '@/lib/_model';
 import { bs } from '@/lib/_state';
 import { getAbilityCost, getCardBudget } from '@/lib/sim/cards/card-budget';
-import { exchange } from './valuations/config';
+import { laneValue } from './lane';
+import { exchange, landLifeValue } from './valuations/config';
 import { AI_PLAYER_ID, WeightPreset, type ScoreBreakdown, type ScoreTerminal } from './model';
 
 export interface PositionWeights {
@@ -202,14 +203,14 @@ function terminalFor(playerId: number): ScoreTerminal {
 function unitValue(playerId: number): number {
   return bs.units
     .filter((unit) => unit.ownerPlayerId === playerId)
-    .reduce((sum, unit) => sum + valueUnit(unit), 0);
+    .reduce((sum, unit) => sum + valueUnit(unit) + laneValue(unit), 0);
 }
 
 function landValue(player: Player): number {
-  return player.lands.reduce(
-    (sum, land) => sum + (land.isRuined ? exchange.ruinedLand : exchange.standingLand),
-    0
-  );
+  return player.lands.reduce((sum, land) => {
+    if (land.isRuined) return sum + exchange.ruinedLand;
+    return sum + exchange.standingLand + Math.max(0, land.health) * landLifeValue;
+  }, 0);
 }
 
 function handTerm(playerId: number): number {

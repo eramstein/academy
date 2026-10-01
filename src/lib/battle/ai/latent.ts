@@ -3,7 +3,7 @@ import { bs } from '@/lib/_state';
 import { canAttack, validAttackTargets } from '../combat';
 import { valueUnit, getActivePreset, weightsFor, type PositionWeights } from './evaluate';
 import { AI_PLAYER_ID } from './model';
-import { exchange } from './valuations/config';
+import { exchange, landLifeValue } from './valuations/config';
 
 export interface LatentHit {
   kind: 'unit' | 'land' | 'player';
@@ -124,19 +124,21 @@ function latentLand(
   ruined: Land[],
   weights: PositionWeights
 ): number {
-  const gap = exchange.standingLand - exchange.ruinedLand;
   const already = landDamage.get(land.instanceId) ?? 0;
-  const room = Math.max(0, land.health - already);
-  const applied = Math.min(swing, room);
+  const remainingHp = Math.max(0, land.health - already);
+  const applied = Math.min(swing, remainingHp);
   const next = already + applied;
   landDamage.set(land.instanceId, next);
-  const before = land.health > 0 ? Math.min(1, already / land.health) : 1;
-  const after = land.health > 0 ? Math.min(1, next / land.health) : 1;
-  if (next >= land.health && !land.isRuined) {
+  const razes = applied > 0 && next >= land.health && !land.isRuined;
+  if (razes) {
     land.isRuined = true;
     ruined.push(land);
   }
-  let credit = gap * (after - before) * exchange.latentFactor;
+  // Same delta landValue would record if this swing had already landed.
+  const delta = razes
+    ? exchange.standingLand + remainingHp * landLifeValue - exchange.ruinedLand
+    : applied * landLifeValue;
+  let credit = delta * exchange.latentFactor;
   if ((land.retaliate ?? 0) >= attacker.health) {
     credit -= valueUnit(attacker) * exchange.latentFactor * weights.ownUnitWeight;
   }
