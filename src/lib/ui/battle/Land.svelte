@@ -36,6 +36,10 @@
     return land.ownerPlayerId === 0 && !bs.players[0].abilityUsed;
   });
 
+  let showAbilityActivation = $derived(
+    uiState.battle.landAbilityAnimating === land.instanceId
+  );
+
   function handleLandClick() {
     const selectedUnit = uiState.battle.selectedUnit;
     // case targetting land
@@ -76,12 +80,17 @@
 <div
   class="land {isValidTarget ? 'valid-target' : ''} {showColorAnimation()
     ? 'color-increment'
-    : ''} {showGoldenBorder() ? 'ability-available' : ''} {land.isRuined ? 'ruined' : ''}"
+    : ''} {showGoldenBorder() ? 'ability-available' : ''} {showAbilityActivation
+    ? 'ability-activating'
+    : ''} {land.isRuined ? 'ruined' : ''}"
   style="background-image: url('{imagePath}')"
   data-land-instance-id={land.instanceId}
   onclick={handleLandClick}
   oncontextmenu={handleContextMenu}
 >
+  {#if showAbilityActivation}
+    <div class="ability-flash" aria-hidden="true"></div>
+  {/if}
   {#if !land.isRuined}
     <div class="land-stats">
       {#if land.retaliate && land.retaliate > 0}
@@ -91,7 +100,7 @@
     </div>
   {/if}
   {#if land.abilities && land.abilities.length > 0}
-    <div class="abilities-container">
+    <div class="abilities-container" class:revealed={showAbilityActivation}>
       <Abilities abilities={land.abilities} />
     </div>
   {/if}
@@ -178,6 +187,25 @@
     animation: colorIncrementPulse 0.3s ease-in-out;
   }
 
+  .land.ability-activating {
+    z-index: 3;
+    animation: landAbilityPulse 0.6s ease-out;
+  }
+
+  .ability-flash {
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at center,
+      rgba(255, 230, 150, 0.55) 0%,
+      rgba(191, 161, 74, 0.25) 45%,
+      transparent 70%
+    );
+    animation: landAbilityFlash 0.6s ease-out forwards;
+  }
+
   .land.ruined {
     filter: grayscale(1);
   }
@@ -197,6 +225,36 @@
     }
   }
 
+  @keyframes landAbilityPulse {
+    0% {
+      transform: scale(1);
+      border-color: var(--color-golden);
+      box-shadow: 0 0 0 0 rgba(191, 161, 74, 0.8);
+    }
+    40% {
+      transform: scale(1.08);
+      border-color: #ffe9a0;
+      box-shadow: 0 0 22px 6px rgba(255, 215, 120, 0.85);
+    }
+    100% {
+      transform: scale(1);
+      border-color: #333;
+      box-shadow: 0 0 0 0 rgba(191, 161, 74, 0);
+    }
+  }
+
+  @keyframes landAbilityFlash {
+    0% {
+      opacity: 0;
+    }
+    25% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
   .abilities-container {
     position: absolute;
     top: 8px;
@@ -206,7 +264,8 @@
     transition: opacity 0.2s ease;
   }
 
-  .land:hover .abilities-container {
+  .land:hover .abilities-container,
+  .abilities-container.revealed {
     opacity: 1;
   }
 </style>

@@ -9,9 +9,10 @@ import {
   type TargetDefinition,
   type UnitDeployed,
 } from '../_model';
-import { bs } from '../_state';
+import { bs, uiState } from '../_state';
 import { DataEffectTemplates } from './effects/effect-templates';
 import { isUnitsTurn } from './player';
+import { soundManager } from './sound';
 import { checkTargets } from './target';
 
 export function playAbility(
@@ -43,6 +44,16 @@ export function playAbility(
   if (payAbilityCost(source, ability) === false) {
     console.log('NOT ENOUGH MANA');
     return;
+  }
+
+  if (source.type === CardType.Land && !uiState.isHeadless) {
+    soundManager.playSound('button2');
+    uiState.battle.landAbilityAnimating = source.instanceId;
+    setTimeout(() => {
+      if (uiState.battle.landAbilityAnimating === source.instanceId) {
+        uiState.battle.landAbilityAnimating = null;
+      }
+    }, 600);
   }
 
   // EFFECTS

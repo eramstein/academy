@@ -52,6 +52,8 @@ export type UiState = {
     playedSpell: SpellCardTemplate | null;
     playedSpellTargets: EffectTargets[][] | null;
     colorBeingIncremented: CardColor | null;
+    /** Land instanceId currently playing its activated-ability flash */
+    landAbilityAnimating: string | null;
     graveyardModal: {
       visible: boolean;
       playerId: number | null;

@@ -23,6 +23,7 @@ export const defaultUiState: UiState = {
     playedSpell: null,
     playedSpellTargets: null,
     colorBeingIncremented: null,
+    landAbilityAnimating: null,
     graveyardModal: {
       visible: false,
       playerId: null,
