@@ -99,6 +99,7 @@ export function boardShare(): number {
   return ai / total;
 }
 
+/** Unspent mana that can still pay toward a card in hand this turn. Pass skips this credit. */
 export function manaCreditFor(player: Player): number {
   let pool = player.mana;
   const cards = player.hand

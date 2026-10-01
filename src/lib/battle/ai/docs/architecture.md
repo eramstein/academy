@@ -210,7 +210,7 @@ These are the starting weights. They are the play policy. Tune them from whole g
 | Ruined land | **4**. A ruin can still have abilities, and it can no longer be attacked |
 | Card in the AI hand | **0.35** of its full budget, including OnDeploy |
 | Card in the opponent's hand | **4** flat. The scorer does not read their hand or the deck order |
-| 1 unspent mana that still pays toward a card in hand | **3** |
+| 1 unspent mana that still pays toward a card in hand | **3**. Pass gets **0**: ending the turn discards the pool |
 | Unspent mana that pays nothing currently in hand | **0** |
 | A hand card that this action newly makes payable | **0.25** of that card's budget, as color progress |
 | A hand card still short of its colors | **0.10** of its budget times the fraction of thresholds this action closed |
@@ -219,7 +219,7 @@ These are the starting weights. They are the play policy. Tune them from whole g
 
 Developing a body is the large swing: a card leaves the hand at 0.35 of budget and arrives on the board near full `valueUnit`. With opponent life at 4 per point, a 4-damage face hit is 16, and a medium body is often more than that. That is intentional for Normal. Aggro's life weight of 6, and its lower board weight, is what makes the race win the comparison. If games show Normal never attacking until lethal, raise `enemyUnitWeight` or opponent life before adding multi-step search.
 
-Mana is credited from the post-action state, before the epilogue ends the turn and wipes it. A ritual that only adds mana the hand can spend therefore beats pass. Mana that enables nothing in hand does not.
+Mana is credited from the post-action state, before the epilogue ends the turn and wipes it. A ritual that only adds mana the hand can spend therefore beats pass. Mana that enables nothing in hand does not. The **pass** candidate gets no mana credit: passing throws the pool away.
 
 Color progress is only the change in payability. The hand term already counts every card at 0.35 whether or not it can be cast. A color bump that unlocks nothing adds about zero, so the bot will pass rather than spend the ability on a random color.
 
@@ -264,10 +264,10 @@ This is how a one-step search sees "remove the blocker, then hit" without simula
 Walk ready AI units that `canAttack`, highest current power first. Each one looks at its current legal target, then at the next target as if bodies already killed by an earlier latent swing were gone. One body is killed once. The credit is `latentFactor` times the same delta `valuePosition` would get if the swing had already landed:
 
 - Player: `power * opponentLifeWeight * latentFactor`
-- Unit: the drop in `valueUnit`, times `latentFactor`. A kill is the whole value. A chip is only the durability change, because threat does not shrink with health. If retaliate would kill the attacker, subtract `latentFactor * valueUnit(attacker)`.
-- Land: the fraction of `(standingLand - ruinedLand)` equal to damage over land health, times `latentFactor`. A swing that razes the land takes the whole gap.
+- Unit: the drop in `valueUnit`, times `latentFactor`. A kill is the whole value. A chip is only the durability change, because threat does not shrink with health. Retaliate is applied only when the defender survives (same as combat). If that retaliate would kill the attacker, subtract `latentFactor * valueUnit(attacker)`.
+- Land: damage valued like the land score term, times `latentFactor`. A swing that razes the land takes the standing/ruined gap. Land retaliate only if the land is not razed.
 
-`latentFactor` starts at **0.85**. Because the credit uses the same budget points as an immediate swing, attacking now outranks leaving the same swing for later. The estimate uses combat stats and `validAttackTargets` only. It does not cast spells.
+Each swing's credit is clamped at **0**. A suicide the bot would skip does not punish a deploy or color play. `latentFactor` starts at **0.85**. Because the credit uses the same budget points as an immediate swing, attacking now outranks leaving the same swing for later. The estimate uses combat stats and `validAttackTargets` only. It does not cast spells.
 
 The **pass** candidate does not receive latent credit: passing ends the turn, so those attacks will not happen. Other candidates still get it, so a deploy or color play is not punished for deferring a swing the loop can take next.
 

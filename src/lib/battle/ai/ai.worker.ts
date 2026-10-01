@@ -42,6 +42,7 @@ self.onmessage = (event: MessageEvent) => {
           candidate.id,
           scoreLine(baseline, AI_PLAYER_ID, {
             includeLatent: candidate.kind !== 'pass',
+            includeMana: candidate.kind !== 'pass',
           })
         );
       } catch (error) {

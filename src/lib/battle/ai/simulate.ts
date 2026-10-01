@@ -18,14 +18,15 @@ import { AI_PLAYER_ID, type ScoreBreakdown } from './model';
 export function scoreLine(
   baseline: BattleState,
   favoringPlayerId: number,
-  options: { includeLatent?: boolean } = {}
+  options: { includeLatent?: boolean; includeMana?: boolean } = {}
 ): Omit<ScoreBreakdown, 'id'> {
   if (isTerminal()) {
     return scorePosition(baseline, favoringPlayerId, emptyCredits());
   }
-  // Pass ends the turn: do not credit attacks that will never be taken.
+  // Pass ends the turn: leftover attacks and unspent mana are gone.
   const includeLatent = options.includeLatent !== false;
-  const credits = measureCredits(baseline, favoringPlayerId, includeLatent);
+  const includeMana = options.includeMana !== false;
+  const credits = measureCredits(baseline, favoringPlayerId, includeLatent, includeMana);
   const healthBefore = new Map(bs.units.map((unit) => [unit.instanceId, unit.health]));
   if (!isInsideEpilogue()) {
     runEpilogue();
@@ -45,10 +46,11 @@ export function failedCandidate(id: string): ScoreBreakdown {
 function measureCredits(
   baseline: BattleState,
   favoringPlayerId: number,
-  includeLatent: boolean
+  includeLatent: boolean,
+  includeMana: boolean
 ): ScoreCredits & { latentHits: LatentHit[] } {
   const player = bs.players[favoringPlayerId];
-  const mana = manaCreditFor(player);
+  const mana = includeMana ? manaCreditFor(player) : 0;
   const color = colorProgress(baseline, favoringPlayerId);
   const plan =
     includeLatent && favoringPlayerId === AI_PLAYER_ID && !bs.isPlayersTurn

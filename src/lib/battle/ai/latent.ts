@@ -13,6 +13,7 @@ export interface LatentHit {
 
 /**
  * Discounted value of attacks the AI can still make this turn, in budget points.
+ * Each swing is clamped at 0 so a suicide the bot would skip does not punish a deploy.
  * `hits` names each credit so a later epilogue can drop a kill it already applied.
  * Callers must skip this for the pass candidate (the turn is ending; those swings are not taken).
  */
@@ -107,13 +108,13 @@ function latentUnit(
     unitHealth.set(target.instanceId, next);
     const drop = durability(target, current) - durability(target, next);
     credit += drop * exchange.latentFactor * weights.enemyUnitWeight;
+    // Retaliate only if the defender survives, matching real combat.
+    if (!attacker.keywords?.ranged && (target.retaliate ?? 0) >= attacker.health) {
+      credit -= valueUnit(attacker) * exchange.latentFactor * weights.ownUnitWeight;
+      dead.add(attacker.instanceId);
+    }
   }
-  const retaliate = !attacker.keywords?.ranged && (target.retaliate ?? 0) >= attacker.health;
-  if (retaliate) {
-    credit -= valueUnit(attacker) * exchange.latentFactor * weights.ownUnitWeight;
-    dead.add(attacker.instanceId);
-  }
-  return credit;
+  return Math.max(0, credit);
 }
 
 function latentLand(
@@ -139,10 +140,10 @@ function latentLand(
     ? exchange.standingLand + remainingHp * landLifeValue - exchange.ruinedLand
     : applied * landLifeValue;
   let credit = delta * exchange.latentFactor;
-  if ((land.retaliate ?? 0) >= attacker.health) {
+  if (!razes && (land.retaliate ?? 0) >= attacker.health) {
     credit -= valueUnit(attacker) * exchange.latentFactor * weights.ownUnitWeight;
   }
-  return credit;
+  return Math.max(0, credit);
 }
 
 function valueAtHealth(unit: UnitDeployed, health: number): number {
