@@ -25,7 +25,7 @@
     [ActionType.Socialize]: 'people',
     [ActionType.Conjure]: 'page-star',
     [ActionType.Invoke]: 'spiral',
-    [ActionType.Wait]: 'hourglass',
+    [ActionType.Wait]: 'arrow-left',
     [ActionType.Augment]: 'leaf',
     [ActionType.Distill]: 'moon',
     [ActionType.StartMatch]: 'trophy',
@@ -34,6 +34,11 @@
     [ActionType.Negotiate]: 'mug',
     [ActionType.PerformJob]: 'coin',
   };
+
+  function actionVariant(action: Action): 'default' | 'long' | 'muted' {
+    if (action.actionType === ActionType.Wait) return 'muted';
+    return action.isLongAction ? 'long' : 'default';
+  }
 
   const socializeIcons: Record<SocializeType, string> = {
     [SocializeType.Befriend]: 'handshake',
@@ -299,10 +304,11 @@
         {/each}
         <button type="button" class="cancel-btn" onclick={cancelParameterPick}>Cancel</button>
       {:else}
-        {#each actions as action (action.label)}
+        {#each actions as action (action.actionType + action.label)}
           <OrnateButton
             icon={actionIcons[action.actionType]}
-            variant={action.isLongAction ? 'long' : 'default'}
+            mirrorIcon={action.actionType === ActionType.Wait}
+            variant={actionVariant(action)}
             onclick={() => onActionClick(action)}
           >
             {action.label}

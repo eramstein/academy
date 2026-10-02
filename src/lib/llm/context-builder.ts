@@ -19,6 +19,37 @@ export function buildLlmContext(params: LlmContextParams = {}): string {
   return sections.filter(Boolean).join('\n\n');
 }
 
+/** Lean context for a one-line duel greeting from a given NPC. */
+export function buildBattleGreetingContext(opponentKey: string): string {
+  const opponent = gs.characters[opponentKey];
+  if (!opponent) {
+    return [buildPlayerContext(), `Opponent: unknown (${opponentKey}).`].join('\n\n');
+  }
+  return [
+    buildPlayerContext(),
+    'Opponent (speaking):',
+    describeNpc(opponent, true, true),
+    describeRelationToPlayer(opponent),
+    'Situation: the player and this opponent are about to begin a card duel.',
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+}
+
+function describeRelationToPlayer(npc: Npc): string {
+  const { friendship, respect, love, rivalry } = npc.relationProgress;
+  const parts = [
+    friendship ? `friendship ${friendship}` : undefined,
+    respect ? `respect ${respect}` : undefined,
+    love ? `love ${love}` : undefined,
+    rivalry ? `rivalry ${rivalry}` : undefined,
+  ].filter(Boolean);
+  if (parts.length === 0) {
+    return 'Their feelings toward the player: neutral / little history yet.';
+  }
+  return `Their feelings toward the player: ${parts.join(', ')}.`;
+}
+
 function buildPlayerContext(): string {
   return `Player character: ${gs.player.name}. Refer to them as "you".`;
 }

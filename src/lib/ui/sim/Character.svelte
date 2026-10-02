@@ -1,7 +1,10 @@
 <script lang="ts">
-  import type { Character as CharacterModel, Npc } from '@/lib/_model';
-  import { SubscriptionType } from '@/lib/_model/enums-sim';
+  import type { Action, Character as CharacterModel, Npc } from '@/lib/_model';
+  import { ActionType, SubscriptionType } from '@/lib/_model/enums-sim';
+  import { gs } from '@/lib/_state';
   import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
+  import { performAction, SocializeType } from '@/lib/sim/actions';
+  import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import Attributes from './Attributes.svelte';
   import CardCrafting from './characters/CardCrafting.svelte';
   import CharacterIdentity from './characters/CharacterIdentity.svelte';
@@ -20,6 +23,13 @@
     respect: 'trophy',
     love: 'heart',
     rivalry: 'boot',
+  };
+
+  const SOCIALIZE_ICONS: Record<SocializeType, string> = {
+    [SocializeType.Befriend]: 'handshake',
+    [SocializeType.Taunt]: 'finger_pointing',
+    [SocializeType.Impress]: 'crown',
+    [SocializeType.Flirt]: 'heart',
   };
 
   const traits = $derived(
@@ -48,8 +58,108 @@
     }))
   );
 
+  const socializeAction = $derived(
+    gs.scene.event?.options.length
+      ? undefined
+      : gs.scene.actions.find((action) => action.actionType === ActionType.Socialize)
+  );
+
+  const socializeTypes = $derived.by(() => {
+    if (!socializeAction) return [];
+    const characterOptions = socializeAction.missingParameters?.characterKey;
+    if (!Array.isArray(characterOptions)) return [];
+    const isPresent = characterOptions.some(
+      (option) => (Array.isArray(option) ? option[0] : option) === character.key
+    );
+    if (!isPresent) return [];
+    const types = socializeAction.missingParameters?.socializeType;
+    if (!Array.isArray(types)) return [];
+    return types.map((type) => (Array.isArray(type) ? type[0] : type) as SocializeType);
+  });
+
+  const matchAction = $derived(
+    gs.scene.event?.options.length
+      ? undefined
+      : gs.scene.actions.find((action) => action.actionType === ActionType.StartMatch)
+  );
+
+  const canStartMatch = $derived.by(() => {
+    if (!matchAction) return false;
+    const opponents = matchAction.missingParameters?.opponentKey;
+    if (!Array.isArray(opponents)) return false;
+    return opponents.some(
+      (option) => (Array.isArray(option) ? option[0] : option) === character.key
+    );
+  });
+
+  const matchDecks = $derived.by(() => {
+    if (!canStartMatch || !matchAction) return [];
+    const decks = matchAction.missingParameters?.playerDeckKey;
+    if (!Array.isArray(decks)) return [];
+    return decks.map((deck) =>
+      Array.isArray(deck)
+        ? { key: deck[0], label: deck[1] }
+        : { key: deck, label: deck }
+    );
+  });
+
+  let pickingMatchDeck = $state(false);
+
+  const showCharacterActions = $derived(
+    socializeTypes.length > 0 || canStartMatch || pickingMatchDeck
+  );
+
+  $effect(() => {
+    character.key;
+    canStartMatch;
+    pickingMatchDeck = false;
+  });
+
   function iconUrl(name: string) {
     return getUiIconPath(name);
+  }
+
+  function socializeLabel(type: SocializeType): string {
+    return type.charAt(0).toUpperCase() + type.slice(1);
+  }
+
+  function onSocialize(type: SocializeType) {
+    if (!socializeAction) return;
+    pickingMatchDeck = false;
+    const action: Action = {
+      ...socializeAction,
+      actionParameters: {
+        ...socializeAction.actionParameters,
+        characterKey: character.key,
+        socializeType: type,
+      },
+      missingParameters: {},
+    };
+    performAction(action);
+  }
+
+  function startMatchWithDeck(deckKey: string) {
+    if (!matchAction) return;
+    pickingMatchDeck = false;
+    const action: Action = {
+      ...matchAction,
+      actionParameters: {
+        ...matchAction.actionParameters,
+        opponentKey: character.key,
+        playerDeckKey: deckKey,
+      },
+      missingParameters: {},
+    };
+    performAction(action);
+  }
+
+  function onStartMatch() {
+    if (!canStartMatch || matchDecks.length === 0) return;
+    if (matchDecks.length === 1) {
+      startMatchWithDeck(matchDecks[0].key);
+      return;
+    }
+    pickingMatchDeck = true;
   }
 </script>
 
@@ -73,6 +183,30 @@
 <div class="character">
   <div class="sheet">
     <CharacterIdentity {character} />
+
+    {#if showCharacterActions}
+      <div class="character-actions">
+        {#if pickingMatchDeck}
+          {#each matchDecks as deck (deck.key)}
+            <OrnateButton onclick={() => startMatchWithDeck(deck.key)}>
+              {deck.label}
+            </OrnateButton>
+          {/each}
+          <button type="button" class="cancel-btn" onclick={() => (pickingMatchDeck = false)}>
+            Cancel
+          </button>
+        {:else}
+          {#each socializeTypes as type (type)}
+            <OrnateButton icon={SOCIALIZE_ICONS[type]} onclick={() => onSocialize(type)}>
+              {socializeLabel(type)}
+            </OrnateButton>
+          {/each}
+          {#if canStartMatch}
+            <OrnateButton icon="trophy" onclick={onStartMatch}>Play League Match</OrnateButton>
+          {/if}
+        {/if}
+      </div>
+    {/if}
 
     <div class="sheet-body">
       <section class="section">
@@ -211,6 +345,40 @@
     background: currentColor;
     opacity: 0.55;
     clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
+  }
+
+  .character-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    padding: 0.75rem 1.2rem 0;
+    box-sizing: border-box;
+  }
+
+  .character-actions :global(.ornate-button) {
+    flex: 0 0 auto;
+  }
+
+  .character-actions :global(.ornate-button .icon) {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+  .cancel-btn {
+    font-family: var(--font-narrative);
+    font-size: 0.9rem;
+    color: var(--color-muted-label);
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--color-brass) 45%, transparent);
+    border-radius: 4px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+
+  .cancel-btn:hover {
+    color: var(--color-cream);
+    border-color: var(--color-brass);
+    background: var(--color-data-hover);
   }
 
   .sheet-body {

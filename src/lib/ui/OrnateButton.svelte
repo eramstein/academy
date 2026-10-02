@@ -7,14 +7,16 @@
     disabled = false,
     variant = 'default',
     icon,
+    mirrorIcon = false,
     lead,
     children,
     type = 'button',
   }: {
     onclick?: (e: MouseEvent) => void;
     disabled?: boolean;
-    variant?: 'default' | 'long';
+    variant?: 'default' | 'long' | 'muted';
     icon?: string;
+    mirrorIcon?: boolean;
     lead?: Snippet;
     children?: Snippet;
     type?: 'button' | 'submit' | 'reset';
@@ -30,6 +32,7 @@
   {type}
   class="ornate-button"
   class:long={variant === 'long'}
+  class:muted={variant === 'muted'}
   class:has-lead={!!lead}
   class:has-icon={!!iconUrl}
   style="--border-img: url('{borderUrl}'); --corner-img: url('{cornerUrl}')"
@@ -51,7 +54,12 @@
     {#if lead}
       {@render lead()}
     {:else if iconUrl}
-      <span class="icon" class:painted={paintedIcon} style="--icon: url('{iconUrl}')"></span>
+      <span
+        class="icon"
+        class:painted={paintedIcon}
+        class:mirrored={mirrorIcon}
+        style="--icon: url('{iconUrl}')"
+      ></span>
     {/if}
     {#if children}
       <span class="label">{@render children()}</span>
@@ -243,10 +251,61 @@
     -webkit-mask: none;
   }
 
+  .icon.mirrored {
+    transform: scaleX(-1);
+  }
+
   .label {
     display: inline-flex;
     align-items: center;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.65);
+  }
+
+  .ornate-button.muted {
+    color: var(--color-muted-label);
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.45)) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25));
+  }
+
+  .ornate-button.muted .fill {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 36%),
+      color-mix(in srgb, var(--color-data) 70%, transparent);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.4),
+      inset 0 0 8px rgba(0, 0, 0, 0.25);
+  }
+
+  .ornate-button.muted .edge,
+  .ornate-button.muted .corner {
+    opacity: 0.55;
+  }
+
+  .ornate-button.muted .icon {
+    background: color-mix(in srgb, var(--metal-hi) 65%, #6a5c4a);
+  }
+
+  .ornate-button.muted .label {
+    text-shadow: none;
+  }
+
+  .ornate-button.muted:hover:not(:disabled) {
+    color: var(--color-cream);
+  }
+
+  .ornate-button.muted:hover:not(:disabled) .fill {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 36%),
+      color-mix(in srgb, var(--color-data-hover) 75%, transparent);
+  }
+
+  .ornate-button.muted:hover:not(:disabled) .edge,
+  .ornate-button.muted:hover:not(:disabled) .corner {
+    opacity: 0.75;
+    filter: none;
+  }
+
+  .ornate-button.muted:active:not(:disabled) {
+    filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4));
   }
 
   .ornate-button.has-lead .label {

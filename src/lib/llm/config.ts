@@ -18,3 +18,13 @@ export const NARRATION_SYSTEM_PROMPT = [
   'Do not mention dice, numbers, game mechanics, or labels such as success or failure.',
   'Always finish text on a complete sentence.',
 ].join(' ');
+
+export const BATTLE_GREETING_SYSTEM_PROMPT = [
+  'You write spoken dialogue for characters in a medieval fantasy magic academy.',
+  'The opponent is greeting the player at the start of a card duel.',
+  'Reply with exactly one sentence of dialogue in the opponent\'s voice (first person).',
+  'Match their personality, traits, and bio; do not invent a different character.',
+  'Do not use quotation marks, stage directions, or labels.',
+  'Do not mention dice, hit points, mana, or other game mechanics.',
+  'Always finish on a complete sentence.',
+].join(' ');

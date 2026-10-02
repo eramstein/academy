@@ -1,7 +1,7 @@
 import type { AttributeCheck } from '@/lib/_model/model-sim';
 import { z } from 'zod';
-import { NARRATION_SYSTEM_PROMPT } from './config';
-import { buildLlmContext } from './context-builder';
+import { BATTLE_GREETING_SYSTEM_PROMPT, NARRATION_SYSTEM_PROMPT } from './config';
+import { buildBattleGreetingContext, buildLlmContext } from './context-builder';
 import { completeChat } from './llm-service';
 
 const AttributeCheckNarrationSchema = z.object({
@@ -46,6 +46,30 @@ export async function generateAttributeCheckNarration(
     text: trimIncompleteSentence(parsed.text.replace(/^["']+|["']+$/g, '').trim()),
     imagePrompt: parsed.imagePrompt.replace(/^["']+|["']+$/g, '').trim(),
   };
+}
+
+/** One spoken sentence from the opponent at the start of a card duel. Cached via completeChat. */
+export async function generateBattleGreeting(opponentKey: string): Promise<string> {
+  const userPrompt = [
+    buildBattleGreetingContext(opponentKey),
+    [
+      'Write the opponent\'s greeting to the player as they sit down to duel.',
+      'One sentence only, in their voice, shaped by their personality and how they feel about the player.',
+    ].join('\n'),
+  ].join('\n\n');
+
+  const text = await completeChat(
+    [
+      { role: 'system', content: BATTLE_GREETING_SYSTEM_PROMPT },
+      { role: 'user', content: userPrompt },
+    ],
+    {
+      temperature: 0.9,
+      maxTokens: 80,
+    }
+  );
+
+  return trimIncompleteSentence(text.replace(/^["']+|["']+$/g, '').trim());
 }
 
 function trimIncompleteSentence(text: string): string {

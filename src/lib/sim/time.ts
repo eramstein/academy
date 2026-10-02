@@ -19,6 +19,11 @@ export function getWeekDay(day: number): number {
   return ((day - 1) % 7) + 1;
 }
 
+export function getNextPeriod(period: DayPeriod = gs.time.period): DayPeriod {
+  const index = PERIODS.indexOf(period);
+  return PERIODS[(index + 1) % PERIODS.length];
+}
+
 export function nextPeriod() {
   const index = PERIODS.indexOf(gs.time.period);
   if (index === PERIODS.length - 1) {

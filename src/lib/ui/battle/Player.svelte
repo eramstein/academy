@@ -6,10 +6,19 @@
   import { attackPlayer } from '@lib/battle/combat';
   import { isHumanPlayer, usePlayerColorAbility } from '@lib/battle/player';
   import { clearSelections, setUnitsTargets } from '@lib/ui/_helpers/selections';
+  import { fade } from 'svelte/transition';
   import Deck from './Deck.svelte';
   import Graveyard from './Graveyard.svelte';
 
-  let { player }: { player: Player } = $props();
+  let {
+    player,
+    greeting = null,
+    onDismissGreeting,
+  }: {
+    player: Player;
+    greeting?: string | null;
+    onDismissGreeting?: () => void;
+  } = $props();
 
   // Convert player name to filename format (lowercase with underscores)
   let characterImageName = $derived(player.name.toLowerCase().replace(/\s+/g, '_'));
@@ -81,27 +90,45 @@
 </script>
 
 <div class="player-container">
-  <div
-    class="player {isValidTarget ? 'valid-target' : ''}"
-    data-player-id={player.id}
-    onclick={handlePlayerClick}
-  >
-    <div class="player-info" style="background-image: url('{characterImagePath}')">
-      <div class="mana-display">
-        <div class="mana-value">{player.mana}</div>
-      </div>
-      <div
-        class="life-display {lifeChangeType === 'inc' ? 'highlight-inc' : ''} {lifeChangeType ===
-        'dec'
-          ? 'highlight-dec'
-          : ''}"
+  <div class="portrait-wrap">
+    {#if greeting}
+      <button
+        type="button"
+        class="speech-bubble"
+        aria-label="Dismiss greeting"
+        onclick={(e) => {
+          e.stopPropagation();
+          onDismissGreeting?.();
+        }}
+        transition:fade={{ duration: 200 }}
       >
-        <span class="life-value">{player.life}</span>
-        {#if lifeChangeType}
-          <span class="life-float {lifeChangeType}"
-            >{lifeChangeType === 'inc' ? '+' : '-'}{lifeChangeAmount}</span
-          >
-        {/if}
+        <span class="speech-bubble-text">{greeting}</span>
+        <span class="speech-bubble-tail" aria-hidden="true"></span>
+      </button>
+    {/if}
+
+    <div
+      class="player {isValidTarget ? 'valid-target' : ''}"
+      data-player-id={player.id}
+      onclick={handlePlayerClick}
+    >
+      <div class="player-info" style="background-image: url('{characterImagePath}')">
+        <div class="mana-display">
+          <div class="mana-value">{player.mana}</div>
+        </div>
+        <div
+          class="life-display {lifeChangeType === 'inc' ? 'highlight-inc' : ''} {lifeChangeType ===
+          'dec'
+            ? 'highlight-dec'
+            : ''}"
+        >
+          <span class="life-value">{player.life}</span>
+          {#if lifeChangeType}
+            <span class="life-float {lifeChangeType}"
+              >{lifeChangeType === 'inc' ? '+' : '-'}{lifeChangeAmount}</span
+            >
+          {/if}
+        </div>
       </div>
     </div>
   </div>
@@ -142,6 +169,54 @@
     flex-direction: column;
     align-items: center;
     margin: 0.5rem;
+  }
+
+  .portrait-wrap {
+    position: relative;
+  }
+
+  .speech-bubble {
+    position: absolute;
+    bottom: calc(100% + 0.35rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    max-width: 480px;
+    min-width: 280px;
+    padding: 0.55rem 0.75rem 0.7rem;
+    margin: 0;
+    border: 2px solid #5a4b3c;
+    border-radius: 14px;
+    background: #f0e6c8;
+    color: #2c251d;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    line-height: 1.35;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+    appearance: none;
+  }
+
+  .speech-bubble:hover {
+    filter: brightness(1.03);
+  }
+
+  .speech-bubble-text {
+    display: block;
+  }
+
+  .speech-bubble-tail {
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #f0e6c8;
+    filter: drop-shadow(0 2px 0 #5a4b3c);
   }
 
   .player {

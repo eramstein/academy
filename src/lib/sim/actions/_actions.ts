@@ -23,7 +23,12 @@ import { move, type MoveParameters } from './move';
 import { negotiate, type NegotiateParameters } from './negotiation';
 import { getSocializeActions, socialize, type SocializeParameters } from './socialize';
 import { getShopActions, transaction, type TransactionParameters } from './transaction';
+import { getNextPeriod } from '../time';
 import { wait } from './wait';
+
+function capitalizePeriod(period: string): string {
+  return period.charAt(0).toUpperCase() + period.slice(1);
+}
 
 export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
@@ -51,7 +56,7 @@ export function getPossibleActions(): Action[] {
     filteredActions.push(...leagueActions);
   } else {
     filteredActions.push({
-      label: 'Wait',
+      label: capitalizePeriod(getNextPeriod()),
       actionType: ActionType.Wait,
       isLongAction: true,
       actionParameters: {},

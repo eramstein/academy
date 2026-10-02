@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { bs } from '@lib/_state';
+  import { bs, gs } from '@lib/_state';
   import { uiState } from '@lib/_state/state-ui.svelte';
   import { getTableImagePath } from '@lib/_utils/asset-paths';
+  import { generateBattleGreeting } from '@/lib/llm/prompts';
   import { handleEndTurn } from '@lib/ui/_helpers/end-turn';
   import { fade, scale } from 'svelte/transition';
   import CardFull from '../cards/CardFull.svelte';
@@ -24,6 +25,47 @@
 
   // ref to measure the floating card center for arrows
   let playedCardEl: HTMLElement | null = $state(null);
+
+  let opponentGreeting: string | null = $state(null);
+  let greetingHideTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const GREETING_DISPLAY_MS = 7_000;
+
+  $effect(() => {
+    const opponentKey = gs.ongoingBattle?.opponentKey;
+    if (!opponentKey) return;
+
+    let cancelled = false;
+
+    void generateBattleGreeting(opponentKey)
+      .then((text) => {
+        if (cancelled || !text) return;
+        opponentGreeting = text;
+        greetingHideTimer = setTimeout(() => {
+          opponentGreeting = null;
+          greetingHideTimer = undefined;
+        }, GREETING_DISPLAY_MS);
+      })
+      .catch((error) => {
+        console.warn('Failed to generate battle greeting', error);
+      });
+
+    return () => {
+      cancelled = true;
+      if (greetingHideTimer) {
+        clearTimeout(greetingHideTimer);
+        greetingHideTimer = undefined;
+      }
+    };
+  });
+
+  function dismissGreeting() {
+    if (greetingHideTimer) {
+      clearTimeout(greetingHideTimer);
+      greetingHideTimer = undefined;
+    }
+    opponentGreeting = null;
+  }
 </script>
 
 <div class="battle" style="background-image: url('{getTableImagePath()}');">
@@ -40,7 +82,11 @@
       <Player player={bs.players[0]} />
     </div>
     <Board />
-    <Player player={bs.players[1]} />
+    <Player
+      player={bs.players[1]}
+      greeting={opponentGreeting}
+      onDismissGreeting={dismissGreeting}
+    />
   </div>
   <div class="bottom-section">
     <div class="hands-container">
