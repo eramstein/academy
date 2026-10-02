@@ -211,9 +211,10 @@ export async function getConjurationOtions(
   // Each option gets its own gameplay params (LLM ok for all slots).
   const optionParameters = await Promise.all(
     Array.from({ length: optionsCount }, async () => {
-      if (!trimmedFlavor) return parameters;
-      const gameplay = await generateGameplayFromFlavor(trimmedFlavor);
-      return mergeGameplayIntoParameters(parameters, gameplay);
+      const base = trimmedFlavor
+        ? mergeGameplayIntoParameters(parameters, await generateGameplayFromFlavor(trimmedFlavor))
+        : parameters;
+      return limitParametersToKnownColors(base, character);
     })
   );
 
@@ -255,18 +256,25 @@ export async function getConjurationOtions(
   return options;
 }
 
-function limitParametersToSkills(
+function limitParametersToKnownColors(
   parameters: CardCreationParameters,
   character: Character
 ): CardCreationParameters {
   const knownColors = character.craftingKnowledge.colors;
-  const knownKeywords = character.craftingKnowledge.keywords;
-  const knownActions = character.craftingKnowledge.actions;
-
   let colors = parameters.colors?.filter((color) => knownColors?.[color]);
   if (!colors?.length) {
     colors = knownColors ? Object.keys(knownColors).map((color) => color as CardColor) : undefined;
   }
+  return { ...parameters, colors };
+}
+
+function limitParametersToSkills(
+  parameters: CardCreationParameters,
+  character: Character
+): CardCreationParameters {
+  const knownKeywords = character.craftingKnowledge.keywords;
+  const knownActions = character.craftingKnowledge.actions;
+  const { colors } = limitParametersToKnownColors(parameters, character);
 
   let keywords = parameters.keywords;
   if (keywords) {

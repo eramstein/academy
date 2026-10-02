@@ -95,7 +95,9 @@ export const DataEffectTemplates: Record<
   damageLand: ({ damage }: { damage: number }) => ({
     fn: ({ targets }) => {
       targets.forEach((t) => {
-        damageLand(t as unknown as Land, damage);
+        t.forEach((l) => {
+          damageLand(l as unknown as Land, damage);
+        });
       });
     },
     label: (targets: TargetDefinition[]) => {
