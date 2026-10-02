@@ -2,6 +2,7 @@ import {
   CardColor,
   CardType,
   TargetType,
+  TriggerType,
   UnitType,
   type DeckBlueprint,
   type UnitCardTemplate,
@@ -9,6 +10,40 @@ import {
 
 // GREEN BASE CARDS
 // ---------------------------------------------------------
+
+const shroomy: UnitCardTemplate = {
+  id: 'shroomy',
+  name: 'Shrromy',
+  imageFileName: 'shroomy',
+  type: CardType.Unit,
+  cost: 1,
+  colors: [{ color: CardColor.Green, count: 3 }],
+  power: 1,
+  maxHealth: 1,
+  retaliate: 0,
+  unitTypes: [UnitType.Beast],
+  abilities: [
+    {
+      actions: [
+        {
+          effect: {
+            name: 'addCounters',
+            args: {
+              counterType: 'growth',
+              counterValue: 1,
+            },
+          },
+        },
+      ],
+      trigger: {
+        type: TriggerType.OnTurnStart,
+        range: {
+          self: true,
+        },
+      },
+    },
+  ],
+};
 
 const lion: UnitCardTemplate = {
   id: 'lion',
@@ -34,6 +69,43 @@ const not_so_little_pig = {
   maxHealth: 4,
   retaliate: 1,
   unitTypes: [UnitType.Beast],
+};
+
+const young_druidess = {
+  id: 'young_druidess',
+  name: 'Young Druidess',
+  imageFileName: 'young_druidess',
+  type: CardType.Unit,
+  cost: 2,
+  colors: [{ color: CardColor.Green, count: 1 }],
+  power: 0,
+  maxHealth: 1,
+  retaliate: 0,
+  unitTypes: [UnitType.Halfing],
+  abilities: [
+    {
+      actions: [
+        {
+          effect: {
+            name: 'healUnit',
+            args: {
+              health: 1,
+              range: {
+                allies: true,
+                adjacent: true,
+              },
+            },
+          },
+        },
+      ],
+      trigger: {
+        type: 'After Moving',
+        range: {
+          self: true,
+        },
+      },
+    },
+  ],
 };
 
 const bear_minimum = {
@@ -140,6 +212,22 @@ const the_beast = {
   unitTypes: [UnitType.Beast],
 };
 
+const lazy_elephant = {
+  id: 'lazy_elephant',
+  name: 'Lazy Elephant',
+  imageFileName: 'lazy_elephant',
+  type: CardType.Unit,
+  cost: 6,
+  colors: [{ color: CardColor.Green, count: 2 }],
+  power: 2,
+  maxHealth: 14,
+  retaliate: 0,
+  unitTypes: [UnitType.Beast],
+  keywords: {
+    trample: true,
+  },
+};
+
 const deer = {
   id: 'deer',
   name: 'Deer',
@@ -182,7 +270,7 @@ const giant_growth = {
         name: 'addCounters',
         args: {
           counterType: 'growth',
-          counterValue: 4,
+          counterValue: 2,
         },
       },
       targets: [
@@ -380,7 +468,7 @@ const lightning_bolt = {
   name: 'Lightning Bolt',
   imageFileName: 'lightning_bolt',
   type: CardType.Spell,
-  cost: 3,
+  cost: 2,
   colors: [{ color: CardColor.Red, count: 2 }],
   actions: [
     {
@@ -1050,6 +1138,9 @@ export const BASE_DECK_GREEN: DeckBlueprint = {
     deer,
     bison,
     giant_growth,
+    young_druidess,
+    shroomy,
+    lazy_elephant,
   ],
   lands: [forest, plains, market, enchanter_lair],
 };

@@ -1,21 +1,25 @@
 <script lang="ts">
+  import type { Card as BattleCard } from '@/lib/_model';
   import { TargetType } from '@/lib/_model/enums-battle';
+  import { CARD_WIDTH } from '@lib/_config/ui-config';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
   import { bs } from '@lib/_state';
   import { uiState } from '@lib/_state/state-ui.svelte';
+  import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import { targetCard } from '@lib/ui/_helpers/targetting';
   import Card from './Card.svelte';
 
-  // Get the player from the battle state using the playerId from UI state
   let player = $derived(
     uiState.battle.graveyardModal.playerId !== null
       ? bs.players[uiState.battle.graveyardModal.playerId]
       : null
   );
 
-  // Get all cards in the graveyard
   let graveyardCards = $derived(player?.graveyard || []);
 
-  // Auto-open modal when targeting graveyard cards
+  const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
+  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
+
   $effect(() => {
     if (uiState.battle.targetBeingSelected?.type === TargetType.GraveyardCard) {
       const currentPlayer = bs.isPlayersTurn ? bs.players[0] : bs.players[1];
@@ -26,7 +30,6 @@
     }
   });
 
-  // Auto-close modal when target selection completes
   $effect(() => {
     if (!uiState.battle.targetBeingSelected) {
       uiState.battle.graveyardModal.visible = false;
@@ -34,186 +37,284 @@
     }
   });
 
-  function handleBackdropClick(event: MouseEvent) {
-    // Only close if clicking the backdrop, not the modal content
-    if (event.target === event.currentTarget) {
-      uiState.battle.graveyardModal.visible = false;
-      uiState.battle.graveyardModal.playerId = null;
-    }
-  }
-
-  function handleCloseClick() {
+  function closeModal() {
     uiState.battle.graveyardModal.visible = false;
     uiState.battle.graveyardModal.playerId = null;
   }
+
+  function handleBackdropClick(event: MouseEvent) {
+    if (event.target === event.currentTarget) closeModal();
+  }
+
+  function selectCard(card: BattleCard) {
+    targetCard(card);
+    closeModal();
+  }
+
+  $effect(() => {
+    if (!uiState.battle.graveyardModal.visible) return;
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') closeModal();
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 </script>
 
 {#if uiState.battle.graveyardModal.visible && player}
-  <div class="modal-backdrop" onclick={handleBackdropClick}>
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="header-content">
-          <h2>{player.name}'s Graveyard</h2>
-          <span class="card-count">({graveyardCards.length} cards)</span>
+  <div class="overlay" role="presentation" onclick={handleBackdropClick}>
+    <div
+      class="frame"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="graveyard-title"
+      style="--table: url('{tablePath}'); --parchment: url('{parchmentPath}'); --card-col: {CARD_WIDTH}px"
+      onclick={(e) => e.stopPropagation()}
+    >
+      <div class="panel">
+        <header class="heading">
+          <h2 id="graveyard-title" class="title">
+            <span class="star" aria-hidden="true"></span>
+            {player.name}'s Graveyard
+            <span class="star" aria-hidden="true"></span>
+          </h2>
+          <p class="subtitle">
+            {graveyardCards.length}
+            {graveyardCards.length === 1 ? 'card' : 'cards'}
+          </p>
+        </header>
+
+        <div class="body">
+          {#if graveyardCards.length === 0}
+            <p class="empty">The graveyard is empty.</p>
+          {:else}
+            <div class="cards-grid">
+              {#each graveyardCards as card (card.id)}
+                <div class="card-wrapper" onclick={() => selectCard(card)}>
+                  <Card {card} displayKeywords={true} inHand={false} />
+                </div>
+              {/each}
+            </div>
+          {/if}
         </div>
-        <button class="close-button" onclick={handleCloseClick}>×</button>
       </div>
 
-      <div class="modal-body">
-        {#if graveyardCards.length === 0}
-          <div class="empty-graveyard">
-            <p>The graveyard is empty.</p>
-          </div>
-        {:else}
-          <div class="cards-grid">
-            {#each graveyardCards as card}
-              <div
-                class="card-wrapper"
-                onclick={() => {
-                  targetCard(card);
-                  uiState.battle.graveyardModal.visible = false;
-                  uiState.battle.graveyardModal.playerId = null;
-                }}
-              >
-                <Card {card} displayKeywords={true} inHand={false} />
-              </div>
-            {/each}
-          </div>
-        {/if}
-      </div>
+      <footer class="actions">
+        <OrnateButton icon="arrow-left" onclick={closeModal}>Close</OrnateButton>
+      </footer>
     </div>
   </div>
 {/if}
 
 <style>
-  .modal-backdrop {
+  .overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    inset: 0;
     z-index: 1000;
-    padding: 2rem;
-  }
-
-  .modal-content {
-    background: linear-gradient(135deg, #2c3e50, #34495e);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    max-width: 95vw;
-    max-height: 95vh;
-    min-width: 800px;
-    width: 90vw;
-    display: flex;
-    flex-direction: column;
-    border: 2px solid #bfa14a;
-  }
-
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #bfa14a;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px 10px 0 0;
-  }
-
-  .header-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .modal-header h2 {
-    color: white;
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-
-  .card-count {
-    color: #bfa14a;
-    font-size: 0.9rem;
-    font-weight: normal;
-  }
-
-  .close-button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 2rem;
-    cursor: pointer;
-    padding: 0;
-    width: 2rem;
-    height: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.72);
+    box-sizing: border-box;
   }
 
-  .close-button:hover {
-    background: rgba(255, 255, 255, 0.1);
+  .frame {
+    position: relative;
+    /* 6 cards + gaps + panel/frame padding + scrollbar */
+    width: min(calc(6 * var(--card-col) + 5 * 0.75rem + 72px), calc(100vw - 48px));
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 10px 8px;
+    background: var(--color-wood) var(--table) center / cover;
+    border: 2px solid var(--color-deep-brown);
+    border-radius: 4px;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
-  .modal-body {
-    padding: 1.5rem;
-    flex: 1;
+  .panel {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--color-parchment) var(--parchment) center / cover;
+    background-blend-mode: multiply;
+    color: var(--color-ink);
+    padding: 16px 20px 18px;
+    box-sizing: border-box;
+    font-family: var(--font-narrative);
+    border-radius: 3px;
+    box-shadow: inset 0 0 28px rgba(90, 75, 60, 0.12);
+    overflow-x: hidden;
+  }
+
+  .heading {
+    flex: 0 0 auto;
+    margin-bottom: 12px;
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    text-align: center;
+  }
+
+  .star {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    background: #4a3f32;
+    clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
+  }
+
+  .subtitle {
+    margin: 4px 0 0;
+    text-align: center;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--color-ink-muted);
+  }
+
+  .body {
+    flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     flex-direction: column;
   }
 
-  .empty-graveyard {
+  .empty {
+    margin: 2rem 0;
     text-align: center;
-    color: #999;
-    font-size: 1.2rem;
-    padding: 2rem;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--color-ink-muted);
   }
 
   .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(6, var(--card-col));
     gap: 0.75rem;
+    justify-content: center;
     justify-items: center;
-    max-height: 70vh;
+    max-height: min(70vh, 640px);
+    overflow-x: hidden;
     overflow-y: auto;
-    padding: 0.75rem;
-    padding-right: 1rem;
-    padding-bottom: 1rem;
+    padding: 4px 6px 8px;
+    width: 100%;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(90, 75, 60, 0.45) transparent;
+  }
+
+  .cards-grid::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .cards-grid::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .cards-grid::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .cards-grid::-webkit-scrollbar-thumb {
+    background: rgba(90, 75, 60, 0.4);
+    border-radius: 3px;
+  }
+
+  .cards-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(90, 75, 60, 0.6);
   }
 
   .card-wrapper {
     display: flex;
     justify-content: center;
+    width: var(--card-col);
+    flex-shrink: 0;
+    cursor: pointer;
+    border-radius: 8px;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
   }
 
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .modal-backdrop {
-      padding: 1rem;
-    }
+  .card-wrapper:hover,
+  .card-wrapper:focus-visible {
+    transform: translateY(-6px);
+    box-shadow:
+      0 4px 8px rgba(44, 37, 29, 0.22),
+      0 12px 22px rgba(44, 37, 29, 0.32);
+    outline: none;
+  }
 
-    .modal-content {
-      max-width: 95vw;
-      max-height: 95vh;
-      min-width: unset;
-      width: 95vw;
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: 3.2rem;
+    padding: 10px 8px 4px;
+  }
+
+  @media (max-width: 1400px) {
+    .frame {
+      width: min(calc(4 * var(--card-col) + 3 * 0.75rem + 72px), calc(100vw - 48px));
     }
 
     .cards-grid {
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      grid-template-columns: repeat(4, var(--card-col));
+    }
+  }
+
+  @media (max-width: 900px) {
+    .frame {
+      width: min(calc(3 * var(--card-col) + 2 * 0.75rem + 72px), calc(100vw - 48px));
+    }
+
+    .cards-grid {
+      grid-template-columns: repeat(3, var(--card-col));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .overlay {
+      padding: 12px;
+    }
+
+    .frame {
+      width: min(calc(2 * var(--card-col) + 0.75rem + 56px), calc(100vw - 24px));
+      max-height: 94vh;
+    }
+
+    .cards-grid {
+      grid-template-columns: repeat(2, var(--card-col));
       gap: 0.5rem;
       max-height: 60vh;
     }
 
-    .modal-header h2 {
-      font-size: 1.2rem;
+    .title {
+      font-size: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-wrapper {
+      transition: none;
     }
   }
 </style>

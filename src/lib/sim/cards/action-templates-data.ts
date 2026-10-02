@@ -157,7 +157,7 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
         },
       ],
     },
-    budget: (args.counters ?? 0) * 6,
+    budget: (args.counters ?? 0) * 11,
   }),
   addDecayCounters: (args: { counters: number }) => ({
     name: 'addDecayCounters',

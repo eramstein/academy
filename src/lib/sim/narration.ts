@@ -145,15 +145,6 @@ function escapeRegExp(value: string): string {
 }
 
 export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
-  const kept: Narration[] = [];
-  for (const narration of gs.scene.narration) {
-    if (narration.type === NarrationType.AttributeCheck) {
-      revokeNarrationImage(narration);
-    } else {
-      kept.push(narration);
-    }
-  }
-  gs.scene.narration = kept;
   const id = crypto.randomUUID();
   narrate({
     id,

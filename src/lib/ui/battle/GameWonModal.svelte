@@ -2,148 +2,197 @@
   import type { Player } from '@lib/_model';
   import { UiView } from '@lib/_model';
   import { uiState } from '@lib/_state';
-  import { gs, resetBattleState } from '@lib/_state/main.svelte';
-  import { getCharacterImagePath } from '@lib/_utils/asset-paths';
+  import { resetBattleState } from '@lib/_state/main.svelte';
+  import { getAssetPath, getCharacterImagePath } from '@lib/_utils/asset-paths';
+  import OrnateButton from '@/lib/ui/OrnateButton.svelte';
 
   let { winningPlayer }: { winningPlayer: Player } = $props();
 
-  // Convert player name to filename format (lowercase with underscores)
   let characterImageName = $derived(winningPlayer.name.toLowerCase().replace(/\s+/g, '_'));
   let characterImagePath = $derived(getCharacterImagePath(characterImageName));
+
+  const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
+  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
   const closeModal = () => {
     resetBattleState();
     uiState.currentView = UiView.Scene;
   };
+
+  $effect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') closeModal();
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 </script>
 
-<div class="game-won-overlay" onclick={closeModal}>
-  <div class="game-won-modal" onclick={(e) => e.stopPropagation()}>
-    <div class="victory-text">
-      <h1>Victory!</h1>
-      <p>{winningPlayer.name} has won the game!</p>
-    </div>
-    <div class="winner-info">
-      <div class="winner-avatar" style="background-image: url('{characterImagePath}')"></div>
-      <div class="winner-details">
-        <h2>{winningPlayer.name}</h2>
-        <p>Final Life: {winningPlayer.life}</p>
+<div class="overlay" role="presentation" onclick={closeModal}>
+  <div
+    class="frame"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="victory-title"
+    style="--table: url('{tablePath}'); --parchment: url('{parchmentPath}')"
+    onclick={(e) => e.stopPropagation()}
+  >
+    <div class="panel">
+      <header class="heading">
+        <h2 id="victory-title" class="title">
+          <span class="star" aria-hidden="true"></span>
+          Victory
+          <span class="star" aria-hidden="true"></span>
+        </h2>
+        <p class="subtitle">{winningPlayer.name} has won the game!</p>
+      </header>
+
+      <div class="winner">
+        <div
+          class="portrait"
+          style="background-image: url('{characterImagePath}')"
+          role="img"
+          aria-label={winningPlayer.name}
+        ></div>
+        <div class="details">
+          <h3 class="name">{winningPlayer.name}</h3>
+          <p class="life">Final life — {winningPlayer.life}</p>
+        </div>
       </div>
     </div>
-    <div class="modal-actions">
-      <button class="back-button" onclick={closeModal}>Back</button>
-    </div>
+
+    <footer class="actions">
+      <OrnateButton icon="arrow-left" onclick={closeModal}>Return to the academy</OrnateButton>
+    </footer>
   </div>
 </div>
 
 <style>
-  .game-won-overlay {
+  .overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    inset: 0;
     z-index: 1000;
-    animation: fadeIn 0.5s ease-out;
-  }
-
-  .game-won-modal {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    border: 3px solid #f39c12;
-    border-radius: 20px;
-    padding: 2rem;
-    text-align: center;
-    color: white;
-    box-shadow:
-      0 20px 60px rgba(0, 0, 0, 0.6),
-      0 10px 30px rgba(0, 0, 0, 0.4),
-      inset 0 2px 4px rgba(255, 255, 255, 0.1);
-    animation: slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    max-width: 500px;
-    width: 90%;
-  }
-
-  .victory-text h1 {
-    font-size: 3rem;
-    margin: 0 0 1rem 0;
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  }
-
-  .victory-text p {
-    font-size: 1.5rem;
-    margin: 0 0 2rem 0;
-    color: #ecf0f1;
-  }
-
-  .winner-info {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.5rem;
-    margin-top: 1rem;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.72);
+    box-sizing: border-box;
+    animation: fade-in 0.4s ease-out;
   }
 
-  .winner-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    border: 3px solid #f39c12;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  }
-
-  .winner-details h2 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.5rem;
-    color: #f39c12;
-  }
-
-  .winner-details p {
-    margin: 0;
-    font-size: 1rem;
-    color: #bdc3c7;
-  }
-
-  .modal-actions {
-    margin-top: 2rem;
+  .frame {
+    position: relative;
+    width: min(420px, 100%);
     display: flex;
+    flex-direction: column;
+    padding: 10px 10px 8px;
+    background: var(--color-wood) var(--table) center / cover;
+    border: 2px solid var(--color-deep-brown);
+    border-radius: 4px;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+    box-sizing: border-box;
+    animation: rise-in 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-parchment) var(--parchment) center / cover;
+    background-blend-mode: multiply;
+    color: var(--color-ink);
+    padding: 18px 22px 20px;
+    box-sizing: border-box;
+    font-family: var(--font-narrative);
+    border-radius: 3px;
+    box-shadow:
+      inset 0 0 28px rgba(90, 75, 60, 0.12),
+      inset 0 0 80px color-mix(in srgb, var(--color-golden) 14%, transparent);
+  }
+
+  .heading {
+    margin-bottom: 1rem;
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
     justify-content: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    text-align: center;
   }
 
-  .back-button {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 0.75rem 2rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+  .star {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    background: #4a3f32;
+    clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
   }
 
-  .back-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
-    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+  .subtitle {
+    margin: 6px 0 0;
+    text-align: center;
+    font-size: 1rem;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    color: var(--color-ink-muted);
   }
 
-  .back-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 10px rgba(243, 156, 18, 0.3);
+  .winner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
   }
 
-  @keyframes fadeIn {
+  .portrait {
+    width: 140px;
+    height: 168px;
+    border-radius: 6px;
+    background-size: cover;
+    background-position: top center;
+    border: 2px solid var(--color-brown-border);
+    box-shadow:
+      0 6px 18px rgba(44, 37, 29, 0.35),
+      inset 0 0 0 1px color-mix(in srgb, var(--color-golden) 35%, transparent);
+  }
+
+  .details {
+    text-align: center;
+  }
+
+  .name {
+    margin: 0 0 0.3rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--color-ink);
+  }
+
+  .life {
+    margin: 0;
+    font-size: 0.98rem;
+    font-style: italic;
+    color: var(--color-ink-muted);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: 3.2rem;
+    padding: 10px 8px 4px;
+  }
+
+  @keyframes fade-in {
     from {
       opacity: 0;
     }
@@ -152,14 +201,21 @@
     }
   }
 
-  @keyframes slideIn {
+  @keyframes rise-in {
     from {
-      transform: translateY(-50px) scale(0.9);
+      transform: translateY(-28px) scale(0.96);
       opacity: 0;
     }
     to {
       transform: translateY(0) scale(1);
       opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .overlay,
+    .frame {
+      animation: none;
     }
   }
 </style>

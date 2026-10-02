@@ -4,16 +4,18 @@ This replaces the decision procedure in [architecture.md](architecture.md). The 
 
 The goal is a bot that plays decently. It should take an obvious win, avoid a death that the opponent's board can already deliver, and otherwise spend mana on actions that leave a better position. It does not need a long-term plan.
 
-Cards and effects are data, and new ones appear at runtime. The AI does not learn what an ability does. It applies a concrete action through the battle engine, fast-forwards the consequences that are already determined, then scores the position from life, board, lands, mana, and cards. Hand-written code lists legal actions, decides which of them are worth simulating, and scores a position. The queue ranker is part of the policy: with a cap of 24 simulations, the bot can only play a line the ranker let through.
+Cards and effects are data, and new ones appear at runtime. The AI does not learn what an ability does. Most turns use one-step search: list legal actions, simulate a capped set through the engine plus an epilogue, and play the best score. That is enough for ordinary trades. It is not enough when survival or the win needs two coordinated plays (block two open rows, or move then attack). Those boards are handled by a separate multi-action planner at the start of the turn; see [Obvious lethal](#obvious-lethal).
 
 ## Decision loop
 
-Each live action is chosen from scratch. The AI does not commit to a script for the rest of the turn, because a random effect can change the board before the next play.
+At the start of `playAiTurn`, the AI asks whether the board is an **obvious lethal**: the opponent can already kill through at least one row, or the AI can already assemble a winning push. If a plan exists, the live loop plays that script action by action, then passes. Otherwise each live action is chosen from scratch by search. Search does not commit to a script for the rest of the turn, because a random effect can change the board before the next play.
 
 ```mermaid
 flowchart TD
   start[playAiTurn] --> weights[Pick weight preset]
-  weights --> loop[Next decision]
+  weights --> lethal{Obvious lethal?}
+  lethal -->|yes, plan found| script[Play planned actions, then pass]
+  lethal -->|no plan| loop[Next decision]
   loop --> gen[Generate concrete candidates]
   gen --> rank[Rank with a cheap heuristic]
   rank --> cap[Keep the quota, forcing lethal and answers]
@@ -30,6 +32,36 @@ flowchart TD
 `actionsPlayedthisTurn` resets at the start of `playAiTurn`. The existing safety net still forces `nextTurn()` if a turn somehow loops. That counter is per turn, not per match.
 
 The once-per-turn player ability is a candidate, same as a spell or an attack. It is not spent automatically before the search. Skipping it is allowed when every way to spend it scores worse.
+
+## Obvious lethal
+
+Implemented in [`obvious-lethal.ts`](../obvious-lethal.ts). This path exists because one-step search plus loss ordering among doomed lines will happily block the wrong row first and never reach the second block that would have saved the game.
+
+### Detection
+
+Row damage is a pure combat model, not the epilogue:
+
+- Spend attackers intelligently: the cheapest unit that can kill the front blocker does so; the rest continue into the land, then the player.
+- Account for current blockers and standing lands on that row.
+- Keywords that change who can join or how damage spills: `moveAndAttack` (a unit on another row may join if an empty cell exists on its owner's side), `ranged` (still cannot hit land or face while a unit is in the row, so it only competes to clear), `trample` (one excess spill, matching combat).
+- For the AI's own offense only: payable `haste` units in hand, and at most one removal among `damageUnit`, `destroyUnit`, `bounceUnit`, and `forceMoveUnit` (spell in hand or activated unit ability on the board). The opponent's hand is unknown, so haste and removals for them are ignored.
+
+**Defensive** obvious lethal: at least one row where that model deals face damage ≥ AI life.
+
+**Offensive** obvious lethal: at least one row where optimistic AI attackers (ready bodies, `moveAndAttack` joins, haste deploys, optional one removal) deal face damage ≥ opponent life.
+
+If both are true, offense is tried first. If no script is found for either, the turn falls through to normal search.
+
+### Planning
+
+The planner searches a short sequence of setup actions (moves, deploys into threatened or lethal rows, and at most one useful removal), restoring a snapshot between trials. Caps stay small (`MAX_SETUP` steps, a node budget) so this stays a turn-open heuristic, not a full tree search.
+
+- **Win:** after setup, append a script of real attacks in clearing order. The plan is kept only if applying that script actually kills the opponent.
+- **Block:** stop when every previously exposed row no longer deals lethal face damage under the same model. Then the live loop plays the setup and **passes**, so search cannot walk the blockers away.
+
+Removals are not chained: if one burn does not clear a blocker, a second burn is not searched. A candidate is kept only when applying it improves the lethal math (defense threat down, or offense shortfall down).
+
+If a planned action is no longer legal when the live loop reaches it, the script is abandoned and search resumes for the rest of the turn.
 
 ## Candidates
 
@@ -104,14 +136,14 @@ It may look at numbers already on the cards and the board: power, health, armor,
 
 `rows.ts` reads the position it is given. It stops reading the global `simulatedNextTurn`. Its danger figure compares total power to total health, so it is only good enough to order the queue. The epilogue, not this number, decides whether a line actually dies.
 
-### Stats-obvious lethal
+### Stats-obvious lethal (search queue)
 
-Before the queue is trimmed, mark an attack as obvious lethal when combat stats alone say it wins this turn:
+Separate from the turn-start [Obvious lethal](#obvious-lethal) planner. Before the search queue is trimmed, mark an **attack** as obvious lethal when combat stats alone say it wins this turn:
 
 - The legal target is the opposing player and `power` is at least their life.
 - Or the attack kills the only blocker in its row, and the ready power behind that trade is at least the land's health plus the opponent's life.
 
-This check does not read spell text. Spell lethal is found by simulating the spell. Obvious lethal attacks are forced into the simulated set.
+This check does not read spell text. Spell lethal is found by simulating the spell. Those attacks are forced into the simulated set so a one-action face kill is not dropped by the quota.
 
 ### Survival inserts
 
@@ -285,9 +317,9 @@ Persona is a weight preset, not a separate policy. `getAiStrategy` selects it fr
 
 ## Greedy continuation (later, off by default)
 
-One-step search plus latent attacks still misses a kill that needs two non-attack actions, or a move that only pays off because of the attack after it. Continuation would ask: "If I take this first action, and then keep playing greedily until I would pass, how good is the end of my turn?"
+The [Obvious lethal](#obvious-lethal) planner covers the multi-step cases that matter most: assemble a win, or block every row that can already kill the AI. One-step search plus latent attacks can still miss ordinary two-step lines outside that (two non-removal spells, a move that only pays off after a non-lethal attack). Continuation would ask: "If I take this first action, and then keep playing greedily until I would pass, how good is the end of my turn?"
 
-It stays behind `continuationEnabled = false`. The branch it would explore is the heuristic's top few, so it finds a second step the ranker already liked. It does not find the spell the ranker left outside the quota. Turn it on only when real games show a two-step line (move then attack, or two spells) that latent attacks and the epilogue both miss. Defaults if that happens: `continuationSteps = 6`, `continuationBranch = 4`, latent credit off on the final score so the same future damage is not counted twice. The live loop still plays only the first action, then replans.
+It stays behind `continuationEnabled = false`. The branch it would explore is the heuristic's top few, so it finds a second step the ranker already liked. It does not find the spell the ranker left outside the quota. Turn it on only when real games show a two-step line that obvious lethal, latent attacks, and the epilogue all miss. Defaults if that happens: `continuationSteps = 6`, `continuationBranch = 4`, latent credit off on the final score so the same future damage is not counted twice. The live loop still plays only the first action, then replans.
 
 ## What this retires
 
@@ -307,10 +339,11 @@ Card budget, combat legality, and headless clones stay. Row danger stays as a qu
 
 | File | Role |
 | --- | --- |
-| `ai.ts` | Turn entry and the live loop. Asks the search for one action, plays it, repeats. |
+| `ai.ts` | Turn entry and the live loop. Tries an obvious-lethal plan first; otherwise asks search for one action, plays it, repeats. |
+| `obvious-lethal.ts` | Detect win-or-die rows; search a short multi-action script; then pass |
 | `search.ts` | Generate, rank, cap, dispatch, pick the winner |
 | `candidates.ts` | Concrete action objects from the battle rules, stored by id |
-| `heuristic.ts` | Queue order, cell choice, obvious lethal, survival inserts |
+| `heuristic.ts` | Queue order, cell choice, stats-obvious lethal attacks, survival inserts |
 | `apply.ts` | Resolve ids on the current `bs` and apply one candidate synchronously |
 | `epilogue.ts` | Fast-forward turn end, opponent turn start, and their attacks |
 | `evaluate.ts` | `valueUnit`, `valuePosition`, weight presets, exchange rates |

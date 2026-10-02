@@ -16,11 +16,12 @@ import { canMove } from '../move';
 import { getAiPlayer, usePlayerColorAbility } from '../player';
 import { nextTurn } from '../turn';
 import AiWorker from './ai.worker?worker';
-import { applyCandidate } from './apply';
+import { applyCandidate, candidateLabel } from './apply';
 import { getColorToIncrement, incrementRandomColor } from './colors';
 import { getAiGoals } from './goals';
 import { usePlayerLandAbility } from './lands';
-import { PersonaType, WeightPreset, type AiPersona, type PossibleActions } from './model';
+import { PersonaType, WeightPreset, type AiPersona, type Candidate, type PossibleActions } from './model';
+import { candidateStillLegal, lethalPlanLabel, planObviousLethal } from './obvious-lethal';
 import { AiPersonaToType } from './personas/mappings';
 import { chooseAction } from './search';
 import { getAiStrategy, getWeightPreset } from './strategy';
@@ -28,11 +29,16 @@ import { getAiStrategy, getWeightPreset } from './strategy';
 const AI_PERSONA: PersonaType = PersonaType.Normal;
 const MAX_ACTIONS_SAFETY_NET = 100;
 let actionsPlayedthisTurn = 0;
+/** null until the first decision of this turn. Empty means normal search. */
+let lethalPlan: Candidate[] | null = null;
+let lethalPass = false;
 export let simulatedNextTurn: BattleState | null = null;
 
 export function playAiTurn() {
   if (uiState.isHeadless) return;
   actionsPlayedthisTurn = 0;
+  lethalPlan = null;
+  lethalPass = false;
   if (config.aiPolicy === 'heuristic') {
     playHeuristicTurn();
     return;
@@ -51,6 +57,51 @@ async function loopSearch() {
   if (bs.playerIdWon !== null) return;
   if (actionsPlayedthisTurn > MAX_ACTIONS_SAFETY_NET) {
     console.log('AI safety net, passing', actionsPlayedthisTurn);
+    nextTurn();
+    return;
+  }
+
+  if (lethalPlan === null) {
+    try {
+      const plan = planObviousLethal();
+      if (plan) {
+        lethalPlan = plan.actions;
+        lethalPass = true;
+        bs.aiState.strategy = plan.reason === 'win' ? AiTurnStrategy.Attack : AiTurnStrategy.Defend;
+        console.log('AI obvious lethal', lethalPlanLabel(plan));
+      } else {
+        lethalPlan = [];
+      }
+    } catch (error) {
+      console.warn('AI lethal plan failed, using search', error);
+      lethalPlan = [];
+    }
+  }
+  if (lethalPlan.length > 0) {
+    const next = lethalPlan[0];
+    if (!candidateStillLegal(next)) {
+      console.warn('AI lethal script stalled', candidateLabel(next));
+      lethalPlan = [];
+      lethalPass = false;
+    } else {
+      lethalPlan.shift();
+      try {
+        applyCandidate(next);
+      } catch (error) {
+        console.warn('AI lethal action failed, using search', error);
+        lethalPlan = [];
+        lethalPass = false;
+      }
+      if (bs.playerIdWon !== null) return;
+      if (lethalPlan.length > 0 || lethalPass) {
+        setTimeout(() => {
+          void loopSearch();
+        }, config.aiActionInterval);
+        return;
+      }
+    }
+  }
+  if (lethalPass) {
     nextTurn();
     return;
   }
