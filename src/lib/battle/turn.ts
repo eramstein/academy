@@ -6,6 +6,7 @@ import { playAiTurn } from './ai/ai';
 import { autoAttack } from './combat';
 import { drawCard } from './deck';
 import { onTurnStart } from './listeners';
+import { damagePlayer } from './player';
 import { soundManager } from './sound';
 import { removeTemporaryEffects } from './temporary-effects';
 import { damageUnit, healUnit } from './unit';
@@ -14,6 +15,9 @@ export function nextTurn() {
   if (!uiState.isHeadless) clearSelections();
   const previousPlayer = bs.isPlayersTurn ? bs.players[0] : bs.players[1];
   updateStatuses(previousPlayer);
+  if (!previousPlayer.abilityUsed) {
+    damagePlayer(previousPlayer, -1);
+  }
   bs.turn++;
   bs.isPlayersTurn = !bs.isPlayersTurn;
   const player = bs.isPlayersTurn ? bs.players[0] : bs.players[1];

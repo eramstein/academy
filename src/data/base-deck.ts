@@ -965,27 +965,7 @@ const plains = {
   type: CardType.Land,
   cost: 0,
   colors: [],
-  health: 10,
-  abilities: [
-    {
-      trigger: {
-        type: 'Activated',
-      },
-      actions: [
-        {
-          effect: {
-            name: 'damagePlayer',
-            args: {
-              damage: -1,
-              opposingPlayer: false,
-            },
-          },
-        },
-      ],
-      cost: 0,
-      exhausts: true,
-    },
-  ],
+  health: 15,
 };
 
 const market = {
