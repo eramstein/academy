@@ -240,20 +240,20 @@ These are the starting weights. They are the play policy. Tune them from whole g
 | 1 point of AI life, Defend | **6**, and opponent life **3** |
 | Standing land | **22**, about a 4-mana card |
 | Ruined land | **4**. A ruin can still have abilities, and it can no longer be attacked |
-| Card in the AI hand | **0.35** of its full budget, including OnDeploy |
+| Card in the AI hand | **15** flat (`handCard`), independent of card budget |
 | Card in the opponent's hand | **4** flat. The scorer does not read their hand or the deck order |
-| 1 unspent mana that still pays toward a card in hand | **3**. Pass gets **0**: ending the turn discards the pool |
-| Unspent mana that pays nothing currently in hand | **0** |
+| 1 unspent mana that can fully pay a hand card or activated ability | **3**. Credit is `maxAffordableCost × 3`, not the raw pool. Pass gets **0** |
+| Unspent mana that cannot fully pay any hand card or activated ability | **0** |
 | A hand card that this action newly makes payable | **0.25** of that card's budget, as color progress |
 | A hand card still short of its colors | **0.10** of its budget times the fraction of thresholds this action closed |
 
 `boardWeight`, `landWeight`, `handWeight`, and `colorWeight` start at **1**. Normal also uses `ownUnitWeight` **0.85** and `enemyUnitWeight` **1.2** (Aggro **0.7** / **1.35**, Defend **1** / **1**). The numbers above are already in budget points. Aggro also lowers `boardWeight` to **0.7**. Defend leaves it at **1**.
 
-Developing a body is the large swing: a card leaves the hand at 0.35 of budget and arrives on the board near full `valueUnit`. With opponent life at 4 per point, a 4-damage face hit is 16, and a medium body is often more than that. That is intentional for Normal. Aggro's life weight of 6, and its lower board weight, is what makes the race win the comparison. If games show Normal never attacking until lethal, raise `enemyUnitWeight` or opponent life before adding multi-step search.
+Developing a body trades a flat **15** hand points for a board body near full `valueUnit`. With opponent life at 4 per point, a 4-damage face hit is 16, and a medium body is often more than that. That is intentional for Normal. Aggro's life weight of 6, and its lower board weight, is what makes the race win the comparison. If games show Normal never attacking until lethal, raise `enemyUnitWeight` or opponent life before adding multi-step search.
 
-Mana is credited from the post-action state, before the epilogue ends the turn and wipes it. A ritual that only adds mana the hand can spend therefore beats pass. Mana that enables nothing in hand does not. The **pass** candidate gets no mana credit: passing throws the pool away.
+Mana is credited from the post-action state, before the epilogue ends the turn and wipes it. Only mana that can **fully** pay at least one payable hand card or activated ability (unit or land; lands also need the once-per-turn ability slot) counts, and only up to the **highest** such cost — leftover pool that buys nothing is ignored. A ritual that only adds mana something can spend therefore beats pass. The **pass** candidate gets no mana credit: passing throws the pool away.
 
-Color progress is only the change in payability. The hand term already counts every card at 0.35 whether or not it can be cast. A color bump that unlocks nothing adds about zero, so the bot will pass rather than spend the ability on a random color.
+Color progress is only the change in payability. The hand term already counts every AI card at a flat 15 whether or not it can be cast. A color bump that unlocks nothing adds about zero, so the bot will pass rather than spend the ability on a random color.
 
 ### Unit value
 
@@ -275,7 +275,7 @@ valueUnit      = threat + durability
 
 `sqrt` is the curve. A 4-health body keeps about 70% of its health budget at half health, and half of it at 1 health. A linear `current / max` would cut that 1-health body to a quarter, and scaling the whole budget would also throw away its attack. Threat stays whole at every health total.
 
-A card in hand uses the full `getCardBudget`, OnDeploy included, times 0.35. The enter effect has not happened yet. After a simulated deploy, the body is `valueUnit` (OnDeploy removed) and the effect itself is whatever the engine changed.
+A card in the AI hand is a flat `handCard` (15), not a fraction of `getCardBudget`. After a simulated deploy, the body is `valueUnit` (OnDeploy removed) and the effect itself is whatever the engine changed.
 
 `valueBoard().rel` uses this `valueUnit`. An empty board is ratio 0.5, so the preset picker does not see `NaN`. Lane placement is not part of `valueUnit`, so it does not move the persona threshold.
 

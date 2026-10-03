@@ -1,6 +1,16 @@
-import { TriggerType, type BattleState, type Card, type CardColor, type Player, type UnitDeployed } from '@/lib/_model';
+import {
+  TriggerType,
+  type BattleState,
+  type Card,
+  type CardColor,
+  type Land,
+  type Player,
+  type UnitDeployed,
+} from '@/lib/_model';
 import { bs } from '@/lib/_state';
 import { getAbilityCost, getCardBudget } from '@/lib/sim/cards/card-budget';
+import { canSourcePlayAbility } from '../ability';
+import { isPayable } from '../cost';
 import { laneValue } from './lane';
 import { exchange, landLifeValue } from './valuations/config';
 import { AI_PLAYER_ID, WeightPreset, type ScoreBreakdown, type ScoreTerminal } from './model';
@@ -99,20 +109,43 @@ export function boardShare(): number {
   return ai / total;
 }
 
-/** Unspent mana that can still pay toward a card in hand this turn. Pass skips this credit. */
+/**
+ * Unspent mana that can still fully pay a hand card or activated ability this turn.
+ * Credits min(pool, max affordable cost); leftover that buys nothing is 0. Pass skips this.
+ */
 export function manaCreditFor(player: Player): number {
-  let pool = player.mana;
-  const cards = player.hand
-    .filter((card) => colorsMet(card, player.colors) && card.cost > 0)
-    .sort((a, b) => a.cost - b.cost || a.instanceId.localeCompare(b.instanceId));
-  let useful = 0;
-  for (const card of cards) {
-    if (pool <= 0) break;
-    const spend = Math.min(pool, card.cost);
-    useful += spend;
-    pool -= spend;
+  const pool = player.mana;
+  if (pool <= 0) return 0;
+
+  let maxAffordable = 0;
+  for (const card of player.hand) {
+    if (card.cost > 0 && card.cost <= pool && isPayable(card)) {
+      maxAffordable = Math.max(maxAffordable, card.cost);
+    }
   }
-  return useful * exchange.manaPoint;
+  for (const unit of bs.units) {
+    if (unit.ownerPlayerId !== player.id) continue;
+    maxAffordable = Math.max(maxAffordable, maxAffordableAbilityCost(unit, pool));
+  }
+  if (!player.abilityUsed) {
+    for (const land of player.lands) {
+      maxAffordable = Math.max(maxAffordable, maxAffordableAbilityCost(land, pool));
+    }
+  }
+  if (maxAffordable <= 0) return 0;
+  return maxAffordable * exchange.manaPoint;
+}
+
+function maxAffordableAbilityCost(source: UnitDeployed | Land, pool: number): number {
+  let max = 0;
+  for (const ability of source.abilities ?? []) {
+    if (ability.trigger?.type !== TriggerType.Activated) continue;
+    const cost = ability.cost ?? 0;
+    if (cost <= 0 || cost > pool) continue;
+    if (!canSourcePlayAbility(source, ability)) continue;
+    max = Math.max(max, cost);
+  }
+  return max;
 }
 
 export function colorProgress(baseline: BattleState, playerId: number): number {
@@ -215,10 +248,7 @@ function landValue(player: Player): number {
 }
 
 function handTerm(playerId: number): number {
-  const aiHand = bs.players[AI_PLAYER_ID].hand.reduce(
-    (sum, card) => sum + exchange.handFraction * getCardBudget(card),
-    0
-  );
+  const aiHand = bs.players[AI_PLAYER_ID].hand.length * exchange.handCard;
   const humanCount = bs.players[0].hand.length * exchange.opponentCard;
   if (playerId === AI_PLAYER_ID) return aiHand - humanCount;
   return humanCount - aiHand;

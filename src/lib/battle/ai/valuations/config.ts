@@ -6,7 +6,7 @@ import { getBudgetFromCost } from '@/lib/sim/cards/card-budget';
 
 // Queue-only weights for the old heuristic and for ordering blocks.
 export const landDestructionValue = 1000000;
-export const playerLifeValue = 20;
+export const playerLifeValue = 8;
 /** Budget points per point of land health in the position score (and queue ranks). */
 export const landLifeValue = 4;
 export const unitLifeValue = 2;
@@ -23,7 +23,8 @@ export const exchange = {
   opponentLifeDefend: 3,
   standingLand: 22,
   ruinedLand: 4,
-  handFraction: 0.35,
+  /** Flat budget points per card in the AI hand (not a fraction of card budget). */
+  handCard: 10,
   opponentCard: 4,
   manaPoint: 3,
   colorUnlockFraction: 0.25,

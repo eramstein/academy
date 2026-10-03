@@ -1,6 +1,7 @@
 import type { Card, Player } from '../_model';
 import { bs } from '../_state';
 import { onCardDrawn } from './listeners';
+import { damagePlayer } from './player';
 import { soundManager } from './sound';
 
 export function shuffleDeck(deck: Card[]): Card[] {
@@ -10,7 +11,7 @@ export function shuffleDeck(deck: Card[]): Card[] {
 export function drawCard(player: Player) {
   const card = player.deck.shift();
   if (!card) {
-    player.life--;
+    damagePlayer(player, 1);
     return;
   }
   player.hand.push(card);
