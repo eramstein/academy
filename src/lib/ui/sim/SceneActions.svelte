@@ -36,7 +36,6 @@
   };
 
   function actionVariant(action: Action): 'default' | 'long' | 'muted' {
-    if (action.actionType === ActionType.Wait) return 'muted';
     return action.isLongAction ? 'long' : 'default';
   }
 

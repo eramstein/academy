@@ -109,18 +109,30 @@ export const DataEffectTemplates: Record<
     range,
     fromTriggerParam,
     dynamicValue,
+    randomTargets,
   }: {
     damage: number;
     range?: UnitFilterArgs;
     fromTriggerParam?: string;
     dynamicValue?: DynamicValue;
+    randomTargets?: number;
   }) => ({
     fn: ({ targets, unit, land, player, triggerParams }) => {
       const value = dynamicValue ? DynamicValues[dynamicValue]({ unit, player }) * damage : damage;
       const sourcePermanent = unit ?? (land as UnitDeployed | Land);
-      const unitsInRange = fromTriggerParam
-        ? getUnitFromTriggerParam(triggerParams, fromTriggerParam)
-        : getUnitsInRange(targets as UnitDeployed[][], range, sourcePermanent, player);
+      let unitsInRange = [];
+      if (fromTriggerParam) {
+        unitsInRange = getUnitFromTriggerParam(triggerParams, fromTriggerParam);
+      } else {
+        unitsInRange = getUnitsInRange(targets as UnitDeployed[][], range, sourcePermanent, player);
+      }
+      if (randomTargets) {
+        const randomUnits = [];
+        for (let i = 0; i < randomTargets; i++) {
+          randomUnits.push(getRandomFromArray(unitsInRange));
+        }
+        unitsInRange = randomUnits;
+      }
       unitsInRange.forEach((u) => {
         damageUnit(u, value);
       });
@@ -131,10 +143,16 @@ export const DataEffectTemplates: Record<
       if (fromTriggerParam) {
         targetsLabel = ` to ${fromTriggerParam}`;
       }
+      if (randomTargets) {
+        targetsLabel =
+          targets.length > 0
+            ? ` ${getTargetLabel({ ...targets[0], count: randomTargets }).replace(/\btarget\b/g, 'random')}`
+            : ` to ${randomTargets === 1 ? 'a random unit' : `${randomTargets} random units`}`;
+      }
       const valueLabel = dynamicValue
         ? `[${dynamicValue} ${damage !== 1 ? ' x ' + damage : ''}]`
         : damage;
-      if (targets.length === 0 && (!range || range?.self)) {
+      if (!randomTargets && targets.length === 0 && (!range || range?.self)) {
         return `Takes ${valueLabel} damage.`;
       }
       return `Deal ${valueLabel} damage ${targetsLabel}. ${range ? getRangeLabel(range) : ''}`;
@@ -362,12 +380,10 @@ export const DataEffectTemplates: Record<
     summonedUnit,
     isRespawn,
     randomPositions,
-    randomManaCost,
   }: {
     summonedUnit?: UnitCardTemplate;
     isRespawn?: boolean;
     randomPositions?: number;
-    randomManaCost?: number;
   }) => ({
     fn: ({ targets, player, unit }) => {
       const unitTemplate = summonedUnit as UnitCardTemplate;

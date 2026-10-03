@@ -1,6 +1,7 @@
 import {
   CardColor,
   CardType,
+  StatusType,
   TargetType,
   TriggerType,
   UnitType,
@@ -304,6 +305,43 @@ const healing_salve = {
 // RED BASE CARDS
 // ---------------------------------------------------------
 
+const manticore_pup = {
+  id: 'manticore_pup',
+  name: 'Manticore Pup',
+  imageFileName: 'manticore_pup',
+  type: CardType.Unit,
+  cost: 1,
+  colors: [{ color: CardColor.Red, count: 3 }],
+  power: 1,
+  maxHealth: 1,
+  retaliate: 0,
+  unitTypes: [UnitType.Monster],
+  abilities: [
+    {
+      trigger: {
+        type: TriggerType.OnDeath,
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'damageUnit',
+            args: {
+              damage: 2,
+              randomTargets: 1,
+              range: {
+                ennemies: true,
+              },
+            },
+          },
+        },
+      ],
+    },
+  ],
+};
+
 const young_viking = {
   id: 'young_viking',
   name: 'Young Viking',
@@ -330,6 +368,22 @@ const enraged_goblin = {
   unitTypes: [UnitType.Monster],
 };
 
+const dwarf_pikeman = {
+  id: 'dwarf_pikeman',
+  name: 'Dwarf Pikeman',
+  imageFileName: 'dwarf_pikeman',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Red, count: 2 }],
+  power: 3,
+  maxHealth: 2,
+  retaliate: 0,
+  unitTypes: [UnitType.Dwarf],
+  keywords: {
+    lance: true,
+  },
+};
+
 const dwarf_berserker = {
   id: 'dwarf_berserker',
   name: 'Dwarf Berserker',
@@ -337,10 +391,13 @@ const dwarf_berserker = {
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Red, count: 1 }],
-  power: 4,
+  power: 5,
   maxHealth: 1,
   retaliate: 0,
   unitTypes: [UnitType.Dwarf],
+  keywords: {
+    zerk: true,
+  },
 };
 
 const lunging_cougar = {
@@ -513,8 +570,72 @@ const rock_drop = {
   ],
 };
 
+const fireball = {
+  id: 'fireball',
+  name: 'Fireball',
+  imageFileName: 'fireball',
+  type: CardType.Spell,
+  cost: 5,
+  colors: [{ color: CardColor.Red, count: 3 }],
+  actions: [
+    {
+      effect: {
+        name: 'damageUnit',
+        args: {
+          damage: 4,
+          range: {
+            addSelf: true,
+            adjacent: true,
+          },
+        },
+      },
+      targets: [
+        {
+          type: TargetType.Units,
+          count: 1,
+        },
+      ],
+    },
+  ],
+};
+
 // BLUE BASE CARDS
 // ---------------------------------------------------------
+
+const fleeting_spirit = {
+  id: 'fleeting_spirit',
+  name: 'Fleeting Spirit',
+  imageFileName: 'fleeting_spir',
+  type: CardType.Unit,
+  cost: 1,
+  colors: [{ color: CardColor.Blue, count: 3 }],
+  power: 0,
+  maxHealth: 2,
+  retaliate: 0,
+  unitTypes: [UnitType.Spirit],
+  abilities: [
+    {
+      trigger: {
+        type: TriggerType.OnDeath,
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'bounceUnit',
+            args: {
+              range: {
+                sameRow: true,
+              },
+            },
+          },
+        },
+      ],
+    },
+  ],
+};
 
 const dazing_spirit = {
   id: 'dazing_spirit',
@@ -540,6 +661,19 @@ const born_from_magic = {
   maxHealth: 3,
   retaliate: 2,
   unitTypes: [UnitType.Elemental],
+};
+
+const security_golem = {
+  id: 'security_golem',
+  name: 'Security Golem',
+  imageFileName: 'security_golem',
+  type: CardType.Unit,
+  cost: 2,
+  colors: [{ color: CardColor.Blue, count: 2 }],
+  power: 3,
+  maxHealth: 2,
+  retaliate: 0,
+  unitTypes: [UnitType.Construct],
 };
 
 const gifted_apprentice = {
@@ -573,6 +707,40 @@ const gifted_apprentice = {
               count: 1,
             },
           ],
+        },
+      ],
+    },
+  ],
+};
+
+const hyptnotic_witch = {
+  id: 'hyptnotic_witch',
+  name: 'Hyptnotic Witch',
+  imageFileName: 'hyptnotic_witch',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Blue, count: 2 }],
+  power: 1,
+  maxHealth: 4,
+  retaliate: 0,
+  abilities: [
+    {
+      trigger: {
+        type: TriggerType.AfterCombat,
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'applyUnitStatus',
+            args: {
+              statusType: StatusType.Mezz,
+              duration: 2,
+              fromTriggerParam: 'defender',
+            },
+          },
         },
       ],
     },
@@ -791,6 +959,19 @@ const carnival_of_miracles = {
 // BLACK BASE CARDS
 // ---------------------------------------------------------
 
+const expendable_recruit = {
+  id: 'expendable_recruit',
+  name: 'Expendable Recruit',
+  imageFileName: 'expendable_recruit',
+  type: CardType.Unit,
+  cost: 1,
+  colors: [{ color: CardColor.Black, count: 1 }],
+  power: 0,
+  maxHealth: 4,
+  retaliate: 0,
+  unitTypes: [UnitType.Human],
+};
+
 const sewer_rat = {
   id: 'sewer_rat',
   name: 'Sewer Rat',
@@ -804,17 +985,41 @@ const sewer_rat = {
   unitTypes: [UnitType.Beast],
 };
 
-const expendable_recruit = {
-  id: 'expendable_recruit',
+const blacksmith = {
+  id: 'blacksmith',
   name: 'Expendable Recruit',
-  imageFileName: 'expendable_recruit',
+  imageFileName: 'blacksmith',
   type: CardType.Unit,
-  cost: 1,
-  colors: [{ color: CardColor.Black, count: 1 }],
-  power: 0,
-  maxHealth: 4,
-  retaliate: 0,
+  cost: 2,
+  colors: [{ color: CardColor.Black, count: 2 }],
+  power: 2,
+  maxHealth: 2,
+  retaliate: 1,
   unitTypes: [UnitType.Human],
+  abilities: [
+    {
+      trigger: {
+        type: TriggerType.OnDeploy,
+      },
+      actions: [
+        {
+          effect: {
+            name: 'staticKeyword',
+            args: {
+              abilityName: 'blacksmithArmor',
+              keyword: 'armor',
+              keyWordValue: 1,
+              reset: false,
+              range: {
+                sameRow: true,
+                allies: true,
+              },
+            },
+          },
+        },
+      ],
+    },
+  ],
 };
 
 const zombie = {
@@ -856,6 +1061,22 @@ const gate_keepers = {
   unitTypes: [UnitType.Human],
   keywords: {
     immobile: true,
+  },
+};
+
+const ornithopter = {
+  id: 'ornithopter',
+  name: 'Ornithopter',
+  imageFileName: 'ornithopter',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Black, count: 2 }],
+  power: 2,
+  maxHealth: 3,
+  retaliate: 1,
+  unitTypes: [UnitType.Construct],
+  keywords: {
+    flying: true,
   },
 };
 
@@ -996,6 +1217,33 @@ const fortify = {
       targets: [
         {
           type: TargetType.Land,
+          count: 1,
+        },
+      ],
+    },
+  ],
+};
+
+const raise_dead = {
+  id: 'raise_dead',
+  name: 'Raise Dead',
+  imageFileName: 'raise_dead',
+  type: CardType.Spell,
+  cost: 3,
+  colors: [{ color: CardColor.Black, count: 3 }],
+  actions: [
+    {
+      effect: {
+        name: 'reanimate',
+        args: {},
+      },
+      targets: [
+        {
+          type: TargetType.GraveyardCard,
+          count: 1,
+        },
+        {
+          type: TargetType.EmptyCell,
           count: 1,
         },
       ],
@@ -1163,6 +1411,9 @@ export const BASE_DECK_RED: DeckBlueprint = {
     ogre_brawler,
     hill_troll,
     enraged_goblin,
+    dwarf_pikeman,
+    fireball,
+    manticore_pup,
   ],
   lands: [mountain, plains, market, enchanter_lair],
 };
@@ -1185,6 +1436,9 @@ export const BASE_DECK_BLACK: DeckBlueprint = {
     market_beggar,
     street_slinger,
     expendable_recruit,
+    blacksmith,
+    ornithopter,
+    raise_dead,
   ],
   lands: [city, plains, market, enchanter_lair],
 };
@@ -1207,6 +1461,9 @@ export const BASE_DECK_BLUE: DeckBlueprint = {
     zeppelin,
     basic_research,
     carnival_of_miracles,
+    security_golem,
+    fleeting_spirit,
+    hyptnotic_witch,
   ],
   lands: [island, plains, market, enchanter_lair],
 };
