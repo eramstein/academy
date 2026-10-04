@@ -367,7 +367,7 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
     },
     budget: 20,
   }),
-  regrowCard: () => ({
+  regrowCard: (args: { count: number }) => ({
     name: 'regrowCard',
     label: 'Regrow',
     description: 'Fetch a card from a graveyard.',
@@ -379,11 +379,11 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
       targets: [
         {
           type: TargetType.GraveyardCard,
-          count: 1,
+          count: args.count ?? 1,
         },
       ],
     },
-    budget: 15,
+    budget: (args.count ?? 1) * 15,
   }),
   addMana: (args: { amount: number }) => ({
     name: 'addMana',
@@ -398,5 +398,23 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
       },
     },
     budget: (args.amount ?? 0) * 10,
+  }),
+  recycleCard: (args: { count: number }) => ({
+    name: 'recycleCard',
+    label: 'Recycle',
+    description: `Shuffle ${args.count ?? 1} card${(args.count ?? 1 !== 1) ? 's' : ''} from a graveyard into the deck.`,
+    definition: {
+      effect: {
+        name: 'recycleCard',
+        args: {},
+      },
+      targets: [
+        {
+          type: TargetType.GraveyardCard,
+          count: args.count ?? 1,
+        },
+      ],
+    },
+    budget: args.count ?? 1,
   }),
 };

@@ -38,12 +38,13 @@ import {
   putToDeckBottom,
   refreshUnit,
   removeCounters,
+  shuffleDeck,
   summonUnit,
   tutorCard,
   untapPlayer,
 } from '@/lib/battle';
 import { fightUnit } from '../combat';
-import { getAllGraveyardsCards, reanimate, regrowCard } from '../graveyard';
+import { getAllGraveyardsCards, reanimate, recycleCard, regrowCard } from '../graveyard';
 import { damageLand, fortifyLand } from '../land';
 import { forceMoveUnit } from '../move';
 import { soundManager } from '../sound';
@@ -656,5 +657,25 @@ export const DataEffectTemplates: Record<
       addMana(player, amount);
     },
     label: () => `Add ${amount} mana`,
+  }),
+  reshuffleGraveyard: () => ({
+    fn: ({ player }) => {
+      player.deck.push(...player.graveyard);
+      player.deck = shuffleDeck(player.deck);
+      player.graveyard = [];
+    },
+    label: () => `Reshuffle cards from the graveyard into the deck`,
+  }),
+  recycleCard: () => ({
+    fn: ({ targets, player }) => {
+      const cards = targets[0] as Card[];
+      cards.forEach((c) => {
+        recycleCard(c.instanceId, player);
+      });
+    },
+    label: (targets: TargetDefinition[]) => {
+      const countLabel = targets[0].count ? ` ${targets[0].count}` : '';
+      return `Shuffle ${countLabel} card${countLabel !== '1' ? 's' : ''} from the graveyard into the deck`;
+    },
   }),
 };

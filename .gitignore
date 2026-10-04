@@ -28,6 +28,5 @@ chroma
 
 .env
 
-# Generated card artwork
-public/assets/images/cards
+# Generated artwork
 public/assets/images/scenes

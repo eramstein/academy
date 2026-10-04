@@ -1,5 +1,6 @@
 import type { Card, Player, Position, UnitCard } from '../_model';
 import { bs } from '../_state';
+import { shuffleDeck } from './deck';
 import { onDeployUnit } from './listeners';
 import { soundManager } from './sound';
 import { makeDeployedUnit } from './unit';
@@ -20,9 +21,19 @@ export function reanimate(card: UnitCard, position: Position, reanimatorPlayerId
   }
 }
 
+// graveyard to hand
 export function regrowCard(cardInstanceId: string, player: Player) {
   const card = player.graveyard.find((c) => c.instanceId === cardInstanceId);
   if (!card) return;
   player.graveyard = player.graveyard.filter((c) => c.instanceId !== cardInstanceId);
   player.hand.push(card);
+}
+
+// graveyard to deck
+export function recycleCard(cardInstanceId: string, player: Player) {
+  const card = player.graveyard.find((c) => c.instanceId === cardInstanceId);
+  if (!card) return;
+  player.graveyard = player.graveyard.filter((c) => c.instanceId !== cardInstanceId);
+  player.deck.push(card);
+  player.deck = shuffleDeck(player.deck);
 }

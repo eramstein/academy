@@ -229,6 +229,31 @@ function clearUiState() {
   ui.validTargets = null;
 }
 
+/** Finish the current multi-target slot early (fewer than the required count). */
+export function finishTargetSelection() {
+  const ui = uiState.battle;
+  if (
+    (!ui.abilityPending && !ui.spellPending && !ui.triggeredAbilityPending) ||
+    !ui.targetBeingSelected
+  ) {
+    return;
+  }
+
+  const currentEffectIdx = ui.currentEffectIndex || 0;
+  const currentTargetIdx = ui.currentTargetIndex || 0;
+  if (!ui.selectedTargets[currentEffectIdx]) ui.selectedTargets[currentEffectIdx] = [];
+  if (!ui.selectedTargets[currentEffectIdx][currentTargetIdx]) {
+    ui.selectedTargets[currentEffectIdx][currentTargetIdx] = [];
+  }
+
+  if (ui.graveyardModal.visible) {
+    ui.graveyardModal.visible = false;
+    ui.graveyardModal.playerId = null;
+  }
+
+  advanceTargetStep();
+}
+
 function advanceTargetStep() {
   const ui = uiState.battle;
   let actions: any[] = [];

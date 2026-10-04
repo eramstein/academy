@@ -14,7 +14,7 @@ import {
 
 const shroomy: UnitCardTemplate = {
   id: 'shroomy',
-  name: 'Shrromy',
+  name: 'Shroomy',
   imageFileName: 'shroomy',
   type: CardType.Unit,
   cost: 1,
@@ -57,6 +57,22 @@ const lion: UnitCardTemplate = {
   maxHealth: 2,
   retaliate: 1,
   unitTypes: [UnitType.Beast],
+};
+
+const snek: UnitCardTemplate = {
+  id: 'snek',
+  name: 'Snek',
+  imageFileName: 'snek',
+  type: CardType.Unit,
+  cost: 2,
+  colors: [{ color: CardColor.Green, count: 1 }],
+  power: 1,
+  maxHealth: 2,
+  retaliate: 0,
+  unitTypes: [UnitType.Beast],
+  keywords: {
+    poisonous: 1,
+  },
 };
 
 const not_so_little_pig = {
@@ -120,6 +136,22 @@ const bear_minimum = {
   maxHealth: 3,
   retaliate: 0,
   unitTypes: [UnitType.Beast],
+};
+
+const vigorous_entling: UnitCardTemplate = {
+  id: 'vigorous_entling',
+  name: 'Vigorous Entling',
+  imageFileName: 'vigorous_entling',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Green, count: 3 }],
+  power: 2,
+  maxHealth: 5,
+  retaliate: 1,
+  unitTypes: [UnitType.Beast],
+  keywords: {
+    regeneration: 3,
+  },
 };
 
 const hungry_wolf = {
@@ -302,6 +334,24 @@ const healing_salve = {
   ],
 };
 
+const regrowth = {
+  id: 'regrowth',
+  name: 'Regrowth',
+  imageFileName: 'regrowth',
+  type: CardType.Spell,
+  cost: 2,
+  colors: [{ color: CardColor.Green, count: 2 }],
+  actions: [
+    {
+      effect: {
+        name: 'regrowCard',
+        args: {},
+      },
+      targets: [{ type: TargetType.GraveyardCard, count: 1 }],
+    },
+  ],
+};
+
 // RED BASE CARDS
 // ---------------------------------------------------------
 
@@ -355,6 +405,40 @@ const young_viking = {
   unitTypes: [UnitType.Human],
 };
 
+const salamander = {
+  id: 'salamander',
+  name: 'Salamander',
+  imageFileName: 'salamander',
+  type: CardType.Unit,
+  cost: 2,
+  colors: [{ color: CardColor.Red, count: 2 }],
+  power: 2,
+  maxHealth: 1,
+  retaliate: 0,
+  unitTypes: [UnitType.Beast],
+  abilities: [
+    {
+      trigger: {
+        type: TriggerType.OnDeploy,
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'damageUnit',
+            args: { damage: 1 },
+            range: {
+              sameRow: true,
+            },
+          },
+        },
+      ],
+    },
+  ],
+};
+
 const enraged_goblin = {
   id: 'enraged_goblin',
   name: 'Enraged Goblin',
@@ -366,6 +450,37 @@ const enraged_goblin = {
   maxHealth: 2,
   retaliate: 1,
   unitTypes: [UnitType.Monster],
+};
+
+const fire_golem = {
+  id: 'fire_golem',
+  name: 'Fire Golem',
+  imageFileName: 'fire_golem',
+  type: CardType.Unit,
+  cost: 2,
+  colors: [{ color: CardColor.Red, count: 1 }],
+  power: 1,
+  maxHealth: 2,
+  retaliate: 0,
+  unitTypes: [UnitType.Elemental],
+  abilities: [
+    {
+      trigger: {
+        type: TriggerType.AfterMove,
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'staticStats',
+            args: { power: 1, range: { self: true } },
+          },
+        },
+      ],
+    },
+  ],
 };
 
 const dwarf_pikeman = {
@@ -599,13 +714,35 @@ const fireball = {
   ],
 };
 
+const earthquake = {
+  id: 'earthquake',
+  name: 'Earthquake',
+  imageFileName: 'earthquake',
+  type: CardType.Spell,
+  cost: 4,
+  colors: [{ color: CardColor.Red, count: 3 }],
+  actions: [
+    {
+      effect: {
+        name: 'damageUnit',
+        args: {
+          damage: 3,
+          range: {
+            all: true,
+          },
+        },
+      },
+    },
+  ],
+};
+
 // BLUE BASE CARDS
 // ---------------------------------------------------------
 
 const fleeting_spirit = {
   id: 'fleeting_spirit',
   name: 'Fleeting Spirit',
-  imageFileName: 'fleeting_spir',
+  imageFileName: 'fleeting_spirit',
   type: CardType.Unit,
   cost: 1,
   colors: [{ color: CardColor.Blue, count: 3 }],
@@ -648,6 +785,37 @@ const dazing_spirit = {
   maxHealth: 2,
   retaliate: 1,
   unitTypes: [UnitType.Spirit],
+};
+
+const hurried_student = {
+  id: 'hurried_student',
+  name: 'Hurried Student',
+  imageFileName: 'hurried_student',
+  type: CardType.Unit,
+  cost: 2,
+  colors: [{ color: CardColor.Blue, count: 2 }],
+  power: 1,
+  maxHealth: 2,
+  retaliate: 0,
+  unitTypes: [UnitType.Spirit],
+  abilities: [
+    {
+      trigger: {
+        type: TriggerType.OnDeploy,
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'drawCard',
+            args: { cardCount: 1 },
+          },
+        },
+      ],
+    },
+  ],
 };
 
 const born_from_magic = {
@@ -754,10 +922,33 @@ const donatello = {
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Blue, count: 3 }],
-  power: 2,
-  maxHealth: 1,
-  retaliate: 0,
+  power: 3,
+  maxHealth: 3,
+  retaliate: 3,
   unitTypes: [UnitType.Human],
+  abilities: [
+    {
+      trigger: {
+        type: TriggerType.OnDeploy,
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'recycleCard',
+          },
+          targets: [
+            {
+              type: 'graveyard_card',
+              count: 3,
+            },
+          ],
+        },
+      ],
+    },
+  ],
 };
 
 const buffoon = {
@@ -766,7 +957,7 @@ const buffoon = {
   imageFileName: 'buffoon',
   type: CardType.Unit,
   cost: 3,
-  colors: [{ color: CardColor.Black, count: 1 }],
+  colors: [{ color: CardColor.Blue, count: 1 }],
   power: 0,
   maxHealth: 10,
   retaliate: 3,
@@ -918,19 +1109,57 @@ const zeppelin = {
   },
 };
 
+const unsummon = {
+  id: 'unsummon',
+  name: 'Unsummon',
+  imageFileName: 'unsummon',
+  type: CardType.Spell,
+  cost: 1,
+  colors: [{ color: CardColor.Blue, count: 3 }],
+  actions: [
+    {
+      effect: {
+        name: 'bounceUnit',
+        args: {
+          count: 1,
+        },
+      },
+    },
+  ],
+};
+
 const basic_research = {
   id: 'basic_research',
   name: 'Basic Research',
   imageFileName: 'basic_research',
   type: CardType.Spell,
   cost: 3,
-  colors: [{ color: CardColor.Black, count: 2 }],
+  colors: [{ color: CardColor.Blue, count: 2 }],
   actions: [
     {
       effect: {
         name: 'drawCard',
         args: {
           cardCount: 2,
+        },
+      },
+    },
+  ],
+};
+
+const ancient_memories = {
+  id: 'ancient_memories',
+  name: 'Ancient Memories',
+  imageFileName: 'ancient_memories',
+  type: CardType.Spell,
+  cost: 1,
+  colors: [{ color: CardColor.Blue, count: 6 }],
+  actions: [
+    {
+      effect: {
+        name: 'drawCard',
+        args: {
+          cardCount: 3,
         },
       },
     },
@@ -985,6 +1214,22 @@ const sewer_rat = {
   unitTypes: [UnitType.Beast],
 };
 
+const skeletal_archer = {
+  id: 'skeletal_archer',
+  name: 'Skeletal Archer',
+  imageFileName: 'skeletal_archer',
+  type: CardType.Unit,
+  cost: 2,
+  colors: [{ color: CardColor.Black, count: 1 }],
+  power: 2,
+  maxHealth: 1,
+  retaliate: 0,
+  unitTypes: [UnitType.Undead],
+  keywords: {
+    ranged: true,
+  },
+};
+
 const blacksmith = {
   id: 'blacksmith',
   name: 'Expendable Recruit',
@@ -1033,6 +1278,43 @@ const zombie = {
   maxHealth: 4,
   retaliate: 2,
   unitTypes: [UnitType.Undead],
+};
+
+const plague_spreader = {
+  id: 'plague_spreader',
+  name: 'Plague Spreader',
+  imageFileName: 'plague_spreader',
+  type: CardType.Unit,
+  cost: 3,
+  colors: [{ color: CardColor.Black, count: 2 }],
+  power: 0,
+  maxHealth: 4,
+  retaliate: 1,
+  unitTypes: [UnitType.Undead],
+  abilities: [
+    {
+      trigger: {
+        type: TriggerType.OnTurnStart,
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'addCounters',
+            args: {
+              counterType: 'decay',
+              counterValue: 1,
+              range: {
+                sameRow: true,
+              },
+            },
+          },
+        },
+      ],
+    },
+  ],
 };
 
 const market_beggar = {
@@ -1251,6 +1533,23 @@ const raise_dead = {
   ],
 };
 
+const demonic_tutor = {
+  id: 'demonic_tutor',
+  name: 'Demonic Tutor',
+  imageFileName: 'demonic_tutor',
+  type: CardType.Spell,
+  cost: 2,
+  colors: [{ color: CardColor.Black, count: 3 }],
+  actions: [
+    {
+      effect: {
+        name: 'tutorCard',
+        args: {},
+      },
+    },
+  ],
+};
+
 // BASIC LANDS
 // ---------------------------------------------------------
 
@@ -1389,6 +1688,9 @@ export const BASE_DECK_GREEN: DeckBlueprint = {
     young_druidess,
     shroomy,
     lazy_elephant,
+    regrowth,
+    vigorous_entling,
+    snek,
   ],
   lands: [forest, plains, market, enchanter_lair],
 };
@@ -1414,6 +1716,9 @@ export const BASE_DECK_RED: DeckBlueprint = {
     dwarf_pikeman,
     fireball,
     manticore_pup,
+    fire_golem,
+    salamander,
+    earthquake,
   ],
   lands: [mountain, plains, market, enchanter_lair],
 };
@@ -1439,6 +1744,9 @@ export const BASE_DECK_BLACK: DeckBlueprint = {
     blacksmith,
     ornithopter,
     raise_dead,
+    demonic_tutor,
+    skeletal_archer,
+    plague_spreader,
   ],
   lands: [city, plains, market, enchanter_lair],
 };
@@ -1464,6 +1772,9 @@ export const BASE_DECK_BLUE: DeckBlueprint = {
     security_golem,
     fleeting_spirit,
     hyptnotic_witch,
+    ancient_memories,
+    unsummon,
+    hurried_student,
   ],
   lands: [island, plains, market, enchanter_lair],
 };

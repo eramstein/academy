@@ -63,29 +63,40 @@ export function learnFromDeck(cards: CardTemplate[], characterKey = 'player'): s
   const learntKeywords: string[] = [];
   const learntActions: string[] = [];
 
+  const learnAction = (effectName: string) => {
+    const actionName = getActionTemplateNameForEffect(effectName);
+    if (
+      !actionName ||
+      knownActions[actionName] !== undefined ||
+      learntActions.includes(actionName)
+    ) {
+      return;
+    }
+    learntActions.push(actionName);
+  };
+
   for (const card of cards) {
-    if (isUnitCard(card) && card.keywords) {
-      for (const [keyword, value] of Object.entries(card.keywords) as [
-        keyof UnitKeywords,
-        boolean | number | undefined,
-      ][]) {
-        if (!value || knownKeywords[keyword] !== undefined || learntKeywords.includes(keyword)) {
-          continue;
+    if (isUnitCard(card)) {
+      if (card.keywords) {
+        for (const [keyword, value] of Object.entries(card.keywords) as [
+          keyof UnitKeywords,
+          boolean | number | undefined,
+        ][]) {
+          if (!value || knownKeywords[keyword] !== undefined || learntKeywords.includes(keyword)) {
+            continue;
+          }
+          learntKeywords.push(keyword);
         }
-        learntKeywords.push(keyword);
+      }
+      for (const ability of card.abilities ?? []) {
+        for (const action of ability.actions) {
+          learnAction(action.effect.name);
+        }
       }
     }
     if (isSpellCard(card)) {
       for (const action of card.actions) {
-        const actionName = getActionTemplateNameForEffect(action.effect.name);
-        if (
-          !actionName ||
-          knownActions[actionName] !== undefined ||
-          learntActions.includes(actionName)
-        ) {
-          continue;
-        }
-        learntActions.push(actionName);
+        learnAction(action.effect.name);
       }
     }
   }

@@ -1,6 +1,11 @@
 <script lang="ts">
   import { uiState } from '@lib/_state';
+  import { getAssetPath } from '@lib/_utils/asset-paths';
   import { DataEffectTemplates } from '@lib/battle/effects/effect-templates';
+  import OrnateButton from '@lib/ui/OrnateButton.svelte';
+  import { finishTargetSelection } from '@lib/ui/_helpers/targetting';
+
+  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
   let targetPrompt = $derived(() => {
     const battle = uiState.battle;
@@ -46,16 +51,24 @@
     return {
       text: `Select ${targetText}${countText}`,
       effectText,
+      showDone: requiredCount > 1,
       isVisible: true,
     };
   });
 </script>
 
 {#if targetPrompt()?.isVisible}
-  <div class="target-prompt">
-    <div class="target-text">{targetPrompt()?.text}</div>
-    {#if targetPrompt()?.effectText}
-      <div class="effect-text">{targetPrompt()?.effectText}</div>
+  <div class="target-prompt" style="--parchment: url('{parchmentPath}')">
+    <div class="panel">
+      <div class="target-text">{targetPrompt()?.text}</div>
+      {#if targetPrompt()?.effectText}
+        <div class="effect-text">{targetPrompt()?.effectText}</div>
+      {/if}
+    </div>
+    {#if targetPrompt()?.showDone}
+      <div class="actions">
+        <OrnateButton onclick={finishTargetSelection}>Done</OrnateButton>
+      </div>
     {/if}
   </div>
 {/if}
@@ -66,46 +79,51 @@
     bottom: 120px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.9);
-    color: #ffd700;
-    font-weight: bold;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 1rem;
     z-index: 1000;
-    border: 2px solid #ffd700;
-    box-shadow:
-      0 4px 12px rgba(0, 0, 0, 0.5),
-      0 0 20px rgba(255, 215, 0, 0.3);
-    animation: pulse 2s ease-in-out infinite alternate;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 220px;
+    max-width: min(360px, calc(100vw - 32px));
     text-align: center;
-    min-width: 200px;
+  }
+
+  .panel {
+    width: 100%;
+    padding: 12px 18px 14px;
+    background: var(--color-parchment) var(--parchment) center / cover;
+    background-blend-mode: multiply;
+    color: var(--color-ink);
+    font-family: var(--font-narrative);
+    border-radius: 3px;
+    border: 1px solid var(--color-brown-border);
+    box-sizing: border-box;
+    box-shadow:
+      0 8px 20px rgba(0, 0, 0, 0.35),
+      inset 0 0 24px rgba(90, 75, 60, 0.12),
+      inset 0 0 60px color-mix(in srgb, var(--color-golden) 12%, transparent);
   }
 
   .target-text {
-    margin-bottom: 8px;
-    white-space: nowrap;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--color-ink);
+    line-height: 1.3;
   }
 
   .effect-text {
-    font-size: 0.85rem;
-    color: #ffffff;
+    margin-top: 6px;
+    font-size: 0.9rem;
     font-weight: normal;
-    line-height: 1.3;
-    max-width: 300px;
+    color: var(--color-ink-muted);
+    line-height: 1.4;
     word-wrap: break-word;
   }
 
-  @keyframes pulse {
-    from {
-      box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.5),
-        0 0 20px rgba(255, 215, 0, 0.3);
-    }
-    to {
-      box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(255, 215, 0, 0.5);
-    }
+  .actions {
+    display: flex;
+    justify-content: center;
   }
 </style>

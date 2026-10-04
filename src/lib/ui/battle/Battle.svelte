@@ -70,17 +70,7 @@
 
 <div class="battle" style="background-image: url('{getTableImagePath()}');">
   <div class="top-section">
-    <div class="player-turn-area">
-      <button
-        class="chip-btn end-turn-btn"
-        class:disabled={!bs.isPlayersTurn}
-        onclick={handleEndTurn}
-        disabled={!bs.isPlayersTurn}
-      >
-        <span>End<br />Turn</span>
-      </button>
-      <Player player={bs.players[0]} />
-    </div>
+    <Player player={bs.players[0]} />
     <Board />
     <Player
       player={bs.players[1]}
@@ -91,6 +81,14 @@
   <div class="bottom-section">
     <div class="hands-container">
       <Hand player={bs.players[0]} />
+      <button
+        class="chip-btn end-turn-btn"
+        class:disabled={!bs.isPlayersTurn}
+        onclick={handleEndTurn}
+        disabled={!bs.isPlayersTurn}
+      >
+        <span>End<br />Turn</span>
+      </button>
       <Hand player={bs.players[1]} />
     </div>
   </div>
@@ -165,12 +163,6 @@
     gap: 2rem;
     width: 100%;
     margin-bottom: 1rem;
-  }
-
-  .player-turn-area {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
   }
 
   .chip-btn {
@@ -258,6 +250,11 @@
     align-items: center;
     width: 100%;
     padding: 0 2rem;
+    gap: 1rem;
+  }
+
+  .hands-container .end-turn-btn {
+    flex-shrink: 0;
   }
 
   .card-full-overlay {

@@ -59,7 +59,7 @@ export const colorPie: Record<CardColor, ColorPie> = {
       hp: 3,
       ret: 1,
     },
-    unitTypes: [UnitType.Mushroom, UnitType.Plant],
+    unitTypes: [UnitType.Mushroom, UnitType.Plant, UnitType.Beast],
     keywordsPreferences: {
       ...defaultKeywordPreferences,
       haste: -2,
@@ -117,6 +117,7 @@ export const colorPie: Record<CardColor, ColorPie> = {
       cycleCards: 3,
       fight: -3,
       tutorCard: 2,
+      recycleCard: 2,
     },
   },
   [CardColor.Black]: {

@@ -19,6 +19,7 @@
 
   const resetSim = async () => {
     await initSim();
+    resetBattleState();
     resetUiState();
   };
 </script>

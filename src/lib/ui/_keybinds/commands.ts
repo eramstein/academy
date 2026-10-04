@@ -1,6 +1,7 @@
 import { DayPeriod, ResourceType } from '../../_model';
 import type { UnitKeywords } from '../../_model/model-battle';
 import { bs, getCurrentBattleState, gs, saveStateToLocalStorage } from '../../_state';
+import { drawCard, tutorCard } from '../../battle/deck';
 import { scheduleClassesForCurrentTerm } from '../../sim/academy';
 import { ACTION_TEMPLATE_KEYS } from '../../sim/cards/action-templates';
 import { KEYWORD_KEYS } from '../../sim/cards/keywords';
@@ -35,6 +36,26 @@ export async function executeCommand(input: string): Promise<CommandResult> {
       // /discard-hand
       bs.players[1].hand = [];
       return { ok: true, message: `Discarded opponent's hand` };
+    }
+
+    case 'draw': {
+      // /draw [name prefix]
+      const player = bs.players[0];
+      const query = parts.slice(1).join(' ').trim().toLowerCase();
+      if (!query) {
+        if (player.deck.length === 0) {
+          return { ok: false, message: 'Deck is empty' };
+        }
+        const card = player.deck[0];
+        drawCard(player);
+        return { ok: true, message: `Drew ${card.name}` };
+      }
+      const card = player.deck.find((c) => c.name.toLowerCase().startsWith(query));
+      if (!card) {
+        return { ok: false, message: `No deck card matching "${parts.slice(1).join(' ')}"` };
+      }
+      tutorCard(card.instanceId, player);
+      return { ok: true, message: `Drew ${card.name}` };
     }
 
     case 'day': {
