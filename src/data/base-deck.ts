@@ -1100,9 +1100,9 @@ const zeppelin = {
   type: CardType.Unit,
   cost: 8,
   colors: [{ color: CardColor.Blue, count: 3 }],
-  power: 4,
+  power: 3,
   maxHealth: 9,
-  retaliate: 4,
+  retaliate: 3,
   unitTypes: [UnitType.Human, UnitType.Monster],
   keywords: {
     flying: true,
@@ -1353,7 +1353,7 @@ const ornithopter = {
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Black, count: 2 }],
-  power: 2,
+  power: 1,
   maxHealth: 3,
   retaliate: 1,
   unitTypes: [UnitType.Construct],
@@ -1362,16 +1362,17 @@ const ornithopter = {
   },
 };
 
-const grim_guard = {
-  id: 'grim_guard',
-  name: 'Grim Guard',
-  imageFileName: 'grim_guard',
+const ogre_guard = {
+  id: 'ogre_guard',
+  name: 'Ogre Guard',
+  imageFileName: 'ogre_guard',
   type: CardType.Unit,
   cost: 4,
   colors: [{ color: CardColor.Black, count: 1 }],
   power: 2,
   maxHealth: 6,
   retaliate: 2,
+  unitTypes: [UnitType.Monster],
 };
 
 const street_slinger = {
@@ -1693,6 +1694,8 @@ export const BASE_DECK_GREEN: DeckBlueprint = {
     snek,
   ],
   lands: [forest, plains, market, enchanter_lair],
+  learntKeywords: ['poisonous', 'regeneration', 'trample'],
+  learntActions: ['addGrowthCounters', 'healUnit', 'regrowCard'],
 };
 
 export const BASE_DECK_RED: DeckBlueprint = {
@@ -1721,6 +1724,8 @@ export const BASE_DECK_RED: DeckBlueprint = {
     earthquake,
   ],
   lands: [mountain, plains, market, enchanter_lair],
+  learntKeywords: ['lance', 'zerk', 'haste'],
+  learntActions: ['directDamage', 'damageLand'],
 };
 
 export const BASE_DECK_BLACK: DeckBlueprint = {
@@ -1729,7 +1734,7 @@ export const BASE_DECK_BLACK: DeckBlueprint = {
   cards: [
     sewer_rat,
     zombie,
-    grim_guard,
+    ogre_guard,
     iron_golem,
     royal_halberdier,
     vigilant_knight,
@@ -1749,6 +1754,8 @@ export const BASE_DECK_BLACK: DeckBlueprint = {
     plague_spreader,
   ],
   lands: [city, plains, market, enchanter_lair],
+  learntKeywords: ['ranged', 'immobile', 'flying'],
+  learntActions: ['addDecayCounters', 'destroyUnit', 'fortifyLand', 'reanimate', 'tutorCard'],
 };
 
 export const BASE_DECK_BLUE: DeckBlueprint = {
@@ -1777,4 +1784,6 @@ export const BASE_DECK_BLUE: DeckBlueprint = {
     hurried_student,
   ],
   lands: [island, plains, market, enchanter_lair],
+  learntKeywords: ['immobile', 'moveAndAttack', 'ranged', 'flying'],
+  learntActions: ['bounceUnit', 'drawCards', 'cycleCards', 'mezz', 'recycleCard', 'forceMoveUnit'],
 };

@@ -36,7 +36,7 @@ export const featureCosts: Record<FeatureCostKey, (card: PartialConjuredUnit) =>
   zerk: () => -4,
   cleave: () => 7,
   lance: (card) => Math.ceil(card.power / 2) * 3,
-  flying: () => 6,
+  flying: () => 8,
   immobile: () => -3,
   armorPiercing: () => 2,
 };

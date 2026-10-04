@@ -236,6 +236,8 @@ export interface DeckBlueprint {
   name: string;
   cards: CardTemplate[];
   lands: CardTemplate[];
+  learntKeywords: string[];
+  learntActions: string[];
 }
 
 export interface Attributes {

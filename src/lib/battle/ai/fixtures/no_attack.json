@@ -1,0 +1,945 @@
+{
+  "turn": 9,
+  "isPlayersTurn": true,
+  "playerIdWon": null,
+  "players": [
+    {
+      "id": 0,
+      "name": "player",
+      "isPlayer": true,
+      "mana": 2,
+      "maxMana": 6,
+      "life": 11,
+      "hand": [
+        {
+          "id": "market_beggar-8461a987-c068-4508-927c-5c5489efee78",
+          "name": "Market Beggar",
+          "imageFileName": "market_beggar",
+          "type": "unit",
+          "cost": 3,
+          "colors": [{ "color": "black", "count": 2 }],
+          "power": 1,
+          "maxHealth": 6,
+          "retaliate": 3,
+          "unitTypes": ["human"],
+          "ownerPlayerId": 0,
+          "instanceId": "340f6fd7-0f3d-415f-9cd3-ff382d29e542"
+        },
+        {
+          "id": "iron_golem-c8dfe82c-c50a-4814-b17e-db7693f00b70",
+          "name": "Iron Golem",
+          "imageFileName": "iron_golem",
+          "type": "unit",
+          "cost": 5,
+          "colors": [{ "color": "black", "count": 1 }],
+          "power": 3,
+          "maxHealth": 6,
+          "retaliate": 2,
+          "ownerPlayerId": 0,
+          "instanceId": "8215c414-2354-4f7f-931a-60ddc6fe0597"
+        },
+        {
+          "id": "execution-4a64c154-4c2a-4d06-9012-f7ca48ab4351",
+          "name": "Execution",
+          "imageFileName": "execution",
+          "type": "spell",
+          "cost": 6,
+          "colors": [{ "color": "black", "count": 2 }],
+          "actions": [
+            {
+              "effect": { "name": "destroyUnit", "args": {} },
+              "targets": [{ "type": "unit", "count": 1 }]
+            }
+          ],
+          "ownerPlayerId": 0,
+          "instanceId": "fb857595-2671-4755-83ff-1d86287a0b5d"
+        },
+        {
+          "id": "royal_halberdier-16c1199e-dad6-4473-b5fc-4c3393f1c477",
+          "name": "Royal Halberdier",
+          "imageFileName": "royal_halberdier",
+          "type": "unit",
+          "cost": 6,
+          "colors": [{ "color": "black", "count": 1 }],
+          "power": 4,
+          "maxHealth": 7,
+          "retaliate": 0,
+          "ownerPlayerId": 0,
+          "instanceId": "11f23ce2-4b26-4a5e-95fa-bb64fbb6030f"
+        },
+        {
+          "id": "gate_keepers-2c6759aa-6620-48e1-a260-512cc7b23a2a",
+          "name": "Gatekeepers",
+          "imageFileName": "gate_keepers",
+          "type": "unit",
+          "cost": 3,
+          "colors": [{ "color": "black", "count": 1 }],
+          "power": 0,
+          "maxHealth": 10,
+          "retaliate": 3,
+          "unitTypes": ["human"],
+          "keywords": { "immobile": true },
+          "ownerPlayerId": 0,
+          "instanceId": "36e538e5-9464-473e-ae9b-66e42b03ad64"
+        },
+        {
+          "id": "blacksmith-1cae9102-c140-463f-9d13-91e60b58c11e",
+          "name": "Expendable Recruit",
+          "imageFileName": "blacksmith",
+          "type": "unit",
+          "cost": 2,
+          "colors": [{ "color": "black", "count": 2 }],
+          "power": 2,
+          "maxHealth": 2,
+          "retaliate": 1,
+          "unitTypes": ["human"],
+          "abilities": [
+            {
+              "trigger": { "type": "On Deploy" },
+              "actions": [
+                {
+                  "effect": {
+                    "name": "staticKeyword",
+                    "args": {
+                      "abilityName": "blacksmithArmor",
+                      "keyword": "armor",
+                      "keyWordValue": 1,
+                      "reset": false,
+                      "range": { "sameRow": true, "allies": true }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "ownerPlayerId": 0,
+          "instanceId": "29b51d32-7446-4b79-a0e1-ef21bb675e91"
+        }
+      ],
+      "deck": [
+        {
+          "id": "vigilant_knight-40e68883-799c-4a7f-b2be-ce73e37b6d68",
+          "name": "Vigilant Knight",
+          "imageFileName": "vigilant_knight",
+          "type": "unit",
+          "cost": 7,
+          "colors": [{ "color": "black", "count": 1 }],
+          "power": 4,
+          "maxHealth": 7,
+          "retaliate": 4,
+          "ownerPlayerId": 0,
+          "instanceId": "f7e89937-115d-4ead-9ae2-57c6fc067b31"
+        },
+        {
+          "id": "skeletal_archer-50dbaf60-9ba6-4f70-97a0-bbb17d0dfe61",
+          "name": "Skeletal Archer",
+          "imageFileName": "skeletal_archer",
+          "type": "unit",
+          "cost": 2,
+          "colors": [{ "color": "black", "count": 1 }],
+          "power": 2,
+          "maxHealth": 1,
+          "retaliate": 0,
+          "unitTypes": ["undead"],
+          "keywords": { "ranged": true },
+          "ownerPlayerId": 0,
+          "instanceId": "d28ff34c-83c1-4acb-8a8e-cd105d032d43"
+        },
+        {
+          "id": "elite_crossbowmen-4d2fb82f-ec9d-4081-bb42-6eb4a917e00d",
+          "name": "Elite Crossbowmen",
+          "imageFileName": "elite_crossbowmen",
+          "type": "unit",
+          "cost": 5,
+          "colors": [{ "color": "black", "count": 3 }],
+          "power": 2,
+          "maxHealth": 8,
+          "retaliate": 2,
+          "unitTypes": ["human"],
+          "keywords": { "ranged": true },
+          "ownerPlayerId": 0,
+          "instanceId": "851c7fab-1e63-4836-aaf5-bc14b9d5250f"
+        },
+        {
+          "id": "fortify-c187fd66-79af-4bd5-9e3f-db4ecf7f48a0",
+          "name": "Fortify",
+          "imageFileName": "fortify",
+          "type": "spell",
+          "cost": 3,
+          "colors": [{ "color": "black", "count": 2 }],
+          "actions": [
+            {
+              "effect": { "name": "fortifyLand", "args": { "amount": 8 } },
+              "targets": [{ "type": "land", "count": 1 }]
+            }
+          ],
+          "ownerPlayerId": 0,
+          "instanceId": "1d50e58c-a16c-4a10-a74c-6956901b9f5b"
+        },
+        {
+          "id": "big_bertha-b7283f4b-6941-4837-8e4e-9cb7b6a85f3c",
+          "name": "Big Bertha",
+          "imageFileName": "big_bertha",
+          "type": "unit",
+          "cost": 8,
+          "colors": [{ "color": "black", "count": 4 }],
+          "power": 5,
+          "maxHealth": 9,
+          "retaliate": 3,
+          "unitTypes": ["human", "monster"],
+          "keywords": { "ranged": true },
+          "ownerPlayerId": 0,
+          "instanceId": "f41b50c5-ce78-447e-bf51-ddcae662beb5"
+        },
+        {
+          "id": "raise_dead-ed37abb8-f6dc-4c88-be3d-763688242abe",
+          "name": "Raise Dead",
+          "imageFileName": "raise_dead",
+          "type": "spell",
+          "cost": 3,
+          "colors": [{ "color": "black", "count": 3 }],
+          "actions": [
+            {
+              "effect": { "name": "reanimate", "args": {} },
+              "targets": [
+                { "type": "graveyard_card", "count": 1 },
+                { "type": "cell_empty", "count": 1 }
+              ]
+            }
+          ],
+          "ownerPlayerId": 0,
+          "instanceId": "94922084-bf44-4708-a827-670c2a53f444"
+        },
+        {
+          "id": "demonic_tutor-876d6c06-1bd2-4f2d-9812-4e2ad46a400b",
+          "name": "Demonic Tutor",
+          "imageFileName": "demonic_tutor",
+          "type": "spell",
+          "cost": 2,
+          "colors": [{ "color": "black", "count": 3 }],
+          "actions": [{ "effect": { "name": "tutorCard", "args": {} } }],
+          "ownerPlayerId": 0,
+          "instanceId": "7036a8c6-4f3b-42c2-bfcd-af725a582fa4"
+        },
+        {
+          "id": "plague_spreader-f2868720-c264-421e-8c7b-3144ac7423a8",
+          "name": "Plague Spreader",
+          "imageFileName": "plague_spreader",
+          "type": "unit",
+          "cost": 3,
+          "colors": [{ "color": "black", "count": 2 }],
+          "power": 0,
+          "maxHealth": 4,
+          "retaliate": 1,
+          "unitTypes": ["undead"],
+          "abilities": [
+            {
+              "trigger": { "type": "On Turn Start", "range": { "self": true } },
+              "actions": [
+                {
+                  "effect": {
+                    "name": "addCounters",
+                    "args": {
+                      "counterType": "decay",
+                      "counterValue": 1,
+                      "range": { "sameRow": true }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "ownerPlayerId": 0,
+          "instanceId": "f4bc46b9-26ac-488b-b595-8795be1f96bf"
+        }
+      ],
+      "graveyard": [
+        {
+          "id": "zombie-8431f422-1659-4519-92b1-106b360d61d4",
+          "name": "Zombie",
+          "imageFileName": "zombie",
+          "type": "unit",
+          "cost": 3,
+          "colors": [{ "color": "black", "count": 1 }],
+          "power": 2,
+          "maxHealth": 4,
+          "retaliate": 2,
+          "unitTypes": ["undead"],
+          "ownerPlayerId": 0,
+          "instanceId": "fe72b315-00e6-4948-a6e4-0806e94c45f2",
+          "position": { "row": 0, "column": 1 },
+          "health": -1,
+          "hasAttacked": false,
+          "hasMoved": false,
+          "exhausted": true,
+          "statuses": {},
+          "untilEndOfTurn": {},
+          "staticModifiers": [],
+          "counters": {},
+          "initialKeywords": {},
+          "isDying": true
+        },
+        {
+          "id": "expendable_recruit-8ffefde6-f60c-47db-92f9-c7cd52966559",
+          "name": "Expendable Recruit",
+          "imageFileName": "expendable_recruit",
+          "type": "unit",
+          "cost": 1,
+          "colors": [{ "color": "black", "count": 1 }],
+          "power": 0,
+          "maxHealth": 4,
+          "retaliate": 0,
+          "unitTypes": ["human"],
+          "ownerPlayerId": 0,
+          "instanceId": "63782022-7439-4fd7-b222-e836521d56e6",
+          "position": { "row": 3, "column": 1 },
+          "health": 0,
+          "hasAttacked": false,
+          "hasMoved": true,
+          "exhausted": true,
+          "statuses": {},
+          "untilEndOfTurn": {},
+          "staticModifiers": [],
+          "counters": {},
+          "initialKeywords": {},
+          "isDying": true
+        }
+      ],
+      "colors": { "black": 3 },
+      "lands": [
+        {
+          "id": "city-d30773c0-2f68-40f7-9203-1c49d2bd86a5",
+          "name": "City",
+          "imageFileName": "city",
+          "type": "land",
+          "cost": 0,
+          "colors": [{ "color": "black", "count": 1 }],
+          "health": 8,
+          "ownerPlayerId": 0,
+          "instanceId": "fb1d9a1c-2b79-4f7f-b394-32ced526bd1c",
+          "position": 0,
+          "isRuined": false
+        },
+        {
+          "id": "plains-b29d6f6a-b303-4361-b237-7bddf048fa32",
+          "name": "Plains",
+          "imageFileName": "plains",
+          "type": "land",
+          "cost": 0,
+          "colors": [],
+          "health": 15,
+          "ownerPlayerId": 0,
+          "instanceId": "435ae193-6d7e-420f-a2cd-a4e6404693c1",
+          "position": 1,
+          "isRuined": false
+        },
+        {
+          "id": "market-fac1bb0d-06e2-44e8-b341-b4ef871ee57d",
+          "name": "Market",
+          "imageFileName": "market",
+          "type": "land",
+          "cost": 0,
+          "colors": [],
+          "health": 10,
+          "abilities": [
+            {
+              "trigger": { "type": "Activated" },
+              "actions": [{ "effect": { "name": "drawCard", "args": { "count": 1 } } }],
+              "cost": 1,
+              "exhausts": true
+            }
+          ],
+          "ownerPlayerId": 0,
+          "instanceId": "40f36653-d829-4282-a2d8-ba012b6b142e",
+          "position": 2,
+          "isRuined": false
+        },
+        {
+          "id": "enchanter_lair-bec3da6d-9b51-4797-a004-3899cd0fa338",
+          "name": "Enchanter Lair",
+          "imageFileName": "enchanter_lair",
+          "type": "land",
+          "cost": 0,
+          "colors": [],
+          "health": 10,
+          "abilities": [
+            {
+              "trigger": { "type": "Activated" },
+              "actions": [
+                {
+                  "effect": { "name": "damageUnit", "args": { "damage": 1 } },
+                  "targets": [{ "type": "unit", "count": 1 }]
+                }
+              ],
+              "cost": 3,
+              "exhausts": true
+            }
+          ],
+          "ownerPlayerId": 0,
+          "instanceId": "73c04adb-ab76-4694-95cc-fc82326c0468",
+          "position": 3,
+          "isRuined": false
+        }
+      ],
+      "abilityUsed": true
+    },
+    {
+      "id": 1,
+      "name": "vai",
+      "isPlayer": false,
+      "mana": 1,
+      "maxMana": 6,
+      "life": 11,
+      "hand": [
+        {
+          "id": "unicorn-60037373-21e7-4e4f-934a-56c8abb37278",
+          "name": "Unicorn",
+          "imageFileName": "unicorn",
+          "type": "unit",
+          "cost": 5,
+          "colors": [{ "color": "green", "count": 4 }],
+          "power": 5,
+          "maxHealth": 5,
+          "retaliate": 1,
+          "unitTypes": ["beast"],
+          "ownerPlayerId": 1,
+          "instanceId": "2fd36116-9a89-4cc1-8424-e9179070a30e"
+        },
+        {
+          "id": "lion-b25ea1af-cb98-427c-8803-0bf74805bc3a",
+          "name": "Lion",
+          "imageFileName": "lion",
+          "type": "unit",
+          "cost": 2,
+          "colors": [{ "color": "green", "count": 1 }],
+          "power": 2,
+          "maxHealth": 2,
+          "retaliate": 1,
+          "unitTypes": ["beast"],
+          "ownerPlayerId": 1,
+          "instanceId": "dbb1adbb-e782-4835-a32b-969f6667f2ff"
+        },
+        {
+          "id": "young_druidess-fc18698c-5374-4593-83b9-03b8b86bee6c",
+          "name": "Young Druidess",
+          "imageFileName": "young_druidess",
+          "type": "unit",
+          "cost": 2,
+          "colors": [{ "color": "green", "count": 1 }],
+          "power": 0,
+          "maxHealth": 1,
+          "retaliate": 0,
+          "unitTypes": ["halfing"],
+          "abilities": [
+            {
+              "actions": [
+                {
+                  "effect": {
+                    "name": "healUnit",
+                    "args": { "health": 1, "range": { "allies": true, "adjacent": true } }
+                  }
+                }
+              ],
+              "trigger": { "type": "After Moving", "range": { "self": true } }
+            }
+          ],
+          "ownerPlayerId": 1,
+          "instanceId": "4f3ab6af-d176-4115-bfef-35220bfeb547"
+        },
+        {
+          "id": "the_beast-21c9226c-e9ac-4af1-bec5-38662553508a",
+          "name": "The Beast",
+          "imageFileName": "the_beast",
+          "type": "unit",
+          "cost": 6,
+          "colors": [{ "color": "green", "count": 6 }],
+          "power": 5,
+          "maxHealth": 6,
+          "retaliate": 6,
+          "unitTypes": ["beast"],
+          "ownerPlayerId": 1,
+          "instanceId": "11e3276f-3df8-425b-8c05-bcbd9f6d1dc3"
+        },
+        {
+          "id": "not_so_little_pig-e9f6e05d-e219-49d1-b5b1-a1830a2ef84a",
+          "name": "Not So Little Pig",
+          "imageFileName": "not_so_little_pig",
+          "type": "unit",
+          "cost": 2,
+          "colors": [{ "color": "green", "count": 2 }],
+          "power": 2,
+          "maxHealth": 4,
+          "retaliate": 1,
+          "unitTypes": ["beast"],
+          "ownerPlayerId": 1,
+          "instanceId": "64190889-268b-46a9-83ae-f7d20eccbe5b"
+        },
+        {
+          "id": "deer-204dc685-cbaf-4600-94b6-d094085dd6cf",
+          "name": "Deer",
+          "imageFileName": "deer",
+          "type": "unit",
+          "cost": 7,
+          "colors": [{ "color": "green", "count": 1 }],
+          "power": 5,
+          "maxHealth": 7,
+          "retaliate": 0,
+          "unitTypes": ["beast"],
+          "ownerPlayerId": 1,
+          "instanceId": "631996b2-7695-48d2-8e20-bf90e5df5900"
+        },
+        {
+          "id": "healing_salve-cd72562b-3581-479d-8b20-e8442627c1c9",
+          "name": "Healing Salve",
+          "imageFileName": "healing_salve",
+          "type": "spell",
+          "cost": 1,
+          "colors": [{ "color": "green", "count": 2 }],
+          "actions": [
+            {
+              "effect": { "name": "healUnit", "args": { "health": 3 } },
+              "targets": [{ "type": "unit", "count": 1 }]
+            }
+          ],
+          "ownerPlayerId": 1,
+          "instanceId": "937fd504-3263-4744-9aba-48b9b827cd4d"
+        },
+        {
+          "id": "hungry_wolf-0aa81c1b-3295-4684-b8bf-2085d9c8a8e9",
+          "name": "Hungry Wolf",
+          "imageFileName": "hungry_wolf",
+          "type": "unit",
+          "cost": 3,
+          "colors": [{ "color": "green", "count": 2 }],
+          "power": 3,
+          "maxHealth": 3,
+          "retaliate": 1,
+          "unitTypes": ["beast"],
+          "ownerPlayerId": 1,
+          "instanceId": "a407c50d-29ab-4381-b709-775e05031a5c"
+        }
+      ],
+      "deck": [
+        {
+          "id": "pandy_panda-795ed98c-a4f0-4f9c-aec0-a0d345ba09d2",
+          "name": "Pandy Panda",
+          "imageFileName": "pandy_panda",
+          "type": "unit",
+          "cost": 4,
+          "colors": [{ "color": "green", "count": 3 }],
+          "power": 3,
+          "maxHealth": 6,
+          "retaliate": 1,
+          "unitTypes": ["beast"],
+          "ownerPlayerId": 1,
+          "instanceId": "a524af5d-466d-44a9-bbe2-8ccacfb36c0a"
+        },
+        {
+          "id": "bison-00375b53-e477-492f-8de8-8c2be283468f",
+          "name": "Bison",
+          "imageFileName": "bison",
+          "type": "unit",
+          "cost": 8,
+          "colors": [{ "color": "green", "count": 1 }],
+          "power": 5,
+          "maxHealth": 6,
+          "retaliate": 1,
+          "unitTypes": ["beast"],
+          "keywords": { "trample": true },
+          "ownerPlayerId": 1,
+          "instanceId": "b5fd219c-ae2c-42ed-bc5d-86161a33d251"
+        },
+        {
+          "id": "lazy_elephant-bf07f67c-0147-4dbc-a114-0ff31dfd066b",
+          "name": "Lazy Elephant",
+          "imageFileName": "lazy_elephant",
+          "type": "unit",
+          "cost": 6,
+          "colors": [{ "color": "green", "count": 2 }],
+          "power": 2,
+          "maxHealth": 14,
+          "retaliate": 0,
+          "unitTypes": ["beast"],
+          "keywords": { "trample": true },
+          "ownerPlayerId": 1,
+          "instanceId": "326c6b3c-fc3b-454f-8ba9-cadfbdf620b7"
+        },
+        {
+          "id": "giant_growth-02442d5f-77fc-4893-8b58-89a6fd09473e",
+          "name": "Giant Growth",
+          "imageFileName": "giant_growth",
+          "type": "spell",
+          "cost": 4,
+          "colors": [{ "color": "green", "count": 2 }],
+          "actions": [
+            {
+              "effect": {
+                "name": "addCounters",
+                "args": { "counterType": "growth", "counterValue": 2 }
+              },
+              "targets": [{ "type": "unit", "count": 1 }]
+            }
+          ],
+          "ownerPlayerId": 1,
+          "instanceId": "d3ae22fa-ad13-4eda-84b4-a5c1b7621595"
+        },
+        {
+          "id": "regrowth-5b397672-95ec-47d9-995c-d93e01462960",
+          "name": "Regrowth",
+          "imageFileName": "regrowth",
+          "type": "spell",
+          "cost": 2,
+          "colors": [{ "color": "green", "count": 2 }],
+          "actions": [
+            {
+              "effect": { "name": "regrowCard", "args": {} },
+              "targets": [{ "type": "graveyard_card", "count": 1 }]
+            }
+          ],
+          "ownerPlayerId": 1,
+          "instanceId": "10d1f517-9ad8-4a37-bfd5-a995e2535691"
+        },
+        {
+          "id": "vigorous_entling-b62a4450-1bf7-4a3a-9a67-c3fb1315fff7",
+          "name": "Vigorous Entling",
+          "imageFileName": "vigorous_entling",
+          "type": "unit",
+          "cost": 3,
+          "colors": [{ "color": "green", "count": 3 }],
+          "power": 2,
+          "maxHealth": 5,
+          "retaliate": 1,
+          "unitTypes": ["beast"],
+          "keywords": { "regeneration": 3 },
+          "ownerPlayerId": 1,
+          "instanceId": "208e2ef0-fef7-46c4-b740-db22c0201915"
+        },
+        {
+          "id": "snek-8959c8b6-9b9a-4a2e-94d9-1c4c253c96f5",
+          "name": "Snek",
+          "imageFileName": "snek",
+          "type": "unit",
+          "cost": 2,
+          "colors": [{ "color": "green", "count": 1 }],
+          "power": 1,
+          "maxHealth": 2,
+          "retaliate": 0,
+          "unitTypes": ["beast"],
+          "keywords": { "poisonous": 1 },
+          "ownerPlayerId": 1,
+          "instanceId": "086e0ef6-aa7e-4075-a85a-961fa9c76a60"
+        },
+        {
+          "id": "shroomy-a9dde16a-50d9-4473-8938-9d203d11a56e",
+          "name": "Shroomy",
+          "imageFileName": "shroomy",
+          "type": "unit",
+          "cost": 1,
+          "colors": [{ "color": "green", "count": 3 }],
+          "power": 1,
+          "maxHealth": 1,
+          "retaliate": 0,
+          "unitTypes": ["beast"],
+          "abilities": [
+            {
+              "actions": [
+                {
+                  "effect": {
+                    "name": "addCounters",
+                    "args": { "counterType": "growth", "counterValue": 1 }
+                  }
+                }
+              ],
+              "trigger": { "type": "On Turn Start", "range": { "self": true } }
+            }
+          ],
+          "ownerPlayerId": 1,
+          "instanceId": "d10cd873-cb46-4b57-a733-700354a21845"
+        }
+      ],
+      "graveyard": [
+        {
+          "id": "bear_minimum-61cb0a28-d318-46ef-8b1d-960c6e207e0e",
+          "name": "Bear Minimum",
+          "imageFileName": "bear_minimum",
+          "type": "unit",
+          "cost": 3,
+          "colors": [{ "color": "green", "count": 1 }],
+          "power": 3,
+          "maxHealth": 3,
+          "retaliate": 0,
+          "unitTypes": ["beast"],
+          "ownerPlayerId": 1,
+          "instanceId": "24aa7b0b-f10f-4b0d-b290-6b1aa0d781cb",
+          "position": { "row": 0, "column": 3 },
+          "health": -1,
+          "hasAttacked": true,
+          "hasMoved": false,
+          "exhausted": true,
+          "statuses": {},
+          "untilEndOfTurn": {},
+          "staticModifiers": [],
+          "counters": {},
+          "initialKeywords": {},
+          "isDying": true
+        }
+      ],
+      "colors": { "green": 1 },
+      "lands": [
+        {
+          "id": "forest-697b56eb-fc28-4f37-80af-7d7f30149bd1",
+          "name": "Forest",
+          "imageFileName": "forest",
+          "type": "land",
+          "cost": 0,
+          "colors": [{ "color": "green", "count": 1 }],
+          "health": 10,
+          "ownerPlayerId": 1,
+          "instanceId": "f5bd6632-b7cd-45fd-babe-2a4e5ed5b8eb",
+          "position": 0,
+          "isRuined": false
+        },
+        {
+          "id": "plains-c40183d7-c2d7-46ab-8c96-53aa337b5b99",
+          "name": "Plains",
+          "imageFileName": "plains",
+          "type": "land",
+          "cost": 0,
+          "colors": [],
+          "health": 15,
+          "ownerPlayerId": 1,
+          "instanceId": "9e921360-7394-4912-ac9c-441b9b5428e6",
+          "position": 1,
+          "isRuined": false
+        },
+        {
+          "id": "market-24544ddb-b964-436b-810c-8033b0246891",
+          "name": "Market",
+          "imageFileName": "market",
+          "type": "land",
+          "cost": 0,
+          "colors": [],
+          "health": 10,
+          "abilities": [
+            {
+              "trigger": { "type": "Activated" },
+              "actions": [{ "effect": { "name": "drawCard", "args": { "count": 1 } } }],
+              "cost": 1,
+              "exhausts": true
+            }
+          ],
+          "ownerPlayerId": 1,
+          "instanceId": "78dfe285-47b9-4072-ae0e-ddfb14fe5099",
+          "position": 2,
+          "isRuined": false
+        },
+        {
+          "id": "enchanter_lair-91c8de31-0c2e-47cf-94da-f52eb4787064",
+          "name": "Enchanter Lair",
+          "imageFileName": "enchanter_lair",
+          "type": "land",
+          "cost": 0,
+          "colors": [],
+          "health": 8,
+          "abilities": [
+            {
+              "trigger": { "type": "Activated" },
+              "actions": [
+                {
+                  "effect": { "name": "damageUnit", "args": { "damage": 1 } },
+                  "targets": [{ "type": "unit", "count": 1 }]
+                }
+              ],
+              "cost": 3,
+              "exhausts": true
+            }
+          ],
+          "ownerPlayerId": 1,
+          "instanceId": "b61beb9d-e5dc-40f4-891a-c842a8495b3a",
+          "position": 3,
+          "isRuined": false
+        }
+      ],
+      "abilityUsed": true
+    }
+  ],
+  "units": [
+    {
+      "id": "sewer_rat-76c380cd-94d4-45ba-9567-194594e1cde2",
+      "name": "Sewer Rat",
+      "imageFileName": "sewer_rat",
+      "type": "unit",
+      "cost": 2,
+      "colors": [{ "color": "black", "count": 1 }],
+      "power": 1,
+      "maxHealth": 4,
+      "retaliate": 1,
+      "unitTypes": ["beast"],
+      "ownerPlayerId": 0,
+      "instanceId": "3ff678fa-1230-444d-ac64-1f37320545e8",
+      "position": { "row": 0, "column": 1 },
+      "health": 4,
+      "hasAttacked": true,
+      "hasMoved": false,
+      "exhausted": true,
+      "statuses": {},
+      "untilEndOfTurn": {},
+      "staticModifiers": [],
+      "counters": {},
+      "initialKeywords": {},
+      "isDying": false
+    },
+    {
+      "id": "jumping_hare-172e3766-9fbb-40f0-8aba-8993839c08a3",
+      "name": "Jaumping Hare",
+      "imageFileName": "jumping_hare",
+      "type": "unit",
+      "cost": 3,
+      "colors": [{ "color": "green", "count": 1 }],
+      "power": 2,
+      "maxHealth": 5,
+      "retaliate": 0,
+      "unitTypes": ["beast"],
+      "ownerPlayerId": 1,
+      "instanceId": "c24ff29a-a302-4fc6-b291-22a9ed553818",
+      "position": { "row": 0, "column": 2 },
+      "health": 4,
+      "hasAttacked": false,
+      "hasMoved": false,
+      "exhausted": false,
+      "statuses": {},
+      "untilEndOfTurn": {},
+      "staticModifiers": [],
+      "counters": {},
+      "initialKeywords": {},
+      "isDying": false
+    },
+    {
+      "id": "ornithopter-da00962b-a8ec-4c00-aad6-9b11fb79ee03",
+      "name": "Ornithopter",
+      "imageFileName": "ornithopter",
+      "type": "unit",
+      "cost": 3,
+      "colors": [{ "color": "black", "count": 2 }],
+      "power": 2,
+      "maxHealth": 3,
+      "retaliate": 1,
+      "unitTypes": ["construct"],
+      "keywords": { "flying": true },
+      "ownerPlayerId": 0,
+      "instanceId": "9963931a-3d98-43ad-a509-8d6bb0c8c68e",
+      "position": { "row": 3, "column": 0 },
+      "health": 3,
+      "hasAttacked": true,
+      "hasMoved": false,
+      "exhausted": true,
+      "statuses": {},
+      "untilEndOfTurn": {},
+      "staticModifiers": [],
+      "counters": {},
+      "initialKeywords": { "flying": true },
+      "isDying": false
+    },
+    {
+      "id": "ferocious_badger-dcdc8c2d-ed1e-41a7-86a6-eb1fd7cb3d79",
+      "name": "Ferocious Badger",
+      "imageFileName": "ferocious_badger",
+      "type": "unit",
+      "cost": 5,
+      "colors": [{ "color": "green", "count": 1 }],
+      "power": 4,
+      "maxHealth": 5,
+      "retaliate": 0,
+      "unitTypes": ["beast"],
+      "ownerPlayerId": 1,
+      "instanceId": "714511b8-e245-4410-90ae-316b83c747f5",
+      "position": { "row": 3, "column": 2 },
+      "health": 1,
+      "hasAttacked": true,
+      "hasMoved": false,
+      "exhausted": true,
+      "statuses": {},
+      "untilEndOfTurn": {},
+      "staticModifiers": [],
+      "counters": {},
+      "initialKeywords": {},
+      "isDying": false
+    },
+    {
+      "id": "street_slinger-cd1198a0-236a-4c84-a3ec-fdedac8c7176",
+      "name": "Street Slinger",
+      "imageFileName": "street_slinger",
+      "type": "unit",
+      "cost": 4,
+      "colors": [{ "color": "black", "count": 2 }],
+      "power": 3,
+      "maxHealth": 4,
+      "retaliate": 0,
+      "unitTypes": ["human"],
+      "keywords": { "ranged": true },
+      "ownerPlayerId": 0,
+      "instanceId": "c2ff3a50-1e2a-4835-b614-d87136223c3b",
+      "position": { "row": 0, "column": 0 },
+      "health": 4,
+      "hasAttacked": true,
+      "hasMoved": false,
+      "exhausted": true,
+      "statuses": {},
+      "untilEndOfTurn": {},
+      "staticModifiers": [],
+      "counters": {},
+      "initialKeywords": { "ranged": true },
+      "isDying": false
+    },
+    {
+      "id": "boring_boar-df87e4df-5871-4291-8c88-2a0d942a0173",
+      "name": "Boring Boar",
+      "imageFileName": "boring_boar",
+      "type": "unit",
+      "cost": 4,
+      "colors": [{ "color": "green", "count": 1 }],
+      "power": 3,
+      "maxHealth": 4,
+      "retaliate": 2,
+      "unitTypes": ["beast"],
+      "ownerPlayerId": 1,
+      "instanceId": "123621c7-0cef-4739-9679-8e455d70a66f",
+      "position": { "row": 0, "column": 3 },
+      "health": 1,
+      "hasAttacked": false,
+      "hasMoved": false,
+      "exhausted": true,
+      "statuses": {},
+      "untilEndOfTurn": {},
+      "staticModifiers": [],
+      "counters": {},
+      "initialKeywords": {},
+      "isDying": false
+    },
+    {
+      "id": "grim_guard-12cbe368-04d8-471f-82c5-6b362ed6cb54",
+      "name": "Grim Guard",
+      "imageFileName": "grim_guard",
+      "type": "unit",
+      "cost": 4,
+      "colors": [{ "color": "black", "count": 1 }],
+      "power": 2,
+      "maxHealth": 6,
+      "retaliate": 2,
+      "ownerPlayerId": 0,
+      "instanceId": "8995023a-305a-49e0-aac7-0825c8049885",
+      "position": { "row": 3, "column": 1 },
+      "health": 6,
+      "hasAttacked": false,
+      "hasMoved": false,
+      "exhausted": true,
+      "statuses": {},
+      "untilEndOfTurn": {},
+      "staticModifiers": [],
+      "counters": {},
+      "initialKeywords": {},
+      "isDying": false
+    }
+  ],
+  "aiState": { "strategy": "Normal", "goals": [], "dismissedCards": {} }
+}

@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { Player } from '@lib/_model';
   import { uiState } from '@lib/_state/state-ui.svelte';
-  import Tooltip from '../Tooltip.svelte';
   import { getCardImagePath } from '@lib/_utils/asset-paths';
+  import Tooltip from '../Tooltip.svelte';
 
   let { player }: { player: Player } = $props();
 
@@ -52,8 +52,8 @@
   }
 
   .graveyard-card {
-    width: 120px;
-    height: 180px;
+    width: 140px;
+    height: 190px;
     transition: opacity 0.3s ease;
     background-size: cover;
     background-position: center;

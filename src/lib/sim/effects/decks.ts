@@ -1,14 +1,7 @@
 import { BASE_DECK_BLACK, BASE_DECK_BLUE, BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
-import {
-  CardColor,
-  isSpellCard,
-  isUnitCard,
-  type CardTemplate,
-  type DeckBlueprint,
-  type UnitKeywords,
-} from '@/lib/_model';
+import { CardColor, type DeckBlueprint, type UnitKeywords } from '@/lib/_model';
 import { gs } from '@/lib/_state';
-import { getActionTemplateMeta, getActionTemplateNameForEffect } from '../cards/action-templates';
+import { getActionTemplateMeta } from '../cards/action-templates';
 import { formatKeywordLabel } from '../cards/keywords';
 import { getActingCharacter } from '../characters';
 import { redeemBaseDeck } from '../deck';
@@ -48,7 +41,7 @@ export function getDeck(parameters: GetDeckParameters): string {
   if (!deck) {
     return `Invalid deck key: ${parameters.deckKey}.`;
   }
-  const learnt = learnFromDeck(deck.cards);
+  const learnt = learnFromDeck(deck);
   redeemBaseDeck(deck, gs.player);
   if (learnt.length) {
     return `You have received your first deck. You learnt ${learnt.join(', ')}. Go and try it out!`;
@@ -56,50 +49,17 @@ export function getDeck(parameters: GetDeckParameters): string {
   return `You have received your first deck. Go and try it out!`;
 }
 
-export function learnFromDeck(cards: CardTemplate[], characterKey = 'player'): string[] {
+export function learnFromDeck(deck: DeckBlueprint, characterKey = 'player'): string[] {
   const character = getActingCharacter(characterKey);
   const knownKeywords = character.craftingKnowledge.keywords ?? {};
   const knownActions = character.craftingKnowledge.actions ?? {};
-  const learntKeywords: string[] = [];
-  const learntActions: string[] = [];
 
-  const learnAction = (effectName: string) => {
-    const actionName = getActionTemplateNameForEffect(effectName);
-    if (
-      !actionName ||
-      knownActions[actionName] !== undefined ||
-      learntActions.includes(actionName)
-    ) {
-      return;
-    }
-    learntActions.push(actionName);
-  };
-
-  for (const card of cards) {
-    if (isUnitCard(card)) {
-      if (card.keywords) {
-        for (const [keyword, value] of Object.entries(card.keywords) as [
-          keyof UnitKeywords,
-          boolean | number | undefined,
-        ][]) {
-          if (!value || knownKeywords[keyword] !== undefined || learntKeywords.includes(keyword)) {
-            continue;
-          }
-          learntKeywords.push(keyword);
-        }
-      }
-      for (const ability of card.abilities ?? []) {
-        for (const action of ability.actions) {
-          learnAction(action.effect.name);
-        }
-      }
-    }
-    if (isSpellCard(card)) {
-      for (const action of card.actions) {
-        learnAction(action.effect.name);
-      }
-    }
-  }
+  const learntKeywords = deck.learntKeywords.filter(
+    (keyword) => knownKeywords[keyword as keyof UnitKeywords] === undefined
+  );
+  const learntActions = deck.learntActions.filter(
+    (actionName) => knownActions[actionName] === undefined
+  );
 
   if (learntKeywords.length) {
     if (!character.craftingKnowledge.keywords) {

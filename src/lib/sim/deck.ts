@@ -1,4 +1,4 @@
-import { BASE_DECK_BLACK, BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
+import { BASE_DECK_BLACK, BASE_DECK_BLUE, BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
 import {
   CardColor,
   type CardTemplate,
@@ -14,6 +14,7 @@ const BASE_DECKS_BY_COLOR: Partial<Record<CardColor, DeckBlueprint>> = {
   [CardColor.Red]: BASE_DECK_RED,
   [CardColor.Black]: BASE_DECK_BLACK,
   [CardColor.Green]: BASE_DECK_GREEN,
+  [CardColor.Blue]: BASE_DECK_BLUE,
 };
 
 export function redeemBaseDeck(baseDeck: DeckBlueprint, character: Character) {
@@ -44,7 +45,7 @@ export function initNpcDecks() {
         ...student.craftingKnowledge.colors,
         ...Object.fromEntries(student.favoriteColors.map((color) => [color, 1])),
       };
-      learnFromDeck(deck.cards, student.key);
+      learnFromDeck(deck, student.key);
     }
   });
 }

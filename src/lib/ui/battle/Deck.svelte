@@ -54,8 +54,8 @@
 
   .deck-stack {
     position: relative;
-    width: 120px;
-    height: 180px;
+    width: 140px;
+    height: 190px;
   }
 
   .card-back {
