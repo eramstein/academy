@@ -10,8 +10,8 @@
     { view: UiView.EventEditor, label: 'Events', icon: '📜' },
   ];
 
-  const stopBattle = () => {
-    endBattle(true);
+  const stopBattle = (concession: boolean) => {
+    endBattle(concession);
     resetBattleState();
     uiState.currentView = UiView.Scene;
     uiState.navigationVisible = false;
@@ -41,9 +41,16 @@
     {/each}
 
     {#if gs.ongoingBattle}
-      <button class="nav-item stop-battle" onclick={stopBattle}>
+      <button class="nav-item stop-battle" onclick={() => stopBattle(true)}>
         <span class="icon">⏹️</span>
         <span class="label">Concede Match</span>
+      </button>
+    {/if}
+
+    {#if gs.ongoingBattle}
+      <button class="nav-item stop-battle" onclick={() => stopBattle(false)}>
+        <span class="icon">⏹️</span>
+        <span class="label">Auto Win</span>
       </button>
     {/if}
 

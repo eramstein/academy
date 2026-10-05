@@ -1,3 +1,4 @@
+import { BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
 import { DayPeriod, ResourceType } from '../../_model';
 import type { UnitKeywords } from '../../_model/model-battle';
 import { bs, getCurrentBattleState, gs, saveStateToLocalStorage } from '../../_state';
@@ -5,8 +6,10 @@ import { drawCard, tutorCard } from '../../battle/deck';
 import { scheduleClassesForCurrentTerm } from '../../sim/academy';
 import { ACTION_TEMPLATE_KEYS } from '../../sim/cards/action-templates';
 import { KEYWORD_KEYS } from '../../sim/cards/keywords';
+import { redeemBaseDeck } from '../../sim/deck';
 import { addResource } from '../../sim/effects/resources';
 import { simulateEvent } from '../../sim/events';
+import { initOngoingBattle } from '../../sim/ongoing-battle';
 import { goToPeriod } from '../../sim/time';
 
 const PERIODS = [DayPeriod.Morning, DayPeriod.Afternoon, DayPeriod.Evening];
@@ -132,6 +135,22 @@ export async function executeCommand(input: string): Promise<CommandResult> {
         ok: true,
         message: `Quicksaved; copied battle state (${kb} KB) to clipboard`,
       };
+    }
+
+    case 'battle': {
+      // /battle — Base Green (player) vs Base Red (administrator)
+      const foe = gs.characters.administrator;
+      if (!foe) {
+        return { ok: false, message: 'Foe administrator not found' };
+      }
+      redeemBaseDeck(BASE_DECK_GREEN, gs.player);
+      redeemBaseDeck(BASE_DECK_RED, foe);
+      const playerDeck = gs.player.decks.at(-1)!;
+      const foeDeck = foe.decks.at(-1)!;
+      bs.units = [];
+      bs.playerIdWon = null;
+      await initOngoingBattle(foe, playerDeck, foeDeck);
+      return { ok: true, message: 'Started battle: Base Green vs Base Red' };
     }
 
     default:

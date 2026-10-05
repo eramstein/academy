@@ -36,7 +36,7 @@
   },
   {
     "key": "event-2",
-    "text": "We'll learn magic crafting by making cards. Today you'll start by familiarizing yourself with the different card types. Get a deck, noob!",
+    "text": "We'll learn magic crafting by making cards. Today you'll start by familiarizing yourself with the different card types.\n\nGreen is the color of nature, growth, health and savagery.\n\nBlack is the color of industry, machines, organization and decay.\n\nRed is the color of chaos, aggression, freedom and speed.\n\nBlue is the color of subterfuge, control, magic and knowledge.\n\nGet a deck, noob!",
     "triggers": [
       {
         "triggerType": "day",

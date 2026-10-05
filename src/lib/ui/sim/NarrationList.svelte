@@ -382,6 +382,7 @@
 <style>
   .narration-list :global(.narration) {
     margin: 0 0 1.25em;
+    white-space: pre-line;
   }
 
   .narration-image {

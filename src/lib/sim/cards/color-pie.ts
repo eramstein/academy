@@ -22,7 +22,7 @@ const defaultKeywordPreferences: Record<keyof UnitKeywords, number> = Object.fro
 ) as Record<keyof UnitKeywords, number>;
 
 const defaultActionPreferences: Record<string, number> = Object.fromEntries(
-  Object.keys(actionTemplates).map((name) => [name, -1])
+  Object.keys(actionTemplates).map((name) => [name, -2])
 );
 
 export const colorPie: Record<CardColor, ColorPie> = {

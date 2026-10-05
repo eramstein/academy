@@ -1662,7 +1662,7 @@ const enchanter_lair = {
           ],
         },
       ],
-      cost: 3,
+      cost: 6,
       exhausts: true,
     },
   ],
