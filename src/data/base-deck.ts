@@ -154,10 +154,10 @@ const vigorous_entling: UnitCardTemplate = {
   },
 };
 
-const hungry_wolf = {
-  id: 'hungry_wolf',
-  name: 'Hungry Wolf',
-  imageFileName: 'hungry_wolf',
+const pack_of_wolves = {
+  id: 'pack_of_wolves',
+  name: 'Pack of Wolves',
+  imageFileName: 'pack_of_wolves',
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Green, count: 2 }],
@@ -290,10 +290,10 @@ const force_of_nature = {
   },
 };
 
-const giant_growth = {
-  id: 'giant_growth',
-  name: 'Giant Growth',
-  imageFileName: 'giant_growth',
+const sudden_growth = {
+  id: 'sudden_growth',
+  name: 'Sudden Growth',
+  imageFileName: 'sudden_growth',
   type: CardType.Spell,
   cost: 4,
   colors: [{ color: CardColor.Green, count: 2 }],
@@ -316,10 +316,10 @@ const giant_growth = {
   ],
 };
 
-const healing_salve = {
-  id: 'healing_salve',
-  name: 'Healing Salve',
-  imageFileName: 'healing_salve',
+const healing_balm = {
+  id: 'healing_balm',
+  name: 'Healing Balm',
+  imageFileName: 'healing_balm',
   type: CardType.Spell,
   cost: 1,
   colors: [{ color: CardColor.Green, count: 2 }],
@@ -777,10 +777,10 @@ const fleeting_spirit = {
   ],
 };
 
-const dazing_spirit = {
-  id: 'dazing_spirit',
-  name: 'Dazing Spirit',
-  imageFileName: 'dazing_spirit',
+const daring_spirit = {
+  id: 'daring_spirit',
+  name: 'Daring Spirit',
+  imageFileName: 'daring_spirit',
   type: CardType.Unit,
   cost: 2,
   colors: [{ color: CardColor.Blue, count: 1 }],
@@ -861,7 +861,7 @@ const gifted_apprentice = {
   abilities: [
     {
       trigger: {
-        type: 'On Deploy',
+        type: TriggerType.OnDeploy,
         range: {
           self: true,
         },
@@ -874,7 +874,7 @@ const gifted_apprentice = {
           },
           targets: [
             {
-              type: 'hand_card',
+              type: TargetType.HandCard,
               count: 1,
             },
           ],
@@ -941,10 +941,11 @@ const donatello = {
         {
           effect: {
             name: 'recycleCard',
+            args: {},
           },
           targets: [
             {
-              type: 'graveyard_card',
+              type: TargetType.GraveyardCard,
               count: 3,
             },
           ],
@@ -971,7 +972,7 @@ const buffoon = {
   abilities: [
     {
       trigger: {
-        type: 'On Deploy',
+        type: TriggerType.OnDeploy,
         range: {
           self: true,
         },
@@ -980,13 +981,12 @@ const buffoon = {
         {
           effect: {
             name: 'bounceUnit',
-            args: {
-              count: 1,
-            },
+            args: {},
           },
           targets: [
             {
-              type: 'units',
+              type: TargetType.Units,
+              count: 1,
             },
           ],
         },
@@ -1053,7 +1053,7 @@ const professore = {
   abilities: [
     {
       trigger: {
-        type: 'On Deploy',
+        type: TriggerType.OnDeploy,
         range: {
           self: true,
         },
@@ -1123,10 +1123,14 @@ const unsummon = {
     {
       effect: {
         name: 'bounceUnit',
-        args: {
+        args: {},
+      },
+      targets: [
+        {
+          type: TargetType.Units,
           count: 1,
         },
-      },
+      ],
     },
   ],
 };
@@ -1680,15 +1684,15 @@ export const BASE_DECK_GREEN: DeckBlueprint = {
     boring_boar,
     ferocious_badger,
     halfling_sentinel,
-    healing_salve,
+    healing_balm,
     not_so_little_pig,
-    hungry_wolf,
+    pack_of_wolves,
     pandy_panda,
     retired_soldier,
     the_beast,
     deer,
     force_of_nature,
-    giant_growth,
+    sudden_growth,
     young_druidess,
     shroomy,
     lazy_elephant,
@@ -1765,7 +1769,7 @@ export const BASE_DECK_BLUE: DeckBlueprint = {
   key: 'base',
   name: 'Base Blue',
   cards: [
-    dazing_spirit,
+    daring_spirit,
     born_from_magic,
     gifted_apprentice,
     donatello,
