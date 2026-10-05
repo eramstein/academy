@@ -46,10 +46,10 @@ const shroomy: UnitCardTemplate = {
   ],
 };
 
-const lion: UnitCardTemplate = {
-  id: 'lion',
-  name: 'Lion',
-  imageFileName: 'lion',
+const savannah_lion: UnitCardTemplate = {
+  id: 'savannah_lion',
+  name: 'Savannah Lion',
+  imageFileName: 'savannah_lion',
   type: CardType.Unit,
   cost: 2,
   colors: [{ color: CardColor.Green, count: 1 }],
@@ -167,10 +167,10 @@ const hungry_wolf = {
   unitTypes: [UnitType.Beast],
 };
 
-const jumping_hare = {
-  id: 'jumping_hare',
-  name: 'Jaumping Hare',
-  imageFileName: 'jumping_hare',
+const halfling_sentinel = {
+  id: 'halfling_sentinel',
+  name: 'Halfling Sentinel',
+  imageFileName: 'halfling_sentinel',
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Green, count: 1 }],
@@ -219,17 +219,17 @@ const ferocious_badger = {
   unitTypes: [UnitType.Beast],
 };
 
-const unicorn = {
-  id: 'unicorn',
-  name: 'Unicorn',
-  imageFileName: 'unicorn',
+const retired_soldier = {
+  id: 'retired_soldier',
+  name: 'Retired Soldier',
+  imageFileName: 'retired_soldier',
   type: CardType.Unit,
   cost: 5,
   colors: [{ color: CardColor.Green, count: 4 }],
   power: 5,
   maxHealth: 5,
   retaliate: 1,
-  unitTypes: [UnitType.Beast],
+  unitTypes: [UnitType.Human],
 };
 
 const the_beast = {
@@ -274,17 +274,17 @@ const deer = {
   unitTypes: [UnitType.Beast],
 };
 
-const bison = {
-  id: 'bison',
-  name: 'Bison',
-  imageFileName: 'bison',
+const force_of_nature = {
+  id: 'force_of_nature',
+  name: 'Force of Nature',
+  imageFileName: 'force_of_nature',
   type: CardType.Unit,
   cost: 8,
-  colors: [{ color: CardColor.Green, count: 1 }],
-  power: 5,
+  colors: [{ color: CardColor.Green, count: 4 }],
+  power: 6,
   maxHealth: 6,
   retaliate: 1,
-  unitTypes: [UnitType.Beast],
+  unitTypes: [UnitType.Elemental],
   keywords: {
     trample: true,
   },
@@ -560,10 +560,10 @@ const northern_challenger = {
   unitTypes: [UnitType.Human],
 };
 
-const ogre_brawler = {
-  id: 'ogre_brawler',
-  name: 'Ogre Brawler',
-  imageFileName: 'ogre_brawler',
+const orc_warrior = {
+  id: 'orc_warrior',
+  name: 'Orc Warrior',
+  imageFileName: 'orc_warrior',
   type: CardType.Unit,
   cost: 4,
   colors: [{ color: CardColor.Red, count: 3 }],
@@ -573,10 +573,10 @@ const ogre_brawler = {
   unitTypes: [UnitType.Monster],
 };
 
-const rock_elemental = {
-  id: 'rock_elemental',
-  name: 'Rock Elemental',
-  imageFileName: 'rock_elemental',
+const gargoyle = {
+  id: 'gargoyle',
+  name: 'Gargoyle',
+  imageFileName: 'gargoyle',
   type: CardType.Unit,
   cost: 5,
   colors: [{ color: CardColor.Red, count: 1 }],
@@ -599,23 +599,23 @@ const hill_troll = {
   unitTypes: [UnitType.Monster],
 };
 
-const modis_chosen = {
-  id: 'modis_chosen',
-  name: 'Modis Chosen',
-  imageFileName: 'modis_chosen',
+const jarl_bodyguard = {
+  id: 'jarl_bodyguard',
+  name: 'Jarl Bodyguard',
+  imageFileName: 'jarl_bodyguard',
   type: CardType.Unit,
   cost: 6,
   colors: [{ color: CardColor.Red, count: 1 }],
   power: 5,
   maxHealth: 4,
   retaliate: 2,
-  unitTypes: [UnitType.Dwarf],
+  unitTypes: [UnitType.Human],
 };
 
-const frenzied_shaman = {
-  id: 'frenzied_shaman',
-  name: 'Frenzied Shaman',
-  imageFileName: 'frenzied_shaman',
+const stone_colossus = {
+  id: 'stone_colossus',
+  name: 'Stone Colossus',
+  imageFileName: 'stone_colossus',
   type: CardType.Unit,
   cost: 7,
   colors: [{ color: CardColor.Red, count: 1 }],
@@ -663,10 +663,10 @@ const lightning_bolt = {
   ],
 };
 
-const rock_drop = {
-  id: 'rock_drop',
-  name: 'Rock Drop',
-  imageFileName: 'rock_drop',
+const sneaky_raid = {
+  id: 'sneaky_raid',
+  name: 'Sneaky Raid',
+  imageFileName: 'sneaky_raid',
   type: CardType.Spell,
   cost: 2,
   colors: [{ color: CardColor.Red, count: 2 }],
@@ -1675,19 +1675,19 @@ export const BASE_DECK_GREEN: DeckBlueprint = {
   key: 'base',
   name: 'Base Green',
   cards: [
-    lion,
+    savannah_lion,
     bear_minimum,
     boring_boar,
     ferocious_badger,
-    jumping_hare,
+    halfling_sentinel,
     healing_salve,
     not_so_little_pig,
     hungry_wolf,
     pandy_panda,
-    unicorn,
+    retired_soldier,
     the_beast,
     deer,
-    bison,
+    force_of_nature,
     giant_growth,
     young_druidess,
     shroomy,
@@ -1706,17 +1706,17 @@ export const BASE_DECK_RED: DeckBlueprint = {
   name: 'Base Red',
   cards: [
     young_viking,
-    rock_elemental,
+    gargoyle,
     northern_challenger,
     dwarf_berserker,
-    modis_chosen,
-    frenzied_shaman,
+    jarl_bodyguard,
+    stone_colossus,
     mountain_giant,
     lightning_bolt,
-    rock_drop,
+    sneaky_raid,
     lunging_cougar,
     angry_lizard,
-    ogre_brawler,
+    orc_warrior,
     hill_troll,
     enraged_goblin,
     dwarf_pikeman,

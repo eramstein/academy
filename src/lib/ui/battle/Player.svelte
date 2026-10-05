@@ -246,22 +246,30 @@
     cursor: pointer;
   }
 
-  .mana-display {
+  /* Shared token chrome: same footprint, thick physical slab under the art. */
+  .mana-display,
+  .life-display {
     position: absolute;
-    bottom: 5px;
-    right: 5px;
-    background: url('/assets/images/ui/decorations/mana-contour.png') center/contain no-repeat;
+    bottom: 4px;
+    width: 2.5rem;
+    height: 2.5rem;
     padding: 0;
-    border-radius: 50%;
-    font-weight: bold;
-    z-index: 3;
-    width: 3rem;
-    height: 3rem;
-    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.5));
+    box-sizing: border-box;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
+    font-weight: 900;
+    z-index: 3;
+    filter:
+      drop-shadow(0 1px 0 rgba(255, 230, 180, 0.35))
+      drop-shadow(0 3px 0 #1a120c)
+      drop-shadow(0 6px 5px rgba(0, 0, 0, 0.55));
+  }
+
+  .mana-display {
+    right: 4px;
+    background: url('/assets/images/ui/decorations/mana-contour.png') center/contain no-repeat;
+    border-radius: 50%;
   }
 
   .player-info {
@@ -287,35 +295,35 @@
   }
 
   .life-display {
-    position: absolute;
-    bottom: 4px;
     left: 4px;
-    background: url('/assets/images/ui/icons/health-icon.png') center/cover no-repeat;
-    color: white;
-    padding: 0.4rem;
+    background: url('/assets/images/ui/icons/health-icon.png') center/contain no-repeat;
     border-radius: 8px;
-    font-weight: bold;
-    font-size: 1rem;
-    z-index: 2;
-    min-width: 2rem;
+    color: white;
     text-align: center;
-    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.55));
+  }
+
+  .mana-value,
+  .life-value {
+    font-size: 1.25rem;
+    line-height: 1;
+    font-weight: 900;
   }
 
   .mana-value {
-    font-size: 1.6rem;
     color: #184a76;
-    line-height: 1;
-    font-weight: 900;
     text-shadow:
       0 1px 2px rgba(0, 0, 0, 0.35),
       0 0 1px rgba(255, 255, 255, 0.35);
-    margin-bottom: 0.3rem;
-    margin-right: 0.1rem;
+    margin-bottom: 0.15rem;
   }
 
   .life-value {
     color: white;
+    text-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.65),
+      0 0 1px rgba(255, 255, 255, 0.25);
+    /* Optical center: icon bevel weighs the bottom edge. */
+    transform: translateY(-0.12em);
   }
 
   /* Life change highlight */

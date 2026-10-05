@@ -48,8 +48,13 @@ export function buildUnitCard(
   parameters: CardCreationParameters,
   character: Character = gs.player
 ): PartialConjuredUnit {
-  const card = getRandomUnitCardTemplate(parameters.colors, isConjuration(parameters), character);
-  if (isInvocation(parameters)) {
+  const card = getRandomUnitCardTemplate(
+    parameters.colors,
+    parameters.source === 'conjure',
+    character
+  );
+  // Invoke: player specifies ingredients — strip random keywords/abilities, then apply params.
+  if (parameters.source === 'invoke') {
     card.keywords = {};
     card.abilities = [];
   }
@@ -126,14 +131,6 @@ function resolveCardColors(colors?: CardColor[]): { color: CardColor; count: num
   return colors?.length
     ? colors.map((color) => ({ color, count: 1 }))
     : [{ color: getRandomFromArray(Object.values(CardColor)), count: 1 }];
-}
-
-// if there is more than just color, it is an invocation, else it's a conjuration
-function isInvocation(parameters: CardCreationParameters): boolean {
-  return !!(Object.keys(parameters).length > 1);
-}
-function isConjuration(parameters: CardCreationParameters): boolean {
-  return Object.keys(parameters).length === 0;
 }
 
 function getRandomUnitCardTemplate(

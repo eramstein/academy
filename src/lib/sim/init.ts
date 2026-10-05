@@ -2,8 +2,8 @@ import { npcs } from '@/data/npcs';
 import { PLACES, REGIONS } from '@/data/sim/places';
 import { DayPeriod, ResourceType, type GameState } from '../_model';
 import { gs } from '../_state';
-import { initNpcDecks } from './deck';
 import { clearUsedFlavors } from './cards/flavor-generation-pipeline/used-flavors';
+import { initNpcDecks } from './deck';
 import { loadEventTemplates, restoreEventTemplates } from './events';
 import { newLeagueSeason } from './league';
 import { setSceneEvents } from './scene';
@@ -48,7 +48,7 @@ export const defaultGameState: GameState = {
     },
     craftingSkills: {
       mastery: 0,
-      efficiency: 0,
+      erudition: 0,
       inspiration: 0,
     },
     jobs: [],

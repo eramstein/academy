@@ -256,7 +256,7 @@ export interface CardKnowledge {
 
 export interface CardCraftingSkills {
   mastery: number;
-  efficiency: number;
+  erudition: number;
   inspiration: number;
 }
 

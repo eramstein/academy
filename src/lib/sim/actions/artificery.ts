@@ -31,7 +31,10 @@ import { rollExtraBudget } from './enchanting';
 const CONJURATION_OPTION_COUNT_BASE = 2;
 const LEARNING_CHANCE_BASE = 1;
 
+export type CardCreationSource = 'invoke' | 'conjure';
+
 export interface CardCreationParameters {
+  /** Card template */
   cardType?: CardType;
   colors?: CardColor[];
   cost?: number;
@@ -41,9 +44,10 @@ export interface CardCreationParameters {
   keywords?: UnitKeywords;
   ability?: AbilityPick;
   actions?: string[];
-  /** Factory args for the selected spell action (Invoke). When set with a single action, that action is used as-is. */
-  actionArgs?: Record<string, number>;
   unitTypes?: UnitType[];
+  /** Meta (card creation options) */
+  actionArgs?: Record<string, number>;
+  source: CardCreationSource;
   resources: { type: ResourceType; count: number }[];
 }
 
@@ -51,8 +55,6 @@ export interface CardCreationBonuses {
   learningChance: number; // get new knowledge (conjure), or level up (upgrade)
   extraBudgetChance: number;
   // legendaryChance: number;
-  // consumableBuffChance: number;
-  // uniqueAbilityChance: number;
 }
 
 export interface CardCreationResult {
@@ -143,7 +145,7 @@ export async function summonInvokedCard(
   augury?: ConjurationAugury
 ): Promise<CardCreationResult | null> {
   const result = await getNewCardTemplate(
-    parameters,
+    { ...parameters, source: 'invoke' },
     true,
     characterKey,
     true,
@@ -203,7 +205,8 @@ export async function getConjurationOtions(
 ): Promise<CardCreationResult[]> {
   const character = getActingCharacter(characterKey);
   const optionsCount = getConjurationOptionCount(characterKey);
-  if (!spendResources(parameters.resources ?? [])) {
+  const conjureParameters: CardCreationParameters = { ...parameters, source: 'conjure' };
+  if (!spendResources(conjureParameters.resources ?? [])) {
     return [];
   }
 
@@ -212,8 +215,11 @@ export async function getConjurationOtions(
   const optionParameters = await Promise.all(
     Array.from({ length: optionsCount }, async () => {
       const base = trimmedFlavor
-        ? mergeGameplayIntoParameters(parameters, await generateGameplayFromFlavor(trimmedFlavor))
-        : parameters;
+        ? mergeGameplayIntoParameters(
+            conjureParameters,
+            await generateGameplayFromFlavor(trimmedFlavor)
+          )
+        : conjureParameters;
       return limitParametersToKnownColors(base, character);
     })
   );
@@ -311,7 +317,7 @@ export function getCardCreationBonuses(
   let learningChance = 0.1;
   let extraBudgetChance = 0;
   // skills bonuses
-  learningChance += character.craftingSkills.inspiration * 0.1;
+  learningChance += character.craftingSkills.erudition * 0.1;
   extraBudgetChance += character.craftingSkills.mastery * 0.1;
   // resources bonuses
   for (const resource of resources) {
@@ -476,6 +482,7 @@ async function getUnitTemplate(
   };
   const actionName = (conjured.abilities ?? []).flatMap(getAbilityActionNames);
   const templateParameters: CardCreationParameters = {
+    source: parameters.source,
     resources: parameters.resources,
     cardType: CardType.Unit,
     colors: colors.map((entry) => entry.color),
@@ -575,6 +582,7 @@ async function getSpellTemplate(
     cost,
   };
   const templateParameters: CardCreationParameters = {
+    source: parameters.source,
     resources: parameters.resources,
     cardType: CardType.Spell,
     colors: conjured.colors.map((entry) => entry.color),

@@ -34,7 +34,7 @@
 
   const CRAFTING_SKILL_ORDER: (keyof CardCraftingSkills)[] = [
     'mastery',
-    'efficiency',
+    'erudition',
     'inspiration',
   ];
 
@@ -185,7 +185,7 @@
         {#each craftingActions as { name, level, label, description } (name)}
           {@const tip = actionTooltip(label, description, labelTruncated && hoveredLabel === name)}
           <li class="kv-pair">
-            <Tooltip content={tip} show={hoveredLabel === name && (!!tip)}>
+            <Tooltip content={tip} show={hoveredLabel === name && !!tip}>
               <span
                 class="kv-name action"
                 class:truncated={hoveredLabel === name && labelTruncated}

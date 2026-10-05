@@ -203,6 +203,7 @@
     conjureOptions = await getConjurationOtions(
       {
         ...cardCraftAction.actionParameters,
+        source: 'conjure',
         resources,
       },
       'player',

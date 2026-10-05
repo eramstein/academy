@@ -534,6 +534,7 @@
 
     if (cardType === CardType.Spell) {
       return {
+        source: 'invoke',
         cardType: CardType.Spell,
         colors: colors.length ? colors : undefined,
         actions: spellAction ? [spellAction] : undefined,
@@ -542,6 +543,7 @@
       };
     }
     return {
+      source: 'invoke',
       cardType: CardType.Unit,
       colors: colors.length ? colors : undefined,
       power: essenceIn.power ? essences.power : 0,

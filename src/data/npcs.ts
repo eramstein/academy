@@ -30,7 +30,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     craftingKnowledge: {},
     craftingSkills: {
       mastery: 0,
-      efficiency: 0,
+      erudition: 0,
       inspiration: 0,
     },
     jobs: [],

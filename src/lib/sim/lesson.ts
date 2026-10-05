@@ -65,6 +65,7 @@ async function makeAllNpcsConjure() {
     if (character.school === SchoolName.Academy) {
       const options = await getConjurationOtions(
         {
+          source: 'conjure',
           resources: [],
         },
         character.key
