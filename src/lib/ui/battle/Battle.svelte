@@ -1,7 +1,7 @@
 <script lang="ts">
   import { bs, gs } from '@lib/_state';
   import { uiState } from '@lib/_state/state-ui.svelte';
-  import { getTableImagePath } from '@lib/_utils/asset-paths';
+  import { getAssetPath, getBattleBackgroundPath } from '@lib/_utils/asset-paths';
   import { generateBattleGreeting } from '@/lib/llm/prompts';
   import { handleEndTurn } from '@lib/ui/_helpers/end-turn';
   import { fade, scale } from 'svelte/transition';
@@ -18,6 +18,8 @@
   import SpellDimOverlay from './SpellDimOverlay.svelte';
   import SpellTargetArrows from './SpellTargetArrows.svelte';
   import TargetPrompt from './TargetPrompt.svelte';
+
+  const endTurnButtonPath = getAssetPath('images/ui/decorations/end-button.png');
 
   // Derived value to check if game is won
   let gameWon = $derived(bs.playerIdWon !== null);
@@ -68,7 +70,7 @@
   }
 </script>
 
-<div class="battle" style="background-image: url('{getTableImagePath()}');">
+<div class="battle" style="background-image: url('{getBattleBackgroundPath()}');">
   <div class="top-section">
     <Player player={bs.players[0]} />
     <Board />
@@ -82,12 +84,13 @@
     <div class="hands-container">
       <Hand player={bs.players[0]} />
       <button
-        class="chip-btn end-turn-btn"
+        class="end-turn-btn"
         class:disabled={!bs.isPlayersTurn}
         onclick={handleEndTurn}
         disabled={!bs.isPlayersTurn}
+        aria-label="End Turn"
       >
-        <span>End<br />Turn</span>
+        <img src={endTurnButtonPath} alt="" draggable="false" />
       </button>
       <Hand player={bs.players[1]} />
     </div>
@@ -145,112 +148,103 @@
 
 <style>
   .battle {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 0.75rem;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     height: 100vh;
-    overflow: hidden;
+    overflow: auto;
+  }
+
+  /* Pool of light over the table, darker toward the props in the corners. */
+  .battle::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 42%, transparent 42%, rgba(0, 0, 0, 0.42) 100%);
+    z-index: 0;
+  }
+
+  .top-section,
+  .bottom-section {
+    position: relative;
+    z-index: 1;
   }
 
   .top-section {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 2rem;
-    width: 100%;
-    margin-bottom: 1rem;
+    gap: 1.25rem;
+    width: max-content;
   }
 
-  .chip-btn {
-    background: url('/assets/images/ui/backgrounds/wood_chip_base.png') center/cover no-repeat;
-    border: 1px solid rgba(0, 0, 0, 0.4);
+  .end-turn-btn {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    margin: 0;
     padding: 0;
+    border: none;
+    background: transparent;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 50%;
-    box-shadow:
-      0 4px 0px #3a221f,
-      0 8px 12px rgba(0, 0, 0, 0.5);
-    position: relative;
-
-    /* Text styling */
-    color: #2a110a; /* Dark brown ink */
-    font-family: inherit;
-    font-weight: 800;
-    line-height: 1.1;
-    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+    transition:
+      transform 0.12s ease,
+      filter 0.12s ease;
   }
 
-  .chip-btn::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 50%;
-    box-shadow:
-      inset 0 2px 5px rgba(255, 255, 255, 0.3),
-      inset 0 -5px 8px rgba(0, 0, 0, 0.5);
+  .end-turn-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     pointer-events: none;
+    user-select: none;
   }
 
-  .end-turn-btn {
-    width: 72px;
-    height: 72px;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  .end-turn-btn:not(:disabled):hover {
+    filter: brightness(1.08) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
   }
 
-  .chip-btn:not(:disabled):hover {
-    filter: brightness(1.1);
-    box-shadow:
-      0 6px 0px #3a221f,
-      0 10px 15px rgba(0, 0, 0, 0.4);
+  .end-turn-btn:not(:disabled):active {
+    transform: translateY(3px);
+    filter: brightness(0.96) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
   }
 
-  .chip-btn:not(:disabled):active {
-    transform: translateY(4px);
-    box-shadow:
-      0 0px 0px #3a221f,
-      0 2px 6px rgba(0, 0, 0, 0.4);
-  }
-
-  .chip-btn.disabled,
-  .chip-btn:disabled {
+  .end-turn-btn.disabled,
+  .end-turn-btn:disabled {
     cursor: not-allowed;
-    filter: grayscale(80%) brightness(0.8);
-    box-shadow:
-      0 2px 0px #1a1a1a,
-      0 4px 6px rgba(0, 0, 0, 0.4);
-    color: #777;
-    text-shadow: none;
+    filter: grayscale(0.55) brightness(0.7) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
   }
 
   .bottom-section {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
+    width: max-content;
+    max-width: 100%;
+    flex-shrink: 0;
     gap: 0;
   }
 
   .hands-container {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
-    width: 100%;
-    padding: 0 2rem;
-    gap: 1rem;
+    width: max-content;
+    max-width: 100%;
+    gap: 1.25rem;
   }
 
   .hands-container .end-turn-btn {

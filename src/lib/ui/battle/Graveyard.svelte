@@ -52,17 +52,19 @@
   }
 
   .graveyard-card {
-    width: 140px;
-    height: 190px;
+    width: 92px;
+    height: 126px;
     transition: opacity 0.3s ease;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 8px;
-    border: 2px solid #222;
+    border-radius: 6px;
+    border: 1px solid rgba(232, 210, 160, 0.3);
     box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.4),
-      0 8px 16px rgba(0, 0, 0, 0.3);
+      0 1px 0 rgba(255, 255, 255, 0.14),
+      0 4px 0 #1a120c,
+      0 8px 10px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16);
   }
 
   .graveyard-card:hover {
@@ -70,8 +72,8 @@
   }
 
   .empty-graveyard {
-    width: 120px;
-    height: 180px;
+    width: 92px;
+    height: 126px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,31 +82,31 @@
   .dotted-border {
     width: 100%;
     height: 100%;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    border-radius: 8px;
+    border: 1px solid rgba(214, 184, 120, 0.28);
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.2);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.38) 0%, rgba(0, 0, 0, 0.16) 100%);
     box-shadow:
-      inset 0 4px 10px rgba(0, 0, 0, 0.5),
-      0 1px 0 rgba(255, 255, 255, 0.05);
+      inset 0 5px 10px rgba(0, 0, 0, 0.5),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+      0 1px 0 rgba(255, 255, 255, 0.04);
     transition:
-      background-color 0.3s ease,
+      background 0.3s ease,
       border-color 0.3s ease;
   }
 
   .dotted-border:hover {
-    border-color: rgba(0, 0, 0, 0.8);
-    background-color: rgba(0, 0, 0, 0.3);
+    border-color: rgba(232, 208, 150, 0.5);
   }
 
   .placeholder-text {
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 14px;
-    font-weight: bold;
+    color: rgba(240, 230, 200, 0.38);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
   }
 </style>

@@ -56,8 +56,57 @@
     return getAssetPath(`images/ui/icons/color_${color}.png`);
   }
 
+  // Check if this card is currently being dragged
+  let isDragging = $derived(inHand && uiState.battle.draggingCard?.instanceId === card.instanceId);
+  let suppressClick = $state(false);
+  const DRAG_THRESHOLD_PX = 8;
+
+  function canDragCard(): boolean {
+    if (!inHand || !bs.isPlayersTurn) return false;
+    const colorRequirementMet = isPayableAfterColorIncrementation(card);
+    return (isUnitCard(card) || isDraggableSpell(card)) && colorRequirementMet !== false;
+  }
+
+  // Pointer drag — HTML5 DnD is cancelled by CSS filter/transform/style churn in Chrome.
+  function handlePointerDown(event: PointerEvent) {
+    if (!canDragCard() || event.button !== 0) return;
+
+    const startX = event.clientX;
+    const startY = event.clientY;
+    let started = false;
+
+    const onMove = (moveEvent: PointerEvent) => {
+      if (started) return;
+      const dist = Math.hypot(moveEvent.clientX - startX, moveEvent.clientY - startY);
+      if (dist < DRAG_THRESHOLD_PX) return;
+      started = true;
+      suppressClick = true;
+      uiState.battle.draggingCard = card;
+    };
+
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+      // Board owns drop + clearing draggingCard once a drag has started.
+      if (!started) return;
+      setTimeout(() => {
+        suppressClick = false;
+      }, 0);
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+  }
+
   // Handle card click
   function handleClick(event?: MouseEvent) {
+    if (suppressClick) {
+      suppressClick = false;
+      return;
+    }
+
     // If selecting a target and it's a hand card, treat this click as target selection
     if (
       inHand &&
@@ -115,44 +164,6 @@
     return totalTargets <= 1;
   }
 
-  // Check if this card is currently being dragged
-  let isDragging = $derived(inHand && uiState.battle.draggingCard?.instanceId === card.instanceId);
-
-  // Drag event handlers
-  function handleDragStart(event: DragEvent) {
-    const colorRequirementMet = isPayableAfterColorIncrementation(card);
-    const canDrag = (isUnitCard(card) || isDraggableSpell(card)) && colorRequirementMet !== false;
-
-    if (!canDrag) {
-      event.preventDefault();
-      return;
-    }
-
-    if (event.dataTransfer) {
-      event.dataTransfer.effectAllowed = 'move';
-      event.dataTransfer.setData('application/json', JSON.stringify(card));
-
-      // Hide the default drag ghost image
-      const img = new Image();
-      img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // transparent pixel
-      event.dataTransfer.setDragImage(img, 0, 0);
-
-      // Initialize dragging state
-      uiState.battle.draggingCard = card;
-    }
-  }
-
-  function handleDrag(event: DragEvent) {
-    // Add visual feedback during drag
-    if (event.dataTransfer) {
-      event.dataTransfer.effectAllowed = 'move';
-    }
-  }
-
-  function handleDragEnd() {
-    uiState.battle.draggingCard = null;
-  }
-
   // Handle right-click to show CardFull
   function handleContextMenu(event: MouseEvent) {
     event.preventDefault();
@@ -164,13 +175,10 @@
 <div
   class="card {isPendingSpell ? 'pending-spell' : ''} {isDragging ? 'dragging' : ''} {isPayable
     ? 'payable'
-    : ''}"
+    : ''} {canDragCard() ? 'draggable' : ''}"
   style="--card-width: {CARD_WIDTH}px; --card-height: {CARD_HEIGHT +
     40}px; --name-font-size: {nameFontSize()}rem;"
-  draggable={(isUnitCard(card) || isDraggableSpell(card)) && isPayable}
-  ondragstart={handleDragStart}
-  ondrag={handleDrag}
-  ondragend={handleDragEnd}
+  onpointerdown={handlePointerDown}
   onclick={handleClick}
   oncontextmenu={handleContextMenu}
 >
@@ -264,11 +272,13 @@
     height: var(--card-height);
     border-radius: 12px;
     box-shadow:
-      0 4px 12px rgba(0, 0, 0, 0.5),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      0 1px 0 rgba(255, 255, 255, 0.14),
+      0 3px 0 #1a120c,
+      0 8px 12px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16);
     background: #444 url('/assets/images/ui/backgrounds/cardboard.png') center/cover;
     background-blend-mode: multiply;
-    border: 1px solid #1a1a1a;
+    border: 1px solid rgba(232, 210, 160, 0.28);
     padding: 4px;
     box-sizing: border-box;
     cursor: pointer;
@@ -298,12 +308,16 @@
   }
 
   .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    margin-top: -8px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.16),
+      0 3px 0 #1a120c,
+      0 16px 18px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16);
   }
 
-  .card:active {
-    transform: scale(0.95);
+  .card.draggable:active {
+    filter: none;
   }
 
   .name {
@@ -519,11 +533,25 @@
   }
 
   .card.dragging {
-    transform: translateY(-20px) scale(1.05);
+    opacity: 0.3;
     border-color: var(--color-golden);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
     z-index: 1000;
-    opacity: 0.3;
+  }
+
+  .card.draggable {
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .card.draggable.dragging {
+    cursor: grabbing;
+  }
+
+  .card.draggable * {
+    -webkit-user-drag: none;
+    user-select: none;
   }
 
   @keyframes spell-pulse {

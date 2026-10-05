@@ -186,6 +186,7 @@
 <style>
   .unit-deployed {
     position: relative;
+    box-sizing: border-box;
     width: 100%;
     height: 100%;
     background-size: cover;
@@ -193,7 +194,11 @@
     background-repeat: no-repeat;
     border-radius: 6px;
     overflow: visible;
-    border: 3px solid;
+    border: 2px solid;
+    box-shadow:
+      0 6px 8px rgba(0, 0, 0, 0.5),
+      0 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
     transition:
       border-color 0.2s ease,
       transform 0.3s ease,
@@ -213,7 +218,10 @@
   .unit-deployed.selected {
     outline: 2px solid #eecd6c;
     transform: translateZ(0) scale(1.02);
-    box-shadow: 0 4px 12px rgba(238, 205, 108, 0.3);
+    box-shadow:
+      0 8px 12px rgba(0, 0, 0, 0.45),
+      0 0 10px rgba(238, 205, 108, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
   }
 
   .unit-deployed.inactive {
@@ -222,7 +230,9 @@
 
   .unit-deployed.valid-target {
     border-color: #ff0000;
-    box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+    box-shadow:
+      0 6px 8px rgba(0, 0, 0, 0.5),
+      0 0 8px rgba(255, 0, 0, 0.5);
     cursor: pointer;
   }
 
@@ -230,7 +240,7 @@
     transform: translateZ(0) translateY(-4px) scale(1.05);
     box-shadow:
       0 0 8px rgba(255, 0, 0, 0.5),
-      0 8px 16px rgba(255, 0, 0, 0.3);
+      0 10px 14px rgba(0, 0, 0, 0.45);
     border-color: #ff4444;
   }
 

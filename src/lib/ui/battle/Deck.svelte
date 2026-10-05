@@ -54,8 +54,20 @@
 
   .deck-stack {
     position: relative;
-    width: 140px;
-    height: 190px;
+    width: 92px;
+    height: 126px;
+  }
+
+  .deck-stack::after {
+    content: '';
+    position: absolute;
+    left: 8%;
+    right: 4%;
+    bottom: -10px;
+    height: 16px;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
   }
 
   .card-back {
@@ -64,12 +76,13 @@
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+    border: 1px solid rgba(232, 210, 160, 0.28);
     box-shadow:
-      -2px 2px 4px rgba(0, 0, 0, 0.4),
-      -4px 4px 8px rgba(0, 0, 0, 0.3),
-      -8px 8px 16px rgba(0, 0, 0, 0.2);
+      0 1px 0 rgba(255, 255, 255, 0.12),
+      -2px 3px 0 #1a120c,
+      -4px 7px 8px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
     transition: transform 0.3s ease;
   }
 
@@ -85,6 +98,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 5px;
   }
 </style>

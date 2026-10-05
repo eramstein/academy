@@ -428,9 +428,12 @@ const salamander = {
         {
           effect: {
             name: 'damageUnit',
-            args: { damage: 1 },
-            range: {
-              sameRow: true,
+            args: {
+              damage: 1,
+              range: {
+                sameRow: true,
+                excludeSelf: true,
+              },
             },
           },
         },

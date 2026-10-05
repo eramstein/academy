@@ -37,7 +37,7 @@
   // Calculate overlap based on number of cards
   function calculateOverlap() {
     const cardWidth = CARD_WIDTH; // Use shared constant
-    const availableWidth = 550 - 32; // 550px - padding (16px * 2)
+    const availableWidth = 588;
     const numCards = player.hand.length;
 
     if (numCards <= 1) return 0;
@@ -67,14 +67,34 @@
 
 <style>
   .hand {
+    position: relative;
     display: flex;
     gap: 0;
-    padding: 0 6rem;
+    box-sizing: border-box;
+    padding: 0 16px 0.4rem;
     overflow: visible;
-    min-height: 220px;
-    align-items: center;
-    justify-content: center;
-    width: 550px;
+    min-height: 200px;
+    align-items: flex-end;
+    /* Opponent hand: pack toward the end-turn button (left). */
+    justify-content: flex-start;
+    width: 620px;
+  }
+
+  /* Player hand: pack toward the end-turn button (right). */
+  .hand.player-hand {
+    justify-content: flex-end;
+  }
+
+  .hand::after {
+    content: '';
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    bottom: 2px;
+    height: 18px;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.5), transparent 72%);
+    pointer-events: none;
+    z-index: 0;
   }
 
   .hand::-webkit-scrollbar {
@@ -96,19 +116,22 @@
   }
 
   .card-wrapper {
+    position: relative;
+    z-index: 1;
     flex-shrink: 0;
   }
 
-  /* Only apply hover effects and transitions to player hands */
+  /* Only apply hover effects and transitions to player hands. */
   .hand.player-hand .card-wrapper {
-    transition: margin-left 0.2s ease;
+    transition:
+      margin-left 0.2s ease,
+      margin-top 0.2s ease;
   }
 
   .hand.player-hand .card-wrapper:hover {
     margin-left: -10px !important;
-    margin-top: -10px !important;
+    margin-top: -14px !important;
     z-index: 10;
-    transform: scale(1.05);
   }
 
   /* When a card is hovered, only shift the immediately adjacent card to the right */
@@ -145,8 +168,14 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 12px;
-    border: 2px solid #444;
+    border-radius: 10px;
+    border: 1px solid rgba(232, 210, 160, 0.3);
     flex-shrink: 0;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.14),
+      0 3px 0 #1a120c,
+      0 8px 12px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      inset 0 -10px 14px rgba(0, 0, 0, 0.35);
   }
 </style>

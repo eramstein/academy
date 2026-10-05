@@ -175,14 +175,16 @@
     position: relative;
   }
 
+  /* Right-aligned so the bubble grows over the board, not past the viewport edge. */
   .speech-bubble {
     position: absolute;
     bottom: calc(100% + 0.35rem);
-    left: 50%;
-    transform: translateX(-50%);
+    right: 0;
+    left: auto;
     z-index: 20;
     max-width: 480px;
     min-width: 280px;
+    width: max-content;
     padding: 0.55rem 0.75rem 0.7rem;
     margin: 0;
     border: 2px solid #5a4b3c;
@@ -208,9 +210,8 @@
 
   .speech-bubble-tail {
     position: absolute;
-    left: 50%;
+    right: 90px;
     bottom: -10px;
-    transform: translateX(-50%);
     width: 0;
     height: 0;
     border-left: 10px solid transparent;
@@ -220,25 +221,28 @@
   }
 
   .player {
-    padding: 4px;
-    background: #1a1a1a;
-    border: 2px solid #000;
-    border-radius: 12px;
-    box-shadow:
-      0 10px 20px rgba(0, 0, 0, 0.6),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    padding: 6px;
     width: 200px;
     height: 200px;
     position: relative;
     box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid rgba(232, 208, 150, 0.5);
+    background: linear-gradient(165deg, #8d734c 0%, #3d2c1e 26%, #1c140f 68%, #110e0b 100%);
+    box-shadow:
+      0 12px 16px rgba(0, 0, 0, 0.5),
+      0 3px 0 #1a120c,
+      inset 0 1px 0 rgba(255, 230, 180, 0.5),
+      inset 0 -3px 6px rgba(0, 0, 0, 0.45);
   }
 
   .player.valid-target {
-    border-color: #ff0000;
+    border-color: #ff5a4a;
     box-shadow:
-      0 10px 20px rgba(0, 0, 0, 0.6),
-      inset 0 0 20px rgba(255, 0, 0, 0.4),
-      0 0 15px rgba(255, 0, 0, 0.6);
+      0 12px 16px rgba(0, 0, 0, 0.5),
+      0 3px 0 #1a120c,
+      inset 0 0 16px rgba(255, 40, 30, 0.45),
+      0 0 12px rgba(255, 40, 30, 0.45);
     cursor: pointer;
   }
 
@@ -253,6 +257,7 @@
     z-index: 3;
     width: 3rem;
     height: 3rem;
+    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.5));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -276,24 +281,25 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.2);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.28) 100%);
     border-radius: 8px;
     z-index: 1;
   }
 
   .life-display {
     position: absolute;
-    bottom: 5px;
-    left: 5px;
+    bottom: 4px;
+    left: 4px;
     background: url('/assets/images/ui/icons/health-icon.png') center/cover no-repeat;
     color: white;
-    padding: 0.5rem;
+    padding: 0.4rem;
     border-radius: 8px;
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1rem;
     z-index: 2;
     min-width: 2rem;
     text-align: center;
+    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.55));
   }
 
   .mana-value {
@@ -392,18 +398,19 @@
     display: flex;
     justify-content: center;
     gap: 0.5rem;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    padding: 0.5rem 0.5rem 0.25rem 0.5rem;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
+    margin-top: 0.45rem;
+    margin-bottom: 0.35rem;
+    padding: 0.4rem 0.45rem 0.2rem;
     width: 200px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    box-shadow:
-      inset 0 2px 6px rgba(0, 0, 0, 0.5),
-      0 1px 0 rgba(255, 255, 255, 0.05);
-    transition: border-color 0.3s ease;
     box-sizing: border-box;
+    border-radius: 6px;
+    border: 1px solid rgba(196, 164, 96, 0.28);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(28, 18, 12, 0.28) 100%);
+    box-shadow:
+      inset 0 4px 8px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(0, 0, 0, 0.35),
+      0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: border-color 0.3s ease;
   }
 
   .player-actions.abilities-available {
@@ -421,8 +428,11 @@
     width: 2rem;
     height: 2rem;
     border-radius: 50%;
-    border: 2px solid #333;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 236, 200, 0.35);
+    box-shadow:
+      0 3px 0 rgba(0, 0, 0, 0.45),
+      0 4px 6px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -459,9 +469,9 @@
   }
 
   .color-count {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: bold;
-    color: white;
+    color: var(--color-cream);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     text-align: center;
   }
@@ -501,13 +511,18 @@
   }
 
   .hand-count {
-    margin-top: 0.5rem;
-    padding: 0.25rem 0.5rem;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
+    margin-top: 0.45rem;
+    padding: 0.2rem 0.7rem;
+    color: var(--color-cream);
     border-radius: 4px;
-    font-size: 0.9rem;
-    font-weight: bold;
+    border: 1px solid rgba(214, 184, 120, 0.38);
+    background: linear-gradient(180deg, #4a3b2c 0%, #2a2118 100%);
+    box-shadow:
+      0 3px 0 #1a120c,
+      0 6px 8px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.85rem;
     text-align: center;
   }
 </style>

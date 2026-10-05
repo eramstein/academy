@@ -114,11 +114,15 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border: 2px solid #333;
-    border-radius: 8px;
+    border: 1px solid rgba(255, 236, 210, 0.28);
+    border-radius: 4px;
     display: flex;
     align-items: flex-end;
     justify-content: flex-start;
+    box-shadow:
+      0 5px 8px rgba(0, 0, 0, 0.48),
+      0 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
   }
 
   .land.valid-target {

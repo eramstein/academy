@@ -14,9 +14,23 @@
     toggleUnitSelection,
   } from '@lib/ui/_helpers/selections';
   import { activateSpell, targetCell, targetUnit } from '@lib/ui/_helpers/targetting';
+  import { getPlaymatPath } from '@lib/_utils/asset-paths';
   import { fly } from 'svelte/transition';
   import Land from './Land.svelte';
   import UnitDeployed from './UnitDeployed.svelte';
+
+  /** Slot size and the felt gaps around them. Shared by the grid and unit placement. */
+  const CELL = 140;
+  const GAP = 6;
+  const LAND_GAP = 10;
+  const MIDDLE_GAP = 88;
+  const PLAYMAT_ASPECT = 1576 / 831;
+
+  const gridWidth =
+    (config.boardColumns + 2) * CELL + 2 * LAND_GAP + (config.boardColumns - 1) * GAP + MIDDLE_GAP;
+  const gridHeight = config.boardRows * CELL + (config.boardRows - 1) * GAP;
+  const playmatHeight = gridHeight + 120;
+  const playmatWidth = Math.round(playmatHeight * PLAYMAT_ASPECT) - 100;
 
   // Create arrays for rows and columns based on config
   const rows = Array.from({ length: config.boardRows }, (_, i) => i);
@@ -56,43 +70,28 @@
 
   // Track drag state for each cell
   let dragOverCell = $state<{ row: number; column: number } | null>(null);
+  let boardEl: HTMLDivElement | null = $state(null);
 
-  // Drop event handlers
-  function handleDragOver(event: DragEvent) {
-    // Only allow drops during player's turn
-    if (!bs.isPlayersTurn) {
-      event.preventDefault();
-      return;
+  /** Resolve board cell under the cursor (works with stage transform:scale). */
+  function findCellAtPoint(clientX: number, clientY: number): { row: number; column: number } | null {
+    if (!boardEl) return null;
+    for (const el of boardEl.querySelectorAll<HTMLElement>('.board-cell')) {
+      const rect = el.getBoundingClientRect();
+      if (
+        clientX >= rect.left &&
+        clientX < rect.right &&
+        clientY >= rect.top &&
+        clientY < rect.bottom
+      ) {
+        return { row: Number(el.dataset.row), column: Number(el.dataset.column) };
+      }
     }
-
-    event.preventDefault();
-    if (event.dataTransfer) {
-      event.dataTransfer.dropEffect = 'move';
-    }
+    return null;
   }
 
-  function handleDragEnter(event: DragEvent, row: number, column: number) {
-    // Only show visual feedback during player's turn
-    if (!bs.isPlayersTurn) return;
-    dragOverCell = { row, column };
-  }
-
-  function handleDragLeave(event: DragEvent, row: number, column: number) {
-    // Only clear if we're leaving the current drag-over cell
-    if (dragOverCell?.row === row && dragOverCell?.column === column) {
-      dragOverCell = null;
-    }
-  }
-
-  function handleDrop(event: DragEvent, row: number, column: number) {
-    event.preventDefault();
-    dragOverCell = null;
-    if (!event.dataTransfer) return;
+  function playCardAt(card: Card, row: number, column: number) {
     try {
-      const cardData = event.dataTransfer.getData('application/json');
-      if (!cardData) return;
       const position: Position = { row, column };
-      const card: Card = JSON.parse(cardData);
       const colorRequirementMet = isPayableAfterColorIncrementation(card);
 
       if (colorRequirementMet === false) return;
@@ -113,15 +112,12 @@
           usePlayerColorAbility(bs.players[card.ownerPlayerId], colorRequirementMet);
         }
 
-        // Activate the spell first to set up the targeting state
         activateSpell(spellCard);
 
         const hasTargets = spellCard.actions.some(
           (action: any) => action.targets && action.targets.length > 0
         );
         if (hasTargets) {
-          // If the spell has targets, try to target the drop location
-          // Find if there's a unit at this position
           const unitAtPosition = bs.units.find(
             (u) => u.position.row === row && u.position.column === column
           );
@@ -137,21 +133,62 @@
     }
   }
 
+  function dropCardAt(row: number, column: number) {
+    dragOverCell = null;
+    const card = uiState.battle.draggingCard;
+    uiState.battle.draggingCard = null;
+    if (card && bs.isPlayersTurn) {
+      playCardAt(card, row, column);
+    }
+  }
+
+  // Pointer drag tracking (works with scaled layouts; HTML5 DnD is unreliable here).
+  $effect(() => {
+    if (!uiState.battle.draggingCard) {
+      dragOverCell = null;
+      return;
+    }
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!bs.isPlayersTurn) return;
+      dragOverCell = findCellAtPoint(event.clientX, event.clientY);
+    };
+
+    const onPointerUp = (event: PointerEvent) => {
+      const cell = findCellAtPoint(event.clientX, event.clientY);
+      if (cell) {
+        dropCardAt(cell.row, cell.column);
+      } else {
+        dragOverCell = null;
+        uiState.battle.draggingCard = null;
+      }
+    };
+
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
+      dragOverCell = null;
+    };
+  });
+
   // Function to check if a position is a valid move target
   function isValidMoveTarget(row: number, column: number) {
     const positionKey = getPositionKey({ row, column });
     return uiState.battle.validTargets?.cells?.[positionKey] === true;
   }
 
-  // Function to calculate unit position in pixels
+  // Units are absolutely positioned over the land column plus the main grid.
   function getUnitPosition(unit: (typeof bs.units)[0]) {
-    // +1 column to account for the left player lands, 8 for the gap with lands, 4 time column for the gap between units, +20 if over middle gap
     const left =
-      (unit.position.column + 1) * 142 +
-      8 +
-      unit.position.column * 4 +
-      (unit.position.column > middleColumnIndex ? 20 : 0);
-    const top = unit.position.row * (142 + 4);
+      CELL +
+      LAND_GAP +
+      unit.position.column * (CELL + GAP) +
+      (unit.position.column > middleColumnIndex ? MIDDLE_GAP : 0);
+    const top = unit.position.row * (CELL + GAP);
     return { left, top };
   }
 
@@ -175,7 +212,17 @@
   }
 </script>
 
-<div class="board-container">
+<div
+  class="playmat"
+  style="--cell: {CELL}px; --gap: {GAP}px; --land-gap: {LAND_GAP}px; --middle-gap: {MIDDLE_GAP}px; --mat-w: {playmatWidth}px; --mat-h: {playmatHeight}px;"
+>
+  <!-- Art + shadow on a non-interactive layer so filter hit-testing can't steal hand events. -->
+  <div
+    class="playmat-art"
+    style="background-image: url('{getPlaymatPath()}');"
+    aria-hidden="true"
+  ></div>
+  <div class="board-container" bind:this={boardEl}>
   <!-- Left column -->
   <div class="side-column left-column">
     {#each rows as row}
@@ -199,10 +246,6 @@
             class:valid-move-target={isValidMoveTarget(row, column)}
             data-row={row}
             data-column={column}
-            ondragover={handleDragOver}
-            ondragenter={(event) => handleDragEnter(event, row, column)}
-            ondragleave={(event) => handleDragLeave(event, row, column)}
-            ondrop={(event) => handleDrop(event, row, column)}
             onclick={() => handleCellClick(row, column)}
           ></div>
         {/each}
@@ -225,128 +268,114 @@
     {@const isAiUnit = unit.ownerPlayerId === 1}
     <div
       class="unit-container"
-      style="left: {position.left}px; top: {position.top}px;"
+      style="left: {position.left}px; top: {position.top}px; width: {CELL}px; height: {CELL}px;"
       class:drag-over={dragOverCell?.row === unit.position.row &&
         dragOverCell?.column === unit.position.column}
-      ondragover={handleDragOver}
-      ondragenter={(event) => handleDragEnter(event, unit.position.row, unit.position.column)}
-      ondragleave={(event) => handleDragLeave(event, unit.position.row, unit.position.column)}
-      ondrop={(event) => handleDrop(event, unit.position.row, unit.position.column)}
       in:fly={isAiUnit ? { y: 0, x: 200, duration: 600 } : undefined}
       out:fly={{ y: 0, x: isAiUnit ? 200 : -200, duration: 350 }}
     >
       <UnitDeployed {unit} />
     </div>
   {/each}
+  </div>
 </div>
 
 <style>
+  .playmat {
+    position: relative;
+    width: var(--mat-w);
+    height: var(--mat-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .playmat-art {
+    position: absolute;
+    inset: 0;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    filter: drop-shadow(0 16px 14px rgba(0, 0, 0, 0.55)) drop-shadow(0 3px 2px rgba(0, 0, 0, 0.5));
+    pointer-events: none;
+    z-index: 0;
+  }
+
   .board-container {
     position: relative;
+    z-index: 1;
     display: flex;
-    gap: 8px;
+    gap: var(--land-gap);
   }
 
   .side-column {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--gap);
   }
 
-  .side-cell {
-    width: 140px;
-    height: 140px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(0, 0, 0, 0.4);
-    border-radius: 8px;
-    box-shadow:
-      inset 0 4px 10px rgba(0, 0, 0, 0.4),
-      0 1px 0 rgba(255, 255, 255, 0.05);
+  .side-cell,
+  .board-cell {
+    width: var(--cell);
+    height: var(--cell);
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid rgba(214, 184, 120, 0.28);
+    background: rgba(0, 0, 0, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
     cursor: pointer;
   }
 
-  .side-cell:hover {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(0, 0, 0, 0.6);
-    box-shadow:
-      inset 0 6px 12px rgba(0, 0, 0, 0.6),
-      0 1px 0 rgba(255, 255, 255, 0.05);
+  .side-cell:hover,
+  .board-cell:hover {
+    border-color: rgba(232, 208, 150, 0.45);
+    background: rgba(0, 0, 0, 0.2);
   }
 
-  .side-cell:active {
-    box-shadow:
-      inset 0 8px 16px rgba(0, 0, 0, 0.8),
-      0 1px 0 rgba(255, 255, 255, 0.05);
+  .side-cell:active,
+  .board-cell:active {
+    background: rgba(0, 0, 0, 0.28);
   }
 
   .board {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--gap);
   }
 
   .board-row {
     display: flex;
-    gap: 4px;
+    gap: var(--gap);
   }
 
   .board-cell.middle-gap {
-    margin-right: 20px;
-  }
-
-  .board-cell {
-    width: 140px;
-    height: 140px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(0, 0, 0, 0.4);
-    border-radius: 8px;
-    box-shadow:
-      inset 0 4px 10px rgba(0, 0, 0, 0.4),
-      0 1px 0 rgba(255, 255, 255, 0.05);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    cursor: pointer;
-  }
-
-  .board-cell:hover {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(0, 0, 0, 0.6);
-    box-shadow:
-      inset 0 6px 12px rgba(0, 0, 0, 0.6),
-      0 1px 0 rgba(255, 255, 255, 0.05);
-  }
-
-  .board-cell:active {
-    box-shadow:
-      inset 0 8px 16px rgba(0, 0, 0, 0.8),
-      0 1px 0 rgba(255, 255, 255, 0.05);
+    margin-right: var(--middle-gap);
   }
 
   .board-cell.drag-over {
-    background: rgba(191, 161, 74, 0.1);
-    border-color: #bfa14a;
+    border-color: rgba(191, 161, 74, 0.85);
+    background: linear-gradient(180deg, rgba(191, 161, 74, 0.22), rgba(191, 161, 74, 0.08));
     box-shadow:
-      inset 0 0 20px rgba(191, 161, 74, 0.4),
-      0 0 10px rgba(191, 161, 74, 0.6);
+      inset 0 0 16px rgba(191, 161, 74, 0.4),
+      0 0 8px rgba(191, 161, 74, 0.35);
   }
 
   .board-cell.valid-move-target {
-    border-color: #4caf50; /* Green border for valid move targets */
+    border-color: rgba(120, 190, 110, 0.9);
     box-shadow:
-      inset 0 0 20px rgba(76, 175, 80, 0.4),
-      0 0 10px rgba(76, 175, 80, 0.6);
+      inset 0 0 16px rgba(76, 175, 80, 0.4),
+      0 0 8px rgba(76, 175, 80, 0.4);
   }
 
   .unit-container {
     position: absolute;
-    width: 138px;
-    height: 138px;
+    box-sizing: border-box;
     pointer-events: auto;
     z-index: 10;
     transition:

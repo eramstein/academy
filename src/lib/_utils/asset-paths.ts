@@ -35,6 +35,14 @@ export function getTableImagePath(): string {
   return getAssetPath('images/ui/backgrounds/table.jpg');
 }
 
+export function getBattleBackgroundPath(): string {
+  return getAssetPath('images/ui/backgrounds/battle-background.png');
+}
+
+export function getPlaymatPath(): string {
+  return getAssetPath('images/ui/backgrounds/playmat.png');
+}
+
 export function getDataBackgroundPath(): string {
   return getAssetPath('images/ui/backgrounds/data-background.png');
 }
