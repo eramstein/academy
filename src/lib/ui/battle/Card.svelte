@@ -31,6 +31,21 @@
     return card.name.length > 20 ? 0.75 : 0.9;
   });
 
+  // Color pips left of the name: keep within ~3-pip width, stack tighter beyond that
+  const COLOR_PIP_SIZE = 18;
+  const COLOR_PIP_OVERLAP_DEFAULT = 6;
+  const COLOR_PIPS_MAX_WIDTH =
+    COLOR_PIP_SIZE + (COLOR_PIP_SIZE - COLOR_PIP_OVERLAP_DEFAULT) * 2; // 42px
+
+  let colorCount = $derived(card.colors?.reduce((sum, c) => sum + c.count, 0) ?? 0);
+  let colorPipOverlap = $derived(
+    colorCount <= 3
+      ? COLOR_PIP_OVERLAP_DEFAULT
+      : COLOR_PIP_SIZE - (COLOR_PIPS_MAX_WIDTH - COLOR_PIP_SIZE) / (colorCount - 1)
+  );
+  // Trim name-bar left padding when many pips so the name keeps more room
+  let nameLeftPadding = $derived(colorCount > 3 ? 2 : 10);
+
   // Check if card is a unit card (works with Card type)
   function isUnitCard(card: Card): card is Card & {
     power: number;
@@ -183,9 +198,12 @@
   oncontextmenu={handleContextMenu}
 >
   <!-- Card name bar -->
-  <div class="name has-unit-types">
+  <div class="name has-unit-types" style="--name-padding-left: {nameLeftPadding}px;">
     {#if card.colors && card.colors.length > 0}
-      <div class="header-colors">
+      <div
+        class="header-colors"
+        style="--color-pip-overlap: {colorPipOverlap}px; --color-pips-max-width: {COLOR_PIPS_MAX_WIDTH}px;"
+      >
         {#each card.colors as colorInfo}
           {#each Array(colorInfo.count) as _}
             <div
@@ -324,7 +342,7 @@
     background: #e8dcc4 url('/assets/images/ui/backgrounds/parchment.png') center/cover;
     background-blend-mode: multiply;
     color: #2c251d;
-    padding: 6px 10px 2px 10px;
+    padding: 6px 10px 2px var(--name-padding-left, 10px);
     font-weight: 800;
     font-size: 0.9rem;
     flex-shrink: 0;
@@ -347,12 +365,9 @@
     font-size: 0.85rem;
   }
 
-  .name.has-unit-types {
-    padding: 6px 10px 2px 10px;
-  }
-
   .name-content {
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -448,11 +463,14 @@
     display: flex;
     z-index: 2;
     margin-top: -13px;
+    max-width: var(--color-pips-max-width, 42px);
+    flex-shrink: 0;
   }
 
   .color-indicator {
     width: 18px;
     height: 18px;
+    flex-shrink: 0;
     border-radius: 50%;
     background-size: cover;
     background-position: center;
@@ -461,7 +479,7 @@
       inset 0 1px 1px rgba(255, 255, 255, 0.5),
       inset 0 -1px 2px rgba(0, 0, 0, 0.9),
       0 2px 3px rgba(0, 0, 0, 0.6);
-    margin-left: -6px;
+    margin-left: calc(-1 * var(--color-pip-overlap, 6px));
     position: relative;
     filter: contrast(1.1) brightness(1.3);
   }

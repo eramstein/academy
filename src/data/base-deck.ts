@@ -821,17 +821,17 @@ const hurried_student = {
   ],
 };
 
-const born_from_magic = {
-  id: 'born_from_magic',
-  name: 'Born from Magic',
-  imageFileName: 'born_from_magic',
+const mechanical_toy = {
+  id: 'mechanical_toy',
+  name: 'Mechanical Toy',
+  imageFileName: 'mechanical_toy',
   type: CardType.Unit,
   cost: 2,
   colors: [{ color: CardColor.Blue, count: 1 }],
   power: 1,
   maxHealth: 3,
   retaliate: 2,
-  unitTypes: [UnitType.Elemental],
+  unitTypes: [UnitType.Construct],
 };
 
 const security_golem = {
@@ -918,17 +918,17 @@ const hyptnotic_witch = {
   ],
 };
 
-const donatello = {
-  id: 'donatello',
-  name: 'Donatello',
-  imageFileName: 'donatello',
+const recycling_bot = {
+  id: 'recycling_bot',
+  name: 'Recycling Bot',
+  imageFileName: 'recycling_bot',
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Blue, count: 3 }],
   power: 3,
   maxHealth: 3,
   retaliate: 3,
-  unitTypes: [UnitType.Human],
+  unitTypes: [UnitType.Construct],
   abilities: [
     {
       trigger: {
@@ -962,13 +962,10 @@ const buffoon = {
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Blue, count: 1 }],
-  power: 0,
-  maxHealth: 10,
-  retaliate: 3,
+  power: 1,
+  maxHealth: 1,
+  retaliate: 0,
   unitTypes: [UnitType.Human],
-  keywords: {
-    immobile: true,
-  },
   abilities: [
     {
       trigger: {
@@ -1027,16 +1024,17 @@ const shameless_imitator = {
   },
 };
 
-const luring_enchantress = {
-  id: 'luring_enchantress',
-  name: 'Luring Enchantress',
-  imageFileName: 'luring_enchantress',
+const ice_golem = {
+  id: 'ice_golem',
+  name: 'Ice Golem',
+  imageFileName: 'ice_golem',
   type: CardType.Unit,
   cost: 5,
   colors: [{ color: CardColor.Blue, count: 1 }],
   power: 4,
   maxHealth: 4,
   retaliate: 2,
+  unitTypes: [UnitType.Elemental],
 };
 
 const professore = {
@@ -1072,28 +1070,17 @@ const professore = {
   ],
 };
 
-const mentalist = {
-  id: 'mentalist',
-  name: 'Mentalist',
-  imageFileName: 'mentalist',
+const water_elemental = {
+  id: 'water_elemental',
+  name: 'Water Elemental',
+  imageFileName: 'water_elemental',
   type: CardType.Unit,
   cost: 6,
   colors: [{ color: CardColor.Blue, count: 1 }],
   power: 4,
   maxHealth: 6,
   retaliate: 3,
-};
-
-const council_envoy = {
-  id: 'council_envoy',
-  name: 'Council Envoy',
-  imageFileName: 'council_envoy',
-  type: CardType.Unit,
-  cost: 7,
-  colors: [{ color: CardColor.Blue, count: 2 }],
-  power: 4,
-  maxHealth: 7,
-  retaliate: 5,
+  unitTypes: [UnitType.Elemental],
 };
 
 const zeppelin = {
@@ -1101,15 +1088,47 @@ const zeppelin = {
   name: 'Zeppelin',
   imageFileName: 'zeppelin',
   type: CardType.Unit,
-  cost: 8,
+  cost: 7,
   colors: [{ color: CardColor.Blue, count: 3 }],
-  power: 3,
+  power: 2,
   maxHealth: 9,
   retaliate: 3,
   unitTypes: [UnitType.Human, UnitType.Monster],
   keywords: {
     flying: true,
   },
+};
+
+const council_envoy = {
+  id: 'council_envoy',
+  name: 'Council Envoy',
+  imageFileName: 'council_envoy',
+  type: CardType.Unit,
+  cost: 9,
+  colors: [{ color: CardColor.Blue, count: 3 }],
+  power: 0,
+  maxHealth: 1,
+  retaliate: 0,
+  abilities: [
+    {
+      trigger: {
+        type: TriggerType.OnDeploy,
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'controlUnit',
+            args: {
+              count: 1,
+            },
+          },
+        },
+      ],
+    },
+  ],
 };
 
 const unsummon = {
@@ -1184,10 +1203,18 @@ const carnival_of_miracles = {
     {
       effect: {
         name: 'forceMoveUnit',
-        args: {
+        args: {},
+      },
+      targets: [
+        {
+          type: TargetType.Units,
           count: 1,
         },
-      },
+        {
+          type: TargetType.EnemyCell,
+          count: 1,
+        },
+      ],
     },
   ],
 };
@@ -1195,10 +1222,10 @@ const carnival_of_miracles = {
 // BLACK BASE CARDS
 // ---------------------------------------------------------
 
-const expendable_recruit = {
-  id: 'expendable_recruit',
-  name: 'Expendable Recruit',
-  imageFileName: 'expendable_recruit',
+const peasant = {
+  id: 'peasant',
+  name: 'Peasant',
+  imageFileName: 'peasant',
   type: CardType.Unit,
   cost: 1,
   colors: [{ color: CardColor.Black, count: 1 }],
@@ -1237,10 +1264,10 @@ const skeletal_archer = {
   },
 };
 
-const blacksmith = {
-  id: 'blacksmith',
-  name: 'Expendable Recruit',
-  imageFileName: 'blacksmith',
+const squire = {
+  id: 'squire',
+  name: 'Squire',
+  imageFileName: 'squire',
   type: CardType.Unit,
   cost: 2,
   colors: [{ color: CardColor.Black, count: 2 }],
@@ -1274,10 +1301,10 @@ const blacksmith = {
   ],
 };
 
-const zombie = {
-  id: 'zombie',
-  name: 'Zombie',
-  imageFileName: 'zombie',
+const weak_zombie = {
+  id: 'weak_zombie',
+  name: 'Weak Zombie',
+  imageFileName: 'weak_zombie',
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Black, count: 1 }],
@@ -1324,10 +1351,10 @@ const plague_spreader = {
   ],
 };
 
-const market_beggar = {
-  id: 'market_beggar',
-  name: 'Market Beggar',
-  imageFileName: 'market_beggar',
+const street_thugs = {
+  id: 'street_thugs',
+  name: 'Street Thugs',
+  imageFileName: 'street_thugs',
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Black, count: 2 }],
@@ -1337,17 +1364,17 @@ const market_beggar = {
   unitTypes: [UnitType.Human],
 };
 
-const gate_keepers = {
-  id: 'gate_keepers',
-  name: 'Gatekeepers',
-  imageFileName: 'gate_keepers',
+const spiky_wall = {
+  id: 'spiky_wall',
+  name: 'Spiky Wall',
+  imageFileName: 'spiky_wall',
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Black, count: 1 }],
   power: 0,
   maxHealth: 10,
   retaliate: 3,
-  unitTypes: [UnitType.Human],
+  unitTypes: [UnitType.Building],
   keywords: {
     immobile: true,
   },
@@ -1410,10 +1437,10 @@ const iron_golem = {
   retaliate: 2,
 };
 
-const elite_crossbowmen = {
-  id: 'elite_crossbowmen',
-  name: 'Elite Crossbowmen',
-  imageFileName: 'elite_crossbowmen',
+const heavy_bowman = {
+  id: 'heavy_bowman',
+  name: 'Heavy Bowman',
+  imageFileName: 'heavy_bowman',
   type: CardType.Unit,
   cost: 5,
   colors: [{ color: CardColor.Black, count: 3 }],
@@ -1426,10 +1453,10 @@ const elite_crossbowmen = {
   },
 };
 
-const royal_halberdier = {
-  id: 'royal_halberdier',
-  name: 'Royal Halberdier',
-  imageFileName: 'royal_halberdier',
+const royal_guard = {
+  id: 'royal_guard',
+  name: 'Royal Guard',
+  imageFileName: 'royal_guard',
   type: CardType.Unit,
   cost: 6,
   colors: [{ color: CardColor.Black, count: 1 }],
@@ -1438,16 +1465,20 @@ const royal_halberdier = {
   retaliate: 0,
 };
 
-const vigilant_knight = {
-  id: 'vigilant_knight',
-  name: 'Vigilant Knight',
-  imageFileName: 'vigilant_knight',
+const valiant_protector = {
+  id: 'valiant_protector',
+  name: 'Valiant Protector',
+  imageFileName: 'valiant_protector',
   type: CardType.Unit,
   cost: 7,
   colors: [{ color: CardColor.Black, count: 1 }],
   power: 4,
   maxHealth: 7,
   retaliate: 4,
+  unitTypes: [UnitType.Human],
+  keywords: {
+    armor: 1,
+  },
 };
 
 const big_bertha = {
@@ -1466,10 +1497,10 @@ const big_bertha = {
   },
 };
 
-const execution = {
-  id: 'execution',
-  name: 'Execution',
-  imageFileName: 'execution',
+const sudden_death = {
+  id: 'sudden_death',
+  name: 'Sudden Death',
+  imageFileName: 'sudden_death',
   type: CardType.Spell,
   cost: 6,
   colors: [{ color: CardColor.Black, count: 2 }],
@@ -1514,10 +1545,10 @@ const fortify = {
   ],
 };
 
-const raise_dead = {
-  id: 'raise_dead',
-  name: 'Raise Dead',
-  imageFileName: 'raise_dead',
+const reanimate = {
+  id: 'reanimate',
+  name: 'Reanimate',
+  imageFileName: 'reanimate',
   type: CardType.Spell,
   cost: 3,
   colors: [{ color: CardColor.Black, count: 3 }],
@@ -1740,22 +1771,22 @@ export const BASE_DECK_BLACK: DeckBlueprint = {
   name: 'Base Black',
   cards: [
     sewer_rat,
-    zombie,
+    weak_zombie,
     ogre_guard,
     iron_golem,
-    royal_halberdier,
-    vigilant_knight,
+    royal_guard,
+    valiant_protector,
     big_bertha,
-    execution,
-    gate_keepers,
-    elite_crossbowmen,
+    sudden_death,
+    spiky_wall,
+    heavy_bowman,
     fortify,
-    market_beggar,
+    street_thugs,
     street_slinger,
-    expendable_recruit,
-    blacksmith,
+    peasant,
+    squire,
     ornithopter,
-    raise_dead,
+    reanimate,
     demonic_tutor,
     skeletal_archer,
     plague_spreader,
@@ -1770,15 +1801,15 @@ export const BASE_DECK_BLUE: DeckBlueprint = {
   name: 'Base Blue',
   cards: [
     daring_spirit,
-    born_from_magic,
+    mechanical_toy,
     gifted_apprentice,
-    donatello,
+    recycling_bot,
     buffoon,
     arcane_sniper,
     shameless_imitator,
-    luring_enchantress,
+    ice_golem,
     professore,
-    mentalist,
+    water_elemental,
     council_envoy,
     zeppelin,
     basic_research,
@@ -1792,5 +1823,13 @@ export const BASE_DECK_BLUE: DeckBlueprint = {
   ],
   lands: [island, plains, market, enchanter_lair],
   learntKeywords: ['immobile', 'moveAndAttack', 'ranged', 'flying'],
-  learntActions: ['bounceUnit', 'drawCards', 'cycleCards', 'mezz', 'recycleCard', 'forceMoveUnit'],
+  learntActions: [
+    'bounceUnit',
+    'controlUnit',
+    'drawCards',
+    'cycleCards',
+    'mezz',
+    'recycleCard',
+    'forceMoveUnit',
+  ],
 };

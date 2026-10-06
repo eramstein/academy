@@ -90,7 +90,7 @@ export const colorPie: Record<CardColor, ColorPie> = {
       hp: 3,
       ret: 1,
     },
-    unitTypes: [UnitType.Construct],
+    unitTypes: [UnitType.Construct, UnitType.Human],
     keywordsPreferences: {
       ...defaultKeywordPreferences,
       moveAndAttack: 3,

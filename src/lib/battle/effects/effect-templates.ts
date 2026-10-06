@@ -511,9 +511,11 @@ export const DataEffectTemplates: Record<
         sourcePermanent,
         player
       );
-      unitsInRange.forEach((u) => {
-        bounceUnit(u);
-      });
+      unitsInRange
+        .filter((u) => !u.isDying)
+        .forEach((u) => {
+          bounceUnit(u);
+        });
     },
     label: (targets: TargetDefinition[]) => {
       const targetsLabel = targets.length > 0 ? ` ${getTargetLabel(targets[0])}` : '';

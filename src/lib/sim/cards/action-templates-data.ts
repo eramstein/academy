@@ -289,7 +289,7 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
         },
       ],
     },
-    budget: (args.count ?? 1) * 16,
+    budget: (args.count ?? 1) * 12,
   }),
   forceMoveUnit: () => ({
     name: 'forceMoveUnit',
@@ -416,5 +416,23 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
       ],
     },
     budget: args.count ?? 1,
+  }),
+  controlUnit: (args: { count: number }) => ({
+    name: 'controlUnit',
+    label: 'Control',
+    description: `Take control of ${args.count ?? 1} target unit${(args.count ?? 1 !== 1) ? 's' : ''}.`,
+    definition: {
+      effect: {
+        name: 'controlUnit',
+        args: {},
+      },
+      targets: [
+        {
+          type: TargetType.Units,
+          count: args.count ?? 1,
+        },
+      ],
+    },
+    budget: args.count * 45,
   }),
 };
