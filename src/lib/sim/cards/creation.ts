@@ -17,12 +17,14 @@ import {
 import type { CardCreationParameters } from '../actions';
 import { buildAbility, pickRandomAbility } from './ability-templates';
 import {
+  ACTION_TEMPLATE_KEYS,
   createActionTemplate,
   defaultActionFactoryArgs,
   pickRandomActionTemplate,
 } from './action-templates';
 import { getBudgetFromCost, getCardBudget } from './card-budget';
 import { colorPie, type StatsPreference } from './color-pie';
+import { knownKeys } from './crafting-skills';
 import { KEYWORD_KEYS, NUMERIC_KEYWORDS, keywordConfig } from './keywords';
 
 type CardIdentityKeys = 'id' | 'cost' | 'name' | 'imageFileName';
@@ -50,7 +52,7 @@ export function buildUnitCard(
 ): PartialConjuredUnit {
   const card = getRandomUnitCardTemplate(
     parameters.colors,
-    parameters.source === 'conjure',
+    parameters.source === 'conjure' && !!parameters.discoverUnknown,
     character
   );
   // Invoke: player specifies ingredients — strip random keywords/abilities, then apply params.
@@ -113,6 +115,7 @@ export function buildSpellCard(parameters: CardCreationParameters): {
   let bestDistance = Infinity;
   for (let i = 0; i < CARD_CANDIDATE_COUNT; i++) {
     const candidate = rollSpellCandidate(cardColors, parameters.actions);
+    if (!candidate) continue;
     const distance = Math.abs(getCardBudget(candidate.card) - targetBudget);
     if (distance < bestDistance) {
       best = candidate;
@@ -135,7 +138,7 @@ function resolveCardColors(colors?: CardColor[]): { color: CardColor; count: num
 
 function getRandomUnitCardTemplate(
   colors?: CardColor[],
-  isConjuration: boolean = true,
+  discoverUnknown = false,
   character: Character = gs.player
 ): PartialConjuredUnit {
   const cardColors = resolveCardColors(colors);
@@ -145,7 +148,7 @@ function getRandomUnitCardTemplate(
   let best: PartialConjuredUnit | null = null;
   let bestDistance = Infinity;
   for (let i = 0; i < CARD_CANDIDATE_COUNT; i++) {
-    const candidate = rollUnitCandidate(cardColors, isConjuration, character);
+    const candidate = rollUnitCandidate(cardColors, discoverUnknown, character);
     const distance = Math.abs(getCardBudget(candidate) - targetBudget);
     if (distance < bestDistance) {
       best = candidate;
@@ -158,11 +161,12 @@ function getRandomUnitCardTemplate(
 function rollSpellCandidate(
   cardColors: { color: CardColor; count: number }[],
   allowedActions?: string[]
-): { card: PartialConjuredSpell; actionName: string } {
+): { card: PartialConjuredSpell; actionName: string } | null {
   const action = pickRandomActionTemplate(
     cardColors.map((entry) => entry.color),
     allowedActions
   );
+  if (!action) return null;
   return {
     card: {
       type: CardType.Spell,
@@ -175,19 +179,23 @@ function rollSpellCandidate(
 
 function rollUnitCandidate(
   cardColors: { color: CardColor; count: number }[],
-  isConjuration: boolean,
+  discoverUnknown: boolean,
   character: Character
 ): PartialConjuredUnit {
   const colorList = cardColors.map((entry) => entry.color);
   const { power, maxHealth, retaliate } = randomCombatStats(colorList);
+  const keywords = randomKeywords(colorList, discoverUnknown, character);
+  const keywordIsNew = Object.keys(keywords).some(
+    (key) => !(character.craftingKnowledge.keywords?.[key as keyof UnitKeywords])
+  );
   return {
     type: CardType.Unit,
     colors: cardColors,
     power,
     maxHealth,
     retaliate,
-    keywords: randomKeywords(colorList, isConjuration, character),
-    abilities: randomAbilities(colorList),
+    keywords,
+    abilities: randomAbilities(colorList, character, discoverUnknown && !keywordIsNew),
   };
 }
 
@@ -239,25 +247,35 @@ function allowedUnitTypesForColors(colors: CardColor[]): UnitType[] {
   );
 }
 
-function randomAbilities(colors: CardColor[]): UnitCardTemplate['abilities'] {
-  if (Math.random() >= 0.5) {
-    return undefined;
-  }
-  const picked = pickRandomAbility(colors);
+function randomAbilities(
+  colors: CardColor[],
+  character: Character,
+  forceUnknown: boolean
+): UnitCardTemplate['abilities'] {
+  const known = ACTION_TEMPLATE_KEYS.filter(
+    (name) => (character.craftingKnowledge.actions?.[name] ?? 0) >= 1
+  );
+  const unknown = ACTION_TEMPLATE_KEYS.filter(
+    (name) => (character.craftingKnowledge.actions?.[name] ?? 0) < 1
+  );
+  const pool = forceUnknown ? unknown : known;
+  if (!pool.length) return undefined;
+  if (!forceUnknown && Math.random() >= 0.5) return undefined;
+  const picked = pickRandomAbility(colors, pool);
   return picked ? [picked.ability] : undefined;
 }
 
 function randomKeywords(
   colors: CardColor[],
-  isConjuration: boolean,
+  discoverUnknown: boolean,
   character: Character
 ): UnitKeywords {
   const keywords: UnitKeywords = {};
   const colorBonus = combinedKeywordPreferences(colors);
-  // if it's a conjuration we focus on new keywords
-  const keywordsPool = isConjuration
-    ? KEYWORD_KEYS.filter((key) => !character.craftingKnowledge.keywords?.[key])
-    : KEYWORD_KEYS;
+  const known = knownKeys(character.craftingKnowledge.keywords);
+  const unknown = KEYWORD_KEYS.filter((key) => !known.has(key));
+  const familiar = KEYWORD_KEYS.filter((key) => known.has(key));
+  const keywordsPool = discoverUnknown ? (unknown.length ? unknown : familiar) : familiar;
   const weightedKeys = keywordsPool
     .filter((key) => keywords[key] === undefined)
     .map((key) => ({

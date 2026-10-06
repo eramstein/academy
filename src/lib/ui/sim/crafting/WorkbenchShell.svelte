@@ -24,9 +24,19 @@
   const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
   const scenePath = getAssetPath('images/ui/backgrounds/card-creation.png');
+
+  /** Escape the scene column stacking context so the overlay covers SimData (e.g. Collection). */
+  function portal(node: HTMLElement) {
+    document.body.appendChild(node);
+    return {
+      destroy() {
+        node.remove();
+      },
+    };
+  }
 </script>
 
-<div class="overlay" role="presentation">
+<div class="overlay" role="presentation" use:portal>
   <div
     class="frame"
     class:ignite

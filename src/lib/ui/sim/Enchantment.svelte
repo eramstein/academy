@@ -388,6 +388,7 @@
     infusedCard = null;
     highlight = null;
     fortuneBudget = 0;
+    learningRoll = 0;
     fortuneShown = false;
     pulseToken += 1;
     charmEntry = null;
@@ -702,12 +703,15 @@
     revealCard(infusedCard ?? sourceCard, preview);
   }
 
-  function onSealComplete(result: { fortuneBudget: number }) {
+  let learningRoll = $state(0);
+
+  function onSealComplete(result: { fortuneBudget: number; learning?: number }) {
     if (!augmentParameters || !sourceCard || finished) {
       sealing = false;
       return;
     }
     fortuneBudget = result.fortuneBudget;
+    learningRoll = result.learning ?? 0;
     if (!infusedCard) onIngredientsSealed();
     if (result.fortuneBudget > 0) onFortuneLanded(result.fortuneBudget);
     finished = true;
@@ -721,6 +725,7 @@
         ...action.actionParameters,
         ...augmentParameters,
         fortuneBudget,
+        learningRoll,
       },
       missingParameters: {},
     });
@@ -865,6 +870,7 @@
       shapeCost={hasAugmentIngredients ? (augmentPreview?.costIncrease ?? null) : null}
       atManaLimit={atBudgetLimit}
       {budgetRemaining}
+      craft="enchant"
       rollFortune
       {charmEntry}
       acceptingDrop={draggingIngredient}

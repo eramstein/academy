@@ -31,10 +31,17 @@
     [ResourceType.Moxes]: 'gem',
   };
 
+  const RESOURCE_ROLES: Record<ResourceType, string> = {
+    [ResourceType.Mithril]: 'Mastery',
+    [ResourceType.MagicDust]: 'Inspiration',
+    [ResourceType.Moxes]: 'Erudition',
+  };
+
   const iconName = RESOURCE_ICONS[type];
   const iconUrl = getUiIconPath(iconName);
   const painted = isPaintedUiIcon(iconName);
   const label = type.replace(/_/g, ' ');
+  const role = RESOURCE_ROLES[type];
   const remaining = $derived(Math.max(0, owned - selected));
   const empty = $derived(owned === 0 && selected === 0);
   const inactive = $derived(disabled || empty);
@@ -71,8 +78,8 @@
   class:bump
   disabled={inactive}
   style="--icon: url('{iconUrl}')"
-  aria-label="{label}: {selected} in the circle, {remaining} remaining. Click to add, right-click to remove, shift-click for five."
-  title="Click to add · Right-click to remove · Shift-click for 5"
+  aria-label="{label} ({role}): {selected} in the circle, {remaining} remaining. Click to add, right-click to remove, shift-click for five."
+  title="{role} · Click to add · Right-click to remove · Shift-click for 5"
   onclick={(event) => commit(event, false)}
   oncontextmenu={(event) => commit(event, true)}
   onanimationend={() => (bump = false)}

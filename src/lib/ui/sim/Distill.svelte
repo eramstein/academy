@@ -137,7 +137,7 @@
   const costDecrease = $derived(distillPreview.costDecrease);
   const enchantmentBonuses = $derived(getCardEnchantmentBonuses(selectedResources()));
   const maxManaDelta = $derived(getMaxManaCostDelta(enchantmentBonuses.extraMana));
-  /** Further cuts cannot lower cost beyond Scope (1 + extraMana). */
+  /** Further cuts cannot lower cost beyond Inspiration (skill plus magic dust). */
   const atCostLimit = $derived(
     costDecrease > 0 && costDecrease >= Math.min(maxManaDelta, sourceCard.cost)
   );
@@ -313,13 +313,14 @@
     sealing = true;
   }
 
-  function onSealComplete(result: { fortuneBudget: number }) {
+  function onSealComplete(result: { fortuneBudget: number; learning?: number }) {
     performAction({
       ...action,
       actionParameters: {
         ...action.actionParameters,
         ...distillParameters,
         fortuneBudget: result.fortuneBudget,
+        learningRoll: result.learning ?? 0,
       },
       missingParameters: {},
     });
@@ -380,6 +381,7 @@
       shapeCost={distillReady ? -costDecrease : null}
       atManaLimit={budgetRemaining === 0}
       {budgetRemaining}
+      craft="enchant"
       rollFortune
       disabled={sealing}
       split

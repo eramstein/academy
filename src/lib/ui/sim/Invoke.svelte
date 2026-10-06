@@ -28,6 +28,7 @@
   } from '@/lib/sim/cards/action-templates';
   import { getAbilityCost, getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
   import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
+  import { craftProfile } from '@/lib/sim/cards/crafting-skills';
   import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import { playAddResourceSound } from '@/lib/sim/sound';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
@@ -160,24 +161,15 @@
     clearManifestTimers();
   });
 
-  function resolveAvailableColors(): CardColor[] {
-    const known = Object.values(CardColor).filter(
-      (color) => !!gs.player.craftingKnowledge.colors?.[color]
-    );
-    return known.length ? known : Object.values(CardColor);
-  }
-
-  const availableColors = $derived(resolveAvailableColors());
-  const knownKeywords = $derived(
-    KEYWORD_KEYS.filter((key) => !!gs.player.craftingKnowledge.keywords?.[key])
+  const availableColors = $derived(
+    Object.values(CardColor).filter((color) => (gs.player.craftingKnowledge.colors?.[color] ?? 0) >= 1)
   );
-  const availableKeywords = $derived(knownKeywords.length ? knownKeywords : KEYWORD_KEYS);
-  const actionNames = $derived.by(() => {
-    const known = ACTION_TEMPLATE_KEYS.filter(
-      (name) => !!gs.player.craftingKnowledge.actions?.[name]
-    );
-    return known.length ? known : ACTION_TEMPLATE_KEYS;
-  });
+  const availableKeywords = $derived(
+    KEYWORD_KEYS.filter((key) => (gs.player.craftingKnowledge.keywords?.[key] ?? 0) >= 1)
+  );
+  const actionNames = $derived(
+    ACTION_TEMPLATE_KEYS.filter((name) => (gs.player.craftingKnowledge.actions?.[name] ?? 0) >= 1)
+  );
 
   const isUnit = $derived(cardType === CardType.Unit);
   const selectedColors = $derived(colors.length ? colors : availableColors);
@@ -509,6 +501,35 @@
 
   const shownColors = $derived(colors.filter((color) => shown(`pigment:${color}`)));
 
+  const ingredientCap = $derived(
+    craftProfile(gs.player.craftingSkills, selectedResources(), 'invoke').scope
+  );
+
+  function selectedResources(): { type: ResourceType; count: number }[] {
+    return Object.values(ResourceType)
+      .map((type) => ({ type, count: selected[type] ?? 0 }))
+      .filter((row) => row.count > 0);
+  }
+
+  function ingredientInMix(id: string): boolean {
+    if (id.startsWith('pigment:')) return colors.includes(id.slice('pigment:'.length) as CardColor);
+    if (id === 'essence:power') return essenceIn.power;
+    if (id === 'essence:hp') return essenceIn.hp;
+    if (id === 'essence:retaliate') return essenceIn.retaliate;
+    if (id.startsWith('rune:')) return !!runeIn[id.slice('rune:'.length) as keyof UnitKeywords];
+    if (id.startsWith('incantation:')) {
+      const name = id.slice('incantation:'.length);
+      return name === abilityAction || name === spellAction;
+    }
+    return false;
+  }
+
+  function canAddIngredient(id: string): boolean {
+    if (ingredientInMix(id)) return true;
+    if (id.startsWith('incantation:') && (abilityAction || spellAction)) return true;
+    return charms.length < ingredientCap;
+  }
+
   function onIngredientDrop(id: string, x: number, y: number) {
     if (sealing) return;
     charmEntry = { id, x, y };
@@ -638,6 +659,7 @@
 >
   <RitualStage
     bind:selected
+    craft="invoke"
     {charms}
     {onCharmLanded}
     {onCharmDismiss}
@@ -751,6 +773,9 @@
           {onArgDial}
           {onIncantationMix}
           locked={sealing}
+          ingredientCap={ingredientCap}
+          ingredientsUsed={charms.length}
+          canAdd={canAddIngredient}
           onDrop={onIngredientDrop}
           onDragChange={(active) => (draggingIngredient = active)}
         />

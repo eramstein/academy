@@ -66,16 +66,29 @@
     phase === 'idle' ? 'Conjuration' : phase === 'revealed' ? 'Choose your creation' : 'Conjuring'
   );
   const auguryStatus = $derived.by(() => {
-    if (auguryBeat.stage === 'learning') return 'Learning stirs…';
-    const insight =
-      auguryBeat.learning && auguryBeat.learning > 0 ? 'Insight takes hold.' : 'No insight.';
-    if (auguryBeat.stage === 'insight') return insight;
-    if (auguryBeat.stage === 'fortune') return `${insight} Fortune turns…`;
-    const bonus =
+    const knowledge =
+      auguryBeat.learning && auguryBeat.learning > 0
+        ? `Erudition grants ${auguryBeat.learning} knowledge.`
+        : 'Erudition grants no knowledge.';
+    const budget =
       auguryBeat.fortune && auguryBeat.fortune > 0
-        ? `Fortune grants +${auguryBeat.fortune} bonus budget.`
-        : 'Fortune grants no bonus budget.';
-    return `${insight} ${bonus}`;
+        ? `Mastery grants +${auguryBeat.fortune} budget.`
+        : 'Mastery grants no bonus budget.';
+    const visions =
+      auguryBeat.optionCount != null
+        ? `${auguryBeat.optionCount} vision${auguryBeat.optionCount === 1 ? '' : 's'}${
+            (auguryBeat.discoveryIndex ?? -1) >= 0 ? ', including new lore' : ''
+          }.`
+        : '';
+    if (auguryBeat.stage === 'learning') return 'Erudition stirs…';
+    if (auguryBeat.stage === 'insight') return knowledge;
+    if (auguryBeat.stage === 'inspiration') {
+      return visions ? `${knowledge} ${visions}` : `${knowledge} Inspiration stirs…`;
+    }
+    if (auguryBeat.stage === 'fortune') {
+      return `${knowledge} ${visions} Mastery turns…`.replace(/\s+/g, ' ').trim();
+    }
+    return `${knowledge} ${budget} ${visions}`.trim();
   });
   const hasAnyOption = $derived(summonSlots.some((slot) => slot.result !== null));
 
@@ -184,7 +197,7 @@
     if (phase !== 'augury') return;
     phase = 'conjuring';
     pickedId = null;
-    const expected = getConjurationOptionCount();
+    const expected = augury.optionCount ?? getConjurationOptionCount();
     summonSlots = Array.from({ length: expected }, (_, i) => ({
       key: `slot-${i}`,
       stage: 'frame' as SummonRevealStage,
@@ -240,6 +253,25 @@
   const lifts = [0, -8, 0];
 </script>
 
+{#snippet auguryMarks()}
+  {#if auguryBeat.learning != null}
+    <span class="insight-mark" class:hit={auguryBeat.learning > 0}>
+      {auguryBeat.learning > 0 ? `Erudition +${auguryBeat.learning}` : 'No knowledge'}
+    </span>
+  {/if}
+  {#if auguryBeat.fortune != null}
+    <span class="insight-mark" class:hit={auguryBeat.fortune > 0}>
+      {auguryBeat.fortune > 0 ? `Mastery +${auguryBeat.fortune}` : 'No bonus budget'}
+    </span>
+  {/if}
+  {#if auguryBeat.optionCount != null}
+    <span class="insight-mark" class:hit={(auguryBeat.discoveryIndex ?? -1) >= 0}>
+      {auguryBeat.optionCount} visions
+      {(auguryBeat.discoveryIndex ?? -1) >= 0 ? '· new lore' : '· familiar lore'}
+    </span>
+  {/if}
+{/snippet}
+
 <WorkbenchShell {title} ignite={phase === 'augury' || phase === 'conjuring'}>
   {#if phase === 'idle'}
     <label class="incantation" class:spoken={flavorText.trim().length > 0}>
@@ -266,6 +298,7 @@
     ignite={phase === 'augury' || phase === 'conjuring'}
     dim={phase === 'revealed' || phase === 'conjuring'}
     consume={phase !== 'idle'}
+    craft="conjure"
     rollAugury={phase === 'augury'}
     onAuguryBeat={(beat) => (auguryBeat = beat)}
     onAuguryComplete={onAuguryComplete}
@@ -307,18 +340,16 @@
     {:else if phase === 'augury'}
       <p class="status">{auguryStatus}</p>
     {:else if phase === 'conjuring'}
-      <p class="status">{statusLine}</p>
+      <p class="status">
+        {statusLine}
+        {#if auguryBeat.stage === 'shown'}
+          {@render auguryMarks()}
+        {/if}
+      </p>
     {:else if !hasAnyOption}
       <OrnateButton icon="arrow-left" onclick={onDone}>Leave</OrnateButton>
     {:else}
-      <p class="status">
-        Select a creation
-        {#if auguryBeat.learning != null}
-          <span class="insight-mark" class:hit={auguryBeat.learning > 0}>
-            {auguryBeat.learning > 0 ? 'Insight takes hold' : 'No insight'}
-          </span>
-        {/if}
-      </p>
+      <p class="status">{@render auguryMarks()}</p>
     {/if}
   {/snippet}
 </WorkbenchShell>
@@ -510,7 +541,7 @@
     color: var(--color-muted-label);
   }
 
-  .insight-mark {
+  .insight-mark:not(:first-child) {
     margin-left: 0.7em;
     padding-left: 0.7em;
     border-left: 1px solid color-mix(in srgb, var(--color-brass) 45%, transparent);

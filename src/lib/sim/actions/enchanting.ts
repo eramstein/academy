@@ -19,6 +19,12 @@ import {
 } from '../cards/action-templates';
 import { cardBudget, featureCosts, getActionBudget, getCardBudget } from '../cards/card-budget';
 import { colorPie, getCardDominantColor } from '../cards/color-pie';
+import {
+  applyKnowledgeGains,
+  craftProfile,
+  describeKnowledgeGains,
+  rollPoints,
+} from '../cards/crafting-skills';
 import { addKeyword, formatKeywordLabel, KEYWORD_KEYS, removeKeyword } from '../cards/keywords';
 import { getActingCharacter } from '../characters';
 import { narrateCardEncanted } from '../narration';
@@ -36,15 +42,19 @@ export interface AugmentParameters {
   ability?: AbilityPick;
   abilityArgs?: ActionArgDeltas;
   removeAbilities?: number[];
-  /** Offered materials; feed Scope (mithril) and Fortune (magic dust). */
+  /** Mithril adds mastery, magic dust adds inspiration, moxes add erudition. */
   resources: { type: ResourceType; count: number }[];
   /** Pre-rolled fortune budget from the seal animation; rolled on apply if omitted. */
   fortuneBudget?: number;
+  /** Pre-rolled erudition points; rolled on apply if omitted. */
+  learningRoll?: number;
 }
 
 export interface CardEnchantmentBonuses {
-  extraBudgetChance: number; // chance of adding extra stats to the card
-  extraMana: number; // this increases the limit of how by much mana we can increase of decrease the cost
+  /** Expected mastery bonus budget (floor + fractional chance). */
+  extraBudgetChance: number;
+  /** Mana the cost may change by. Effective Inspiration, including magic dust. */
+  extraMana: number;
 }
 
 export interface AugmentPreview {
@@ -72,10 +82,12 @@ export interface DistillParameters {
   ability?: AbilityPick;
   abilityArgs?: ActionArgDeltas;
   removeAbilities?: number[];
-  /** Offered materials; feed Scope (mithril) and Fortune (magic dust). */
+  /** Mithril adds mastery, magic dust adds inspiration, moxes add erudition. */
   resources: { type: ResourceType; count: number }[];
   /** Pre-rolled fortune budget from the seal animation; rolled on apply if omitted. */
   fortuneBudget?: number;
+  /** Pre-rolled erudition points; rolled on apply if omitted. */
+  learningRoll?: number;
 }
 
 export interface DistillPreview {
@@ -93,18 +105,17 @@ export interface DistillPreview {
 }
 
 const MIN_ACTION_ARG = 1;
-/** Base augment/distill mana cost change; raised by CardEnchantmentBonuses.extraMana. */
-const BASE_MANA_COST_DELTA = 1;
 
-export function getMaxManaCostDelta(extraMana: number): number {
-  return BASE_MANA_COST_DELTA + Math.max(0, extraMana);
+/** Mana the card may gain or lose. This is the effective Inspiration, including magic dust. */
+export function getMaxManaCostDelta(inspiration: number): number {
+  return Math.max(0, inspiration);
 }
 
 /** Minimum mana cost increase that funds `spent`, or null if it would exceed maxDelta or 9. */
 export function requiredCostIncrease(
   baseCost: number,
   spent: number,
-  maxDelta: number = BASE_MANA_COST_DELTA
+  maxDelta: number = 0
 ): number | null {
   const maxIncrease = Math.min(maxDelta, 9 - baseCost);
   if (maxIncrease < 0) return null;
@@ -118,7 +129,7 @@ export function requiredCostIncrease(
 export function requiredCostDecrease(
   baseCost: number,
   saved: number,
-  maxDelta: number = BASE_MANA_COST_DELTA
+  maxDelta: number = 0
 ): number {
   let best = 0;
   const maxDecrease = Math.min(maxDelta, baseCost);
@@ -130,11 +141,9 @@ export function requiredCostDecrease(
   return best;
 }
 
-/** Deterministic floor + fractional roll, matching artificery mastery. */
-export function rollExtraBudget(extraBudgetChance: number): number {
-  const sure = Math.floor(extraBudgetChance);
-  const bonus = Math.random() < extraBudgetChance - sure ? 1 : 0;
-  return sure + bonus;
+/** Deterministic floor + fractional roll. `expected` may be greater than 1. */
+export function rollExtraBudget(expected: number): number {
+  return rollPoints(expected);
 }
 
 /** How fortune budget converts to +health / +retaliate. */
@@ -161,21 +170,11 @@ export function getCardEnchantmentBonuses(
   characterKey: string = 'player'
 ): CardEnchantmentBonuses {
   const character = getActingCharacter(characterKey);
-  let extraMana = 0;
-  let extraBudgetChance = 0.1;
-  // skills bonuses
-  extraMana += character.craftingSkills.inspiration;
-  extraBudgetChance += character.craftingSkills.mastery * 0.1;
-  // resources bonuses
-  for (const resource of resources) {
-    if (resource.type === ResourceType.MagicDust) {
-      extraBudgetChance += resource.count * 0.1;
-    }
-    if (resource.type === ResourceType.Mithril) {
-      extraMana += resource.count * 1;
-    }
-  }
-  return { extraMana, extraBudgetChance };
+  const profile = craftProfile(character.craftingSkills, resources, 'enchant');
+  return {
+    extraMana: profile.scope,
+    extraBudgetChance: profile.extraBudget.expected,
+  };
 }
 
 export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview {
@@ -201,6 +200,17 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
 
   const bonuses = getCardEnchantmentBonuses(parameters.resources);
   const maxDelta = getMaxManaCostDelta(bonuses.extraMana);
+  if (maxDelta < 1) {
+    return {
+      error: 'Inspiration allows no mana change. Add magic dust or raise Inspiration.',
+      card,
+      costIncrease: 0,
+      upgradeBudget: 0,
+      scopeBudget: 0,
+      spent: 0,
+      extraBudget: 0,
+    };
+  }
   const maxCostIncrease = Math.min(maxDelta, 9 - card.cost);
   const scopeBudget = cardBudget[card.cost + maxCostIncrease] - cardBudget[card.cost];
 
@@ -288,9 +298,10 @@ export function augmentCard(parameters: AugmentParameters): string {
     spendSpellExtraBudget(card, result.extraBudget);
   }
 
-  applyEnchantmentFortune(card, parameters.resources, parameters.fortuneBudget);
-
-  narrateCardEncanted(oldCard, card, describeAugment(oldCard, card));
+  const fortune = resolveEnchantFortune(parameters);
+  parameters.fortuneBudget = fortune;
+  applyEnchantmentFortune(card, parameters.resources, fortune);
+  narrateCardEncanted(oldCard, card, describeEnchantResult(describeAugment(oldCard, card), oldCard, card, parameters, fortune));
 
   return '';
 }
@@ -321,6 +332,18 @@ export function getDistillPreview(parameters: DistillParameters): DistillPreview
 
   const bonuses = getCardEnchantmentBonuses(parameters.resources);
   const maxDelta = getMaxManaCostDelta(bonuses.extraMana);
+  if (maxDelta < 1) {
+    return {
+      error: 'Inspiration allows no mana change. Add magic dust or raise Inspiration.',
+      card,
+      preview: null,
+      costDecrease: 0,
+      downgradeBudget: 0,
+      scopeBudget: 0,
+      saved: 0,
+      extraCut: 0,
+    };
+  }
   const maxCostDecrease = Math.min(maxDelta, card.cost);
   const scopeBudget = cardBudget[card.cost] - cardBudget[card.cost - maxCostDecrease];
 
@@ -410,8 +433,10 @@ export function distillCard(parameters: DistillParameters): string {
   const oldCard = cloneCardTemplate(card);
 
   makeDistilledCardTemplate(card, parameters, true);
-  applyEnchantmentFortune(card, parameters.resources, parameters.fortuneBudget);
-  narrateCardEncanted(oldCard, card, describeDistill(oldCard, card));
+  const fortune = resolveEnchantFortune(parameters);
+  parameters.fortuneBudget = fortune;
+  applyEnchantmentFortune(card, parameters.resources, fortune);
+  narrateCardEncanted(oldCard, card, describeEnchantResult(describeDistill(oldCard, card), oldCard, card, parameters, fortune));
 
   return '';
 }
@@ -430,6 +455,28 @@ export function getEnchantableCards(options: { distill?: boolean } = {}): CardTe
     if (options.distill) return card.cost > 0;
     return card.cost < 9;
   });
+}
+
+function resolveEnchantFortune(parameters: { resources: { type: ResourceType; count: number }[]; fortuneBudget?: number }): number {
+  if (parameters.fortuneBudget != null) return parameters.fortuneBudget;
+  return rollExtraBudget(getCardEnchantmentBonuses(parameters.resources).extraBudgetChance);
+}
+
+function describeEnchantResult(
+  summary: string,
+  oldCard: CardTemplate,
+  newCard: CardTemplate,
+  parameters: { resources: { type: ResourceType; count: number }[]; learningRoll?: number },
+  fortune: number
+): string {
+  const profile = craftProfile(gs.player.craftingSkills, parameters.resources, 'enchant');
+  const points = parameters.learningRoll ?? rollPoints(profile.knowledge.expected);
+  const gains = applyKnowledgeGains(gs.player, newCard, points, undefined, oldCard);
+  const parts = [summary];
+  if (fortune > 0) parts.push(`Mastery granted ${fortune} bonus budget.`);
+  const knowledge = describeKnowledgeGains(gains);
+  if (knowledge) parts.push(knowledge);
+  return parts.join(' ');
 }
 
 function describeAugment(oldCard: CardTemplate, newCard: CardTemplate): string {

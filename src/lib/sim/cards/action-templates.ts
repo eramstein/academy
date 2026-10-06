@@ -85,7 +85,8 @@ export function createActionTemplate(
 export function pickRandomActionTemplate(
   colors: CardColor[],
   allowedActions?: string[]
-): ActionTemplate {
+): ActionTemplate | null {
+  if (allowedActions && allowedActions.length === 0) return null;
   const colorBonus = combinedActionPreferences(colors);
   const actionPool = allowedActions?.length
     ? allowedActions.filter((key) => key in actionTemplates)

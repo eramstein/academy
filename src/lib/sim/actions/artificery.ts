@@ -1,7 +1,6 @@
 import {
   CardColor,
   CardType,
-  isUnitCard,
   ResourceType,
   type CardTemplate,
   type Character,
@@ -12,8 +11,20 @@ import {
 } from '@/lib/_model';
 import { gs, uiState } from '@/lib/_state';
 import { getAbilityActionNames, type AbilityPick } from '../cards/ability-templates';
-import { getActionTemplateMeta } from '../cards/action-templates';
 import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
+import {
+  applyKnowledgeGains,
+  craftProfile,
+  describeKnowledgeGains,
+  isNumericKeyword,
+  knownKeys,
+  rollConjureOptionCount,
+  rollDiscoveryIndex,
+  rollPoints,
+  unknownActions,
+  unknownKeywords,
+  type CraftProfile,
+} from '../cards/crafting-skills';
 import { buildSpellCard, buildUnitCard, randomUnitTypes } from '../cards/creation';
 import {
   generateGameplayFromFlavor,
@@ -22,14 +33,10 @@ import {
   toGameplayTemplate,
   type UsedFlavorsBatch,
 } from '../cards/flavor-generation-pipeline';
-import { formatKeywordLabel } from '../cards/keywords';
 import { getActingCharacter } from '../characters';
 import { narrateCardConjured } from '../narration';
 import { spendResources } from '../resources';
 import { rollExtraBudget } from './enchanting';
-
-const CONJURATION_OPTION_COUNT_BASE = 2;
-const LEARNING_CHANCE_BASE = 1;
 
 export type CardCreationSource = 'invoke' | 'conjure';
 
@@ -49,12 +56,16 @@ export interface CardCreationParameters {
   actionArgs?: Record<string, number>;
   source: CardCreationSource;
   resources: { type: ResourceType; count: number }[];
+  /** Conjure: this option may include one unknown keyword or action. */
+  discoverUnknown?: boolean;
 }
 
 export interface CardCreationBonuses {
-  learningChance: number; // get new knowledge (conjure), or level up (upgrade)
+  /** Expected knowledge points (base 25% plus erudition). */
+  learningChance: number;
+  /** Expected bonus budget from mastery. */
   extraBudgetChance: number;
-  // legendaryChance: number;
+  profile: CraftProfile;
 }
 
 export interface CardCreationResult {
@@ -70,6 +81,10 @@ export interface CardCreationResult {
 export interface ConjurationAugury {
   learning: number;
   fortuneBudget: number;
+  /** Conjure: how many options to generate, including any extra vision. */
+  optionCount?: number;
+  /** Conjure: index of the option that may reveal new lore, or -1. */
+  discoveryIndex?: number;
 }
 
 export type UsedFlavors = UsedFlavorsBatch;
@@ -86,9 +101,13 @@ export interface CardSummonProgress {
 
 export type CardSummonProgressHandler = (progress: CardSummonProgress) => void;
 
-export function getConjurationOptionCount(characterKey = 'player'): number {
+/** Guaranteed vision count before the inspiration roll (base 2 plus sure extras). */
+export function getConjurationOptionCount(
+  characterKey = 'player',
+  resources: { type: ResourceType; count: number }[] = []
+): number {
   const character = getActingCharacter(characterKey);
-  return CONJURATION_OPTION_COUNT_BASE + Math.floor(character.craftingSkills.inspiration);
+  return craftProfile(character.craftingSkills, resources, 'conjure').conjureOptions.sure;
 }
 
 export async function getNewCardTemplate(
@@ -109,10 +128,20 @@ export async function getNewCardTemplate(
     return null;
   }
   const character = getActingCharacter(characterKey);
-  const bonuses = getCardCreationBonuses(parameters.resources, characterKey);
+  const bonuses = getCardCreationBonuses(parameters.resources, characterKey, parameters.source);
   const prunedParams = prune ? limitParametersToSkills(parameters, character) : parameters;
   const cardType = resolveCardType(prunedParams);
-  const typedParams = { ...prunedParams, cardType };
+  let typedParams = prepareConjureParameters(
+    { ...prunedParams, cardType },
+    character
+  );
+  if (
+    typedParams.source === 'conjure' &&
+    typedParams.cardType === CardType.Spell &&
+    !typedParams.actions?.length
+  ) {
+    typedParams = { ...typedParams, cardType: CardType.Unit };
+  }
   if (cardType === CardType.Spell) {
     const { template, bonusBudget, actionName } = await getSpellTemplate(
       typedParams,
@@ -204,7 +233,10 @@ export async function getConjurationOtions(
   augury?: ConjurationAugury
 ): Promise<CardCreationResult[]> {
   const character = getActingCharacter(characterKey);
-  const optionsCount = getConjurationOptionCount(characterKey);
+  const profile = craftProfile(character.craftingSkills, parameters.resources ?? [], 'conjure');
+  const optionsCount = augury?.optionCount ?? rollConjureOptionCount(profile.inspiration.total);
+  const discoveryIndex =
+    augury?.discoveryIndex ?? rollDiscoveryIndex(profile.discoveryChance, optionsCount);
   const conjureParameters: CardCreationParameters = { ...parameters, source: 'conjure' };
   if (!spendResources(conjureParameters.resources ?? [])) {
     return [];
@@ -235,7 +267,7 @@ export async function getConjurationOtions(
   for (let i = 0; i < optionsCount; i++) {
     const useAi = allowAiGenerate && i === aiOptionIndex;
     const result = await getNewCardTemplate(
-      optionParameters[i],
+      { ...optionParameters[i], discoverUnknown: i === discoveryIndex },
       false,
       characterKey,
       false,
@@ -300,40 +332,153 @@ function limitParametersToSkills(
     actions = knownActions ? Object.keys(knownActions) : undefined;
   }
 
-  return {
-    ...parameters,
-    colors,
-    keywords,
-    ability,
-    actions,
-  };
+  return limitInvokeIngredients(
+    {
+      ...parameters,
+      colors,
+      keywords,
+      ability,
+      actions,
+    },
+    character
+  );
+}
+
+function prepareConjureParameters(
+  parameters: CardCreationParameters,
+  character: Character
+): CardCreationParameters {
+  if (parameters.source !== 'conjure') return parameters;
+  const discover = !!parameters.discoverUnknown;
+  const knownKeywords = knownKeys(character.craftingKnowledge?.keywords);
+  const knownActions = knownKeys(character.craftingKnowledge?.actions);
+  const newKeywords = unknownKeywords(character);
+  const newActions = unknownActions(character);
+  const flavored = !!(parameters.keywords || parameters.actions?.length);
+
+  if (!flavored) {
+    if (parameters.cardType !== CardType.Spell) return parameters;
+    const pool = discover
+      ? newActions.length
+        ? newActions
+        : [...knownActions]
+      : [...knownActions];
+    return { ...parameters, actions: pool };
+  }
+
+  let keywords = parameters.keywords ? { ...parameters.keywords } : undefined;
+  let actions = parameters.actions ? [...parameters.actions] : undefined;
+  if (!discover) {
+    if (keywords) {
+      const kept = Object.fromEntries(
+        Object.entries(keywords).filter(([key]) => knownKeywords.has(key))
+      ) as UnitKeywords;
+      keywords = Object.keys(kept).length ? kept : undefined;
+    }
+    if (actions) {
+      actions = actions.filter((action) => knownActions.has(action));
+      if (!actions.length) actions = undefined;
+    }
+    return { ...parameters, keywords, actions };
+  }
+
+  const hasNewKeyword = keywords
+    ? Object.keys(keywords).some((key) => !knownKeywords.has(key) && keywords?.[key as keyof UnitKeywords])
+    : false;
+  const hasNewAction = actions?.some((action) => !knownActions.has(action)) ?? false;
+  if (!hasNewKeyword && !hasNewAction) {
+    if (newKeywords.length) {
+      const key = newKeywords[Math.floor(Math.random() * newKeywords.length)];
+      keywords = {
+        ...(keywords ?? {}),
+        [key]: isNumericKeyword(key) ? 1 : true,
+      };
+    } else if (newActions.length) {
+      const action = newActions[Math.floor(Math.random() * newActions.length)];
+      if (parameters.cardType === CardType.Unit) {
+        return {
+          ...parameters,
+          keywords,
+          ability: { trigger: 'onDeploy', action },
+        };
+      }
+      actions = [action];
+    }
+  }
+  return { ...parameters, keywords, actions };
+}
+
+function countInvokeIngredients(parameters: CardCreationParameters): number {
+  let count = parameters.colors?.length ?? 0;
+  if ((parameters.power ?? 0) > 0) count++;
+  if ((parameters.hp ?? 1) > 1) count++;
+  if ((parameters.retaliate ?? 0) > 0) count++;
+  if (parameters.keywords) {
+    count += Object.values(parameters.keywords).filter(Boolean).length;
+  }
+  if (parameters.ability || parameters.actions?.length) count++;
+  return count;
+}
+
+/** Inspiration (plus magic dust) is how many definition ingredients an invocation may use. */
+function limitInvokeIngredients(
+  parameters: CardCreationParameters,
+  character: Character
+): CardCreationParameters {
+  if (parameters.source !== 'invoke') return parameters;
+  const cap = craftProfile(character.craftingSkills, parameters.resources, 'invoke').scope;
+  let next = parameters;
+  if (countInvokeIngredients(next) <= cap) return next;
+
+  if (next.ability) next = { ...next, ability: undefined };
+  if (countInvokeIngredients(next) <= cap) return next;
+  if (next.actions?.length) next = { ...next, actions: undefined, actionArgs: undefined };
+  if (countInvokeIngredients(next) <= cap) return next;
+
+  if (next.keywords) {
+    const entries = Object.entries(next.keywords);
+    while (
+      entries.length &&
+      countInvokeIngredients({
+        ...next,
+        keywords: Object.fromEntries(entries) as UnitKeywords,
+      }) > cap
+    ) {
+      entries.pop();
+    }
+    next = {
+      ...next,
+      keywords: entries.length ? (Object.fromEntries(entries) as UnitKeywords) : undefined,
+    };
+  }
+  if (countInvokeIngredients(next) <= cap) return next;
+  if ((next.retaliate ?? 0) > 0) next = { ...next, retaliate: 0 };
+  if (countInvokeIngredients(next) <= cap) return next;
+  if ((next.hp ?? 1) > 1) next = { ...next, hp: 1 };
+  if (countInvokeIngredients(next) <= cap) return next;
+  if ((next.power ?? 0) > 0) next = { ...next, power: 0 };
+  if (countInvokeIngredients(next) <= cap) return next;
+
+  if (next.colors?.length) {
+    const colors = [...next.colors];
+    while (colors.length && countInvokeIngredients({ ...next, colors }) > cap) colors.pop();
+    next = { ...next, colors: colors.length ? colors : undefined };
+  }
+  return next;
 }
 
 export function getCardCreationBonuses(
   resources: { type: ResourceType; count: number }[],
-  characterKey = 'player'
+  characterKey = 'player',
+  source: CardCreationSource = 'invoke'
 ): CardCreationBonuses {
   const character = getActingCharacter(characterKey);
-  let learningChance = 0.1;
-  let extraBudgetChance = 0;
-  // skills bonuses
-  learningChance += character.craftingSkills.erudition * 0.1;
-  extraBudgetChance += character.craftingSkills.mastery * 0.1;
-  // resources bonuses
-  for (const resource of resources) {
-    if (resource.type === ResourceType.MagicDust) {
-      learningChance += resource.count * 0.1;
-    }
-    if (resource.type === ResourceType.Mithril) {
-      extraBudgetChance += resource.count * 0.1;
-    }
-  }
-  return { learningChance, extraBudgetChance };
-}
-
-function learningHits(learningChance: number, learningRoll: number | undefined): boolean {
-  if (learningRoll !== undefined) return learningRoll > 0;
-  return Math.random() < LEARNING_CHANCE_BASE + learningChance;
+  const profile = craftProfile(character.craftingSkills, resources, source);
+  return {
+    learningChance: profile.knowledge.expected,
+    extraBudgetChance: profile.extraBudget.expected,
+    profile,
+  };
 }
 
 function learnCard(
@@ -344,79 +489,23 @@ function learnCard(
   actionName?: string[],
   learningRoll?: number
 ) {
-  const learntKeywords: string[] = [];
-  const improvedKeywords: string[] = [];
-  const learntActions: string[] = [];
-  const improvedActions: string[] = [];
-  const learnKeywords = learningHits(learningChance, learningRoll);
-  const learnActions =
-    learningRoll !== undefined ? learnKeywords : learningHits(learningChance, undefined);
-  if (isUnitCard(template) && template.keywords && learnKeywords) {
-    if (!character.craftingKnowledge.keywords) {
-      character.craftingKnowledge.keywords = {};
-    }
-    const known = character.craftingKnowledge.keywords;
-    for (const keyword of Object.keys(template.keywords) as (keyof UnitKeywords)[]) {
-      const name = formatKeywordLabel(keyword);
-      if (known[keyword] === undefined) {
-        known[keyword] = 1;
-        learntKeywords.push(name);
-      } else {
-        known[keyword] += 1;
-        improvedKeywords.push(`${name} (${known[keyword]})`);
-      }
-    }
-  }
-  if (actionName?.length && learnActions) {
-    if (!character.craftingKnowledge.actions) {
-      character.craftingKnowledge.actions = {};
-    }
-    const known = character.craftingKnowledge.actions;
-    for (const action of actionName) {
-      const name = getActionTemplateMeta(action)?.label ?? formatKeywordLabel(action);
-      if (known[action] === undefined) {
-        known[action] = 1;
-        learntActions.push(name);
-      } else {
-        known[action] += 1;
-        improvedActions.push(`${name} (${known[action]})`);
-      }
-    }
-  }
+  const points = learningRoll ?? rollPoints(learningChance);
+  const gains = applyKnowledgeGains(character, template, points, actionName);
   character.collection.push(template);
   if (character.key === gs.player.key) {
-    narrateCardLearnt(
-      template,
-      bonusBudget,
-      learntKeywords,
-      improvedKeywords,
-      learntActions,
-      improvedActions
-    );
+    narrateCardLearnt(template, bonusBudget, gains);
   }
 }
 
 function narrateCardLearnt(
   template: CardTemplate,
   bonusBudget: number,
-  learntKeywords: string[],
-  improvedKeywords: string[],
-  learntActions: string[],
-  improvedActions: string[]
+  gains: ReturnType<typeof applyKnowledgeGains>
 ) {
-  const parts: string[] = [];
-  const learntNames = [...learntKeywords, ...learntActions];
-  const improvedNames = [...improvedKeywords, ...improvedActions];
-  if (learntNames.length) {
-    parts.push(`You learnt ${joinKeywordNames(learntNames)}`);
-  }
-  if (improvedNames.length) {
-    parts.push(`You improved ${joinKeywordNames(improvedNames)}`);
-  }
-  const learnt = parts.length ? `${parts.join('. ')}.` : '';
+  const learnt = describeKnowledgeGains(gains);
   let text = learnt ? `You created ${template.name}. ${learnt}` : `You created ${template.name}.`;
   if (bonusBudget) {
-    text += ` Your mastery granted it ${bonusBudget} bonus budget.`;
+    text += ` Mastery granted ${bonusBudget} bonus budget.`;
   }
   narrateCardConjured(template.id, text);
 }
@@ -438,16 +527,6 @@ function resolveCardType(parameters: CardCreationParameters): CardType.Unit | Ca
     return CardType.Spell;
   }
   return Math.random() < 0.25 ? CardType.Spell : CardType.Unit;
-}
-
-function joinKeywordNames(names: string[]): string {
-  if (names.length === 1) {
-    return names[0];
-  }
-  if (names.length === 2) {
-    return `${names[0]} and ${names[1]}`;
-  }
-  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
 }
 
 async function getUnitTemplate(

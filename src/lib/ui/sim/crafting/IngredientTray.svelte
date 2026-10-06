@@ -52,6 +52,8 @@
     hints,
     locked = false,
     showPigments = true,
+    ingredientCap = null,
+    ingredientsUsed = 0,
     canAdd = () => true,
     canIncrease = () => true,
     onPigment,
@@ -84,6 +86,9 @@
     locked?: boolean;
     /** When false, pigment stones are hidden (e.g. enchanting an existing card). */
     showPigments?: boolean;
+    /** Invocation cap from Inspiration. Null hides the count. */
+    ingredientCap?: number | null;
+    ingredientsUsed?: number;
     /** Return false to gray out and block dropping this ingredient. */
     canAdd?: (id: string) => boolean;
     /** Return false when an in-mix numeric ingredient cannot be increased further. */
@@ -439,13 +444,23 @@
 <div class="tray" class:locked style="--parchment: url('{parchment}')">
   <h3 class="page-title">
     <span class="title-rule" aria-hidden="true"></span>
-    <span class="title-text">Ingredients</span>
+    <span class="title-text">
+      Ingredients
+      {#if ingredientCap != null}
+        <span class="cap" class:full={ingredientCap === 0 || ingredientsUsed >= ingredientCap}>
+          {ingredientsUsed}/{ingredientCap}
+        </span>
+      {/if}
+    </span>
     <span class="title-rule" aria-hidden="true"></span>
     <span class="title-flourish" aria-hidden="true"></span>
   </h3>
   {#if showPigments}
     <section class="group" aria-label="Pigments">
       {@render sectionLabel('Pigments', false)}
+      {#if availableColors.length === 0}
+        <p class="empty">No known colors yet.</p>
+      {:else}
       <div class="cluster">
         {#each availableColors as color (color)}
           {@const id = `pigment:${color}`}
@@ -464,6 +479,7 @@
           </div>
         {/each}
       </div>
+      {/if}
     </section>
   {/if}
 
@@ -527,6 +543,9 @@
 
     <section class="group" aria-label="Runes">
       {@render sectionLabel('Runes')}
+      {#if availableKeywords.length === 0}
+        <p class="empty">No known runes yet. Conjure to learn them.</p>
+      {:else}
       <div class="cluster">
         {#each availableKeywords as key (key)}
           {@const id = `rune:${key}`}
@@ -591,13 +610,14 @@
           </div>
         {/each}
       </div>
+      {/if}
     </section>
   {/if}
 
   <section class="group" aria-label="Incantations">
     {@render sectionLabel('Incantations')}
     {#if knownActions.length === 0}
-      <p class="empty">No known incantations yet.</p>
+      <p class="empty">No known incantations yet. Conjure to learn them.</p>
     {:else}
       <div class="cluster scrolls">
         {#each knownActions as name (name)}
@@ -739,8 +759,22 @@
   }
 
   .title-text {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.45rem;
     font-size: 0.95rem;
     line-height: 1;
+  }
+
+  .cap {
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-muted);
+  }
+
+  .cap.full {
+    color: var(--color-golden);
   }
 
   .title-rule {
