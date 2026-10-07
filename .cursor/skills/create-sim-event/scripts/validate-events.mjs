@@ -190,6 +190,18 @@ function checkEffect(where, effect) {
     case 'unlock_event':
       checkOneOf(where, 'eventKey', parameters.eventKey, eventKeys);
       break;
+    case 'offer_card_gifts':
+      if (typeof parameters.count !== 'number') {
+        errors.push(`${where}: count must be a number`);
+      } else if (parameters.count < 1) {
+        errors.push(`${where}: count must be at least 1`);
+      }
+      if (!Array.isArray(parameters.poolKeys) || parameters.poolKeys.length === 0) {
+        errors.push(`${where}: poolKeys must be a non-empty array`);
+      } else if (!parameters.poolKeys.every((key) => typeof key === 'string' && key.trim())) {
+        errors.push(`${where}: poolKeys must be an array of non-empty strings`);
+      }
+      break;
   }
 }
 

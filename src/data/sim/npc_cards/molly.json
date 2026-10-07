@@ -17,7 +17,8 @@
     "unitTypes": ["spirit"],
     "keywords": {
       "regeneration": 4
-    }
+    },
+    "poolKeys": ["molly", "base"]
   },
   {
     "id": "alpha_male",
@@ -54,7 +55,8 @@
           }
         ]
       }
-    ]
+    ],
+    "poolKeys": ["molly", "base"]
   },
   {
     "id": "big_mammas_inn",
@@ -92,6 +94,7 @@
           }
         ]
       }
-    ]
+    ],
+    "poolKeys": ["molly", "base"]
   }
 ]

@@ -114,6 +114,7 @@ Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffect
 | `schedule_activity` | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, recurrence?: { maxCount, daysOfWeek, period } } }` |
 | `get_job`           | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                             |
 | `unlock_event`      | `{ eventKey: "molly-2" }`                                                                                                                         |
+| `offer_card_gifts`  | `{ count: 2, poolKeys: ["molly", "base"] }`                                                                                                       |
 
 For `schedule_activity`: `schedule.date.day` is an **offset in days from now** (`0` = today), not an
 absolute day. `participants` are character keys and include `"player"` when the player takes part.
@@ -126,6 +127,11 @@ which takes the same shape and day-offset rules as `schedule_activity`'s. Give a
 
 `unlock_event` clears `locked` on another event by key so it can start triggering. The target must
 already exist in `events.json`.
+
+`offer_card_gifts` samples `count` card templates whose `poolKeys` include every listed key
+(`getCardTemplatesByPoolKeys`), then posts a `gift_card_choice` narration so the player can pick
+one card into their collection. Prefer it on the event (not an option) so the offer appears with
+the scene.
 
 `effects` on the event fire as soon as it triggers; `effects` on an option fire only if the player
 picks that option.

@@ -42,6 +42,8 @@ export interface BaseCardTemplate {
   type: CardType;
   cost: number;
   colors: { color: CardColor; count: number }[];
+  /** Catalog tags used to filter authored npc/pool cards. */
+  poolKeys?: string[];
 }
 
 export interface UnitCardTemplate extends BaseCardTemplate {

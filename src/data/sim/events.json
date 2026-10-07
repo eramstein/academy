@@ -189,6 +189,48 @@
     "emotion": "happy"
   },
   {
+    "key": "molly-f2",
+    "text": "Molly finds you again with a shy brightness that was not there before. She says your friendship has come to mean more to her than she quite knows how to say, and she wants you to have something from her own collection—a card she has kept close. She lays a few favorites before you and asks you to choose the one that speaks to you.",
+    "triggers": [
+      {
+        "triggerType": "previous_events",
+        "parameters": {
+          "molly-f1": true
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "molly"
+        }
+      }
+    ],
+    "optionTemplates": [],
+    "triggersOnce": true,
+    "characterArc": "molly",
+    "emotion": "embarrassed",
+    "effects": [
+      {
+        "type": "offer_card_gifts",
+        "parameters": {
+          "count": 3,
+          "poolKeys": [
+            "molly",
+            "base"
+          ]
+        }
+      }
+    ]
+  },
+  {
     "key": "molly-r1",
     "text": "Molly seeks you out with a thoughtful look. She says she has been watching how you carry yourself, and she respects the care you put into your work. She asks if you would take on a mentoring post with her at the library on Tuesday evenings, helping younger students find their footing.",
     "triggers": [
@@ -224,7 +266,9 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [2],
+                    "daysOfWeek": [
+                      2
+                    ],
                     "period": "evening"
                   }
                 }
@@ -307,7 +351,10 @@
             "parameters": {
               "activity": {
                 "type": "date",
-                "participants": ["player", "emma"],
+                "participants": [
+                  "player",
+                  "emma"
+                ],
                 "placeKey": "cafeteria"
               },
               "schedule": {

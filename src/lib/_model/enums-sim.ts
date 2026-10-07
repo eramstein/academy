@@ -34,6 +34,7 @@ export enum NarrationType {
   AttributeCheck = 'attribute_check',
   ConjuredCard = 'conjured_card',
   EncantedCard = 'encanted_card',
+  GiftCardChoice = 'gift_card_choice',
   NewPeriod = 'new_period',
   MatchResult = 'match_result',
   Transaction = 'transaction',

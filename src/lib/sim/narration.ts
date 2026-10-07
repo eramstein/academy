@@ -43,7 +43,10 @@ export async function cacheNarrationSceneImage(id: string): Promise<void> {
   await saveCachedSceneImage(entry.imagePrompt, await response.blob());
 }
 
-function narrationAcceptsPrompt(entry: Narration | undefined, imagePrompt: string): entry is Narration {
+function narrationAcceptsPrompt(
+  entry: Narration | undefined,
+  imagePrompt: string
+): entry is Narration {
   if (!entry) return false;
   return !entry.imagePrompt || entry.imagePrompt === imagePrompt;
 }
@@ -231,10 +234,7 @@ function fallbackAttemptedActionText(action: Action): string {
   return `You ${String(action.actionType).replace(/_/g, ' ')}.`;
 }
 
-export function narrateText(
-  text: string,
-  options?: { characterKey?: string; emotion?: Emotion }
-) {
+export function narrateText(text: string, options?: { characterKey?: string; emotion?: Emotion }) {
   narrate({
     id: crypto.randomUUID(),
     text,
@@ -270,6 +270,15 @@ export function narrateCardConjured(cardId: string, text: string) {
     text,
     type: NarrationType.ConjuredCard,
     cardIds: [cardId],
+  });
+}
+
+export function narrateGiftCardChoice(cards: CardTemplate[], text: string) {
+  narrate({
+    id: crypto.randomUUID(),
+    text,
+    type: NarrationType.GiftCardChoice,
+    cardTemplates: cards,
   });
 }
 

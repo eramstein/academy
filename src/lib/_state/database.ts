@@ -23,3 +23,7 @@ db.version(4).stores({
 db.version(5).stores({
   sceneImages: 'prompt',
 });
+
+db.version(6).stores({
+  cardTemplates: 'id',
+});

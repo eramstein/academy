@@ -66,6 +66,6 @@ export function resolveDeckCards(ids: string[], collection: CardTemplate[]): Car
   });
 }
 
-function makeUniqueId(cardTemplate: CardTemplate): CardTemplate {
+export function makeUniqueId(cardTemplate: CardTemplate): CardTemplate {
   return { ...cardTemplate, id: `${cardTemplate.id}-${crypto.randomUUID()}` };
 }

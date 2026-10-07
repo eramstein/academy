@@ -3,15 +3,18 @@ import { EventEffectType } from '@/lib/_model/enums-sim';
 import { narrateText } from '../narration';
 import { getDeck, type GetDeckParameters } from './decks';
 import { unlockEvent, type UnlockEventParameters } from './events';
-import { getJob, type GetJobParameters } from './jobs';
+import { offerCardGifts, type OfferCardGiftsParameters } from './gifts';
 import { addGold, type AddGoldParameters } from './gold';
+import { getJob, type GetJobParameters } from './jobs';
 import { addResource, type AddResourceParameters } from './resources';
 import { scheduleActivities, type ScheduleActivitiesParameters } from './schedule';
 import { subscribe, type TransactionSubscriptionParameters } from './subscribe';
 
 export function applyEffect(effect: EventEffect) {
   const result = effectFunctions[effect.type](effect.parameters);
-  narrateText(result);
+  if (result) {
+    narrateText(result);
+  }
 }
 
 const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>) => string> = {
@@ -24,4 +27,6 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     scheduleActivities(parameters as ScheduleActivitiesParameters),
   [EventEffectType.GetJob]: (parameters) => getJob(parameters as GetJobParameters),
   [EventEffectType.UnlockEvent]: (parameters) => unlockEvent(parameters as UnlockEventParameters),
+  [EventEffectType.OfferCardGifts]: (parameters) =>
+    offerCardGifts(parameters as OfferCardGiftsParameters),
 };

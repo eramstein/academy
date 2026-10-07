@@ -3,6 +3,7 @@ import { PLACES, REGIONS } from '@/data/sim/places';
 import { DayPeriod, ResourceType, type GameState } from '../_model';
 import { gs } from '../_state';
 import { clearUsedFlavors } from './cards/flavor-generation-pipeline/used-flavors';
+import { loadCardTemplates, restoreCardTemplates } from './cards/npc-card-templates';
 import { initNpcDecks } from './deck';
 import { loadEventTemplates, restoreEventTemplates } from './events';
 import { newLeagueSeason } from './league';
@@ -80,6 +81,8 @@ export const initSim = async () => {
   await clearUsedFlavors();
   await restoreEventTemplates();
   await loadEventTemplates();
+  await restoreCardTemplates();
+  await loadCardTemplates();
   setSceneEvents();
   newLeagueSeason();
   initNpcDecks();

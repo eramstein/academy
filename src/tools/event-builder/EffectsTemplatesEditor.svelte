@@ -28,9 +28,9 @@
     nested?: boolean;
   } = $props();
 
-  // Authorable from events; Subscribe is action-only, OfferCardGifts is not wired in applyEffect.
+  // Authorable from events; Subscribe is action-only.
   const effectTypes = Object.values(EventEffectType).filter(
-    (type) => type !== EventEffectType.Subscribe && type !== EventEffectType.OfferCardGifts
+    (type) => type !== EventEffectType.Subscribe
   );
   const resourceTypes = Object.values(ResourceType);
   const activityTypes = Object.values(ActivityType);
@@ -107,6 +107,8 @@
         return defaultJobArgs();
       case EventEffectType.UnlockEvent:
         return { eventKey: '' };
+      case EventEffectType.OfferCardGifts:
+        return { count: 2, poolKeys: [] };
       default:
         return {};
     }
@@ -389,6 +391,31 @@
                 aria-label="Event key"
                 oninput={(e) =>
                   setParameter(i, 'eventKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+            {:else if effect.type === EventEffectType.OfferCardGifts}
+              <input
+                class="input narrow"
+                type="number"
+                min="1"
+                value={effect.parameters.count ?? 2}
+                aria-label="Gift count"
+                oninput={(e) =>
+                  setParameter(i, 'count', Number((e.currentTarget as HTMLInputElement).value))}
+              />
+              <input
+                class="input participants"
+                value={(effect.parameters.poolKeys ?? []).join(', ')}
+                placeholder="pool keys (comma-separated)"
+                aria-label="Pool keys"
+                oninput={(e) =>
+                  setParameter(
+                    i,
+                    'poolKeys',
+                    (e.currentTarget as HTMLInputElement).value
+                      .split(',')
+                      .map((part) => part.trim())
+                      .filter(Boolean)
+                  )}
               />
             {/if}
 

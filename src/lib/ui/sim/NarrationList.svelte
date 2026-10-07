@@ -4,6 +4,7 @@
   import { gs } from '@/lib/_state/main.svelte';
   import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import { addCardToDeck } from '@/lib/sim/deck';
+  import { acceptGiftCard } from '@/lib/sim/effects/gifts';
   import { cacheNarrationSceneImage } from '@/lib/sim/narration';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import { untrack } from 'svelte';
@@ -127,12 +128,31 @@
     }
   }
 
+  function giftAwaitingPick(entry: Narration): boolean {
+    return entry.type === NarrationType.GiftCardChoice && !entry.cardIds?.length;
+  }
+
+  function pickGiftCard(entry: Narration, card: CardTemplate) {
+    if (!giftAwaitingPick(entry)) return;
+    const gifted = acceptGiftCard(card);
+    entry.cardTemplates = [gifted];
+    entry.cardIds = [gifted.id];
+    const deck = firstDeck();
+    if (deck) {
+      addCardToDeck(deck, gifted);
+    }
+    completeEntry(entry.id);
+  }
+
   function onTextDone(entry: Narration) {
     if (!textDoneSet.has(entry.id)) {
       textDoneIds = [...textDoneIds, entry.id];
     }
     if (entry.attributeCheck) {
       maybeCompleteAttributeCheck(entry, { textDone: true });
+      return;
+    }
+    if (giftAwaitingPick(entry)) {
       return;
     }
     completeEntry(entry.id);
@@ -218,6 +238,8 @@
   {:else}
     {@const cards = cardsForEntry(entry)}
     {@const inDeck = cardsInFirstDeck(entry)}
+    {@const isGiftChoice = entry.type === NarrationType.GiftCardChoice}
+    {@const awaitingGiftPick = giftAwaitingPick(entry)}
     {@const canAddToDeck =
       entry.type === NarrationType.ConjuredCard && !!firstDeck() && cards.length > 0 && !inDeck}
     {#if entry.attributeCheck}
@@ -266,7 +288,24 @@
     {#if entry.gold}
       {@render goldEarned(entry.gold)}
     {/if}
-    {#if entry.cardTemplates?.length}
+    {#if isGiftChoice && entry.cardTemplates?.length}
+      <div class="narration-cards" class:gift-choices={awaitingGiftPick}>
+        {#each entry.cardTemplates as card (card.id)}
+          {#if awaitingGiftPick}
+            <button
+              type="button"
+              class="gift-card-btn"
+              aria-label={`Choose ${card.name} and add to deck`}
+              onclick={() => pickGiftCard(entry, card)}
+            >
+              <CardCompact {card} />
+            </button>
+          {:else}
+            <CardCompact {card} />
+          {/if}
+        {/each}
+      </div>
+    {:else if entry.cardTemplates?.length}
       <div class="narration-cards">
         {#each entry.cardTemplates as card, i (`${card.id}-${i}`)}
           {#if i > 0}
@@ -276,7 +315,7 @@
         {/each}
       </div>
     {/if}
-    {#if cards.length > 0}
+    {#if !isGiftChoice && cards.length > 0}
       <div class="narration-cards">
         {#each cards as card (card.id)}
           <CardCompact {card} />
@@ -702,6 +741,29 @@
     align-items: center;
     gap: 12px;
     margin: 0 0 1.25em;
+  }
+
+  .narration-cards.gift-choices {
+    gap: 16px;
+  }
+
+  .gift-card-btn {
+    margin: 0;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    line-height: 0;
+  }
+
+  .gift-card-btn:hover {
+    border-color: var(--color-golden);
+  }
+
+  .gift-card-btn:focus-visible {
+    outline: 2px solid var(--color-golden);
+    outline-offset: 2px;
   }
 
   .card-arrow {
