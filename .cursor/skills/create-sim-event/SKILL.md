@@ -19,6 +19,7 @@ use this shape:
 Event for <npc key | main story>:
 Trigger: <relation level, day/period, place, activity, prior events, who is present>
 Synopsis: <one or two sentences to elaborate into the event text>
+Emotion: <Emotion enum value> (optional; infer from synopsis when clear)
 Options:
   - <label>: <reward or consequence>
   - <label>: <reward or consequence>
@@ -33,7 +34,7 @@ request did not imply.
 1. Read `src/data/sim/events.json` to see existing keys, arc grouping, and house style.
 2. Pick the key: `<npcKey>-<n>` for a character arc event, `event-<n>` for main story, using the
    next free number in that series. Keys are permanent identifiers, not prose.
-3. Write `text` (see _Writing the text_).
+3. Write `text` (see _Writing the text_). Set `emotion` when appropriate (see _Emotion_).
 4. Map every condition in the request to a trigger, and every outcome to an effect template.
    Verify character, place, and deck keys against the source files listed below.
 5. Insert the event object after the last event of the same `characterArc`, or append it at the end
@@ -70,11 +71,12 @@ invent template names: unknown names crash at runtime when the event fires.
     /* optional: applied on trigger, before options */
   ],
   "characterArc": "molly", // npc key, only for character arc events
+  "emotion": "happy", // optional; how the speaking NPC presents in this beat
 }
 ```
 
 Property order in the file follows the existing entries: `key`, `text`, `triggers`,
-`effectsTemplates`, `optionTemplates`, `triggersOnce`, `characterArc`.
+`effectsTemplates`, `optionTemplates`, `triggersOnce`, `characterArc`, `emotion`.
 
 ## Triggers
 
@@ -106,6 +108,7 @@ Effect templates, from `SceneEffectTemplates`:
 | `effectTemplate`   | `args`                                                                                                                                            |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `addResource`      | `{ resourceType: "magic_dust" \| "mithril" \| "moxes", amount: 10 }`                                                                              |
+| `addGold`          | `{ amount: 10 }`                                                                                                                                  |
 | `getDeck`          | `{ deckKey: "base_red" \| "base_black" \| "base_green" }`                                                                                         |
 | `scheduleActivity` | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, recurrence?: { maxCount, daysOfWeek, period } } }` |
 | `getJob`           | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                             |
@@ -137,10 +140,34 @@ applying an effect. Only `enrollmentTransaction` and `enrollmentPayment` exist, 
 | Character keys, display names, gender    | `src/data/npcs.ts` (plus `"player"`)        |
 | Place keys                               | `PLACES` in `src/data/sim/places.ts`        |
 | Deck keys                                | `getDeck` in `src/lib/sim/effects/decks.ts` |
-| Resource, period, activity, class values | `src/lib/_model/enums-sim.ts`               |
+| Resource, period, activity, class, emotion | `src/lib/_model/enums-sim.ts`             |
 
 The validator enumerates the valid values in its error messages, so a run also doubles as a
 reference when unsure.
+
+## Emotion
+
+`emotion` is optional on `EventTemplate`. It tags the speaking NPC's affect for this beat (portrait /
+presentation), using `Emotion` from `src/lib/_model/enums-sim.ts`:
+
+`neutral`, `happy`, `joyful`, `laughing`, `sad`, `angry`, `annoyed`, `surprised`, `provocative`,
+`in_love`, `proud`, `embarrassed`.
+
+When to set it:
+
+- Use the value the user named, if they did.
+- Otherwise, for character-arc events (`characterArc` set), infer from the synopsis and written
+  text when the NPC's mood is clear (gratitude gift → `happy`, job offer with pride → `proud`,
+  awkward confession → `embarrassed`, sharp rivalry → `annoyed` or `angry`).
+- Prefer a specific value over `neutral` when the prose already signals a mood.
+
+When to omit it:
+
+- Mood is ambiguous, mixed, or not about an NPC's expression.
+- Main-story events with no clear speaking NPC emotion.
+- Do not invent a feeling the request and prose do not support.
+
+Never invent enum values outside the list above.
 
 ## Writing the text
 
@@ -188,13 +215,14 @@ or 1 magic dust."_
     }
   ],
   "triggersOnce": true,
-  "characterArc": "molly"
+  "characterArc": "molly",
+  "emotion": "happy"
 }
 ```
 
 Note what the request did not spell out and the defaults filled in: `character_present`,
-`triggersOnce`, `characterArc`, the key, and a paragraph of prose that justifies the gift through
-Molly's friendship without naming the rewards.
+`triggersOnce`, `characterArc`, `emotion` (warm gratitude → `happy`), the key, and a paragraph of
+prose that justifies the gift through Molly's friendship without naming the rewards.
 
 ## Editing an existing event
 

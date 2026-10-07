@@ -30,6 +30,20 @@ const targets = [
     dir: './public/assets/images/characters',
     quality: 90,
   },
+  {
+    dir: './public/assets/images/events',
+    quality: 90,
+    width: 1024,
+    height: 1024,
+    maxFileSizeKB: 300,
+  },
+  {
+    dir: './public/assets/images/jobs',
+    quality: 90,
+    width: 1024,
+    height: 1024,
+    maxFileSizeKB: 300,
+  },
 ];
 
 async function matchesTargetDimensions(inputPath, width, height) {

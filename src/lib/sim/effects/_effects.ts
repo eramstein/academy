@@ -4,6 +4,7 @@ import { narrateText } from '../narration';
 import { getDeck, type GetDeckParameters } from './decks';
 import { unlockEvent, type UnlockEventParameters } from './events';
 import { getJob, type GetJobParameters } from './jobs';
+import { addGold, type AddGoldParameters } from './gold';
 import { addResource, type AddResourceParameters } from './resources';
 import { scheduleActivities, type ScheduleActivitiesParameters } from './schedule';
 import { subscribe, type TransactionSubscriptionParameters } from './subscribe';
@@ -18,6 +19,7 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.Subscribe]: (parameters) =>
     subscribe(parameters as TransactionSubscriptionParameters),
   [EventEffectType.AddResource]: (parameters) => addResource(parameters as AddResourceParameters),
+  [EventEffectType.AddGold]: (parameters) => addGold(parameters as AddGoldParameters),
   [EventEffectType.ScheduleActivity]: (parameters) =>
     scheduleActivities(parameters as ScheduleActivitiesParameters),
   [EventEffectType.GetJob]: (parameters) => getJob(parameters as GetJobParameters),

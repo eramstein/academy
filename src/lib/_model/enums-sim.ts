@@ -8,6 +8,7 @@ export enum EventEffectType {
   GetDeck = 'get_deck',
   Subscribe = 'subscribe',
   AddResource = 'add_resource',
+  AddGold = 'add_gold',
   ScheduleActivity = 'schedule_activity',
   GetJob = 'get_job',
   UnlockEvent = 'unlock_event',
@@ -98,4 +99,19 @@ export enum ResourceType {
 export enum JobType {
   Mentoring = 'mentoring',
   Coaching = 'coaching',
+}
+
+export enum Emotion {
+  Neutral = 'neutral',
+  Happy = 'happy',
+  Laughing = 'laughing',
+  Sad = 'sad',
+  Angry = 'angry',
+  Surprised = 'surprised',
+  Flirtatious = 'flirtatious',
+  Taunting = 'taunting',
+  Dreaming = 'dreaming',
+  Proud = 'proud',
+  Embarrassed = 'embarrassed',
+  Scared = 'scared',
 }

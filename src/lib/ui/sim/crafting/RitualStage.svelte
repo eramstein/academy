@@ -2047,30 +2047,6 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     color: var(--color-ink-muted);
   }
 
-  .fortune-die {
-    width: 2.55rem;
-    height: 2.55rem;
-    display: grid;
-    place-items: center;
-    font-family: var(--font-narrative);
-    font-size: 1.25rem;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    color: #2c251d;
-    background:
-      radial-gradient(circle at 32% 28%, rgba(255, 248, 230, 0.85), transparent 42%),
-      linear-gradient(155deg, #f3e6c8 0%, #d4bc8e 46%, #8f7348 100%);
-    border: 1px solid #5c4632;
-    border-radius: 5px;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 248, 230, 0.85),
-      inset 0 -3px 4px rgba(70, 48, 24, 0.35),
-      0 2px 0 #6a5338,
-      0 5px 8px rgba(0, 0, 0, 0.38);
-    transform: rotate(-6deg);
-  }
-
   .pct-die {
     display: flex;
     align-items: baseline;
@@ -2114,28 +2090,18 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     opacity: 0.9;
   }
 
-  .fortune-die.rolling,
   .pct-die.rolling {
     animation: fortune-tumble 0.12s linear infinite;
   }
 
-  .fortune-die.hit,
   .pct-die.hit {
     animation: fortune-settle 0.3s cubic-bezier(0.22, 1.4, 0.36, 1) both;
   }
 
-  .fortune-die.miss,
   .pct-die.miss {
     opacity: 0.55;
     filter: grayscale(0.45);
-  }
-
-  .pct-die.miss {
     transform: rotate(-4deg);
-  }
-
-  .fortune-die.miss {
-    transform: rotate(-6deg);
   }
 
   .gauge.fortune-live {
@@ -2166,13 +2132,13 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
       transform: rotateX(-8deg) rotateZ(-10deg) scale(1.04);
     }
     100% {
-      transform: rotate(-6deg) scale(1);
+      transform: rotate(-4deg) scale(1);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .fortune-die.rolling,
-    .fortune-die.hit {
+    .pct-die.rolling,
+    .pct-die.hit {
       animation: none;
     }
   }

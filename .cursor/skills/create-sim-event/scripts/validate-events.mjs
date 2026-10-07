@@ -27,6 +27,7 @@ const periods = enumValues(enums, 'DayPeriod');
 const activityTypes = enumValues(enums, 'ActivityType');
 const classTypes = enumValues(enums, 'ClassType');
 const jobTypes = enumValues(enums, 'JobType');
+const emotions = enumValues(enums, 'Emotion');
 
 const effectTemplates = recordKeys(
   read('src/lib/sim/effects/_templates.ts'),
@@ -146,6 +147,9 @@ function checkEffect(where, effect) {
       checkOneOf(where, 'resourceType', args.resourceType, resourceTypes);
       if (typeof args.amount !== 'number') errors.push(`${where}: amount must be a number`);
       break;
+    case 'addGold':
+      if (typeof args.amount !== 'number') errors.push(`${where}: amount must be a number`);
+      break;
     case 'scheduleActivity': {
       const activity = args.activity;
       if (!activity) {
@@ -200,6 +204,8 @@ const allowedEventProps = new Set([
   'triggersOnce',
   'effectsTemplates',
   'characterArc',
+  'emotion',
+  'image',
 ]);
 
 events.forEach((event, index) => {
@@ -217,6 +223,14 @@ events.forEach((event, index) => {
   }
   if (event?.characterArc !== undefined) {
     checkOneOf(where, 'characterArc', event.characterArc, npcKeys);
+  }
+  if (event?.emotion !== undefined) {
+    checkOneOf(where, 'emotion', event.emotion, emotions);
+  }
+  if (event?.image !== undefined) {
+    if (typeof event.image !== 'string' || !event.image.trim()) {
+      errors.push(`${where}: image must be a non-empty string when set`);
+    }
   }
 
   if (!Array.isArray(event?.triggers) || event.triggers.length === 0) {

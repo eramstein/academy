@@ -283,12 +283,9 @@
               onclick={() => pickParameter(optionValue(option))}
             >
               {#snippet lead()}
-                <span
-                  class="option-thumb"
-                  class:portrait={thumb.portrait}
-                  style="background-image: url('{thumb.path}')"
-                  aria-hidden="true"
-                ></span>
+                <span class="option-thumb" class:portrait={thumb.portrait} aria-hidden="true">
+                  <img src={thumb.path} alt="" draggable="false" />
+                </span>
               {/snippet}
               {optionLabel(option)}
             </OrnateButton>
@@ -362,19 +359,33 @@
   }
 
   .option-thumb {
-    flex: 0 0 52px;
+    flex: 0 0 2.75rem;
     align-self: stretch;
-    width: 52px;
-    border-right: 1px solid color-mix(in srgb, var(--color-brass) 70%, transparent);
-    background-color: rgba(0, 0, 0, 0.35);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    width: 2.75rem;
+    margin: 5px 0 5px 5px;
+    overflow: hidden;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.45);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-brass) 55%, transparent);
   }
 
-  .option-thumb.portrait {
-    background-size: 160%;
-    background-position: center 12%;
+  .option-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  /*
+    Watercolor portraits have fine paper grain that aliases into white speckles
+    when downscaled hard. Mild zoom + soft filter averages that grain out.
+  */
+  .option-thumb.portrait img {
+    object-position: center 14%;
+    transform: scale(1.28);
+    transform-origin: center 16%;
+    filter: contrast(0.9) saturate(1.05) brightness(0.96);
   }
 
   .cancel-btn {

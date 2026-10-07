@@ -80,6 +80,13 @@
     }
   });
 
+  // Empty text means an LLM fill is in flight — keep the page scrolled to the caret.
+  $effect(() => {
+    if (activeEntry && !activeEntry.text) {
+      onProgress?.('smooth');
+    }
+  });
+
   function completeEntry(id: string) {
     if (completedSet.has(id)) return;
     completedIds = [...completedIds, id];
@@ -225,17 +232,35 @@
       {@render narrationImage(entry)}
     {/if}
     {#if entry.text}
-      <NarrationText
-        class="narration"
-        text={entry.text}
-        mentions={entry.mentions}
-        {animate}
-        onProgress={() => onProgress?.('auto')}
-        onDone={() => onTextDone(entry)}
-      />
-    {:else if animate && entry.attributeCheck}
-      <div class="narration narration-pending" aria-hidden="true">
-        <span class="caret"></span>
+      {@const portraitChar = characterForKey(entry.characters?.[0])}
+      {#if portraitChar}
+        <div class="event-with-portrait">
+          <span class="event-portrait" aria-hidden="true">
+            <CharacterPortrait character={portraitChar} emotion={entry.emotion} />
+          </span>
+          <NarrationText
+            class="narration"
+            text={entry.text}
+            mentions={entry.mentions}
+            {animate}
+            onProgress={() => onProgress?.('auto')}
+            onDone={() => onTextDone(entry)}
+          />
+        </div>
+      {:else}
+        <NarrationText
+          class="narration"
+          text={entry.text}
+          mentions={entry.mentions}
+          {animate}
+          onProgress={() => onProgress?.('auto')}
+          onDone={() => onTextDone(entry)}
+        />
+      {/if}
+    {:else if animate}
+      <div class="narration narration-pending" role="status" aria-label="Writing">
+        <span aria-hidden="true">Writing…</span>
+        <span class="caret" aria-hidden="true"></span>
       </div>
     {/if}
     {#if entry.gold}
@@ -385,6 +410,35 @@
     white-space: pre-line;
   }
 
+  .event-with-portrait {
+    margin: 0 0 1.25em;
+    overflow: auto;
+  }
+
+  .event-with-portrait :global(.narration) {
+    margin: 0;
+  }
+
+  .event-portrait {
+    float: left;
+    display: block;
+    width: 240px;
+    height: 240px;
+    margin: 0.2em 0.9em 0.55em 0;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 4px;
+    border: 1px solid var(--color-brown-border);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 248, 230, 0.2),
+      0 2px 6px rgba(42, 24, 16, 0.16);
+    background: var(--color-deep-brown);
+  }
+
+  .event-portrait :global(.character-portrait) {
+    border-radius: 0;
+  }
+
   .narration-image {
     margin: 0 0 1.25em;
     padding: 0;
@@ -467,13 +521,17 @@
 
   .narration-pending {
     min-height: 1.7em;
+    color: var(--color-ink-muted);
+    font-family: var(--font-narrative);
+    font-size: 0.95rem;
+    font-style: italic;
   }
 
   .narration-pending .caret {
     display: inline-block;
     width: 0.55ch;
     height: 1.05em;
-    margin-left: 1px;
+    margin-left: 0.2ch;
     vertical-align: text-bottom;
     background: currentColor;
     opacity: 0.55;

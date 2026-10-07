@@ -1,10 +1,10 @@
-import type { AttributeCheck } from '@/lib/_model/model-sim';
+import type { Action, AttributeCheck } from '@/lib/_model/model-sim';
 import { z } from 'zod';
 import { BATTLE_GREETING_SYSTEM_PROMPT, NARRATION_SYSTEM_PROMPT } from './config';
-import { buildBattleGreetingContext, buildLlmContext } from './context-builder';
+import { buildBattleGreetingContext, buildLlmContext, type LlmContextParams } from './context-builder';
 import { completeChat } from './llm-service';
 
-const AttributeCheckNarrationSchema = z.object({
+const SceneNarrationSchema = z.object({
   text: z.string().min(1),
   imagePrompt: z
     .string()
@@ -15,13 +15,12 @@ const AttributeCheckNarrationSchema = z.object({
     ),
 });
 
-export type AttributeCheckNarration = z.infer<typeof AttributeCheckNarrationSchema>;
+export type SceneNarration = z.infer<typeof SceneNarrationSchema>;
+export type AttributeCheckNarration = SceneNarration;
 
-export async function generateAttributeCheckNarration(
-  check: AttributeCheck
-): Promise<AttributeCheckNarration> {
+async function generateSceneNarration(contextParams: LlmContextParams): Promise<SceneNarration> {
   const userPrompt = [
-    buildLlmContext({ attributeCheck: check }),
+    buildLlmContext(contextParams),
     [
       'Return JSON with:',
       '- text: one short paragraph describing what happens.',
@@ -37,8 +36,8 @@ export async function generateAttributeCheckNarration(
     {
       temperature: 0.8,
       maxTokens: 320,
-      schema: AttributeCheckNarrationSchema,
-      schemaName: 'attribute-check-narration',
+      schema: SceneNarrationSchema,
+      schemaName: 'scene-narration',
     }
   );
 
@@ -46,6 +45,16 @@ export async function generateAttributeCheckNarration(
     text: trimIncompleteSentence(parsed.text.replace(/^["']+|["']+$/g, '').trim()),
     imagePrompt: parsed.imagePrompt.replace(/^["']+|["']+$/g, '').trim(),
   };
+}
+
+export async function generateAttributeCheckNarration(
+  check: AttributeCheck
+): Promise<SceneNarration> {
+  return generateSceneNarration({ attributeCheck: check });
+}
+
+export async function generateAttemptedActionNarration(action: Action): Promise<SceneNarration> {
+  return generateSceneNarration({ attemptedAction: action });
 }
 
 /** One spoken sentence from the opponent at the start of a card duel. Cached via completeChat. */

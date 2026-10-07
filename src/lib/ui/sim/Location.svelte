@@ -1,8 +1,18 @@
 <script lang="ts">
+  import { ActivityType } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
-  import { getPlaceImagePath } from '@/lib/_utils/asset-paths';
+  import { getJobImagePath, getPlaceImagePath } from '@/lib/_utils/asset-paths';
+  import { getCurrentScheduledActivity } from '@/lib/sim/schedule';
 
-  const imagePath = $derived(getPlaceImagePath(gs.player.placeKey));
+  const activity = $derived(getCurrentScheduledActivity());
+  const matchedJob = $derived(
+    activity?.type === ActivityType.Work && activity.jobId
+      ? gs.player.jobs.find((j) => j.id === activity.jobId)
+      : undefined
+  );
+  const imagePath = $derived(
+    matchedJob ? getJobImagePath(matchedJob.name) : getPlaceImagePath(gs.player.placeKey)
+  );
 </script>
 
 <div class="location" style="--bg-image: url('{imagePath}')"></div>

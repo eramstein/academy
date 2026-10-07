@@ -1,3 +1,27 @@
+import { Emotion } from '@/lib/_model/enums-sim';
+
+/** Characters that have a 4×3 emotion spritesheet under images/characters/sheets. */
+const CHARACTER_EMOTION_SHEETS = new Set(['molly']);
+
+const EMOTION_SHEET_COLS = 4;
+const EMOTION_SHEET_ROWS = 3;
+
+/** Grid position [col, row] for each emotion on character sheets. */
+const EMOTION_SHEET_CELLS: Record<Emotion, readonly [number, number]> = {
+  [Emotion.Neutral]: [0, 0],
+  [Emotion.Happy]: [1, 0],
+  [Emotion.Laughing]: [2, 0],
+  [Emotion.Sad]: [3, 0],
+  [Emotion.Angry]: [0, 1],
+  [Emotion.Surprised]: [1, 1],
+  [Emotion.Flirtatious]: [2, 1],
+  [Emotion.Taunting]: [3, 1],
+  [Emotion.Dreaming]: [0, 2],
+  [Emotion.Proud]: [1, 2],
+  [Emotion.Embarrassed]: [2, 2],
+  [Emotion.Scared]: [3, 2],
+};
+
 // Utility function to get the correct asset path for both development and production
 export function getAssetPath(path: string): string {
   // Assets are now in the public directory
@@ -21,6 +45,23 @@ export function getLandImagePath(imageFileName: string): string {
 
 export function getCharacterImagePath(characterName: string): string {
   return getAssetPath(`images/characters/${characterName}.jpg`);
+}
+
+export function getCharacterSheetPath(characterKey: string): string {
+  return getAssetPath(`images/characters/sheets/${characterKey}.png`);
+}
+
+export function hasCharacterEmotionSheet(characterKey: string): boolean {
+  return CHARACTER_EMOTION_SHEETS.has(characterKey);
+}
+
+/** CSS background-position percentages for a cell on a 4×3 emotion sheet. */
+export function getEmotionSheetBackgroundPosition(emotion: Emotion): { x: number; y: number } {
+  const [col, row] = EMOTION_SHEET_CELLS[emotion];
+  return {
+    x: (col / (EMOTION_SHEET_COLS - 1)) * 100,
+    y: (row / (EMOTION_SHEET_ROWS - 1)) * 100,
+  };
 }
 
 export function getSoundPath(soundName: string): string {
@@ -57,6 +98,10 @@ export function getItemImagePath(itemKey: string): string {
 
 export function getPlaceImagePath(placeKey: string): string {
   return getAssetPath(`images/places/${placeKey}.jpg`);
+}
+
+export function getJobImagePath(jobName: string): string {
+  return getAssetPath(`images/jobs/${jobName}.jpg`);
 }
 
 /** Semantic UI icon names → painted PNG files in images/ui/icons. */

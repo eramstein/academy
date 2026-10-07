@@ -4,10 +4,12 @@ import { gs } from '@/lib/_state';
 
 export interface LlmContextParams {
   attributeCheck?: AttributeCheck;
+  attemptedAction?: Action;
 }
 
 export function buildLlmContext(params: LlmContextParams = {}): string {
-  const focusKey = getFocusCharacterKey(params.attributeCheck?.attemptedAction);
+  const action = params.attributeCheck?.attemptedAction ?? params.attemptedAction;
+  const focusKey = getFocusCharacterKey(action);
   const sections = [
     buildPlayerContext(),
     buildPlaceContext(),
@@ -15,6 +17,8 @@ export function buildLlmContext(params: LlmContextParams = {}): string {
   ];
   if (params.attributeCheck) {
     sections.push(buildAttributeCheckContext(params.attributeCheck, focusKey));
+  } else if (params.attemptedAction) {
+    sections.push(buildAttemptedActionContext(params.attemptedAction, focusKey));
   }
   return sections.filter(Boolean).join('\n\n');
 }
@@ -124,6 +128,14 @@ function buildAttributeCheckContext(check: AttributeCheck, focusKey?: string): s
     'Narrate this specific attempt. If a person is being interacted with, they are the focus; other people in the room are background unless they naturally notice.'
   );
   return lines.join('\n');
+}
+
+function buildAttemptedActionContext(action: Action, focusKey?: string): string {
+  return [
+    'Current attempt:',
+    ...describeAttemptedAction(action, focusKey),
+    'Narrate this specific attempt. If a person is being interacted with, they are the focus; other people in the room are background unless they naturally notice.',
+  ].join('\n');
 }
 
 function describeAttemptedAction(action?: Action, focusKey?: string): string[] {

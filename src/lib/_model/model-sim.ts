@@ -8,6 +8,7 @@ import type {
   CharacterTrait,
   ClassType,
   DayPeriod,
+  Emotion,
   EventEffectType,
   JobType,
   NarrationType,
@@ -54,6 +55,7 @@ export interface Scene {
   event: SceneEvent | undefined; // current event the player has to react to
   actions: Action[]; // list of proactive actions the player can do currently
   selectingNextPlace?: boolean; // whether the player is selecting a next place
+  image?: string;
 }
 
 export interface SceneEvent {
@@ -86,6 +88,8 @@ export interface EventTemplate {
   locked?: boolean;
   effectsTemplates?: EventEffectsTemplate[];
   characterArc?: string; // npc key
+  emotion?: Emotion;
+  image?: string;
 }
 
 export interface EventOptionTemplate {
@@ -110,6 +114,8 @@ export interface Narration {
   type: NarrationType;
   mentions?: Mentions;
   attributeCheck?: AttributeCheck;
+  /** Action being narrated when there is no attribute check (e.g. socialize). */
+  attemptedAction?: Action;
   /** Short visual description for generating an image of this scene. */
   imagePrompt?: string;
   /** Object URL for a generated scene illustration. */
@@ -119,6 +125,7 @@ export interface Narration {
   day?: number;
   period?: DayPeriod;
   characters?: string[];
+  emotion?: Emotion;
   won?: boolean;
   transaction?: TransactionParameters;
   gold?: number;

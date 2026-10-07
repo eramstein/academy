@@ -1,20 +1,22 @@
 import {
   ActivityType,
-  type ClassActivity,
   ClassType,
   DayPeriod,
   SubscriptionType,
+  type ClassActivity,
 } from '../_model';
 import { gs } from '../_state';
 import { TransactionType, type NegotiateParameters } from './actions';
 import { scheduleActivity } from './schedule';
 import { getWeekDay } from './time';
 
+const TERM_LENGTH = 42;
+
 // this can be used to create a transaction action for the enrollment
 // it is for the current term, which is 84 days (12 weeks)
 // the first term starts on day 1
 export function getEnrollmentTransactionParameters(): NegotiateParameters {
-  const remainingDays = 84 - (gs.time.day % 84);
+  const remainingDays = TERM_LENGTH - (gs.time.day % TERM_LENGTH);
   return {
     cost: 900,
     transactionType: TransactionType.Subscription,
@@ -28,7 +30,7 @@ export function getEnrollmentTransactionParameters(): NegotiateParameters {
 // the classes are scheduled for the rest of the term, starting from the current day
 // classes happen monday to friday, artificery in the morning, enchanting in the afternoon
 export function scheduleClassesForCurrentTerm() {
-  const remainingDays = 84 - (gs.time.day % 84);
+  const remainingDays = TERM_LENGTH - (gs.time.day % TERM_LENGTH);
   for (let i = 0; i < remainingDays; i++) {
     // skip on weekends
     if (getWeekDay(gs.time.day + i) > 5) {

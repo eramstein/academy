@@ -128,8 +128,8 @@
     "triggersOnce": true
   },
   {
-    "key": "molly-1",
-    "text": "Moly approaches you and tells you she appreciated the way you made her feel welcome last time. She offers you a token of gratitude, pick your favorite.",
+    "key": "molly-f1",
+    "text": "Moly tells you she appreciated the way you made her feel welcome. She offers you a token of gratitude, pick your favorite!",
     "triggers": [
       {
         "triggerType": "relation_parameter",
@@ -148,66 +148,50 @@
     ],
     "optionTemplates": [
       {
-        "text": "Get a Mox",
+        "text": "Get Moxes",
         "effectsTemplates": [
           {
             "effectTemplate": "addResource",
             "args": {
               "resourceType": "moxes",
-              "amount": 99
+              "amount": 3
             }
           }
         ]
       },
       {
-        "text": "Get some Dust",
+        "text": "Get some Magic Dust",
         "effectsTemplates": [
           {
             "effectTemplate": "addResource",
             "args": {
               "resourceType": "magic_dust",
-              "amount": 1
+              "amount": 3
+            }
+          }
+        ]
+      },
+      {
+        "text": "Get some Mithril",
+        "effectsTemplates": [
+          {
+            "effectTemplate": "addResource",
+            "args": {
+              "resourceType": "mithril",
+              "amount": 3
             }
           }
         ]
       }
     ],
     "triggersOnce": true,
-    "characterArc": "molly"
+    "characterArc": "molly",
+    "emotion": "happy"
   },
   {
-    "key": "molly-2",
-    "text": "Molly doesn't like you! boo!",
-    "triggers": [
-      {
-        "triggerType": "relation_parameter",
-        "parameters": {
-          "characterKey": "molly",
-          "relationParameter": "friendship",
-          "value": -1
-        }
-      },
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [],
-    "triggersOnce": true,
-    "characterArc": "molly"
-  },
-  {
-    "key": "molly-3",
+    "key": "molly-r1",
     "text": "Molly seeks you out with a thoughtful look. She says she has been watching how you carry yourself, and she respects the care you put into your work. She asks if you would take on a mentoring post with her at the library on Tuesday evenings, helping younger students find their footing.",
     "triggers": [
-      {
-        "triggerType": "previous_events",
-        "parameters": {
-          "molly-1": true
-        }
-      },
       {
         "triggerType": "relation_parameter",
         "parameters": {
@@ -255,6 +239,45 @@
     ],
     "triggersOnce": true,
     "characterArc": "molly"
+  },
+  {
+    "key": "molly-v1",
+    "text": "Molly finds you with a tight smile that does not reach her eyes. Whatever has soured between you still sits heavy on her, and she makes no effort to hide it. She presses a small purse into your hands anyway, calling it charity for someone who clearly needs the help, and waits to see whether you will take the slight.",
+    "triggers": [
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "rivalry",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "molly"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept",
+        "effectsTemplates": [
+          {
+            "effectTemplate": "addGold",
+            "args": {
+              "amount": 10
+            }
+          }
+        ]
+      },
+      {
+        "text": "Refuse"
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "molly",
+    "emotion": "angry"
   },
   {
     "key": "emma-1",

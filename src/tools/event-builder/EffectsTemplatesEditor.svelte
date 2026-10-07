@@ -96,6 +96,8 @@
         return { deckKey: 'base_red' };
       case 'addResource':
         return { resourceType: ResourceType.MagicDust, amount: 1 };
+      case 'addGold':
+        return { amount: 10 };
       case 'scheduleActivity':
         return defaultScheduleArgs();
       case 'getJob':
@@ -360,6 +362,16 @@
                 min="0"
                 value={effect.args.amount ?? 0}
                 aria-label="Amount"
+                oninput={(e) =>
+                  setArg(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+              />
+            {:else if effect.effectTemplate === 'addGold'}
+              <input
+                class="input narrow"
+                type="number"
+                min="0"
+                value={effect.args.amount ?? 0}
+                aria-label="Gold amount"
                 oninput={(e) =>
                   setArg(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
               />

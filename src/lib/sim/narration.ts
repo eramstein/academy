@@ -1,8 +1,11 @@
 import { getCharacterImagePath } from '@/lib/_utils/asset-paths';
 import { generateImage, isImageGenAvailable } from '@/lib/image_gen';
-import { generateAttributeCheckNarration } from '@/lib/llm/prompts';
+import {
+  generateAttemptedActionNarration,
+  generateAttributeCheckNarration,
+} from '@/lib/llm/prompts';
 import type { CardTemplate, DayPeriod } from '../_model';
-import { NarrationType } from '../_model/enums-sim';
+import { ActionType, Emotion, NarrationType } from '../_model/enums-sim';
 import type { Action, AttributeCheck, Job, Mentions, Narration } from '../_model/model-sim';
 import { gs } from '../_state';
 import type { TransactionParameters } from './actions';
@@ -80,7 +83,9 @@ async function fillNarrationImage(id: string, imagePrompt: string) {
 }
 
 function portraitKeyForNarration(entry: Narration): string {
-  const fromAction = focusCharacterKey(entry.attributeCheck?.attemptedAction);
+  const fromAction = focusCharacterKey(
+    entry.attributeCheck?.attemptedAction ?? entry.attemptedAction
+  );
   if (fromAction && (gs.characters[fromAction] || fromAction === gs.player.key)) {
     return fromAction;
   }
@@ -186,11 +191,56 @@ function fallbackAttributeCheckText(attributeCheck: AttributeCheck): string {
   return `You ${verb} your ${attributeCheck.attribute}.`;
 }
 
-export function narrateText(text: string) {
+export function narrateAttemptedAction(action: Action) {
+  const id = crypto.randomUUID();
+  narrate({
+    id,
+    text: '',
+    type: NarrationType.Text,
+    attemptedAction: action,
+  });
+  void fillAttemptedActionNarration(id, action);
+}
+
+async function fillAttemptedActionNarration(id: string, action: Action) {
+  let text: string;
+  let imagePrompt: string | undefined;
+  try {
+    const result = await generateAttemptedActionNarration(action);
+    text = result.text;
+    imagePrompt = result.imagePrompt;
+  } catch (error) {
+    console.error('Failed to generate action narration', error);
+    text = fallbackAttemptedActionText(action);
+  }
+  const entry = gs.scene.narration.find((narration) => narration.id === id);
+  if (!entry) return;
+  entry.text = text;
+  entry.mentions = findMentions(text);
+  if (imagePrompt) {
+    void fillNarrationImage(id, imagePrompt);
+  }
+}
+
+function fallbackAttemptedActionText(action: Action): string {
+  const params = action.actionParameters ?? {};
+  if (action.actionType === ActionType.Socialize && typeof params.characterKey === 'string') {
+    const name = gs.characters[params.characterKey]?.name ?? 'someone';
+    return `You try to ${params.socializeType ?? 'talk with'} ${name}.`;
+  }
+  return `You ${String(action.actionType).replace(/_/g, ' ')}.`;
+}
+
+export function narrateText(
+  text: string,
+  options?: { characterKey?: string; emotion?: Emotion }
+) {
   narrate({
     id: crypto.randomUUID(),
     text,
     type: NarrationType.Text,
+    ...(options?.characterKey ? { characters: [options.characterKey] } : {}),
+    ...(options?.emotion ? { emotion: options.emotion } : {}),
   });
 }
 

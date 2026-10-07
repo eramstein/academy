@@ -99,7 +99,10 @@ export function simulateEvent(templateKey: string) {
     text: template.text,
     options: template.optionTemplates?.map(buildOption) ?? [],
   };
-  narrateText(event.text);
+  narrateText(event.text, {
+    characterKey: template.characterArc,
+    emotion: template.emotion,
+  });
   gs.scene.event = event;
   return event;
 }

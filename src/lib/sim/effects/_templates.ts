@@ -9,6 +9,12 @@ export const SceneEffectTemplates: Record<string, (args: Record<string, any>) =>
       parameters: { resourceType: args.resourceType, amount: args.amount },
     },
   ],
+  addGold: (args) => [
+    {
+      type: EventEffectType.AddGold,
+      parameters: { amount: args.amount },
+    },
+  ],
   scheduleActivity: (args) => [
     {
       type: EventEffectType.ScheduleActivity,

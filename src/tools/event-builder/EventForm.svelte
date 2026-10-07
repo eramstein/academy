@@ -2,6 +2,7 @@
   import {
     ActivityType,
     DayPeriod,
+    Emotion,
     EventTriggerType,
     type ActionTemplate,
     type EventEffectsTemplate,
@@ -34,6 +35,8 @@
   let triggersOnce = $state(true);
   let locked = $state(false);
   let characterArc = $state('');
+  let emotion = $state('');
+  let image = $state('');
   let triggers = $state<EventTrigger[]>([]);
   let options = $state<EventOptionTemplate[]>([]);
   let effectsTemplates = $state<EventEffectsTemplate[]>([]);
@@ -43,6 +46,7 @@
   const triggerTypes = Object.values(EventTriggerType);
   const periods = Object.values(DayPeriod);
   const activityTypes = Object.values(ActivityType);
+  const emotions = Object.values(Emotion);
   const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
   const actionNames = Object.keys(SceneActionTemplates);
 
@@ -55,6 +59,8 @@
       triggersOnce = true;
       locked = false;
       characterArc = '';
+      emotion = '';
+      image = '';
       triggers = [
         { triggerType: EventTriggerType.Day, parameters: { day: 1 } },
         { triggerType: EventTriggerType.Period, parameters: { period: DayPeriod.Morning } },
@@ -70,9 +76,17 @@
     triggersOnce = cloned.triggersOnce ?? false;
     locked = cloned.locked ?? false;
     characterArc = cloned.characterArc ?? '';
+    emotion = cloned.emotion ?? '';
+    image = cloned.image ?? '';
     triggers = cloned.triggers ?? [];
     options = cloned.optionTemplates ?? [];
     effectsTemplates = cloned.effectsTemplates ?? [];
+  }
+
+  function defaultImageFromKey() {
+    const trimmedKey = key.trim();
+    if (!trimmedKey) return;
+    image = `${trimmedKey}.jpg`;
   }
 
   cloneEventFields(event);
@@ -236,6 +250,15 @@
       built.characterArc = arc;
     }
 
+    if (emotion) {
+      built.emotion = emotion as Emotion;
+    }
+
+    const imageName = image.trim();
+    if (imageName) {
+      built.image = imageName;
+    }
+
     if (effectsTemplates.length > 0) {
       built.effectsTemplates = effectsTemplates.map((effect) => ({
         effectTemplate: effect.effectTemplate,
@@ -323,6 +346,38 @@
             autocomplete="off"
           />
         </label>
+
+        <label class="field emotion-field">
+          <span class="label">Emotion</span>
+          <select class="input" bind:value={emotion} aria-label="Emotion">
+            <option value="">(none)</option>
+            {#each emotions as value (value)}
+              <option {value}>{value}</option>
+            {/each}
+          </select>
+        </label>
+
+        <div class="field image-field">
+          <span class="label">Image</span>
+          <div class="image-row">
+            <input
+              class="input"
+              bind:value={image}
+              placeholder="molly-1.jpg (optional)"
+              autocomplete="off"
+              aria-label="Image"
+            />
+            <button
+              type="button"
+              class="btn ghost compact"
+              onclick={defaultImageFromKey}
+              disabled={!key.trim()}
+              title="Set to key.jpg"
+            >
+              key.jpg
+            </button>
+          </div>
+        </div>
 
         <label class="check">
           <input type="checkbox" bind:checked={triggersOnce} />
@@ -665,6 +720,27 @@
   .arc-field {
     width: 12rem;
     flex-shrink: 0;
+  }
+
+  .emotion-field {
+    width: 10rem;
+    flex-shrink: 0;
+  }
+
+  .image-field {
+    width: 16rem;
+    flex-shrink: 0;
+  }
+
+  .image-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .image-row .input {
+    flex: 1;
+    min-width: 0;
   }
 
   .text-field {
