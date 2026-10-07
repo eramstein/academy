@@ -1,5 +1,5 @@
 import { performAction, setPossibleActions } from '@/lib/sim/actions';
-import { applyEffect, resolveEffectTemplates } from '@/lib/sim/effects';
+import { applyEffect } from '@/lib/sim/effects';
 import { type EventOption, type EventTemplate, type SceneEvent } from '../_model';
 import { gs } from '../_state';
 import { consumeEventTemplate, getTriggeredSceneEvent, recordEventOccured } from './events';
@@ -83,8 +83,8 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
   if (template.triggersOnce) {
     consumeEventTemplate(template);
   }
-  if (template.effectsTemplates) {
-    resolveEffectTemplates(template.effectsTemplates).forEach((effect) => applyEffect(effect));
+  if (template.effects) {
+    template.effects.forEach((effect) => applyEffect(effect));
   }
   recordEventOccured(template);
 }

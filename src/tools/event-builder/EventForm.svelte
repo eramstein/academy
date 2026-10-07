@@ -5,7 +5,7 @@
     Emotion,
     EventTriggerType,
     type ActionTemplate,
-    type EventEffectsTemplate,
+    type EventEffect,
     type EventOptionTemplate,
     type EventTemplate,
     type EventTrigger,
@@ -39,7 +39,7 @@
   let image = $state('');
   let triggers = $state<EventTrigger[]>([]);
   let options = $state<EventOptionTemplate[]>([]);
-  let effectsTemplates = $state<EventEffectsTemplate[]>([]);
+  let effects = $state<EventEffect[]>([]);
   let error = $state('');
   let saving = $state(false);
 
@@ -66,7 +66,7 @@
         { triggerType: EventTriggerType.Period, parameters: { period: DayPeriod.Morning } },
       ];
       options = [];
-      effectsTemplates = [];
+      effects = [];
       return;
     }
 
@@ -80,7 +80,7 @@
     image = cloned.image ?? '';
     triggers = cloned.triggers ?? [];
     options = cloned.optionTemplates ?? [];
-    effectsTemplates = cloned.effectsTemplates ?? [];
+    effects = cloned.effects ?? [];
   }
 
   function defaultImageFromKey() {
@@ -170,7 +170,7 @@
   }
 
   function addOption() {
-    options = [...options, { text: '', effectsTemplates: [] }];
+    options = [...options, { text: '', effects: [] }];
   }
 
   function removeOption(index: number) {
@@ -200,10 +200,10 @@
     };
   }
 
-  function setOptionEffects(index: number, next: EventEffectsTemplate[]) {
+  function setOptionEffects(index: number, next: EventEffect[]) {
     options[index] = {
       ...options[index],
-      effectsTemplates: next,
+      effects: next,
     };
   }
 
@@ -228,10 +228,10 @@
             };
           }
 
-          if (option.effectsTemplates && option.effectsTemplates.length > 0) {
-            next.effectsTemplates = option.effectsTemplates.map((effect) => ({
-              effectTemplate: effect.effectTemplate,
-              args: { ...effect.args },
+          if (option.effects && option.effects.length > 0) {
+            next.effects = option.effects.map((effect) => ({
+              type: effect.type,
+              parameters: { ...effect.parameters },
             }));
           }
 
@@ -259,10 +259,10 @@
       built.image = imageName;
     }
 
-    if (effectsTemplates.length > 0) {
-      built.effectsTemplates = effectsTemplates.map((effect) => ({
-        effectTemplate: effect.effectTemplate,
-        args: { ...effect.args },
+    if (effects.length > 0) {
+      built.effects = effects.map((effect) => ({
+        type: effect.type,
+        parameters: { ...effect.parameters },
       }));
     }
 
@@ -434,7 +434,11 @@
                     aria-label="Day"
                   />
                 {:else if trigger.triggerType === EventTriggerType.Period}
-                  <select class="input param-select" bind:value={trigger.parameters.period} aria-label="Period">
+                  <select
+                    class="input param-select"
+                    bind:value={trigger.parameters.period}
+                    aria-label="Period"
+                  >
                     {#each periods as period (period)}
                       <option value={period}>{period}</option>
                     {/each}
@@ -491,12 +495,16 @@
                           }
                         }}
                       />
-                      <button type="button" class="btn ghost compact" onclick={() => commitPreviousEventDraft(i)}
-                        >Add key</button
+                      <button
+                        type="button"
+                        class="btn ghost compact"
+                        onclick={() => commitPreviousEventDraft(i)}>Add key</button
                       >
                     {:else}
-                      <button type="button" class="btn ghost compact" onclick={() => beginPreviousEventDraft(i)}
-                        >Add key</button
+                      <button
+                        type="button"
+                        class="btn ghost compact"
+                        onclick={() => beginPreviousEventDraft(i)}>Add key</button
                       >
                     {/if}
                   </div>
@@ -539,8 +547,8 @@
 
       <section class="panel effects">
         <EffectsTemplatesEditor
-          effects={effectsTemplates}
-          onChange={(next) => (effectsTemplates = next)}
+          {effects}
+          onChange={(next) => (effects = next)}
           title="Effects"
           description="Applied when the event triggers, before options."
         />
@@ -610,7 +618,7 @@
               </div>
 
               <EffectsTemplatesEditor
-                effects={option.effectsTemplates ?? []}
+                effects={option.effects ?? []}
                 onChange={(next) => setOptionEffects(i, next)}
                 title="Option effects"
                 nested

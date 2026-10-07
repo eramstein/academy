@@ -17,7 +17,6 @@ import {
 } from '../_state/event-templates';
 import { SceneActionTemplates } from './actions';
 import { getCharactersAtScene } from './characters';
-import { resolveEffectTemplates } from './effects';
 import { narrateText } from './narration';
 import { getCurrentScheduledActivity } from './schedule';
 
@@ -204,8 +203,8 @@ function buildOption(optionTemplate: EventOptionTemplate): EventOption {
     const { actionTemplate, args } = optionTemplate.actionTemplate;
     option.outcome.action = SceneActionTemplates[actionTemplate](args);
   }
-  if (optionTemplate.effectsTemplates) {
-    option.outcome.effects = resolveEffectTemplates(optionTemplate.effectsTemplates);
+  if (optionTemplate.effects) {
+    option.outcome.effects = optionTemplate.effects;
   }
   return option;
 }

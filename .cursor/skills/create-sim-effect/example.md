@@ -1,7 +1,7 @@
 # Worked example
 
-Request: *"add an effect that changes how a character feels about the player: parameters are the
-character key, which relation parameter, and by how much."*
+Request: _"add an effect that changes how a character feels about the player: parameters are the
+character key, which relation parameter, and by how much."_
 
 ## 1. `src/lib/sim/effects/relations.ts` (new)
 
@@ -54,54 +54,39 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
 };
 ```
 
-## 4. `src/lib/sim/effects/_templates.ts`
-
-```ts
-  changeRelation: (args) => [
-    {
-      type: EventEffectType.ChangeRelation,
-      parameters: {
-        characterKey: args.characterKey,
-        relationParameter: args.relationParameter,
-        amount: args.amount,
-      },
-    },
-  ],
-```
-
-## 5. `src/tools/event-builder/EffectsTemplatesEditor.svelte`
+## 4. `src/tools/event-builder/EffectsTemplatesEditor.svelte`
 
 Add the option list next to the other ones at the top of the script:
 
 ```ts
-  const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
+const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
 ```
 
 Add the defaults case:
 
 ```ts
-      case 'changeRelation':
+      case EventEffectType.ChangeRelation:
         return { characterKey: '', relationParameter: 'friendship', amount: 1 };
 ```
 
-Extend the arg chain inside `.effect-row`, after the `addResource` branch:
+Extend the parameter chain inside `.effect-row`, after the `AddResource` branch:
 
 ```svelte
-            {:else if effect.effectTemplate === 'changeRelation'}
+            {:else if effect.type === EventEffectType.ChangeRelation}
               <input
                 class="input arg"
-                value={effect.args.characterKey ?? ''}
+                value={effect.parameters.characterKey ?? ''}
                 placeholder="character key"
                 aria-label="Character key"
                 oninput={(e) =>
-                  setArg(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
               />
               <select
                 class="input arg"
-                value={effect.args.relationParameter ?? 'friendship'}
+                value={effect.parameters.relationParameter ?? 'friendship'}
                 aria-label="Relation parameter"
                 onchange={(e) =>
-                  setArg(i, 'relationParameter', (e.currentTarget as HTMLSelectElement).value)}
+                  setParameter(i, 'relationParameter', (e.currentTarget as HTMLSelectElement).value)}
               >
                 {#each relationParameters as param (param)}
                   <option value={param}>{param}</option>
@@ -110,46 +95,46 @@ Extend the arg chain inside `.effect-row`, after the `addResource` branch:
               <input
                 class="input narrow"
                 type="number"
-                value={effect.args.amount ?? 0}
+                value={effect.parameters.amount ?? 0}
                 aria-label="Amount"
                 oninput={(e) =>
-                  setArg(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+                  setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
               />
 ```
 
 No `min` on the amount input, since a negative amount is meaningful here.
 
-## 6. `.cursor/skills/create-sim-event/SKILL.md`
+## 5. `.cursor/skills/create-sim-event/SKILL.md`
 
-New row in the *Effects* table:
+New row in the _Effects_ table:
 
 ```md
-| `changeRelation` | `{ characterKey, relationParameter: "friendship" \| "respect" \| "love" \| "rivalry", amount: 1 }` |
+| `change_relation` | `{ characterKey, relationParameter: "friendship" \| "respect" \| "love" \| "rivalry", amount: 1 }` |
 ```
 
 And a sentence under the table, because the sign matters and the interaction with relation triggers
 is easy to miss:
 
 ```md
-`changeRelation` takes a signed `amount`; a negative value damages the relation. Remember that a
+`change_relation` takes a signed `amount`; a negative value damages the relation. Remember that a
 `relation_parameter` trigger resets the relation to 0 when the event fires, so an event that both
 requires and grants friendship ends up at the granted amount.
 ```
 
-## 7. `.cursor/skills/create-sim-event/scripts/validate-events.mjs`
+## 6. `.cursor/skills/create-sim-event/scripts/validate-events.mjs`
 
 New case in `checkEffect`:
 
 ```js
-    case 'changeRelation':
-      checkOneOf(where, 'characterKey', args.characterKey, characterKeys);
-      checkOneOf(where, 'relationParameter', args.relationParameter, [
+    case 'change_relation':
+      checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
+      checkOneOf(where, 'relationParameter', parameters.relationParameter, [
         'friendship',
         'respect',
         'love',
         'rivalry',
       ]);
-      if (typeof args.amount !== 'number') errors.push(`${where}: amount must be a number`);
+      if (typeof parameters.amount !== 'number') errors.push(`${where}: amount must be a number`);
       break;
 ```
 
@@ -157,7 +142,7 @@ New case in `checkEffect`:
 
 ```json
 {
-  "effectTemplate": "changeRelation",
-  "args": { "characterKey": "molly", "relationParameter": "friendship", "amount": 1 }
+  "type": "change_relation",
+  "parameters": { "characterKey": "molly", "relationParameter": "friendship", "amount": 1 }
 }
 ```

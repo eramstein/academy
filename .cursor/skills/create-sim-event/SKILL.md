@@ -1,6 +1,6 @@
 ---
 name: create-sim-event
-description: Creates or edits sim events in src/data/sim/events.json from a natural-language description, elaborating a short synopsis into event prose and mapping conditions and rewards onto triggers, option templates, and effect templates. Use when the user asks to add, write, or change a game event, a character arc beat (e.g. "add an event for molly where..."), or the triggers/options of an existing event.
+description: Creates or edits sim events in src/data/sim/events.json from a natural-language description, elaborating a short synopsis into event prose and mapping conditions and rewards onto triggers, option templates, and effects. Use when the user asks to add, write, or change a game event, a character arc beat (e.g. "add an event for molly where..."), or the triggers/options of an existing event.
 ---
 
 # Create a sim event
@@ -35,7 +35,7 @@ request did not imply.
 2. Pick the key: `<npcKey>-<n>` for a character arc event, `event-<n>` for main story, using the
    next free number in that series. Keys are permanent identifiers, not prose.
 3. Write `text` (see _Writing the text_). Set `emotion` when appropriate (see _Emotion_).
-4. Map every condition in the request to a trigger, and every outcome to an effect template.
+4. Map every condition in the request to a trigger, and every outcome to an `EventEffect`.
    Verify character, place, and deck keys against the source files listed below.
 5. Insert the event object after the last event of the same `characterArc`, or append it at the end
    of the array for a main-story event.
@@ -49,10 +49,10 @@ request did not imply.
    the user to reload the running page: the dev server serves this file through `/api/events` at
    init and Vite intentionally skips HMR for it.
 
-If a requested outcome has no matching effect template, or a condition has no matching trigger type,
-stop and say which template would have to be added (`SceneEffectTemplates` in
-`src/lib/sim/effects/_templates.ts`, plus an `EventEffectType` and an effect function). Do not
-invent template names: unknown names crash at runtime when the event fires.
+If a requested outcome has no matching effect type, or a condition has no matching trigger type,
+stop and say which `EventEffectType` and effect function would have to be added (see the
+`create-sim-effect` skill). Do not invent type names: unknown types crash at runtime when the
+event fires.
 
 ## Schema
 
@@ -67,7 +67,7 @@ invent template names: unknown names crash at runtime when the event fires.
     /* player choices; [] means the event is pure narration */
   ],
   "triggersOnce": true, // set true unless the event is meant to repeat
-  "effectsTemplates": [
+  "effects": [
     /* optional: applied on trigger, before options */
   ],
   "characterArc": "molly", // npc key, only for character arc events
@@ -76,7 +76,7 @@ invent template names: unknown names crash at runtime when the event fires.
 ```
 
 Property order in the file follows the existing entries: `key`, `text`, `triggers`,
-`effectsTemplates`, `optionTemplates`, `triggersOnce`, `characterArc`, `emotion`.
+`effects`, `optionTemplates`, `triggersOnce`, `characterArc`, `emotion`.
 
 ## Triggers
 
@@ -103,31 +103,32 @@ Two consequences of how the engine handles these:
 
 ## Effects
 
-Effect templates, from `SceneEffectTemplates`:
+Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffectType` in
+`src/lib/_model/enums-sim.ts`:
 
-| `effectTemplate`   | `args`                                                                                                                                            |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `addResource`      | `{ resourceType: "magic_dust" \| "mithril" \| "moxes", amount: 10 }`                                                                              |
-| `addGold`          | `{ amount: 10 }`                                                                                                                                  |
-| `getDeck`          | `{ deckKey: "base_red" \| "base_black" \| "base_green" }`                                                                                         |
-| `scheduleActivity` | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, recurrence?: { maxCount, daysOfWeek, period } } }` |
-| `getJob`           | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                             |
-| `unlockEvent`      | `{ eventKey: "molly-2" }`                                                                                                                         |
+| `type`              | `parameters`                                                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `add_resource`      | `{ resourceType: "magic_dust" \| "mithril" \| "moxes", amount: 10 }`                                                                              |
+| `add_gold`          | `{ amount: 10 }`                                                                                                                                  |
+| `get_deck`          | `{ deckKey: "base_red" \| "base_black" \| "base_green" }`                                                                                         |
+| `schedule_activity` | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, recurrence?: { maxCount, daysOfWeek, period } } }` |
+| `get_job`           | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                             |
+| `unlock_event`      | `{ eventKey: "molly-2" }`                                                                                                                         |
 
-For `scheduleActivity`: `schedule.date.day` is an **offset in days from now** (`0` = today), not an
+For `schedule_activity`: `schedule.date.day` is an **offset in days from now** (`0` = today), not an
 absolute day. `participants` are character keys and include `"player"` when the player takes part.
 `daysOfWeek` uses 1 for Monday through 7 for Sunday. Never put `day`/`period` inside `activity`.
 
-`getJob` hires the player: it adds the job and schedules the `work` activities from `job.schedule`,
-which takes the same shape and day-offset rules as `scheduleActivity`'s. Give a recurring job a
+`get_job` hires the player: it adds the job and schedules the `work` activities from `job.schedule`,
+which takes the same shape and day-offset rules as `schedule_activity`'s. Give a recurring job a
 `recurrence`, or it turns into a single shift. `employerKey` is an NPC key (never `"player"`) and
 `payPerActivity` is the gold earned per shift.
 
-`unlockEvent` clears `locked` on another event by key so it can start triggering. The target must
+`unlock_event` clears `locked` on another event by key so it can start triggering. The target must
 already exist in `events.json`.
 
-`effectsTemplates` on the event fire as soon as it triggers; `effectsTemplates` on an option fire
-only if the player picks that option.
+`effects` on the event fire as soon as it triggers; `effects` on an option fire only if the player
+picks that option.
 
 Action templates (`optionTemplates[].actionTemplate`) start an interactive action instead of
 applying an effect. Only `enrollmentTransaction` and `enrollmentPayment` exist, both from
@@ -135,12 +136,12 @@ applying an effect. Only `enrollmentTransaction` and `enrollmentPayment` exist, 
 
 ## Keys to verify
 
-| Kind                                     | Source                                      |
-| ---------------------------------------- | ------------------------------------------- |
-| Character keys, display names, gender    | `src/data/npcs.ts` (plus `"player"`)        |
-| Place keys                               | `PLACES` in `src/data/sim/places.ts`        |
-| Deck keys                                | `getDeck` in `src/lib/sim/effects/decks.ts` |
-| Resource, period, activity, class, emotion | `src/lib/_model/enums-sim.ts`             |
+| Kind                                       | Source                                      |
+| ------------------------------------------ | ------------------------------------------- |
+| Character keys, display names, gender      | `src/data/npcs.ts` (plus `"player"`)        |
+| Place keys                                 | `PLACES` in `src/data/sim/places.ts`        |
+| Deck keys                                  | `getDeck` in `src/lib/sim/effects/decks.ts` |
+| Resource, period, activity, class, emotion | `src/lib/_model/enums-sim.ts`               |
 
 The validator enumerates the valid values in its error messages, so a run also doubles as a
 reference when unsure.
@@ -203,14 +204,14 @@ or 1 magic dust."_
   "optionTemplates": [
     {
       "text": "Get a Mox",
-      "effectsTemplates": [
-        { "effectTemplate": "addResource", "args": { "resourceType": "moxes", "amount": 99 } }
+      "effects": [
+        { "type": "add_resource", "parameters": { "resourceType": "moxes", "amount": 99 } }
       ]
     },
     {
       "text": "Get some Dust",
-      "effectsTemplates": [
-        { "effectTemplate": "addResource", "args": { "resourceType": "magic_dust", "amount": 1 } }
+      "effects": [
+        { "type": "add_resource", "parameters": { "resourceType": "magic_dust", "amount": 1 } }
       ]
     }
   ],

@@ -29,10 +29,7 @@ const classTypes = enumValues(enums, 'ClassType');
 const jobTypes = enumValues(enums, 'JobType');
 const emotions = enumValues(enums, 'Emotion');
 
-const effectTemplates = recordKeys(
-  read('src/lib/sim/effects/_templates.ts'),
-  'SceneEffectTemplates'
-);
+const effectTypes = enumValues(enums, 'EventEffectType');
 const actionTemplates = recordKeys(
   read('src/lib/sim/actions/_templates.ts'),
   'SceneActionTemplates'
@@ -137,23 +134,23 @@ function checkSchedule(where, schedule) {
 }
 
 function checkEffect(where, effect) {
-  const args = effect?.args ?? {};
-  checkOneOf(where, 'effectTemplate', effect?.effectTemplate, effectTemplates);
-  switch (effect?.effectTemplate) {
-    case 'getDeck':
-      checkOneOf(where, 'deckKey', args.deckKey, deckKeys);
+  const parameters = effect?.parameters ?? {};
+  checkOneOf(where, 'type', effect?.type, effectTypes);
+  switch (effect?.type) {
+    case 'get_deck':
+      checkOneOf(where, 'deckKey', parameters.deckKey, deckKeys);
       break;
-    case 'addResource':
-      checkOneOf(where, 'resourceType', args.resourceType, resourceTypes);
-      if (typeof args.amount !== 'number') errors.push(`${where}: amount must be a number`);
+    case 'add_resource':
+      checkOneOf(where, 'resourceType', parameters.resourceType, resourceTypes);
+      if (typeof parameters.amount !== 'number') errors.push(`${where}: amount must be a number`);
       break;
-    case 'addGold':
-      if (typeof args.amount !== 'number') errors.push(`${where}: amount must be a number`);
+    case 'add_gold':
+      if (typeof parameters.amount !== 'number') errors.push(`${where}: amount must be a number`);
       break;
-    case 'scheduleActivity': {
-      const activity = args.activity;
+    case 'schedule_activity': {
+      const activity = parameters.activity;
       if (!activity) {
-        errors.push(`${where}: scheduleActivity needs an activity object`);
+        errors.push(`${where}: schedule_activity needs an activity object`);
         break;
       }
       checkOneOf(where, 'activity type', activity.type, activityTypes);
@@ -169,13 +166,13 @@ function checkEffect(where, effect) {
       if ('day' in activity || 'period' in activity) {
         errors.push(`${where}: put day/period under schedule, not activity`);
       }
-      checkSchedule(where, args.schedule);
+      checkSchedule(where, parameters.schedule);
       break;
     }
-    case 'getJob': {
-      const job = args.job;
+    case 'get_job': {
+      const job = parameters.job;
       if (!job) {
-        errors.push(`${where}: getJob needs a job object`);
+        errors.push(`${where}: get_job needs a job object`);
         break;
       }
       checkOneOf(where, 'jobType', job.jobType, jobTypes);
@@ -190,8 +187,8 @@ function checkEffect(where, effect) {
       checkSchedule(where, job.schedule);
       break;
     }
-    case 'unlockEvent':
-      checkOneOf(where, 'eventKey', args.eventKey, eventKeys);
+    case 'unlock_event':
+      checkOneOf(where, 'eventKey', parameters.eventKey, eventKeys);
       break;
   }
 }
@@ -202,7 +199,7 @@ const allowedEventProps = new Set([
   'optionTemplates',
   'triggers',
   'triggersOnce',
-  'effectsTemplates',
+  'effects',
   'characterArc',
   'emotion',
   'image',
@@ -239,8 +236,8 @@ events.forEach((event, index) => {
     event.triggers.forEach((trigger, i) => checkTrigger(`${where} trigger[${i}]`, trigger));
   }
 
-  for (const [i, effect] of (event?.effectsTemplates ?? []).entries()) {
-    checkEffect(`${where} effectsTemplates[${i}]`, effect);
+  for (const [i, effect] of (event?.effects ?? []).entries()) {
+    checkEffect(`${where} effects[${i}]`, effect);
   }
 
   if (event?.optionTemplates !== undefined && !Array.isArray(event.optionTemplates)) {
@@ -259,8 +256,8 @@ events.forEach((event, index) => {
         actionTemplates
       );
     }
-    (option?.effectsTemplates ?? []).forEach((effect, j) =>
-      checkEffect(`${optionWhere} effectsTemplates[${j}]`, effect)
+    (option?.effects ?? []).forEach((effect, j) =>
+      checkEffect(`${optionWhere} effects[${j}]`, effect)
     );
   });
 });

@@ -12,6 +12,7 @@ export enum EventEffectType {
   ScheduleActivity = 'schedule_activity',
   GetJob = 'get_job',
   UnlockEvent = 'unlock_event',
+  OfferCardGifts = 'offer_card_gifts',
 }
 
 export enum ActionType {

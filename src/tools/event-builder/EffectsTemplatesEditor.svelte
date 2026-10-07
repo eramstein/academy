@@ -4,14 +4,14 @@
     ActivityType,
     ClassType,
     DayPeriod,
+    EventEffectType,
     JobType,
     ResourceType,
-    type EventEffectsTemplate,
+    type EventEffect,
     type Job,
     type Schedule,
     type ScheduledActivity,
   } from '@/lib/_model';
-  import { SceneEffectTemplates } from '@/lib/sim/effects/_templates';
   import { WEEK_DAYS } from '@/lib/sim/time';
 
   let {
@@ -21,14 +21,17 @@
     description = '',
     nested = false,
   }: {
-    effects: EventEffectsTemplate[];
-    onChange: (effects: EventEffectsTemplate[]) => void;
+    effects: EventEffect[];
+    onChange: (effects: EventEffect[]) => void;
     title?: string;
     description?: string;
     nested?: boolean;
   } = $props();
 
-  const effectNames = Object.keys(SceneEffectTemplates);
+  // Authorable from events; Subscribe is action-only, OfferCardGifts is not wired in applyEffect.
+  const effectTypes = Object.values(EventEffectType).filter(
+    (type) => type !== EventEffectType.Subscribe && type !== EventEffectType.OfferCardGifts
+  );
   const resourceTypes = Object.values(ResourceType);
   const activityTypes = Object.values(ActivityType);
   const classTypes = Object.values(ClassType);
@@ -90,50 +93,50 @@
     };
   }
 
-  function defaultArgs(effectTemplate: string): Record<string, any> {
-    switch (effectTemplate) {
-      case 'getDeck':
+  function defaultParameters(type: EventEffectType): Record<string, any> {
+    switch (type) {
+      case EventEffectType.GetDeck:
         return { deckKey: 'base_red' };
-      case 'addResource':
+      case EventEffectType.AddResource:
         return { resourceType: ResourceType.MagicDust, amount: 1 };
-      case 'addGold':
+      case EventEffectType.AddGold:
         return { amount: 10 };
-      case 'scheduleActivity':
+      case EventEffectType.ScheduleActivity:
         return defaultScheduleArgs();
-      case 'getJob':
+      case EventEffectType.GetJob:
         return defaultJobArgs();
-      case 'unlockEvent':
+      case EventEffectType.UnlockEvent:
         return { eventKey: '' };
       default:
         return {};
     }
   }
 
-  function update(next: EventEffectsTemplate[]) {
+  function update(next: EventEffect[]) {
     onChange(next);
   }
 
   function addEffect() {
-    const effectTemplate = effectNames[0] ?? 'getDeck';
-    update([...effects, { effectTemplate, args: defaultArgs(effectTemplate) }]);
+    const type = effectTypes[0] ?? EventEffectType.GetDeck;
+    update([...effects, { type, parameters: defaultParameters(type) }]);
   }
 
   function removeEffect(index: number) {
     update(effects.filter((_, i) => i !== index));
   }
 
-  function setEffectTemplate(index: number, effectTemplate: string) {
+  function setEffectType(index: number, type: EventEffectType) {
     update(
       effects.map((effect, i) =>
-        i === index ? { effectTemplate, args: defaultArgs(effectTemplate) } : effect
+        i === index ? { type, parameters: defaultParameters(type) } : effect
       )
     );
   }
 
-  function setArg(index: number, key: string, value: unknown) {
+  function setParameter(index: number, key: string, value: unknown) {
     update(
       effects.map((effect, i) =>
-        i === index ? { ...effect, args: { ...effect.args, [key]: value } } : effect
+        i === index ? { ...effect, parameters: { ...effect.parameters, [key]: value } } : effect
       )
     );
   }
@@ -161,8 +164,8 @@
     };
   }
 
-  function scheduleArgs(effect: EventEffectsTemplate): ScheduleActivityArgs {
-    return normalizeScheduleArgs(effect.args);
+  function scheduleArgs(effect: EventEffect): ScheduleActivityArgs {
+    return normalizeScheduleArgs(effect.parameters);
   }
 
   function withoutEmptyRecurrence(schedule: Schedule): Schedule {
@@ -179,7 +182,7 @@
         i === index
           ? {
               ...effect,
-              args: {
+              parameters: {
                 activity: next.activity,
                 schedule: withoutEmptyRecurrence(next.schedule),
               },
@@ -206,13 +209,13 @@
     };
   }
 
-  function jobArgs(effect: EventEffectsTemplate): JobArgs {
-    return normalizeJobArgs(effect.args);
+  function jobArgs(effect: EventEffect): JobArgs {
+    return normalizeJobArgs(effect.parameters);
   }
 
   function writeJobArgs(index: number, next: JobArgs) {
     const job = { ...next.job, schedule: withoutEmptyRecurrence(next.job.schedule) };
-    update(effects.map((effect, i) => (i === index ? { ...effect, args: { job } } : effect)));
+    update(effects.map((effect, i) => (i === index ? { ...effect, parameters: { job } } : effect)));
   }
 
   function setJobField(index: number, key: keyof Omit<Job, 'id'>, value: unknown) {
@@ -220,17 +223,17 @@
     writeJobArgs(index, { job: { ...current.job, [key]: value } });
   }
 
-  // The schedule controls are shared, so read and write it through the owning template's args.
+  // The schedule controls are shared, so read and write it through the owning effect's parameters.
   function currentSchedule(index: number): Schedule {
     const effect = effects[index];
-    return effect.effectTemplate === 'getJob'
+    return effect.type === EventEffectType.GetJob
       ? jobArgs(effect).job.schedule
       : scheduleArgs(effect).schedule;
   }
 
   function setSchedule(index: number, schedule: Schedule) {
     const effect = effects[index];
-    if (effect.effectTemplate === 'getJob') {
+    if (effect.type === EventEffectType.GetJob) {
       writeJobArgs(index, { job: { ...jobArgs(effect).job, schedule } });
     } else {
       writeScheduleArgs(index, { ...scheduleArgs(effect), schedule });
@@ -321,36 +324,39 @@
   {:else}
     <ul class="stack">
       {#each effects as effect, i (i)}
-        {@const args = effect.effectTemplate === 'scheduleActivity' ? scheduleArgs(effect) : null}
-        {@const job = effect.effectTemplate === 'getJob' ? jobArgs(effect) : null}
+        {@const args =
+          effect.type === EventEffectType.ScheduleActivity ? scheduleArgs(effect) : null}
+        {@const job = effect.type === EventEffectType.GetJob ? jobArgs(effect) : null}
         <li class="effect-item">
           <div class="effect-row">
             <select
               class="input template"
-              value={effect.effectTemplate}
-              aria-label="Effect template"
-              onchange={(e) => setEffectTemplate(i, (e.currentTarget as HTMLSelectElement).value)}
+              value={effect.type}
+              aria-label="Effect type"
+              onchange={(e) =>
+                setEffectType(i, (e.currentTarget as HTMLSelectElement).value as EventEffectType)}
             >
-              {#each effectNames as name (name)}
-                <option value={name}>{name}</option>
+              {#each effectTypes as type (type)}
+                <option value={type}>{type}</option>
               {/each}
             </select>
 
-            {#if effect.effectTemplate === 'getDeck'}
+            {#if effect.type === EventEffectType.GetDeck}
               <input
                 class="input arg"
-                value={effect.args.deckKey ?? ''}
+                value={effect.parameters.deckKey ?? ''}
                 placeholder="deck key"
                 aria-label="Deck key"
-                oninput={(e) => setArg(i, 'deckKey', (e.currentTarget as HTMLInputElement).value)}
+                oninput={(e) =>
+                  setParameter(i, 'deckKey', (e.currentTarget as HTMLInputElement).value)}
               />
-            {:else if effect.effectTemplate === 'addResource'}
+            {:else if effect.type === EventEffectType.AddResource}
               <select
                 class="input arg"
-                value={effect.args.resourceType ?? ResourceType.MagicDust}
+                value={effect.parameters.resourceType ?? ResourceType.MagicDust}
                 aria-label="Resource type"
                 onchange={(e) =>
-                  setArg(i, 'resourceType', (e.currentTarget as HTMLSelectElement).value)}
+                  setParameter(i, 'resourceType', (e.currentTarget as HTMLSelectElement).value)}
               >
                 {#each resourceTypes as type (type)}
                   <option value={type}>{type}</option>
@@ -360,28 +366,29 @@
                 class="input narrow"
                 type="number"
                 min="0"
-                value={effect.args.amount ?? 0}
+                value={effect.parameters.amount ?? 0}
                 aria-label="Amount"
                 oninput={(e) =>
-                  setArg(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+                  setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
               />
-            {:else if effect.effectTemplate === 'addGold'}
+            {:else if effect.type === EventEffectType.AddGold}
               <input
                 class="input narrow"
                 type="number"
                 min="0"
-                value={effect.args.amount ?? 0}
+                value={effect.parameters.amount ?? 0}
                 aria-label="Gold amount"
                 oninput={(e) =>
-                  setArg(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+                  setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
               />
-            {:else if effect.effectTemplate === 'unlockEvent'}
+            {:else if effect.type === EventEffectType.UnlockEvent}
               <input
                 class="input arg"
-                value={effect.args.eventKey ?? ''}
+                value={effect.parameters.eventKey ?? ''}
                 placeholder="event key"
                 aria-label="Event key"
-                oninput={(e) => setArg(i, 'eventKey', (e.currentTarget as HTMLInputElement).value)}
+                oninput={(e) =>
+                  setParameter(i, 'eventKey', (e.currentTarget as HTMLInputElement).value)}
               />
             {/if}
 

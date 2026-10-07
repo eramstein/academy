@@ -1,0 +1,97 @@
+[
+  {
+    "id": "dryad",
+    "imageFileName": "dryad",
+    "name": "Dryad",
+    "type": "unit",
+    "cost": 5,
+    "power": 3,
+    "retaliate": 2,
+    "maxHealth": 6,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["spirit"],
+    "keywords": {
+      "regeneration": 4
+    }
+  },
+  {
+    "id": "alpha_male",
+    "imageFileName": "alpha_male",
+    "name": "Alpha Male",
+    "type": "unit",
+    "cost": 7,
+    "power": 5,
+    "retaliate": 2,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "fight",
+              "args": {
+                "targetInFront": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "big_mammas_inn",
+    "imageFileName": "big_mammas_inn",
+    "name": "Big Mamma's Inn",
+    "type": "land",
+    "cost": 0,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "health": 8,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1,
+                "range": {
+                  "sameRow": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

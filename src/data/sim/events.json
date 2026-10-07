@@ -54,10 +54,10 @@
     "optionTemplates": [
       {
         "text": "Red",
-        "effectsTemplates": [
+        "effects": [
           {
-            "effectTemplate": "getDeck",
-            "args": {
+            "type": "get_deck",
+            "parameters": {
               "deckKey": "base_red"
             }
           }
@@ -65,10 +65,10 @@
       },
       {
         "text": "Black",
-        "effectsTemplates": [
+        "effects": [
           {
-            "effectTemplate": "getDeck",
-            "args": {
+            "type": "get_deck",
+            "parameters": {
               "deckKey": "base_black"
             }
           }
@@ -76,10 +76,10 @@
       },
       {
         "text": "Green",
-        "effectsTemplates": [
+        "effects": [
           {
-            "effectTemplate": "getDeck",
-            "args": {
+            "type": "get_deck",
+            "parameters": {
               "deckKey": "base_green"
             }
           }
@@ -87,10 +87,10 @@
       },
       {
         "text": "Blue",
-        "effectsTemplates": [
+        "effects": [
           {
-            "effectTemplate": "getDeck",
-            "args": {
+            "type": "get_deck",
+            "parameters": {
               "deckKey": "base_blue"
             }
           }
@@ -116,10 +116,10 @@
         }
       }
     ],
-    "effectsTemplates": [
+    "effects": [
       {
-        "effectTemplate": "addResource",
-        "args": {
+        "type": "add_resource",
+        "parameters": {
           "resourceType": "magic_dust",
           "amount": 10
         }
@@ -149,10 +149,10 @@
     "optionTemplates": [
       {
         "text": "Get Moxes",
-        "effectsTemplates": [
+        "effects": [
           {
-            "effectTemplate": "addResource",
-            "args": {
+            "type": "add_resource",
+            "parameters": {
               "resourceType": "moxes",
               "amount": 3
             }
@@ -161,10 +161,10 @@
       },
       {
         "text": "Get some Magic Dust",
-        "effectsTemplates": [
+        "effects": [
           {
-            "effectTemplate": "addResource",
-            "args": {
+            "type": "add_resource",
+            "parameters": {
               "resourceType": "magic_dust",
               "amount": 3
             }
@@ -173,10 +173,10 @@
       },
       {
         "text": "Get some Mithril",
-        "effectsTemplates": [
+        "effects": [
           {
-            "effectTemplate": "addResource",
-            "args": {
+            "type": "add_resource",
+            "parameters": {
               "resourceType": "mithril",
               "amount": 3
             }
@@ -210,10 +210,10 @@
     "optionTemplates": [
       {
         "text": "Accept",
-        "effectsTemplates": [
+        "effects": [
           {
-            "effectTemplate": "getJob",
-            "args": {
+            "type": "get_job",
+            "parameters": {
               "job": {
                 "jobType": "mentoring",
                 "name": "Library Mentoring",
@@ -262,10 +262,10 @@
     "optionTemplates": [
       {
         "text": "Accept",
-        "effectsTemplates": [
+        "effects": [
           {
-            "effectTemplate": "addGold",
-            "args": {
+            "type": "add_gold",
+            "parameters": {
               "amount": 10
             }
           }
@@ -301,10 +301,10 @@
     "optionTemplates": [
       {
         "text": "Accept",
-        "effectsTemplates": [
+        "effects": [
           {
-            "effectTemplate": "scheduleActivity",
-            "args": {
+            "type": "schedule_activity",
+            "parameters": {
               "activity": {
                 "type": "date",
                 "participants": ["player", "emma"],

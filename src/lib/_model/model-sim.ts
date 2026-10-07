@@ -86,7 +86,7 @@ export interface EventTemplate {
   triggers: EventTrigger[];
   triggersOnce?: boolean;
   locked?: boolean;
-  effectsTemplates?: EventEffectsTemplate[];
+  effects?: EventEffect[];
   characterArc?: string; // npc key
   emotion?: Emotion;
   image?: string;
@@ -95,16 +95,11 @@ export interface EventTemplate {
 export interface EventOptionTemplate {
   text: string;
   actionTemplate?: ActionTemplate;
-  effectsTemplates?: EventEffectsTemplate[];
+  effects?: EventEffect[];
 }
 
 export interface ActionTemplate {
   actionTemplate: string;
-  args: Record<string, any>;
-}
-
-export interface EventEffectsTemplate {
-  effectTemplate: string;
   args: Record<string, any>;
 }
 
