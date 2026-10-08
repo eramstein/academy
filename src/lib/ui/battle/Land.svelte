@@ -1,9 +1,10 @@
 <script lang="ts">
   import type { Land } from '@lib/_model';
-  import { TargetType } from '@lib/_model';
+  import { TargetType, TriggerType } from '@lib/_model';
   import { bs, uiState } from '@lib/_state';
   import { getLandImagePath } from '@lib/_utils/asset-paths';
   import { attackLand } from '@lib/battle/combat';
+  import { isActivityPayable } from '@lib/battle/cost';
   import { isHumanPlayer, usePlayerColorAbility } from '@lib/battle/player';
   import { clearSelections, setUnitsTargets } from '@lib/ui/_helpers/selections';
   import { activateAbility, targetLand } from '@lib/ui/_helpers/targetting';
@@ -30,10 +31,18 @@
     return land.colors.some((c) => c.color === colorBeingIncremented);
   });
 
-  // Check if this land should show the golden border (ability available)
+  // Golden outline when this land can still be used this turn.
+  // Outline (not a thicker border) so the artwork is not rescaled.
   let showGoldenBorder = $derived(() => {
-    // Only show for player's lands when ability is not used
-    return land.ownerPlayerId === 0 && !bs.players[0].abilityUsed;
+    if (!bs.isPlayersTurn || land.ownerPlayerId !== 0 || bs.players[0].abilityUsed) {
+      return false;
+    }
+    const ability = land.abilities?.[0];
+    if (ability?.trigger.type === TriggerType.Activated) {
+      return isActivityPayable(land, ability);
+    }
+    // Basic lands tap for a color and don't cost mana.
+    return land.colors.length > 0;
   });
 
   let showAbilityActivation = $derived(
@@ -183,8 +192,13 @@
   }
 
   .land.ability-available {
-    border: 2px solid var(--color-golden);
-    box-shadow: 0 0 8px rgba(191, 161, 74, 0.3);
+    outline: 2px solid var(--color-golden);
+    outline-offset: 0;
+    box-shadow:
+      0 0 8px rgba(191, 161, 74, 0.45),
+      0 5px 8px rgba(0, 0, 0, 0.48),
+      0 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
   }
 
   .land.color-increment {

@@ -17,6 +17,15 @@
 
   let graveyardCards = $derived(player?.graveyard || []);
 
+  let selectedInstanceIds = $derived.by(() => {
+    const ui = uiState.battle;
+    if (ui.targetBeingSelected?.type !== TargetType.GraveyardCard) return new Set<string>();
+    const effectIdx = ui.currentEffectIndex || 0;
+    const targetIdx = ui.currentTargetIndex || 0;
+    const selected = (ui.selectedTargets[effectIdx]?.[targetIdx] as BattleCard[] | undefined) ?? [];
+    return new Set(selected.map((c) => c.instanceId));
+  });
+
   const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
@@ -47,7 +56,13 @@
   }
 
   function selectCard(card: BattleCard) {
-    targetCard(card);
+    if (uiState.battle.targetBeingSelected?.type === TargetType.GraveyardCard) {
+      if (selectedInstanceIds.has(card.instanceId)) return;
+      // Keep the modal open until all required graveyard targets are picked;
+      // targetCard closes it once the count is met.
+      targetCard(card);
+      return;
+    }
     closeModal();
   }
 
@@ -89,8 +104,12 @@
             <p class="empty">The graveyard is empty.</p>
           {:else}
             <div class="cards-grid">
-              {#each graveyardCards as card (card.id)}
-                <div class="card-wrapper" onclick={() => selectCard(card)}>
+              {#each graveyardCards as card (card.instanceId)}
+                <div
+                  class="card-wrapper"
+                  class:selected={selectedInstanceIds.has(card.instanceId)}
+                  onclick={() => selectCard(card)}
+                >
                   <Card {card} displayKeywords={true} inHand={false} />
                 </div>
               {/each}
@@ -248,18 +267,30 @@
     flex-shrink: 0;
     cursor: pointer;
     border-radius: 8px;
+    box-shadow: 0 0 0 0 transparent;
     transition:
-      transform 0.18s ease,
-      box-shadow 0.18s ease;
+      box-shadow 0.15s ease,
+      filter 0.15s ease;
   }
 
   .card-wrapper:hover,
   .card-wrapper:focus-visible {
-    transform: translateY(-6px);
+    filter: brightness(1.05);
+  }
+
+  .card-wrapper.selected {
     box-shadow:
-      0 4px 8px rgba(44, 37, 29, 0.22),
-      0 12px 22px rgba(44, 37, 29, 0.32);
-    outline: none;
+      0 0 0 2px var(--color-ink),
+      0 0 0 5px var(--color-golden);
+    cursor: default;
+  }
+
+  .card-wrapper.selected:hover,
+  .card-wrapper.selected:focus-visible {
+    filter: none;
+    box-shadow:
+      0 0 0 2px var(--color-ink),
+      0 0 0 5px var(--color-golden);
   }
 
   .actions {

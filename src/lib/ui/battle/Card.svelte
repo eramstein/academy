@@ -188,7 +188,7 @@
 </script>
 
 <div
-  class="card {isPendingSpell ? 'pending-spell' : ''} {isDragging ? 'dragging' : ''} {isPayable
+  class="card {inHand ? 'in-hand' : ''} {isPendingSpell ? 'pending-spell' : ''} {isDragging ? 'dragging' : ''} {isPayable
     ? 'payable'
     : ''} {canDragCard() ? 'draggable' : ''}"
   style="--card-width: {CARD_WIDTH}px; --card-height: {CARD_HEIGHT +
@@ -325,7 +325,7 @@
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
-  .card:hover {
+  .card.in-hand:hover {
     margin-top: -8px;
     box-shadow:
       0 1px 0 rgba(255, 255, 255, 0.16),

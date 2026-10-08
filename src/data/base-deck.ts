@@ -834,23 +834,23 @@ const mechanical_toy = {
   unitTypes: [UnitType.Construct],
 };
 
-const security_golem = {
-  id: 'security_golem',
-  name: 'Security Golem',
-  imageFileName: 'security_golem',
+const volatile_spirits = {
+  id: 'volatile_spirits',
+  name: 'Volatile Spirits',
+  imageFileName: 'volatile_spirits',
   type: CardType.Unit,
   cost: 2,
   colors: [{ color: CardColor.Blue, count: 2 }],
   power: 3,
   maxHealth: 2,
   retaliate: 0,
-  unitTypes: [UnitType.Construct],
+  unitTypes: [UnitType.Spirit],
 };
 
-const gifted_apprentice = {
-  id: 'gifted_apprentice',
-  name: 'Gifted Apprentice',
-  imageFileName: 'gifted_apprentice',
+const unsure_student = {
+  id: 'unsure_student',
+  name: 'Unsure Student',
+  imageFileName: 'unsure_student',
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Blue, count: 1 }],
@@ -955,10 +955,10 @@ const recycling_bot = {
   ],
 };
 
-const buffoon = {
-  id: 'buffoon',
-  name: 'Buffoon',
-  imageFileName: 'buffoon',
+const bureaucrat = {
+  id: 'bureaucrat',
+  name: 'Bureaucrat',
+  imageFileName: 'bureaucrat',
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Blue, count: 1 }],
@@ -992,10 +992,10 @@ const buffoon = {
   ],
 };
 
-const arcane_sniper = {
-  id: 'arcane_sniper',
-  name: 'Arcane Sniper',
-  imageFileName: 'arcane_sniper',
+const pragmatic_mage = {
+  id: 'pragmatic_mage',
+  name: 'Pragmatic Mage',
+  imageFileName: 'pragmatic_mage',
   type: CardType.Unit,
   cost: 4,
   colors: [{ color: CardColor.Blue, count: 2 }],
@@ -1008,10 +1008,10 @@ const arcane_sniper = {
   },
 };
 
-const shameless_imitator = {
-  id: 'shameless_imitator',
-  name: 'Shameless Imitator',
-  imageFileName: 'shameless_imitator',
+const mage_sharpshooter = {
+  id: 'mage_sharpshooter',
+  name: 'Mage Sharpshooter',
+  imageFileName: 'mage_sharpshooter',
   type: CardType.Unit,
   cost: 4,
   colors: [{ color: CardColor.Blue, count: 2 }],
@@ -1154,10 +1154,10 @@ const unsummon = {
   ],
 };
 
-const basic_research = {
-  id: 'basic_research',
-  name: 'Basic Research',
-  imageFileName: 'basic_research',
+const honest_work = {
+  id: 'honest_work',
+  name: 'Honest Work',
+  imageFileName: 'honest_work',
   type: CardType.Spell,
   cost: 3,
   colors: [{ color: CardColor.Blue, count: 2 }],
@@ -1192,10 +1192,10 @@ const ancient_memories = {
   ],
 };
 
-const carnival_of_miracles = {
-  id: 'carnival_of_miracles',
-  name: 'Carnival of Miracles',
-  imageFileName: 'carnival_of_miracles',
+const magical_move = {
+  id: 'magical_move',
+  name: 'Magical Move',
+  imageFileName: 'magical_move',
   type: CardType.Spell,
   cost: 2,
   colors: [{ color: CardColor.Blue, count: 2 }],
@@ -1802,19 +1802,19 @@ export const BASE_DECK_BLUE: DeckBlueprint = {
   cards: [
     daring_spirit,
     mechanical_toy,
-    gifted_apprentice,
+    unsure_student,
     recycling_bot,
-    buffoon,
-    arcane_sniper,
-    shameless_imitator,
+    bureaucrat,
+    pragmatic_mage,
+    mage_sharpshooter,
     ice_golem,
     patient_researcher,
     water_elemental,
     council_envoy,
     zeppelin,
-    basic_research,
-    carnival_of_miracles,
-    security_golem,
+    honest_work,
+    magical_move,
+    volatile_spirits,
     fleeting_spirit,
     hyptnotic_witch,
     ancient_memories,
