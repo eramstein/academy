@@ -1,10 +1,17 @@
 import type { Action, Job } from '@/lib/_model';
 import { ActionType } from '@/lib/_model/enums-sim';
 import { gs } from '@/lib/_state';
+import {
+  teachAbility,
+  teachColor,
+  type TeachAbilityParameters,
+  type TeachColorParameters,
+} from '../effects/teach';
 import { getJobActions, performJob } from '../jobs';
-import { getLessonActions } from '../lesson';
+import { getLessonActions, getStudyActions } from '../lesson';
 import { narrateText } from '../narration';
 import { nextScene, setSceneEvents } from '../scene';
+import { getNextPeriod } from '../time';
 import { ActionsLimitByPeriod } from './_action-types';
 import {
   conjureCard,
@@ -23,7 +30,6 @@ import { move, type MoveParameters } from './move';
 import { negotiate, type NegotiateParameters } from './negotiation';
 import { getSocializeActions, socialize, type SocializeParameters } from './socialize';
 import { getShopActions, transaction, type TransactionParameters } from './transaction';
-import { getNextPeriod } from '../time';
 import { wait } from './wait';
 
 function capitalizePeriod(period: string): string {
@@ -34,6 +40,7 @@ export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
   actions.push(...getSocializeActions());
   actions.push(...getLessonActions());
+  actions.push(...getStudyActions());
   actions.push(...getShopActions());
   actions.push(...getJobActions());
   console.log('actions', actions);
@@ -116,4 +123,6 @@ const actionFunctions: Record<
   [ActionType.Invoke]: (parameters) =>
     invokeCard(parameters as CardCreationParameters, parameters.characterKey ?? 'player'),
   [ActionType.PerformJob]: (parameters) => performJob(parameters.job as Job),
+  [ActionType.StudyColors]: (parameters) => teachColor(parameters as TeachColorParameters),
+  [ActionType.StudyAbilities]: (parameters) => teachAbility(parameters as TeachAbilityParameters),
 };

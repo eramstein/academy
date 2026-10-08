@@ -13,6 +13,8 @@ export enum EventEffectType {
   GetJob = 'get_job',
   UnlockEvent = 'unlock_event',
   OfferCardGifts = 'offer_card_gifts',
+  TeachColor = 'teach_color',
+  TeachAbility = 'teach_ability',
 }
 
 export enum ActionType {
@@ -27,6 +29,8 @@ export enum ActionType {
   Wait = 'wait',
   Socialize = 'socialize',
   StartMatch = 'start_match',
+  StudyColors = 'study_colors',
+  StudyAbilities = 'study_abilities',
 }
 
 export enum NarrationType {
@@ -47,6 +51,7 @@ export enum ActivityType {
   Social = 'social',
   Date = 'date',
   Training = 'training',
+  Study = 'study',
 }
 
 export enum ClassType {

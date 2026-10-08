@@ -48,7 +48,7 @@ export function getCharacterImagePath(characterName: string): string {
 }
 
 export function getCharacterSheetPath(characterKey: string): string {
-  return getAssetPath(`images/characters/sheets/${characterKey}.png`);
+  return getAssetPath(`images/characters/sheets/${characterKey}.jpg`);
 }
 
 export function hasCharacterEmotionSheet(characterKey: string): boolean {
@@ -100,8 +100,19 @@ export function getPlaceImagePath(placeKey: string): string {
   return getAssetPath(`images/places/${placeKey}.jpg`);
 }
 
+/** Event illustration filename as stored on EventTemplate.image (e.g. molly-f2.jpg). */
+export function getEventImagePath(imageFileName: string): string {
+  return getAssetPath(`images/events/${imageFileName}`);
+}
+
 export function getJobImagePath(jobName: string): string {
   return getAssetPath(`images/jobs/${jobName}.jpg`);
+}
+
+/** Activity illustration: `images/activities/{type}_{characterKeys...}.jpg` (e.g. study_molly.jpg). */
+export function getActivityImagePath(activityType: string, characterKeys: string[]): string {
+  const participants = [...characterKeys].sort().join('_');
+  return getAssetPath(`images/activities/${activityType}_${participants}.jpg`);
 }
 
 /** Semantic UI icon names → painted PNG files in images/ui/icons. */

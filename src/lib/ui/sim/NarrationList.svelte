@@ -338,6 +338,7 @@
 {/snippet}
 
 {#snippet narrationImage(entry: Narration)}
+  {@const canCache = !!(entry.imageUrl && entry.imagePrompt)}
   <figure class="narration-image" title={entry.imagePrompt}>
     {#if entry.imageUrl}
       <div class="scene-frame">
@@ -345,6 +346,7 @@
           src={entry.imageUrl}
           alt=""
           title={entry.imagePrompt}
+          class:cacheable={canCache}
           onload={() => onProgress?.('smooth')}
           onclick={() => askCacheScene(entry)}
         />
@@ -505,6 +507,9 @@
 
   .narration-image img {
     width: 100%;
+  }
+
+  .narration-image img.cacheable {
     cursor: pointer;
   }
 

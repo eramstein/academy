@@ -1707,7 +1707,7 @@ const enchanter_lair = {
 };
 
 export const BASE_DECK_GREEN: DeckBlueprint = {
-  key: 'base',
+  key: 'base_green',
   name: 'Base Green',
   cards: [
     savannah_lion,
@@ -1737,7 +1737,7 @@ export const BASE_DECK_GREEN: DeckBlueprint = {
 };
 
 export const BASE_DECK_RED: DeckBlueprint = {
-  key: 'base',
+  key: 'base_red',
   name: 'Base Red',
   cards: [
     young_viking,
@@ -1767,7 +1767,7 @@ export const BASE_DECK_RED: DeckBlueprint = {
 };
 
 export const BASE_DECK_BLACK: DeckBlueprint = {
-  key: 'base',
+  key: 'base_black',
   name: 'Base Black',
   cards: [
     sewer_rat,
@@ -1797,7 +1797,7 @@ export const BASE_DECK_BLACK: DeckBlueprint = {
 };
 
 export const BASE_DECK_BLUE: DeckBlueprint = {
-  key: 'base',
+  key: 'base_blue',
   name: 'Base Blue',
   cards: [
     daring_spirit,

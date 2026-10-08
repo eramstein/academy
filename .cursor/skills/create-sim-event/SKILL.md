@@ -111,14 +111,18 @@ Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffect
 | `add_resource`      | `{ resourceType: "magic_dust" \| "mithril" \| "moxes", amount: 10 }`                                                                              |
 | `add_gold`          | `{ amount: 10 }`                                                                                                                                  |
 | `get_deck`          | `{ deckKey: "base_red" \| "base_black" \| "base_green" }`                                                                                         |
-| `schedule_activity` | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, recurrence?: { maxCount, daysOfWeek, period } } }` |
+| `schedule_activity` | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, nextFree?: true, recurrence?: { maxCount, daysOfWeek, period } } }` |
 | `get_job`           | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                             |
 | `unlock_event`      | `{ eventKey: "molly-2" }`                                                                                                                         |
 | `offer_card_gifts`  | `{ count: 2, poolKeys: ["molly", "base"] }`                                                                                                       |
+| `teach_color`       | `{ color?: "red" \| "blue" \| "green" \| "black", characterKey?: "molly" }`                                                                       |
+| `teach_ability`     | `{ ability?: "haste" \| "directDamage" \| …, characterKey?: "molly" }` (omit `ability` for random)                                                |
 
 For `schedule_activity`: `schedule.date.day` is an **offset in days from now** (`0` = today), not an
-absolute day. `participants` are character keys and include `"player"` when the player takes part.
-`daysOfWeek` uses 1 for Monday through 7 for Sunday. Never put `day`/`period` inside `activity`.
+absolute day. Set `schedule.nextFree: true` to pick the soonest free slot for `date.period`
+(defaults to evening) instead of a fixed offset. `participants` are character keys and include
+`"player"` when the player takes part. `daysOfWeek` uses 1 for Monday through 7 for Sunday. Never
+put `day`/`period` inside `activity`.
 
 `get_job` hires the player: it adds the job and schedules the `work` activities from `job.schedule`,
 which takes the same shape and day-offset rules as `schedule_activity`'s. Give a recurring job a
@@ -132,6 +136,16 @@ already exist in `events.json`.
 (`getCardTemplatesByPoolKeys`), then posts a `gift_card_choice` narration so the player can pick
 one card into their collection. Prefer it on the event (not an option) so the offer appears with
 the scene.
+
+`teach_color` adds the color to the player's `craftingKnowledge.colors` at 1 if unknown, or
+increments the existing level by 1. Provide `color`, or `characterKey` to pick from that NPC's known
+colors (preferring ones the player does not know yet). With `characterKey`, if the player owns no
+collection card of the taught color, they also receive the matching `base_*` deck via `get_deck`.
+
+`teach_ability` does the same for a unit keyword (`craftingKnowledge.keywords`) or action template
+(`craftingKnowledge.actions`). `ability` is optional; omit it (or leave it empty) to pick a random
+keyword or action-template key. With `characterKey` and no `ability`, the random pool is restricted
+to abilities that NPC already knows.
 
 `effects` on the event fire as soon as it triggers; `effects` on an option fire only if the player
 picks that option.

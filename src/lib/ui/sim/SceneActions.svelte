@@ -78,6 +78,11 @@
 
   const currentOptions = $derived.by(() => {
     if (!pendingAction || !currentParameterKey) return [];
+    // Resolve decks live so we always show current decks with unique option values
+    // (saved games may still share key "base" across color decks).
+    if (currentParameterKey === 'playerDeckKey') {
+      return gs.player.decks.map((deck, index) => [String(index), deck.name] as [string, string]);
+    }
     const value = pendingAction.missingParameters?.[currentParameterKey];
     return Array.isArray(value) ? value : [];
   });
@@ -99,10 +104,17 @@
 
   function optionThumb(option: string | [string, string]): { path: string; portrait: boolean } | undefined {
     const value = optionValue(option);
-    const card = gs.player.collection.find((c) => c.id === value);
-    if (card) return { path: getCardImagePath(card.imageFileName), portrait: false };
-    const character = gs.characters[value];
-    if (character) return { path: getCharacterImagePath(character.key), portrait: true };
+    // Only attach thumbs for parameters that are actually cards/characters —
+    // deck keys must not fall through to character portraits.
+    if (currentParameterKey === 'cardId') {
+      const card = gs.player.collection.find((c) => c.id === value);
+      if (card) return { path: getCardImagePath(card.imageFileName), portrait: false };
+      return undefined;
+    }
+    if (currentParameterKey === 'characterKey' || currentParameterKey === 'opponentKey') {
+      const character = gs.characters[value];
+      if (character) return { path: getCharacterImagePath(character.key), portrait: true };
+    }
   }
 
   function optionIcon(option: string | [string, string]): string | undefined {
@@ -275,31 +287,33 @@
           <OrnateButton onclick={() => selectOption(option)}>{option.text}</OrnateButton>
         {/each}
       {:else if pendingAction && currentParameterKey}
-        {#each currentOptions as option (optionValue(option))}
-          {@const thumb = optionThumb(option)}
-          {#if thumb}
-            <OrnateButton
-              variant={pendingAction.isLongAction ? 'long' : 'default'}
-              onclick={() => pickParameter(optionValue(option))}
-            >
-              {#snippet lead()}
-                <span class="option-thumb" class:portrait={thumb.portrait} aria-hidden="true">
-                  <img src={thumb.path} alt="" draggable="false" />
-                </span>
-              {/snippet}
-              {optionLabel(option)}
-            </OrnateButton>
-          {:else}
-            <OrnateButton
-              icon={optionIcon(option)}
-              variant={pendingAction.isLongAction ? 'long' : 'default'}
-              onclick={() => pickParameter(optionValue(option))}
-            >
-              {optionLabel(option)}
-            </OrnateButton>
-          {/if}
-        {/each}
-        <button type="button" class="cancel-btn" onclick={cancelParameterPick}>Cancel</button>
+        {#key currentParameterKey}
+          {#each currentOptions as option, i (`${currentParameterKey}-${optionValue(option)}-${i}`)}
+            {@const thumb = optionThumb(option)}
+            {#if thumb}
+              <OrnateButton
+                variant={pendingAction.isLongAction ? 'long' : 'default'}
+                onclick={() => pickParameter(optionValue(option))}
+              >
+                {#snippet lead()}
+                  <span class="option-thumb" class:portrait={thumb.portrait} aria-hidden="true">
+                    <img src={thumb.path} alt="" draggable="false" />
+                  </span>
+                {/snippet}
+                {optionLabel(option)}
+              </OrnateButton>
+            {:else}
+              <OrnateButton
+                icon={optionIcon(option)}
+                variant={pendingAction.isLongAction ? 'long' : 'default'}
+                onclick={() => pickParameter(optionValue(option))}
+              >
+                {optionLabel(option)}
+              </OrnateButton>
+            {/if}
+          {/each}
+          <button type="button" class="cancel-btn" onclick={cancelParameterPick}>Cancel</button>
+        {/key}
       {:else}
         {#each actions as action (action.actionType + action.label)}
           <OrnateButton

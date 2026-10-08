@@ -9,6 +9,12 @@ import { getJob, type GetJobParameters } from './jobs';
 import { addResource, type AddResourceParameters } from './resources';
 import { scheduleActivities, type ScheduleActivitiesParameters } from './schedule';
 import { subscribe, type TransactionSubscriptionParameters } from './subscribe';
+import {
+  teachAbility,
+  teachColor,
+  type TeachAbilityParameters,
+  type TeachColorParameters,
+} from './teach';
 
 export function applyEffect(effect: EventEffect) {
   const result = effectFunctions[effect.type](effect.parameters);
@@ -29,4 +35,7 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.UnlockEvent]: (parameters) => unlockEvent(parameters as UnlockEventParameters),
   [EventEffectType.OfferCardGifts]: (parameters) =>
     offerCardGifts(parameters as OfferCardGiftsParameters),
+  [EventEffectType.TeachColor]: (parameters) => teachColor(parameters as TeachColorParameters),
+  [EventEffectType.TeachAbility]: (parameters) =>
+    teachAbility(parameters as TeachAbilityParameters),
 };

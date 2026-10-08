@@ -2,6 +2,7 @@
   import { PLACES } from '@/data/sim/places';
   import {
     ActivityType,
+    CardColor,
     ClassType,
     DayPeriod,
     EventEffectType,
@@ -12,6 +13,8 @@
     type Schedule,
     type ScheduledActivity,
   } from '@/lib/_model';
+  import { ACTION_TEMPLATE_KEYS } from '@/lib/sim/cards/action-templates';
+  import { KEYWORD_KEYS } from '@/lib/sim/cards/keywords';
   import { WEEK_DAYS } from '@/lib/sim/time';
 
   let {
@@ -33,6 +36,8 @@
     (type) => type !== EventEffectType.Subscribe
   );
   const resourceTypes = Object.values(ResourceType);
+  const cardColors = Object.values(CardColor);
+  const abilityKeys = [...KEYWORD_KEYS, ...ACTION_TEMPLATE_KEYS];
   const activityTypes = Object.values(ActivityType);
   const classTypes = Object.values(ClassType);
   const jobTypes = Object.values(JobType);
@@ -109,6 +114,10 @@
         return { eventKey: '' };
       case EventEffectType.OfferCardGifts:
         return { count: 2, poolKeys: [] };
+      case EventEffectType.TeachColor:
+        return { color: CardColor.Red };
+      case EventEffectType.TeachAbility:
+        return {};
       default:
         return {};
     }
@@ -416,6 +425,53 @@
                       .map((part) => part.trim())
                       .filter(Boolean)
                   )}
+              />
+            {:else if effect.type === EventEffectType.TeachColor}
+              <select
+                class="input arg"
+                value={effect.parameters.color ?? CardColor.Red}
+                aria-label="Card color"
+                onchange={(e) =>
+                  setParameter(i, 'color', (e.currentTarget as HTMLSelectElement).value)}
+              >
+                {#each cardColors as color (color)}
+                  <option value={color}>{color}</option>
+                {/each}
+              </select>
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? ''}
+                placeholder="character key (optional)"
+                aria-label="Character key"
+                oninput={(e) => {
+                  const value = (e.currentTarget as HTMLInputElement).value.trim();
+                  setParameter(i, 'characterKey', value || undefined);
+                }}
+              />
+            {:else if effect.type === EventEffectType.TeachAbility}
+              <select
+                class="input arg"
+                value={effect.parameters.ability ?? ''}
+                aria-label="Ability key"
+                onchange={(e) => {
+                  const value = (e.currentTarget as HTMLSelectElement).value;
+                  setParameter(i, 'ability', value || undefined);
+                }}
+              >
+                <option value="">(random)</option>
+                {#each abilityKeys as key (key)}
+                  <option value={key}>{key}</option>
+                {/each}
+              </select>
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? ''}
+                placeholder="character key (optional)"
+                aria-label="Character key"
+                oninput={(e) => {
+                  const value = (e.currentTarget as HTMLInputElement).value.trim();
+                  setParameter(i, 'characterKey', value || undefined);
+                }}
               />
             {/if}
 

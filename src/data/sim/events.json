@@ -190,12 +190,70 @@
   },
   {
     "key": "molly-f2",
-    "text": "Molly finds you again with a shy brightness that was not there before. She says your friendship has come to mean more to her than she quite knows how to say, and she wants you to have something from her own collection—a card she has kept close. She lays a few favorites before you and asks you to choose the one that speaks to you.",
+    "text": "Molly finds you with an armful of notes and a shy, hopeful smile. She says she has been wanting to study together, and that she would love to share a few tricks from the green magic she knows best—if you can spare an evening at the library soon.",
     "triggers": [
       {
         "triggerType": "previous_events",
         "parameters": {
           "molly-f1": true
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "molly"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept",
+        "effects": [
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "study",
+                "participants": [
+                  "player",
+                  "molly"
+                ],
+                "placeKey": "library"
+              },
+              "schedule": {
+                "nextFree": true,
+                "date": {
+                  "period": "evening"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "text": "Decline"
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "molly",
+    "emotion": "dreaming"
+  },
+  {
+    "key": "molly-f3",
+    "text": "Molly finds you again with a shy brightness that was not there before. She says your friendship has come to mean more to her than she quite knows how to say, and she wants you to have something from her own collection—a card she has kept close. She lays a few favorites before you and asks you to choose the one that speaks to you.",
+    "triggers": [
+      {
+        "triggerType": "previous_events",
+        "parameters": {
+          "molly-f2": true
         }
       },
       {

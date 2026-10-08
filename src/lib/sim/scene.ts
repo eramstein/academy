@@ -5,7 +5,7 @@ import { gs } from '../_state';
 import { consumeEventTemplate, getTriggeredSceneEvent, recordEventOccured } from './events';
 import { narrateText } from './narration';
 import { updateNpcLocations } from './npc';
-import { getCurrentScheduledActivity } from './schedule';
+import { getCurrentScheduledActivity, narrateScheduledActivity } from './schedule';
 import { nextPeriod } from './time';
 
 /* 
@@ -53,6 +53,7 @@ export function startScene() {
       }
       gs.characters[participant].placeKey = currentScheduledActivity.placeKey;
     });
+    narrateScheduledActivity(currentScheduledActivity);
     setSceneEvents();
   } else {
     gs.scene.selectingNextPlace = true;
@@ -78,6 +79,7 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
   narrateText(event.text, {
     characterKey: template.characterArc,
     emotion: template.emotion,
+    image: template.image,
   });
   gs.scene.event = event.options.length > 0 ? event : undefined;
   if (template.triggersOnce) {

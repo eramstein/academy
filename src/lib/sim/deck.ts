@@ -18,16 +18,25 @@ const BASE_DECKS_BY_COLOR: Partial<Record<CardColor, DeckBlueprint>> = {
 };
 
 export function redeemBaseDeck(baseDeck: DeckBlueprint, character: Character) {
-  const cardsWithIds = baseDeck.cards.map(makeUniqueId);
-  const landsWithIds = baseDeck.lands.map(makeUniqueId);
-  character.collection.push(...cardsWithIds);
-  character.collection.push(...landsWithIds);
+  const cardsWithIds = baseDeck.cards.map((template) => claimDeckCard(template, character));
+  const landsWithIds = baseDeck.lands.map((template) => claimDeckCard(template, character));
   character.decks.push({
     key: baseDeck.key,
     name: baseDeck.name,
     cards: cardsWithIds.map((c) => c.id),
     lands: landsWithIds.map((c) => c.id),
   });
+}
+
+/** Reuse an owned copy by name; otherwise mint and add to the collection. */
+function claimDeckCard(template: CardTemplate, character: Character): CardTemplate {
+  const existing = character.collection.find((card) => card.name === template.name);
+  if (existing) {
+    return existing;
+  }
+  const card = makeUniqueId(template);
+  character.collection.push(card);
+  return card;
 }
 
 export function initNpcDecks() {

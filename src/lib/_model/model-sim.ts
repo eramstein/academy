@@ -267,6 +267,8 @@ export interface Schedule {
     day?: number;
     period?: DayPeriod;
   };
+  /** When true, schedule on the soonest free slot for date.period (default evening). */
+  nextFree?: boolean;
   recurrence?: {
     maxCount?: number;
     daysOfWeek?: number[];

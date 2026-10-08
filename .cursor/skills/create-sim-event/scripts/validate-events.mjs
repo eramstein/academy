@@ -21,6 +21,7 @@ function recordKeys(source, recordName) {
 }
 
 const enums = read('src/lib/_model/enums-sim.ts');
+const battleEnums = read('src/lib/_model/enums-battle.ts');
 const triggerTypes = enumValues(enums, 'EventTriggerType');
 const resourceTypes = enumValues(enums, 'ResourceType');
 const periods = enumValues(enums, 'DayPeriod');
@@ -28,6 +29,7 @@ const activityTypes = enumValues(enums, 'ActivityType');
 const classTypes = enumValues(enums, 'ClassType');
 const jobTypes = enumValues(enums, 'JobType');
 const emotions = enumValues(enums, 'Emotion');
+const cardColors = enumValues(battleEnums, 'CardColor');
 
 const effectTypes = enumValues(enums, 'EventEffectType');
 const actionTemplates = recordKeys(
@@ -47,6 +49,18 @@ const placeKeys = [
 const deckKeys = [...read('src/lib/sim/effects/decks.ts').matchAll(/deckKey === '([^']+)'/g)].map(
   (m) => m[1]
 );
+
+const keywordKeys = [
+  ...(
+    read('src/lib/sim/cards/keywords.ts').match(
+      /export const KEYWORD_KEYS[^=]*=\s*\[([^\]]*)\]/
+    )?.[1] ?? ''
+  ).matchAll(/['"](\w+)['"]/g),
+].map((m) => m[1]);
+const actionTemplateKeys = [
+  ...read('src/lib/sim/cards/action-templates-data.ts').matchAll(/^ {2}(\w+):\s*\(/gm),
+].map((m) => m[1]);
+const abilityKeys = [...keywordKeys, ...actionTemplateKeys];
 
 const raw = read('src/data/sim/events.json');
 let events;
@@ -117,10 +131,20 @@ function checkTrigger(where, trigger) {
 
 function checkSchedule(where, schedule) {
   const date = schedule?.date;
+  const nextFree = schedule?.nextFree === true;
+  if (schedule?.nextFree != null && typeof schedule.nextFree !== 'boolean') {
+    errors.push(`${where}: schedule.nextFree must be a boolean`);
+  }
   if (date) {
-    if (!Number.isInteger(date.day))
+    if (!nextFree && !Number.isInteger(date.day)) {
       errors.push(`${where}: schedule.date.day must be an integer offset`);
+    }
+    if (nextFree && date.day != null && !Number.isInteger(date.day)) {
+      errors.push(`${where}: schedule.date.day must be an integer offset when set`);
+    }
     if (date.period) checkOneOf(where, 'schedule period', date.period, periods);
+  } else if (nextFree) {
+    // nextFree defaults to evening when date.period is omitted
   }
   const recurrence = schedule?.recurrence;
   if (recurrence) {
@@ -200,6 +224,24 @@ function checkEffect(where, effect) {
         errors.push(`${where}: poolKeys must be a non-empty array`);
       } else if (!parameters.poolKeys.every((key) => typeof key === 'string' && key.trim())) {
         errors.push(`${where}: poolKeys must be an array of non-empty strings`);
+      }
+      break;
+    case 'teach_color': {
+      const hasCharacter = typeof parameters.characterKey === 'string' && parameters.characterKey;
+      const hasColor = parameters.color !== undefined && parameters.color !== '';
+      if (!hasCharacter && !hasColor) {
+        errors.push(`${where}: teach_color needs color or characterKey`);
+      }
+      if (hasCharacter) checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
+      if (hasColor) checkOneOf(where, 'color', parameters.color, cardColors);
+      break;
+    }
+    case 'teach_ability':
+      if (parameters.ability !== undefined && parameters.ability !== '') {
+        checkOneOf(where, 'ability', parameters.ability, abilityKeys);
+      }
+      if (typeof parameters.characterKey === 'string' && parameters.characterKey) {
+        checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
       }
       break;
   }

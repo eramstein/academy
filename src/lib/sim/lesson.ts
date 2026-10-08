@@ -1,4 +1,4 @@
-import { ActionType, ClassType, SchoolName, type Action } from '../_model';
+import { ActionType, ActivityType, ClassType, SchoolName, type Action } from '../_model';
 import { isClassActivity } from '../_model/type-lookup-sim';
 import { gs } from '../_state';
 import { getRandomFromArray } from '../_utils/random';
@@ -78,4 +78,29 @@ async function makeAllNpcsConjure() {
       character.decks[0]!.cards.push(result.template.id);
     }
   }
+}
+
+export function getStudyActions(): Action[] {
+  const currentActivity = getCurrentScheduledActivity();
+  if (!currentActivity || currentActivity.type !== ActivityType.Study) {
+    return [];
+  }
+
+  const teacherKey = currentActivity.participants.find((key) => key !== 'player');
+  const actionParameters = teacherKey ? { characterKey: teacherKey } : {};
+
+  return [
+    {
+      label: 'Study Colors',
+      actionType: ActionType.StudyColors,
+      isLongAction: true,
+      actionParameters,
+    },
+    {
+      label: 'Study Abilities',
+      actionType: ActionType.StudyAbilities,
+      isLongAction: true,
+      actionParameters,
+    },
+  ];
 }

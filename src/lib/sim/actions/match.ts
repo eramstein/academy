@@ -10,13 +10,26 @@ export interface StartMatchParameters {
 }
 
 export function startMatch(parameters: StartMatchParameters): string {
-  const playerDeck = gs.player.decks.find((deck) => deck.key === parameters.playerDeckKey);
+  const playerDeck = resolvePlayerDeck(parameters.playerDeckKey);
   const opponentDeck = pickNpcDeck(parameters.opponentKey);
   if (!playerDeck || !opponentDeck) {
     return 'Missing deck.';
   }
   initOngoingBattle(gs.characters[parameters.opponentKey], playerDeck, opponentDeck, true);
   return `You have started a match with ${gs.characters[parameters.opponentKey].name}.`;
+}
+
+/** Option value for a player deck — index-based so duplicate deck.keys still pick correctly. */
+export function playerDeckOptions(): [string, string][] {
+  return gs.player.decks.map((deck, index) => [String(index), deck.name]);
+}
+
+function resolvePlayerDeck(playerDeckKey: string) {
+  const index = Number(playerDeckKey);
+  if (Number.isInteger(index) && index >= 0 && index < gs.player.decks.length) {
+    return gs.player.decks[index];
+  }
+  return gs.player.decks.find((deck) => deck.key === playerDeckKey);
 }
 
 export function getLeagueMatchActions(): Action[] {
@@ -28,7 +41,8 @@ export function getLeagueMatchActions(): Action[] {
     return [];
   }
   const opponents = getPossibleLeagueOpponents();
-  if (!opponents.length) {
+  const decks = playerDeckOptions();
+  if (!opponents.length || !decks.length) {
     return [];
   }
   return [
@@ -39,7 +53,7 @@ export function getLeagueMatchActions(): Action[] {
       actionParameters: {},
       missingParameters: {
         opponentKey: opponents.map((c) => [c.key, c.name]),
-        playerDeckKey: gs.player.decks.map((d) => [d.key, d.name]),
+        playerDeckKey: decks,
       },
     },
   ];

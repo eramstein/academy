@@ -101,6 +101,7 @@ export function simulateEvent(templateKey: string) {
   narrateText(event.text, {
     characterKey: template.characterArc,
     emotion: template.emotion,
+    image: template.image,
   });
   gs.scene.event = event;
   return event;
