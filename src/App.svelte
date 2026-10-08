@@ -3,6 +3,7 @@
   import { UiView } from './lib/_model';
   import { loadGameStateFromLocalStorage, uiState } from './lib/_state';
   import { initImageGen } from './lib/image_gen';
+  import { loadCardTemplates } from './lib/sim/cards/npc-card-templates';
   import { loadEventTemplates } from './lib/sim/events';
   import { handleKeybinds } from './lib/ui/_keybinds/keybinds';
   import Main from './lib/ui/Main.svelte';
@@ -18,6 +19,7 @@
       await Promise.all([
         loadGameStateFromLocalStorage('quicksave'),
         loadEventTemplates(),
+        loadCardTemplates(),
         initImageGen(),
       ]);
     } catch (error) {

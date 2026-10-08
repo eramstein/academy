@@ -1977,9 +1977,9 @@
     "actions": ["directDamage"]
   },
   {
-    "name": "Red Haired Bard",
-    "imagePrompt": "Red Haired Bard",
-    "imageName": "red_haired_bard",
+    "name": "Celtic Musician",
+    "imagePrompt": "Celtic Musician",
+    "imageName": "celtic_musician",
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
@@ -2264,7 +2264,7 @@
     "unitSize": "powerful",
     "cheapImage": false,
     "colors": ["green"],
-    "keywords": [],
+    "keywords": ["trample"],
     "actions": ["grow", "addGrowthCounters"]
   },
   {

@@ -1,67 +1,95 @@
 [
   {
-    "id": "dryad",
-    "imageFileName": "dryad",
-    "name": "Dryad",
+    "id": "red_haired_bard",
+    "name": "Red Haired Bard",
+    "imageFileName": "red_haired_bard",
     "type": "unit",
     "cost": 5,
-    "power": 3,
-    "retaliate": 2,
-    "maxHealth": 6,
+    "power": 2,
+    "retaliate": 1,
+    "maxHealth": 2,
     "colors": [
       {
         "color": "green",
         "count": 3
       }
     ],
-    "unitTypes": ["spirit"],
-    "keywords": {
-      "regeneration": 4
-    },
-    "poolKeys": ["molly", "base"]
-  },
-  {
-    "id": "alpha_male",
-    "imageFileName": "alpha_male",
-    "name": "Alpha Male",
-    "type": "unit",
-    "cost": 7,
-    "power": 5,
-    "retaliate": 2,
-    "maxHealth": 5,
-    "colors": [
-      {
-        "color": "green",
-        "count": 2
-      }
-    ],
     "unitTypes": ["human"],
     "abilities": [
       {
+        "actions": [
+          {
+            "effect": {
+              "name": "temporaryEffect",
+              "args": {
+                "effect": {
+                  "moveAndAttack": true
+                },
+                "range": {
+                  "allies": true,
+                  "adjacent": true,
+                  "unitType": "beast"
+                }
+              }
+            }
+          }
+        ],
         "trigger": {
           "type": "After Moving",
           "range": {
             "self": true
           }
-        },
-        "actions": [
-          {
-            "effect": {
-              "name": "fight",
-              "args": {
-                "targetInFront": true
-              }
-            }
-          }
-        ]
+        }
       }
     ],
     "poolKeys": ["molly", "base"]
   },
   {
-    "id": "big_mammas_inn",
-    "imageFileName": "big_mammas_inn",
-    "name": "Big Mamma's Inn",
+    "id": "natures_revolt",
+    "name": "Nature's Revolt",
+    "imageFileName": "natures_revolt",
+    "type": "spell",
+    "cost": 7,
+    "colors": [
+      {
+        "color": "green",
+        "count": 4
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "addCounters",
+          "args": {
+            "counterType": "growth",
+            "counterValue": 3,
+            "range": {
+              "allies": true,
+              "unitType": "beast"
+            }
+          }
+        }
+      },
+      {
+        "effect": {
+          "name": "staticKeyword",
+          "args": {
+            "abilityName": "stampede",
+            "keyword": "trample",
+            "range": {
+              "allies": true,
+              "unitType": "beast"
+            }
+          }
+        }
+      }
+    ],
+    "poolKeys": ["molly", "base"]
+  },
+  {
+    "id": "bountiful_soil",
+    "imageFileName": "bountiful_soil",
+    "name": "Bountiful Soil",
     "type": "land",
     "cost": 0,
     "colors": [
@@ -87,7 +115,9 @@
                 "counterType": "growth",
                 "counterValue": 1,
                 "range": {
-                  "sameRow": true
+                  "sameRow": true,
+                  "allies": true,
+                  "unitType": "beast"
                 }
               }
             }
