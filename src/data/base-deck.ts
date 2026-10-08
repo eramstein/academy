@@ -206,10 +206,10 @@ const pandy_panda = {
   unitTypes: [UnitType.Beast],
 };
 
-const ferocious_badger = {
-  id: 'ferocious_badger',
-  name: 'Ferocious Badger',
-  imageFileName: 'ferocious_badger',
+const old_badger = {
+  id: 'old_badger',
+  name: 'Old Badger',
+  imageFileName: 'old_badger',
   type: CardType.Unit,
   cost: 5,
   colors: [{ color: CardColor.Green, count: 1 }],
@@ -261,10 +261,10 @@ const lazy_elephant = {
   },
 };
 
-const deer = {
-  id: 'deer',
-  name: 'Deer',
-  imageFileName: 'deer',
+const alpha_deer = {
+  id: 'alpha_deer',
+  name: 'Alpha Deer',
+  imageFileName: 'alpha_deer',
   type: CardType.Unit,
   cost: 7,
   colors: [{ color: CardColor.Green, count: 1 }],
@@ -502,10 +502,10 @@ const dwarf_pikeman = {
   },
 };
 
-const dwarf_berserker = {
-  id: 'dwarf_berserker',
-  name: 'Dwarf Berserker',
-  imageFileName: 'dwarf_berserker',
+const mad_dwarf = {
+  id: 'mad_dwarf',
+  name: 'Mad Dwarf',
+  imageFileName: 'mad_dwarf',
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Red, count: 1 }],
@@ -518,10 +518,10 @@ const dwarf_berserker = {
   },
 };
 
-const lunging_cougar = {
-  id: 'lunging_cougar',
-  name: 'Lunging Cougar',
-  imageFileName: 'lunging_cougar',
+const dwarf_sprinter = {
+  id: 'dwarf_sprinter',
+  name: 'Dwarf Sprinter',
+  imageFileName: 'dwarf_sprinter',
   type: CardType.Unit,
   cost: 3,
   colors: [{ color: CardColor.Red, count: 2 }],
@@ -547,10 +547,10 @@ const angry_lizard = {
   unitTypes: [UnitType.Beast],
 };
 
-const northern_challenger = {
-  id: 'northern_challenger',
-  name: 'Northern Challenger',
-  imageFileName: 'northern_challenger',
+const viking_axeman = {
+  id: 'viking_axeman',
+  name: 'Viking Axeman',
+  imageFileName: 'viking_axeman',
   type: CardType.Unit,
   cost: 4,
   colors: [{ color: CardColor.Red, count: 1 }],
@@ -1037,10 +1037,10 @@ const ice_golem = {
   unitTypes: [UnitType.Elemental],
 };
 
-const professore = {
-  id: 'professore',
-  name: 'Professor',
-  imageFileName: 'professore',
+const patient_researcher = {
+  id: 'patient_researcher',
+  name: 'Patient Researcher',
+  imageFileName: 'patient_researcher',
   type: CardType.Unit,
   cost: 5,
   colors: [{ color: CardColor.Blue, count: 3 }],
@@ -1235,10 +1235,10 @@ const peasant = {
   unitTypes: [UnitType.Human],
 };
 
-const sewer_rat = {
-  id: 'sewer_rat',
-  name: 'Sewer Rat',
-  imageFileName: 'sewer_rat',
+const gourmand_rat = {
+  id: 'gourmand_rat',
+  name: 'Gourmand Rat',
+  imageFileName: 'gourmand_rat',
   type: CardType.Unit,
   cost: 2,
   colors: [{ color: CardColor.Black, count: 1 }],
@@ -1425,10 +1425,10 @@ const street_slinger = {
   },
 };
 
-const iron_golem = {
-  id: 'iron_golem',
-  name: 'Iron Golem',
-  imageFileName: 'iron_golem',
+const mummy = {
+  id: 'mummy',
+  name: 'Mummy',
+  imageFileName: 'mummy',
   type: CardType.Unit,
   cost: 5,
   colors: [{ color: CardColor.Black, count: 1 }],
@@ -1713,7 +1713,7 @@ export const BASE_DECK_GREEN: DeckBlueprint = {
     savannah_lion,
     bear_minimum,
     boring_boar,
-    ferocious_badger,
+    old_badger,
     halfling_sentinel,
     healing_balm,
     not_so_little_pig,
@@ -1721,7 +1721,7 @@ export const BASE_DECK_GREEN: DeckBlueprint = {
     pandy_panda,
     retired_soldier,
     the_beast,
-    deer,
+    alpha_deer,
     force_of_nature,
     sudden_growth,
     young_druidess,
@@ -1742,14 +1742,14 @@ export const BASE_DECK_RED: DeckBlueprint = {
   cards: [
     young_viking,
     gargoyle,
-    northern_challenger,
-    dwarf_berserker,
+    viking_axeman,
+    mad_dwarf,
     jarl_bodyguard,
     stone_colossus,
     mountain_giant,
     lightning_bolt,
     sneaky_raid,
-    lunging_cougar,
+    dwarf_sprinter,
     angry_lizard,
     orc_warrior,
     hill_troll,
@@ -1770,10 +1770,10 @@ export const BASE_DECK_BLACK: DeckBlueprint = {
   key: 'base_black',
   name: 'Base Black',
   cards: [
-    sewer_rat,
+    gourmand_rat,
     weak_zombie,
     ogre_guard,
-    iron_golem,
+    mummy,
     royal_guard,
     valiant_protector,
     big_bertha,
@@ -1808,7 +1808,7 @@ export const BASE_DECK_BLUE: DeckBlueprint = {
     arcane_sniper,
     shameless_imitator,
     ice_golem,
-    professore,
+    patient_researcher,
     water_elemental,
     council_envoy,
     zeppelin,

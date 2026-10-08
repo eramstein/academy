@@ -166,6 +166,14 @@ function describeAttemptedAction(action?: Action, focusKey?: string): string[] {
         job?.employerKey ? `Employer: ${characterName(job.employerKey)}.` : undefined,
       ].filter((line): line is string => Boolean(line));
     }
+    case ActionType.Invite: {
+      const place = typeof params.placeKey === 'string' ? gs.places[params.placeKey]?.name : undefined;
+      return [
+        `Action: invite.`,
+        `The player is inviting ${characterName(params.characterKey)} to a ${params.type ?? 'social'} activity${place ? ` at ${place}` : ''}.`,
+        params.period ? `Proposed time: ${params.period}.` : undefined,
+      ].filter((line): line is string => Boolean(line));
+    }
     default:
       return [
         `Action: ${String(action.actionType).replace(/_/g, ' ')}.`,

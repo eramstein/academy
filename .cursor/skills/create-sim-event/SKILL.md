@@ -117,6 +117,10 @@ Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffect
 | `offer_card_gifts`  | `{ count: 2, poolKeys: ["molly", "base"] }`                                                                                                       |
 | `teach_color`       | `{ color?: "red" \| "blue" \| "green" \| "black", characterKey?: "molly" }`                                                                       |
 | `teach_ability`     | `{ ability?: "haste" \| "directDamage" \| …, characterKey?: "molly" }` (omit `ability` for random)                                                |
+| `narrate`           | `{ text: "Molly looks away, a little hurt." }`                                                                                                   |
+
+`narrate` only posts the given sentence; it does not change game state. Use it on options that
+need a reaction beat with no reward or schedule.
 
 For `schedule_activity`: `schedule.date.day` is an **offset in days from now** (`0` = today), not an
 absolute day. Set `schedule.nextFree: true` to pick the soonest free slot for `date.period`

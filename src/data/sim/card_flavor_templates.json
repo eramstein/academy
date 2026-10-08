@@ -114,6 +114,18 @@
     "actions": ["directDamage"]
   },
   {
+    "name": "Dwarf Berserker",
+    "imagePrompt": "Dwarf Berserker",
+    "imageName": "dwarf_berserker",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": ["red"],
+    "keywords": ["zerk"],
+    "unitTypes": ["dwarf"],
+    "actions": ["fight"]
+  },
+  {
     "name": "Arc Lightning Specialist",
     "imagePrompt": "Arc Lightning Specialist",
     "imageName": "arc_lightning_specialist",
@@ -1889,8 +1901,8 @@
     "keywords": []
   },
   {
-    "name": "Professore",
-    "imagePrompt": "Professore",
+    "name": "Il Professore",
+    "imagePrompt": "Il Professore",
     "imageName": "professore",
     "cardType": "unit",
     "unitSize": "weak",

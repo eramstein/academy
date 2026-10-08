@@ -15,6 +15,7 @@ import {
   type TeachAbilityParameters,
   type TeachColorParameters,
 } from './teach';
+import { narrate, type NarrateParameters } from './narrate';
 
 export function applyEffect(effect: EventEffect) {
   const result = effectFunctions[effect.type](effect.parameters);
@@ -38,4 +39,5 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.TeachColor]: (parameters) => teachColor(parameters as TeachColorParameters),
   [EventEffectType.TeachAbility]: (parameters) =>
     teachAbility(parameters as TeachAbilityParameters),
+  [EventEffectType.Narrate]: (parameters) => narrate(parameters as NarrateParameters),
 };

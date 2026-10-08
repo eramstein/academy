@@ -15,6 +15,7 @@ export enum EventEffectType {
   OfferCardGifts = 'offer_card_gifts',
   TeachColor = 'teach_color',
   TeachAbility = 'teach_ability',
+  Narrate = 'narrate',
 }
 
 export enum ActionType {
@@ -31,6 +32,7 @@ export enum ActionType {
   StartMatch = 'start_match',
   StudyColors = 'study_colors',
   StudyAbilities = 'study_abilities',
+  Invite = 'invite',
 }
 
 export enum NarrationType {

@@ -244,6 +244,11 @@ function checkEffect(where, effect) {
         checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
       }
       break;
+    case 'narrate':
+      if (typeof parameters.text !== 'string' || !parameters.text.trim()) {
+        errors.push(`${where}: narrate text is required`);
+      }
+      break;
   }
 }
 

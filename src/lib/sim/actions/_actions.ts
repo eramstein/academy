@@ -25,6 +25,7 @@ import {
   type AugmentParameters,
   type DistillParameters,
 } from './enchanting';
+import { invite, type InviteParameters } from './invitation';
 import { getLeagueMatchActions, startMatch, type StartMatchParameters } from './match';
 import { move, type MoveParameters } from './move';
 import { negotiate, type NegotiateParameters } from './negotiation';
@@ -125,4 +126,5 @@ const actionFunctions: Record<
   [ActionType.PerformJob]: (parameters) => performJob(parameters.job as Job),
   [ActionType.StudyColors]: (parameters) => teachColor(parameters as TeachColorParameters),
   [ActionType.StudyAbilities]: (parameters) => teachAbility(parameters as TeachAbilityParameters),
+  [ActionType.Invite]: (parameters) => invite(parameters as InviteParameters),
 };

@@ -118,6 +118,8 @@
         return { color: CardColor.Red };
       case EventEffectType.TeachAbility:
         return {};
+      case EventEffectType.Narrate:
+        return { text: '' };
       default:
         return {};
     }
@@ -472,6 +474,15 @@
                   const value = (e.currentTarget as HTMLInputElement).value.trim();
                   setParameter(i, 'characterKey', value || undefined);
                 }}
+              />
+            {:else if effect.type === EventEffectType.Narrate}
+              <input
+                class="input arg"
+                value={effect.parameters.text ?? ''}
+                placeholder="narration text"
+                aria-label="Narration text"
+                oninput={(e) =>
+                  setParameter(i, 'text', (e.currentTarget as HTMLInputElement).value)}
               />
             {/if}
 
