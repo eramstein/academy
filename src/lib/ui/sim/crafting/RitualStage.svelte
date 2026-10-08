@@ -18,6 +18,10 @@
     type CraftMode,
     type PointRoll,
   } from '@/lib/sim/cards/crafting-skills';
+  import {
+    craftableResourceTypes,
+    isUniqueResource,
+  } from '@/lib/sim/cards/resources';
   import { playAddResourceSound } from '@/lib/sim/sound';
   import type { Snippet } from 'svelte';
   import { untrack } from 'svelte';
@@ -148,7 +152,6 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     children?: Snippet;
   } = $props();
 
-  const TYPES = Object.values(ResourceType);
   const pagePath = getAssetPath('images/ui/backgrounds/book-page.png');
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
   const bookIcon = getUiIconPath('book');
@@ -158,6 +161,7 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     [ResourceType.MagicDust]: getUiIconPath('magic_dust'),
     [ResourceType.Mithril]: getUiIconPath('metal_bar'),
     [ResourceType.Moxes]: getUiIconPath('gem'),
+    [ResourceType.MollysBeads]: getUiIconPath('leaf'),
   };
   const BEAD = 28;
   const CHARM = 32;
@@ -173,17 +177,20 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     [ResourceType.MagicDust]: 103,
     [ResourceType.Mithril]: 84,
     [ResourceType.Moxes]: 65,
+    [ResourceType.MollysBeads]: 55,
   };
   /** Wider orbits when the forming card sits in the enlarged split circle. */
   const RADIUS_SPLIT: Record<ResourceType, number> = {
     [ResourceType.MagicDust]: 214,
     [ResourceType.Mithril]: 202,
     [ResourceType.Moxes]: 190,
+    [ResourceType.MollysBeads]: 178,
   };
   const SPEED: Record<ResourceType, number> = {
     [ResourceType.MagicDust]: 0.0007,
     [ResourceType.Mithril]: -0.00055,
     [ResourceType.Moxes]: 0.00088,
+    [ResourceType.MollysBeads]: -0.00072,
   };
   const CHARM_RADIUS = { base: 88, split: 172 };
   const CHARM_SPEED = 0.00052;
@@ -257,6 +264,9 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
   let consumeAt = 0;
   let orbitClock = 0;
   let lastTick = 0;
+
+  /** Unique resources are only offered when creating cards (invoke / conjure). */
+  const TYPES = $derived(craftableResourceTypes(craft === 'invoke' || craft === 'conjure'));
 
   const resourceRows = $derived(
     TYPES.map((type) => ({
@@ -451,7 +461,20 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
 
   function setCount(type: ResourceType, value: number) {
     const owned = gs.player.resources[type] ?? 0;
-    selected = { ...selected, [type]: Math.min(owned, Math.max(0, value)) };
+    let next = Math.min(owned, Math.max(0, value));
+    // Unique resources: at most one unit, and only one unique type in the craft.
+    if (isUniqueResource(type)) {
+      next = Math.min(next, 1);
+      const updated = { ...selected, [type]: next };
+      if (next > 0) {
+        for (const other of Object.values(ResourceType)) {
+          if (other !== type && isUniqueResource(other)) updated[other] = 0;
+        }
+      }
+      selected = updated;
+      return;
+    }
+    selected = { ...selected, [type]: next };
   }
 
   function ease(t: number): number {

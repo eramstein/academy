@@ -30,6 +30,7 @@
     [ResourceType.MagicDust]: 'magic_dust',
     [ResourceType.Mithril]: 'metal_bar',
     [ResourceType.Moxes]: 'gem',
+    [ResourceType.MollysBeads]: 'leaf',
   };
 
   const narration = $derived(gs.scene.narration);

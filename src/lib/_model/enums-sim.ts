@@ -98,9 +98,12 @@ export enum EventTriggerType {
 }
 
 export enum ResourceType {
+  // Common resources
   MagicDust = 'magic_dust',
   Mithril = 'mithril',
   Moxes = 'moxes',
+  // Unique resources
+  MollysBeads = 'mollys_beads',
 }
 
 export enum JobType {

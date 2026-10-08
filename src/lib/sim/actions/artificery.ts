@@ -1,13 +1,14 @@
 import {
   CardColor,
   CardType,
+  isUnitCard,
   ResourceType,
+  UnitType,
   type CardTemplate,
   type Character,
   type SpellCardTemplate,
   type UnitCardTemplate,
   type UnitKeywords,
-  type UnitType,
 } from '@/lib/_model';
 import { gs, uiState } from '@/lib/_state';
 import { getAbilityActionNames, type AbilityPick } from '../cards/ability-templates';
@@ -33,6 +34,10 @@ import {
   toGameplayTemplate,
   type UsedFlavorsBatch,
 } from '../cards/flavor-generation-pipeline';
+import {
+  applyUniqueResourcesFromSelection,
+  mergeUniqueResourceUnitTypes,
+} from '../cards/resources';
 import { getActingCharacter } from '../characters';
 import { narrateCardConjured } from '../narration';
 import { spendResources } from '../resources';
@@ -131,10 +136,7 @@ export async function getNewCardTemplate(
   const bonuses = getCardCreationBonuses(parameters.resources, characterKey, parameters.source);
   const prunedParams = prune ? limitParametersToSkills(parameters, character) : parameters;
   const cardType = resolveCardType(prunedParams);
-  let typedParams = prepareConjureParameters(
-    { ...prunedParams, cardType },
-    character
-  );
+  let typedParams = prepareConjureParameters({ ...prunedParams, cardType }, character);
   if (
     typedParams.source === 'conjure' &&
     typedParams.cardType === CardType.Spell &&
@@ -154,6 +156,8 @@ export async function getNewCardTemplate(
     );
     return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
   }
+  // Unique resources (e.g. Molly's Beads → Beast) must be on params before flavor match/gen.
+  typedParams = mergeUniqueResourceUnitTypes(typedParams);
   const { template, bonusBudget, actionName } = await getUnitTemplate(
     typedParams,
     bonuses,
@@ -383,7 +387,9 @@ function prepareConjureParameters(
   }
 
   const hasNewKeyword = keywords
-    ? Object.keys(keywords).some((key) => !knownKeywords.has(key) && keywords?.[key as keyof UnitKeywords])
+    ? Object.keys(keywords).some(
+        (key) => !knownKeywords.has(key) && keywords?.[key as keyof UnitKeywords]
+      )
     : false;
   const hasNewAction = actions?.some((action) => !knownActions.has(action)) ?? false;
   if (!hasNewKeyword && !hasNewAction) {
@@ -585,6 +591,7 @@ async function getUnitTemplate(
       : randomUnitTypes(colors.map((entry) => entry.color)),
   };
   onSummonProgress?.('frame', draft);
+  sealUniqueResources(draft, parameters, templateParameters);
   onSummonProgress?.('gameplay', draft);
 
   const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), {
@@ -626,6 +633,7 @@ async function getUnitTemplate(
   draft.id = flavor.name + crypto.randomUUID();
   draft.name = flavor.name;
   draft.imageFileName = flavor.imageName;
+  // Params already carry unique-resource types (e.g. Beast); prefer those over flavor picks.
   draft.unitTypes = conjured.unitTypes?.length
     ? conjured.unitTypes
     : flavor.unitTypes?.length
@@ -677,6 +685,7 @@ async function getSpellTemplate(
     imageFileName: '',
   };
   onSummonProgress?.('frame', draft);
+  sealUniqueResources(draft, parameters, templateParameters);
   onSummonProgress?.('gameplay', draft);
 
   const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), {
@@ -715,4 +724,18 @@ async function getSpellTemplate(
     bonusBudget,
     actionName,
   };
+}
+
+/** Mutate gameplay with unique resources (colors, HP, …); sync flavor params. */
+function sealUniqueResources(
+  draft: CardTemplate,
+  parameters: CardCreationParameters,
+  templateParameters: CardCreationParameters
+) {
+  applyUniqueResourcesFromSelection(draft, parameters.resources);
+  templateParameters.colors = draft.colors.map((entry) => entry.color);
+  if (isUnitCard(draft)) {
+    templateParameters.hp = draft.maxHealth;
+    templateParameters.unitTypes = draft.unitTypes;
+  }
 }

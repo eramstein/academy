@@ -19,6 +19,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
       [ResourceType.MagicDust]: 0,
       [ResourceType.Mithril]: 0,
       [ResourceType.Moxes]: 0,
+      [ResourceType.MollysBeads]: 0,
     },
     relationProgress: {
       friendship: 0,
