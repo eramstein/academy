@@ -108,8 +108,10 @@
   let previousHealth = $state(unit.health);
   let isDamaged = $state(false);
   let damageAmount = $state(0);
+  let isHealed = $state(false);
+  let healAmount = $state(0);
 
-  // Watch for health changes to trigger damage animation
+  // Watch for health changes to trigger damage/heal animation
   $effect(() => {
     const healthDiff = previousHealth - unit.health;
     if (healthDiff > 0) {
@@ -117,6 +119,12 @@
       isDamaged = true;
       setTimeout(() => {
         isDamaged = false;
+      }, 600);
+    } else if (healthDiff < 0) {
+      healAmount = -healthDiff;
+      isHealed = true;
+      setTimeout(() => {
+        isHealed = false;
       }, 600);
     }
     previousHealth = unit.health;
@@ -180,6 +188,9 @@
 
   {#if isDamaged}
     <div class="damage-effect">-{damageAmount}</div>
+  {/if}
+  {#if isHealed}
+    <div class="heal-effect">+{healAmount}</div>
   {/if}
 </div>
 
@@ -324,18 +335,26 @@
     z-index: 2;
   }
 
-  .damage-effect {
+  .damage-effect,
+  .heal-effect {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 24px;
     font-weight: bold;
-    color: #ff4d4d;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
     z-index: 3;
-    animation: damage-number 0.6s ease-out forwards;
+    animation: float-number 0.6s ease-out forwards;
     pointer-events: none;
+  }
+
+  .damage-effect {
+    color: #ff4d4d;
+  }
+
+  .heal-effect {
+    color: #2ecc71;
   }
 
   @keyframes damage-flash {
@@ -350,7 +369,7 @@
     }
   }
 
-  @keyframes damage-number {
+  @keyframes float-number {
     0% {
       opacity: 0;
       transform: translate(-50%, -50%) scale(0.5);

@@ -60,6 +60,27 @@ const PLACES: Record<string, Place> = {
     regionKey: 'town',
     locked: true,
   },
+  ['emma-room']: {
+    key: 'emma-room',
+    name: "Emma's Room",
+    description: "Emma's Room is a cozy room with a warm and inviting atmosphere.",
+    regionKey: 'town',
+    locked: true,
+  },
+  ['elsa-room']: {
+    key: 'elsa-room',
+    name: "Elsa's Room",
+    description: "Elsa's Room is a luxurious room with lots of decorations.",
+    regionKey: 'town',
+    locked: true,
+  },
+  ['vai-room']: {
+    key: 'vai-room',
+    name: "Vai's Room",
+    description: "Vai's Room is very basic with simple furniture.",
+    regionKey: 'town',
+    locked: true,
+  },
   ['metarials-shop']: {
     key: 'metarials-shop',
     name: 'Metarials Shop',

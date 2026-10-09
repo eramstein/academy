@@ -38,6 +38,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     bio: '',
     age: 0,
     activityHistory: {},
+    favoritePlaces: {},
   };
 }
 
@@ -99,6 +100,9 @@ export const npcs: Record<string, Npc> = {
     favoriteColors: [CardColor.Green],
     bio: `Molly Moreno arrived at the Academy with a fortune she would rather the world forgot. Born to wealth, she dresses as if money were a rumor and moves through the halls with a modest, almost apologetic grace. She is twenty-one, shy at first glance and warm upon the second, a young woman whose first instinct is always toward other people. Empathy comes to her as easily as breathing; she notices the lonely, the struggling, the ones who sit a little apart, and she cannot help but try to ease their way. In the lecture rooms, however, that same tenderness turns inward as doubt. She is not without ability, yet she distrusts her own mind, and praise sits uneasily on her. Sports, open country, and the company of children restore her in a way no examination ever has. Those who look past her quiet clothes find a generous heart, a little unsure of itself, and a loyalty that, once given, is not easily withdrawn.`,
     age: 21,
+    favoritePlaces: {
+      'royal-pigeon-inn': 1,
+    },
   },
   elsa: {
     ...createDefaultNpc(),
@@ -112,6 +116,9 @@ export const npcs: Record<string, Npc> = {
     favoriteColors: [CardColor.Red],
     bio: `Elsa Falkenstein attends the Academy the way other young nobles take the waters: as an occupation, not a necessity. She expects, in due course, to inherit the family estate, and she has never been required to work, nor even to succeed. Twenty-four and already practiced in disdain, she carries herself as if the rooms she enters were slightly beneath her. The haughtiness is not entirely a pose. She grew up alone in a house that offered rank instead of affection, and she learned early that pride could pass for armor. Beneath it, however, she is lonely in a way she cannot name. She would like friends—true ones, not courtiers—but she has never been taught how to ask, and her manner drives away the very people she secretly hopes will stay. Those who endure the frost may find, at last, a young woman who has spent her life waiting to be wanted, and who still does not know how to begin.`,
     age: 24,
+    favoritePlaces: {
+      'royal-pigeon-inn': 1,
+    },
   },
   ousmane: {
     ...createDefaultNpc(),
@@ -125,6 +132,9 @@ export const npcs: Record<string, Npc> = {
     favoriteColors: [CardColor.Black],
     bio: `Ousmane Tempeli comes from a distant empire, and he does not speak of it unless he must. He was a soldier once, and a good one, until the war his country waged grew so cruel that desertion seemed the only remaining honor. He is twenty-nine now, far from the banners of his youth, and he has set himself a different campaign: to become a great artificer, as his grandfather Omar was, a name still spoken with awe in the trade. Energy is his native climate; he loves a challenge the way other men love rest, and he meets most days with an easy, infectious cheer. Then, without warning, the old war returns to him. Melancholy settles on his face, and he is elsewhere—among things he will not describe. Those who know him learn to wait through these silences. The man who emerges from them is still the same: ambitious, warm, and determined to make something lasting with his hands, as if a well-made work might at last outshine what he has seen.`,
     age: 29,
+    favoritePlaces: {
+      'old-monk-inn': 1,
+    },
   },
   emma: {
     ...createDefaultNpc(),
@@ -138,6 +148,9 @@ export const npcs: Record<string, Npc> = {
     favoriteColors: [CardColor.Red],
     bio: `Emma Delamain was born poor and raised as if poverty were a problem to be solved by books. Her family had little money and a great deal of culture, and they spent what they had on an education of the highest order. She repaid them by becoming brilliant. At twenty-seven she is already a force at the Academy: ambitious, exacting, and, when a goal is in sight, capable of a ruthlessness that startles even those who admire her. Beauty is another of her instruments. She is strikingly lovely and does not pretend otherwise; charm, for her, is a tool as legitimate as any theorem. Yet she is not all calculation. She reads voraciously, plays the violin with real feeling, and possesses a sharp, delighted humor. Those she likes she teases without mercy, as if affection were a sport. To be chosen by Emma is to be both flattered and a little afraid, for she gives her attention the way a duelist gives a salute: gracefully, and with every intention of winning.`,
     age: 27,
+    favoritePlaces: {
+      'old-monk-inn': 1,
+    },
   },
   vai: {
     ...createDefaultNpc(),
@@ -151,6 +164,9 @@ export const npcs: Record<string, Npc> = {
     favoriteColors: [CardColor.Green],
     bio: `Vaiana Chen grew up among ledgers and cargo, the daughter of merchants who recognized a rarer talent than trade and refused to let it go unused. She did not want to study magic. She was pushed into it by parents who saw her gifts more clearly than she wished to, and who treated genius as an obligation. At twenty-two she remains what she has always been: a prodigy without appetite, capable of work that startles her teachers and unwilling, most days, to be startled herself. Games interest her more than glory; she has a tomboy's ease with contests, dirt, and dare, and she would rather win a wager than a prize. She is introverted but not shy. Silence, for her, is a preference, not a fear, and she will not be walked over by anyone who mistakes her quiet for compliance. Those who try find a young woman who can be pushed into a school, but not, it seems, into caring.`,
     age: 22,
+    favoritePlaces: {
+      'old-monk-inn': 1,
+    },
   },
   henry: {
     ...createDefaultNpc(),
@@ -164,6 +180,9 @@ export const npcs: Record<string, Npc> = {
     favoriteColors: [CardColor.Black],
     bio: `Henry Lombard lives in the long shadow of his mother's reputation, and he has never quite learned how to stand in the sun. He is the son of Professor Lombard, the Academy's exacting mistress of artificery, and at twenty he still measures every effort against a standard he cannot reach. He is not untalented so much as overmatched: earnest, anxious, and perpetually certain that he is about to disappoint her. Friendship comes to him without calculation. He is warm, quick to smile, and almost painfully eager to be liked, which makes him easy company and easier still to use. Naivety clings to him like a schoolboy's coat; he believes the best of people until the evidence is overwhelming, and sometimes even then. Those who are kind to him find a loyal, open-hearted young man. Those who are not find a willing instrument. He wants, more than anything, to be worthy of the name he already bears.`,
     age: 20,
+    favoritePlaces: {
+      'old-monk-inn': 1,
+    },
   },
   farid: {
     ...createDefaultNpc(),
@@ -177,6 +196,9 @@ export const npcs: Record<string, Npc> = {
     favoriteColors: [CardColor.Red],
     bio: `Farid El-Khouri arrived at the Academy as a defector from a more prestigious rival, and he has never let anyone forget it. Twenty-five, restless, and convinced of his own pedigree, he carries his former schooling like a medal he insists on wearing indoors. Superiority comes to him as a habit; he cannot help comparing, ranking, and finding the present company slightly wanting. Yet he is not a bore. Humor runs through him like a live wire, mischievous and schoolboyish, and he will risk a joke at the precise moment a wiser man would keep silent. He looks for battles the way other students look for friends. Provocation is his sport, and a quiet room is, to him, an invitation. Those who rise to it discover a duelist who enjoys the quarrel almost more than the victory. Those who refuse may glimpse, beneath the swagger, a young man still proving that leaving the greater school was not a fall.`,
     age: 25,
+    favoritePlaces: {
+      'royal-pigeon-inn': 1,
+    },
   },
   'the-dude': {
     ...createDefaultNpc(),
@@ -190,6 +212,9 @@ export const npcs: Record<string, Npc> = {
     favoriteColors: [CardColor.Green],
     bio: `Nobody quite knows who The Dude is, and he has arranged his life so that the question never quite lands. He has been at the Academy longer than seems reasonable, a man of forty-one who appears, each term, to have no intention of leaving. He does the minimum required to avoid expulsion and not a stroke more, as if effort itself were a kind of bad manners. Nonchalance is his native climate; he drifts through lectures, gardens, and other people's crises with the same unhurried air. He cultivates mystery the way some men cultivate a garden: a little too obviously, and with evident pleasure. The effect is not entirely false. There is something in him—an ease, a strange gravity—that makes even his idleness feel like a choice. Students invent histories for him. He smiles, declines to confirm them, and remains, year after year, the Academy's most enduring riddle.`,
     age: 41,
+    favoritePlaces: {
+      'royal-pigeon-inn': 1,
+    },
   },
   lombard: {
     ...createDefaultNpc(),

@@ -1,6 +1,6 @@
 import { ActivityType, SchoolName } from '../_model';
 import { gs } from '../_state';
-import { getRandomFromArray } from '../_utils/random';
+import { getRandomFromObjectWeights } from '../_utils/random';
 import { getCurrentScheduledActivity } from './schedule';
 
 export function updateNpcLocations() {
@@ -20,16 +20,10 @@ export function updateNpcLocations() {
     // case student in evening
     if (
       character.school === SchoolName.Academy &&
-      currentScheduledActivity?.type !== ActivityType.Class
+      currentScheduledActivity?.type !== ActivityType.Class &&
+      Object.keys(character.favoritePlaces).length > 0
     ) {
-      const eveningPlaces = [
-        'library',
-        'old-monk-inn',
-        'royal-pigeon-inn',
-        'cafeteria',
-        'barracks',
-      ];
-      character.placeKey = getRandomFromArray(eveningPlaces);
+      character.placeKey = getRandomFromObjectWeights(character.favoritePlaces);
     }
   });
 }

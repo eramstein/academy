@@ -209,6 +209,7 @@ export interface Npc extends Character {
   };
   activityHistory: Partial<Record<ActivityType, number>>;
   bio: string;
+  favoritePlaces: Record<string, number>;
 }
 
 export interface Place {
