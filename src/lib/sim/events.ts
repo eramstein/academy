@@ -33,6 +33,11 @@ export interface EventTriggerParameters {
     relationParameter: keyof Npc['relationProgress'];
     value: number;
   };
+  [EventTriggerType.ActivityHistory]: {
+    characterKey: string;
+    activityType: ActivityType;
+    value: number;
+  };
 }
 
 export type EventTrigger = {
@@ -178,6 +183,8 @@ function doesTriggerMatch(trigger: EventTrigger): boolean {
       return getCharactersAtScene().some(
         (character) => character.key === trigger.parameters.characterKey
       );
+    case EventTriggerType.ActivityHistory:
+      return checkActivityHistory(trigger);
     default:
       return false;
   }
@@ -193,6 +200,14 @@ function checkRelationParameter(
   } else {
     return character.relationProgress[relationParameter] >= value;
   }
+}
+
+function checkActivityHistory(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.ActivityHistory }>
+): boolean {
+  const { characterKey, activityType, value } = trigger.parameters;
+  const character = gs.characters[characterKey];
+  return (character.activityHistory[activityType] ?? 0) >= value;
 }
 
 function buildOption(optionTemplate: EventOptionTemplate): EventOption {

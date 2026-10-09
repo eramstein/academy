@@ -222,7 +222,10 @@
             "parameters": {
               "activity": {
                 "type": "study",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "library"
               },
               "schedule": {
@@ -277,7 +280,10 @@
         "type": "offer_card_gifts",
         "parameters": {
           "count": 3,
-          "poolKeys": ["molly", "base"]
+          "poolKeys": [
+            "molly",
+            "base"
+          ]
         }
       }
     ]
@@ -318,7 +324,9 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [2],
+                    "daysOfWeek": [
+                      2
+                    ],
                     "period": "evening"
                   }
                 }
@@ -477,6 +485,126 @@
     "emotion": "embarrassed"
   },
   {
+    "key": "molly-l2",
+    "text": "Molly finds you with a soft, eager smile and asks if you would go out with her again—this time to the Royal Pigeon Inn. She has already thought it through: she knows coin is tight for you, so she is inviting you as her guest, and she hopes you will say yes.",
+    "triggers": [
+      {
+        "triggerType": "activity_history",
+        "parameters": {
+          "characterKey": "molly",
+          "activityType": "date",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "love",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "molly"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Decline"
+      },
+      {
+        "text": "Accept",
+        "effects": [
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "date",
+                "participants": [
+                  "player",
+                  "molly"
+                ],
+                "placeKey": "royal-pigeon-inn"
+              },
+              "schedule": {
+                "nextFree": true,
+                "date": {
+                  "period": "evening"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "molly",
+    "emotion": "embarrassed"
+  },
+  {
+    "key": "molly-l3",
+    "text": "Molly leans in close, voice low, and asks if you would come with her to her room at the Royal Pigeon Inn. There is no mistaking the invitation—she wants you alone with her, and she is waiting on your answer.",
+    "triggers": [
+      {
+        "triggerType": "activity_history",
+        "parameters": {
+          "characterKey": "molly",
+          "activityType": "date",
+          "value": 2
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "love",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "molly"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Decline"
+      },
+      {
+        "text": "Accept",
+        "effects": [
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "romance",
+                "participants": [
+                  "player",
+                  "molly"
+                ],
+                "placeKey": "molly-room"
+              },
+              "schedule": {
+                "date": {
+                  "day": 0,
+                  "period": "evening"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "molly",
+    "emotion": "flirtatious"
+  },
+  {
     "key": "emma-1",
     "text": "Emma asks you out",
     "triggers": [
@@ -504,7 +632,10 @@
             "parameters": {
               "activity": {
                 "type": "date",
-                "participants": ["player", "emma"],
+                "participants": [
+                  "player",
+                  "emma"
+                ],
                 "placeKey": "cafeteria"
               },
               "schedule": {

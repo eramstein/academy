@@ -231,6 +231,13 @@ function fallbackAttemptedActionText(action: Action): string {
     const name = gs.characters[params.characterKey]?.name ?? 'someone';
     return `You try to ${params.socializeType ?? 'talk with'} ${name}.`;
   }
+  if (action.actionType === ActionType.Romance && typeof params.characterKey === 'string') {
+    const name = gs.characters[params.characterKey]?.name ?? 'someone';
+    if (params.romanceType === 'physical') {
+      return `You share a passionate night with ${name}.`;
+    }
+    return `You grow closer with ${name}, warm and at ease together.`;
+  }
   return `You ${String(action.actionType).replace(/_/g, ' ')}.`;
 }
 

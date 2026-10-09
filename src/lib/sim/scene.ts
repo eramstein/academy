@@ -1,6 +1,11 @@
 import { performAction, setPossibleActions } from '@/lib/sim/actions';
 import { applyEffect } from '@/lib/sim/effects';
-import { type EventOption, type EventTemplate, type SceneEvent } from '../_model';
+import {
+  type EventOption,
+  type EventTemplate,
+  type SceneEvent,
+  type ScheduledActivity,
+} from '../_model';
 import { gs } from '../_state';
 import { consumeEventTemplate, getTriggeredSceneEvent, recordEventOccured } from './events';
 import { narrateText } from './narration';
@@ -46,18 +51,24 @@ export function startScene() {
   const currentScheduledActivity = getCurrentScheduledActivity();
   console.log('nextScene', currentScheduledActivity);
   if (currentScheduledActivity) {
-    gs.player.placeKey = currentScheduledActivity.placeKey;
-    currentScheduledActivity.participants.forEach((participant) => {
-      if (participant === gs.player.key) {
-        return;
-      }
-      gs.characters[participant].placeKey = currentScheduledActivity.placeKey;
-    });
-    narrateScheduledActivity(currentScheduledActivity);
+    setCurrentActivity(currentScheduledActivity);
     setSceneEvents();
   } else {
     gs.scene.selectingNextPlace = true;
   }
+}
+
+export function setCurrentActivity(currentScheduledActivity: ScheduledActivity) {
+  gs.player.placeKey = currentScheduledActivity.placeKey;
+  currentScheduledActivity.participants.forEach((participant) => {
+    if (participant === gs.player.key) {
+      return;
+    }
+    gs.characters[participant].placeKey = currentScheduledActivity.placeKey;
+    gs.characters[participant].activityHistory[currentScheduledActivity.type] =
+      (gs.characters[participant].activityHistory[currentScheduledActivity.type] || 0) + 1;
+  });
+  narrateScheduledActivity(currentScheduledActivity);
 }
 
 export function nextScene() {

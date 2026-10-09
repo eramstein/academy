@@ -52,6 +52,14 @@ const PLACES: Record<string, Place> = {
     description: 'The Royal Pigeon Inn is a luxurious inn with a fancy atmosphere.',
     regionKey: 'town',
   },
+  ['molly-room']: {
+    key: 'molly-room',
+    name: "Molly's Room",
+    description:
+      "Molly's Room at the royal inn, is a cozy room with a warm and inviting atmosphere.",
+    regionKey: 'town',
+    locked: true,
+  },
   ['metarials-shop']: {
     key: 'metarials-shop',
     name: 'Metarials Shop',

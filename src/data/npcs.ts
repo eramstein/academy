@@ -37,6 +37,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     jobs: [],
     bio: '',
     age: 0,
+    activityHistory: {},
   };
 }
 

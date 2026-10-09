@@ -1,6 +1,6 @@
 <script lang="ts">
   import { npcs } from '@/data/npcs';
-  import type { EventTemplate, EventTrigger } from '@/lib/_model';
+  import { EventTriggerType, type EventTemplate, type EventTrigger } from '@/lib/_model';
   import CharacterArcGraph from './CharacterArcGraph.svelte';
 
   let {
@@ -34,9 +34,12 @@
   }
 
   function formatTrigger(trigger: EventTrigger): string {
-    const { triggerType, parameters } = trigger;
-    const value = Object.values(parameters)[0];
-    return value !== undefined ? `${triggerType}: ${value}` : triggerType;
+    if (trigger.triggerType === EventTriggerType.ActivityHistory) {
+      const { characterKey, activityType, value } = trigger.parameters;
+      return `${trigger.triggerType}: ${characterKey} ${activityType} ≥${value}`;
+    }
+    const value = Object.values(trigger.parameters)[0];
+    return value !== undefined ? `${trigger.triggerType}: ${value}` : trigger.triggerType;
   }
 
   function triggerSummary(event: EventTemplate): string {

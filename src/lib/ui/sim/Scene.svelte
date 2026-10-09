@@ -12,10 +12,14 @@
 
   const selectingNextPlace = $derived(gs.scene.selectingNextPlace);
   const regionsWithPlaces = $derived(
-    Object.values(gs.regions).map((region) => ({
-      region,
-      places: Object.values(gs.places).filter((place) => place.regionKey === region.key),
-    }))
+    Object.values(gs.regions)
+      .map((region) => ({
+        region,
+        places: Object.values(gs.places).filter(
+          (place) => place.regionKey === region.key && !place.locked
+        ),
+      }))
+      .filter(({ places }) => places.length > 0)
   );
 
   let bookEl: HTMLElement | undefined = $state();

@@ -104,6 +104,11 @@
         relationParameter: 'friendship',
         value: 0,
       },
+      [EventTriggerType.ActivityHistory]: {
+        characterKey: '',
+        activityType: ActivityType.Social,
+        value: 1,
+      },
     };
     return defaults[triggerType];
   }
@@ -530,6 +535,30 @@
                     bind:value={trigger.parameters.value}
                     aria-label="Relation threshold"
                     title="Negative: ≤ value; non-negative: ≥ value"
+                  />
+                {:else if trigger.triggerType === EventTriggerType.ActivityHistory}
+                  <input
+                    class="input param-input"
+                    bind:value={trigger.parameters.characterKey}
+                    placeholder="character key"
+                    aria-label="Character key"
+                  />
+                  <select
+                    class="input param-select"
+                    bind:value={trigger.parameters.activityType}
+                    aria-label="Activity"
+                  >
+                    {#each activityTypes as activity (activity)}
+                      <option value={activity}>{activity}</option>
+                    {/each}
+                  </select>
+                  <input
+                    class="input narrow"
+                    type="number"
+                    min="1"
+                    bind:value={trigger.parameters.value}
+                    aria-label="Activity history count"
+                    title="Requires activityHistory[activityType] ≥ value"
                   />
                 {/if}
 

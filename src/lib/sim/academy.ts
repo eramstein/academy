@@ -52,7 +52,9 @@ export function scheduleClassesForCurrentTerm() {
       period: DayPeriod.Afternoon,
       classType: ClassType.Enchanting,
     };
-    scheduleActivity(artificeryActivity);
+    if (i > 0) {
+      scheduleActivity(artificeryActivity);
+    }
     scheduleActivity(enchantingActivity);
   }
 }

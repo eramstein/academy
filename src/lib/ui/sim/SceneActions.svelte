@@ -5,6 +5,7 @@
   import {
     getConjurationOtions,
     performAction,
+    RomanceType,
     SocializeType,
     TransactionType,
     type CardCreationResult,
@@ -23,6 +24,8 @@
 
   const actionIcons: Partial<Record<ActionType, string>> = {
     [ActionType.Socialize]: 'people',
+    [ActionType.Romance]: 'heart',
+    [ActionType.Invite]: 'calendar',
     [ActionType.Conjure]: 'page-star',
     [ActionType.Invoke]: 'spiral',
     [ActionType.Wait]: 'arrow-left',
@@ -33,6 +36,8 @@
     [ActionType.Transaction]: 'coin',
     [ActionType.Negotiate]: 'mug',
     [ActionType.PerformJob]: 'coin',
+    [ActionType.StudyColors]: 'book',
+    [ActionType.StudyAbilities]: 'book',
   };
 
   function actionVariant(action: Action): 'default' | 'long' | 'muted' {
@@ -44,6 +49,11 @@
     [SocializeType.Taunt]: 'finger_pointing',
     [SocializeType.Impress]: 'crown',
     [SocializeType.Flirt]: 'heart',
+  };
+
+  const romanceIcons: Record<RomanceType, string> = {
+    [RomanceType.DeepenRelationship]: 'heart',
+    [RomanceType.Physical]: 'feather',
   };
 
   let pendingAction = $state<Action | null>(null);
@@ -58,6 +68,7 @@
     characterKey: 'Who?',
     placeKey: 'Where?',
     socializeType: 'How?',
+    romanceType: 'How?',
     playerDeckKey: 'Choose your deck',
     opponentKey: 'Against who?',
     cardId: 'Which card?',
@@ -84,7 +95,14 @@
       return gs.player.decks.map((deck, index) => [String(index), deck.name] as [string, string]);
     }
     const value = pendingAction.missingParameters?.[currentParameterKey];
-    return Array.isArray(value) ? value : [];
+    if (!Array.isArray(value)) return [];
+    if (currentParameterKey === 'placeKey') {
+      return value.filter((option) => {
+        const key = Array.isArray(option) ? option[0] : option;
+        return !gs.places[key]?.locked;
+      });
+    }
+    return value;
   });
 
   const parameterPrompt = $derived(
@@ -99,6 +117,12 @@
 
   function optionLabel(option: string | [string, string]): string {
     if (Array.isArray(option)) return option[1];
+    if (currentParameterKey === 'romanceType') {
+      return option
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ');
+    }
     return option.charAt(0).toUpperCase() + option.slice(1);
   }
 
@@ -118,8 +142,20 @@
   }
 
   function optionIcon(option: string | [string, string]): string | undefined {
-    if (currentParameterKey !== 'socializeType') return undefined;
-    return socializeIcons[optionValue(option) as SocializeType];
+    const value = optionValue(option);
+    if (currentParameterKey === 'socializeType') {
+      return socializeIcons[value as SocializeType];
+    }
+    if (currentParameterKey === 'romanceType') {
+      return romanceIcons[value as RomanceType];
+    }
+    return undefined;
+  }
+
+  function romanceActionIcon(action: Action): string | undefined {
+    if (action.actionType !== ActionType.Romance) return undefined;
+    const romanceType = action.actionParameters?.romanceType as RomanceType | undefined;
+    return romanceType ? romanceIcons[romanceType] : actionIcons[ActionType.Romance];
   }
 
   function applyParameter(action: Action, key: string, value: string): Action {
@@ -317,7 +353,7 @@
       {:else}
         {#each actions as action (action.actionType + action.label)}
           <OrnateButton
-            icon={actionIcons[action.actionType]}
+            icon={romanceActionIcon(action) ?? actionIcons[action.actionType]}
             mirrorIcon={action.actionType === ActionType.Wait}
             variant={actionVariant(action)}
             onclick={() => onActionClick(action)}

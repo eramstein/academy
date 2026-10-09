@@ -126,6 +126,13 @@ function checkTrigger(where, trigger) {
       ]);
       if (typeof params.value !== 'number') errors.push(`${where}: value must be a number`);
       break;
+    case 'activity_history':
+      checkOneOf(where, 'characterKey', params.characterKey, npcKeys);
+      checkOneOf(where, 'activityType', params.activityType, activityTypes);
+      if (typeof params.value !== 'number' || !Number.isInteger(params.value) || params.value < 1) {
+        errors.push(`${where}: value must be an integer ≥ 1`);
+      }
+      break;
   }
 }
 

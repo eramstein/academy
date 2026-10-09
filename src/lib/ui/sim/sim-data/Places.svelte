@@ -5,10 +5,14 @@
   import Place from '../Place.svelte';
 
   const regionsWithPlaces = $derived(
-    Object.values(gs.regions).map((region) => ({
-      region,
-      places: Object.values(gs.places).filter((place) => place.regionKey === region.key),
-    }))
+    Object.values(gs.regions)
+      .map((region) => ({
+        region,
+        places: Object.values(gs.places).filter(
+          (place) => place.regionKey === region.key && !place.locked
+        ),
+      }))
+      .filter(({ places }) => places.length > 0)
   );
 
   const selectedPlace = $derived(
@@ -18,7 +22,8 @@
   $effect(() => {
     const key = uiState.sim.selectedPlaceKey;
     if (!key) return;
-    if (!gs.places[key]) {
+    const place = gs.places[key];
+    if (!place || place.locked) {
       uiState.sim.selectedPlaceKey = null;
     }
   });

@@ -17,7 +17,7 @@ use this shape:
 
 ```
 Event for <npc key | main story>:
-Trigger: <relation level, day/period, place, activity, prior events, who is present>
+Trigger: <relation level, day/period, place, activity, activity history count, prior events, who is present>
 Synopsis: <one or two sentences to elaborate into the event text>
 Emotion: <Emotion enum value> (optional; infer from synopsis when clear)
 Options:
@@ -83,21 +83,24 @@ Property order in the file follows the existing entries: `key`, `text`, `trigger
 Every trigger in the array must match at the same time (logical AND). The engine picks the first
 event in file order whose triggers all match.
 
-| `triggerType`        | `parameters`                                 | Notes                                                                                                                             |
-| -------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `relation_parameter` | `{ characterKey, relationParameter, value }` | `relationParameter` is `friendship`, `respect`, `love` or `rivalry`. Positive `value` means "at least"; negative means "at most". |
-| `character_present`  | `{ characterKey }`                           | The NPC is in the player's current place.                                                                                         |
-| `day`                | `{ day: 3 }`                                 | Absolute day number; day 1 is a Monday.                                                                                           |
-| `period`             | `{ period: "morning" }`                      | `morning`, `afternoon`, `evening`.                                                                                                |
-| `place`              | `{ placeKey }`                               | The player's current place.                                                                                                       |
-| `activity_type`      | `{ activityType }`                           | `class`, `work`, `social`, `date`, `training`; matches the currently scheduled activity.                                          |
-| `previous_events`    | `{ "molly-1": true }`                        | Map of event keys that must have happened first; add one entry per prerequisite.                                                  |
+| `triggerType`        | `parameters`                                          | Notes                                                                                                                             |
+| -------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `relation_parameter` | `{ characterKey, relationParameter, value }`          | `relationParameter` is `friendship`, `respect`, `love` or `rivalry`. Positive `value` means "at least"; negative means "at most". |
+| `character_present`  | `{ characterKey }`                                    | The NPC is in the player's current place.                                                                                         |
+| `day`                | `{ day: 3 }`                                          | Absolute day number; day 1 is a Monday.                                                                                           |
+| `period`             | `{ period: "morning" }`                               | `morning`, `afternoon`, `evening`.                                                                                                |
+| `place`              | `{ placeKey }`                                        | The player's current place.                                                                                                       |
+| `activity_type`      | `{ activityType }`                                    | `class`, `work`, `social`, `date`, `training`, `study`; matches the currently scheduled activity.                                 |
+| `activity_history`   | `{ characterKey, activityType, value }`               | NPC has shared that `activityType` with the player at least `value` times (`Npc.activityHistory`).                             |
+| `previous_events`    | `{ "molly-1": true }`                                 | Map of event keys that must have happened first; add one entry per prerequisite.                                                  |
 
-Two consequences of how the engine handles these:
+Consequences of how the engine handles these:
 
 - A `relation_parameter` trigger **consumes** the relation value: when the event fires, that
   relation resets to 0. So an arc that gates `molly-2` on friendship 1 after `molly-1` already
   spent friendship 1 needs the player to earn it again. Combine with `previous_events` for ordering.
+- `activity_history` does **not** consume the count; it stays on the NPC. Prefer it for "we've
+  done this enough times" gates, and pair with `character_present` / `previous_events` as needed.
 - A "character offers you something" event needs `character_present` in addition to the relation
   trigger, otherwise it can fire while the NPC is elsewhere. Existing arc events always pair them.
 
@@ -123,10 +126,11 @@ Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffect
 need a reaction beat with no reward or schedule.
 
 For `schedule_activity`: `schedule.date.day` is an **offset in days from now** (`0` = today), not an
-absolute day. Set `schedule.nextFree: true` to pick the soonest free slot for `date.period`
-(defaults to evening) instead of a fixed offset. `participants` are character keys and include
-`"player"` when the player takes part. `daysOfWeek` uses 1 for Monday through 7 for Sunday. Never
-put `day`/`period` inside `activity`.
+absolute day. Omit `date.period` (without `nextFree`) to use the **current** period—useful for
+immediate “come with me now” beats. Set `schedule.nextFree: true` to pick the soonest free slot for
+`date.period` (defaults to evening) instead of a fixed offset. `participants` are character keys and
+include `"player"` when the player takes part. `daysOfWeek` uses 1 for Monday through 7 for Sunday.
+Never put `day`/`period` inside `activity`.
 
 `get_job` hires the player: it adds the job and schedules the `work` activities from `job.schedule`,
 which takes the same shape and day-offset rules as `schedule_activity`'s. Give a recurring job a

@@ -174,6 +174,21 @@ function describeAttemptedAction(action?: Action, focusKey?: string): string[] {
         params.period ? `Proposed time: ${params.period}.` : undefined,
       ].filter((line): line is string => Boolean(line));
     }
+    case ActionType.Romance: {
+      const partner = characterName(params.characterKey);
+      if (params.romanceType === 'physical') {
+        return [
+          `Action: romance — physical intimacy.`,
+          `The player is sharing a sexual encounter with ${partner}.`,
+          'Narrate the encounter as adult erotic fiction shaped by the vitality check outcome.',
+        ];
+      }
+      return [
+        `Action: romance — deepen the relationship.`,
+        `The player is spending intimate, affectionate time with ${partner}, growing closer emotionally.`,
+        'Narrate a cosy, heartwarming scene of tenderness and growing love.',
+      ];
+    }
     default:
       return [
         `Action: ${String(action.actionType).replace(/_/g, ' ')}.`,

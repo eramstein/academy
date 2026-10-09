@@ -11,6 +11,7 @@ import { getJobActions, performJob } from '../jobs';
 import { getLessonActions, getStudyActions } from '../lesson';
 import { narrateText } from '../narration';
 import { nextScene, setSceneEvents } from '../scene';
+import { formatActivityShortLabel, getNextPeriodScheduledActivity } from '../schedule';
 import { getNextPeriod } from '../time';
 import { ActionsLimitByPeriod } from './_action-types';
 import {
@@ -29,7 +30,14 @@ import { invite, type InviteParameters } from './invitation';
 import { getLeagueMatchActions, startMatch, type StartMatchParameters } from './match';
 import { move, type MoveParameters } from './move';
 import { negotiate, type NegotiateParameters } from './negotiation';
-import { getSocializeActions, socialize, type SocializeParameters } from './socialize';
+import {
+  getRelationalActions,
+  getSocializeActions,
+  romance,
+  socialize,
+  type RomanceParameters,
+  type SocializeParameters,
+} from './socialize';
 import { getShopActions, transaction, type TransactionParameters } from './transaction';
 import { wait } from './wait';
 
@@ -39,12 +47,13 @@ function capitalizePeriod(period: string): string {
 
 export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
+
   actions.push(...getSocializeActions());
   actions.push(...getLessonActions());
   actions.push(...getStudyActions());
   actions.push(...getShopActions());
   actions.push(...getJobActions());
-  console.log('actions', actions);
+  actions.push(...getRelationalActions());
 
   // check if the number of actions is limited by period
   let filteredActions = actions.filter(
@@ -63,8 +72,13 @@ export function getPossibleActions(): Action[] {
   if (leagueActions.length > 0) {
     filteredActions.push(...leagueActions);
   } else {
+    const nextPeriod = capitalizePeriod(getNextPeriod());
+    const nextActivity = getNextPeriodScheduledActivity();
+    const label = nextActivity
+      ? `${nextPeriod}: ${formatActivityShortLabel(nextActivity)}`
+      : nextPeriod;
     filteredActions.push({
-      label: capitalizePeriod(getNextPeriod()),
+      label,
       actionType: ActionType.Wait,
       isLongAction: true,
       actionParameters: {},
@@ -100,6 +114,7 @@ export async function performAction(action: Action) {
 
 export function setPossibleActions() {
   gs.scene.actions = getPossibleActions();
+  console.log('setPossibleActions', gs.scene.actions);
   // if no actions are available, end the scene
   if (gs.scene.actions.length === 0) {
     console.log('no actions available, ending scene');
@@ -127,4 +142,5 @@ const actionFunctions: Record<
   [ActionType.StudyColors]: (parameters) => teachColor(parameters as TeachColorParameters),
   [ActionType.StudyAbilities]: (parameters) => teachAbility(parameters as TeachAbilityParameters),
   [ActionType.Invite]: (parameters) => invite(parameters as InviteParameters),
+  [ActionType.Romance]: (parameters) => romance(parameters as RomanceParameters),
 };

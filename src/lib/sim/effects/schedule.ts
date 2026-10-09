@@ -26,7 +26,8 @@ export function scheduleActivities(parameters: ScheduleActivitiesParameters): st
   const { activity, schedule = {} } = parameters;
   const { date, recurrence, nextFree } = schedule;
   const activities: ScheduledActivity[] = [];
-  const datePeriod = date?.period ?? DayPeriod.Evening;
+  // nextFree defaults to evening; otherwise omit period to schedule into the current slot.
+  const datePeriod = date?.period ?? (nextFree ? DayPeriod.Evening : gs.time.period);
   const startDay = nextFree ? findNextFreeDay(datePeriod) : gs.time.day + (date?.day ?? 0);
 
   if (recurrence) {

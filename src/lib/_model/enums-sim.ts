@@ -32,6 +32,7 @@ export enum ActionType {
   StartMatch = 'start_match',
   StudyColors = 'study_colors',
   StudyAbilities = 'study_abilities',
+  Romance = 'romance',
   Invite = 'invite',
 }
 
@@ -54,6 +55,9 @@ export enum ActivityType {
   Date = 'date',
   Training = 'training',
   Study = 'study',
+  Romance = 'romance',
+  Tournament = 'tournament',
+  Exam = 'exam',
 }
 
 export enum ClassType {
@@ -97,6 +101,7 @@ export enum EventTriggerType {
   Place = 'place',
   CharacterPresent = 'character_present',
   RelationParameter = 'relation_parameter',
+  ActivityHistory = 'activity_history',
 }
 
 export enum ResourceType {

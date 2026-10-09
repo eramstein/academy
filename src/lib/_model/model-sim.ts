@@ -207,6 +207,7 @@ export interface Npc extends Character {
     love: number;
     rivalry: number;
   };
+  activityHistory: Partial<Record<ActivityType, number>>;
   bio: string;
 }
 
@@ -218,6 +219,7 @@ export interface Place {
   itemsOnSale?: {
     resources?: Partial<Record<ResourceType, { price: number; count: number }>>;
   };
+  locked?: boolean;
 }
 
 export interface Region {
