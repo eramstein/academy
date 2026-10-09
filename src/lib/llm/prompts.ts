@@ -7,7 +7,11 @@ import {
   ROMANCE_DEEPEN_SYSTEM_PROMPT,
   ROMANCE_PHYSICAL_SYSTEM_PROMPT,
 } from './config';
-import { buildBattleGreetingContext, buildLlmContext, type LlmContextParams } from './context-builder';
+import {
+  buildBattleGreetingContext,
+  buildLlmContext,
+  type LlmContextParams,
+} from './context-builder';
 import { completeChat } from './llm-service';
 
 const SceneNarrationSchema = z.object({
@@ -17,38 +21,42 @@ const SceneNarrationSchema = z.object({
     .min(1)
     .max(320)
     .describe(
-      'One or two short sentences: the focus character\'s physical action, a visible expression such as laughing or scowling, and the place with two or three concrete objects. No appearance, clothing, or inner feelings.'
+      "One or two short sentences: the focus character's physical action, a visible expression such as laughing or scowling, and the named place with two or three concrete objects. No appearance, clothing, or inner feelings."
     ),
 });
 
 export type SceneNarration = z.infer<typeof SceneNarrationSchema>;
 export type AttributeCheckNarration = SceneNarration;
 
+const OPENING_ANGLES = [
+  'Start with a line of dialogue only the focus character would say.',
+  'Start with an object in this place that the focus character is already handling.',
+  'Start with the focus character mid-habit, drawn from their character notes, before the player gets a word in.',
+  'Start with a sound, smell, or mess particular to this place, then bring the focus character into it.',
+];
+
+const GREETING_ANGLES = [
+  'Let a habit or grudge from their character notes show in the wording.',
+  'Talk about the duel through whatever this person actually cares about.',
+  'If they barely know the player, the sentence should size the player up. If they have history, that history should be specific.',
+];
+
 async function generateSceneNarration(
   contextParams: LlmContextParams,
   systemPrompt: string = NARRATION_SYSTEM_PROMPT,
   extraUserGuidance?: string
 ): Promise<SceneNarration> {
-  const userPrompt = [
-    buildLlmContext(contextParams),
-    [
-      'Return JSON with:',
-      '- text: one short paragraph describing what happens.',
-      '- imagePrompt: one or two short sentences. The focus character\'s activity, a visible expression (laughing, scowling, smiling, shouting), and the place with a few concrete objects. Example: "Laughing while pouring tea behind the inn bar, wooden mugs and bottles on the shelves, firelight on the counter."',
-      extraUserGuidance,
-    ]
-      .filter(Boolean)
-      .join('\n'),
-  ].join('\n\n');
-
   const parsed = await completeChat(
     [
       { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt },
+      {
+        role: 'user',
+        content: [buildLlmContext(contextParams), narrationRequest(extraUserGuidance)].join('\n\n'),
+      },
     ],
     {
-      temperature: 0.8,
-      maxTokens: 320,
+      temperature: 0.9,
+      maxTokens: 420,
       schema: SceneNarrationSchema,
       schemaName: 'scene-narration',
     }
@@ -60,6 +68,20 @@ async function generateSceneNarration(
   };
 }
 
+function narrationRequest(extra?: string): string {
+  const angle = OPENING_ANGLES[Math.floor(Math.random() * OPENING_ANGLES.length)];
+  return [
+    'Write the scene as JSON with "text" and "imagePrompt".',
+    angle,
+    'The first words must not be "You lean", "You smile", "You approach", "You glance", or "You chuckle".',
+    'Name the focus character and include one detail from their character notes.',
+    extra,
+    'imagePrompt: a visible expression, what the focus character is physically doing, the place name, and two or three objects that belong there. No clothing, appearance, or inner feelings.',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
 function romanceSystemPrompt(action?: Action): string {
   return action?.actionParameters?.romanceType === 'physical'
     ? ROMANCE_PHYSICAL_SYSTEM_PROMPT
@@ -67,10 +89,11 @@ function romanceSystemPrompt(action?: Action): string {
 }
 
 function romanceUserGuidance(action?: Action): string {
+  const partner = 'the focus character';
   if (action?.actionParameters?.romanceType === 'physical') {
-    return 'Write an adult erotic scene of sexual intimacy between the player and the focus character. Explicit content is allowed.';
+    return `Write an adult erotic scene of sexual intimacy between the player and ${partner}. Explicit detail is allowed. Filter it through their habits and inhibitions from the character notes, not a generic embrace.`;
   }
-  return 'Write a cosy, heartwarming scene of emotional intimacy and growing affection.';
+  return `Write a cosy scene of emotional intimacy. The tenderness should look like ${partner} specifically — their shyness, pride, humor, or loneliness — not a generic cuddle.`;
 }
 
 /** Romance scenes use dedicated system prompts (cosy deepen vs adult physical). */
@@ -103,11 +126,14 @@ export async function generateAttemptedActionNarration(action: Action): Promise<
 
 /** One spoken sentence from the opponent at the start of a card duel. Cached via completeChat. */
 export async function generateBattleGreeting(opponentKey: string): Promise<string> {
+  const angle = GREETING_ANGLES[Math.floor(Math.random() * GREETING_ANGLES.length)];
   const userPrompt = [
     buildBattleGreetingContext(opponentKey),
     [
-      'Write the opponent\'s greeting to the player as they sit down to duel.',
-      'One sentence only, in their voice, shaped by their personality and how they feel about the player.',
+      "Write the opponent's greeting as they sit down to duel.",
+      'One sentence only, in their voice.',
+      angle,
+      'Do not start with "So", "Well", or "Ah".',
     ].join('\n'),
   ].join('\n\n');
 
@@ -117,8 +143,8 @@ export async function generateBattleGreeting(opponentKey: string): Promise<strin
       { role: 'user', content: userPrompt },
     ],
     {
-      temperature: 0.9,
-      maxTokens: 80,
+      temperature: 0.95,
+      maxTokens: 100,
     }
   );
 

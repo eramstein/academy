@@ -1,4 +1,4 @@
-import type { Card, Player, Position, UnitCard } from '../_model';
+import { isUnitCard, type Card, type Player, type Position, type UnitCard } from '../_model';
 import { bs } from '../_state';
 import { shuffleDeck } from './deck';
 import { onDeployUnit } from './listeners';
@@ -7,6 +7,10 @@ import { makeDeployedUnit } from './unit';
 
 export function getAllGraveyardsCards(): Card[] {
   return bs.players.flatMap((p) => p.graveyard);
+}
+
+export function getAllGraveyardsUnits(): UnitCard[] {
+  return bs.players.flatMap((p) => p.graveyard.filter(isUnitCard) as UnitCard[]);
 }
 
 export function reanimate(card: UnitCard, position: Position, reanimatorPlayerId: number) {

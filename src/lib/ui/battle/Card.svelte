@@ -288,6 +288,9 @@
   .card {
     width: var(--card-width);
     height: var(--card-height);
+    /* Keep the body sans when a parent (graveyard panel) sets the narrative serif.
+       Georgia's digits sit lower in the mana circle. */
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     border-radius: 12px;
     box-shadow:
       0 1px 0 rgba(255, 255, 255, 0.14),

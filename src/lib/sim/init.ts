@@ -35,9 +35,9 @@ export const defaultGameState: GameState = {
       aura: 5,
     },
     resources: {
-      [ResourceType.MagicDust]: 0,
-      [ResourceType.Mithril]: 0,
-      [ResourceType.Moxes]: 0,
+      [ResourceType.MagicDust]: 2,
+      [ResourceType.Mithril]: 2,
+      [ResourceType.Moxes]: 2,
       [ResourceType.MollysBeads]: 0,
     },
     subscriptions: {
@@ -49,9 +49,9 @@ export const defaultGameState: GameState = {
       keywords: {},
     },
     craftingSkills: {
-      mastery: 0,
-      erudition: 0,
-      inspiration: 0,
+      mastery: 1,
+      erudition: 1,
+      inspiration: 1,
     },
     jobs: [],
   },

@@ -1,4 +1,4 @@
-import { CardType, CounterType, StatusType } from '@/lib/_model';
+import { CardType, CounterType, isUnitCard, StatusType } from '@/lib/_model';
 import type {
   Card,
   EffectArgs,
@@ -44,7 +44,7 @@ import {
   untapPlayer,
 } from '@/lib/battle';
 import { fightUnit } from '../combat';
-import { getAllGraveyardsCards, reanimate, recycleCard, regrowCard } from '../graveyard';
+import { getAllGraveyardsUnits, reanimate, recycleCard, regrowCard } from '../graveyard';
 import { damageLand, fortifyLand } from '../land';
 import { forceMoveUnit } from '../move';
 import { soundManager } from '../sound';
@@ -68,9 +68,9 @@ export const DataEffectTemplates: Record<
       const playerId = player?.id ?? unit?.ownerPlayerId;
       const isPlayer = playerId === 0;
       const reanimatedUnit = (targets[0]?.[0] ||
-        getRandomFromArray(getAllGraveyardsCards())) as UnitCard;
+        getRandomFromArray(getAllGraveyardsUnits())) as UnitCard;
       const position = (targets[1]?.[0] || getRandomFromArray(getEmptyCells(isPlayer))) as Position;
-      if (reanimatedUnit && position) {
+      if (reanimatedUnit && position && isUnitCard(reanimatedUnit)) {
         reanimate(reanimatedUnit, position, playerId);
       }
     },
