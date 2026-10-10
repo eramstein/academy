@@ -6,10 +6,19 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["ranged", "armor"],
-    "unitTypes": ["construct"],
-    "actions": ["directDamage"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "armor"
+    ],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Agent of Chaos",
@@ -18,9 +27,15 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["demon"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "demon"
+    ]
   },
   {
     "name": "Al-ahmar Djinn",
@@ -29,9 +44,18 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "blue"],
-    "keywords": ["ranged", "retaliate", "resist"],
-    "unitTypes": ["spirit"]
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate",
+      "resist"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
   },
   {
     "name": "Aladin",
@@ -40,9 +64,14 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red", "blue"],
+    "colors": [
+      "red",
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Albatros",
@@ -51,9 +80,15 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["flying"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "flying"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Ali Baba",
@@ -62,9 +97,14 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "blue"],
+    "colors": [
+      "red",
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Alpha Male",
@@ -73,10 +113,17 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red", "green"],
+    "colors": [
+      "red",
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["fight"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Ammunition Cart",
@@ -85,9 +132,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["construct"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Angry Lizard",
@@ -96,10 +149,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "unitTypes": ["beast"],
-    "actions": ["directDamage"]
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Angry Mob",
@@ -108,10 +167,346 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["human"],
-    "actions": ["directDamage"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Anklebriar",
+    "imagePrompt": "A small creeper lashes around a foot and roots it to the ground.",
+    "imageName": "anklebriar",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "root"
+    ]
+  },
+  {
+    "name": "Antler King",
+    "imagePrompt": "A great stag drives two lesser stags into a crashing antler lock and looms over them.",
+    "imageName": "antler_king",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Archdruid",
+    "imagePrompt": "An archdruid packs living bark over a terrible wound until it seals.",
+    "imageName": "archdruid",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "healUnit"
+    ]
+  },
+  {
+    "name": "Ashling",
+    "imagePrompt": "A withered stalk splits and a fresh living copy unfurls from the dead one.",
+    "imageName": "ashling",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "regrowCard"
+    ]
+  },
+  {
+    "name": "Aurochs Calf",
+    "imagePrompt": "A heavy calf bowls through a line and flattens whatever stands behind its target.",
+    "imageName": "aurochs_calf",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Balmleaf",
+    "imagePrompt": "A young herb wraps a nick in a living leaf and the nick vanishes.",
+    "imageName": "balmleaf",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "healUnit"
+    ]
+  },
+  {
+    "name": "Barrow Hound",
+    "imagePrompt": "A lean hound drags a buried bark-card out of loose soil.",
+    "imageName": "barrow_hound",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
+  },
+  {
+    "name": "Barrow Seed",
+    "imagePrompt": "A green shoot pushes through barrow-soil and lifts a buried token into the light.",
+    "imageName": "barrow_seed",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "regrowCard"
+    ]
+  },
+  {
+    "name": "Basilisk",
+    "imagePrompt": "A huge basilisk with wet fangs and a sick green sheen down its throat.",
+    "imageName": "basilisk",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "poisonous"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Binding Loam",
+    "imagePrompt": "A huge body of living soil, feet fused into the ground beneath it.",
+    "imageName": "binding_loam",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "root"
+    ]
+  },
+  {
+    "name": "Bindweed",
+    "imagePrompt": "A walking bindweed, ankle-thick vines coiled and rooted around its own feet.",
+    "imageName": "bindweed",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "root"
+    ]
+  },
+  {
+    "name": "Bog Snare",
+    "imagePrompt": "Mud and reed-roots lock around a pair of ankles and hold them fast.",
+    "imageName": "bog_snare",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "root"
+    ]
+  },
+  {
+    "name": "Brawling Ettin",
+    "imagePrompt": "An ettin with two snarling heads shoved nose to nose on one body.",
+    "imageName": "brawling_ettin",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Briar Leshy",
+    "imagePrompt": "A leshy of braided briar, root-toes locked into the ground under its own weight.",
+    "imageName": "briar_leshy",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "root"
+    ]
+  },
+  {
+    "name": "Burrow Brawler",
+    "imagePrompt": "A stocky halfling with skinned knuckles and a low, bristling stance.",
+    "imageName": "burrow_brawler",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Burrow Elder",
+    "imagePrompt": "A small ancient halfling, bent with age, a long-buried relic cradled in both hands.",
+    "imageName": "burrow_elder",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
+  },
+  {
+    "name": "Colossus Agaric",
+    "imagePrompt": "A towering fly agaric, cap still swelling, new rings of flesh stacked up the stalk.",
+    "imageName": "colossus_agaric",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "mushroom"
+    ],
+    "actions": [
+      "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Dew Chalice",
+    "imagePrompt": "Morning dew gathers in a stone cup and shines as fresh green mana.",
+    "imageName": "dew_chalice",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "addMana"
+    ]
+  },
+  {
+    "name": "Dew Sapling",
+    "imagePrompt": "A knee-high sapling with sunlight beaded like green dew along every leaf.",
+    "imageName": "dew_sapling",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "addMana"
+    ]
   },
   {
     "name": "Dwarf Berserker",
@@ -120,10 +515,18 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["zerk"],
-    "unitTypes": ["dwarf"],
-    "actions": ["fight"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "zerk"
+    ],
+    "unitTypes": [
+      "dwarf"
+    ],
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Arc Lightning Specialist",
@@ -132,10 +535,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["directDamage"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Arcane Sniper",
@@ -144,9 +553,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["ranged", "moveAndAttack"],
-    "unitTypes": ["human"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Artificial Plague",
@@ -155,9 +571,13 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "actions": ["addDecayCounters"]
+    "actions": [
+      "addDecayCounters"
+    ]
   },
   {
     "name": "Assassin",
@@ -166,10 +586,16 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["destroyUnit"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "destroyUnit"
+    ]
   },
   {
     "name": "Baba Yaga",
@@ -178,10 +604,21 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["blue", "green"],
-    "keywords": ["resist", "poisonous"],
-    "unitTypes": ["demon"],
-    "actions": ["mezz", "root"]
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "resist",
+      "poisonous"
+    ],
+    "unitTypes": [
+      "demon"
+    ],
+    "actions": [
+      "mezz",
+      "root"
+    ]
   },
   {
     "name": "Ballista",
@@ -190,9 +627,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["ranged"],
-    "unitTypes": ["building"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "building"
+    ]
   },
   {
     "name": "Banshee",
@@ -201,10 +644,20 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green", "black"],
-    "keywords": ["retaliate", "resist"],
-    "unitTypes": ["monster"],
-    "actions": ["daze"]
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "resist"
+    ],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "daze"
+    ]
   },
   {
     "name": "Basic Research",
@@ -213,9 +666,13 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["drawCards"]
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Battery",
@@ -224,9 +681,13 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["construct"]
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Bear Minimum",
@@ -235,9 +696,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Bear Riders",
@@ -246,9 +713,18 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["green", "blue"],
-    "keywords": ["moveAndAttack", "trample"],
-    "unitTypes": ["human", "beast"]
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack",
+      "trample"
+    ],
+    "unitTypes": [
+      "human",
+      "beast"
+    ]
   },
   {
     "name": "Benevolent Druid",
@@ -257,9 +733,14 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green", "black"],
+    "colors": [
+      "green",
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Benevolent Monk",
@@ -268,9 +749,13 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Big Bertha",
@@ -279,9 +764,18 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["ranged", "cleave", "lance", "retaliate"],
-    "unitTypes": ["human"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "cleave",
+      "lance",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Big Mamma's Inn",
@@ -290,9 +784,14 @@
     "cardType": "land",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "actions": ["grow", "addGrowthCounters"]
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Bison",
@@ -301,9 +800,16 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["trample", "retaliate"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Blacksmith",
@@ -312,9 +818,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["retaliate", "armor"],
-    "unitTypes": ["human"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Bob the Blob",
@@ -323,10 +836,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["elemental"],
-    "actions": ["addDecayCounters"]
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "addDecayCounters"
+    ]
   },
   {
     "name": "Boring Boar",
@@ -335,9 +854,13 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["beast"]
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Born From Magic",
@@ -346,10 +869,20 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue", "green"],
-    "keywords": ["flying"],
-    "unitTypes": ["spirit"],
-    "actions": ["grow", "addGrowthCounters"]
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "flying"
+    ],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Buffoon",
@@ -358,9 +891,13 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Busy Forge",
@@ -369,9 +906,14 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "black"],
+    "colors": [
+      "red",
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["building"]
+    "unitTypes": [
+      "building"
+    ]
   },
   {
     "name": "Caring Druidess",
@@ -380,10 +922,16 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["healUnit"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "healUnit"
+    ]
   },
   {
     "name": "Carnival of Miracles",
@@ -392,9 +940,15 @@
     "cardType": "spell",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["blue", "black"],
+    "colors": [
+      "blue",
+      "black"
+    ],
     "keywords": [],
-    "actions": ["fortifyLand", "addDecayCounters"]
+    "actions": [
+      "fortifyLand",
+      "addDecayCounters"
+    ]
   },
   {
     "name": "Charge!",
@@ -403,7 +957,10 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "black"],
+    "colors": [
+      "red",
+      "black"
+    ],
     "keywords": []
   },
   {
@@ -413,7 +970,9 @@
     "cardType": "land",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": []
   },
   {
@@ -423,9 +982,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["lance", "retaliate"],
-    "unitTypes": ["human"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "lance",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Clunky Golem",
@@ -434,10 +1000,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["construct"],
-    "actions": ["directDamage"]
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Clunky Helicopter",
@@ -446,9 +1018,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["armor"],
-    "unitTypes": ["construct"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Coal Demon",
@@ -457,9 +1035,16 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["elemental", "demon"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "elemental",
+      "demon"
+    ]
   },
   {
     "name": "Council Envoy",
@@ -468,9 +1053,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black", "blue"],
-    "keywords": ["armor"],
-    "unitTypes": ["human"]
+    "colors": [
+      "black",
+      "blue"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Cowardly Mage",
@@ -479,9 +1071,15 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["ranged"],
-    "unitTypes": ["human"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Cursed Artist",
@@ -490,10 +1088,17 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue", "black"],
+    "colors": [
+      "blue",
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["addDecayCounters"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "addDecayCounters"
+    ]
   },
   {
     "name": "Dark Remedy",
@@ -502,9 +1107,14 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green", "black"],
+    "colors": [
+      "green",
+      "black"
+    ],
     "keywords": [],
-    "actions": ["drawCards"]
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Dark Ritual",
@@ -513,7 +1123,9 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": []
   },
   {
@@ -523,10 +1135,17 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green", "blue"],
+    "colors": [
+      "green",
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["spirit"],
-    "actions": ["daze"]
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "daze"
+    ]
   },
   {
     "name": "Decaying Ray",
@@ -535,9 +1154,13 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "actions": ["addDecayCounters"]
+    "actions": [
+      "addDecayCounters"
+    ]
   },
   {
     "name": "Deer",
@@ -546,9 +1169,13 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["beast"]
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Desert Sorcerer",
@@ -557,10 +1184,19 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "blue"],
-    "keywords": ["ranged"],
-    "unitTypes": ["human"],
-    "actions": ["directDamage"]
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Desert Storm",
@@ -569,7 +1205,10 @@
     "cardType": "spell",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red", "blue"],
+    "colors": [
+      "red",
+      "blue"
+    ],
     "keywords": []
   },
   {
@@ -579,9 +1218,14 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue", "black"],
+    "colors": [
+      "blue",
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Drake",
@@ -590,9 +1234,17 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["lance", "flying", "retaliate"],
-    "unitTypes": ["dragon"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "lance",
+      "flying",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "dragon"
+    ]
   },
   {
     "name": "Dryad",
@@ -601,9 +1253,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["regeneration"],
-    "unitTypes": ["spirit"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "regeneration"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
   },
   {
     "name": "Dude's Arms Stash",
@@ -622,10 +1280,19 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "blue"],
-    "keywords": ["moveAndAttack"],
-    "unitTypes": ["human"],
-    "actions": ["bounceUnit"]
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "bounceUnit"
+    ]
   },
   {
     "name": "Dwarf Berserker",
@@ -634,9 +1301,15 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["zerk"],
-    "unitTypes": ["dwarf"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "zerk"
+    ],
+    "unitTypes": [
+      "dwarf"
+    ]
   },
   {
     "name": "Dwarf Cadencer",
@@ -645,9 +1318,13 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "unitTypes": ["dwarf"]
+    "unitTypes": [
+      "dwarf"
+    ]
   },
   {
     "name": "Dwarven Punisher",
@@ -656,9 +1333,16 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["haste", "trample"],
-    "unitTypes": ["dwarf"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste",
+      "trample"
+    ],
+    "unitTypes": [
+      "dwarf"
+    ]
   },
   {
     "name": "Eagle Mounted Archers",
@@ -667,9 +1351,18 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["ranged", "flying", "retaliate"],
-    "unitTypes": ["human", "beast"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "flying",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human",
+      "beast"
+    ]
   },
   {
     "name": "Earthquake",
@@ -678,9 +1371,13 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "actions": ["directDamage"]
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Ebonheart",
@@ -689,9 +1386,32 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black", "green"],
+    "colors": [
+      "black",
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["demon"]
+    "unitTypes": [
+      "demon"
+    ]
+  },
+  {
+    "name": "Elder Yew",
+    "imagePrompt": "An ancient yew with a vast crown and a trunk split by fresh wood pushing outward.",
+    "imageName": "elder_yew",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Elite Crossbowmen",
@@ -700,9 +1420,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["ranged", "retaliate"],
-    "unitTypes": ["human"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Emergency Repairs",
@@ -711,9 +1438,13 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "actions": ["healUnit"]
+    "actions": [
+      "healUnit"
+    ]
   },
   {
     "name": "Emma's Dark Tower",
@@ -724,7 +1455,9 @@
     "cheapImage": false,
     "colors": [],
     "keywords": [],
-    "actions": ["damageOpponent"]
+    "actions": [
+      "damageOpponent"
+    ]
   },
   {
     "name": "Energy Monster",
@@ -733,10 +1466,19 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["monster"],
-    "actions": ["grow", "addGrowthCounters"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Energyze",
@@ -745,19 +1487,10 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": []
-  },
-  {
-    "name": "Enraged Goblin",
-    "imagePrompt": "Enraged Goblin",
-    "imageName": "enraged_goblin",
-    "cardType": "unit",
-    "unitSize": "weak",
-    "cheapImage": false,
-    "colors": ["red"],
-    "keywords": [],
-    "unitTypes": ["monster"]
   },
   {
     "name": "Ent",
@@ -766,9 +1499,16 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["retaliate", "armor"],
-    "unitTypes": ["spirit"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
   },
   {
     "name": "Entangling Roots",
@@ -777,10 +1517,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["plant"],
-    "actions": ["root"]
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "root"
+    ]
   },
   {
     "name": "Entrench",
@@ -789,7 +1535,10 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "black"],
+    "colors": [
+      "red",
+      "black"
+    ],
     "keywords": []
   },
   {
@@ -799,9 +1548,13 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "actions": ["destroyUnit"]
+    "actions": [
+      "destroyUnit"
+    ]
   },
   {
     "name": "Expendable Recruit",
@@ -810,10 +1563,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["drawCards"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Explosive Trap",
@@ -822,10 +1581,17 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "black"],
+    "colors": [
+      "red",
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["building"],
-    "actions": ["directDamage"]
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Fair Trader",
@@ -834,10 +1600,18 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["moveAndAttack"],
-    "unitTypes": ["human"],
-    "actions": ["cycleCards"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "cycleCards"
+    ]
   },
   {
     "name": "Fancy Courtesan",
@@ -846,10 +1620,34 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue", "black"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["human"],
-    "actions": ["mezz"]
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "mezz"
+    ]
+  },
+  {
+    "name": "Fang and Tusk",
+    "imagePrompt": "A boar and a wolf slam together in a spray of leaves.",
+    "imageName": "fang_and_tusk",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Fat Pigeon",
@@ -858,9 +1656,34 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue", "black"],
-    "keywords": ["flying"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "flying"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Fen Lurker",
+    "imagePrompt": "A hunched bog creature with reed-roots for legs, sunk to the knees in mud.",
+    "imageName": "fen_lurker",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "root"
+    ]
   },
   {
     "name": "Ferocious Badger",
@@ -869,9 +1692,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Fight!",
@@ -880,9 +1709,13 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "actions": ["fight"]
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Fire Elemental",
@@ -891,10 +1724,18 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["elemental"],
-    "actions": ["directDamage"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Fireball",
@@ -903,9 +1744,13 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "actions": ["directDamage"]
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Fisherman's Ifrit",
@@ -914,9 +1759,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "blue"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["spirit"]
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
   },
   {
     "name": "Flammen Werfer",
@@ -925,9 +1777,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "black"],
-    "keywords": ["lance"],
-    "unitTypes": ["human"]
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "lance"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Flying Carpet",
@@ -936,9 +1795,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "blue"],
-    "keywords": ["flying"],
-    "unitTypes": ["construct"]
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "flying"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Forest",
@@ -947,7 +1813,9 @@
     "cardType": "land",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": []
   },
   {
@@ -957,9 +1825,13 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "actions": ["fortifyLand"]
+    "actions": [
+      "fortifyLand"
+    ]
   },
   {
     "name": "Frankish Castle",
@@ -968,9 +1840,17 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "black"],
-    "keywords": ["retaliate", "immobile"],
-    "unitTypes": ["building"]
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "immobile"
+    ],
+    "unitTypes": [
+      "building"
+    ]
   },
   {
     "name": "Franz",
@@ -979,10 +1859,19 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red", "black"],
-    "keywords": ["armor"],
-    "unitTypes": ["human"],
-    "actions": ["fight"]
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Frenzied Shaman",
@@ -991,9 +1880,13 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Gas Station",
@@ -1002,7 +1895,9 @@
     "cardType": "land",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": []
   },
   {
@@ -1012,9 +1907,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["human"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Gaul Brawler",
@@ -1023,9 +1924,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["cleave", "retaliate"],
-    "unitTypes": ["human"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "cleave",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Giant Growth",
@@ -1034,9 +1942,14 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "actions": ["grow", "addGrowthCounters"]
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Giant Spider",
@@ -1045,9 +1958,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["retaliate", "poisonous"],
-    "unitTypes": ["monster"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "poisonous"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
   },
   {
     "name": "Gifted Apprentice",
@@ -1056,9 +1976,14 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "blue"],
+    "colors": [
+      "red",
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Glacial Guard",
@@ -1067,9 +1992,52 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue", "green"],
-    "keywords": ["ranged"],
-    "unitTypes": ["human"]
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Glade Page",
+    "imagePrompt": "A young elf with a thorn switch across one shoulder and a sharp, daring face.",
+    "imageName": "glade_page",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elf"
+    ],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Glimmer Sprite",
+    "imagePrompt": "A thumbnail sprite, wings like caught sunlight, a bead of green mana bright in its chest.",
+    "imageName": "glimmer_sprite",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "addMana"
+    ]
   },
   {
     "name": "Gnome Engineer",
@@ -1078,10 +2046,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["halfing"],
-    "actions": ["healUnit"]
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "healUnit"
+    ]
   },
   {
     "name": "Gnome Mechanic",
@@ -1090,10 +2064,17 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["halfing"],
-    "actions": ["grow", "addGrowthCounters"]
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Goblin Engineer",
@@ -1102,9 +2083,13 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["monster"]
+    "unitTypes": [
+      "greenskin"
+    ]
   },
   {
     "name": "Golgoth",
@@ -1113,9 +2098,53 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red", "black"],
-    "keywords": ["retaliate", "armor"],
-    "unitTypes": ["human"]
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Grave Hyena",
+    "imagePrompt": "A barrow-dusted hyena with a seed-carved bone held crosswise in its jaws.",
+    "imageName": "grave_hyena",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
+  },
+  {
+    "name": "Grave Mammoth",
+    "imagePrompt": "An enormous mammoth crusted in barrow-earth, a relic caught on one tusk.",
+    "imageName": "grave_mammoth",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
   },
   {
     "name": "Greedy Bear",
@@ -1124,9 +2153,32 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green", "blue"],
-    "keywords": ["trample", "retaliate"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Green Poultice",
+    "imagePrompt": "Thick moss pulls a torn flank closed, green threads sealing the wound.",
+    "imageName": "green_poultice",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "healUnit"
+    ]
   },
   {
     "name": "Grenadier",
@@ -1135,9 +2187,18 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue", "black"],
-    "keywords": ["ranged", "cleave", "retaliate"],
-    "unitTypes": ["human"]
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "cleave",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Grim Guard",
@@ -1146,9 +2207,51 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["ranged"],
-    "unitTypes": ["human"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Grove Chanter",
+    "imagePrompt": "A moss-cloaked druid, throat bright with green light, mouth open in song.",
+    "imageName": "grove_chanter",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "addMana"
+    ]
+  },
+  {
+    "name": "Grove Queen",
+    "imagePrompt": "A towering dryad, sap glowing in the cracks of her bark.",
+    "imageName": "grove_queen",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "healUnit"
+    ]
   },
   {
     "name": "Guinea Pig",
@@ -1157,7 +2260,9 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": []
   },
   {
@@ -1167,9 +2272,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green", "black"],
-    "keywords": ["cleave"],
-    "unitTypes": ["human"]
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [
+      "cleave"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Harpy Huntress",
@@ -1178,9 +2290,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["flying", "retaliate"],
-    "unitTypes": ["monster"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "flying",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
   },
   {
     "name": "Havrhell",
@@ -1189,10 +2308,23 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red", "green"],
-    "keywords": ["moveAndAttack", "cleave", "retaliate", "resist"],
-    "unitTypes": ["dwarf"],
-    "actions": ["grow", "addGrowthCounters"]
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack",
+      "cleave",
+      "retaliate",
+      "resist"
+    ],
+    "unitTypes": [
+      "dwarf"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Heal",
@@ -1211,9 +2343,28 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "actions": ["healUnit"]
+    "actions": [
+      "healUnit"
+    ]
+  },
+  {
+    "name": "Heartwood Tithe",
+    "imagePrompt": "Golden sap is drawn out of a split trunk and pools as bright green mana.",
+    "imageName": "heartwood_tithe",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "addMana"
+    ]
   },
   {
     "name": "Henry's Cemetary",
@@ -1224,7 +2375,9 @@
     "cheapImage": false,
     "colors": [],
     "keywords": [],
-    "actions": ["reanimate"]
+    "actions": [
+      "reanimate"
+    ]
   },
   {
     "name": "Hill Troll",
@@ -1233,9 +2386,13 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "unitTypes": ["monster"]
+    "unitTypes": [
+      "monster"
+    ]
   },
   {
     "name": "Hobbit Gardener",
@@ -1244,9 +2401,13 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["halfing"]
+    "unitTypes": [
+      "halfing"
+    ]
   },
   {
     "name": "Hobbit Villager",
@@ -1255,9 +2416,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["retaliate", "regeneration"],
-    "unitTypes": ["halfing"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "regeneration"
+    ],
+    "unitTypes": [
+      "halfing"
+    ]
   },
   {
     "name": "Hold the Line",
@@ -1266,8 +2434,43 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue", "green"],
+    "colors": [
+      "blue",
+      "green"
+    ],
     "keywords": []
+  },
+  {
+    "name": "Holdfast",
+    "imagePrompt": "Thick vines whip up and pin a struggling figure's legs to the ground.",
+    "imageName": "holdfast",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "root"
+    ]
+  },
+  {
+    "name": "Hollow Treant",
+    "imagePrompt": "A hollow treant wide as a gate, its trunk a wall of living wood.",
+    "imageName": "hollow_treant",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample"
+    ],
+    "unitTypes": [
+      "plant"
+    ]
   },
   {
     "name": "Hungry Hermit",
@@ -1276,10 +2479,18 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "green"],
+    "colors": [
+      "red",
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["grow", "addGrowthCounters"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Hungry Wolf",
@@ -1288,9 +2499,15 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Hype Goblin",
@@ -1299,9 +2516,15 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["haste"],
-    "unitTypes": ["monster"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste"
+    ],
+    "unitTypes": [
+      "greenskin"
+    ]
   },
   {
     "name": "Improve Engine",
@@ -1310,7 +2533,10 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue", "black"],
+    "colors": [
+      "blue",
+      "black"
+    ],
     "keywords": []
   },
   {
@@ -1320,9 +2546,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["retaliate", "armor"],
-    "unitTypes": ["construct"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Irresistible Allure",
@@ -1331,7 +2564,10 @@
     "cardType": "spell",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["blue", "black"],
+    "colors": [
+      "blue",
+      "black"
+    ],
     "keywords": []
   },
   {
@@ -1341,8 +2577,28 @@
     "cardType": "land",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": []
+  },
+  {
+    "name": "Ivy Reclaimer",
+    "imagePrompt": "An ivy creature with a wooden token grown into its chest, leaves clenched around it.",
+    "imageName": "ivy_reclaimer",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
   },
   {
     "name": "Jumping Hare",
@@ -1351,9 +2607,52 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["haste", "moveAndAttack"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "haste",
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Kit Vixen",
+    "imagePrompt": "A young vixen with a torn ear, milk-teeth bared, and fur standing in a scrappy ruff.",
+    "imageName": "kit_vixen",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Knitvine",
+    "imagePrompt": "A vine creature with pale inner bark showing and tendrils curled like fresh bandages.",
+    "imageName": "knitvine",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "healUnit"
+    ]
   },
   {
     "name": "Kobold",
@@ -1362,9 +2661,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "green"],
-    "keywords": ["moveAndAttack"],
-    "unitTypes": ["monster"]
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
   },
   {
     "name": "Kobold Slinger",
@@ -1373,9 +2679,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["ranged"],
-    "unitTypes": ["monster"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
   },
   {
     "name": "Kobold Undercity",
@@ -1384,7 +2696,9 @@
     "cardType": "land",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": []
   },
   {
@@ -1394,9 +2708,13 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "actions": ["destroyUnit"]
+    "actions": [
+      "destroyUnit"
+    ]
   },
   {
     "name": "Leonardo Borgio",
@@ -1405,9 +2723,34 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["black", "blue"],
-    "keywords": ["ranged"],
-    "unitTypes": ["human"]
+    "colors": [
+      "black",
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Ley Bull",
+    "imagePrompt": "A huge bull with earth-light running the length of its lowered horns.",
+    "imageName": "ley_bull",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "addMana"
+    ]
   },
   {
     "name": "Lightning Bolt",
@@ -1416,9 +2759,13 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "actions": ["directDamage"]
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Lightning Explosion",
@@ -1427,9 +2774,13 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["directDamage"]
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Lunging Cougar",
@@ -1438,9 +2789,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["haste"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Luring Enchantress",
@@ -1449,10 +2806,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["forceMoveUnit"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "forceMoveUnit"
+    ]
   },
   {
     "name": "Luxurious Growth",
@@ -1461,7 +2824,9 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": []
   },
   {
@@ -1471,9 +2836,13 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Magic Weapons",
@@ -1482,9 +2851,13 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["drawCards"]
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Malevolent Druid",
@@ -1493,10 +2866,53 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green", "black"],
+    "colors": [
+      "green",
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["damageOpponent"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "damageOpponent"
+    ]
+  },
+  {
+    "name": "Mana Spire",
+    "imagePrompt": "A towering column of living sap and leaves, green light venting from its crown.",
+    "imageName": "mana_spire",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "addMana"
+    ]
+  },
+  {
+    "name": "Mandrake",
+    "imagePrompt": "A man-sized mandrake, root-limbs thick, hide split by swelling new growth.",
+    "imageName": "mandrake",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Market",
@@ -1507,7 +2923,9 @@
     "cheapImage": false,
     "colors": [],
     "keywords": [],
-    "actions": ["drawCards"]
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Market Beggar",
@@ -1516,9 +2934,15 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["human"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Mason Guilder",
@@ -1527,10 +2951,18 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["human"],
-    "actions": ["fortifyLand"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "fortifyLand"
+    ]
   },
   {
     "name": "Mass Enrage",
@@ -1539,9 +2971,13 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "actions": ["drawCards"]
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Mass Root",
@@ -1550,9 +2986,14 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "actions": ["root", "drawCards"]
+    "actions": [
+      "root",
+      "drawCards"
+    ]
   },
   {
     "name": "Mass Sleep",
@@ -1561,9 +3002,13 @@
     "cardType": "spell",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["mezz"]
+    "actions": [
+      "mezz"
+    ]
   },
   {
     "name": "Master of Chains",
@@ -1572,10 +3017,36 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["human"],
-    "actions": ["directDamage"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Meadow Shirriff",
+    "imagePrompt": "A halfling shirriff in a green tabard, chin out, a cracked stick across his shoulders.",
+    "imageName": "meadow_shirriff",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Mega Moss Monster",
@@ -1584,9 +3055,13 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["plant"]
+    "unitTypes": [
+      "plant"
+    ]
   },
   {
     "name": "Melting Spree",
@@ -1595,7 +3070,9 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": []
   },
   {
@@ -1605,9 +3082,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["ranged", "retaliate"],
-    "unitTypes": ["human"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Modi's Benediction",
@@ -1616,7 +3100,10 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "green"],
+    "colors": [
+      "red",
+      "green"
+    ],
     "keywords": []
   },
   {
@@ -1626,9 +3113,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["haste", "zerk"],
-    "unitTypes": ["human"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste",
+      "zerk"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Molly's Oasis",
@@ -1639,7 +3133,26 @@
     "cheapImage": false,
     "colors": [],
     "keywords": [],
-    "actions": ["addMana"]
+    "actions": [
+      "addMana"
+    ]
+  },
+  {
+    "name": "Molt Beetle",
+    "imagePrompt": "A small beetle halfway out of a split shell, the new carapace wet and bright.",
+    "imageName": "molt_beetle",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "regeneration"
+    ],
+    "unitTypes": [
+      "insect"
+    ]
   },
   {
     "name": "Mosquito",
@@ -1648,10 +3161,34 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["beast"],
-    "actions": ["addDecayCounters"]
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "addDecayCounters"
+    ]
+  },
+  {
+    "name": "Moss Maid",
+    "imagePrompt": "A fey wrapped in a living moss cloak, both palms glowing a soft green.",
+    "imageName": "moss_maid",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "healUnit"
+    ]
   },
   {
     "name": "Mountain",
@@ -1660,7 +3197,9 @@
     "cardType": "land",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": []
   },
   {
@@ -1670,9 +3209,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["monster"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
   },
   {
     "name": "Mycosed Bear",
@@ -1681,9 +3226,15 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green", "black"],
+    "colors": [
+      "green",
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["beast", "mushroom"]
+    "unitTypes": [
+      "beast",
+      "mushroom"
+    ]
   },
   {
     "name": "Nature's Reconquest",
@@ -1692,9 +3243,14 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green", "blue"],
+    "colors": [
+      "green",
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["destroyUnit"]
+    "actions": [
+      "destroyUnit"
+    ]
   },
   {
     "name": "Necessary Sacrifice",
@@ -1703,9 +3259,33 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue", "black"],
+    "colors": [
+      "blue",
+      "black"
+    ],
     "keywords": [],
-    "actions": ["destroyUnit", "drawCards"]
+    "actions": [
+      "destroyUnit",
+      "drawCards"
+    ]
+  },
+  {
+    "name": "Nectar Mare",
+    "imagePrompt": "A mare with honeycomb caught in her teeth and green-gold light on her muzzle.",
+    "imageName": "nectar_mare",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "addMana"
+    ]
   },
   {
     "name": "Neutralize",
@@ -1716,7 +3296,9 @@
     "cheapImage": false,
     "colors": [],
     "keywords": [],
-    "actions": ["daze"]
+    "actions": [
+      "daze"
+    ]
   },
   {
     "name": "Northern Challenger",
@@ -1725,9 +3307,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "green"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["human"]
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Not a Fox",
@@ -1736,10 +3325,19 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black", "green"],
-    "keywords": ["resist"],
-    "unitTypes": ["beast"],
-    "actions": ["damageOpponent"]
+    "colors": [
+      "black",
+      "green"
+    ],
+    "keywords": [
+      "resist"
+    ],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "damageOpponent"
+    ]
   },
   {
     "name": "Not So Little Pig",
@@ -1748,10 +3346,17 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["beast"],
-    "actions": ["grow", "addGrowthCounters"]
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Odin's Chosen",
@@ -1760,9 +3365,16 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red", "green"],
-    "keywords": ["haste"],
-    "unitTypes": ["human"]
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "haste"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Ogre Brawler",
@@ -1771,10 +3383,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "unitTypes": ["monster"],
-    "actions": ["fight"]
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Opera Singer",
@@ -1783,10 +3401,18 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["human"],
-    "actions": ["daze"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "daze"
+    ]
   },
   {
     "name": "Orc Miner",
@@ -1795,9 +3421,34 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["retaliate", "armor"],
-    "unitTypes": ["monster"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "greenskin"
+    ]
+  },
+  {
+    "name": "Orchard Picker",
+    "imagePrompt": "A small halfling with orchard-stained hands and a glow of green dew in their palms.",
+    "imageName": "orchard_picker",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "addMana"
+    ]
   },
   {
     "name": "Ourssaf",
@@ -1806,9 +3457,13 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["demon"]
+    "unitTypes": [
+      "demon"
+    ]
   },
   {
     "name": "Ousmane's Summoning Circle",
@@ -1827,10 +3482,19 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["regeneration"],
-    "unitTypes": ["beast"],
-    "actions": ["grow", "addGrowthCounters"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "regeneration"
+    ],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Panicked Student",
@@ -1839,10 +3503,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["cycleCards"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "cycleCards"
+    ]
   },
   {
     "name": "Peaceful Faerie",
@@ -1851,10 +3521,18 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["ranged"],
-    "unitTypes": ["spirit"],
-    "actions": ["mezz"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "mezz"
+    ]
   },
   {
     "name": "Peasants be gone!",
@@ -1863,9 +3541,84 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["bounceUnit"]
+    "actions": [
+      "bounceUnit"
+    ]
+  },
+  {
+    "name": "Peatling",
+    "imagePrompt": "A knee-high figure of peat with a bark token grown into its chest.",
+    "imageName": "peatling",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
+  },
+  {
+    "name": "Pebble Ram",
+    "imagePrompt": "A stocky young ram, low and dense as a river stone, horns already notched.",
+    "imageName": "pebble_ram",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Pit Hydra",
+    "imagePrompt": "A massive hydra, many heads crowded around one body, each lunging at the next.",
+    "imageName": "pit_hydra",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Pit Lynx",
+    "imagePrompt": "A scarred lynx with ears flat, fangs long, and the thick neck of a pit fighter.",
+    "imageName": "pit_lynx",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Plague Lands",
@@ -1876,7 +3629,9 @@
     "cheapImage": false,
     "colors": [],
     "keywords": [],
-    "actions": ["addDecayCounters"]
+    "actions": [
+      "addDecayCounters"
+    ]
   },
   {
     "name": "Plague Spreader",
@@ -1885,10 +3640,17 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["human", "demon"],
-    "actions": ["addDecayCounters"]
+    "unitTypes": [
+      "human",
+      "demon"
+    ],
+    "actions": [
+      "addDecayCounters"
+    ]
   },
   {
     "name": "Plains",
@@ -1907,9 +3669,32 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue", "black"],
+    "colors": [
+      "blue",
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Poultice Apprentice",
+    "imagePrompt": "A young herbalist with yarrow in their hair and moss packed across both palms.",
+    "imageName": "poultice_apprentice",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "healUnit"
+    ]
   },
   {
     "name": "Promising Prototype",
@@ -1918,7 +3703,9 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [
       "moveAndAttack",
       "trample",
@@ -1929,7 +3716,9 @@
       "armor",
       "resist"
     ],
-    "unitTypes": ["construct"]
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Rage Elemental",
@@ -1938,10 +3727,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "unitTypes": ["elemental"],
-    "actions": ["directDamage"]
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Ragnar Lothbrok",
@@ -1950,9 +3745,16 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red", "green"],
-    "keywords": ["moveAndAttack"],
-    "unitTypes": ["human"]
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Raise Dead",
@@ -1961,9 +3763,14 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black", "green"],
+    "colors": [
+      "black",
+      "green"
+    ],
     "keywords": [],
-    "actions": ["reanimate"]
+    "actions": [
+      "reanimate"
+    ]
   },
   {
     "name": "Rebuild",
@@ -1974,7 +3781,9 @@
     "cheapImage": false,
     "colors": [],
     "keywords": [],
-    "actions": ["fortifyLand"]
+    "actions": [
+      "fortifyLand"
+    ]
   },
   {
     "name": "Red Dragon",
@@ -1983,10 +3792,18 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["lance"],
-    "unitTypes": ["dragon"],
-    "actions": ["directDamage"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "lance"
+    ],
+    "unitTypes": [
+      "dragon"
+    ],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Celtic Musician",
@@ -1995,9 +3812,31 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Relic Hunter",
+    "imagePrompt": "A green-cloaked hunter with grave-dirt on the knees and a leaf-wrapped token at the belt.",
+    "imageName": "relic_hunter",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
   },
   {
     "name": "Rock Drop",
@@ -2006,9 +3845,13 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "actions": ["damageLand"]
+    "actions": [
+      "damageLand"
+    ]
   },
   {
     "name": "Rock Elemental",
@@ -2017,9 +3860,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["resist"],
-    "unitTypes": ["elemental"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "resist"
+    ],
+    "unitTypes": [
+      "elemental"
+    ]
   },
   {
     "name": "Royal Castle Builder",
@@ -2028,9 +3877,13 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Royal Halberdier",
@@ -2039,9 +3892,50 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["lance", "retaliate", "armor"],
-    "unitTypes": ["human"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "lance",
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Rutting Clash",
+    "imagePrompt": "Two stags crash antlers in a clearing and neither one yields.",
+    "imageName": "rutting_clash",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Sap Elemental",
+    "imagePrompt": "A person-sized body of running sap, beads of green light sweating from its skin.",
+    "imageName": "sap_elemental",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "addMana"
+    ]
   },
   {
     "name": "Savannah Lion",
@@ -2050,9 +3944,66 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
+  },
+  {
+    "name": "Scar Oak",
+    "imagePrompt": "A huge oak with a deep gash already sealing into smooth green wood.",
+    "imageName": "scar_oak",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "regeneration"
+    ],
+    "unitTypes": [
+      "plant"
+    ]
+  },
+  {
+    "name": "Scar Willow",
+    "imagePrompt": "A sapling willow, one torn strip of bark sealing back into smooth green wood.",
+    "imageName": "scar_willow",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "regeneration"
+    ],
+    "unitTypes": [
+      "plant"
+    ]
+  },
+  {
+    "name": "Scarhide Moose",
+    "imagePrompt": "A massive moose, open wounds closing over across its scarred hide.",
+    "imageName": "scarhide_moose",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "regeneration"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Schnell!",
@@ -2061,9 +4012,13 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "actions": ["directDamage"]
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Second Breakfast",
@@ -2072,9 +4027,14 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "actions": ["grow", "addGrowthCounters"]
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Security Golem",
@@ -2083,10 +4043,17 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["construct"],
-    "actions": ["stun", "mezz"]
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "stun",
+      "mezz"
+    ]
   },
   {
     "name": "Self Building Tank",
@@ -2095,10 +4062,21 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["ranged", "retaliate", "armor"],
-    "unitTypes": ["construct"],
-    "actions": ["grow", "addGrowthCounters"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Sewer Rat",
@@ -2107,9 +4085,13 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["beast"]
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Sewers",
@@ -2118,7 +4100,9 @@
     "cardType": "land",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": []
   },
   {
@@ -2128,10 +4112,16 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["drawCards"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Sherazad",
@@ -2140,9 +4130,17 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red", "blue"],
-    "keywords": ["ranged", "resist"],
-    "unitTypes": ["human"]
+    "colors": [
+      "red",
+      "blue"
+    ],
+    "keywords": [
+      "ranged",
+      "resist"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Shield Maiden",
@@ -2151,10 +4149,17 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "green"],
+    "colors": [
+      "red",
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["stun"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "stun"
+    ]
   },
   {
     "name": "Shroomy",
@@ -2163,10 +4168,17 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["mushroom"],
-    "actions": ["grow", "addGrowthCounters"]
+    "unitTypes": [
+      "mushroom"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Shroomy Protecs",
@@ -2175,9 +4187,13 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["mushroom"]
+    "unitTypes": [
+      "mushroom"
+    ]
   },
   {
     "name": "Snek",
@@ -2186,9 +4202,15 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["poisonous"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "poisonous"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Snow Hare",
@@ -2197,10 +4219,17 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue", "green"],
+    "colors": [
+      "blue",
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["beast"],
-    "actions": ["forceMoveUnit"]
+    "unitTypes": [
+      "beast"
+    ],
+    "actions": [
+      "forceMoveUnit"
+    ]
   },
   {
     "name": "Snow storm",
@@ -2209,9 +4238,14 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue", "green"],
+    "colors": [
+      "blue",
+      "green"
+    ],
     "keywords": [],
-    "actions": ["daze"]
+    "actions": [
+      "daze"
+    ]
   },
   {
     "name": "Snow Troll",
@@ -2220,9 +4254,32 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "green"],
-    "keywords": ["retaliate", "regeneration"],
-    "unitTypes": ["monster"]
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "retaliate",
+      "regeneration"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Soil's Memory",
+    "imagePrompt": "Pale roots drag a leaf-wrapped relic back out of the soil.",
+    "imageName": "soil_s_memory",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "regrowCard"
+    ]
   },
   {
     "name": "Sortie Specialists",
@@ -2231,9 +4288,16 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["red", "black"],
-    "keywords": ["haste"],
-    "unitTypes": ["human"]
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "haste"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Spectral Spore Slinger",
@@ -2241,10 +4305,18 @@
     "imagePrompt": "glowing blue-lensed mushroom with oversized spectacles leaping mid-air, hurling a swarm of luminous spores from a gaping cap toward distant foes",
     "cardType": "unit",
     "unitSize": "powerful",
-    "cheapImage": true,
-    "colors": ["blue", "green"],
-    "keywords": ["ranged", "haste"],
-    "unitTypes": ["mushroom"]
+    "cheapImage": false,
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "ranged",
+      "haste"
+    ],
+    "unitTypes": [
+      "mushroom"
+    ]
   },
   {
     "name": "Spirit of Speed and Fury",
@@ -2253,9 +4325,13 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "unitTypes": ["spirit"]
+    "unitTypes": [
+      "spirit"
+    ]
   },
   {
     "name": "Spirited Train",
@@ -2264,9 +4340,52 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["moveAndAttack", "retaliate", "armor", "resist"],
-    "unitTypes": ["construct", "demon"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack",
+      "retaliate",
+      "armor",
+      "resist"
+    ],
+    "unitTypes": [
+      "construct",
+      "demon"
+    ]
+  },
+  {
+    "name": "Spring Anointing",
+    "imagePrompt": "Clear spring water washes a bruised limb and the bruises fade as it runs.",
+    "imageName": "spring_anointing",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "healUnit"
+    ]
+  },
+  {
+    "name": "Spring Nymph",
+    "imagePrompt": "A knee-high nymph, spring water sheeting from her hair and pooling in her palms.",
+    "imageName": "spring_nymph",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "healUnit"
+    ]
   },
   {
     "name": "Stampede",
@@ -2275,9 +4394,16 @@
     "cardType": "spell",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["trample"],
-    "actions": ["grow", "addGrowthCounters"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Steam Wall",
@@ -2286,10 +4412,17 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue", "black"],
+    "colors": [
+      "blue",
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["building"],
-    "actions": ["bounceUnit"]
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "bounceUnit"
+    ]
   },
   {
     "name": "Stone Skin",
@@ -2298,8 +4431,29 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green", "black"],
+    "colors": [
+      "green",
+      "black"
+    ],
     "keywords": []
+  },
+  {
+    "name": "Strangler Fig",
+    "imagePrompt": "A gigantic strangler fig whose roots coil into a cage around its own trunk.",
+    "imageName": "strangler_fig",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "plant"
+    ],
+    "actions": [
+      "root"
+    ]
   },
   {
     "name": "Street Slinger",
@@ -2308,9 +4462,15 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
-    "keywords": ["ranged"],
-    "unitTypes": ["human"]
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "ranged"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Stroke of Genius",
@@ -2319,9 +4479,14 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "blue"],
+    "colors": [
+      "red",
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["tutorCard"]
+    "actions": [
+      "tutorCard"
+    ]
   },
   {
     "name": "Sucker Punch",
@@ -2330,9 +4495,45 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "actions": ["fight"]
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Sunmotes",
+    "imagePrompt": "Sunlight through leaves condenses into drifting motes of green mana.",
+    "imageName": "sunmotes",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "addMana"
+    ]
+  },
+  {
+    "name": "Sweeping Wolverine",
+    "imagePrompt": "A young wolverine with foreclaws spread in a wide, low fan.",
+    "imageName": "sweeping_wolverine",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "cleave"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Swift Drakkar",
@@ -2341,9 +4542,17 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "green"],
-    "keywords": ["haste", "retaliate"],
-    "unitTypes": ["construct"]
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "haste",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Taiga Rangers",
@@ -2352,9 +4561,17 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue", "green"],
-    "keywords": ["ranged", "poisonous"],
-    "unitTypes": ["human"]
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "ranged",
+      "poisonous"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Teleport",
@@ -2363,9 +4580,14 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["forceMoveUnit", "drawCards"]
+    "actions": [
+      "forceMoveUnit",
+      "drawCards"
+    ]
   },
   {
     "name": "Tesla Tower",
@@ -2374,9 +4596,17 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["blue", "black"],
-    "keywords": ["ranged", "armor"],
-    "unitTypes": ["construct"]
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "keywords": [
+      "ranged",
+      "armor"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
   },
   {
     "name": "Teutonic Knight",
@@ -2385,9 +4615,18 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "black"],
-    "keywords": ["lance", "retaliate", "armor"],
-    "unitTypes": ["human"]
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "lance",
+      "retaliate",
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "The Arena",
@@ -2396,7 +4635,9 @@
     "cardType": "land",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": []
   },
   {
@@ -2406,9 +4647,17 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["trample", "retaliate"],
-    "unitTypes": ["beast", "demon"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast",
+      "demon"
+    ]
   },
   {
     "name": "The Black Knight",
@@ -2417,9 +4666,18 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["green", "black"],
-    "keywords": ["retaliate", "regeneration"],
-    "unitTypes": ["human", "demon"]
+    "colors": [
+      "green",
+      "black"
+    ],
+    "keywords": [
+      "retaliate",
+      "regeneration"
+    ],
+    "unitTypes": [
+      "human",
+      "demon"
+    ]
   },
   {
     "name": "The Great Reset",
@@ -2430,7 +4688,42 @@
     "cheapImage": false,
     "colors": [],
     "keywords": [],
-    "actions": ["destroyUnit"]
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
+    "name": "Thorn Circle",
+    "imagePrompt": "Two beasts tear into each other inside a ring of snapping thorns.",
+    "imageName": "thorn_circle",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "actions": [
+      "fight"
+    ]
+  },
+  {
+    "name": "Thornbinder",
+    "imagePrompt": "An elf with thorned vines grown from both wrists and rooted at their feet.",
+    "imageName": "thornbinder",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elf"
+    ],
+    "actions": [
+      "root"
+    ]
   },
   {
     "name": "Tim",
@@ -2439,10 +4732,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "unitTypes": ["human"],
-    "actions": ["directDamage"]
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Time Elemental",
@@ -2451,10 +4750,20 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue", "green"],
-    "keywords": ["moveAndAttack"],
-    "unitTypes": ["elemental"],
-    "actions": ["grow", "addGrowthCounters"]
+    "colors": [
+      "blue",
+      "green"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "To the gates!",
@@ -2463,7 +4772,9 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": []
   },
   {
@@ -2473,10 +4784,40 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["green", "blue"],
-    "keywords": ["armor", "resist"],
-    "unitTypes": ["demon", "beast", "human"],
-    "actions": ["destroyUnit"]
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "armor",
+      "resist"
+    ],
+    "unitTypes": [
+      "demon",
+      "beast",
+      "human"
+    ],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
+    "name": "Tomb Singer",
+    "imagePrompt": "A grave-pale elf with a wooden plaque grown into one open palm.",
+    "imageName": "tomb_singer",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elf"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
   },
   {
     "name": "Transfer Energy",
@@ -2485,9 +4826,13 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["drawCards"]
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Trap Road",
@@ -2506,10 +4851,17 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "black"],
+    "colors": [
+      "red",
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["construct"],
-    "actions": ["damageOpponent"]
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "damageOpponent"
+    ]
   },
   {
     "name": "Tricky Move",
@@ -2518,7 +4870,9 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": []
   },
   {
@@ -2528,9 +4882,13 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": [],
-    "actions": ["directDamage"]
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Try Again",
@@ -2539,9 +4897,14 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["bounceUnit", "drawCards"]
+    "actions": [
+      "bounceUnit",
+      "drawCards"
+    ]
   },
   {
     "name": "Tsunami",
@@ -2550,9 +4913,30 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["blue"],
+    "colors": [
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["directDamage"]
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
+    "name": "Tumblethorn",
+    "imagePrompt": "A compact ball of thornwood, round and heavy as a boulder.",
+    "imageName": "tumblethorn",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample"
+    ],
+    "unitTypes": [
+      "plant"
+    ]
   },
   {
     "name": "Tundra Wolf",
@@ -2561,9 +4945,16 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green", "blue"],
-    "keywords": ["resist"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "keywords": [
+      "resist"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Uncle Bobo",
@@ -2572,10 +4963,17 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["halfing"],
-    "actions": ["grow", "addGrowthCounters"]
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "grow",
+      "addGrowthCounters"
+    ]
   },
   {
     "name": "Unicorn",
@@ -2584,9 +4982,17 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["trample", "retaliate", "resist"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "trample",
+      "retaliate",
+      "resist"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Unstable Bridge",
@@ -2595,9 +5001,14 @@
     "cardType": "spell",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "blue"],
+    "colors": [
+      "red",
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["bounceUnit"]
+    "actions": [
+      "bounceUnit"
+    ]
   },
   {
     "name": "Unstable Lab",
@@ -2608,7 +5019,9 @@
     "cheapImage": false,
     "colors": [],
     "keywords": [],
-    "actions": ["destroyUnit"]
+    "actions": [
+      "destroyUnit"
+    ]
   },
   {
     "name": "Vengeful Crusader",
@@ -2617,9 +5030,33 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "black"],
-    "keywords": ["armor"],
-    "unitTypes": ["human"]
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Venom Toad",
+    "imagePrompt": "A squat toad, warts slick, fangs wet with a sick green sheen.",
+    "imageName": "venom_toad",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "poisonous"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Vigilant Knight",
@@ -2628,9 +5065,13 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Viking Banner",
@@ -2639,9 +5080,34 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["red", "green"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["human"]
+    "colors": [
+      "red",
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Voice of the Wood",
+    "imagePrompt": "A tall elf, arms lifted, green canopy-light gathered in both open hands.",
+    "imageName": "voice_of_the_wood",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elf"
+    ],
+    "actions": [
+      "addMana"
+    ]
   },
   {
     "name": "Wall of brambles",
@@ -2650,9 +5116,33 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["plant"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "plant"
+    ]
+  },
+  {
+    "name": "Warren Delver",
+    "imagePrompt": "A soil-caked young halfling with a seed-carved wooden token hugged to their chest.",
+    "imageName": "warren_delver",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
   },
   {
     "name": "Watch Tower",
@@ -2661,9 +5151,18 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "black"],
-    "keywords": ["immobile", "ranged", "retaliate"],
-    "unitTypes": ["building"]
+    "colors": [
+      "red",
+      "black"
+    ],
+    "keywords": [
+      "immobile",
+      "ranged",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "building"
+    ]
   },
   {
     "name": "What doesn't kill",
@@ -2672,7 +5171,10 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green", "black"],
+    "colors": [
+      "green",
+      "black"
+    ],
     "keywords": []
   },
   {
@@ -2682,7 +5184,9 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red"],
+    "colors": [
+      "red"
+    ],
     "keywords": []
   },
   {
@@ -2692,9 +5196,14 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "blue"],
+    "colors": [
+      "red",
+      "blue"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Who is fat ???",
@@ -2703,7 +5212,9 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": []
   },
   {
@@ -2713,9 +5224,14 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "blue"],
+    "colors": [
+      "red",
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["regrowCard"]
+    "actions": [
+      "regrowCard"
+    ]
   },
   {
     "name": "Wolf",
@@ -2724,9 +5240,15 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
-    "keywords": ["retaliate"],
-    "unitTypes": ["beast"]
+    "colors": [
+      "green"
+    ],
+    "keywords": [
+      "retaliate"
+    ],
+    "unitTypes": [
+      "beast"
+    ]
   },
   {
     "name": "Wooden Barricade",
@@ -2739,15 +5261,37 @@
     "keywords": []
   },
   {
+    "name": "Yarrow Herbalist",
+    "imagePrompt": "A halfling with yarrow braided in their hair and moss packed under every nail.",
+    "imageName": "yarrow_herbalist",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "green"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "halfing"
+    ],
+    "actions": [
+      "healUnit"
+    ]
+  },
+  {
     "name": "Young Hobbit",
     "imagePrompt": "Young Hobbit",
     "imageName": "young_hobbit",
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["halfing"]
+    "unitTypes": [
+      "halfing"
+    ]
   },
   {
     "name": "Hobbit Druid",
@@ -2756,9 +5300,13 @@
     "cardType": "unit",
     "unitSize": "medium",
     "cheapImage": false,
-    "colors": ["green"],
+    "colors": [
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["halfing"]
+    "unitTypes": [
+      "halfing"
+    ]
   },
   {
     "name": "Young Viking",
@@ -2767,9 +5315,14 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "green"],
+    "colors": [
+      "red",
+      "green"
+    ],
     "keywords": [],
-    "unitTypes": ["human"]
+    "unitTypes": [
+      "human"
+    ]
   },
   {
     "name": "Zeppelin",
@@ -2778,10 +5331,19 @@
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
-    "colors": ["blue"],
-    "keywords": ["flying", "retaliate"],
-    "unitTypes": ["construct"],
-    "actions": ["directDamage"]
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "flying",
+      "retaliate"
+    ],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "directDamage"
+    ]
   },
   {
     "name": "Zizany",
@@ -2790,9 +5352,14 @@
     "cardType": "spell",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["red", "blue"],
+    "colors": [
+      "red",
+      "blue"
+    ],
     "keywords": [],
-    "actions": ["fight"]
+    "actions": [
+      "fight"
+    ]
   },
   {
     "name": "Zombie",
@@ -2801,8 +5368,12 @@
     "cardType": "unit",
     "unitSize": "weak",
     "cheapImage": false,
-    "colors": ["black"],
+    "colors": [
+      "black"
+    ],
     "keywords": [],
-    "unitTypes": ["monster"]
+    "unitTypes": [
+      "monster"
+    ]
   }
 ]

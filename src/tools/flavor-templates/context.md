@@ -1,6 +1,6 @@
 # Flavor templates
 
-Flavor templates give a newly created card a name and a short image prompt that fit its gameplay. A heavy creature can carry trample; a fast one can carry haste. The catalog is `src/data/sim/card_flavor_templates.json`. This folder's browser is how we see which combinations already have a flavor, so later passes can fill the gaps.
+Flavor templates give a newly created card a name and a short image prompt that fit its gameplay. A heavy creature can carry trample; a fast one can carry haste. A unit prompt is a portrait of that one creature. A spell prompt depicts the effect. The catalog is `src/data/sim/card_flavor_templates.json`. This folder's browser is how we see which combinations already have a flavor, so later passes can fill the gaps.
 
 ## Fields
 
@@ -12,7 +12,14 @@ Flavor templates give a newly created card a name and a short image prompt that 
 - **actions** — keys from `actionTemplates` in `src/lib/sim/cards/action-templates-data.ts`.
 - **cheapImage** — `false` unless the art was made with the local cheap generator.
 
-`name` is the card title. `imagePrompt` is the subject depiction sent to image generation. `imageName` is the file slug.
+`name` is the card title. `imagePrompt` is the subject depiction sent to image generation. `imageName` is the file slug under `public/assets/images/cards` (saved as `imageName.jpg`; `.png` / `.webp` also count as present).
+
+## Missing images
+
+On demand, list templates with no matching card file:
+
+- Browser: **Missing images** in the Flavors tool (Escape → Flavors). Uses `GET /api/missing-card-images`.
+- CLI: `node src/tools/flavor-templates/list-missing-images.mjs` (add `--json` for machine output).
 
 ## Color preferences
 
@@ -20,7 +27,7 @@ Mechanical preferences live in `src/lib/sim/cards/color-pie.ts`. A score around 
 
 The browser treats a positive score as preferred, zero as neutral, and a negative score as rare. Rare rows stay hidden until **Show rare** is on. With several colors selected, the score shown is the highest among those colors.
 
-Unit-type preference comes from each color's `unitTypes` list in `color-pie.ts`. `color-pie.json` holds the color identity descriptions.
+Unit-type preference comes from each color's weighted `unitTypes` list in `color-pie.ts` (`{ type, weight }`). `color-pie.json` holds the color identity descriptions.
 
 ## How a query matches
 

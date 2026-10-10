@@ -10,7 +10,8 @@
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
     "lint": "eslint .",
     "images": "node src/tools/convert-images.js",
-    "reset-images": "node src/tools/reset-images.js"
+    "reset-images": "node src/tools/reset-images.js",
+    "missing-images": "node src/tools/flavor-templates/list-missing-images.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",

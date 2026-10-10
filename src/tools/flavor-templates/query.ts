@@ -36,6 +36,15 @@ export interface FlavorRecord {
   actions: string[];
 }
 
+/** Template whose `imageName` has no matching file under public/assets/images/cards. */
+export interface MissingCardImage {
+  /** Expected card image file name (canonical `.jpg`). */
+  fileName: string;
+  imageName: string;
+  imagePrompt: string;
+  name: string;
+}
+
 export interface FlavorQuery {
   /** Template must include every selected color. */
   colors: CardColor[];
@@ -189,6 +198,27 @@ export function normalizeFlavorTemplates(raw: unknown): FlavorRecord[] {
 }
 
 export const flavorCatalog: FlavorRecord[] = normalizeFlavorTemplates(rawTemplates);
+
+/**
+ * Templates with no matching image on disk. `existingBasenames` is the set of
+ * file basenames (no extension) found under public/assets/images/cards.
+ */
+export function missingCardImages(
+  templates: FlavorRecord[],
+  existingBasenames: ReadonlySet<string>
+): MissingCardImage[] {
+  return templates
+    .filter((template) => template.imageName && !existingBasenames.has(template.imageName))
+    .map((template) => ({
+      fileName: `${template.imageName}.jpg`,
+      imageName: template.imageName,
+      imagePrompt: template.imagePrompt,
+      name: template.name,
+    }))
+    .sort(
+      (a, b) => a.fileName.localeCompare(b.fileName) || a.name.localeCompare(b.name)
+    );
+}
 
 export function queryLabel(query: FlavorQuery): string {
   const parts: string[] = [

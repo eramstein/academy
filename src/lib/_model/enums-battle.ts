@@ -54,16 +54,20 @@ export enum UnitType {
   Beast = 'beast',
   Human = 'human',
   Dwarf = 'dwarf',
-  Monster = 'monster',
+  Giant = 'giant', // big monsters, trolls, giants, etc.
   Elemental = 'elemental',
-  Spirit = 'spirit',
+  Spirit = 'spirit', // feys, pixies, sprites...
   Dragon = 'dragon',
   Demon = 'demon',
   Halfing = 'halfing',
-  Plant = 'plant',
-  Construct = 'construct',
-  Building = 'building',
+  Plant = 'plant', // trees, living humanoids plant-like, etc.
+  Construct = 'construct', // mechanical, golems, etc.
+  Building = 'building', // static structures, fortifications, buildings, towers, etc.
   Undead = 'undead',
+  Elf = 'elf',
+  Greenskin = 'greenskin', // orcs and goblins
+  Insect = 'insect', // bugs, spiders, etc.
+  Monster = 'monster', // generic monster, not a specific type
 }
 
 export enum CounterType {

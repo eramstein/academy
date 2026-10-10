@@ -41,3 +41,22 @@ export async function persistCardImage(imageName: string, imageBlob: Blob): Prom
     throw new Error(`save-card-image failed: ${res.status} ${body}`);
   }
 }
+
+/** Mark a catalog flavor as Comfy / low-quality art (or clear that flag). */
+export async function persistFlavorCheapImage(
+  imageName: string,
+  cheapImage: boolean = true
+): Promise<void> {
+  if (!import.meta.env.DEV) {
+    throw new Error('persistFlavorCheapImage is only available in DEV');
+  }
+  const res = await fetch('/api/set-flavor-cheap-image', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ imageName, cheapImage }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`set-flavor-cheap-image failed: ${res.status} ${body}`);
+  }
+}

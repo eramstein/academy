@@ -13,15 +13,9 @@ export interface GeneratedFlavorText {
   unitType?: UnitType;
 }
 
-const IMAGE_PROMPT_TEMPLATE = `Whimsical hand-painted storybook fantasy illustration of <DEPICTION>.
-
-Traditional watercolor and expressive ink illustration, visibly hand-drawn with organic, slightly irregular ink contours, varied line weight, delicate cross-hatching, fine ink details, and rich translucent watercolor washes. Subtle pigment texture and natural watercolor granulation, subtle pigment blooms, layered brush strokes, imperfect hand-painted edges, and natural color variation.
-
-Expressive character design, charming proportions, carefully rendered facial expression, intricate details. Warm natural lighting, rich earthy colors, strong shapes and a clear silhouette.
-
-The appearance of a professionally illustrated page from a traditional European fantasy storybook, painted by hand with watercolor and pen and ink. Not a digital painting, not 3D, not vector art.
-
-Square composition, close-up subject, highly detailed, suitable for a small 300x300 game illustration. FULL-BLEED ARTWORK: the illustration completely fills the entire image from edge to edge. No text, no border, no UI.`;
+const IMAGE_PROMPT_TEMPLATE = `Whimsical hand-drawn fantasy illustration of <DEPICTION>. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image.
+Rich storybook watercolor and gouache: layered translucent washes, soft color blooms, gentle pigment granulation, and varied brushwork. Add readable material detail on the subject — bark, cloth, metal, leaves, soil, fur, stone, or magic glow — with a few fine ink accents on edges and focal points. Supporting background with atmospheric depth, soft light shafts or mist, and a handful of concrete props that reinforce the scene (not empty flat color).
+Expressive slightly cartoon-like proportions, warm natural lighting, strong contrast, and lush hand-painted European fantasy storybook quality. Intricate but organized: the main subject stays crisp when shrunk to 300×300. Square 1:1, full bleed. No text, border, UI, or padding.`;
 
 const UNIT_TYPE_VALUES = Object.values(UnitType) as [UnitType, ...UnitType[]];
 

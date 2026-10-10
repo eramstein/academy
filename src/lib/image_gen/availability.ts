@@ -3,8 +3,16 @@ import { probeComfy } from './comfy/client';
 let ready: boolean | null = null;
 let pending: Promise<boolean> | null = null;
 
-/** Probe ComfyUI once. Later calls reuse the same result for the session. */
+/**
+ * Probe ComfyUI. Success is cached for the session; failure can be retried
+ * on the next call (e.g. Comfy started after the app).
+ */
 export function initImageGen(): Promise<boolean> {
+  if (ready === true) return Promise.resolve(true);
+  if (ready === false) {
+    pending = null;
+    ready = null;
+  }
   if (!pending) {
     pending = probeComfy().then((ok) => {
       ready = ok;

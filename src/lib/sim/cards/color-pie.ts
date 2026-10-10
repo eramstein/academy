@@ -11,7 +11,7 @@ export interface StatsPreference {
 
 export interface ColorPie {
   statsPreference: StatsPreference;
-  unitTypes: UnitType[];
+  unitTypes: { type: UnitType; weight: number }[];
   // keywordsPreferences and actionPreferences: +3: strong, 0: neutral, -3: weak
   keywordsPreferences: Record<keyof UnitKeywords, number>;
   actionPreferences: Record<string, number>;
@@ -32,7 +32,15 @@ export const colorPie: Record<CardColor, ColorPie> = {
       hp: 4,
       ret: 2,
     },
-    unitTypes: [UnitType.Dwarf, UnitType.Dragon],
+    unitTypes: [
+      { type: UnitType.Dwarf, weight: 5 },
+      { type: UnitType.Dragon, weight: 1 },
+      { type: UnitType.Human, weight: 5 },
+      { type: UnitType.Giant, weight: 2 },
+      { type: UnitType.Monster, weight: 3 },
+      { type: UnitType.Elemental, weight: 3 },
+      { type: UnitType.Spirit, weight: 2 },
+    ],
     keywordsPreferences: {
       ...defaultKeywordPreferences,
       haste: 3,
@@ -59,7 +67,18 @@ export const colorPie: Record<CardColor, ColorPie> = {
       hp: 3,
       ret: 1,
     },
-    unitTypes: [UnitType.Mushroom, UnitType.Plant, UnitType.Beast],
+    unitTypes: [
+      { type: UnitType.Mushroom, weight: 1 },
+      { type: UnitType.Plant, weight: 4 },
+      { type: UnitType.Beast, weight: 10 },
+      { type: UnitType.Human, weight: 4 },
+      { type: UnitType.Halfing, weight: 5 },
+      { type: UnitType.Spirit, weight: 4 },
+      { type: UnitType.Elemental, weight: 3 },
+      { type: UnitType.Monster, weight: 3 },
+      { type: UnitType.Insect, weight: 1 },
+      { type: UnitType.Elf, weight: 3 },
+    ],
     keywordsPreferences: {
       ...defaultKeywordPreferences,
       haste: -2,
@@ -90,7 +109,15 @@ export const colorPie: Record<CardColor, ColorPie> = {
       hp: 3,
       ret: 1,
     },
-    unitTypes: [UnitType.Construct, UnitType.Human],
+    unitTypes: [
+      { type: UnitType.Construct, weight: 10 },
+      { type: UnitType.Human, weight: 10 },
+      { type: UnitType.Monster, weight: 2 },
+      { type: UnitType.Elemental, weight: 3 },
+      { type: UnitType.Spirit, weight: 5 },
+      { type: UnitType.Building, weight: 3 },
+      { type: UnitType.Demon, weight: 1 },
+    ],
     keywordsPreferences: {
       ...defaultKeywordPreferences,
       moveAndAttack: 3,
@@ -126,7 +153,17 @@ export const colorPie: Record<CardColor, ColorPie> = {
       hp: 4,
       ret: 2,
     },
-    unitTypes: [UnitType.Demon, UnitType.Construct],
+    unitTypes: [
+      { type: UnitType.Demon, weight: 1 },
+      { type: UnitType.Construct, weight: 2 },
+      { type: UnitType.Undead, weight: 5 },
+      { type: UnitType.Insect, weight: 3 },
+      { type: UnitType.Monster, weight: 4 },
+      { type: UnitType.Elemental, weight: 3 },
+      { type: UnitType.Spirit, weight: 2 },
+      { type: UnitType.Building, weight: 6 },
+      { type: UnitType.Human, weight: 10 },
+    ],
     keywordsPreferences: {
       ...defaultKeywordPreferences,
       ranged: 3,

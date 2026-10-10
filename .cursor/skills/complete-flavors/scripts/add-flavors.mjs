@@ -15,8 +15,31 @@ if (!inputPath) {
 }
 
 const COLORS = new Set(['red', 'green', 'blue', 'black']);
+const COLOR_ENUM = { red: 'Red', green: 'Green', blue: 'Blue', black: 'Black' };
 const SIZES = new Set(['weak', 'medium', 'powerful']);
 const TYPES = new Set(['unit', 'spell']);
+
+function weightedUnitTypes(color) {
+  const pieSource = fs.readFileSync(path.join(root, 'src/lib/sim/cards/color-pie.ts'), 'utf8');
+  const enumSource = fs.readFileSync(path.join(root, 'src/lib/_model/enums-battle.ts'), 'utf8');
+  const enumBody = enumSource.match(/export enum UnitType \{([\s\S]*?)\}/)?.[1] ?? '';
+  const enumValues = {};
+  for (const match of enumBody.matchAll(/(\w+)\s*=\s*'(\w+)'/g)) enumValues[match[1]] = match[2];
+  const marker = `[CardColor.${COLOR_ENUM[color]}]:`;
+  const start = pieSource.indexOf(marker);
+  const next = pieSource.indexOf('[CardColor.', start + marker.length);
+  const block = pieSource.slice(start, next === -1 ? undefined : next);
+  const body = block.match(/unitTypes:\s*\[([\s\S]*?)\]/)?.[1] ?? '';
+  const allowed = new Set();
+  for (const match of body.matchAll(/UnitType\.(\w+)\s*,\s*weight:\s*(-?\d+)/g)) {
+    if (Number(match[2]) <= 0) continue;
+    const type = enumValues[match[1]];
+    if (type) allowed.add(type);
+  }
+  return allowed;
+}
+
+const allowedUnitTypes = Object.fromEntries([...COLORS].map((color) => [color, weightedUnitTypes(color)]));
 
 function nameToImageName(name) {
   return name
@@ -80,6 +103,12 @@ for (const [index, template] of incoming.entries()) {
     }
   } else {
     errors.push(`${where}: a unit fills either one keyword or one action, not both`);
+  }
+  if (template.cardType === 'unit' && Array.isArray(template.unitTypes) && template.unitTypes.length === 1) {
+    const allowed = allowedUnitTypes[template.colors?.[0]];
+    if (allowed && !allowed.has(template.unitTypes[0])) {
+      errors.push(`${where}: unitType "${template.unitTypes[0]}" is not a weighted type for ${template.colors?.[0]}`);
+    }
   }
   if (template.name && names.has(template.name)) errors.push(`${where}: name already exists`);
   const imageName = nameToImageName(template.name ?? '');

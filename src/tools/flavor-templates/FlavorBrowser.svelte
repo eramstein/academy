@@ -1,6 +1,12 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import colorIdentity from '@/data/color-pie.json';
+  import { generateImage, initImageGen } from '@/lib/image_gen';
+  import { assembleImagePrompt } from '@/lib/sim/cards/flavor-generation-pipeline/generate-text';
+  import {
+    persistCardImage,
+    persistFlavorCheapImage,
+  } from '@/lib/sim/cards/flavor-generation-pipeline/persist';
   import { formatKeywordLabel } from '@/lib/sim/cards/keywords';
   import CoverageGrid from './CoverageGrid.svelte';
   import TraitCoverageMatrix from './TraitCoverageMatrix.svelte';
@@ -24,6 +30,7 @@
     type CoverageFacet,
     type FlavorQuery,
     type FlavorRecord,
+    type MissingCardImage,
     type PowerLevel,
   } from './query';
   import type { CardColor } from '@/lib/_model';
@@ -31,6 +38,18 @@
   let records = $state<FlavorRecord[]>(flavorCatalog);
   let query = $state<FlavorQuery>(createEmptyQuery());
   let includeRare = $state(false);
+  let showMissingImages = $state(false);
+  let missingImages = $state<MissingCardImage[] | null>(null);
+  let missingImagesError = $state('');
+  let missingImagesLoading = $state(false);
+  let generatingImageName = $state<string | null>(null);
+  let generateErrors = $state<Record<string, string>>({});
+  /** Object URLs for images generated this session (keyed by imageName). */
+  let generatedPreviews = $state<Record<string, string>>({});
+
+  const stillMissingCount = $derived(
+    (missingImages ?? []).filter((row) => !generatedPreviews[row.imageName]).length
+  );
 
   const summary = $derived(summarizeByColor(records));
   const matches = $derived(filterFlavorTemplates(records, query));
@@ -57,6 +76,25 @@
       // Keep the bundled catalog.
     }
   });
+
+  onDestroy(() => {
+    for (const url of Object.values(generatedPreviews)) {
+      URL.revokeObjectURL(url);
+    }
+  });
+
+  function setPreview(imageName: string, blob: Blob) {
+    const previous = generatedPreviews[imageName];
+    if (previous) URL.revokeObjectURL(previous);
+    generatedPreviews = { ...generatedPreviews, [imageName]: URL.createObjectURL(blob) };
+  }
+
+  function clearPreviews() {
+    for (const url of Object.values(generatedPreviews)) {
+      URL.revokeObjectURL(url);
+    }
+    generatedPreviews = {};
+  }
 
   function toggleColor(color: CardColor) {
     const colors = query.colors.includes(color)
@@ -142,6 +180,58 @@
       .map((color) => formatKeywordLabel(color))
       .join(', ');
   }
+
+  async function loadMissingImages() {
+    missingImagesLoading = true;
+    missingImagesError = '';
+    clearPreviews();
+    generateErrors = {};
+    try {
+      const response = await fetch('/api/missing-card-images', { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const payload = (await response.json()) as { missing?: MissingCardImage[] };
+      missingImages = Array.isArray(payload.missing) ? payload.missing : [];
+    } catch {
+      missingImagesError = 'Could not scan card images. Is the Vite dev server running?';
+      missingImages = null;
+    } finally {
+      missingImagesLoading = false;
+    }
+  }
+
+  async function toggleMissingImages() {
+    showMissingImages = !showMissingImages;
+    if (showMissingImages && missingImages === null && !missingImagesLoading) {
+      await loadMissingImages();
+    }
+  }
+
+  async function generateMissingImage(row: MissingCardImage) {
+    if (generatingImageName) return;
+    generatingImageName = row.imageName;
+    const cleared = { ...generateErrors };
+    delete cleared[row.imageName];
+    generateErrors = cleared;
+
+    try {
+      if (!(await initImageGen())) {
+        throw new Error('ComfyUI is not reachable. Start Comfy and try again.');
+      }
+      const { blob } = await generateImage(assembleImagePrompt(row.imagePrompt), {
+        filenamePrefix: `academy_card_${row.imageName}`,
+      });
+      await persistCardImage(row.imageName, blob);
+      await persistFlavorCheapImage(row.imageName, true);
+      setPreview(row.imageName, blob);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Image generation failed';
+      generateErrors = { ...generateErrors, [row.imageName]: message };
+    } finally {
+      generatingImageName = null;
+    }
+  }
 </script>
 
 <div class="browser">
@@ -151,10 +241,21 @@
         <h1>Flavor templates</h1>
         <p class="query" aria-live="polite">{queryLabel(query)}</p>
       </div>
-      <p class="count" aria-live="polite">
-        <span class="count-num">{matches.length}</span>
-        <span class="count-of">of {records.length}</span>
-      </p>
+      <div class="title-actions">
+        <button
+          type="button"
+          class="chip"
+          class:active={showMissingImages}
+          aria-pressed={showMissingImages}
+          onclick={() => toggleMissingImages()}
+        >
+          Missing images{missingImages ? ` · ${stillMissingCount}` : ''}
+        </button>
+        <p class="count" aria-live="polite">
+          <span class="count-num">{matches.length}</span>
+          <span class="count-of">of {records.length}</span>
+        </p>
+      </div>
     </div>
 
     <div class="filter-row">
@@ -290,6 +391,84 @@
   </header>
 
   <div class="body">
+    {#if showMissingImages}
+      <div class="pane missing-pane">
+        <div class="coverage-head">
+          <h2>Missing card images</h2>
+          <button
+            type="button"
+            class="chip"
+            disabled={missingImagesLoading}
+            onclick={() => loadMissingImages()}
+          >
+            {missingImagesLoading ? 'Scanning…' : 'Refresh'}
+          </button>
+        </div>
+        <p class="hint">
+          Templates whose <code>imageName</code> has no
+          <code>.jpg</code>/<code>.png</code>/<code>.webp</code> under
+          <code>public/assets/images/cards</code>. Generate uses Comfy
+          (<code>flux2-klein-text-to-image</code>) with the shared card art prompt and saves
+          <code>imageName.jpg</code>.
+        </p>
+        {#if missingImagesError}
+          <p class="empty">{missingImagesError}</p>
+        {:else if missingImagesLoading && missingImages === null}
+          <p class="empty">Scanning disk…</p>
+        {:else if missingImages && missingImages.length === 0}
+          <p class="empty">All templates have a card image on disk.</p>
+        {:else if missingImages}
+          <p class="hint">
+            {stillMissingCount} missing{#if stillMissingCount !== missingImages.length}
+              · {missingImages.length - stillMissingCount} generated this session{/if}
+          </p>
+          <ul class="list missing-list">
+            {#each missingImages as row (row.imageName)}
+              {@const previewUrl = generatedPreviews[row.imageName]}
+              <li class:generated={!!previewUrl}>
+                <div class="missing-row">
+                  {#if previewUrl || generatingImageName === row.imageName}
+                    <div class="thumb-slot">
+                      {#if previewUrl}
+                        <img class="thumb" src={previewUrl} alt="{row.name} preview" />
+                      {:else}
+                        <span class="thumb-placeholder">…</span>
+                      {/if}
+                    </div>
+                  {/if}
+                  <div class="missing-body">
+                    <div class="item-top">
+                      <div class="item-labels">
+                        <span class="name" title={row.name}>{row.fileName}</span>
+                        <span class="meta">{row.name}</span>
+                      </div>
+                      <button
+                        type="button"
+                        class="chip generate-btn"
+                        disabled={generatingImageName !== null}
+                        onclick={() => generateMissingImage(row)}
+                      >
+                        {#if generatingImageName === row.imageName}
+                          Generating…
+                        {:else if previewUrl}
+                          Regenerate
+                        {:else}
+                          Generate
+                        {/if}
+                      </button>
+                    </div>
+                    <p class="prompt">{row.imagePrompt}</p>
+                    {#if generateErrors[row.imageName]}
+                      <p class="generate-error">{generateErrors[row.imageName]}</p>
+                    {/if}
+                  </div>
+                </div>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      </div>
+    {:else}
     <div class="pane coverage">
       <h2>Catalog</h2>
       <p class="hint">
@@ -422,6 +601,7 @@
         </ul>
       {/if}
     </div>
+    {/if}
   </div>
 </div>
 
@@ -452,6 +632,90 @@
     align-items: flex-end;
     justify-content: space-between;
     gap: 1rem;
+  }
+
+  .title-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: none;
+  }
+
+  .missing-pane {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .missing-list .name {
+    font-family: ui-monospace, monospace;
+    font-size: 0.95rem;
+  }
+
+  .missing-list .missing-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .missing-list .thumb-slot {
+    flex: none;
+    width: 72px;
+    height: 72px;
+    border-radius: 4px;
+    border: 1px solid rgba(175, 142, 103, 0.35);
+    background: rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .missing-list .thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .missing-list .thumb-placeholder {
+    color: var(--color-muted-label);
+    font-size: 1.1rem;
+  }
+
+  .missing-list .missing-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .missing-list .item-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: baseline;
+    min-width: 0;
+  }
+
+  .missing-list .generate-btn {
+    flex: none;
+  }
+
+  .missing-list .item-top {
+    align-items: center;
+  }
+
+  .missing-list li.generated {
+    border-color: rgba(175, 142, 103, 0.55);
+  }
+
+  .missing-pane .generate-error {
+    margin: 0.35rem 0 0;
+    color: #e8a0a0;
+    font-size: 0.85rem;
+  }
+
+  .missing-pane code {
+    font-size: 0.9em;
+    color: var(--color-brass);
   }
 
   h1,

@@ -66,6 +66,64 @@ export default defineConfig(({ command }) => ({
             return;
           }
 
+          if (req.method === 'GET' && req.url === '/api/missing-card-images') {
+            try {
+              const templatesPath = path.resolve(
+                __dirname,
+                'src/data/sim/card_flavor_templates.json'
+              );
+              const cardsDir = path.resolve(__dirname, 'public/assets/images/cards');
+              const templates = JSON.parse(fs.readFileSync(templatesPath, 'utf-8'));
+              if (!Array.isArray(templates)) {
+                sendJson(500, { error: 'card_flavor_templates.json is not an array' });
+                return;
+              }
+
+              const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+              const existingBasenames = new Set<string>();
+              if (fs.existsSync(cardsDir)) {
+                for (const entry of fs.readdirSync(cardsDir, { withFileTypes: true })) {
+                  if (!entry.isFile()) continue;
+                  const ext = path.extname(entry.name).toLowerCase();
+                  if (!IMAGE_EXTS.has(ext)) continue;
+                  existingBasenames.add(path.basename(entry.name, path.extname(entry.name)));
+                }
+              }
+
+              const missing = templates
+                .filter(
+                  (row: { imageName?: string }) =>
+                    typeof row.imageName === 'string' &&
+                    row.imageName &&
+                    !existingBasenames.has(row.imageName)
+                )
+                .map((row: { imageName: string; imagePrompt?: string; name?: string }) => ({
+                  fileName: `${row.imageName}.jpg`,
+                  imageName: row.imageName,
+                  imagePrompt:
+                    typeof row.imagePrompt === 'string' ? row.imagePrompt : (row.name ?? ''),
+                  name: typeof row.name === 'string' ? row.name : row.imageName,
+                }))
+                .sort(
+                  (
+                    a: { fileName: string; name: string },
+                    b: { fileName: string; name: string }
+                  ) => a.fileName.localeCompare(b.fileName) || a.name.localeCompare(b.name)
+                );
+
+              sendJson(200, {
+                missing,
+                count: missing.length,
+                existingCount: existingBasenames.size,
+                templateCount: templates.length,
+              });
+            } catch (error) {
+              console.error('Error listing missing card images:', error);
+              sendJson(500, { error: 'Failed to list missing card images' });
+            }
+            return;
+          }
+
           if (req.method === 'GET' && req.url === '/api/events') {
             try {
               const filePath = path.resolve(__dirname, 'src/data/sim/events.json');
@@ -151,6 +209,51 @@ export default defineConfig(({ command }) => ({
               .catch((error) => {
                 console.error('Error saving flavor:', error);
                 sendJson(500, { error: 'Failed to save flavor' });
+              });
+            return;
+          }
+
+          if (req.method === 'POST' && req.url === '/api/set-flavor-cheap-image') {
+            readBody()
+              .then((body) => {
+                const payload = JSON.parse(body) as {
+                  imageName?: string;
+                  cheapImage?: boolean;
+                };
+                if (!payload.imageName || typeof payload.imageName !== 'string') {
+                  sendJson(400, { error: 'imageName is required' });
+                  return;
+                }
+                if (typeof payload.cheapImage !== 'boolean') {
+                  sendJson(400, { error: 'cheapImage boolean is required' });
+                  return;
+                }
+
+                const filePath = path.resolve(__dirname, 'src/data/sim/card_flavor_templates.json');
+                const flavors = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+                if (!Array.isArray(flavors)) {
+                  sendJson(500, { error: 'card_flavor_templates.json is not an array' });
+                  return;
+                }
+
+                const existingIndex = flavors.findIndex(
+                  (f: { imageName?: string }) => f.imageName === payload.imageName
+                );
+                if (existingIndex === -1) {
+                  sendJson(404, { error: `No flavor with imageName ${payload.imageName}` });
+                  return;
+                }
+
+                flavors[existingIndex] = {
+                  ...flavors[existingIndex],
+                  cheapImage: payload.cheapImage,
+                };
+                fs.writeFileSync(filePath, JSON.stringify(flavors, null, 2) + '\n', 'utf-8');
+                sendJson(200, { success: true, flavor: flavors[existingIndex] });
+              })
+              .catch((error) => {
+                console.error('Error setting flavor cheapImage:', error);
+                sendJson(500, { error: 'Failed to set flavor cheapImage' });
               });
             return;
           }

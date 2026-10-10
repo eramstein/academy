@@ -452,7 +452,7 @@ const enraged_goblin = {
   power: 3,
   maxHealth: 2,
   retaliate: 1,
-  unitTypes: [UnitType.Monster],
+  unitTypes: [UnitType.Greenskin],
 };
 
 const fire_golem = {
@@ -570,7 +570,7 @@ const orc_warrior = {
   power: 4,
   maxHealth: 4,
   retaliate: 1,
-  unitTypes: [UnitType.Monster],
+  unitTypes: [UnitType.Greenskin],
 };
 
 const gargoyle = {
@@ -1491,7 +1491,7 @@ const big_bertha = {
   power: 5,
   maxHealth: 9,
   retaliate: 3,
-  unitTypes: [UnitType.Human, UnitType.Monster],
+  unitTypes: [UnitType.Human, UnitType.Giant],
   keywords: {
     ranged: true,
   },
