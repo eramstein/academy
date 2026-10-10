@@ -8,6 +8,7 @@
   const navItems = [
     { view: UiView.Scene, label: 'Game', icon: '🎮' },
     { view: UiView.EventEditor, label: 'Events', icon: '📜' },
+    { view: UiView.FlavorBrowser, label: 'Flavors', icon: '🎴' },
   ];
 
   const stopBattle = (concession: boolean) => {

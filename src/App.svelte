@@ -10,6 +10,7 @@
   import Navigation from './lib/ui/Navigation.svelte';
   import SaveManagerModal from './lib/ui/sim/SaveManagerModal.svelte';
   import EventEditor from './tools/event-builder/EventEditor.svelte';
+  import FlavorBrowser from './tools/flavor-templates/FlavorBrowser.svelte';
 
   let isLoading = $state(true);
 
@@ -43,6 +44,8 @@
   {#key uiState.currentView}
     {#if uiState.currentView === UiView.EventEditor}
       <EventEditor />
+    {:else if uiState.currentView === UiView.FlavorBrowser}
+      <FlavorBrowser />
     {:else}
       <Main />
     {/if}

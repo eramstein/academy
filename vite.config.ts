@@ -54,6 +54,18 @@ export default defineConfig(({ command }) => ({
             return;
           }
 
+          if (req.method === 'GET' && req.url === '/api/flavor-templates') {
+            try {
+              const filePath = path.resolve(__dirname, 'src/data/sim/card_flavor_templates.json');
+              const fileContent = fs.readFileSync(filePath, 'utf-8');
+              sendJson(200, JSON.parse(fileContent));
+            } catch (error) {
+              console.error('Error reading flavor templates:', error);
+              sendJson(500, { error: 'Failed to read flavor templates' });
+            }
+            return;
+          }
+
           if (req.method === 'GET' && req.url === '/api/events') {
             try {
               const filePath = path.resolve(__dirname, 'src/data/sim/events.json');
@@ -111,10 +123,7 @@ export default defineConfig(({ command }) => ({
                   return;
                 }
 
-                const filePath = path.resolve(
-                  __dirname,
-                  'src/data/sim/card_flavor_templates.json'
-                );
+                const filePath = path.resolve(__dirname, 'src/data/sim/card_flavor_templates.json');
                 const fileContent = fs.readFileSync(filePath, 'utf-8');
                 const flavors = JSON.parse(fileContent);
 
@@ -221,10 +230,7 @@ export default defineConfig(({ command }) => ({
   server: {
     watch: {
       // Avoid full reloads when editors / flavor pipeline write these files.
-      ignored: [
-        '**/src/data/sim/events.json',
-        '**/src/data/sim/card_flavor_templates.json',
-      ],
+      ignored: ['**/src/data/sim/events.json', '**/src/data/sim/card_flavor_templates.json'],
     },
     proxy: {
       '/mistral-api': {
