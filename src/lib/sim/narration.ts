@@ -1,4 +1,8 @@
-import { getCharacterImagePath, getEventImagePath } from '@/lib/_utils/asset-paths';
+import {
+  getCharacterImagePath,
+  getEventImagePath,
+  resolveEventImageFileName,
+} from '@/lib/_utils/asset-paths';
 import { generateImage, isImageGenAvailable } from '@/lib/image_gen';
 import {
   generateAttemptedActionNarration,
@@ -243,15 +247,19 @@ function fallbackAttemptedActionText(action: Action): string {
 
 export function narrateText(
   text: string,
-  options?: { characterKey?: string; emotion?: Emotion; image?: string }
+  options?: { characterKey?: string; emotion?: Emotion; image?: string; eventKey?: string }
 ) {
+  const imageFile =
+    options?.image || options?.eventKey
+      ? resolveEventImageFileName(options.eventKey ?? '', options.image)
+      : undefined;
   narrate({
     id: crypto.randomUUID(),
     text,
     type: NarrationType.Text,
     ...(options?.characterKey ? { characters: [options.characterKey] } : {}),
     ...(options?.emotion ? { emotion: options.emotion } : {}),
-    ...(options?.image ? { imageUrl: getEventImagePath(options.image) } : {}),
+    ...(imageFile ? { imageUrl: getEventImagePath(imageFile) } : {}),
   });
 }
 

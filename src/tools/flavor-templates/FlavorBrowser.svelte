@@ -1,8 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import colorIdentity from '@/data/color-pie.json';
-  import { generateImage, initImageGen } from '@/lib/image_gen';
-  import { assembleImagePrompt } from '@/lib/sim/cards/flavor-generation-pipeline/generate-text';
+  import { assembleCardImagePrompt, generateImage, initImageGen } from '@/lib/image_gen';
   import {
     persistCardImage,
     persistFlavorCheapImage,
@@ -219,9 +218,12 @@
       if (!(await initImageGen())) {
         throw new Error('ComfyUI is not reachable. Start Comfy and try again.');
       }
-      const { blob } = await generateImage(assembleImagePrompt(row.imagePrompt), {
-        filenamePrefix: `academy_card_${row.imageName}`,
-      });
+      const { blob } = await generateImage(
+        assembleCardImagePrompt(row.imagePrompt, { colors: row.colors }),
+        {
+          filenamePrefix: `academy_card_${row.imageName}`,
+        }
+      );
       await persistCardImage(row.imageName, blob);
       await persistFlavorCheapImage(row.imageName, true);
       setPreview(row.imageName, blob);

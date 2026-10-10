@@ -1,4 +1,9 @@
 import colorPieData from '@/data/color-pie.json';
+import {
+  assembleCardImagePrompt,
+  cleanDepiction,
+  withBackgroundCaption,
+} from '@/lib/image_gen';
 import { CardColor, CardType, UnitType, type UnitKeywords } from '@/lib/_model';
 import { completeChat } from '@/lib/llm/llm-service';
 import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
@@ -13,9 +18,9 @@ export interface GeneratedFlavorText {
   unitType?: UnitType;
 }
 
-const IMAGE_PROMPT_TEMPLATE = `Whimsical hand-drawn fantasy illustration of <DEPICTION>. Clear, bold silhouette and instantly recognizable subject, centered and filling most of the square image.
-Rich storybook watercolor and gouache: layered translucent washes, soft color blooms, gentle pigment granulation, and varied brushwork. Add readable material detail on the subject — bark, cloth, metal, leaves, soil, fur, stone, or magic glow — with a few fine ink accents on edges and focal points. Supporting background with atmospheric depth, soft light shafts or mist, and a handful of concrete props that reinforce the scene (not empty flat color).
-Expressive slightly cartoon-like proportions, warm natural lighting, strong contrast, and lush hand-painted European fantasy storybook quality. Intricate but organized: the main subject stays crisp when shrunk to 300×300. Square 1:1, full bleed. No text, border, UI, or padding.`;
+export { assembleCardImagePrompt, cleanDepiction };
+/** @deprecated Prefer {@link assembleCardImagePrompt}. */
+export const assembleImagePrompt = assembleCardImagePrompt;
 
 const UNIT_TYPE_VALUES = Object.values(UnitType) as [UnitType, ...UnitType[]];
 
@@ -49,7 +54,6 @@ const FlavorTextWithUnitSchema = FlavorTextSchema.extend({
 
 type ColorPieEntry = {
   description: string;
-  unitTypes: string;
 };
 
 const colorPieFlavor = colorPieData as Record<string, ColorPieEntry>;
@@ -62,7 +66,7 @@ function describeColors(colors: CardColor[]): string {
     .map((color) => {
       const entry = colorPieFlavor[color];
       if (!entry) return `- ${color}`;
-      return `- ${color}: ${entry.description} Typical unit types: ${entry.unitTypes}.`;
+      return `- ${color}: ${entry.description}`;
     })
     .join('\n');
 }
@@ -75,20 +79,6 @@ function describeKeywords(keywords: (keyof UnitKeywords)[]): string {
       return visual ? `- ${key}: ${rules} Art MUST show: ${visual}.` : `- ${key}: ${rules}`;
     })
     .join('\n');
-}
-
-/** Clean a depiction phrase for storage / template insertion. */
-export function cleanDepiction(depiction: string): string {
-  return depiction
-    .trim()
-    .replace(/^of\s+/i, '')
-    .replace(/^an?\s+/i, '')
-    .replace(/\.$/, '');
-}
-
-/** Expand a stored depiction into the full Comfy image prompt. */
-export function assembleImagePrompt(depiction: string): string {
-  return IMAGE_PROMPT_TEMPLATE.replace('<DEPICTION>', cleanDepiction(depiction));
 }
 
 function buildPrompt(
@@ -184,7 +174,7 @@ export async function generateFlavorText(
     }
     return {
       name,
-      imagePrompt: cleanDepiction(depiction),
+      imagePrompt: withBackgroundCaption(cleanDepiction(depiction), gameplay.colors),
       imageName: nameToImageName(name),
       unitType: parsed.unitType,
     };
@@ -203,7 +193,7 @@ export async function generateFlavorText(
   }
   return {
     name,
-    imagePrompt: cleanDepiction(depiction),
+    imagePrompt: withBackgroundCaption(cleanDepiction(depiction), gameplay.colors),
     imageName: nameToImageName(name),
   };
 }

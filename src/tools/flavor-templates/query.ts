@@ -43,6 +43,7 @@ export interface MissingCardImage {
   imageName: string;
   imagePrompt: string;
   name: string;
+  colors: CardColor[];
 }
 
 export interface FlavorQuery {
@@ -214,6 +215,7 @@ export function missingCardImages(
       imageName: template.imageName,
       imagePrompt: template.imagePrompt,
       name: template.name,
+      colors: [...template.colors],
     }))
     .sort(
       (a, b) => a.fileName.localeCompare(b.fileName) || a.name.localeCompare(b.name)

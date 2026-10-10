@@ -19,12 +19,14 @@ import { SceneActionTemplates } from './actions';
 import { getCharactersAtScene } from './characters';
 import { narrateText } from './narration';
 import { getCurrentScheduledActivity } from './schedule';
+import { getWeekDay } from './time';
 
 /** Parameter shapes expected by each EventTriggerType (see doesTriggerMatch). */
 export interface EventTriggerParameters {
   [EventTriggerType.PreviousEvents]: Record<string, unknown>; // pending prior event keys
   [EventTriggerType.Day]: { day: number };
-  [EventTriggerType.Period]: { period: DayPeriod };
+  /** Single `period` or `periods` (any match). Prefer `periods` when listing more than one. */
+  [EventTriggerType.Period]: { period?: DayPeriod; periods?: DayPeriod[] };
   [EventTriggerType.ActivityType]: { activityType: ActivityType };
   [EventTriggerType.Place]: { placeKey: string };
   [EventTriggerType.CharacterPresent]: { characterKey: string };
@@ -38,6 +40,8 @@ export interface EventTriggerParameters {
     activityType: ActivityType;
     value: number;
   };
+  /** 1 = Monday … 7 = Sunday; any listed weekday matches. */
+  [EventTriggerType.DayOfWeek]: { daysOfWeek: number[] };
 }
 
 export type EventTrigger = {
@@ -88,6 +92,7 @@ export function getTriggeredSceneEvent():
   return {
     template,
     event: {
+      key: template.key,
       text: template.text,
       options: template.optionTemplates?.map(buildOption) ?? [],
     },
@@ -100,6 +105,7 @@ export function simulateEvent(templateKey: string) {
     return undefined;
   }
   const event = {
+    key: template.key,
     text: template.text,
     options: template.optionTemplates?.map(buildOption) ?? [],
   };
@@ -107,6 +113,7 @@ export function simulateEvent(templateKey: string) {
     characterKey: template.characterArc,
     emotion: template.emotion,
     image: template.image,
+    eventKey: template.key,
   });
   gs.scene.event = event;
   return event;
@@ -172,7 +179,7 @@ function doesTriggerMatch(trigger: EventTrigger): boolean {
     case EventTriggerType.Day:
       return gs.time.day === trigger.parameters.day;
     case EventTriggerType.Period:
-      return gs.time.period === trigger.parameters.period;
+      return checkPeriod(trigger);
     case EventTriggerType.ActivityType:
       return getCurrentScheduledActivity()?.type === trigger.parameters.activityType;
     case EventTriggerType.Place:
@@ -185,9 +192,21 @@ function doesTriggerMatch(trigger: EventTrigger): boolean {
       );
     case EventTriggerType.ActivityHistory:
       return checkActivityHistory(trigger);
+    case EventTriggerType.DayOfWeek:
+      return trigger.parameters.daysOfWeek.includes(getWeekDay(gs.time.day));
     default:
       return false;
   }
+}
+
+function checkPeriod(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.Period }>
+): boolean {
+  const { period, periods } = trigger.parameters;
+  if (periods && periods.length > 0) {
+    return periods.includes(gs.time.period);
+  }
+  return period != null && gs.time.period === period;
 }
 
 function checkRelationParameter(

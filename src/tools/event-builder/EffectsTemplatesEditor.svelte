@@ -44,6 +44,8 @@
   const periods = Object.values(DayPeriod);
   const placeKeys = Object.keys(PLACES);
   const weekDays = WEEK_DAYS.map((name, index) => ({ name, value: index + 1 }));
+  const attributeKeys = ['dexterity', 'intelligence', 'vitality', 'charisma', 'aura'] as const;
+  const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
 
   type ActivityArgs = Omit<ScheduledActivity, 'day' | 'period'> & { classType?: ClassType };
 
@@ -120,6 +122,10 @@
         return {};
       case EventEffectType.Narrate:
         return { text: '' };
+      case EventEffectType.LevelAttribute:
+        return { attribute: 'intelligence', amount: 1, characterKey: 'player' };
+      case EventEffectType.ChangeRelation:
+        return { characterKey: '', relationParameter: 'friendship', amount: 1 };
       default:
         return {};
     }
@@ -483,6 +489,66 @@
                 aria-label="Narration text"
                 oninput={(e) =>
                   setParameter(i, 'text', (e.currentTarget as HTMLInputElement).value)}
+              />
+            {:else if effect.type === EventEffectType.LevelAttribute}
+              <select
+                class="input arg"
+                value={effect.parameters.attribute ?? 'intelligence'}
+                aria-label="Attribute"
+                onchange={(e) =>
+                  setParameter(i, 'attribute', (e.currentTarget as HTMLSelectElement).value)}
+              >
+                {#each attributeKeys as attr (attr)}
+                  <option value={attr}>{attr}</option>
+                {/each}
+              </select>
+              <input
+                class="input narrow"
+                type="number"
+                value={effect.parameters.amount ?? 1}
+                aria-label="Amount"
+                oninput={(e) =>
+                  setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? 'player'}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+            {:else if effect.type === EventEffectType.ChangeRelation}
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? ''}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <select
+                class="input arg"
+                value={effect.parameters.relationParameter ?? 'friendship'}
+                aria-label="Relation parameter"
+                onchange={(e) =>
+                  setParameter(
+                    i,
+                    'relationParameter',
+                    (e.currentTarget as HTMLSelectElement).value
+                  )}
+              >
+                {#each relationParameters as param (param)}
+                  <option value={param}>{param}</option>
+                {/each}
+              </select>
+              <input
+                class="input narrow"
+                type="number"
+                value={effect.parameters.amount ?? 0}
+                aria-label="Amount"
+                oninput={(e) =>
+                  setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
               />
             {/if}
 

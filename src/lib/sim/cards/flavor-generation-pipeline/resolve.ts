@@ -9,9 +9,8 @@ import {
   rankBestFlavor,
   requiredMatchScore,
 } from './match';
-import { generateImage, isImageGenAvailable } from '@/lib/image_gen';
+import { assembleCardImagePrompt, generateImage, isImageGenAvailable } from '@/lib/image_gen';
 import {
-  assembleImagePrompt,
   flavorFromGeneratedText,
   generateFlavorText,
 } from './generate-text';
@@ -96,9 +95,12 @@ async function generateAndPersist(
   });
 
   onProgress?.({ stage: 'generate_image' });
-  const { blob: imageBlob } = await generateImage(assembleImagePrompt(flavor.imagePrompt), {
-    filenamePrefix: 'academy_card',
-  });
+  const { blob: imageBlob } = await generateImage(
+    assembleCardImagePrompt(flavor.imagePrompt, { colors: flavor.colors }),
+    {
+      filenamePrefix: 'academy_card',
+    }
+  );
   console.log(LOG_PREFIX, 'Comfy image ready', {
     imageName: flavor.imageName,
     bytes: imageBlob.size,

@@ -9,7 +9,7 @@ description: >-
 
 # Complete flavor templates
 
-Flavor templates live in `src/data/sim/card_flavor_templates.json`. A template is a card name plus a one-sentence image prompt. A unit prompt is a portrait of the creature. A spell prompt depicts the effect. Background is in `src/tools/flavor-templates/context.md`.
+Flavor templates live in `src/data/sim/card_flavor_templates.json`. A template is a card name plus a two-sentence image prompt. The first sentence is the subject: a unit portrait, or a spell's effect. The second sentence is the place behind it. How the catalog is organized is in `src/tools/flavor-templates/context.md`.
 
 ## Quota
 
@@ -40,7 +40,7 @@ Preferences and unit types come from `src/lib/sim/cards/color-pie.ts`. Keyword m
 
 2. Fill one batch, then stop and report what is left. A batch is one color, or 12 templates, whichever the user asked for. "Fill the gaps" with no scope means the first 12 missing templates in the script output. "Fill blue" or "fill all" means keep batching that scope until `list-gaps` prints `OK` for it.
 
-3. Read the tooltip, action description, and color identity for every trait in the batch before naming anything.
+3. Read the tooltip, action description, and color identity for every trait in the batch before naming anything. Also read that color's `locationTypes`, `dominantColors`, and `atmospheres` in `src/data/color-pie.json`. Each template's background sentence uses one of each.
 
 4. If the batch includes units, allocate types before naming any of them. `--count` is the number of units only, not spells:
 
@@ -102,9 +102,11 @@ The field value stays the enum string, including `halfing`. The portrait should 
 Each template closes **one** gap: one keyword, or one action, not both.
 
 - **name**: a flavorful card title. It must not be the mechanic label ("Haste", "Blue Flying Weak"). The title should still be readable as that creature or spell.
-- **imagePrompt**: one short sentence. Subject only. No art-style words, no card frame, no "fantasy illustration".
-  - **Units**: the creature is the only subject and the centerpiece. Describe its silhouette, scale, and one or two signature features so it is evocative, unique, and recognizable at a glance. Do not show it acting the mechanic out on someone else, and do not add other creatures, victims, or bystanders. Suggest the keyword or action through that creature's own body: spread wings, crushing bulk, dripping fangs, bark closing over its own scar. A pose of the creature itself is fine. A scene is not.
-  - **Spells**: depict the effect. A direct-damage spell depicts the strike, not a creature. A draw-cards spell depicts finding or revealing knowledge.
+- **imagePrompt**: two short sentences. No art-style words, no card frame, no "fantasy illustration".
+  - **First sentence** — the subject, and only the subject.
+    - **Units**: the creature is the only subject and the centerpiece. Describe its silhouette, scale, and one or two signature features so it is evocative, unique, and recognizable at a glance. Do not show it acting the mechanic out on someone else, and do not add other creatures, victims, or bystanders. Suggest the keyword or action through that creature's own body: spread wings, crushing bulk, dripping fangs, bark closing over its own scar. A pose of the creature itself is fine. A scene is not.
+    - **Spells**: depict the effect. A direct-damage spell depicts the strike, not a creature. A draw-cards spell depicts finding or revealing knowledge.
+  - **Second sentence** — the background. Every color in `src/data/color-pie.json` has `locationTypes`, `dominantColors`, and `atmospheres`. Pick one of each for the template's color. Write one comma-separated caption: a specific view of the place, then two materials or surfaces that carry the chosen colors, then the light or weather. `Rocky mountains`, `Slate gray and muted green`, and `Overcast and cloudy` become `Rocky mountain slope, gray stone and muted green moss, cloudy daylight.` Rewrite the three picks into the scene that way. The creature and the spell effect stay in the first sentence. Choose a place the subject could occupy. Across the batch, vary the location, the palette, and the atmosphere. If that color's lists are empty, stop and say so.
 - **Size**, for units: weak is small, young, or minor; medium is a full example of the thing; powerful is huge, ancient, or elite. Spell gap-fills use `unitSize: "medium"`.
 - **Color**: one color, the gap's color. Depict that color's identity (red speed and aggression, green nature and savagery, blue magic and cunning, black industry and decay).
 - **Unit type**: exactly one string value from that color's weighted `unitTypes` (`plant`, `halfing`, not the enum key). Match the `allocate-types.mjs` counts for the batch. Spells have no unit type.
@@ -118,10 +120,12 @@ Do not reuse a name or slug already in the catalog. Do not add keywords that are
 
 ## Template shape
 
+The second sentences below only show the caption shape. A real template builds that caption from its own color's `locationTypes`, `dominantColors`, and `atmospheres`.
+
 ```json
 {
   "name": "Gale Courier",
-  "imagePrompt": "A palm-sized brass owl with wings spread wide and a bright glass eye.",
+  "imagePrompt": "A palm-sized brass owl with wings spread wide and a bright glass eye. High granite roost, pale silver stone and icy blue mist, silver moonlight.",
   "cardType": "unit",
   "unitSize": "weak",
   "cheapImage": false,
@@ -134,7 +138,7 @@ Do not reuse a name or slug already in the catalog. Do not add keywords that are
 ```json
 {
   "name": "Borrowed Thunder",
-  "imagePrompt": "A crack of stolen lightning leaps from an open palm toward a distant figure.",
+  "imagePrompt": "A crack of stolen lightning leaps from an open palm toward a distant figure. Ashen hillside, copper stone and rust-red grass, approaching thunderstorm.",
   "cardType": "spell",
   "unitSize": "medium",
   "cheapImage": false,

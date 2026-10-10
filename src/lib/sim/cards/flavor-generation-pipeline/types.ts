@@ -21,7 +21,10 @@ export interface GameplayTemplate {
 export interface FlavorTemplate {
   name: string;
   imageName: string;
-  /** Subject depiction only; full style prompt is assembled via `assembleImagePrompt`. */
+  /**
+   * Subject depiction, preferably with a second background caption sentence.
+   * Full style prompt is assembled via `assembleCardImagePrompt`.
+   */
   imagePrompt: string;
   cardType: CardType;
   unitSize: PowerLevel;

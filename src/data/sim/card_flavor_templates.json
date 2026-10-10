@@ -1397,7 +1397,7 @@
   },
   {
     "name": "Elder Yew",
-    "imagePrompt": "An ancient yew with a vast crown and a trunk split by fresh wood pushing outward.",
+    "imagePrompt": "An ancient yew with a vast crown and a trunk split by fresh wood pushing outward. Ancient forest interior, deep emerald canopy and dark leaf litter, dappled sunlight through leaves.",
     "imageName": "elder_yew",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -1636,7 +1636,7 @@
   },
   {
     "name": "Fang and Tusk",
-    "imagePrompt": "A boar and a wolf slam together in a spray of leaves.",
+    "imagePrompt": "A boar and a wolf slam together in a spray of leaves. Trampled forest clearing, brown earth and moss-green brush, warm afternoon light.",
     "imageName": "fang_and_tusk",
     "cardType": "spell",
     "unitSize": "medium",
@@ -1669,7 +1669,7 @@
   },
   {
     "name": "Fen Lurker",
-    "imagePrompt": "A hunched bog creature with reed-roots for legs, sunk to the knees in mud.",
+    "imagePrompt": "A hunched bog creature with reed-roots for legs, sunk to the knees in mud. Dark swamp hollow, charcoal water and forest-green reeds, thick rolling fog.",
     "imageName": "fen_lurker",
     "cardType": "unit",
     "unitSize": "weak",
@@ -2005,7 +2005,7 @@
   },
   {
     "name": "Glade Page",
-    "imagePrompt": "A young elf with a thorn switch across one shoulder and a sharp, daring face.",
+    "imagePrompt": "A young elf with a thorn switch across one shoulder and a sharp, daring face. Forest village lane, sage timber and muted green thatch, soft morning sunlight.",
     "imageName": "glade_page",
     "cardType": "unit",
     "unitSize": "weak",
@@ -2023,7 +2023,7 @@
   },
   {
     "name": "Glimmer Sprite",
-    "imagePrompt": "A thumbnail sprite, wings like caught sunlight, a bead of green mana bright in its chest.",
+    "imagePrompt": "A thumbnail sprite, wings like caught sunlight, a bead of green mana bright in its chest. Enchanted garden border, lavender petals and violet shade, silver moonlight.",
     "imageName": "glimmer_sprite",
     "cardType": "unit",
     "unitSize": "weak",
@@ -2112,7 +2112,7 @@
   },
   {
     "name": "Grave Hyena",
-    "imagePrompt": "A barrow-dusted hyena with a seed-carved bone held crosswise in its jaws.",
+    "imagePrompt": "A barrow-dusted hyena with a seed-carved bone held crosswise in its jaws. Overgrown barrow stones, gray masonry and muted green lichen, cool twilight.",
     "imageName": "grave_hyena",
     "cardType": "unit",
     "unitSize": "medium",
@@ -2130,7 +2130,7 @@
   },
   {
     "name": "Grave Mammoth",
-    "imagePrompt": "An enormous mammoth crusted in barrow-earth, a relic caught on one tusk.",
+    "imagePrompt": "An enormous mammoth crusted in barrow-earth, a relic caught on one tusk. Rolling burial grassland, dark olive turf and sun-worn grass, golden sunset.",
     "imageName": "grave_mammoth",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -2167,7 +2167,7 @@
   },
   {
     "name": "Green Poultice",
-    "imagePrompt": "Thick moss pulls a torn flank closed, green threads sealing the wound.",
+    "imagePrompt": "Thick moss pulls a torn flank closed, green threads sealing the wound. Mossy riverbank, lime-bright moss and wet stone, glistening light after rain.",
     "imageName": "green_poultice",
     "cardType": "spell",
     "unitSize": "medium",
@@ -2219,7 +2219,7 @@
   },
   {
     "name": "Grove Chanter",
-    "imagePrompt": "A moss-cloaked druid, throat bright with green light, mouth open in song.",
+    "imagePrompt": "A moss-cloaked druid, throat bright with green light, mouth open in song. Sacred druid grove, deep blue shade and green moss, dim diffused daylight.",
     "imageName": "grove_chanter",
     "cardType": "unit",
     "unitSize": "medium",
@@ -2237,7 +2237,7 @@
   },
   {
     "name": "Grove Queen",
-    "imagePrompt": "A towering dryad, sap glowing in the cracks of her bark.",
+    "imagePrompt": "A towering dryad, sap glowing in the cracks of her bark. Dense jungle interior, indigo leaves and purple-black trunks, deep nighttime shadows.",
     "imageName": "grove_queen",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -2353,7 +2353,7 @@
   },
   {
     "name": "Heartwood Tithe",
-    "imagePrompt": "Golden sap is drawn out of a split trunk and pools as bright green mana.",
+    "imagePrompt": "Golden sap is drawn out of a split trunk and pools as bright green mana. Root-cavern mouth, amber stone and gold-lit roots, clouded daylight.",
     "imageName": "heartwood_tithe",
     "cardType": "spell",
     "unitSize": "medium",
@@ -2442,7 +2442,7 @@
   },
   {
     "name": "Holdfast",
-    "imagePrompt": "Thick vines whip up and pin a struggling figure's legs to the ground.",
+    "imagePrompt": "Thick vines whip up and pin a struggling figure's legs to the ground. Misty wetland margin, teal water and turquoise reeds, gentle morning mist.",
     "imageName": "holdfast",
     "cardType": "spell",
     "unitSize": "medium",
@@ -2457,7 +2457,7 @@
   },
   {
     "name": "Hollow Treant",
-    "imagePrompt": "A hollow treant wide as a gate, its trunk a wall of living wood.",
+    "imagePrompt": "A hollow treant wide as a gate, its trunk a wall of living wood. Ancient forest aisle, brown heartwood and moss-green bark, low overcast light.",
     "imageName": "hollow_treant",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -2584,7 +2584,7 @@
   },
   {
     "name": "Ivy Reclaimer",
-    "imagePrompt": "An ivy creature with a wooden token grown into its chest, leaves clenched around it.",
+    "imagePrompt": "An ivy creature with a wooden token grown into its chest, leaves clenched around it. Giant mushroom colonnade, indigo caps and purple shadow, heavy rainfall.",
     "imageName": "ivy_reclaimer",
     "cardType": "unit",
     "unitSize": "medium",
@@ -2620,7 +2620,7 @@
   },
   {
     "name": "Kit Vixen",
-    "imagePrompt": "A young vixen with a torn ear, milk-teeth bared, and fur standing in a scrappy ruff.",
+    "imagePrompt": "A young vixen with a torn ear, milk-teeth bared, and fur standing in a scrappy ruff. Forest clearing edge, rust-red brush and copper bracken, bright spring daylight.",
     "imageName": "kit_vixen",
     "cardType": "unit",
     "unitSize": "weak",
@@ -2638,7 +2638,7 @@
   },
   {
     "name": "Knitvine",
-    "imagePrompt": "A vine creature with pale inner bark showing and tendrils curled like fresh bandages.",
+    "imagePrompt": "A vine creature with pale inner bark showing and tendrils curled like fresh bandages. Mossy river stones, fresh lime moss and pale green water, cool twilight.",
     "imageName": "knitvine",
     "cardType": "unit",
     "unitSize": "medium",
@@ -2736,7 +2736,7 @@
   },
   {
     "name": "Ley Bull",
-    "imagePrompt": "A huge bull with earth-light running the length of its lowered horns.",
+    "imagePrompt": "A huge bull with earth-light running the length of its lowered horns. Rolling grassland ridge, dark olive turf and olive-shaded earth, approaching thunderstorm.",
     "imageName": "ley_bull",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -2880,7 +2880,7 @@
   },
   {
     "name": "Mana Spire",
-    "imagePrompt": "A towering column of living sap and leaves, green light venting from its crown.",
+    "imagePrompt": "A towering column of living sap and leaves, green light venting from its crown. Dense jungle column, deep blue shadow and green leaves, dappled sunlight through leaves.",
     "imageName": "mana_spire",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -2898,7 +2898,7 @@
   },
   {
     "name": "Mandrake",
-    "imagePrompt": "A man-sized mandrake, root-limbs thick, hide split by swelling new growth.",
+    "imagePrompt": "A man-sized mandrake, root-limbs thick, hide split by swelling new growth. Underground root cavern, brown soil and moss-green roots, deep nighttime shadows.",
     "imageName": "mandrake",
     "cardType": "unit",
     "unitSize": "medium",
@@ -3032,7 +3032,7 @@
   },
   {
     "name": "Meadow Shirriff",
-    "imagePrompt": "A halfling shirriff in a green tabard, chin out, a cracked stick across his shoulders.",
+    "imagePrompt": "A halfling shirriff in a green tabard, chin out, a cracked stick across his shoulders. Wildflower meadow, sage grass and muted green blooms, warm afternoon light.",
     "imageName": "meadow_shirriff",
     "cardType": "unit",
     "unitSize": "medium",
@@ -3139,7 +3139,7 @@
   },
   {
     "name": "Molt Beetle",
-    "imagePrompt": "A small beetle halfway out of a split shell, the new carapace wet and bright.",
+    "imagePrompt": "A small beetle halfway out of a split shell, the new carapace wet and bright. Giant mushroom floor, lavender gills and violet wet caps, glistening light after rain.",
     "imageName": "molt_beetle",
     "cardType": "unit",
     "unitSize": "weak",
@@ -3174,7 +3174,7 @@
   },
   {
     "name": "Moss Maid",
-    "imagePrompt": "A fey wrapped in a living moss cloak, both palms glowing a soft green.",
+    "imagePrompt": "A fey wrapped in a living moss cloak, both palms glowing a soft green. Enchanted garden shade, lavender moss and violet leaves, gentle morning mist.",
     "imageName": "moss_maid",
     "cardType": "unit",
     "unitSize": "medium",
@@ -3271,7 +3271,7 @@
   },
   {
     "name": "Nectar Mare",
-    "imagePrompt": "A mare with honeycomb caught in her teeth and green-gold light on her muzzle.",
+    "imagePrompt": "A mare with honeycomb caught in her teeth and green-gold light on her muzzle. Wildflower meadow, amber blooms and gold-lit grass, golden sunset.",
     "imageName": "nectar_mare",
     "cardType": "unit",
     "unitSize": "medium",
@@ -3434,7 +3434,7 @@
   },
   {
     "name": "Orchard Picker",
-    "imagePrompt": "A small halfling with orchard-stained hands and a glow of green dew in their palms.",
+    "imagePrompt": "A small halfling with orchard-stained hands and a glow of green dew in their palms. Forest village orchard, amber fruit and gold-green leaves, gray overcast light.",
     "imageName": "orchard_picker",
     "cardType": "unit",
     "unitSize": "weak",
@@ -3551,7 +3551,7 @@
   },
   {
     "name": "Peatling",
-    "imagePrompt": "A knee-high figure of peat with a bark token grown into its chest.",
+    "imagePrompt": "A knee-high figure of peat with a bark token grown into its chest. Misty peat wetland, charcoal peat and forest-green moss, dim diffused daylight.",
     "imageName": "peatling",
     "cardType": "unit",
     "unitSize": "weak",
@@ -3569,7 +3569,7 @@
   },
   {
     "name": "Pebble Ram",
-    "imagePrompt": "A stocky young ram, low and dense as a river stone, horns already notched.",
+    "imagePrompt": "A stocky young ram, low and dense as a river stone, horns already notched. Rocky mountain slope, gray stone and muted green moss, cloudy daylight.",
     "imageName": "pebble_ram",
     "cardType": "unit",
     "unitSize": "weak",
@@ -3586,7 +3586,7 @@
   },
   {
     "name": "Pit Hydra",
-    "imagePrompt": "A massive hydra, many heads crowded around one body, each lunging at the next.",
+    "imagePrompt": "A massive hydra, many heads crowded around one body, each lunging at the next. Dark swamp pit, indigo water and purple-black mud, approaching thunderstorm.",
     "imageName": "pit_hydra",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -3604,7 +3604,7 @@
   },
   {
     "name": "Pit Lynx",
-    "imagePrompt": "A scarred lynx with ears flat, fangs long, and the thick neck of a pit fighter.",
+    "imagePrompt": "A scarred lynx with ears flat, fangs long, and the thick neck of a pit fighter. Overgrown fighting pit, rust-stained stone and copper lichen, cool twilight.",
     "imageName": "pit_lynx",
     "cardType": "unit",
     "unitSize": "medium",
@@ -3680,7 +3680,7 @@
   },
   {
     "name": "Poultice Apprentice",
-    "imagePrompt": "A young herbalist with yarrow in their hair and moss packed across both palms.",
+    "imagePrompt": "A young herbalist with yarrow in their hair and moss packed across both palms. Forest village herb-plot, sage leaves and muted green stems, dappled sunlight through leaves.",
     "imageName": "poultice_apprentice",
     "cardType": "unit",
     "unitSize": "weak",
@@ -3822,7 +3822,7 @@
   },
   {
     "name": "Relic Hunter",
-    "imagePrompt": "A green-cloaked hunter with grave-dirt on the knees and a leaf-wrapped token at the belt.",
+    "imagePrompt": "A green-cloaked hunter with grave-dirt on the knees and a leaf-wrapped token at the belt. Overgrown ruin floor, pale silver stone and icy blue shadow, dim diffused daylight.",
     "imageName": "relic_hunter",
     "cardType": "unit",
     "unitSize": "medium",
@@ -3906,7 +3906,7 @@
   },
   {
     "name": "Rutting Clash",
-    "imagePrompt": "Two stags crash antlers in a clearing and neither one yields.",
+    "imagePrompt": "Two stags crash antlers in a clearing and neither one yields. Forest clearing, dark olive brush and sun-browned grass, golden sunset.",
     "imageName": "rutting_clash",
     "cardType": "spell",
     "unitSize": "medium",
@@ -3921,7 +3921,7 @@
   },
   {
     "name": "Sap Elemental",
-    "imagePrompt": "A person-sized body of running sap, beads of green light sweating from its skin.",
+    "imagePrompt": "A person-sized body of running sap, beads of green light sweating from its skin. Enchanted garden bed, deep emerald leaves and dark soil, soft morning sunlight.",
     "imageName": "sap_elemental",
     "cardType": "unit",
     "unitSize": "medium",
@@ -3956,7 +3956,7 @@
   },
   {
     "name": "Scar Oak",
-    "imagePrompt": "A huge oak with a deep gash already sealing into smooth green wood.",
+    "imagePrompt": "A huge oak with a deep gash already sealing into smooth green wood. Ancient forest hollow, sage-green leaves and muted moss, thick rolling fog.",
     "imageName": "scar_oak",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -3973,7 +3973,7 @@
   },
   {
     "name": "Scar Willow",
-    "imagePrompt": "A sapling willow, one torn strip of bark sealing back into smooth green wood.",
+    "imagePrompt": "A sapling willow, one torn strip of bark sealing back into smooth green wood. Willow-hung riverbank, pale silver water and icy blue shade, gentle morning mist.",
     "imageName": "scar_willow",
     "cardType": "unit",
     "unitSize": "weak",
@@ -3990,7 +3990,7 @@
   },
   {
     "name": "Scarhide Moose",
-    "imagePrompt": "A massive moose, open wounds closing over across its scarred hide.",
+    "imagePrompt": "A massive moose, open wounds closing over across its scarred hide. High mountain slope, pale silver frost and icy blue stone, frosty winter morning.",
     "imageName": "scarhide_moose",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -4268,7 +4268,7 @@
   },
   {
     "name": "Soil's Memory",
-    "imagePrompt": "Pale roots drag a leaf-wrapped relic back out of the soil.",
+    "imagePrompt": "Pale roots drag a leaf-wrapped relic back out of the soil. Buried root hollow, charcoal loam and forest-green root fibers, deep nighttime shadows.",
     "imageName": "soil_s_memory",
     "cardType": "spell",
     "unitSize": "medium",
@@ -4302,7 +4302,7 @@
   {
     "name": "Spectral Spore Slinger",
     "imageName": "spectral_spore_slinger",
-    "imagePrompt": "glowing blue-lensed mushroom with oversized spectacles leaping mid-air, hurling a swarm of luminous spores from a gaping cap toward distant foes",
+    "imagePrompt": "A glowing blue-lensed mushroom with oversized spectacles leaping mid-air, hurling a swarm of luminous spores from a gaping cap toward distant foes. Giant mushroom forest, teal caps and turquoise mist, silver moonlight.",
     "cardType": "unit",
     "unitSize": "powerful",
     "cheapImage": false,
@@ -4356,7 +4356,7 @@
   },
   {
     "name": "Spring Anointing",
-    "imagePrompt": "Clear spring water washes a bruised limb and the bruises fade as it runs.",
+    "imagePrompt": "Clear spring water washes a bruised limb and the bruises fade as it runs. Mossy spring bank, deep blue water and green moss, glistening light after rain.",
     "imageName": "spring_anointing",
     "cardType": "spell",
     "unitSize": "medium",
@@ -4371,7 +4371,7 @@
   },
   {
     "name": "Spring Nymph",
-    "imagePrompt": "A knee-high nymph, spring water sheeting from her hair and pooling in her palms.",
+    "imagePrompt": "A knee-high nymph, spring water sheeting from her hair and pooling in her palms. Misty wetland pool, teal water and turquoise moss, soft morning sunlight.",
     "imageName": "spring_nymph",
     "cardType": "unit",
     "unitSize": "weak",
@@ -4439,7 +4439,7 @@
   },
   {
     "name": "Strangler Fig",
-    "imagePrompt": "A gigantic strangler fig whose roots coil into a cage around its own trunk.",
+    "imagePrompt": "A gigantic strangler fig whose roots coil into a cage around its own trunk. Dense jungle trunk, deep emerald leaves and rain-dark vines, heavy rainfall.",
     "imageName": "strangler_fig",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -4505,7 +4505,7 @@
   },
   {
     "name": "Sunmotes",
-    "imagePrompt": "Sunlight through leaves condenses into drifting motes of green mana.",
+    "imagePrompt": "Sunlight through leaves condenses into drifting motes of green mana. Ancient forest edge, amber leaves and gold-green canopy, warm afternoon light.",
     "imageName": "sunmotes",
     "cardType": "spell",
     "unitSize": "medium",
@@ -4520,7 +4520,7 @@
   },
   {
     "name": "Sweeping Wolverine",
-    "imagePrompt": "A young wolverine with foreclaws spread in a wide, low fan.",
+    "imagePrompt": "A young wolverine with foreclaws spread in a wide, low fan. Forest clearing, gray stones and muted green ferns, dim diffused daylight.",
     "imageName": "sweeping_wolverine",
     "cardType": "unit",
     "unitSize": "weak",
@@ -4694,7 +4694,7 @@
   },
   {
     "name": "Thorn Circle",
-    "imagePrompt": "Two beasts tear into each other inside a ring of snapping thorns.",
+    "imagePrompt": "Two beasts tear into each other inside a ring of snapping thorns. Dense jungle ring, rust-red brush and copper leaves, approaching thunderstorm.",
     "imageName": "thorn_circle",
     "cardType": "spell",
     "unitSize": "medium",
@@ -4709,7 +4709,7 @@
   },
   {
     "name": "Thornbinder",
-    "imagePrompt": "An elf with thorned vines grown from both wrists and rooted at their feet.",
+    "imagePrompt": "An elf with thorned vines grown from both wrists and rooted at their feet. Sacred druid grove, dark olive trunks and shadowed moss, thick rolling fog.",
     "imageName": "thornbinder",
     "cardType": "unit",
     "unitSize": "medium",
@@ -4803,7 +4803,7 @@
   },
   {
     "name": "Tomb Singer",
-    "imagePrompt": "A grave-pale elf with a wooden plaque grown into one open palm.",
+    "imagePrompt": "A grave-pale elf with a wooden plaque grown into one open palm. Overgrown tomb ruin, indigo stone and purple shadow, silver moonlight.",
     "imageName": "tomb_singer",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -4923,7 +4923,7 @@
   },
   {
     "name": "Tumblethorn",
-    "imagePrompt": "A compact ball of thornwood, round and heavy as a boulder.",
+    "imagePrompt": "A compact ball of thornwood, round and heavy as a boulder. Open grassland, rust-red scrub and copper-dry grass, frosty winter morning.",
     "imageName": "tumblethorn",
     "cardType": "unit",
     "unitSize": "weak",
@@ -5043,7 +5043,7 @@
   },
   {
     "name": "Venom Toad",
-    "imagePrompt": "A squat toad, warts slick, fangs wet with a sick green sheen.",
+    "imagePrompt": "A squat toad, warts slick, fangs wet with a sick green sheen. Dark swamp pool, lime-bright pads and deep green water, heavy rainfall.",
     "imageName": "venom_toad",
     "cardType": "unit",
     "unitSize": "medium",
@@ -5093,7 +5093,7 @@
   },
   {
     "name": "Voice of the Wood",
-    "imagePrompt": "A tall elf, arms lifted, green canopy-light gathered in both open hands.",
+    "imagePrompt": "A tall elf, arms lifted, green canopy-light gathered in both open hands. Sacred druid grove, deep emerald canopy and dark moss, cool twilight.",
     "imageName": "voice_of_the_wood",
     "cardType": "unit",
     "unitSize": "powerful",
@@ -5128,7 +5128,7 @@
   },
   {
     "name": "Warren Delver",
-    "imagePrompt": "A soil-caked young halfling with a seed-carved wooden token hugged to their chest.",
+    "imagePrompt": "A soil-caked young halfling with a seed-carved wooden token hugged to their chest. Underground warren mouth, brown loam and moss-green root walls, gentle morning mist.",
     "imageName": "warren_delver",
     "cardType": "unit",
     "unitSize": "weak",
@@ -5235,7 +5235,7 @@
   },
   {
     "name": "Wolf",
-    "imagePrompt": "Wolf",
+    "imagePrompt": "A full-grown wolf with a torn ear, lips peeled back, and shoulders hunched to spring. Rocky mountain ledge, pale silver stone and icy blue shadow, deep nighttime shadows.",
     "imageName": "wolf",
     "cardType": "unit",
     "unitSize": "medium",
@@ -5262,7 +5262,7 @@
   },
   {
     "name": "Yarrow Herbalist",
-    "imagePrompt": "A halfling with yarrow braided in their hair and moss packed under every nail.",
+    "imagePrompt": "A halfling with yarrow braided in their hair and moss packed under every nail. Wildflower meadow, lavender blooms and violet grass-shadow, bright spring daylight.",
     "imageName": "yarrow_herbalist",
     "cardType": "unit",
     "unitSize": "medium",

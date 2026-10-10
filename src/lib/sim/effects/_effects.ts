@@ -1,11 +1,14 @@
 import type { EventEffect } from '@/lib/_model';
 import { EventEffectType } from '@/lib/_model/enums-sim';
 import { narrateText } from '../narration';
+import { levelAttribute, type LevelAttributeParameters } from './attributes';
 import { getDeck, type GetDeckParameters } from './decks';
 import { unlockEvent, type UnlockEventParameters } from './events';
 import { offerCardGifts, type OfferCardGiftsParameters } from './gifts';
 import { addGold, type AddGoldParameters } from './gold';
 import { getJob, type GetJobParameters } from './jobs';
+import { narrate, type NarrateParameters } from './narrate';
+import { changeRelation, type ChangeRelationParameters } from './relations';
 import { addResource, type AddResourceParameters } from './resources';
 import { scheduleActivities, type ScheduleActivitiesParameters } from './schedule';
 import { subscribe, type TransactionSubscriptionParameters } from './subscribe';
@@ -15,7 +18,6 @@ import {
   type TeachAbilityParameters,
   type TeachColorParameters,
 } from './teach';
-import { narrate, type NarrateParameters } from './narrate';
 
 export function applyEffect(effect: EventEffect) {
   const result = effectFunctions[effect.type](effect.parameters);
@@ -40,4 +42,8 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.TeachAbility]: (parameters) =>
     teachAbility(parameters as TeachAbilityParameters),
   [EventEffectType.Narrate]: (parameters) => narrate(parameters as NarrateParameters),
+  [EventEffectType.LevelAttribute]: (parameters) =>
+    levelAttribute(parameters as LevelAttributeParameters),
+  [EventEffectType.ChangeRelation]: (parameters) =>
+    changeRelation(parameters as ChangeRelationParameters),
 };

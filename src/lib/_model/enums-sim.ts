@@ -16,6 +16,8 @@ export enum EventEffectType {
   TeachColor = 'teach_color',
   TeachAbility = 'teach_ability',
   Narrate = 'narrate',
+  LevelAttribute = 'level_attribute',
+  ChangeRelation = 'change_relation',
 }
 
 export enum ActionType {
@@ -102,6 +104,7 @@ export enum EventTriggerType {
   CharacterPresent = 'character_present',
   RelationParameter = 'relation_parameter',
   ActivityHistory = 'activity_history',
+  DayOfWeek = 'day_of_week',
 }
 
 export enum ResourceType {

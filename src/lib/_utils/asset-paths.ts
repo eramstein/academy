@@ -105,6 +105,30 @@ export function getEventImagePath(imageFileName: string): string {
   return getAssetPath(`images/events/${imageFileName}`);
 }
 
+/**
+ * Basenames under public/assets/images/events.
+ * Keep in sync when adding event art named after an event key (hyphens or underscores).
+ */
+const EVENT_IMAGE_FILES = new Set([
+  'molly-f1.jpg',
+  'molly_elsa_bully.jpg',
+  'molly_hiking.jpg',
+  'molly_reading.jpg',
+]);
+
+/** Resolve an event illustration by explicit filename or by event key convention. */
+export function resolveEventImageFileName(
+  eventKey: string,
+  explicitImage?: string
+): string | undefined {
+  if (explicitImage) {
+    return explicitImage.includes('.') ? explicitImage : `${explicitImage}.jpg`;
+  }
+  if (!eventKey) return undefined;
+  const candidates = [`${eventKey}.jpg`, `${eventKey.replace(/-/g, '_')}.jpg`];
+  return candidates.find((fileName) => EVENT_IMAGE_FILES.has(fileName));
+}
+
 export function getJobImagePath(jobName: string): string {
   return getAssetPath(`images/jobs/${jobName}.jpg`);
 }

@@ -104,9 +104,32 @@ function checkTrigger(where, trigger) {
     case 'day':
       if (!Number.isInteger(params.day)) errors.push(`${where}: day must be an integer`);
       break;
-    case 'period':
-      checkOneOf(where, 'period', params.period, periods);
+    case 'period': {
+      const list = Array.isArray(params.periods)
+        ? params.periods
+        : params.period != null
+          ? [params.period]
+          : [];
+      if (list.length === 0) {
+        errors.push(`${where}: period needs period or periods`);
+      }
+      for (const period of list) {
+        checkOneOf(where, 'period', period, periods);
+      }
       break;
+    }
+    case 'day_of_week': {
+      if (!Array.isArray(params.daysOfWeek) || params.daysOfWeek.length === 0) {
+        errors.push(`${where}: daysOfWeek must be a non-empty array`);
+      } else {
+        for (const day of params.daysOfWeek) {
+          if (!Number.isInteger(day) || day < 1 || day > 7) {
+            errors.push(`${where}: daysOfWeek values must be 1-7 (Monday-Sunday), got ${day}`);
+          }
+        }
+      }
+      break;
+    }
     case 'activity_type':
       checkOneOf(where, 'activityType', params.activityType, activityTypes);
       break;
@@ -255,6 +278,31 @@ function checkEffect(where, effect) {
       if (typeof parameters.text !== 'string' || !parameters.text.trim()) {
         errors.push(`${where}: narrate text is required`);
       }
+      break;
+    case 'level_attribute':
+      checkOneOf(where, 'attribute', parameters.attribute, [
+        'dexterity',
+        'intelligence',
+        'vitality',
+        'charisma',
+        'aura',
+      ]);
+      if (parameters.amount !== undefined && typeof parameters.amount !== 'number') {
+        errors.push(`${where}: amount must be a number`);
+      }
+      if (typeof parameters.characterKey === 'string' && parameters.characterKey) {
+        checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
+      }
+      break;
+    case 'change_relation':
+      checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
+      checkOneOf(where, 'relationParameter', parameters.relationParameter, [
+        'friendship',
+        'respect',
+        'love',
+        'rivalry',
+      ]);
+      if (typeof parameters.amount !== 'number') errors.push(`${where}: amount must be a number`);
       break;
   }
 }

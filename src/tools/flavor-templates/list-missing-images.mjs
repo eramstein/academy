@@ -38,6 +38,7 @@ const missing = templates
     imageName: row.imageName,
     imagePrompt: typeof row.imagePrompt === 'string' ? row.imagePrompt : (row.name ?? ''),
     name: typeof row.name === 'string' ? row.name : row.imageName,
+    colors: Array.isArray(row.colors) ? row.colors : [],
   }))
   .sort((a, b) => a.fileName.localeCompare(b.fileName) || a.name.localeCompare(b.name));
 

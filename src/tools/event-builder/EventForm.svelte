@@ -12,6 +12,7 @@
     type EventTriggerParameters,
   } from '@/lib/_model';
   import { SceneActionTemplates } from '@/lib/sim/actions/_templates';
+  import { WEEK_DAYS } from '@/lib/sim/time';
   import EffectsTemplatesEditor from './EffectsTemplatesEditor.svelte';
   import { saveEventTemplate } from './save-event';
 
@@ -48,6 +49,7 @@
   const activityTypes = Object.values(ActivityType);
   const emotions = Object.values(Emotion);
   const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
+  const weekDays = WEEK_DAYS.map((name, index) => ({ name, value: index + 1 }));
   const actionNames = Object.keys(SceneActionTemplates);
 
   let previousEventDrafts = $state<Record<number, string>>({});
@@ -63,7 +65,7 @@
       image = '';
       triggers = [
         { triggerType: EventTriggerType.Day, parameters: { day: 1 } },
-        { triggerType: EventTriggerType.Period, parameters: { period: DayPeriod.Morning } },
+        { triggerType: EventTriggerType.Period, parameters: { periods: [DayPeriod.Morning] } },
       ];
       options = [];
       effects = [];
@@ -95,7 +97,7 @@
     const defaults: EventTriggerParameters = {
       [EventTriggerType.PreviousEvents]: {},
       [EventTriggerType.Day]: { day: 1 },
-      [EventTriggerType.Period]: { period: DayPeriod.Morning },
+      [EventTriggerType.Period]: { periods: [DayPeriod.Morning] },
       [EventTriggerType.ActivityType]: { activityType: ActivityType.Class },
       [EventTriggerType.Place]: { placeKey: '' },
       [EventTriggerType.CharacterPresent]: { characterKey: '' },
@@ -109,8 +111,43 @@
         activityType: ActivityType.Social,
         value: 1,
       },
+      [EventTriggerType.DayOfWeek]: { daysOfWeek: [6, 7] },
     };
     return defaults[triggerType];
+  }
+
+  function periodList(
+    trigger: Extract<EventTrigger, { triggerType: EventTriggerType.Period }>
+  ): DayPeriod[] {
+    if (trigger.parameters.periods?.length) return trigger.parameters.periods;
+    if (trigger.parameters.period) return [trigger.parameters.period];
+    return [];
+  }
+
+  function togglePeriod(index: number, period: DayPeriod) {
+    const trigger = triggers[index];
+    if (trigger?.triggerType !== EventTriggerType.Period) return;
+    const current = periodList(trigger);
+    const next = current.includes(period)
+      ? current.filter((p) => p !== period)
+      : [...current, period];
+    triggers[index] = {
+      ...trigger,
+      parameters: { periods: next },
+    };
+    triggers = [...triggers];
+  }
+
+  function toggleDayOfWeek(index: number, day: number) {
+    const trigger = triggers[index];
+    if (trigger?.triggerType !== EventTriggerType.DayOfWeek) return;
+    const current = trigger.parameters.daysOfWeek ?? [];
+    const next = current.includes(day) ? current.filter((d) => d !== day) : [...current, day];
+    triggers[index] = {
+      ...trigger,
+      parameters: { daysOfWeek: next.sort((a, b) => a - b) },
+    };
+    triggers = [...triggers];
   }
 
   function setTriggerType(index: number, triggerType: EventTriggerType) {
@@ -439,15 +476,31 @@
                     aria-label="Day"
                   />
                 {:else if trigger.triggerType === EventTriggerType.Period}
-                  <select
-                    class="input param-select"
-                    bind:value={trigger.parameters.period}
-                    aria-label="Period"
-                  >
+                  <div class="days" role="group" aria-label="Periods">
                     {#each periods as period (period)}
-                      <option value={period}>{period}</option>
+                      <label class="check day">
+                        <input
+                          type="checkbox"
+                          checked={periodList(trigger).includes(period)}
+                          onchange={() => togglePeriod(i, period)}
+                        />
+                        {period}
+                      </label>
                     {/each}
-                  </select>
+                  </div>
+                {:else if trigger.triggerType === EventTriggerType.DayOfWeek}
+                  <div class="days" role="group" aria-label="Days of week">
+                    {#each weekDays as day (day.value)}
+                      <label class="check day">
+                        <input
+                          type="checkbox"
+                          checked={trigger.parameters.daysOfWeek?.includes(day.value) ?? false}
+                          onchange={() => toggleDayOfWeek(i, day.value)}
+                        />
+                        {day.name.slice(0, 3)}
+                      </label>
+                    {/each}
+                  </div>
                 {:else if trigger.triggerType === EventTriggerType.ActivityType}
                   <select
                     class="input param-select"
@@ -874,6 +927,14 @@
     border: none;
   }
 
+  .days {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.55rem;
+    flex: 1;
+    min-width: 0;
+  }
+
   .check {
     display: flex;
     align-items: center;
@@ -882,6 +943,11 @@
     cursor: pointer;
     font-size: 0.9rem;
     white-space: nowrap;
+  }
+
+  .check.day {
+    padding-bottom: 0;
+    font-size: 0.75rem;
   }
 
   .stack {

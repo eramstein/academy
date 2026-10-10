@@ -39,6 +39,7 @@
   let cacheAskId = $state<string | null>(null);
   let checkDoneIds = $state<string[]>([]);
   let textDoneIds = $state<string[]>([]);
+  let expandedImageId = $state<string | null>(null);
 
   const completedSet = $derived(new Set(completedIds));
   const checkDoneSet = $derived(new Set(checkDoneIds));
@@ -217,6 +218,17 @@
         label: formatResource(type),
       }));
   }
+
+  /** Static event art (not LLM-generated) — shown in the portrait slot. */
+  function entryEventImage(entry: Narration): string | undefined {
+    if (!entry.imageUrl || entry.imagePrompt) return undefined;
+    return entry.imageUrl;
+  }
+
+  function toggleEventImage(entryId: string) {
+    expandedImageId = expandedImageId === entryId ? null : entryId;
+    onProgress?.('smooth');
+  }
 </script>
 
 <div class="narration-list">
@@ -251,16 +263,31 @@
         onDone={() => onCheckDone(entry)}
       />
     {/if}
-    {#if entry.imageUrl || entry.imagePrompt}
+    {#if entry.imagePrompt}
       {@render narrationImage(entry)}
     {/if}
     {#if entry.text}
       {@const portraitChar = characterForKey(entry.characters?.[0])}
-      {#if portraitChar}
-        <div class="event-with-portrait">
-          <span class="event-portrait" aria-hidden="true">
-            <CharacterPortrait character={portraitChar} emotion={entry.emotion} />
-          </span>
+      {@const eventImage = entryEventImage(entry)}
+      {#if eventImage || portraitChar}
+        {@const imageExpanded = expandedImageId === entry.id}
+        <div class="event-with-portrait" class:image-expanded={imageExpanded}>
+          {#if eventImage}
+            <button
+              type="button"
+              class="event-portrait event-portrait-btn"
+              class:expanded={imageExpanded}
+              aria-expanded={imageExpanded}
+              aria-label={imageExpanded ? 'Shrink event image' : 'Expand event image'}
+              onclick={() => toggleEventImage(entry.id)}
+            >
+              <img src={eventImage} alt="" class="event-scene-image" />
+            </button>
+          {:else if portraitChar}
+            <span class="event-portrait" aria-hidden="true">
+              <CharacterPortrait character={portraitChar} emotion={entry.emotion} />
+            </span>
+          {/if}
           <NarrationText
             class="narration"
             text={entry.text}
@@ -477,8 +504,36 @@
     background: var(--color-deep-brown);
   }
 
+  .event-portrait-btn {
+    padding: 0;
+    cursor: zoom-in;
+    font: inherit;
+    color: inherit;
+  }
+
+  .event-portrait-btn.expanded {
+    float: none;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    margin: 0 0 0.75em;
+    cursor: zoom-out;
+  }
+
+  .event-with-portrait.image-expanded :global(.narration) {
+    clear: both;
+  }
+
   .event-portrait :global(.character-portrait) {
     border-radius: 0;
+  }
+
+  .event-scene-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
   }
 
   .narration-image {

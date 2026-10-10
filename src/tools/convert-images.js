@@ -33,8 +33,8 @@ const targets = [
   {
     dir: './public/assets/images/events',
     quality: 90,
-    width: 1024,
-    height: 1024,
+    width: 512,
+    height: 512,
     maxFileSizeKB: 300,
   },
   {

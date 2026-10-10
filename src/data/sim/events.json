@@ -222,10 +222,7 @@
             "parameters": {
               "activity": {
                 "type": "study",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "library"
               },
               "schedule": {
@@ -280,13 +277,104 @@
         "type": "offer_card_gifts",
         "parameters": {
           "count": 3,
-          "poolKeys": [
-            "molly",
-            "base"
-          ]
+          "poolKeys": ["molly", "base"]
         }
       }
     ]
+  },
+  {
+    "key": "molly-hiking",
+    "text": "Molly invites you for a hike in the mountains, and before long you are both on a bright weekend trail with wind in the pines. She sets an easy, tireless pace while your lungs burn and your legs complain, but she never leaves you behind—slowing on the steep bits, offering a hand over the rocks, and laughing with you when you stop to catch your breath. By the overlook you are worn out and grinning, glad she asked.",
+    "triggers": [
+      {
+        "triggerType": "previous_events",
+        "parameters": {
+          "molly-f1": true
+        }
+      },
+      {
+        "triggerType": "day_of_week",
+        "parameters": {
+          "daysOfWeek": [6, 7]
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "periods": ["morning", "afternoon"]
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "molly"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Compliment her",
+        "effects": [
+          {
+            "type": "level_attribute",
+            "parameters": {
+              "attribute": "charisma",
+              "amount": 1,
+              "characterKey": "player"
+            }
+          },
+          {
+            "type": "level_attribute",
+            "parameters": {
+              "attribute": "vitality",
+              "amount": 1,
+              "characterKey": "molly"
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "love",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Joke about yourself",
+        "effects": [
+          {
+            "type": "level_attribute",
+            "parameters": {
+              "attribute": "intelligence",
+              "amount": 1,
+              "characterKey": "player"
+            }
+          },
+          {
+            "type": "level_attribute",
+            "parameters": {
+              "attribute": "vitality",
+              "amount": 1,
+              "characterKey": "molly"
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "molly",
+    "emotion": "happy",
+    "image": "molly_hiking.jpg"
   },
   {
     "key": "molly-r1",
@@ -324,9 +412,7 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [
-                      2
-                    ],
+                    "daysOfWeek": [2],
                     "period": "evening"
                   }
                 }
@@ -523,10 +609,7 @@
             "parameters": {
               "activity": {
                 "type": "date",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "royal-pigeon-inn"
               },
               "schedule": {
@@ -583,10 +666,7 @@
             "parameters": {
               "activity": {
                 "type": "romance",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "molly-room"
               },
               "schedule": {
@@ -632,10 +712,7 @@
             "parameters": {
               "activity": {
                 "type": "date",
-                "participants": [
-                  "player",
-                  "emma"
-                ],
+                "participants": ["player", "emma"],
                 "placeKey": "cafeteria"
               },
               "schedule": {

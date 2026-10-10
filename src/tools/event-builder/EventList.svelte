@@ -38,6 +38,17 @@
       const { characterKey, activityType, value } = trigger.parameters;
       return `${trigger.triggerType}: ${characterKey} ${activityType} ≥${value}`;
     }
+    if (trigger.triggerType === EventTriggerType.DayOfWeek) {
+      return `${trigger.triggerType}: ${trigger.parameters.daysOfWeek.join(',')}`;
+    }
+    if (trigger.triggerType === EventTriggerType.Period) {
+      const list = trigger.parameters.periods?.length
+        ? trigger.parameters.periods
+        : trigger.parameters.period
+          ? [trigger.parameters.period]
+          : [];
+      return list.length ? `${trigger.triggerType}: ${list.join(',')}` : trigger.triggerType;
+    }
     const value = Object.values(trigger.parameters)[0];
     return value !== undefined ? `${trigger.triggerType}: ${value}` : trigger.triggerType;
   }
@@ -61,7 +72,9 @@
       <h1>Event templates</h1>
       <p class="subtitle">
         {#if selectedArc}
-          {arcEvents.length} arc event{arcEvents.length === 1 ? '' : 's'} · {displayName(selectedArc)}
+          {arcEvents.length} arc event{arcEvents.length === 1 ? '' : 's'} · {displayName(
+            selectedArc
+          )}
         {:else}
           {events.length} event{events.length === 1 ? '' : 's'}
         {/if}

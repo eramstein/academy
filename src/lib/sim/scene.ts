@@ -91,6 +91,7 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
     characterKey: template.characterArc,
     emotion: template.emotion,
     image: template.image,
+    eventKey: template.key,
   });
   gs.scene.event = event.options.length > 0 ? event : undefined;
   if (template.triggersOnce) {

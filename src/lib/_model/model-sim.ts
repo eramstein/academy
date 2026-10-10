@@ -59,6 +59,7 @@ export interface Scene {
 }
 
 export interface SceneEvent {
+  key: string;
   text: string;
   options: EventOption[];
 }
