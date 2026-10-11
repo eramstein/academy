@@ -51,6 +51,13 @@ const targets = [
     height: 1024,
     maxFileSizeKB: 300,
   },
+  {
+    dir: './public/assets/images/activities_more',
+    quality: 90,
+    width: 1024,
+    height: 1024,
+    maxFileSizeKB: 300,
+  },
 ];
 
 async function matchesTargetDimensions(inputPath, width, height) {

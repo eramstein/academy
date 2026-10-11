@@ -16,11 +16,11 @@
   );
   const placePath = $derived(getPlaceImagePath(gs.player.placeKey));
   const jobPath = $derived(matchedJob ? getJobImagePath(matchedJob.name) : undefined);
-  const activityPath = $derived.by(() => {
-    if (!activity || matchedJob) return undefined;
+  const activityPaths = $derived.by(() => {
+    if (!activity || matchedJob) return [];
     const others = activity.participants.filter((key) => key !== gs.player.key);
-    if (others.length === 0) return undefined;
-    return getActivityImagePath(activity.type, others);
+    if (others.length === 0) return [];
+    return getActivityImagePath(activity.type, others, gs.player.placeKey);
   });
 
   let imagePath = $state(getPlaceImagePath(gs.player.placeKey));
@@ -28,28 +28,39 @@
   $effect(() => {
     const job = jobPath;
     const place = placePath;
-    const activityCandidate = activityPath;
+    const candidates = activityPaths;
 
     if (job) {
       imagePath = job;
       return;
     }
 
-    if (!activityCandidate) {
+    if (candidates.length === 0) {
       imagePath = place;
       return;
     }
 
     imagePath = place;
     let cancelled = false;
+    let index = 0;
+    let current: string | undefined;
     const img = new Image();
+
+    const tryNext = () => {
+      if (cancelled) return;
+      if (index >= candidates.length) {
+        imagePath = place;
+        return;
+      }
+      current = candidates[index++];
+      img.src = current;
+    };
+
     img.onload = () => {
-      if (!cancelled) imagePath = activityCandidate;
+      if (!cancelled && current) imagePath = current;
     };
-    img.onerror = () => {
-      if (!cancelled) imagePath = place;
-    };
-    img.src = activityCandidate;
+    img.onerror = tryNext;
+    tryNext();
 
     return () => {
       cancelled = true;

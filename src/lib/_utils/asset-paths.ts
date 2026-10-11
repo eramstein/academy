@@ -133,10 +133,26 @@ export function getJobImagePath(jobName: string): string {
   return getAssetPath(`images/jobs/${jobName}.jpg`);
 }
 
-/** Activity illustration: `images/activities/{type}_{characterKeys...}.jpg` (e.g. study_molly.jpg). */
-export function getActivityImagePath(activityType: string, characterKeys: string[]): string {
+const ACTIVITY_IMAGE_FOLDERS = ['activities', 'activities_more'] as const;
+
+/**
+ * Activity illustration candidates, tried in order:
+ * `{type}_{participants}_{placeKey}.jpg` then `{type}_{participants}.jpg`,
+ * each under `images/activities` then `images/activities_more`.
+ */
+export function getActivityImagePath(
+  activityType: string,
+  characterKeys: string[],
+  placeKey?: string
+): string[] {
   const participants = [...characterKeys].sort().join('_');
-  return getAssetPath(`images/activities/${activityType}_${participants}.jpg`);
+  const basenames = [
+    ...(placeKey ? [`${activityType}_${participants}_${placeKey}.jpg`] : []),
+    `${activityType}_${participants}.jpg`,
+  ];
+  return basenames.flatMap((basename) =>
+    ACTIVITY_IMAGE_FOLDERS.map((folder) => getAssetPath(`images/${folder}/${basename}`))
+  );
 }
 
 /** Semantic UI icon names → painted PNG files in images/ui/icons. */
