@@ -12,12 +12,14 @@ export enum EventEffectType {
   ScheduleActivity = 'schedule_activity',
   GetJob = 'get_job',
   UnlockEvent = 'unlock_event',
+  FollowUpEvent = 'follow_up_event',
   OfferCardGifts = 'offer_card_gifts',
   TeachColor = 'teach_color',
   TeachAbility = 'teach_ability',
   Narrate = 'narrate',
   LevelAttribute = 'level_attribute',
   ChangeRelation = 'change_relation',
+  Move = 'move',
 }
 
 export enum ActionType {

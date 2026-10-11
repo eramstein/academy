@@ -1,5 +1,6 @@
 import { type BattleState, type GameState, type UiState } from '../_model';
 import { defaultBattleState } from '../battle';
+import { rebuildWorkingEventTemplates } from '../sim/events';
 import { defaultGameState, initSim } from '../sim/init';
 import { getGame, getLatestGame, saveGame, type SaveGame } from './save-games';
 import { uiState } from './state-ui.svelte';
@@ -34,6 +35,12 @@ export const loadGameStateFromLocalStorage = async (id: string) => {
     if (savedState) {
       const parsedState: GameState = savedState.gameState;
       Object.assign(gs, parsedState);
+      // Always replace from the save (Object.assign keeps prior gs.events if the field is missing).
+      gs.events = {
+        occurred: [...(parsedState.events?.occurred ?? [])],
+        unlocked: [...(parsedState.events?.unlocked ?? [])],
+      };
+      rebuildWorkingEventTemplates();
     } else {
       await initSim();
     }

@@ -3,11 +3,17 @@ import { EventEffectType } from '@/lib/_model/enums-sim';
 import { narrateText } from '../narration';
 import { levelAttribute, type LevelAttributeParameters } from './attributes';
 import { getDeck, type GetDeckParameters } from './decks';
-import { unlockEvent, type UnlockEventParameters } from './events';
+import {
+  followUpEvent,
+  unlockEvent,
+  type FollowUpEventParameters,
+  type UnlockEventParameters,
+} from './events';
 import { offerCardGifts, type OfferCardGiftsParameters } from './gifts';
 import { addGold, type AddGoldParameters } from './gold';
 import { getJob, type GetJobParameters } from './jobs';
 import { narrate, type NarrateParameters } from './narrate';
+import { move, type MoveParameters } from './move';
 import { changeRelation, type ChangeRelationParameters } from './relations';
 import { addResource, type AddResourceParameters } from './resources';
 import { scheduleActivities, type ScheduleActivitiesParameters } from './schedule';
@@ -36,6 +42,8 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     scheduleActivities(parameters as ScheduleActivitiesParameters),
   [EventEffectType.GetJob]: (parameters) => getJob(parameters as GetJobParameters),
   [EventEffectType.UnlockEvent]: (parameters) => unlockEvent(parameters as UnlockEventParameters),
+  [EventEffectType.FollowUpEvent]: (parameters) =>
+    followUpEvent(parameters as FollowUpEventParameters),
   [EventEffectType.OfferCardGifts]: (parameters) =>
     offerCardGifts(parameters as OfferCardGiftsParameters),
   [EventEffectType.TeachColor]: (parameters) => teachColor(parameters as TeachColorParameters),
@@ -46,4 +54,5 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     levelAttribute(parameters as LevelAttributeParameters),
   [EventEffectType.ChangeRelation]: (parameters) =>
     changeRelation(parameters as ChangeRelationParameters),
+  [EventEffectType.Move]: (parameters) => move(parameters as MoveParameters),
 };

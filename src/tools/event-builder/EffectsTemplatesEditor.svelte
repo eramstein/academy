@@ -114,6 +114,8 @@
         return defaultJobArgs();
       case EventEffectType.UnlockEvent:
         return { eventKey: '' };
+      case EventEffectType.FollowUpEvent:
+        return { eventKey: '' };
       case EventEffectType.OfferCardGifts:
         return { count: 2, poolKeys: [] };
       case EventEffectType.TeachColor:
@@ -126,6 +128,8 @@
         return { attribute: 'intelligence', amount: 1, characterKey: 'player' };
       case EventEffectType.ChangeRelation:
         return { characterKey: '', relationParameter: 'friendship', amount: 1 };
+      case EventEffectType.Move:
+        return { placeKey: placeKeys[0] ?? '', characterKeys: ['player'] };
       default:
         return {};
     }
@@ -409,6 +413,15 @@
                 oninput={(e) =>
                   setParameter(i, 'eventKey', (e.currentTarget as HTMLInputElement).value)}
               />
+            {:else if effect.type === EventEffectType.FollowUpEvent}
+              <input
+                class="input arg"
+                value={effect.parameters.eventKey ?? ''}
+                placeholder="event key"
+                aria-label="Follow-up event key"
+                oninput={(e) =>
+                  setParameter(i, 'eventKey', (e.currentTarget as HTMLInputElement).value)}
+              />
             {:else if effect.type === EventEffectType.OfferCardGifts}
               <input
                 class="input narrow"
@@ -549,6 +562,33 @@
                 aria-label="Amount"
                 oninput={(e) =>
                   setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+              />
+            {:else if effect.type === EventEffectType.Move}
+              <select
+                class="input arg"
+                value={effect.parameters.placeKey ?? placeKeys[0] ?? ''}
+                aria-label="Place"
+                onchange={(e) =>
+                  setParameter(i, 'placeKey', (e.currentTarget as HTMLSelectElement).value)}
+              >
+                {#each placeKeys as placeKey (placeKey)}
+                  <option value={placeKey}>{PLACES[placeKey].name}</option>
+                {/each}
+              </select>
+              <input
+                class="input participants"
+                value={(effect.parameters.characterKeys ?? []).join(', ')}
+                placeholder="character keys (comma-separated)"
+                aria-label="Character keys"
+                oninput={(e) =>
+                  setParameter(
+                    i,
+                    'characterKeys',
+                    (e.currentTarget as HTMLInputElement).value
+                      .split(',')
+                      .map((key) => key.trim())
+                      .filter(Boolean)
+                  )}
               />
             {/if}
 

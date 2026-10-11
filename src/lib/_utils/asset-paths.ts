@@ -100,33 +100,21 @@ export function getPlaceImagePath(placeKey: string): string {
   return getAssetPath(`images/places/${placeKey}.jpg`);
 }
 
-/** Event illustration filename as stored on EventTemplate.image (e.g. molly-f2.jpg). */
+/** Event illustration at images/events/{fileName}. */
 export function getEventImagePath(imageFileName: string): string {
   return getAssetPath(`images/events/${imageFileName}`);
 }
 
 /**
- * Basenames under public/assets/images/events.
- * Keep in sync when adding event art named after an event key (hyphens or underscores).
+ * Event art filename: `{eventKey}.jpg` when the template opts in via `image`.
+ * Place the file at public/assets/images/events/{eventKey}.jpg.
  */
-const EVENT_IMAGE_FILES = new Set([
-  'molly-f1.jpg',
-  'molly_elsa_bully.jpg',
-  'molly_hiking.jpg',
-  'molly_reading.jpg',
-]);
-
-/** Resolve an event illustration by explicit filename or by event key convention. */
 export function resolveEventImageFileName(
   eventKey: string,
-  explicitImage?: string
+  image?: string
 ): string | undefined {
-  if (explicitImage) {
-    return explicitImage.includes('.') ? explicitImage : `${explicitImage}.jpg`;
-  }
-  if (!eventKey) return undefined;
-  const candidates = [`${eventKey}.jpg`, `${eventKey.replace(/-/g, '_')}.jpg`];
-  return candidates.find((fileName) => EVENT_IMAGE_FILES.has(fileName));
+  if (!image || !eventKey) return undefined;
+  return `${eventKey}.jpg`;
 }
 
 export function getJobImagePath(jobName: string): string {

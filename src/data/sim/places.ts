@@ -101,6 +101,13 @@ const PLACES: Record<string, Place> = {
       'The Forest of Schlupak is a dense forest, dark, mysterious and full of dangers, but also bountiful of magical ingredients.',
     regionKey: 'wilderness',
   },
+  ['gray_mountains']: {
+    key: 'gray_mountains',
+    name: 'Gray Mountains',
+    description:
+      'The Gray Mountains are a range of beautiful high mountains, peaceful with views on lakes and forests.',
+    regionKey: 'wilderness',
+  },
 } as const;
 
 const REGIONS: Record<string, Region> = {

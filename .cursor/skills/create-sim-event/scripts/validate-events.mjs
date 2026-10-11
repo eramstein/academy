@@ -244,6 +244,9 @@ function checkEffect(where, effect) {
     case 'unlock_event':
       checkOneOf(where, 'eventKey', parameters.eventKey, eventKeys);
       break;
+    case 'follow_up_event':
+      checkOneOf(where, 'eventKey', parameters.eventKey, eventKeys);
+      break;
     case 'offer_card_gifts':
       if (typeof parameters.count !== 'number') {
         errors.push(`${where}: count must be a number`);
@@ -304,6 +307,16 @@ function checkEffect(where, effect) {
       ]);
       if (typeof parameters.amount !== 'number') errors.push(`${where}: amount must be a number`);
       break;
+    case 'move':
+      checkOneOf(where, 'placeKey', parameters.placeKey, placeKeys);
+      if (!Array.isArray(parameters.characterKeys) || parameters.characterKeys.length === 0) {
+        errors.push(`${where}: characterKeys must be a non-empty array`);
+      } else {
+        for (const characterKey of parameters.characterKeys) {
+          checkOneOf(where, 'characterKey', characterKey, characterKeys);
+        }
+      }
+      break;
   }
 }
 
@@ -313,6 +326,7 @@ const allowedEventProps = new Set([
   'optionTemplates',
   'triggers',
   'triggersOnce',
+  'locked',
   'effects',
   'characterArc',
   'emotion',
@@ -337,6 +351,9 @@ events.forEach((event, index) => {
   }
   if (event?.emotion !== undefined) {
     checkOneOf(where, 'emotion', event.emotion, emotions);
+  }
+  if (event?.locked !== undefined && typeof event.locked !== 'boolean') {
+    errors.push(`${where}: locked must be a boolean when set`);
   }
   if (event?.image !== undefined) {
     if (typeof event.image !== 'string' || !event.image.trim()) {

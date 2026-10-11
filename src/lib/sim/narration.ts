@@ -249,10 +249,9 @@ export function narrateText(
   text: string,
   options?: { characterKey?: string; emotion?: Emotion; image?: string; eventKey?: string }
 ) {
-  const imageFile =
-    options?.image || options?.eventKey
-      ? resolveEventImageFileName(options.eventKey ?? '', options.image)
-      : undefined;
+  const imageFile = options?.image
+    ? resolveEventImageFileName(options.eventKey ?? '', options.image)
+    : undefined;
   narrate({
     id: crypto.randomUUID(),
     text,

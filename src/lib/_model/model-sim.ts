@@ -34,6 +34,10 @@ export interface GameState {
   scheduledActivities: ScheduledActivity[];
   league: League;
   ongoingBattle: OngoingBattle | null;
+  events: {
+    occurred: string[];
+    unlocked: string[];
+  };
 }
 
 export interface OngoingBattle {

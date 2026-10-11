@@ -17,9 +17,10 @@
   onMount(async () => {
     window.addEventListener('keydown', handleKeybinds);
     try {
+      // Catalog must load before game state so progress can prune the in-memory working set.
+      await loadEventTemplates();
       await Promise.all([
         loadGameStateFromLocalStorage('quicksave'),
-        loadEventTemplates(),
         loadCardTemplates(),
         initImageGen(),
       ]);

@@ -74,11 +74,17 @@ export const defaultGameState: GameState = {
     playedToday: false,
   },
   ongoingBattle: null,
+  events: {
+    occurred: [],
+    unlocked: [],
+  },
 };
 
 export const initSim = async () => {
   console.log('initSim');
   Object.assign(gs, defaultGameState);
+  // Fresh arrays — Object.assign would keep mutated occurred/unlocked refs from defaultGameState.
+  gs.events = { occurred: [], unlocked: [] };
   await clearUsedFlavors();
   await restoreEventTemplates();
   await loadEventTemplates();

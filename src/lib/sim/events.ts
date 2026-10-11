@@ -9,10 +9,8 @@ import type {
 } from '../_model/model-sim';
 import { gs } from '../_state';
 import {
-  deleteEventTemplate,
   getAllEventTemplates,
   replaceEventTemplates,
-  updateEventTemplate,
   type StoredEventTemplate,
 } from '../_state/event-templates';
 import { SceneActionTemplates } from './actions';
@@ -23,7 +21,7 @@ import { getWeekDay } from './time';
 
 /** Parameter shapes expected by each EventTriggerType (see doesTriggerMatch). */
 export interface EventTriggerParameters {
-  [EventTriggerType.PreviousEvents]: Record<string, unknown>; // pending prior event keys
+  [EventTriggerType.PreviousEvents]: Record<string, unknown>; // required prior event keys
   [EventTriggerType.Day]: { day: number };
   /** Single `period` or `periods` (any match). Prefer `periods` when listing more than one. */
   [EventTriggerType.Period]: { period?: DayPeriod; periods?: DayPeriod[] };
@@ -51,7 +49,19 @@ export type EventTrigger = {
   };
 }[EventTriggerType];
 
+/** Full immutable catalog (from IndexedDB / source). Never pruned during play. */
+let allEventTemplates: StoredEventTemplate[] = [];
+/** In-memory working set: catalog minus once-events already in gs.events.occurred. */
 let eventTemplates: StoredEventTemplate[] = [];
+
+function ensureEventProgress() {
+  if (!gs.events) {
+    gs.events = { occurred: [], unlocked: [] };
+  } else {
+    gs.events.occurred ??= [];
+    gs.events.unlocked ??= [];
+  }
+}
 
 async function readEventTemplatesSource(): Promise<EventTemplate[]> {
   try {
@@ -70,8 +80,34 @@ export async function restoreEventTemplates() {
   await replaceEventTemplates(templates);
 }
 
+/** Rebuild the working set from the full catalog + current game progress. */
+export function rebuildWorkingEventTemplates() {
+  ensureEventProgress();
+  const occurred = new Set(gs.events.occurred);
+  eventTemplates = allEventTemplates.filter(
+    (template) => !(template.triggersOnce && occurred.has(template.key))
+  );
+}
+
 export async function loadEventTemplates() {
-  eventTemplates = await getAllEventTemplates();
+  // Repair catalogs pruned by older play sessions: source is the truth for content.
+  const fromDb = await getAllEventTemplates();
+  const fromSource = await readEventTemplatesSource();
+  const dbKeys = new Set(fromDb.map((template) => template.key));
+  const missingFromDb = fromSource.filter((template) => !dbKeys.has(template.key));
+
+  if (fromDb.length === 0 || missingFromDb.length > 0) {
+    const sourceKeys = new Set(fromSource.map((template) => template.key));
+    const dbOnly = fromDb
+      .filter((template) => !sourceKeys.has(template.key))
+      .map(({ id: _id, ...template }) => template);
+    await replaceEventTemplates([...fromSource, ...dbOnly]);
+    allEventTemplates = await getAllEventTemplates();
+  } else {
+    allEventTemplates = fromDb;
+  }
+
+  rebuildWorkingEventTemplates();
 }
 
 /** Replace IndexedDB + in-memory templates with the given list (e.g. after editor save). */
@@ -80,11 +116,18 @@ export async function syncEventTemplates(templates: EventTemplate[]) {
   await loadEventTemplates();
 }
 
+function isTemplateUnlocked(template: StoredEventTemplate): boolean {
+  ensureEventProgress();
+  if (!template.locked) return true;
+  return gs.events.unlocked.includes(template.key);
+}
+
 export function getTriggeredSceneEvent():
   | { event: SceneEvent; template: StoredEventTemplate }
   | undefined {
-  const template = eventTemplates.find((eventTemplate) =>
-    eventTemplate.triggers.every(doesTriggerMatch)
+  const template = eventTemplates.find(
+    (eventTemplate) =>
+      isTemplateUnlocked(eventTemplate) && eventTemplate.triggers.every(doesTriggerMatch)
   );
   if (!template) {
     return undefined;
@@ -99,16 +142,30 @@ export function getTriggeredSceneEvent():
   };
 }
 
-export function simulateEvent(templateKey: string) {
-  const template = eventTemplates.find((eventTemplate) => eventTemplate.key === templateKey);
+export function getSceneEventByKey(
+  templateKey: string
+): { event: SceneEvent; template: StoredEventTemplate } | undefined {
+  // Search full catalog so follow-ups / debug still resolve consumed once-events.
+  const template = allEventTemplates.find((eventTemplate) => eventTemplate.key === templateKey);
   if (!template) {
     return undefined;
   }
-  const event = {
-    key: template.key,
-    text: template.text,
-    options: template.optionTemplates?.map(buildOption) ?? [],
+  return {
+    template,
+    event: {
+      key: template.key,
+      text: template.text,
+      options: template.optionTemplates?.map(buildOption) ?? [],
+    },
   };
+}
+
+export function simulateEvent(templateKey: string) {
+  const resolved = getSceneEventByKey(templateKey);
+  if (!resolved) {
+    return undefined;
+  }
+  const { event, template } = resolved;
   narrateText(event.text, {
     characterKey: template.characterArc,
     emotion: template.emotion,
@@ -119,11 +176,9 @@ export function simulateEvent(templateKey: string) {
   return event;
 }
 
+/** Drop a once-event from the in-memory working set and reset relation triggers. Catalog stays intact. */
 export function consumeEventTemplate(template: StoredEventTemplate) {
   eventTemplates = eventTemplates.filter((eventTemplate) => eventTemplate !== template);
-  if (template.id !== undefined) {
-    void deleteEventTemplate(template.id);
-  }
   // for events requiring relation values, "consume" the relation value
   for (const trigger of template.triggers.filter(
     (t) => t.triggerType === EventTriggerType.RelationParameter
@@ -134,39 +189,24 @@ export function consumeEventTemplate(template: StoredEventTemplate) {
   }
 }
 
-// clear other events triggers that required this one to trigger
+/** Record that an event fired (save-backed). Does not mutate catalog templates. */
 export function recordEventOccured(template: StoredEventTemplate) {
+  ensureEventProgress();
   const key = template.key;
-  for (const eventTemplate of eventTemplates) {
-    let changed = false;
-    eventTemplate.triggers = eventTemplate.triggers.filter((trigger) => {
-      if (trigger.triggerType !== EventTriggerType.PreviousEvents) {
-        return true;
-      }
-      if (key in trigger.parameters) {
-        delete trigger.parameters[key];
-        changed = true;
-      }
-      // Drop once all required prior events have occurred (or were already empty)
-      if (Object.keys(trigger.parameters).length === 0) {
-        changed = true;
-        return false;
-      }
-      return true;
-    });
-    if (changed) {
-      void updateEventTemplate(eventTemplate);
-    }
+  if (!gs.events.occurred.includes(key)) {
+    gs.events.occurred.push(key);
   }
 }
 
 export function unlockEventTemplate(templateKey: string): boolean {
-  const template = eventTemplates.find((eventTemplate) => eventTemplate.key === templateKey);
+  const template = allEventTemplates.find((eventTemplate) => eventTemplate.key === templateKey);
   if (!template) {
     return false;
   }
-  template.locked = false;
-  void updateEventTemplate(template);
+  ensureEventProgress();
+  if (!gs.events.unlocked.includes(templateKey)) {
+    gs.events.unlocked.push(templateKey);
+  }
   return true;
 }
 
@@ -174,8 +214,8 @@ function doesTriggerMatch(trigger: EventTrigger): boolean {
   // Keep trigger intact so switch narrows parameters per triggerType
   switch (trigger.triggerType) {
     case EventTriggerType.PreviousEvents:
-      // Satisfied when nothing is left to wait on (also handles already-empty params)
-      return Object.keys(trigger.parameters).length === 0;
+      ensureEventProgress();
+      return Object.keys(trigger.parameters).every((key) => gs.events.occurred.includes(key));
     case EventTriggerType.Day:
       return gs.time.day === trigger.parameters.day;
     case EventTriggerType.Period:

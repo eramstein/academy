@@ -186,7 +186,8 @@
     ],
     "triggersOnce": true,
     "characterArc": "molly",
-    "emotion": "happy"
+    "emotion": "happy",
+    "image": "molly-f1.jpg"
   },
   {
     "key": "molly-f2",
@@ -284,7 +285,7 @@
   },
   {
     "key": "molly-hiking",
-    "text": "Molly invites you for a hike in the mountains, and before long you are both on a bright weekend trail with wind in the pines. She sets an easy, tireless pace while your lungs burn and your legs complain, but she never leaves you behind—slowing on the steep bits, offering a hand over the rocks, and laughing with you when you stop to catch your breath. By the overlook you are worn out and grinning, glad she asked.",
+    "text": "Molly finds you with a hopeful bounce in her step and asks if you would like to go hiking in the Gray Mountains. She talks about the trail, the overlook, and the clear air on a bright weekend, and waits to see whether you will come along.",
     "triggers": [
       {
         "triggerType": "previous_events",
@@ -308,6 +309,46 @@
         "triggerType": "character_present",
         "parameters": {
           "characterKey": "molly"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept",
+        "effects": [
+          {
+            "type": "follow_up_event",
+            "parameters": {
+              "eventKey": "molly-hiking-2"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Refuse",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Molly's smile falters. She nods quickly, trying to hide her disappointment, and says maybe another time."
+            }
+          }
+        ]
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "molly",
+    "emotion": "happy"
+  },
+  {
+    "key": "molly-hiking-2",
+    "text": "Before long you are both on a bright weekend trail in the Gray Mountains, wind in the pines. Molly sets an easy, tireless pace while your lungs burn and your legs complain, but she never leaves you behind—slowing on the steep bits, offering a hand over the rocks, and laughing with you when you stop to catch your breath. By the overlook you are worn out and grinning, glad you said yes.",
+    "effects": [
+      {
+        "type": "move",
+        "parameters": {
+          "placeKey": "gray_mountains",
+          "characterKeys": ["player", "molly"]
         }
       }
     ],
@@ -372,9 +413,10 @@
       }
     ],
     "triggersOnce": true,
+    "locked": true,
     "characterArc": "molly",
     "emotion": "happy",
-    "image": "molly_hiking.jpg"
+    "image": "molly-hiking-2.jpg"
   },
   {
     "key": "molly-r1",

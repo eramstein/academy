@@ -34,6 +34,8 @@ export function setSceneEvents() {
 
 export async function selectOption(option: EventOption) {
   console.log('selectOption', option, gs.scene.event);
+  // Clear so a follow_up_event effect can claim the scene; otherwise setSceneEvents would wipe it.
+  gs.scene.event = undefined;
   if (option.outcome.effects) {
     option.outcome.effects.forEach((effect) => {
       applyEffect(effect);
@@ -41,7 +43,7 @@ export async function selectOption(option: EventOption) {
   }
   if (option.outcome.action) {
     await performAction(option.outcome.action);
-  } else {
+  } else if (!gs.scene.event) {
     setSceneEvents();
   }
 }
