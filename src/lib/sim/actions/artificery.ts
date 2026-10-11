@@ -37,6 +37,7 @@ import {
 import {
   applyUniqueResourcesFromSelection,
   mergeUniqueResourceUnitTypes,
+  unitTypesFromUniqueResources,
 } from '../cards/resources';
 import { getActingCharacter } from '../characters';
 import { narrateCardConjured } from '../narration';
@@ -549,8 +550,11 @@ async function getUnitTemplate(
   bonusBudget: number;
   actionName: string[];
 }> {
+  // Only unique resources hard-constrain creature type; otherwise flavor picks it.
+  const constrainedUnitTypes = unitTypesFromUniqueResources(parameters.resources);
   const unitParams = { ...parameters };
   delete unitParams.cardType;
+  unitParams.unitTypes = constrainedUnitTypes.length ? [...constrainedUnitTypes] : undefined;
 
   const cardBase = buildUnitCard(unitParams, character);
   const bonusBudget = fortuneBudget ?? rollExtraBudget(bonuses.extraBudgetChance);
@@ -576,7 +580,8 @@ async function getUnitTemplate(
     hp: conjured.maxHealth,
     retaliate: conjured.retaliate,
     keywords: conjured.keywords,
-    unitTypes: conjured.unitTypes,
+    // Omit provisional types from the flavor query so the catalog isn't type-locked.
+    unitTypes: constrainedUnitTypes.length ? [...constrainedUnitTypes] : undefined,
     actions: actionName.length ? actionName : undefined,
   };
 
@@ -586,9 +591,7 @@ async function getUnitTemplate(
     id: draftId,
     name: '',
     imageFileName: '',
-    unitTypes: conjured.unitTypes?.length
-      ? conjured.unitTypes
-      : randomUnitTypes(colors.map((entry) => entry.color)),
+    unitTypes: constrainedUnitTypes.length ? [...constrainedUnitTypes] : [],
   };
   onSummonProgress?.('frame', draft);
   sealUniqueResources(draft, parameters, templateParameters);
@@ -602,7 +605,7 @@ async function getUnitTemplate(
       if (event.stage === 'name_ready') {
         draft.name = event.name;
         draft.imageFileName = '';
-        if (!draft.unitTypes?.length && event.unitTypes?.length) {
+        if (!constrainedUnitTypes.length && event.unitTypes?.length) {
           draft.unitTypes = event.unitTypes;
         }
         onSummonProgress?.('name', draft);
@@ -611,7 +614,7 @@ async function getUnitTemplate(
       if (event.stage === 'reuse' || event.stage === 'fallback') {
         draft.name = event.flavor.name;
         draft.imageFileName = '';
-        if (!draft.unitTypes?.length && event.flavor.unitTypes?.length) {
+        if (!constrainedUnitTypes.length && event.flavor.unitTypes?.length) {
           draft.unitTypes = event.flavor.unitTypes;
         }
         onSummonProgress?.('name', draft);
@@ -622,7 +625,7 @@ async function getUnitTemplate(
       if (event.stage === 'image_ready') {
         draft.name = event.flavor.name;
         draft.imageFileName = event.flavor.imageName;
-        if (!draft.unitTypes?.length && event.flavor.unitTypes?.length) {
+        if (!constrainedUnitTypes.length && event.flavor.unitTypes?.length) {
           draft.unitTypes = event.flavor.unitTypes;
         }
         onSummonProgress?.('image', draft);
@@ -633,12 +636,12 @@ async function getUnitTemplate(
   draft.id = flavor.name + crypto.randomUUID();
   draft.name = flavor.name;
   draft.imageFileName = flavor.imageName;
-  // Params already carry unique-resource types (e.g. Beast); prefer those over flavor picks.
-  draft.unitTypes = conjured.unitTypes?.length
-    ? conjured.unitTypes
+  // Unique-resource types win; otherwise take the flavor's type (random only as last resort).
+  draft.unitTypes = constrainedUnitTypes.length
+    ? [...constrainedUnitTypes]
     : flavor.unitTypes?.length
-      ? flavor.unitTypes
-      : draft.unitTypes;
+      ? [...flavor.unitTypes]
+      : randomUnitTypes(colors.map((entry) => entry.color));
   onSummonProgress?.('image', draft);
   return {
     template: draft,
@@ -736,6 +739,6 @@ function sealUniqueResources(
   templateParameters.colors = draft.colors.map((entry) => entry.color);
   if (isUnitCard(draft)) {
     templateParameters.hp = draft.maxHealth;
-    templateParameters.unitTypes = draft.unitTypes;
+    templateParameters.unitTypes = draft.unitTypes?.length ? draft.unitTypes : undefined;
   }
 }

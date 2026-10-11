@@ -113,7 +113,7 @@ export function getRangeLabel(filterArgs: UnitFilterArgs) {
     labels.push('allies');
   }
   if (filterArgs.ennemies) {
-    labels.push('ennemies');
+    labels.push('enemies');
   }
   if (filterArgs.inFrontOf) {
     labels.push('in front of');

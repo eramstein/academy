@@ -31,7 +31,6 @@ import {
   getEmptyCells,
   getOpposingPlayer,
   getRandomEmptyAlliedCells,
-  getTemporaryEffectLabel,
   healUnit,
   incrementColor,
   makeUnit,
@@ -48,11 +47,23 @@ import { getAllGraveyardsUnits, reanimate, recycleCard, regrowCard } from '../gr
 import { damageLand, fortifyLand } from '../land';
 import { forceMoveUnit } from '../move';
 import { soundManager } from '../sound';
-import { getTargetLabel } from '../target';
 import { DynamicValue, DynamicValues } from './dynamic-values';
+import {
+  affectedPhrase,
+  countedCards,
+  describeAmount,
+  describeTemporaryBonus,
+  getsClause,
+  isPluralTarget,
+  joinList,
+  magnitudeLabel,
+  sentence,
+  statFragment,
+  targetNoun,
+  words,
+} from './effect-labels';
 import { DataEffectPrimers } from './effect-primers';
 import {
-  getRangeLabel,
   getUnitFromTriggerParam,
   getUnitsInRange,
   type UnitFilterArgs,
@@ -74,7 +85,11 @@ export const DataEffectTemplates: Record<
         reanimate(reanimatedUnit, position, playerId);
       }
     },
-    label: () => `Reanimate a unit to a position`,
+    label: (targets: TargetDefinition[]) => {
+      const unit = targets[0] ? targetNoun(targets[0]) : 'a random graveyard unit';
+      const cell = targets[1] ? targetNoun(targets[1]) : 'a random empty cell';
+      return sentence(`Reanimate ${unit} onto ${cell}`);
+    },
   }),
   damagePlayer: ({
     damage,
@@ -90,8 +105,20 @@ export const DataEffectTemplates: Record<
       console.log('damagePlayer', opposingPlayer, targetPlayer);
       damagePlayer(targetPlayer, damage);
     },
-    label: () =>
-      `${damage > 0 ? 'Deal' : 'Heal'} ${Math.abs(damage)} damage ${opposingPlayer ? 'to your opponent' : ''}.`,
+    label: () => {
+      const described = describeAmount(damage);
+      const amount = magnitudeLabel(described);
+      const who = opposingPlayer ? 'your opponent' : 'yourself';
+      if (described.number !== undefined && described.number < 0) {
+        return sentence(
+          opposingPlayer ? `Heal your opponent for ${amount}` : `Heal yourself for ${amount}`
+        );
+      }
+      if (described.equalTo) {
+        return sentence(`Deal damage ${described.equalTo} to ${who}`);
+      }
+      return sentence(`Deal ${amount} damage to ${who}`);
+    },
   }),
   damageLand: ({ damage }: { damage: number }) => ({
     fn: ({ targets }) => {
@@ -102,7 +129,12 @@ export const DataEffectTemplates: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      return `Deal ${damage} damage to ${getTargetLabel(targets[0])}`;
+      const land = targets[0] ? targetNoun(targets[0]) : 'target land';
+      const described = describeAmount(damage);
+      if (described.equalTo) {
+        return sentence(`Deal damage ${described.equalTo} to ${land}`);
+      }
+      return sentence(`Deal ${magnitudeLabel(described)} damage to ${land}`);
     },
   }),
   damageUnit: ({
@@ -140,23 +172,28 @@ export const DataEffectTemplates: Record<
       soundManager.playDamageSound();
     },
     label: (targets: TargetDefinition[]) => {
-      let targetsLabel = targets.length > 0 ? ` ${getTargetLabel(targets[0])}` : '';
-      if (fromTriggerParam) {
-        targetsLabel = ` to ${fromTriggerParam}`;
+      const described = describeAmount(damage, dynamicValue);
+      const amount = magnitudeLabel(described);
+      const affected = affectedPhrase(targets, { fromTriggerParam, range, randomTargets });
+      const dealt = described.number !== undefined ? String(described.number) : amount;
+      if (affected.self) {
+        if (described.equalTo) {
+          return sentence(`Takes damage ${described.equalTo}`, affected.range);
+        }
+        return sentence(`Takes ${dealt} damage`, affected.range);
       }
-      if (randomTargets) {
-        targetsLabel =
-          targets.length > 0
-            ? ` ${getTargetLabel({ ...targets[0], count: randomTargets }).replace(/\btarget\b/g, 'random')}`
-            : ` to ${randomTargets === 1 ? 'a random unit' : `${randomTargets} random units`}`;
+      if (described.equalTo) {
+        return sentence(
+          affected.phrase
+            ? `Deal damage ${described.equalTo} to ${affected.phrase}`
+            : `Deal damage ${described.equalTo}`,
+          affected.range
+        );
       }
-      const valueLabel = dynamicValue
-        ? `[${dynamicValue} ${damage !== 1 ? ' x ' + damage : ''}]`
-        : damage;
-      if (!randomTargets && targets.length === 0 && (!range || range?.self)) {
-        return `Takes ${valueLabel} damage.`;
-      }
-      return `Deal ${valueLabel} damage ${targetsLabel}. ${range ? getRangeLabel(range) : ''}`;
+      return sentence(
+        affected.phrase ? `Deal ${dealt} damage to ${affected.phrase}` : `Deal ${dealt} damage`,
+        affected.range
+      );
     },
   }),
   healUnit: ({ health, range }: { health: number; range?: UnitFilterArgs }) => ({
@@ -173,8 +210,17 @@ export const DataEffectTemplates: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      const targetsLabel = targets.length > 0 ? ` ${getTargetLabel(targets[0])}` : '';
-      return `Heal ${health} to ${targetsLabel}. ${range ? getRangeLabel(range) : ''}`;
+      const described = describeAmount(health);
+      const amount = magnitudeLabel(described);
+      const affected = affectedPhrase(targets, { range });
+      const healthText = described.equalTo ? `health ${described.equalTo}` : `${amount} health`;
+      if (affected.self) {
+        return sentence(`Restore ${healthText}`, affected.range);
+      }
+      return sentence(
+        affected.phrase ? `Restore ${healthText} to ${affected.phrase}` : `Restore ${healthText}`,
+        affected.range
+      );
     },
   }),
   addCounters: ({
@@ -206,20 +252,32 @@ export const DataEffectTemplates: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      let targetsLabel = targets.length > 0 ? ` ${getTargetLabel(targets[0])}` : '';
-      if (fromTriggerParam) {
-        targetsLabel = ` to ${fromTriggerParam}`;
+      const described = describeAmount(counterValue, dynamicValue);
+      const affected = affectedPhrase(targets, { fromTriggerParam, range });
+      const counter = `${counterType} counter`;
+      if (valueIsMultiplier) {
+        const factor = described.equalTo
+          ? described.equalTo.replace(/^equal to /, '')
+          : String(described.number ?? counterValue);
+        const body = affected.self
+          ? `Multiply this unit's ${counter}s by ${factor}`
+          : affected.phrase
+            ? `Multiply ${counter}s on ${affected.phrase} by ${factor}`
+            : `Multiply ${counter}s by ${factor}`;
+        return sentence(body, affected.range);
       }
-      const valueLabel = dynamicValue
-        ? `[${dynamicValue} ${counterValue !== 1 ? ' x ' + counterValue : ''}]`
-        : counterValue;
-      const verb =
-        targets.length === 0 && (!range || range?.self)
-          ? 'Gets'
-          : valueIsMultiplier
-            ? 'Multiply by'
-            : 'Add';
-      return `${verb} ${valueLabel} ${counterType} counter${counterValue !== 1 ? 's' : ''}${targetsLabel}. ${range ? getRangeLabel(range) : ''}`;
+      const plural = described.equalTo || described.number !== 1;
+      const counters = `${counter}${plural ? 's' : ''}`;
+      const amount = described.equalTo
+        ? `${counters} ${described.equalTo}`
+        : `${described.number ?? counterValue} ${counters}`;
+      if (affected.self) {
+        return sentence(`Gets ${amount}`, affected.range);
+      }
+      return sentence(
+        affected.phrase ? `Add ${amount} to ${affected.phrase}` : `Add ${amount}`,
+        affected.range
+      );
     },
   }),
   staticStats: ({
@@ -265,17 +323,14 @@ export const DataEffectTemplates: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      const targetsLabel = targets.length > 0 ? ` to ${getTargetLabel(targets[0])}` : '';
-      const valueLabel = dynamicValue
-        ? `[${dynamicValue} ${power !== 1 ? ' x ' + power : ''}]`
-        : power;
-      const maxHealthLabel = dynamicValue
-        ? `[${dynamicValue} ${maxHealth !== 1 ? ' x ' + maxHealth : ''}]`
-        : maxHealth;
-      const retaliateLabel = dynamicValue
-        ? `[${dynamicValue} ${retaliate !== 1 ? ' x ' + retaliate : ''}]`
-        : retaliate;
-      return `Add ${valueLabel ? `power ${valueLabel}` : ''}${maxHealthLabel ? ` health ${maxHealthLabel}` : ''}${retaliateLabel ? ` retaliate ${retaliateLabel}` : ''}${targetsLabel}. ${range ? getRangeLabel(range) : ''}`;
+      const affected = affectedPhrase(targets, { fromTriggerParam, range });
+      const parts = [
+        statFragment('power', power, dynamicValue),
+        statFragment('health', maxHealth, dynamicValue),
+        statFragment('retaliate', retaliate, dynamicValue),
+      ].filter((part): part is string => !!part);
+      const change = parts.length > 0 ? joinList(parts) : 'no stats';
+      return sentence(getsClause(affected.phrase, change, affected.self), affected.range);
     },
   }),
   staticKeyword: ({
@@ -307,11 +362,18 @@ export const DataEffectTemplates: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      let targetsLabel = targets.length > 0 ? ` to ${getTargetLabel(targets[0])}` : '';
-      if (fromTriggerParam) {
-        targetsLabel = ` to ${fromTriggerParam}`;
+      const affected = affectedPhrase(targets, { fromTriggerParam, range });
+      const name = words(keyword);
+      const value =
+        typeof keyWordValue === 'number' ? ` ${keyWordValue > 0 ? '+' : ''}${keyWordValue}` : '';
+      const keywordText = `${name}${value}`;
+      if (affected.self) {
+        return sentence(`Gets ${keywordText}`, affected.range);
       }
-      return `Give ${keyword} ${keyWordValue ? keyWordValue : ''}${targetsLabel}. ${range ? getRangeLabel(range) : ''}`;
+      return sentence(
+        affected.phrase ? `Give ${keywordText} to ${affected.phrase}` : `Give ${keywordText}`,
+        affected.range
+      );
     },
   }),
   temporaryEffect: ({
@@ -334,21 +396,25 @@ export const DataEffectTemplates: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      const targetsLabel = targets.length > 0 ? ` to ${getTargetLabel(targets[0])}` : '';
-      return `Apply ${getTemporaryEffectLabel(effect)} effect ${targetsLabel} for 1 turn. ${range ? getRangeLabel(range) : ''}`;
+      const affected = affectedPhrase(targets, { range });
+      const bonus = describeTemporaryBonus(effect);
+      return sentence(
+        `${getsClause(affected.phrase, bonus, affected.self)} until end of turn`,
+        affected.range
+      );
     },
   }),
   untapPlayer: () => ({
     fn: ({ player }) => {
       untapPlayer(player);
     },
-    label: () => `Untap this player`,
+    label: () => `This player may use their color ability again.`,
   }),
   incrementColor: ({ color }) => ({
     fn: ({ player }) => {
       incrementColor(player, color, 1);
     },
-    label: () => `Add 1 ${color} mana`,
+    label: () => sentence(`Add 1 ${color} mana`),
   }),
   applyUnitStatus: ({
     statusType,
@@ -373,8 +439,17 @@ export const DataEffectTemplates: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      const targetsLabel = targets.length > 0 ? ` ${getTargetLabel(targets[0])}` : '';
-      return `Apply ${statusType} for ${duration} turn${duration !== 1 ? 's' : ''}${targetsLabel}. ${range ? getRangeLabel(range) : ''}`;
+      const affected = affectedPhrase(targets, { fromTriggerParam, range });
+      const turns = `${duration} turn${Number(duration) === 1 ? '' : 's'}`;
+      if (affected.self) {
+        return sentence(`Apply ${statusType} for ${turns}`, affected.range);
+      }
+      return sentence(
+        affected.phrase
+          ? `Apply ${statusType} to ${affected.phrase} for ${turns}`
+          : `Apply ${statusType} for ${turns}`,
+        affected.range
+      );
     },
   }),
   summon: ({
@@ -406,10 +481,19 @@ export const DataEffectTemplates: Record<
         }
       }
     },
-    label: () =>
-      isRespawn
-        ? `Spawn ${summonedUnit ? summonedUnit.name : 'a random unit'} at this unit's position`
-        : `Summon ${summonedUnit ? summonedUnit.name : 'a random unit'} to ${randomPositions ? 'random' : 'target'} position`,
+    label: (targets: TargetDefinition[]) => {
+      const name = summonedUnit?.name ?? 'a unit';
+      if (isRespawn) {
+        return sentence(`Summon ${name} at this unit's position`);
+      }
+      const count = typeof randomPositions === 'number' ? randomPositions : randomPositions ? 1 : 0;
+      if (count > 0) {
+        const cells = count === 1 ? 'a random allied cell' : `${count} random allied cells`;
+        return sentence(`Summon ${name} onto ${cells}`);
+      }
+      const cell = targets[0] ? targetNoun(targets[0]) : 'target cell';
+      return sentence(`Summon ${name} onto ${cell}`);
+    },
   }),
   darkRitual: ({ effect = 'damage' }: { effect: 'damage' | 'heal' }) => ({
     fn: ({ targets }) => {
@@ -423,8 +507,14 @@ export const DataEffectTemplates: Record<
       }
       destroyUnit(sacrificedUnit);
     },
-    label: () =>
-      `Sacrifice a unit to ${effect === 'damage' ? 'deal damage' : effect} equal to its health to another unit`,
+    label: (targets: TargetDefinition[]) => {
+      const sacrifice = targets[0] ? targetNoun(targets[0]) : 'a unit';
+      const other = targets[1] ? targetNoun(targets[1]) : 'another unit';
+      if (effect === 'heal') {
+        return sentence(`Sacrifice ${sacrifice} and restore its health to ${other}`);
+      }
+      return sentence(`Sacrifice ${sacrifice} and deal its health as damage to ${other}`);
+    },
   }),
   transferCounters: ({ counterType = CounterType.Growth }: { counterType: CounterType }) => ({
     fn: ({ targets, unit }) => {
@@ -446,7 +536,10 @@ export const DataEffectTemplates: Record<
         addCounters(targetUnit, counterType, movedCounters);
       }
     },
-    label: () => `Transfer all ${counterType} counters from other units to this unit`,
+    label: (targets: TargetDefinition[]) => {
+      const dest = targets[0] ? targetNoun(targets[0]) : 'this unit';
+      return sentence(`Move all ${counterType} counters from other units onto ${dest}`);
+    },
   }),
   transformCounters: ({
     fromCounterType = CounterType.Growth,
@@ -472,8 +565,12 @@ export const DataEffectTemplates: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      const targetsLabel = targets.length > 0 ? ` to ${getTargetLabel(targets[0])}` : '';
-      return `Transfer all ${fromCounterType} counters into ${toCounterType} counters${targetsLabel}. ${range ? getRangeLabel(range) : ''}`;
+      const affected = affectedPhrase(targets, { range });
+      const where = affected.self ? 'this unit' : (affected.phrase ?? 'units in range');
+      return sentence(
+        `Convert all ${fromCounterType} counters on ${where} into ${toCounterType} counters`,
+        affected.range
+      );
     },
   }),
   drawCard: ({ cardCount = 1 }) => ({
@@ -482,7 +579,7 @@ export const DataEffectTemplates: Record<
         drawCard(player);
       }
     },
-    label: () => `Draw ${cardCount} card${cardCount !== 1 ? 's' : ''}.`,
+    label: () => sentence(`Draw ${countedCards(cardCount)}`),
   }),
   destroyUnit: ({ range }: { range?: UnitFilterArgs }) => ({
     fn: ({ targets, unit, land, player }) => {
@@ -498,8 +595,14 @@ export const DataEffectTemplates: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      const targetsLabel = targets.length > 0 ? ` ${getTargetLabel(targets[0])}` : 'units';
-      return `Destroy ${targetsLabel}. ${range ? getRangeLabel(range) : ''}`;
+      const affected = affectedPhrase(targets, { range });
+      if (affected.self) {
+        return sentence('Destroy this unit', affected.range);
+      }
+      return sentence(
+        affected.phrase ? `Destroy ${affected.phrase}` : 'Destroy units in range',
+        affected.range
+      );
     },
   }),
   bounceUnit: ({ range }: { range?: UnitFilterArgs }) => ({
@@ -518,8 +621,12 @@ export const DataEffectTemplates: Record<
         });
     },
     label: (targets: TargetDefinition[]) => {
-      const targetsLabel = targets.length > 0 ? ` ${getTargetLabel(targets[0])}` : '';
-      return `Bounce ${targetsLabel.replace('to ', '')}. ${range ? getRangeLabel(range) : ''}`;
+      const affected = affectedPhrase(targets, { range });
+      if (affected.self) {
+        return sentence("Return this unit to its owner's hand", affected.range);
+      }
+      const owners = isPluralTarget(affected.phrase) ? "their owners' hands" : "its owner's hand";
+      return sentence(`Return ${affected.phrase ?? 'units in range'} to ${owners}`, affected.range);
     },
   }),
   fortifyLand: ({ amount }: { amount: number }) => ({
@@ -533,7 +640,10 @@ export const DataEffectTemplates: Record<
           : (bs.players[sourcePermanent.ownerPlayerId].lands[row] as Land);
       fortifyLand(targetLand, amount);
     },
-    label: () => `Fortify land by ${amount}.`,
+    label: (targets: TargetDefinition[]) => {
+      const land = targets[0] ? targetNoun(targets[0]) : 'this land';
+      return sentence(`Fortify ${land} by ${amount}`);
+    },
   }),
   refreshUnit: ({ range }: { range?: UnitFilterArgs }) => ({
     fn: ({ targets, unit, land, player }) => {
@@ -549,8 +659,14 @@ export const DataEffectTemplates: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      const targetsLabel = targets.length > 0 ? ` ${getTargetLabel(targets[0])}` : '';
-      return `Refresh ${targetsLabel}. ${range ? getRangeLabel(range) : ''}  `;
+      const affected = affectedPhrase(targets, { range });
+      if (affected.self) {
+        return sentence('Refresh this unit', affected.range);
+      }
+      return sentence(
+        affected.phrase ? `Refresh ${affected.phrase}` : 'Refresh units in range',
+        affected.range
+      );
     },
   }),
   forceMoveUnit: () => ({
@@ -559,7 +675,11 @@ export const DataEffectTemplates: Record<
       const position = targets[1][0] as Position;
       forceMoveUnit(unit, position);
     },
-    label: () => `Force move unit to target position.`,
+    label: (targets: TargetDefinition[]) => {
+      const unit = targets[0] ? targetNoun(targets[0]) : 'target unit';
+      const cell = targets[1] ? targetNoun(targets[1]) : 'target cell';
+      return sentence(`Move ${unit} to ${cell}`);
+    },
   }),
   controlUnit: () => ({
     fn: ({ targets }) => {
@@ -567,7 +687,11 @@ export const DataEffectTemplates: Record<
       const position = targets[1][0] as Position;
       controlUnit(unit, position);
     },
-    label: () => `Take control of target unit.`,
+    label: (targets: TargetDefinition[]) => {
+      const unit = targets[0] ? targetNoun(targets[0]) : 'target unit';
+      const cell = targets[1] ? targetNoun(targets[1]) : 'target cell';
+      return sentence(`Take control of ${unit} and move it to ${cell}`);
+    },
   }),
   swapUnits: () => ({
     fn: ({ targets }) => {
@@ -580,7 +704,7 @@ export const DataEffectTemplates: Record<
       unit1.position = unit2.position;
       unit2.position = position1;
     },
-    label: () => `Swap positions of 2 units on the same side`,
+    label: () => `Swap the positions of two units on the same side.`,
   }),
   fight: ({
     mutual = true,
@@ -596,7 +720,7 @@ export const DataEffectTemplates: Record<
       const unit2 = targetInFront
         ? getClosestEnnemyInRow(unit1)
         : ((targets[0][1] ?? targets[0][0]) as UnitDeployed);
-      if (!unit1 || !unit2 || unit1.ownerPlayerId === unit2.ownerPlayerId) {
+      if (!unit1 || !unit2) {
         return;
       }
       if (!sameSidePossible && unit1.ownerPlayerId === unit2.ownerPlayerId) {
@@ -607,15 +731,22 @@ export const DataEffectTemplates: Record<
         fightUnit(unit2, unit1);
       }
     },
-    label: (targets) => {
+    label: (targets: TargetDefinition[]) => {
+      const sideNote = sameSidePossible ? ' Units on the same side can be chosen.' : '';
       if (targetInFront) {
-        return `Attack the closest enemy unit in front of this unit`;
+        return mutual
+          ? `This unit fights the closest enemy in front.${sideNote}`
+          : `This unit attacks the closest enemy in front. That unit does not fight back.${sideNote}`;
       }
-      const subject = targets[0].count && targets[0].count > 1 ? 'Target unit' : 'This unit';
-      const oppositeSideLabel = sameSidePossible ? ' on the opposite side' : '';
+      const twoTargets = (targets[0]?.count ?? 0) > 1;
+      if (twoTargets) {
+        return mutual
+          ? `Two target units fight each other.${sideNote}`
+          : `The first target unit attacks the second. The second does not fight back.${sideNote}`;
+      }
       return mutual
-        ? `${subject} fights another unit${oppositeSideLabel}`
-        : `Attack target unit${oppositeSideLabel} (no fight back)`;
+        ? `This unit fights target unit.${sideNote}`
+        : `This unit attacks target unit. That unit does not fight back.${sideNote}`;
     },
   }),
   cycleCards: () => ({
@@ -628,8 +759,12 @@ export const DataEffectTemplates: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      const countLabel = targets[0].count ? ` ${targets[0].count}` : '';
-      return `Cycle ${countLabel} card${countLabel !== '1' ? 's' : ''}`;
+      const count = targets[0]?.count;
+      const n = !count || count < 1 ? 1 : count;
+      const chosen = n === 1 ? 'a card' : `${n} cards`;
+      const drawn = n === 1 ? 'a card' : `${n} cards`;
+      const pronoun = n === 1 ? 'it' : 'them';
+      return sentence(`Cycle ${chosen}: draw ${drawn}, then discard ${pronoun}`);
     },
   }),
   tutorCard: () => ({
@@ -637,14 +772,20 @@ export const DataEffectTemplates: Record<
       const card = targets[0][0] as Card;
       tutorCard(card.instanceId, player);
     },
-    label: () => `Fetch a card from the deck`,
+    label: (targets: TargetDefinition[]) => {
+      const card = targets[0] ? targetNoun(targets[0]) : 'a card from your deck';
+      return sentence(`Put ${card} into your hand`);
+    },
   }),
   regrowCard: () => ({
     fn: ({ targets, player }) => {
       const card = targets[0][0] as Card;
       regrowCard(card.instanceId, player);
     },
-    label: () => `Fetch a card from the graveyard`,
+    label: (targets: TargetDefinition[]) => {
+      const card = targets[0] ? targetNoun(targets[0]) : 'a card from your graveyard';
+      return sentence(`Put ${card} into your hand`);
+    },
   }),
   putToDeckBottom: () => ({
     fn: ({ targets, player, unit }) => {
@@ -652,13 +793,16 @@ export const DataEffectTemplates: Record<
       const card = target ? target : (unit as Card);
       putToDeckBottom(card, player);
     },
-    label: () => `Put that card on the bottom of your deck`,
+    label: (targets: TargetDefinition[]) => {
+      const card = targets[0] ? targetNoun(targets[0]) : 'this card';
+      return sentence(`Put ${card} on the bottom of your deck`);
+    },
   }),
   addMana: ({ amount }: { amount: number }) => ({
     fn: ({ player }) => {
       addMana(player, amount);
     },
-    label: () => `Add ${amount} mana`,
+    label: () => sentence(`Add ${amount} mana`),
   }),
   reshuffleGraveyard: () => ({
     fn: ({ player }) => {
@@ -666,7 +810,7 @@ export const DataEffectTemplates: Record<
       player.deck = shuffleDeck(player.deck);
       player.graveyard = [];
     },
-    label: () => `Reshuffle cards from the graveyard into the deck`,
+    label: () => `Shuffle your graveyard into your deck.`,
   }),
   recycleCard: () => ({
     fn: ({ targets, player }) => {
@@ -675,9 +819,7 @@ export const DataEffectTemplates: Record<
         recycleCard(c.instanceId, player);
       });
     },
-    label: (targets: TargetDefinition[]) => {
-      const countLabel = targets[0].count ? ` ${targets[0].count}` : '';
-      return `Shuffle ${countLabel} card${countLabel !== '1' ? 's' : ''} from the graveyard into the deck`;
-    },
+    label: (targets: TargetDefinition[]) =>
+      sentence(`Shuffle ${countedCards(targets[0]?.count)} from your graveyard into your deck`),
   }),
 };

@@ -126,7 +126,17 @@
       "Faint lantern light",
       "Ash drifting through the air",
       "Damp and decaying atmosphere",
-      "Harsh sunlight through smoke"
+      "Harsh sunlight through smoke",
+      "Weak spring sun through smog",
+      "Thawing spring rain on dark stone",
+      "Pale spring light in the alleys",
+      "Sweltering summer heat over the roofs",
+      "Close humid summer night",
+      "Cold autumn drizzle",
+      "Brown leaves drifting through smoke",
+      "Freezing winter rain",
+      "Snow on black rooftops",
+      "Frost on iron at dawn"
     ]
   },
   "red": {
@@ -186,7 +196,16 @@
       "Clear bright daylight",
       "Fast-moving storm clouds",
       "Flickering campfire light",
-      "Chaotic festival torchlight"
+      "Chaotic festival torchlight",
+      "Sharp spring wind across open ground",
+      "Dusty spring sunlight after the thaw",
+      "Blazing midsummer noon",
+      "Dry summer lightning on the horizon",
+      "Cold autumn gale",
+      "Low red autumn sun through dust",
+      "Biting winter wind",
+      "Driving snow under an ember dusk",
+      "Hard winter sunlight on bare rock"
     ]
   },
   "blue": {
@@ -247,7 +266,17 @@
       "Gentle floating particles",
       "Soft underwater light",
       "Overcast twilight",
-      "Faint light through dusty windows"
+      "Faint light through dusty windows",
+      "Cool spring mist at dawn",
+      "Soft spring light through high windows",
+      "Fresh spring rain on stone",
+      "Hazy summer daylight",
+      "Still midsummer evening",
+      "Pale autumn light through fog",
+      "Fine autumn rain on the harbor",
+      "Clear winter starlight",
+      "Frosted winter morning",
+      "Thin winter sun through icy mist"
     ]
   }
 }

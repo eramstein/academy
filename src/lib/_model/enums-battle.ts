@@ -61,7 +61,7 @@ export enum UnitType {
   Demon = 'demon',
   Halfing = 'halfing',
   Plant = 'plant', // trees, living humanoids plant-like, etc.
-  Construct = 'construct', // mechanical, golems, etc.
+  Construct = 'construct', // mechanical, golems, etc. steampunk inspired
   Building = 'building', // static structures, fortifications, buildings, towers, etc.
   Undead = 'undead',
   Elf = 'elf',

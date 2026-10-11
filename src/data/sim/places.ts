@@ -94,6 +94,13 @@ const PLACES: Record<string, Place> = {
       },
     },
   },
+  ['forest_of_schlupak']: {
+    key: 'forest_of_schlupak',
+    name: 'Forest of Schlupak',
+    description:
+      'The Forest of Schlupak is a dense forest, dark, mysterious and full of dangers, but also bountiful of magical ingredients.',
+    regionKey: 'wilderness',
+  },
 } as const;
 
 const REGIONS: Record<string, Region> = {
@@ -106,6 +113,11 @@ const REGIONS: Record<string, Region> = {
     key: 'town',
     name: 'Godsend Town',
     description: 'Godsend Town is a small town with a lot of people and a lot of things to do.',
+  },
+  ['wilderness']: {
+    key: 'wilderness',
+    name: 'The Wilderness',
+    description: 'Natural sites around Gosend Town, most of them wild and untamed.',
   },
 } as const;
 

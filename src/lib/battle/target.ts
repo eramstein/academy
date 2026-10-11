@@ -145,42 +145,43 @@ export function getEligibleTargets(
 
 export function getTargetLabel(target: TargetDefinition): string {
   const count = target.count ?? 1;
-  const countLabel = count > 1 ? String(count) : '';
+  const n = count > 1 ? `${count} ` : '';
+  const s = count === 1 ? '' : 's';
   if (target.type === TargetType.Units) {
-    return `to ${countLabel} target unit${count !== 1 ? 's' : ''}`;
+    return `to ${n}target unit${s}`;
   }
   if (target.type === TargetType.Ennemies) {
-    return `to ${countLabel} target ennemy${count !== 1 ? 's' : ''}`;
+    return `to ${n}target ${count === 1 ? 'enemy' : 'enemies'}`;
   }
   if (target.type === TargetType.Allies) {
-    return `to ${countLabel} target ally${count !== 1 ? 's' : ''}`;
+    return `to ${n}target ${count === 1 ? 'ally' : 'allies'}`;
   }
   if (target.type === TargetType.Cell) {
-    return `, targets cell${count !== 1 ? 's' : ''}`;
+    return `to ${n}target cell${s}`;
   }
   if (target.type === TargetType.AllyCell) {
-    return `, targets ally cell${count !== 1 ? 's' : ''}`;
+    return `to ${n}target allied cell${s}`;
   }
   if (target.type === TargetType.EnemyCell) {
-    return `, targets enemy cell${count !== 1 ? 's' : ''}`;
+    return `to ${n}target enemy cell${s}`;
   }
   if (target.type === TargetType.EmptyCell) {
-    return `, targets empty cell${count !== 1 ? 's' : ''}`;
+    return `to ${n}target empty cell${s}`;
   }
   if (target.type === TargetType.Land) {
-    return `to ${countLabel} target land${count !== 1 ? 's' : ''}`;
+    return `to ${n}target land${s}`;
   }
   if (target.type === TargetType.GraveyardCard) {
-    return `to ${countLabel} target graveyard card${count !== 1 ? 's' : ''}`;
+    return `to ${n}target graveyard card${s}`;
   }
   if (target.type === TargetType.DeckCard) {
-    return `to ${countLabel} target deck card${count !== 1 ? 's' : ''}`;
+    return `to ${n}target deck card${s}`;
   }
   if (target.type === TargetType.Player) {
-    return `to ${countLabel} target player${count !== 1 ? 's' : ''}`;
+    return `to ${n}target player${s}`;
   }
   if (target.type === TargetType.HandCard) {
-    return ` card${count !== 1 ? 's' : ''} in hand`;
+    return `${n}card${s} in hand`;
   }
   return '';
 }
