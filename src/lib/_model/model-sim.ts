@@ -83,6 +83,8 @@ export interface EventEffect {
   parameters: Record<string, any>;
 }
 
+export type EventImageSize = 'small' | 'medium' | 'large';
+
 // An event template defines when a scene event triggers and how to generate its options
 export interface EventTemplate {
   key: string;
@@ -95,6 +97,8 @@ export interface EventTemplate {
   characterArc?: string; // npc key
   emotion?: Emotion;
   image?: string;
+  /** How static event art is shown. Defaults to `small` when `image` is set. */
+  imageSize?: EventImageSize;
 }
 
 export interface EventOptionTemplate {
@@ -120,6 +124,8 @@ export interface Narration {
   imagePrompt?: string;
   /** Object URL for a generated scene illustration. */
   imageUrl?: string;
+  /** Display size for static event art (`imageUrl` without `imagePrompt`). */
+  imageSize?: EventImageSize;
   cardIds?: string[];
   cardTemplates?: CardTemplate[];
   day?: number;

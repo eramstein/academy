@@ -10,7 +10,14 @@ import {
 } from '@/lib/llm/prompts';
 import type { CardTemplate, DayPeriod } from '../_model';
 import { ActionType, Emotion, NarrationType } from '../_model/enums-sim';
-import type { Action, AttributeCheck, Job, Mentions, Narration } from '../_model/model-sim';
+import type {
+  Action,
+  AttributeCheck,
+  EventImageSize,
+  Job,
+  Mentions,
+  Narration,
+} from '../_model/model-sim';
 import { gs } from '../_state';
 import type { TransactionParameters } from './actions';
 import { actionTemplates, getActionTemplateMeta } from './cards/action-templates';
@@ -247,18 +254,29 @@ function fallbackAttemptedActionText(action: Action): string {
 
 export function narrateText(
   text: string,
-  options?: { characterKey?: string; emotion?: Emotion; image?: string; eventKey?: string }
+  options?: {
+    characterKey?: string;
+    emotion?: Emotion;
+    image?: string;
+    imageSize?: EventImageSize;
+    eventKey?: string;
+  }
 ) {
   const imageFile = options?.image
     ? resolveEventImageFileName(options.eventKey ?? '', options.image)
     : undefined;
+  const imageUrl = imageFile ? getEventImagePath(imageFile) : undefined;
+  const imageSize = imageUrl ? (options?.imageSize ?? 'small') : undefined;
+  if (imageUrl && imageSize === 'large') {
+    gs.scene.image = imageUrl;
+  }
   narrate({
     id: crypto.randomUUID(),
     text,
     type: NarrationType.Text,
     ...(options?.characterKey ? { characters: [options.characterKey] } : {}),
     ...(options?.emotion ? { emotion: options.emotion } : {}),
-    ...(imageFile ? { imageUrl: getEventImagePath(imageFile) } : {}),
+    ...(imageUrl ? { imageUrl, imageSize } : {}),
   });
 }
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { EventTriggerType, type EventTemplate } from '@/lib/_model';
+  import { EventEffectType, EventTriggerType, type EventEffect, type EventTemplate } from '@/lib/_model';
 
   let {
     events,
@@ -34,6 +34,14 @@
     y2: number;
   };
 
+  function followUpTargets(effects: EventEffect[] | undefined): string[] {
+    if (!effects?.length) return [];
+    return effects
+      .filter((effect) => effect.type === EventEffectType.FollowUpEvent)
+      .map((effect) => effect.parameters?.eventKey)
+      .filter((key): key is string => typeof key === 'string' && key.length > 0);
+  }
+
   const layout = $derived.by(() => {
     const byKey = new Map(events.map((event) => [event.key, event]));
     const adjacency = new Map<string, string[]>();
@@ -46,17 +54,31 @@
 
     const edgeSeen = new Set<string>();
     const edgeKeys: { from: string; to: string }[] = [];
+
+    const addEdge = (from: string, to: string) => {
+      if (!byKey.has(from) || !byKey.has(to)) return;
+      const edgeId = `${from}->${to}`;
+      if (edgeSeen.has(edgeId)) return;
+      edgeSeen.add(edgeId);
+      edgeKeys.push({ from, to });
+      adjacency.get(from)!.push(to);
+      inDegree.set(to, (inDegree.get(to) ?? 0) + 1);
+    };
+
     for (const event of events) {
       for (const trigger of event.triggers ?? []) {
         if (trigger.triggerType !== EventTriggerType.PreviousEvents) continue;
         for (const prevKey of Object.keys(trigger.parameters ?? {})) {
-          if (!byKey.has(prevKey)) continue;
-          const edgeId = `${prevKey}->${event.key}`;
-          if (edgeSeen.has(edgeId)) continue;
-          edgeSeen.add(edgeId);
-          edgeKeys.push({ from: prevKey, to: event.key });
-          adjacency.get(prevKey)!.push(event.key);
-          inDegree.set(event.key, (inDegree.get(event.key) ?? 0) + 1);
+          addEdge(prevKey, event.key);
+        }
+      }
+
+      for (const nextKey of followUpTargets(event.effects)) {
+        addEdge(event.key, nextKey);
+      }
+      for (const option of event.optionTemplates ?? []) {
+        for (const nextKey of followUpTargets(option.effects)) {
+          addEdge(event.key, nextKey);
         }
       }
     }

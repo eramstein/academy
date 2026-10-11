@@ -361,8 +361,10 @@ events.forEach((event, index) => {
     }
   }
 
-  if (!Array.isArray(event?.triggers) || event.triggers.length === 0) {
-    errors.push(`${where}: at least one trigger is required`);
+  if (event?.triggers === undefined) {
+    errors.push(`${where}: triggers is required (use [] for follow-up-only events)`);
+  } else if (!Array.isArray(event.triggers)) {
+    errors.push(`${where}: triggers must be an array`);
   } else {
     event.triggers.forEach((trigger, i) => checkTrigger(`${where} trigger[${i}]`, trigger));
   }

@@ -113,7 +113,9 @@ export async function loadEventTemplates() {
 /** Replace IndexedDB + in-memory templates with the given list (e.g. after editor save). */
 export async function syncEventTemplates(templates: EventTemplate[]) {
   await replaceEventTemplates(templates);
-  await loadEventTemplates();
+  // Do not re-merge from source — that would overwrite the editor's just-saved catalog.
+  allEventTemplates = await getAllEventTemplates();
+  rebuildWorkingEventTemplates();
 }
 
 function isTemplateUnlocked(template: StoredEventTemplate): boolean {
@@ -127,7 +129,8 @@ export function getTriggeredSceneEvent():
   | undefined {
   const template = eventTemplates.find(
     (eventTemplate) =>
-      isTemplateUnlocked(eventTemplate) && eventTemplate.triggers.every(doesTriggerMatch)
+      isTemplateUnlocked(eventTemplate) &&
+      (eventTemplate.triggers ?? []).every(doesTriggerMatch)
   );
   if (!template) {
     return undefined;
@@ -170,6 +173,7 @@ export function simulateEvent(templateKey: string) {
     characterKey: template.characterArc,
     emotion: template.emotion,
     image: template.image,
+    imageSize: template.imageSize,
     eventKey: template.key,
   });
   gs.scene.event = event;
@@ -180,7 +184,8 @@ export function simulateEvent(templateKey: string) {
 export function consumeEventTemplate(template: StoredEventTemplate) {
   eventTemplates = eventTemplates.filter((eventTemplate) => eventTemplate !== template);
   // for events requiring relation values, "consume" the relation value
-  for (const trigger of template.triggers.filter(
+  // Follow-up-only events may omit triggers entirely.
+  for (const trigger of (template.triggers ?? []).filter(
     (t) => t.triggerType === EventTriggerType.RelationParameter
   )) {
     const { characterKey, relationParameter } = trigger.parameters;

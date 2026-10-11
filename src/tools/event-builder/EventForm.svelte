@@ -38,6 +38,7 @@
   let characterArc = $state('');
   let emotion = $state('');
   let image = $state('');
+  let imageSize = $state<'small' | 'medium' | 'large'>('small');
   let triggers = $state<EventTrigger[]>([]);
   let options = $state<EventOptionTemplate[]>([]);
   let effects = $state<EventEffect[]>([]);
@@ -63,10 +64,8 @@
       characterArc = '';
       emotion = '';
       image = '';
-      triggers = [
-        { triggerType: EventTriggerType.Day, parameters: { day: 1 } },
-        { triggerType: EventTriggerType.Period, parameters: { periods: [DayPeriod.Morning] } },
-      ];
+      imageSize = 'small';
+      triggers = [];
       options = [];
       effects = [];
       return;
@@ -80,6 +79,7 @@
     characterArc = cloned.characterArc ?? '';
     emotion = cloned.emotion ?? '';
     image = cloned.image ?? '';
+    imageSize = cloned.imageSize ?? 'small';
     triggers = cloned.triggers ?? [];
     options = cloned.optionTemplates ?? [];
     effects = cloned.effects ?? [];
@@ -299,6 +299,9 @@
     const imageName = image.trim();
     if (imageName) {
       built.image = imageName;
+      if (imageSize !== 'small') {
+        built.imageSize = imageSize;
+      }
     }
 
     if (effects.length > 0) {
@@ -330,10 +333,6 @@
     }
     if (!text.trim()) {
       error = 'Text is required.';
-      return;
-    }
-    if (triggers.length === 0) {
-      error = 'Add at least one trigger.';
       return;
     }
 
@@ -419,6 +418,16 @@
               key.jpg
             </button>
           </div>
+          {#if image.trim()}
+            <label class="image-size">
+              <span class="label">Image size</span>
+              <select class="select" bind:value={imageSize}>
+                <option value="small">Small (portrait in book)</option>
+                <option value="medium">Medium (expanded in book)</option>
+                <option value="large">Large (replaces location art)</option>
+              </select>
+            </label>
+          {/if}
         </div>
 
         <label class="check">
@@ -447,7 +456,7 @@
         </div>
 
         {#if triggers.length === 0}
-          <p class="hint">No triggers yet.</p>
+          <p class="hint">No triggers — follow-up / unlocked events can stay empty.</p>
         {:else}
           <ul class="stack">
             {#each triggers as trigger, i (i)}
@@ -831,6 +840,13 @@
   .image-row .input {
     flex: 1;
     min-width: 0;
+  }
+
+  .image-size {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.4rem;
   }
 
   .text-field {

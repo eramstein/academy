@@ -223,7 +223,10 @@
             "parameters": {
               "activity": {
                 "type": "study",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "library"
               },
               "schedule": {
@@ -278,7 +281,10 @@
         "type": "offer_card_gifts",
         "parameters": {
           "count": 3,
-          "poolKeys": ["molly", "base"]
+          "poolKeys": [
+            "molly",
+            "base"
+          ]
         }
       }
     ]
@@ -296,13 +302,19 @@
       {
         "triggerType": "day_of_week",
         "parameters": {
-          "daysOfWeek": [6, 7]
+          "daysOfWeek": [
+            6,
+            7
+          ]
         }
       },
       {
         "triggerType": "period",
         "parameters": {
-          "periods": ["morning", "afternoon"]
+          "periods": [
+            "morning",
+            "afternoon"
+          ]
         }
       },
       {
@@ -343,15 +355,7 @@
   {
     "key": "molly-hiking-2",
     "text": "Before long you are both on a bright weekend trail in the Gray Mountains, wind in the pines. Molly sets an easy, tireless pace while your lungs burn and your legs complain, but she never leaves you behind—slowing on the steep bits, offering a hand over the rocks, and laughing with you when you stop to catch your breath. By the overlook you are worn out and grinning, glad you said yes.",
-    "effects": [
-      {
-        "type": "move",
-        "parameters": {
-          "placeKey": "gray_mountains",
-          "characterKeys": ["player", "molly"]
-        }
-      }
-    ],
+    "triggers": [],
     "optionTemplates": [
       {
         "text": "Compliment her",
@@ -416,7 +420,20 @@
     "locked": true,
     "characterArc": "molly",
     "emotion": "happy",
-    "image": "molly-hiking-2.jpg"
+    "image": "molly-hiking-2.jpg",
+    "imageSize": "large",
+    "effects": [
+      {
+        "type": "move",
+        "parameters": {
+          "placeKey": "gray_mountains",
+          "characterKeys": [
+            "player",
+            "molly"
+          ]
+        }
+      }
+    ]
   },
   {
     "key": "molly-r1",
@@ -454,7 +471,9 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [2],
+                    "daysOfWeek": [
+                      2
+                    ],
                     "period": "evening"
                   }
                 }
@@ -651,7 +670,10 @@
             "parameters": {
               "activity": {
                 "type": "date",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "royal-pigeon-inn"
               },
               "schedule": {
@@ -708,7 +730,10 @@
             "parameters": {
               "activity": {
                 "type": "romance",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "molly-room"
               },
               "schedule": {
@@ -754,7 +779,10 @@
             "parameters": {
               "activity": {
                 "type": "date",
-                "participants": ["player", "emma"],
+                "participants": [
+                  "player",
+                  "emma"
+                ],
                 "placeKey": "cafeteria"
               },
               "schedule": {

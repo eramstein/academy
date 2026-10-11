@@ -49,6 +49,7 @@ export async function selectOption(option: EventOption) {
 }
 
 export function startScene() {
+  gs.scene.image = undefined;
   updateNpcLocations();
   const currentScheduledActivity = getCurrentScheduledActivity();
   console.log('nextScene', currentScheduledActivity);
@@ -81,6 +82,7 @@ export function nextScene() {
 export function selectNextScene(placeKey: string) {
   gs.player.placeKey = placeKey;
   gs.scene.selectingNextPlace = false;
+  gs.scene.image = undefined;
   console.log('selectNextScene', placeKey, gs.scene.selectingNextPlace);
   setSceneEvents();
 }
@@ -93,6 +95,7 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
     characterKey: template.characterArc,
     emotion: template.emotion,
     image: template.image,
+    imageSize: template.imageSize,
     eventKey: template.key,
   });
   gs.scene.event = event.options.length > 0 ? event : undefined;

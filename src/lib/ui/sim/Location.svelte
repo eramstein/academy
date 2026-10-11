@@ -15,6 +15,7 @@
       : undefined
   );
   const placePath = $derived(getPlaceImagePath(gs.player.placeKey));
+  const eventImagePath = $derived(gs.scene.image);
   const jobPath = $derived(matchedJob ? getJobImagePath(matchedJob.name) : undefined);
   const activityPaths = $derived.by(() => {
     if (!activity || matchedJob) return [];
@@ -26,6 +27,12 @@
   let imagePath = $state(getPlaceImagePath(gs.player.placeKey));
 
   $effect(() => {
+    const eventImage = eventImagePath;
+    if (eventImage) {
+      imagePath = eventImage;
+      return;
+    }
+
     const job = jobPath;
     const place = placePath;
     const candidates = activityPaths;

@@ -39,7 +39,10 @@
   let cacheAskId = $state<string | null>(null);
   let checkDoneIds = $state<string[]>([]);
   let textDoneIds = $state<string[]>([]);
+  /** Manually expanded small event images. */
   let expandedImageId = $state<string | null>(null);
+  /** Medium images start expanded; track which the player collapsed. */
+  let collapsedImageIds = $state<string[]>([]);
 
   const completedSet = $derived(new Set(completedIds));
   const checkDoneSet = $derived(new Set(checkDoneIds));
@@ -73,6 +76,13 @@
     const nextTextDone = textDoneIds.filter((id) => ids.has(id));
     if (nextTextDone.length !== textDoneIds.length) {
       textDoneIds = nextTextDone;
+    }
+    const nextCollapsed = collapsedImageIds.filter((id) => ids.has(id));
+    if (nextCollapsed.length !== collapsedImageIds.length) {
+      collapsedImageIds = nextCollapsed;
+    }
+    if (expandedImageId && !ids.has(expandedImageId)) {
+      expandedImageId = null;
     }
   });
 
@@ -219,14 +229,31 @@
       }));
   }
 
-  /** Static event art (not LLM-generated) — shown in the portrait slot. */
+  /**
+   * Static event art for the book portrait slot.
+   * `large` replaces the Location panel instead and is omitted here.
+   */
   function entryEventImage(entry: Narration): string | undefined {
     if (!entry.imageUrl || entry.imagePrompt) return undefined;
+    if ((entry.imageSize ?? 'small') === 'large') return undefined;
     return entry.imageUrl;
   }
 
-  function toggleEventImage(entryId: string) {
-    expandedImageId = expandedImageId === entryId ? null : entryId;
+  function isEventImageExpanded(entry: Narration): boolean {
+    if ((entry.imageSize ?? 'small') === 'medium') {
+      return !collapsedImageIds.includes(entry.id);
+    }
+    return expandedImageId === entry.id;
+  }
+
+  function toggleEventImage(entry: Narration) {
+    if ((entry.imageSize ?? 'small') === 'medium') {
+      collapsedImageIds = collapsedImageIds.includes(entry.id)
+        ? collapsedImageIds.filter((id) => id !== entry.id)
+        : [...collapsedImageIds, entry.id];
+    } else {
+      expandedImageId = expandedImageId === entry.id ? null : entry.id;
+    }
     onProgress?.('smooth');
   }
 </script>
@@ -270,7 +297,7 @@
       {@const portraitChar = characterForKey(entry.characters?.[0])}
       {@const eventImage = entryEventImage(entry)}
       {#if eventImage || portraitChar}
-        {@const imageExpanded = expandedImageId === entry.id}
+        {@const imageExpanded = eventImage ? isEventImageExpanded(entry) : false}
         <div class="event-with-portrait" class:image-expanded={imageExpanded}>
           {#if eventImage}
             <button
@@ -279,7 +306,7 @@
               class:expanded={imageExpanded}
               aria-expanded={imageExpanded}
               aria-label={imageExpanded ? 'Shrink event image' : 'Expand event image'}
-              onclick={() => toggleEventImage(entry.id)}
+              onclick={() => toggleEventImage(entry)}
             >
               <img src={eventImage} alt="" class="event-scene-image" />
             </button>
