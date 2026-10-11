@@ -14,6 +14,10 @@ Flavor templates give a newly created card a name and a short image prompt that 
 
 `name` is the card title. `imagePrompt` is the subject depiction sent to image generation. `imageName` is the file slug under `public/assets/images/cards` (saved as `imageName.jpg`; `.png` / `.webp` also count as present).
 
+## Gallery
+
+**Gallery** in the Flavors tool shows matching templates as card art with name, type, size, colors, traits, and prompt under each image. Filters still apply. Looks for `.jpg`, then `.png` / `.webp` under `public/assets/images/cards`; otherwise “No image”.
+
 ## Missing images
 
 On demand, list templates with no matching card file:

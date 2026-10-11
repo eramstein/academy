@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import colorIdentity from '@/data/color-pie.json';
+  import { getAssetPath, getCardImagePath } from '@/lib/_utils/asset-paths';
   import { assembleCardImagePrompt, generateImage, initImageGen } from '@/lib/image_gen';
   import {
     persistCardImage,
@@ -34,9 +35,12 @@
   } from './query';
   import type { CardColor } from '@/lib/_model';
 
+  type MatchDisplay = 'list' | 'gallery';
+
   let records = $state<FlavorRecord[]>(flavorCatalog);
   let query = $state<FlavorQuery>(createEmptyQuery());
   let includeRare = $state(false);
+  let matchDisplay = $state<MatchDisplay>('list');
   let showMissingImages = $state(false);
   let missingImages = $state<MissingCardImage[] | null>(null);
   let missingImagesError = $state('');
@@ -45,6 +49,10 @@
   let generateErrors = $state<Record<string, string>>({});
   /** Object URLs for images generated this session (keyed by imageName). */
   let generatedPreviews = $state<Record<string, string>>({});
+  /** Resolved gallery art URLs after extension fallback (keyed by imageName). */
+  let artSrc = $state<Record<string, string>>({});
+  /** imageNames whose card file failed to load in the gallery. */
+  let brokenArt = $state<Record<string, true>>({});
 
   const stillMissingCount = $derived(
     (missingImages ?? []).filter((row) => !generatedPreviews[row.imageName]).length
@@ -169,6 +177,30 @@
     return parts.join(' · ');
   }
 
+  function cardArtCandidates(imageName: string): string[] {
+    return [
+      getCardImagePath(imageName),
+      getAssetPath(`images/cards/${imageName}.png`),
+      getAssetPath(`images/cards/${imageName}.webp`),
+    ];
+  }
+
+  function galleryArtUrl(imageName: string): string {
+    return artSrc[imageName] ?? getCardImagePath(imageName);
+  }
+
+  function onGalleryArtError(imageName: string) {
+    const candidates = cardArtCandidates(imageName);
+    const current = galleryArtUrl(imageName);
+    const next = candidates[candidates.indexOf(current) + 1];
+    if (next) {
+      artSrc = { ...artSrc, [imageName]: next };
+      return;
+    }
+    if (brokenArt[imageName]) return;
+    brokenArt = { ...brokenArt, [imageName]: true };
+  }
+
   function colorSummary(template: FlavorRecord): string {
     const rank = new Map(FLAVOR_COLORS.map((color, index) => [color, index]));
     return [...template.colors]
@@ -244,6 +276,32 @@
         <p class="query" aria-live="polite">{queryLabel(query)}</p>
       </div>
       <div class="title-actions">
+        <div class="chips" role="group" aria-label="Match display">
+          <button
+            type="button"
+            class="chip"
+            class:active={matchDisplay === 'list' && !showMissingImages}
+            aria-pressed={matchDisplay === 'list' && !showMissingImages}
+            onclick={() => {
+              matchDisplay = 'list';
+              showMissingImages = false;
+            }}
+          >
+            List
+          </button>
+          <button
+            type="button"
+            class="chip"
+            class:active={matchDisplay === 'gallery' && !showMissingImages}
+            aria-pressed={matchDisplay === 'gallery' && !showMissingImages}
+            onclick={() => {
+              matchDisplay = 'gallery';
+              showMissingImages = false;
+            }}
+          >
+            Gallery
+          </button>
+        </div>
         <button
           type="button"
           class="chip"
@@ -392,7 +450,7 @@
     </div>
   </header>
 
-  <div class="body">
+  <div class="body" class:full-pane={showMissingImages || matchDisplay === 'gallery'}>
     {#if showMissingImages}
       <div class="pane missing-pane">
         <div class="coverage-head">
@@ -464,6 +522,48 @@
                       <p class="generate-error">{generateErrors[row.imageName]}</p>
                     {/if}
                   </div>
+                </div>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      </div>
+    {:else if matchDisplay === 'gallery'}
+      <div class="pane gallery-pane">
+        {#if matches.length === 0}
+          <p class="empty">No templates match this combination.</p>
+        {:else}
+          <ul class="gallery">
+            {#each matches as template, index (`${template.imageName}:${index}`)}
+              <li class="gallery-card">
+                <div class="gallery-art">
+                  {#if brokenArt[template.imageName]}
+                    <span class="art-missing">No image</span>
+                  {:else}
+                    <img
+                      src={galleryArtUrl(template.imageName)}
+                      alt={template.name}
+                      loading="lazy"
+                      onerror={() => onGalleryArtError(template.imageName)}
+                    />
+                  {/if}
+                </div>
+                <div class="gallery-meta">
+                  <span class="name" title="{template.imagePrompt} ({template.imageName})">
+                    {template.name}
+                    {#if template.cheapImage}
+                      <span class="cheap">cheap</span>
+                    {/if}
+                  </span>
+                  <p class="meta">
+                    {template.cardType} · {template.unitSize} · {colorSummary(template)}
+                  </p>
+                  {#if traitSummary(template)}
+                    <p class="traits">{traitSummary(template)}</p>
+                  {/if}
+                  {#if template.imagePrompt !== template.name}
+                    <p class="prompt">{template.imagePrompt}</p>
+                  {/if}
                 </div>
               </li>
             {/each}
@@ -877,6 +977,10 @@
     grid-template-columns: minmax(320px, 42%) minmax(0, 1fr);
   }
 
+  .body.full-pane {
+    grid-template-columns: 1fr;
+  }
+
   .pane {
     min-height: 0;
     overflow: auto;
@@ -885,6 +989,65 @@
 
   .coverage {
     border-right: 1px solid rgba(175, 142, 103, 0.25);
+  }
+
+  .gallery-pane {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .gallery {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.85rem;
+  }
+
+  .gallery-card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .gallery-art {
+    aspect-ratio: 1;
+    background: rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid rgba(175, 142, 103, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .gallery-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .gallery-art .art-missing {
+    color: var(--color-muted-label);
+    font-size: 0.85rem;
+  }
+
+  .gallery-meta {
+    padding: 0.65rem 0.75rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .gallery-meta .name {
+    display: block;
+  }
+
+  .gallery-meta .traits,
+  .gallery-meta .prompt {
+    margin-top: 0.1rem;
   }
 
   .hint,

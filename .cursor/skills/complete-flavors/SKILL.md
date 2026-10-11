@@ -2,9 +2,10 @@
 name: complete-flavors
 description: >-
   Fills gaps in src/data/sim/card_flavor_templates.json with names and short
-  image prompts that match color, size, keywords, and actions. Use when the
-  user asks to complete flavors, fill flavor coverage, add missing flavor
-  templates, or cover color-pie keyword and action gaps.
+  image prompts that match color, size, keywords, and actions, and that vary
+  narrative tone. Use when the user asks to complete flavors, fill flavor
+  coverage, add missing flavor templates, or cover color-pie keyword and
+  action gaps.
 ---
 
 # Complete flavor templates
@@ -40,7 +41,7 @@ Preferences and unit types come from `src/lib/sim/cards/color-pie.ts`. Keyword m
 
 2. Fill one batch, then stop and report what is left. A batch is one color, or 12 templates, whichever the user asked for. "Fill the gaps" with no scope means the first 12 missing templates in the script output. "Fill blue" or "fill all" means keep batching that scope until `list-gaps` prints `OK` for it.
 
-3. Read the tooltip, action description, and color identity for every trait in the batch before naming anything. Also read that color's `locationTypes`, `dominantColors`, and `atmospheres` in `src/data/color-pie.json`. Each template's background sentence uses one of each.
+3. Read the tooltip, action description, and color identity for every trait in the batch before naming anything. Also read that color's `locationTypes`, `dominantColors`, and `atmospheres` in `src/data/color-pie.json`. Each template's background sentence uses one of each. Read `narrativeTones` in `src/tools/flavor-templates/narrative-tones.ts` and assign one tone to each template before writing prompts.
 
 4. If the batch includes units, allocate types before naming any of them. `--count` is the number of units only, not spells:
 
@@ -75,7 +76,7 @@ Use the usual medieval-fantasy version of the type. These are starting points, n
 | Type | Tropes |
 | --- | --- |
 | beast | wolf, bear, boar, stag, elk, lynx, ram, hound, horse, serpent, owl |
-| plant | oak, yew, briar, ivy, fern, willow, nightshade, treant, tumbleweed |
+| plant | treant, walking oak, vine horror, carnivorous pitcher, briar stalker, mandrake, thorn walker, blossom guardian, ivy colossus (animated vegetal creatures, not still plants) |
 | mushroom | morel, chanterelle, fly agaric, deathcap |
 | human | druid, ranger, herbalist, warden, huntress, hermit |
 | halfing | gardener, shirriff, burrow-delver, orchard-keeper, hill elder |
@@ -103,10 +104,11 @@ Each template closes **one** gap: one keyword, or one action, not both.
 
 - **name**: a flavorful card title. It must not be the mechanic label ("Haste", "Blue Flying Weak"). The title should still be readable as that creature or spell.
 - **imagePrompt**: two short sentences. No art-style words, no card frame, no "fantasy illustration".
-  - **First sentence** — the subject, and only the subject.
+  - **Tone** — one string from `narrativeTones`. Spread the list across the batch so a tone is not reused until every tone has been used. Tone is independent of color: identity stays in the subject, and the tone changes expression, pose, and mood (exaggerated and absurd, gentle and rounded, predatory and cruel). The mechanic still has to read. Do not paste the tone string in as its own sentence, and do not put it in the background caption.
+  - **First sentence** — the subject, and only the subject. Write it in the assigned tone.
     - **Units**: the creature is the only subject and the centerpiece. Describe its silhouette, scale, and one or two signature features so it is evocative, unique, and recognizable at a glance. Do not show it acting the mechanic out on someone else, and do not add other creatures, victims, or bystanders. Suggest the keyword or action through that creature's own body: spread wings, crushing bulk, dripping fangs, bark closing over its own scar. A pose of the creature itself is fine. A scene is not.
     - **Spells**: depict the effect. A direct-damage spell depicts the strike, not a creature. A draw-cards spell depicts finding or revealing knowledge.
-  - **Second sentence** — the background. Every color in `src/data/color-pie.json` has `locationTypes`, `dominantColors`, and `atmospheres`. Pick one of each for the template's color. Write one comma-separated caption: a specific view of the place, then two materials or surfaces that carry the chosen colors, then the light or weather. `Rocky mountains`, `Slate gray and muted green`, and `Overcast and cloudy` become `Rocky mountain slope, gray stone and muted green moss, cloudy daylight.` Rewrite the three picks into the scene that way. The creature and the spell effect stay in the first sentence. Choose a place the subject could occupy. Across the batch, vary the location, the palette, and the atmosphere. If that color's lists are empty, stop and say so.
+  - **Second sentence** — the background. Every color in `src/data/color-pie.json` has `locationTypes`, `dominantColors`, and `atmospheres`. Pick one of each for the template's color. Write one comma-separated caption: a specific view of the place, then two materials or surfaces that carry the chosen colors, then the light or weather. `Rocky mountains`, `Slate gray and muted green`, and `Overcast and cloudy` become `Rocky mountain slope, gray stone and muted green moss, cloudy daylight.` Rewrite the three picks into the scene that way. The creature and the spell effect stay in the first sentence. Choose a place the subject could occupy. Across the batch, vary the location, the palette, the atmosphere, and the narrative tone. If that color's lists are empty, stop and say so.
 - **Size**, for units: weak is small, young, or minor; medium is a full example of the thing; powerful is huge, ancient, or elite. Spell gap-fills use `unitSize: "medium"`.
 - **Color**: one color, the gap's color. Depict that color's identity (red speed and aggression, green nature and savagery, blue magic and cunning, black industry and decay).
 - **Unit type**: exactly one string value from that color's weighted `unitTypes` (`plant`, `halfing`, not the enum key). Match the `allocate-types.mjs` counts for the batch. Spells have no unit type.
@@ -120,12 +122,12 @@ Do not reuse a name or slug already in the catalog. Do not add keywords that are
 
 ## Template shape
 
-The second sentences below only show the caption shape. A real template builds that caption from its own color's `locationTypes`, `dominantColors`, and `atmospheres`.
+The second sentences below only show the caption shape. A real template builds that caption from its own color's `locationTypes`, `dominantColors`, and `atmospheres`. The first sentence is written in one `narrativeTones` entry: Gale Courier is "Innocent and endearing"; Borrowed Thunder is "Bold and triumphant".
 
 ```json
 {
   "name": "Gale Courier",
-  "imagePrompt": "A palm-sized brass owl with wings spread wide and a bright glass eye. High granite roost, pale silver stone and icy blue mist, silver moonlight.",
+  "imagePrompt": "A palm-sized brass owl with rounded wings held open, a wide glass eye, and a small curious tilt of the head. High granite roost, pale silver stone and icy blue mist, silver moonlight.",
   "cardType": "unit",
   "unitSize": "weak",
   "cheapImage": false,
@@ -138,7 +140,7 @@ The second sentences below only show the caption shape. A real template builds t
 ```json
 {
   "name": "Borrowed Thunder",
-  "imagePrompt": "A crack of stolen lightning leaps from an open palm toward a distant figure. Ashen hillside, copper stone and rust-red grass, approaching thunderstorm.",
+  "imagePrompt": "A crack of stolen lightning splits the sky in a proud, towering arc. Ashen hillside, copper stone and rust-red grass, approaching thunderstorm.",
   "cardType": "spell",
   "unitSize": "medium",
   "cheapImage": false,

@@ -32,7 +32,15 @@
       "Dark purple and indigo",
       "Slate gray and muted green",
       "Pale silver and icy blue",
-      "Dark charcoal and forest green"
+      "Dark charcoal and forest green",
+      "Blossom pink and soft green",
+      "Pale yellow and fresh green",
+      "Sun-bleached green and sky blue",
+      "Rich leaf green and warm gold",
+      "Scarlet maple and burnt orange",
+      "Rust brown and golden ochre",
+      "Snow white and pine green",
+      "Icy blue and bare gray"
     ],
     "atmospheres": [
       "Soft morning sunlight",
@@ -50,7 +58,15 @@
       "Overcast and cloudy",
       "Bright spring daylight",
       "Frosty winter morning",
-      "Dappled sunlight through leaves"
+      "Dappled sunlight through leaves",
+      "Soft spring blossom light",
+      "Fresh rain-washed spring air",
+      "Hazy midsummer heat",
+      "Long golden summer evening",
+      "Crisp autumn afternoon",
+      "Falling leaves in slanted light",
+      "Pale winter dusk",
+      "Snow-laden forest hush"
     ]
   },
   "black": {
