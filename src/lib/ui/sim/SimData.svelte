@@ -54,7 +54,13 @@
           class:active={selected === tab.id}
           role="tab"
           aria-selected={selected === tab.id}
-          onclick={() => (uiState.sim.dataTab = tab.id)}
+          onclick={() => {
+            uiState.sim.dataTab = tab.id;
+            if (tab.id === 'characters') {
+              uiState.sim.selectedCharacterKey = null;
+              uiState.sim.characterBackTab = null;
+            }
+          }}
         >
           <span class="tab-frame" aria-hidden="true">
             <span class="tab-fill"></span>

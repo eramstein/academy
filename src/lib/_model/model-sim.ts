@@ -190,6 +190,12 @@ export interface AttributeCheck {
   difficulty: string;
   target: number;
   attemptedAction?: Action;
+  /** Focus available when the check started (for commit UI). */
+  availableFocus?: number;
+  /** Focus spent on this check (+5 to the target each). */
+  usedFocus?: number;
+  /** Waiting for the player to commit focus before rolling. */
+  pending?: boolean;
 }
 
 export interface Action {
@@ -242,6 +248,7 @@ export interface Npc extends Character {
   activityHistory: Partial<Record<ActivityType, number>>;
   bio: string;
   favoritePlaces: Record<string, number>;
+  matchesRecord: { won: number; lost: number };
 }
 
 export interface RelationProgress {

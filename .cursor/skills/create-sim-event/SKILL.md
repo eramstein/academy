@@ -83,19 +83,20 @@ Property order in the file follows the existing entries: `key`, `text`, `trigger
 Every trigger in the array must match at the same time (logical AND). The engine picks the first
 event in file order whose triggers all match.
 
-| `triggerType`        | `parameters`                                                       | Notes                                                                                                                             |
-| -------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `socialize`          | `{ characterKey, socializeType }`                                  | Fires only when the player socializes with that NPC using that type (`befriend`, `taunt`, `impress`, `flirt`).                    |
+| `triggerType`        | `parameters`                                                       | Notes                                                                                                                                                    |
+| -------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `socialize`          | `{ characterKey, socializeType }`                                  | Fires only when the player socializes with that NPC using that type (`befriend`, `taunt`, `impress`, `flirt`).                                           |
 | `relation_parameter` | `{ characterKey, relationParameter, value }`                       | Cumulative `relationProgress`. `relationParameter` is `friendship`, `respect`, `love` or `rivalry`. Positive `value` = "at least"; negative = "at most". |
-| `character_present`  | `{ characterKey }`                                                 | The NPC is in the player's current place.                                                                                         |
-| `day`                | `{ day: 3 }`                                                       | Absolute day number; day 1 is a Monday.                                                                                           |
-| `period`             | `{ period: "morning" }` or `{ periods: ["morning", "afternoon"] }` | Single period, or any of several. `morning`, `afternoon`, `evening`.                                                              |
-| `day_of_week`        | `{ daysOfWeek: [6, 7] }`                                           | 1 = Monday … 7 = Sunday; matches if today is any listed weekday.                                                                  |
-| `place`              | `{ placeKey }`                                                     | The player's current place.                                                                                                       |
-| `activity_type`      | `{ activityType }`                                                 | `class`, `work`, `social`, `date`, `training`, `study`; matches the currently scheduled activity.                                 |
-| `activity_history`   | `{ characterKey, activityType, value }`                            | NPC has shared that `activityType` with the player at least `value` times (`Npc.activityHistory`).                                |
-| `scheduled_activity` | `{}`                                                               | Current scheduled activity's `eventId` equals this event's `key`. Set `eventId` on the activity when scheduling it.              |
-| `previous_events`    | `{ "molly-1": true }`                                              | Map of event keys that must have happened first; add one entry per prerequisite.                                                  |
+| `character_present`  | `{ characterKey }`                                                 | The NPC is in the player's current place.                                                                                                                |
+| `day`                | `{ day: 3 }`                                                       | Absolute day number; day 1 is a Monday.                                                                                                                  |
+| `period`             | `{ period: "morning" }` or `{ periods: ["morning", "afternoon"] }` | Single period, or any of several. `morning`, `afternoon`, `evening`.                                                                                     |
+| `day_of_week`        | `{ daysOfWeek: [6, 7] }`                                           | 1 = Monday … 7 = Sunday; matches if today is any listed weekday.                                                                                         |
+| `place`              | `{ placeKey }`                                                     | The player's current place.                                                                                                                              |
+| `activity_type`      | `{ activityType }`                                                 | `class`, `work`, `social`, `date`, `training`, `study`; matches the currently scheduled activity.                                                        |
+| `activity_history`   | `{ characterKey, activityType, value }`                            | NPC has shared that `activityType` with the player at least `value` times (`Npc.activityHistory`).                                                       |
+| `matches_won`        | `{ characterKey, count }`                                          | Player has won at least `count` matches against that NPC (`npc.matchesRecord.won`). Does not consume the count.                                          |
+| `scheduled_activity` | `{}`                                                               | Current scheduled activity's `eventId` equals this event's `key`. Set `eventId` on the activity when scheduling it.                                      |
+| `previous_events`    | `{ "molly-1": true }`                                              | Map of event keys that must have happened first; add one entry per prerequisite.                                                                         |
 
 Consequences of how the engine handles these:
 
@@ -109,6 +110,8 @@ Consequences of how the engine handles these:
 - `activity_history` does **not** consume the count; it stays on the NPC. Prefer it for "we've
   done this enough times" gates, and pair with `socialize` / `character_present` /
   `previous_events` as needed.
+- `matches_won` reads cumulative league wins against that NPC (`matchesRecord.won`). It does
+  **not** reset when an event fires. Pair with `character_present` / `previous_events` as needed.
 - `scheduled_activity` is for beats that fire when a previously scheduled activity becomes
   current. Author the activity with `eventId` set to this event's key (via `schedule_activity`),
   and put a bare `scheduled_activity` trigger on the target event.
@@ -120,23 +123,23 @@ Consequences of how the engine handles these:
 Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffectType` in
 `src/lib/_model/enums-sim.ts`:
 
-| `type`                      | `parameters`                                                                                                                                                       |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `add_resource`              | `{ resourceType: "magic_dust" \| "mithril" \| "moxes", amount: 10 }`                                                                                               |
-| `add_gold`                  | `{ amount: 10 }`                                                                                                                                                   |
-| `get_deck`                  | `{ deckKey: "base_red" \| "base_black" \| "base_green" }`                                                                                                          |
-| `schedule_activity`         | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, nextFree?: true, recurrence?: { maxCount, daysOfWeek, period } } }` |
-| `get_job`                   | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                                              |
-| `unlock_event`              | `{ eventKey: "molly-2" }`                                                                                                                                          |
-| `follow_up_event`           | `{ eventKey: "molly-2" }`                                                                                                                                          |
-| `offer_card_gifts`          | `{ count: 2, poolKeys: ["molly", "base"] }`                                                                                                                        |
-| `teach_color`               | `{ color?: "red" \| "blue" \| "green" \| "black", characterKey?: "molly" }`                                                                                        |
-| `teach_ability`             | `{ ability?: "haste" \| "directDamage" \| …, characterKey?: "molly" }` (omit `ability` for random)                                                                 |
-| `narrate`                   | `{ text: "Molly looks away, a little hurt." }`                                                                                                                     |
-| `level_attribute`           | `{ attribute: "dexterity" \| "intelligence" \| "vitality" \| "charisma" \| "aura", amount?: 1, characterKey?: "player" }`                                          |
-| `change_relation`           | `{ characterKey, relationParameter: "friendship" \| "respect" \| "love" \| "rivalry", amount: 1 }`                                                                 |
-| `update_relation_arc`       | `{ characterKey, text: "You and Molly share a quiet laugh.", image?: "events/molly-f1.jpg" }`                                                                      |
-| `move`                      | `{ placeKey: "academy", characterKeys: ["player", "molly"] }`                                                                                                      |
+| `type`                | `parameters`                                                                                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `add_resource`        | `{ resourceType: "magic_dust" \| "mithril" \| "moxes", amount: 10 }`                                                                                               |
+| `add_gold`            | `{ amount: 10 }`                                                                                                                                                   |
+| `get_deck`            | `{ deckKey: "base_red" \| "base_black" \| "base_green" }`                                                                                                          |
+| `schedule_activity`   | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, nextFree?: true, recurrence?: { maxCount, daysOfWeek, period } } }` |
+| `get_job`             | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                                              |
+| `unlock_event`        | `{ eventKey: "molly-2" }`                                                                                                                                          |
+| `follow_up_event`     | `{ eventKey: "molly-2" }`                                                                                                                                          |
+| `offer_card_gifts`    | `{ count: 2, poolKeys: ["molly", "base"] }`                                                                                                                        |
+| `teach_color`         | `{ color?: "red" \| "blue" \| "green" \| "black", characterKey?: "molly" }`                                                                                        |
+| `teach_ability`       | `{ ability?: "haste" \| "directDamage" \| …, characterKey?: "molly" }` (omit `ability` for random)                                                                 |
+| `narrate`             | `{ text: "Molly looks away, a little hurt." }`                                                                                                                     |
+| `level_attribute`     | `{ attribute: "dexterity" \| "intelligence" \| "vitality" \| "charisma" \| "aura", amount?: 1, characterKey?: "player" }`                                          |
+| `change_relation`     | `{ characterKey, relationParameter: "friendship" \| "respect" \| "love" \| "rivalry", amount: 1 }`                                                                 |
+| `update_relation_arc` | `{ characterKey, text: "You and Molly share a quiet laugh.", image?: "events/molly-f1.jpg" }`                                                                      |
+| `move`                | `{ placeKey: "academy", characterKeys: ["player", "molly"] }`                                                                                                      |
 
 `narrate` only posts the given sentence; it does not change game state. Use it on options that
 need a reaction beat with no reward or schedule.

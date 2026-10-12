@@ -11,9 +11,9 @@ export interface NegotiateParameters {
   partner: string; // NPC key
 }
 
-export function negotiate(parameters: NegotiateParameters): string {
+export async function negotiate(parameters: NegotiateParameters): Promise<string> {
   narrateText(`You negotiate with ${parameters.partner}.`);
-  const { success, critical } = confrontNpc('charisma', parameters.partner, {
+  const { success, critical } = await confrontNpc('charisma', parameters.partner, {
     label: 'Negotiate',
     actionType: ActionType.Negotiate,
     actionParameters: {

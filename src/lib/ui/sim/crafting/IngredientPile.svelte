@@ -30,6 +30,7 @@
     [ResourceType.Mithril]: 'metal_bar',
     [ResourceType.Moxes]: 'gem',
     [ResourceType.MollysBeads]: 'leaf',
+    [ResourceType.SchlupakMushrooms]: 'feather',
   };
 
   const RESOURCE_ROLES: Record<ResourceType, string> = {
@@ -37,6 +38,7 @@
     [ResourceType.MagicDust]: 'Inspiration',
     [ResourceType.Moxes]: 'Erudition',
     [ResourceType.MollysBeads]: 'Unique',
+    [ResourceType.SchlupakMushrooms]: 'Unique',
   };
 
   const iconName = RESOURCE_ICONS[type];

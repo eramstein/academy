@@ -39,7 +39,7 @@ export async function selectOption(option: EventOption) {
   gs.scene.event = undefined;
   if (option.outcome.attributeCheck) {
     const check = option.outcome.attributeCheck;
-    const { success } = attributeCheck(
+    const { success } = await attributeCheck(
       gs.player.attributes[check.attribute],
       skillCheckDifficulty[check.difficulty],
       check.attribute

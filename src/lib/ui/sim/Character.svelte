@@ -8,8 +8,12 @@
   import Attributes from './Attributes.svelte';
   import CardCrafting from './characters/CardCrafting.svelte';
   import CharacterIdentity from './characters/CharacterIdentity.svelte';
+  import CharacterRelationArc from './characters/CharacterRelationArc.svelte';
 
   let { character }: { character: CharacterModel } = $props();
+
+  const npc = $derived('relationArc' in character ? (character as Npc) : null);
+  let viewingArc = $state(false);
 
   const SUB_ICONS: Record<SubscriptionType, string> = {
     [SubscriptionType.Academy]: 'sun',
@@ -18,12 +22,6 @@
   };
 
   const RELATION_ORDER = ['friendship', 'respect', 'love', 'rivalry'] as const;
-  const RELATION_ICONS: Record<(typeof RELATION_ORDER)[number], string> = {
-    friendship: 'people',
-    respect: 'trophy',
-    love: 'heart',
-    rivalry: 'boot',
-  };
 
   const SOCIALIZE_ICONS: Record<SocializeType, string> = {
     [SocializeType.Befriend]: 'handshake',
@@ -45,7 +43,6 @@
       ? RELATION_ORDER.map((key) => ({
           key,
           value: (character as Npc).relationProgress[key],
-          icon: RELATION_ICONS[key],
         }))
       : []
   );
@@ -113,6 +110,7 @@
     character.key;
     canStartMatch;
     pickingMatchDeck = false;
+    viewingArc = false;
   });
 
   function iconUrl(name: string) {
@@ -161,6 +159,11 @@
     }
     pickingMatchDeck = true;
   }
+
+  function incrementRelation(key: (typeof RELATION_ORDER)[number]) {
+    if (!npc) return;
+    npc.relationProgress[key] = (npc.relationProgress[key] ?? 0) + 1;
+  }
 </script>
 
 {#snippet icon(name: string)}
@@ -181,8 +184,15 @@
 {/snippet}
 
 <div class="character">
+  {#if viewingArc && npc}
+    <CharacterRelationArc character={npc} onClose={() => (viewingArc = false)} />
+  {/if}
+
   <div class="sheet">
-    <CharacterIdentity {character} />
+    <CharacterIdentity
+      {character}
+      onStory={npc ? () => (viewingArc = true) : undefined}
+    />
 
     {#if showCharacterActions}
       <div class="character-actions">
@@ -250,9 +260,15 @@
             <ul class="relation-list">
               {#each relations as rel (rel.key)}
                 <li class="relation-row">
-                  {@render icon(rel.icon)}
                   <span class="relation-name">{rel.key}</span>
-                  <span class="relation-value">{rel.value}</span>
+                  <button
+                    type="button"
+                    class="relation-value"
+                    title="Click to +1"
+                    onclick={() => incrementRelation(rel.key)}
+                  >
+                    {rel.value}
+                  </button>
                 </li>
               {/each}
             </ul>
@@ -478,7 +494,7 @@
 
   .relation-row {
     display: grid;
-    grid-template-columns: 1.4rem 1fr auto;
+    grid-template-columns: 1fr auto;
     gap: 0.5rem;
     align-items: center;
     font-size: 0.95rem;
@@ -490,8 +506,23 @@
   }
 
   .relation-value {
-    color: var(--color-muted-label);
+    margin: 0;
+    padding: 0.1rem 0.35rem;
+    min-width: 1.5rem;
+    font: inherit;
     font-variant-numeric: tabular-nums;
+    text-align: right;
+    color: var(--color-muted-label);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .relation-value:hover {
+    color: var(--color-cream);
+    border-color: color-mix(in srgb, var(--color-brass) 55%, transparent);
+    background: var(--color-data-hover);
   }
 
   .sub-row {

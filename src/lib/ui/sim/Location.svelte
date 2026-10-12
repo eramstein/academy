@@ -1,28 +1,13 @@
 <script lang="ts">
-  import { ActivityType } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
-  import {
-    getActivityImagePath,
-    getJobImagePath,
-    getPlaceImagePath,
-  } from '@/lib/_utils/asset-paths';
+  import { getPlaceImagePath } from '@/lib/_utils/asset-paths';
+  import { getActivityImageCandidates } from '@/lib/sim/activity-image';
   import { getCurrentScheduledActivity } from '@/lib/sim/schedule';
 
   const activity = $derived(getCurrentScheduledActivity());
-  const matchedJob = $derived(
-    activity?.type === ActivityType.Work && activity.jobId
-      ? gs.player.jobs.find((j) => j.id === activity.jobId)
-      : undefined
-  );
   const placePath = $derived(getPlaceImagePath(gs.player.placeKey));
   const eventImagePath = $derived(gs.scene.image);
-  const jobPath = $derived(matchedJob ? getJobImagePath(matchedJob.name) : undefined);
-  const activityPaths = $derived.by(() => {
-    if (!activity || matchedJob) return [];
-    const others = activity.participants.filter((key) => key !== gs.player.key);
-    if (others.length === 0) return [];
-    return getActivityImagePath(activity.type, others, gs.player.placeKey);
-  });
+  const activityPaths = $derived(activity ? getActivityImageCandidates(activity) : []);
 
   let imagePath = $state(getPlaceImagePath(gs.player.placeKey));
 
@@ -33,14 +18,8 @@
       return;
     }
 
-    const job = jobPath;
     const place = placePath;
     const candidates = activityPaths;
-
-    if (job) {
-      imagePath = job;
-      return;
-    }
 
     if (candidates.length === 0) {
       imagePath = place;

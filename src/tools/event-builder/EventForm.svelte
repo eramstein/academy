@@ -15,10 +15,7 @@
   } from '@/lib/_model';
   import { SceneActionTemplates } from '@/lib/sim/actions/_templates';
   import { SocializeType } from '@/lib/sim/actions/socialize';
-  import {
-    skillCheckDifficultyKeys,
-    skillCheckDifficultyLabels,
-  } from '@/lib/sim/attribute-checks';
+  import { skillCheckDifficultyKeys, skillCheckDifficultyLabels } from '@/lib/sim/attribute-checks';
   import { WEEK_DAYS } from '@/lib/sim/time';
   import EffectsTemplatesEditor from './EffectsTemplatesEditor.svelte';
   import { saveEventTemplate } from './save-event';
@@ -127,6 +124,7 @@
       },
       [EventTriggerType.DayOfWeek]: { daysOfWeek: [6, 7] },
       [EventTriggerType.ScheduledActivity]: {},
+      [EventTriggerType.MatchesWon]: { characterKey: '', count: 1 },
     };
     return defaults[triggerType];
   }
@@ -724,9 +722,26 @@
                     title="Requires activityHistory[activityType] ≥ value"
                   />
                 {:else if trigger.triggerType === EventTriggerType.ScheduledActivity}
-                  <span class="param-hint" title="Matches when the current activity's eventId equals this event's key"
+                  <span
+                    class="param-hint"
+                    title="Matches when the current activity's eventId equals this event's key"
                     >activity.eventId = this key</span
                   >
+                {:else if trigger.triggerType === EventTriggerType.MatchesWon}
+                  <input
+                    class="input param-input"
+                    bind:value={trigger.parameters.characterKey}
+                    placeholder="character key"
+                    aria-label="Character key"
+                  />
+                  <input
+                    class="input narrow"
+                    type="number"
+                    min="1"
+                    bind:value={trigger.parameters.count}
+                    aria-label="Matches won count"
+                    title="Requires matchesRecord.won ≥ count against this character"
+                  />
                 {/if}
 
                 <button

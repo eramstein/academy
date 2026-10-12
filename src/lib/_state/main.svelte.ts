@@ -40,6 +40,13 @@ export const loadGameStateFromLocalStorage = async (id: string) => {
         occurred: [...(parsedState.events?.occurred ?? [])],
         unlocked: [...(parsedState.events?.unlocked ?? [])],
       };
+      // Older saves predate player focus.
+      if (typeof gs.player.focus !== 'number') {
+        gs.player.focus = defaultGameState.player.focus;
+      }
+      if (typeof gs.player.maxFocus !== 'number') {
+        gs.player.maxFocus = defaultGameState.player.maxFocus;
+      }
       rebuildWorkingEventTemplates();
     } else {
       await initSim();

@@ -64,6 +64,7 @@ export enum ActivityType {
   Tournament = 'tournament',
   Exam = 'exam',
   Event = 'event',
+  Adventure = 'adventure',
 }
 
 export enum ClassType {
@@ -111,6 +112,7 @@ export enum EventTriggerType {
   ActivityHistory = 'activity_history',
   DayOfWeek = 'day_of_week',
   ScheduledActivity = 'scheduled_activity',
+  MatchesWon = 'matches_won',
 }
 
 export enum ResourceType {
@@ -120,6 +122,7 @@ export enum ResourceType {
   Moxes = 'moxes',
   // Unique resources
   MollysBeads = 'mollys_beads',
+  SchlupakMushrooms = 'schlupak_mushrooms',
 }
 
 export enum JobType {

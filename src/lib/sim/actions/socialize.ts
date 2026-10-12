@@ -84,7 +84,7 @@ export function getSocializeActions(): Action[] {
   ];
 }
 
-export function romance(parameters: RomanceParameters): string {
+export async function romance(parameters: RomanceParameters): Promise<string> {
   const partner = gs.characters[parameters.characterKey];
   const action: Action = {
     label:
@@ -110,7 +110,7 @@ export function romance(parameters: RomanceParameters): string {
   }
 
   if (parameters.romanceType === RomanceType.Physical) {
-    const { success } = attributeCheck(
+    const { success } = await attributeCheck(
       gs.player.attributes.vitality,
       skillCheckDifficulty.trivial,
       'vitality',

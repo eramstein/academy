@@ -28,6 +28,11 @@ export function recordLeagueMatchResult(won: boolean) {
     return;
   }
   recordPlayedMatch(PLAYER_KEY, gs.ongoingBattle.opponentKey, won);
+  if (won) {
+    gs.characters[gs.ongoingBattle.opponentKey].matchesRecord.won++;
+  } else {
+    gs.characters[gs.ongoingBattle.opponentKey].matchesRecord.lost++;
+  }
   autoPlayOtherLeagueMatches();
   gs.league.playedToday = true;
 }

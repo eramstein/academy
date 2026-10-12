@@ -221,7 +221,10 @@
             "parameters": {
               "activity": {
                 "type": "study",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "library"
               },
               "schedule": {
@@ -275,7 +278,10 @@
         "type": "offer_card_gifts",
         "parameters": {
           "count": 3,
-          "poolKeys": ["molly", "base"]
+          "poolKeys": [
+            "molly",
+            "base"
+          ]
         }
       }
     ]
@@ -293,13 +299,19 @@
       {
         "triggerType": "day_of_week",
         "parameters": {
-          "daysOfWeek": [6, 7]
+          "daysOfWeek": [
+            6,
+            7
+          ]
         }
       },
       {
         "triggerType": "period",
         "parameters": {
-          "periods": ["morning", "afternoon"]
+          "periods": [
+            "morning",
+            "afternoon"
+          ]
         }
       },
       {
@@ -412,7 +424,10 @@
         "type": "move",
         "parameters": {
           "placeKey": "gray_mountains",
-          "characterKeys": ["player", "molly"]
+          "characterKeys": [
+            "player",
+            "molly"
+          ]
         }
       }
     ]
@@ -452,7 +467,9 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [2],
+                    "daysOfWeek": [
+                      2
+                    ],
                     "period": "evening"
                   }
                 }
@@ -645,7 +662,10 @@
             "parameters": {
               "activity": {
                 "type": "date",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "royal-pigeon-inn"
               },
               "schedule": {
@@ -701,7 +721,10 @@
             "parameters": {
               "activity": {
                 "type": "romance",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "molly-room"
               },
               "schedule": {
@@ -717,6 +740,49 @@
     ],
     "triggersOnce": true,
     "characterArc": "molly",
+    "emotion": "flirtatious"
+  },
+  {
+    "key": "emma-l2",
+    "text": "Emma catches your eyes drifting from the page and asks, with a knowing smile, whether you are having trouble focusing. Her legs are crossed just so beneath the shorts she somehow always wears on the evenings you study together—and no, she assures you, that is not a coincidence. She lets the tease hang a moment, then cools into a sharper truth: charm alone will not win her. For now you do not stand a chance; her respect comes first.",
+    "triggers": [
+      {
+        "triggerType": "socialize",
+        "parameters": {
+          "characterKey": "emma",
+          "socializeType": "flirt"
+        }
+      },
+      {
+        "triggerType": "activity_type",
+        "parameters": {
+          "activityType": "study"
+        }
+      },
+      {
+        "triggerType": "place",
+        "parameters": {
+          "placeKey": "emma-room"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Oh well",
+        "effects": [
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "love",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "emma",
     "emotion": "flirtatious"
   },
   {
@@ -781,7 +847,10 @@
             "parameters": {
               "activity": {
                 "type": "social",
-                "participants": ["player", "emma"],
+                "participants": [
+                  "player",
+                  "emma"
+                ],
                 "placeKey": "cafeteria",
                 "eventId": "emma-ball"
               },
@@ -897,6 +966,519 @@
     "emotion": "excited",
     "image": "emma-ball.jpg",
     "imageSize": "large"
+  },
+  {
+    "key": "emma-r1",
+    "text": "Emma sizes you up with a cool, appraising glance, as if grading a paper she already knows will need work. She decides quickly that your academic footing could use a firmer hand—hers—and offers to host private study sessions in her rooms, for a fee she names without apology.",
+    "triggers": [
+      {
+        "triggerType": "socialize",
+        "parameters": {
+          "characterKey": "emma",
+          "socializeType": "impress"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept",
+        "effects": [
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": -50
+            }
+          },
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "study",
+                "participants": [
+                  "player",
+                  "emma"
+                ],
+                "placeKey": "emma-room"
+              },
+              "schedule": {
+                "recurrence": {
+                  "maxCount": 12,
+                  "daysOfWeek": [
+                    2
+                  ],
+                  "period": "evening"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "text": "Decline",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Emma's expression cools. She had offered you her time and expertise, and your refusal leaves her plainly disappointed."
+            }
+          }
+        ]
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "emma",
+    "emotion": "proud"
+  },
+  {
+    "key": "emma-match1",
+    "text": "Emma is plainly vexed at having lost to you, though she keeps her chin high and offers a crisp, dignified congratulations. She allows herself one dry joke about beginner's luck—then waits, as if daring you to take the victory as anything less than temporary.",
+    "triggers": [
+      {
+        "triggerType": "matches_won",
+        "parameters": {
+          "characterKey": "emma",
+          "count": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Return compliment",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You congratulate her in turn, saying you are glad to have found a worthy opponent. Emma's shoulders ease a fraction; the sting of the loss softens into something closer to respect."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Taunt her",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You taunt her over the loss. Emma's composure cracks—her eyes flash, and she answers with a sharp, angry edge that promises she will not forget."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "emma",
+    "emotion": "proud"
+  },
+  {
+    "key": "emma-loan",
+    "text": "Emma's usual sharp composure has slipped; worry sits plainly on her face, and when you ask what is wrong she hesitates before answering. She confides that her student loan has become a problem—her parents are poor and cannot help her through it. Studying is her whole life, and the thought that she might have to leave the Academy has her voice tight with fear.",
+    "triggers": [
+      {
+        "triggerType": "socialize",
+        "parameters": {
+          "characterKey": "emma",
+          "socializeType": "befriend"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "friendship",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "respect",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "love",
+          "value": 1
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Study the loan",
+        "attributeCheck": {
+          "attribute": "intelligence",
+          "difficulty": "medium",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Together you dig through the contract and find a way to restructure the terms. Emma is visibly relieved, and her thanks are warm and genuine."
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You pore over the clauses together, but nothing useful surfaces. Emma's disappointment is quiet, but plain."
+              }
+            }
+          ]
+        }
+      },
+      {
+        "text": "Give 100 Gold",
+        "effects": [
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": -100
+            }
+          },
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Emma accepts the gold with a careful nod, clearly thankful for the help when she needs it most."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Walk away",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You shrug and leave her to it. Emma frowns after you, the worry on her face hardening into something colder."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "emma",
+    "emotion": "sad"
+  },
+  {
+    "key": "emma-f1",
+    "text": "Emma is cracking jokes in the middle of a knot of students, every punchline landing while all eyes stay fixed on her. You edge closer through the laughter and find yourself weighing how to join in—whether to ride the wave with the others, or risk a quip of your own.",
+    "triggers": [
+      {
+        "triggerType": "socialize",
+        "parameters": {
+          "characterKey": "emma",
+          "socializeType": "befriend"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Laugh along",
+        "attributeCheck": {
+          "attribute": "charisma",
+          "difficulty": "trivial",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Emma lights up when she sees you laughing with the others, plainly glad her jokes land with you too."
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Emma lights up when she sees you laughing with the others, plainly glad her jokes land with you too."
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            }
+          ]
+        }
+      },
+      {
+        "text": "Add a joke",
+        "attributeCheck": {
+          "attribute": "intelligence",
+          "difficulty": "medium",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You slip in a joke of your own. Emma throws her head back laughing, clearly impressed you kept pace with her."
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You try a joke of your own—and it flops. The circle goes quiet for a beat before Emma steers the banter elsewhere."
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "emma",
+    "emotion": "laughing"
+  },
+  {
+    "key": "emma-forest-expedition-1",
+    "text": "Emma draws you aside with a cool, purposeful look—she has heard of a rare mushroom that grows only in the Forest of Schlupak, and she is convinced it will sharpen her conjuration work considerably. The woods are dangerous, she admits without softening it, which is why she wants company. She proposes you join her next weekend, share the risk, and split whatever you find.",
+    "triggers": [
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "respect",
+          "value": 3
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept",
+        "effects": [
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "adventure",
+                "participants": [
+                  "player",
+                  "emma"
+                ],
+                "placeKey": "forest_of_schlupak",
+                "eventId": "emma-forest-expedition-2"
+              },
+              "schedule": {
+                "date": {
+                  "day": 0,
+                  "period": "morning"
+                },
+                "nextFree": true,
+                "recurrence": {
+                  "maxCount": 1,
+                  "daysOfWeek": [
+                    6,
+                    7
+                  ],
+                  "period": "morning"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "text": "Decline"
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "emma",
+    "emotion": "neutral"
+  },
+  {
+    "key": "emma-forest-expedition-2",
+    "text": "You and Emma push deeper into the Forest of Schlupak, gathering ingredients among the roots and damp shade. She crouches to pluck a cluster of rare magical mushrooms—then a dark bear crests a small hill above you, shoulders rolling, eyes fixed, and the woods go suddenly quiet.",
+    "triggers": [
+      {
+        "triggerType": "scheduled_activity",
+        "parameters": {}
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Fight it",
+        "attributeCheck": {
+          "attribute": "vitality",
+          "difficulty": "extreme",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You draw a sword and drive the bear off. Emma stares after it, unable to believe her eyes."
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Emma bails you out with a clever magical device that distracts the bear long enough for you both to flee."
+              }
+            }
+          ]
+        }
+      },
+      {
+        "text": "Distract it",
+        "attributeCheck": {
+          "attribute": "dexterity",
+          "difficulty": "easy",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You run to draw the bear away, then feign death until it loses interest and lumbers off. Emma is plainly impressed."
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Emma bails you out with a clever magical device that distracts the bear long enough for you both to flee."
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "emma",
+    "emotion": "scared",
+    "image": "emma-forest-expedition-2.jpg",
+    "imageSize": "large",
+    "effects": [
+      {
+        "type": "add_resource",
+        "parameters": {
+          "resourceType": "schlupak_mushrooms",
+          "amount": 2
+        }
+      }
+    ]
   },
   {
     "key": "conjuration-1",

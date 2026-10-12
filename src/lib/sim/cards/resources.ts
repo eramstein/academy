@@ -1,5 +1,12 @@
-import { CardColor, isUnitCard, UnitType, type CardTemplate } from '@/lib/_model';
+import {
+  CardColor,
+  isSpellCard,
+  isUnitCard,
+  UnitType,
+  type CardTemplate,
+} from '@/lib/_model';
 import { ResourceType } from '@/lib/_model/enums-sim';
+import { addKeyword } from './keywords';
 
 export const COMMON_RESOURCE_TYPES: ResourceType[] = [
   ResourceType.MagicDust,
@@ -7,7 +14,10 @@ export const COMMON_RESOURCE_TYPES: ResourceType[] = [
   ResourceType.Moxes,
 ];
 
-export const UNIQUE_RESOURCE_TYPES: ResourceType[] = [ResourceType.MollysBeads];
+export const UNIQUE_RESOURCE_TYPES: ResourceType[] = [
+  ResourceType.MollysBeads,
+  ResourceType.SchlupakMushrooms,
+];
 
 export function isUniqueResource(type: ResourceType): boolean {
   return UNIQUE_RESOURCE_TYPES.includes(type);
@@ -54,6 +64,8 @@ export function applyUniqueResourceEffects(cardTemplate: CardTemplate, resourceT
   switch (resourceType) {
     case ResourceType.MollysBeads:
       return applyMollysBeadsEffects(cardTemplate);
+    case ResourceType.SchlupakMushrooms:
+      return applySchlupakMushroomsEffects(cardTemplate);
   }
 }
 
@@ -83,6 +95,23 @@ function applyMollysBeadsEffects(cardTemplate: CardTemplate) {
     }
     if (!cardTemplate.unitTypes.includes(UnitType.Beast)) {
       cardTemplate.unitTypes.push(UnitType.Beast);
+    }
+  }
+}
+
+// Schlupak mushrooms: creatures get poisonous +1 and retaliate +1;
+// spells with damageUnit get +1 damage
+function applySchlupakMushroomsEffects(cardTemplate: CardTemplate) {
+  if (isUnitCard(cardTemplate)) {
+    addKeyword(cardTemplate, 'poisonous', 1);
+    cardTemplate.retaliate++;
+    return;
+  }
+  if (isSpellCard(cardTemplate)) {
+    for (const action of cardTemplate.actions) {
+      if (action.effect.name !== 'damageUnit') continue;
+      const damage = Number(action.effect.args.damage) || 0;
+      action.effect.args.damage = damage + 1;
     }
   }
 }

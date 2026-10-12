@@ -38,6 +38,10 @@
       const { characterKey, activityType, value } = trigger.parameters;
       return `${trigger.triggerType}: ${characterKey} ${activityType} ≥${value}`;
     }
+    if (trigger.triggerType === EventTriggerType.MatchesWon) {
+      const { characterKey, count } = trigger.parameters;
+      return `${trigger.triggerType}: ${characterKey} ≥${count}`;
+    }
     if (trigger.triggerType === EventTriggerType.DayOfWeek) {
       return `${trigger.triggerType}: ${trigger.parameters.daysOfWeek.join(',')}`;
     }

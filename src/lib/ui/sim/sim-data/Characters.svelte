@@ -1,11 +1,7 @@
 <script lang="ts">
   import { SchoolName } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
-  import {
-    clearSelectedSimCharacter,
-    selectSimCharacter,
-    uiState,
-  } from '@/lib/_state/state-ui.svelte';
+  import { selectSimCharacter, uiState } from '@/lib/_state/state-ui.svelte';
   import Character from '../Character.svelte';
   import CharacterPortrait from '../characters/CharacterPortrait.svelte';
 
@@ -45,7 +41,6 @@
 
 {#if selectedCharacter}
   <div class="character-view">
-    <button type="button" class="back-btn" onclick={clearSelectedSimCharacter}>Back</button>
     <Character character={selectedCharacter} />
   </div>
 {:else}
@@ -98,30 +93,6 @@
     width: 100%;
     height: 100%;
     min-height: 0;
-  }
-
-  .character-view :global(.identity) {
-    padding-right: 4.75rem;
-  }
-
-  .back-btn {
-    position: absolute;
-    top: 24px;
-    right: 24px;
-    z-index: 3;
-    padding: 0.5rem 0.9rem;
-    background: var(--color-data);
-    border: 1px solid var(--color-brass);
-    border-radius: 4px;
-    color: var(--color-cream);
-    font-family: var(--font-narrative);
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-
-  .back-btn:hover {
-    background: var(--color-data-hover);
-    border-color: var(--color-brass);
   }
 
   .characters {

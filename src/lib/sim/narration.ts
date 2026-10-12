@@ -163,7 +163,8 @@ function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
+/** Push a check into the narration stream. LLM text waits until resolveAttributeCheckNarration. */
+export function narrateAttributeCheck(attributeCheck: AttributeCheck): string {
   const id = crypto.randomUUID();
   narrate({
     id,
@@ -171,6 +172,15 @@ export function narrateAttributeCheck(attributeCheck: AttributeCheck) {
     type: NarrationType.AttributeCheck,
     attributeCheck,
   });
+  return id;
+}
+
+/** After the roll resolves, fill LLM narration for a previously pending check. */
+export function resolveAttributeCheckNarration(id: string, attributeCheck: AttributeCheck) {
+  const entry = gs.scene.narration.find((narration) => narration.id === id);
+  if (entry) {
+    entry.attributeCheck = attributeCheck;
+  }
   void fillAttributeCheckNarration(id, attributeCheck);
 }
 

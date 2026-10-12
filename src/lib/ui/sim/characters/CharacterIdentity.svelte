@@ -4,7 +4,13 @@
   import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import CharacterPortrait from './CharacterPortrait.svelte';
 
-  let { character }: { character: Character } = $props();
+  let {
+    character,
+    onStory,
+  }: {
+    character: Character;
+    onStory?: () => void;
+  } = $props();
 
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
   const cornerPath = getAssetPath('images/ui/decorations/corner.svg');
@@ -46,8 +52,12 @@
 
 <header
   class="identity-card"
+  class:has-story={!!onStory}
   style="--parchment: url('{parchmentPath}'); --corner: url('{cornerPath}');"
 >
+  {#if onStory}
+    <button type="button" class="story-btn" onclick={onStory}>Story</button>
+  {/if}
   <div class="identity-top">
     <div class="portrait-frame">
       <span class="portrait-ornament tl" aria-hidden="true"></span>
@@ -97,6 +107,7 @@
 
 <style>
   .identity-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -114,6 +125,30 @@
     box-shadow:
       inset 0 0 28px rgba(90, 75, 60, 0.12),
       0 8px 18px rgba(0, 0, 0, 0.35);
+  }
+
+  .identity-card.has-story .identity {
+    padding-right: 5.25rem;
+  }
+
+  .story-btn {
+    position: absolute;
+    top: 1.1rem;
+    right: 1.1rem;
+    z-index: 2;
+    padding: 0.5rem 0.95rem;
+    background: var(--color-data);
+    border: 1px solid var(--color-brass);
+    border-radius: 4px;
+    color: var(--color-cream);
+    font-family: var(--font-narrative);
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .story-btn:hover {
+    background: var(--color-data-hover);
+    border-color: var(--color-brass);
   }
 
   .identity-top {

@@ -35,9 +35,9 @@ export function acceptJob(job: Omit<Job, 'id'>, schedule: Schedule) {
   return `You have accepted the job ${job.name} from ${job.employerKey}.`;
 }
 
-export function performJob(job: Job) {
+export async function performJob(job: Job): Promise<string> {
   const attribute = attributePerJobType[job.jobType] ?? 'intelligence';
-  const result = attributeCheck(
+  const result = await attributeCheck(
     gs.player.attributes[attribute],
     skillCheckDifficulty.medium,
     attribute,

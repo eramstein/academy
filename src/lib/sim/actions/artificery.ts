@@ -739,6 +739,8 @@ function sealUniqueResources(
   templateParameters.colors = draft.colors.map((entry) => entry.color);
   if (isUnitCard(draft)) {
     templateParameters.hp = draft.maxHealth;
+    templateParameters.retaliate = draft.retaliate;
+    templateParameters.keywords = draft.keywords;
     templateParameters.unitTypes = draft.unitTypes?.length ? draft.unitTypes : undefined;
   }
 }

@@ -165,6 +165,12 @@ function checkTrigger(where, trigger) {
         errors.push(`${where}: value must be an integer ≥ 1`);
       }
       break;
+    case 'matches_won':
+      checkOneOf(where, 'characterKey', params.characterKey, npcKeys);
+      if (typeof params.count !== 'number' || !Number.isInteger(params.count) || params.count < 1) {
+        errors.push(`${where}: count must be an integer ≥ 1`);
+      }
+      break;
     case 'scheduled_activity':
       // No parameters: matches when current activity.eventId === this event's key.
       break;

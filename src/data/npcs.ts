@@ -20,6 +20,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
       [ResourceType.Mithril]: 0,
       [ResourceType.Moxes]: 0,
       [ResourceType.MollysBeads]: 0,
+      [ResourceType.SchlupakMushrooms]: 0,
     },
     relationProgress: {
       friendship: 0,
@@ -40,6 +41,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     age: 0,
     activityHistory: {},
     favoritePlaces: {},
+    matchesRecord: { won: 0, lost: 0 },
   };
 }
 
@@ -143,7 +145,12 @@ export const npcs: Record<string, Npc> = {
     name: 'Emma Delamain',
     placeKey: 'admin-office',
     attributes: { dexterity: 5, intelligence: 19, vitality: 8, charisma: 18, aura: 8 },
-    traits: { [CharacterTrait.Grumpy]: true },
+    traits: {
+      [CharacterTrait.Funny]: true,
+      [CharacterTrait.Assertive]: true,
+      [CharacterTrait.Confident]: true,
+      [CharacterTrait.Beautiful]: true,
+    },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Red],

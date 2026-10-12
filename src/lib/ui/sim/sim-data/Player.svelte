@@ -19,6 +19,7 @@
     [ResourceType.Mithril]: 'metal_bar',
     [ResourceType.Moxes]: 'gem',
     [ResourceType.MollysBeads]: 'leaf',
+    [ResourceType.SchlupakMushrooms]: 'feather',
   };
 
   const player = $derived(gs.player);

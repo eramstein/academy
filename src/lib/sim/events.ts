@@ -15,7 +15,9 @@ import {
 } from '../_state/event-templates';
 import { SceneActionTemplates } from './actions';
 import type { SocializeParameters } from './actions/socialize';
+import { getActivityImageRelCandidates, probeFirstExistingImageRel } from './activity-image';
 import { getCharactersAtScene } from './characters';
+import { updateRelationArc } from './effects/relations';
 import { narrateText } from './narration';
 import { getCurrentScheduledActivity } from './schedule';
 import { getWeekDay } from './time';
@@ -44,6 +46,8 @@ export interface EventTriggerParameters {
   [EventTriggerType.DayOfWeek]: { daysOfWeek: number[] };
   /** Matches when the current scheduled activity's `eventId` equals this event's key. */
   [EventTriggerType.ScheduledActivity]: Record<string, never>;
+  /** Player has won at least `count` matches against this NPC (`matchesRecord.won`). */
+  [EventTriggerType.MatchesWon]: { characterKey: string; count: number };
 }
 
 export type EventTrigger = {
@@ -195,9 +199,41 @@ export function consumeEventTemplate(template: StoredEventTemplate) {
 export function recordEventOccured(template: StoredEventTemplate) {
   ensureEventProgress();
   const key = template.key;
-  if (!gs.events.occurred.includes(key)) {
-    gs.events.occurred.push(key);
+  if (gs.events.occurred.includes(key)) {
+    return;
   }
+  gs.events.occurred.push(key);
+  if (template.characterArc) {
+    updateRelationArc({
+      characterKey: template.characterArc,
+      text: template.text,
+      image: template.image,
+    });
+    if (!template.image) {
+      attachActivityImageToArc(template.characterArc, template.text);
+    }
+  }
+}
+
+/** When an arc event has no art, probe the current activity illustration (same as Location). */
+function attachActivityImageToArc(characterKey: string, text: string) {
+  const activity = getCurrentScheduledActivity();
+  if (!activity) return;
+
+  const candidates = getActivityImageRelCandidates(activity);
+  if (candidates.length === 0) return;
+
+  void probeFirstExistingImageRel(candidates).then((image) => {
+    if (!image) return;
+    const character = gs.characters[characterKey];
+    if (!character) return;
+    const entry = [...character.relationArc]
+      .reverse()
+      .find((beat) => beat.text === text && !beat.image);
+    if (entry) {
+      entry.image = image;
+    }
+  });
 }
 
 export function unlockEventTemplate(templateKey: string): boolean {
@@ -240,6 +276,8 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       return trigger.parameters.daysOfWeek.includes(getWeekDay(gs.time.day));
     case EventTriggerType.ScheduledActivity:
       return getCurrentScheduledActivity()?.eventId === eventKey;
+    case EventTriggerType.MatchesWon:
+      return checkMatchesWon(trigger);
     default:
       return false;
   }
@@ -286,6 +324,15 @@ function checkActivityHistory(
   const { characterKey, activityType, value } = trigger.parameters;
   const character = gs.characters[characterKey];
   return (character.activityHistory[activityType] ?? 0) >= value;
+}
+
+function checkMatchesWon(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.MatchesWon }>
+): boolean {
+  const { characterKey, count } = trigger.parameters;
+  const character = gs.characters[characterKey];
+  if (!character) return false;
+  return (character.matchesRecord?.won ?? 0) >= count;
 }
 
 function buildOption(optionTemplate: EventOptionTemplate): EventOption {

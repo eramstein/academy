@@ -133,11 +133,11 @@ const ACTIVITY_IMAGE_FOLDERS = ['activities', 'activities_more'] as const;
 const PHYSICAL_ROMANCE_IMAGE_MAX = 12;
 
 /**
- * Activity illustration candidates, tried in order:
+ * Activity illustration candidates relative to `images/`, tried in order:
  * `{type}_{participants}_{placeKey}.jpg` then `{type}_{participants}.jpg`,
- * each under `images/activities` then `images/activities_more`.
+ * each under `activities` then `activities_more`.
  */
-export function getActivityImagePath(
+export function getActivityImageRelPath(
   activityType: string,
   characterKeys: string[],
   placeKey?: string
@@ -148,7 +148,22 @@ export function getActivityImagePath(
     `${activityType}_${participants}.jpg`,
   ];
   return basenames.flatMap((basename) =>
-    ACTIVITY_IMAGE_FOLDERS.map((folder) => getAssetPath(`images/${folder}/${basename}`))
+    ACTIVITY_IMAGE_FOLDERS.map((folder) => `${folder}/${basename}`)
+  );
+}
+
+/**
+ * Activity illustration candidates, tried in order:
+ * `{type}_{participants}_{placeKey}.jpg` then `{type}_{participants}.jpg`,
+ * each under `images/activities` then `images/activities_more`.
+ */
+export function getActivityImagePath(
+  activityType: string,
+  characterKeys: string[],
+  placeKey?: string
+): string[] {
+  return getActivityImageRelPath(activityType, characterKeys, placeKey).map((rel) =>
+    getAssetPath(`images/${rel}`)
   );
 }
 

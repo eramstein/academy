@@ -162,6 +162,7 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     [ResourceType.Mithril]: getUiIconPath('metal_bar'),
     [ResourceType.Moxes]: getUiIconPath('gem'),
     [ResourceType.MollysBeads]: getUiIconPath('leaf'),
+    [ResourceType.SchlupakMushrooms]: getUiIconPath('feather'),
   };
   const BEAD = 28;
   const CHARM = 32;
@@ -178,6 +179,7 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     [ResourceType.Mithril]: 84,
     [ResourceType.Moxes]: 65,
     [ResourceType.MollysBeads]: 55,
+    [ResourceType.SchlupakMushrooms]: 48,
   };
   /** Wider orbits when the forming card sits in the enlarged split circle. */
   const RADIUS_SPLIT: Record<ResourceType, number> = {
@@ -185,12 +187,14 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     [ResourceType.Mithril]: 202,
     [ResourceType.Moxes]: 190,
     [ResourceType.MollysBeads]: 178,
+    [ResourceType.SchlupakMushrooms]: 166,
   };
   const SPEED: Record<ResourceType, number> = {
     [ResourceType.MagicDust]: 0.0007,
     [ResourceType.Mithril]: -0.00055,
     [ResourceType.Moxes]: 0.00088,
     [ResourceType.MollysBeads]: -0.00072,
+    [ResourceType.SchlupakMushrooms]: 0.00065,
   };
   const CHARM_RADIUS = { base: 88, split: 172 };
   const CHARM_SPEED = 0.00052;

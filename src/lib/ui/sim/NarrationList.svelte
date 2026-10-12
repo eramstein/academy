@@ -31,6 +31,7 @@
     [ResourceType.Mithril]: 'metal_bar',
     [ResourceType.Moxes]: 'gem',
     [ResourceType.MollysBeads]: 'leaf',
+    [ResourceType.SchlupakMushrooms]: 'feather',
   };
 
   const narration = $derived(gs.scene.narration);
@@ -285,6 +286,7 @@
     {#if entry.attributeCheck}
       <AttributeCheckEntry
         check={entry.attributeCheck}
+        narrationId={entry.id}
         {animate}
         onProgress={() => onProgress?.('auto')}
         onDone={() => onCheckDone(entry)}
@@ -337,7 +339,7 @@
           onDone={() => onTextDone(entry)}
         />
       {/if}
-    {:else if animate}
+    {:else if animate && !entry.attributeCheck?.pending}
       <div class="narration narration-pending" role="status" aria-label="Writing">
         <span aria-hidden="true">Writing…</span>
         <span class="caret" aria-hidden="true"></span>

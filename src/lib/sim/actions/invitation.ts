@@ -11,9 +11,9 @@ export interface InviteParameters {
   characterKey: string;
 }
 
-export function invite(parameters: InviteParameters): string {
+export async function invite(parameters: InviteParameters): Promise<string> {
   const period = parameters.period ?? DayPeriod.Evening;
-  const { success } = attributeCheck(
+  const { success } = await attributeCheck(
     gs.player.attributes.charisma,
     skillCheckDifficulty.trivial,
     'charisma',

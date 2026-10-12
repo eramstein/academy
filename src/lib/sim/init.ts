@@ -29,16 +29,17 @@ export const defaultGameState: GameState = {
     placeKey: 'admin-office',
     attributes: {
       dexterity: 5,
-      intelligence: 5,
-      vitality: 5,
-      charisma: 5,
-      aura: 5,
+      intelligence: 15,
+      vitality: 8,
+      charisma: 8,
+      aura: 7,
     },
     resources: {
       [ResourceType.MagicDust]: 2,
       [ResourceType.Mithril]: 2,
       [ResourceType.Moxes]: 2,
       [ResourceType.MollysBeads]: 0,
+      [ResourceType.SchlupakMushrooms]: 0,
     },
     subscriptions: {
       academy: 0,
@@ -82,8 +83,9 @@ export const defaultGameState: GameState = {
 
 export const initSim = async () => {
   console.log('initSim');
-  Object.assign(gs, defaultGameState);
-  // Fresh arrays — Object.assign would keep mutated occurred/unlocked refs from defaultGameState.
+  const fresh = structuredClone(defaultGameState);
+  Object.assign(gs, fresh);
+  gs.player = fresh.player;
   gs.events = { occurred: [], unlocked: [] };
   await clearUsedFlavors();
   await restoreEventTemplates();
