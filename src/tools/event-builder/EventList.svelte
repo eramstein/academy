@@ -42,6 +42,10 @@
       const { characterKey, count } = trigger.parameters;
       return `${trigger.triggerType}: ${characterKey} ≥${count}`;
     }
+    if (trigger.triggerType === EventTriggerType.LeaguesWon) {
+      const { characterKey, count } = trigger.parameters;
+      return `${trigger.triggerType}: ${characterKey} ≥${count}`;
+    }
     if (trigger.triggerType === EventTriggerType.DayOfWeek) {
       return `${trigger.triggerType}: ${trigger.parameters.daysOfWeek.join(',')}`;
     }
@@ -124,9 +128,6 @@
               <span class="key">{event.key}</span>
               <span class="meta">
                 {optionCount(event)} option{optionCount(event) === 1 ? '' : 's'}
-                {#if event.triggersOnce}
-                  · once
-                {/if}
                 {#if event.locked}
                   · locked
                 {/if}

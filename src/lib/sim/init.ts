@@ -73,6 +73,7 @@ export const defaultGameState: GameState = {
     rankings: [],
     records: {},
     playedToday: false,
+    pastWinners: [],
   },
   ongoingBattle: null,
   events: {
@@ -93,6 +94,6 @@ export const initSim = async () => {
   await restoreCardTemplates();
   await loadCardTemplates();
   setSceneEvents();
-  newLeagueSeason();
+  newLeagueSeason('');
   initNpcDecks();
 };

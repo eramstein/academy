@@ -66,17 +66,31 @@ event fires.
   "optionTemplates": [
     /* player choices; [] means the event is pure narration */
   ],
-  "triggersOnce": true, // set true unless the event is meant to repeat
   "effects": [
     /* optional: applied on trigger, before options */
   ],
   "characterArc": "molly", // npc key, only for character arc events
   "emotion": "happy", // optional; how the speaking NPC presents in this beat
+  "image": "molly-4.jpg", // optional; filename under public/assets/images/events/
+  "imageSize": "large", // optional; "small" | "medium" | "large"
 }
 ```
 
-Property order in the file follows the existing entries: `key`, `text`, `triggers`,
-`effects`, `optionTemplates`, `triggersOnce`, `characterArc`, `emotion`.
+Every event triggers at most once (consumed after it fires). Property order in the file
+follows the existing entries: `key`, `text`, `triggers`, `effects`, `optionTemplates`,
+`characterArc`, `emotion`, `image`, `imageSize`.
+
+## Images
+
+When setting `image` on an event:
+
+- Use a **`.jpg`** filename only (e.g. `emma-hospital.jpg`). Never author `.png` in
+  `events.json`.
+- Place the file at `public/assets/images/events/{image}`.
+- If the source asset is a PNG, convert it first (e.g. `node src/tools/convert-images.js`,
+  which targets the events folder) and reference the resulting `.jpg`.
+- For full-bleed scene art, set `imageSize` to `"large"` when the user asks for a large
+  image; otherwise omit or use the size they named.
 
 ## Triggers
 
@@ -95,6 +109,7 @@ event in file order whose triggers all match.
 | `activity_type`      | `{ activityType }`                                                 | `class`, `work`, `social`, `date`, `training`, `study`; matches the currently scheduled activity.                                                        |
 | `activity_history`   | `{ characterKey, activityType, value }`                            | NPC has shared that `activityType` with the player at least `value` times (`Npc.activityHistory`).                                                       |
 | `matches_won`        | `{ characterKey, count }`                                          | Player has won at least `count` matches against that NPC (`npc.matchesRecord.won`). Does not consume the count.                                          |
+| `leagues_won`        | `{ characterKey, count }`                                          | Character appears at least `count` times in `league.pastWinners` (season titles). Does not consume the count. `characterKey` may be `"player"`.         |
 | `scheduled_activity` | `{}`                                                               | Current scheduled activity's `eventId` equals this event's `key`. Set `eventId` on the activity when scheduling it.                                      |
 | `previous_events`    | `{ "molly-1": true }`                                              | Map of event keys that must have happened first; add one entry per prerequisite.                                                                         |
 
@@ -112,6 +127,9 @@ Consequences of how the engine handles these:
   `previous_events` as needed.
 - `matches_won` reads cumulative league wins against that NPC (`matchesRecord.won`). It does
   **not** reset when an event fires. Pair with `character_present` / `previous_events` as needed.
+- `leagues_won` counts how often `characterKey` appears in `league.pastWinners` (one entry per
+  season title). It does **not** reset when an event fires. Pair with `character_present` /
+  `previous_events` / ceremony `activity_type` as needed.
 - `scheduled_activity` is for beats that fire when a previously scheduled activity becomes
   current. Author the activity with `eventId` set to this event's key (via `schedule_activity`),
   and put a bare `scheduled_activity` trigger on the target event.
@@ -152,8 +170,8 @@ cumulative `relationProgress` (the only relation meter). Socialize actions do no
 this effect (and similar authored effects) do.
 
 `update_relation_arc` appends `{ text, image? }` to that NPC's `relationArc`. `image` is a path
-under `images/` as `folder/file` (e.g. `events/molly-f1.jpg`, `activities_more/emma-bed-2.png`).
-The effect also narrates `text`.
+under `images/` as `folder/file` (e.g. `events/molly-f1.jpg`, `activities_more/emma-bed-2.jpg`).
+Prefer `.jpg` over `.png`. The effect also narrates `text`.
 
 `move` sets each listed character's `placeKey` immediately. Include `"player"` to relocate the
 player; NPC keys move those NPCs. This does not schedule travel or advance time.
@@ -307,16 +325,15 @@ moxes, or 1 magic dust."_
       ]
     }
   ],
-  "triggersOnce": true,
   "characterArc": "molly",
   "emotion": "happy"
 }
 ```
 
 Note what the request did not spell out and the defaults filled in: `character_present`,
-`triggersOnce`, `characterArc`, `emotion` (warm gratitude → `happy`), the key, and a paragraph of
-prose that justifies the gift through Molly's friendship without naming the rewards. Map "befriend
-/ flirt / impress / taunt" wording to `socialize`, not to a `relation_parameter` threshold.
+`characterArc`, `emotion` (warm gratitude → `happy`), the key, and a paragraph of prose that
+justifies the gift through Molly's friendship without naming the rewards. Map "befriend / flirt /
+impress / taunt" wording to `socialize`, not to a `relation_parameter` threshold.
 
 ## Editing an existing event
 

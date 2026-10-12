@@ -17,6 +17,8 @@ const ACTIVITY_NARRATION: Record<ActivityType, string> = {
   [ActivityType.Tournament]: 'competing',
   [ActivityType.Exam]: 'taking an exam',
   [ActivityType.Event]: 'an event occured',
+  [ActivityType.Adventure]: 'adventuring',
+  [ActivityType.LeagueCeremony]: 'attending the league ceremony',
 };
 
 function capitalize(text: string): string {

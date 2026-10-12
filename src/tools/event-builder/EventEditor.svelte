@@ -38,7 +38,6 @@
       key: `${characterKey}-${Math.floor(Math.random() * 1_000_000_000)}`,
       text: '',
       characterArc: characterKey,
-      triggersOnce: true,
       optionTemplates: [],
       triggers: [
         {

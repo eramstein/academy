@@ -171,6 +171,12 @@ function checkTrigger(where, trigger) {
         errors.push(`${where}: count must be an integer ≥ 1`);
       }
       break;
+    case 'leagues_won':
+      checkOneOf(where, 'characterKey', params.characterKey, characterKeys);
+      if (typeof params.count !== 'number' || !Number.isInteger(params.count) || params.count < 1) {
+        errors.push(`${where}: count must be an integer ≥ 1`);
+      }
+      break;
     case 'scheduled_activity':
       // No parameters: matches when current activity.eventId === this event's key.
       break;
@@ -352,7 +358,6 @@ const allowedEventProps = new Set([
   'text',
   'optionTemplates',
   'triggers',
-  'triggersOnce',
   'locked',
   'effects',
   'characterArc',

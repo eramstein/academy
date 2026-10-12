@@ -109,9 +109,7 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
     eventKey: template.key,
   });
   gs.scene.event = event.options.length > 0 ? event : undefined;
-  if (template.triggersOnce) {
-    consumeEventTemplate(template);
-  }
+  consumeEventTemplate(template);
   if (template.effects) {
     template.effects.forEach((effect) => applyEffect(effect));
   }

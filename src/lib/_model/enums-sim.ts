@@ -65,6 +65,7 @@ export enum ActivityType {
   Exam = 'exam',
   Event = 'event',
   Adventure = 'adventure',
+  LeagueCeremony = 'league_ceremony',
 }
 
 export enum ClassType {
@@ -113,6 +114,7 @@ export enum EventTriggerType {
   DayOfWeek = 'day_of_week',
   ScheduledActivity = 'scheduled_activity',
   MatchesWon = 'matches_won',
+  LeaguesWon = 'leagues_won',
 }
 
 export enum ResourceType {

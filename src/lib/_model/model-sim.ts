@@ -52,6 +52,7 @@ export interface League {
   rankings: { characterKey: string; points: number }[];
   records: Record<string, { opponentKey: string; won: boolean }[]>;
   playedToday: boolean;
+  pastWinners: string[];
 }
 
 export interface Scene {
@@ -113,7 +114,6 @@ export interface EventTemplate {
   text: string;
   optionTemplates: EventOptionTemplate[];
   triggers: EventTrigger[];
-  triggersOnce?: boolean;
   locked?: boolean;
   effects?: EventEffect[];
   characterArc?: string; // npc key

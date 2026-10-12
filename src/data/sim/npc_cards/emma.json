@@ -1,0 +1,50 @@
+[
+  {
+    "id": "subjugating_knight",
+    "name": "Subjugating Knight",
+    "imageFileName": "subjugating_knight",
+    "type": "unit",
+    "cost": 5,
+    "power": 4,
+    "retaliate": 1,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      },
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "daze",
+                "duration": 1,
+                "range": {
+                  "sameRow": true,
+                  "unitType": "human",
+                  "ennemies": true
+                }
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        }
+      }
+    ],
+    "poolKeys": ["emma", "special"]
+  }
+]

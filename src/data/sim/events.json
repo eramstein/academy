@@ -31,8 +31,7 @@
           "args": {}
         }
       }
-    ],
-    "triggersOnce": true
+    ]
   },
   {
     "key": "event-2",
@@ -96,8 +95,7 @@
           }
         ]
       }
-    ],
-    "triggersOnce": true
+    ]
   },
   {
     "key": "event-3",
@@ -124,8 +122,7 @@
           "amount": 10
         }
       }
-    ],
-    "triggersOnce": true
+    ]
   },
   {
     "key": "molly-f1",
@@ -183,7 +180,6 @@
         ]
       }
     ],
-    "triggersOnce": true,
     "characterArc": "molly",
     "emotion": "happy",
     "image": "molly-f1.jpg"
@@ -221,10 +217,7 @@
             "parameters": {
               "activity": {
                 "type": "study",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "library"
               },
               "schedule": {
@@ -241,7 +234,6 @@
         "text": "Decline"
       }
     ],
-    "triggersOnce": true,
     "characterArc": "molly",
     "emotion": "dreaming"
   },
@@ -270,7 +262,6 @@
       }
     ],
     "optionTemplates": [],
-    "triggersOnce": true,
     "characterArc": "molly",
     "emotion": "embarrassed",
     "effects": [
@@ -278,10 +269,7 @@
         "type": "offer_card_gifts",
         "parameters": {
           "count": 3,
-          "poolKeys": [
-            "molly",
-            "base"
-          ]
+          "poolKeys": ["molly", "base"]
         }
       }
     ]
@@ -299,19 +287,13 @@
       {
         "triggerType": "day_of_week",
         "parameters": {
-          "daysOfWeek": [
-            6,
-            7
-          ]
+          "daysOfWeek": [6, 7]
         }
       },
       {
         "triggerType": "period",
         "parameters": {
-          "periods": [
-            "morning",
-            "afternoon"
-          ]
+          "periods": ["morning", "afternoon"]
         }
       },
       {
@@ -345,7 +327,6 @@
         ]
       }
     ],
-    "triggersOnce": true,
     "characterArc": "molly",
     "emotion": "happy"
   },
@@ -413,7 +394,6 @@
         ]
       }
     ],
-    "triggersOnce": true,
     "locked": true,
     "characterArc": "molly",
     "emotion": "happy",
@@ -424,10 +404,7 @@
         "type": "move",
         "parameters": {
           "placeKey": "gray_mountains",
-          "characterKeys": [
-            "player",
-            "molly"
-          ]
+          "characterKeys": ["player", "molly"]
         }
       }
     ]
@@ -467,9 +444,7 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [
-                      2
-                    ],
+                    "daysOfWeek": [2],
                     "period": "evening"
                   }
                 }
@@ -482,7 +457,6 @@
         "text": "Decline"
       }
     ],
-    "triggersOnce": true,
     "characterArc": "molly"
   },
   {
@@ -535,7 +509,6 @@
         ]
       }
     ],
-    "triggersOnce": true,
     "characterArc": "molly",
     "emotion": "proud"
   },
@@ -573,7 +546,6 @@
         "text": "Refuse"
       }
     ],
-    "triggersOnce": true,
     "characterArc": "molly",
     "emotion": "angry"
   },
@@ -620,7 +592,6 @@
         }
       }
     ],
-    "triggersOnce": true,
     "characterArc": "molly",
     "emotion": "flirtatious"
   },
@@ -662,10 +633,7 @@
             "parameters": {
               "activity": {
                 "type": "date",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "royal-pigeon-inn"
               },
               "schedule": {
@@ -679,7 +647,6 @@
         ]
       }
     ],
-    "triggersOnce": true,
     "characterArc": "molly",
     "emotion": "happy"
   },
@@ -721,10 +688,7 @@
             "parameters": {
               "activity": {
                 "type": "romance",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "molly-room"
               },
               "schedule": {
@@ -738,7 +702,6 @@
         ]
       }
     ],
-    "triggersOnce": true,
     "characterArc": "molly",
     "emotion": "flirtatious"
   },
@@ -781,7 +744,6 @@
         ]
       }
     ],
-    "triggersOnce": true,
     "characterArc": "emma",
     "emotion": "flirtatious"
   },
@@ -808,7 +770,6 @@
         "text": "Oh well"
       }
     ],
-    "triggersOnce": true,
     "characterArc": "emma",
     "emotion": "amused",
     "image": "emma-l1.jpg",
@@ -847,10 +808,7 @@
             "parameters": {
               "activity": {
                 "type": "social",
-                "participants": [
-                  "player",
-                  "emma"
-                ],
+                "participants": ["player", "emma"],
                 "placeKey": "cafeteria",
                 "eventId": "emma-ball"
               },
@@ -876,7 +834,6 @@
         ]
       }
     ],
-    "triggersOnce": true,
     "characterArc": "emma",
     "emotion": "amused"
   },
@@ -961,7 +918,6 @@
         }
       }
     ],
-    "triggersOnce": true,
     "characterArc": "emma",
     "emotion": "excited",
     "image": "emma-ball.jpg",
@@ -1000,18 +956,13 @@
             "parameters": {
               "activity": {
                 "type": "study",
-                "participants": [
-                  "player",
-                  "emma"
-                ],
+                "participants": ["player", "emma"],
                 "placeKey": "emma-room"
               },
               "schedule": {
                 "recurrence": {
                   "maxCount": 12,
-                  "daysOfWeek": [
-                    2
-                  ],
+                  "daysOfWeek": [2],
                   "period": "evening"
                 }
               }
@@ -1031,7 +982,6 @@
         ]
       }
     ],
-    "triggersOnce": true,
     "characterArc": "emma",
     "emotion": "proud"
   },
@@ -1093,7 +1043,6 @@
         ]
       }
     ],
-    "triggersOnce": true,
     "characterArc": "emma",
     "emotion": "proud"
   },
@@ -1224,7 +1173,6 @@
         ]
       }
     ],
-    "triggersOnce": true,
     "characterArc": "emma",
     "emotion": "sad"
   },
@@ -1326,7 +1274,6 @@
         }
       }
     ],
-    "triggersOnce": true,
     "characterArc": "emma",
     "emotion": "laughing"
   },
@@ -1358,10 +1305,7 @@
             "parameters": {
               "activity": {
                 "type": "adventure",
-                "participants": [
-                  "player",
-                  "emma"
-                ],
+                "participants": ["player", "emma"],
                 "placeKey": "forest_of_schlupak",
                 "eventId": "emma-forest-expedition-2"
               },
@@ -1373,10 +1317,7 @@
                 "nextFree": true,
                 "recurrence": {
                   "maxCount": 1,
-                  "daysOfWeek": [
-                    6,
-                    7
-                  ],
+                  "daysOfWeek": [6, 7],
                   "period": "morning"
                 }
               }
@@ -1388,7 +1329,6 @@
         "text": "Decline"
       }
     ],
-    "triggersOnce": true,
     "characterArc": "emma",
     "emotion": "neutral"
   },
@@ -1465,7 +1405,6 @@
         }
       }
     ],
-    "triggersOnce": true,
     "characterArc": "emma",
     "emotion": "scared",
     "image": "emma-forest-expedition-2.jpg",
@@ -1479,6 +1418,402 @@
         }
       }
     ]
+  },
+  {
+    "key": "emma-hospital",
+    "text": "Henry finds you with urgent news—Emma has fallen ill and is resting in the hospital wing. You rush to her bedside and find her lying there, pale but smiling. A little embarrassed, she admits she tried a new concoction on herself because she did not have time to fetch a test bot—even she can make mistakes, she says, though she hopes to be out by tomorrow.",
+    "triggers": [
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "evening"
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "love",
+          "value": 3
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Buy flowers",
+        "effects": [
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": -10
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "love",
+              "amount": 1
+            }
+          },
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You return with a small bouquet. Emma's smile widens as she takes it in, clearly cheered by the gesture."
+            }
+          }
+        ]
+      },
+      {
+        "text": "Show concern",
+        "attributeCheck": {
+          "attribute": "charisma",
+          "difficulty": "easy",
+          "successEffects": [
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "love",
+                "amount": 1
+              }
+            },
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Emma softens at the worry in your voice; she looks touched that you care so openly."
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Your concern comes out clumsy and overdone. Emma laughs it off kindly, but the moment slips past."
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "characterArc": "emma",
+    "emotion": "happy",
+    "image": "emma-hospital.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "emma-l3",
+    "text": "Emma watches your latest attempt with a look half amused and half heartwarmed, as if she has been waiting for you to try again. She shakes her head, then softens. \"Alright, alright, Fibonacci... I think you've earned a date.\" Her eyes brighten as she asks where the two of you should go.",
+    "triggers": [
+      {
+        "triggerType": "socialize",
+        "parameters": {
+          "characterKey": "emma",
+          "socializeType": "flirt"
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "love",
+          "value": 4
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "respect",
+          "value": 4
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Royal Pigeon Inn",
+        "effects": [
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": -50
+            }
+          },
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "date",
+                "participants": ["player", "emma"],
+                "placeKey": "royal-pigeon-inn"
+              },
+              "schedule": {
+                "nextFree": true,
+                "date": {
+                  "period": "evening"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "text": "Old Monk's Inn",
+        "effects": [
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": -20
+            }
+          },
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "date",
+                "participants": ["player", "emma"],
+                "placeKey": "old-monk-inn"
+              },
+              "schedule": {
+                "nextFree": true,
+                "date": {
+                  "period": "evening"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "text": "Her Room",
+        "effects": [
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "date",
+                "participants": ["player", "emma"],
+                "placeKey": "emma-room"
+              },
+              "schedule": {
+                "nextFree": true,
+                "date": {
+                  "period": "evening"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "emma",
+    "emotion": "dreaming"
+  },
+  {
+    "key": "emma-pre-craft",
+    "text": "Emma catches the eager look in your eyes and laughs, clearly enjoying how keen you are for a second date. She tilts her head, teasing, then offers something better: come to her room for a very special experience—one she promises you will not forget.",
+    "triggers": [
+      {
+        "triggerType": "socialize",
+        "parameters": {
+          "characterKey": "emma",
+          "socializeType": "flirt"
+        }
+      },
+      {
+        "triggerType": "activity_history",
+        "parameters": {
+          "characterKey": "emma",
+          "activityType": "date",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "There is simply no polite—or impolite—way to refuse an invitation like that. You accept before your better judgment can clear its throat."
+            }
+          },
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "event",
+                "participants": ["player", "emma"],
+                "placeKey": "emma-room",
+                "eventId": "emma-craft"
+              },
+              "schedule": {
+                "nextFree": true,
+                "date": {
+                  "period": "evening"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "emma",
+    "emotion": "flirtatious"
+  },
+  {
+    "key": "emma-craft",
+    "text": "You show up at Emma's door buzzing with hope for a romantic evening—only to find her in a crafting outfit, sleeves rolled and tools already laid out. \"Ah, here you are,\" she says brightly. \"Take the tools and help me.\" The hours slip by as you craft a card together at her workbench. It is not the night you imagined, but you are happy simply to be with her. When she presses the finished card into your hands and winks at the illustration, you smile, hopeful for what comes next.",
+    "triggers": [
+      {
+        "triggerType": "scheduled_activity",
+        "parameters": {}
+      }
+    ],
+    "effects": [
+      {
+        "type": "offer_card_gifts",
+        "parameters": {
+          "count": 1,
+          "poolKeys": ["emma"],
+          "specificCardKeys": ["subjugating_knight"]
+        }
+      }
+    ],
+    "optionTemplates": [],
+    "characterArc": "emma",
+    "emotion": "excited",
+    "image": "emma-crafting.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "emma-gambit",
+    "text": "Emma looks you over with a smile that is half invitation and half verdict, then takes you apart with a few sharp, amused remarks until you have nowhere left to hide. When she is finished, her tone softens into something more deliberate: you have earned a real shot at her, she says—but she will not give herself to anyone less than the best. Win the league, and she will be yours.",
+    "triggers": [
+      {
+        "triggerType": "socialize",
+        "parameters": {
+          "characterKey": "emma",
+          "socializeType": "flirt"
+        }
+      },
+      {
+        "triggerType": "previous_events",
+        "parameters": {
+          "emma-craft": true
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Emma's eyes brighten with genuine appreciation. She likes that you did not flinch."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Beg for a Kiss",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Emma laughs, then leans in and kisses you lightly on the cheek—a tease, and a promise she will not quite make yet."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "love",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "emma",
+    "emotion": "taunting"
+  },
+  {
+    "key": "emma-gambit-resolution",
+    "text": "Emma approaches you looking more vulnerable than usual—nearly shy, as if the wager she set has finally caught up with her. She reminds you of her promise: win the league, and she would be yours. Now that you have the title, she proposes you come to her room to collect your winnings.",
+    "triggers": [
+      {
+        "triggerType": "previous_events",
+        "parameters": {
+          "emma-gambit": true
+        }
+      },
+      {
+        "triggerType": "leagues_won",
+        "parameters": {
+          "characterKey": "player",
+          "count": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept",
+        "effects": [
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "romance",
+                "participants": ["player", "emma"],
+                "placeKey": "emma-room"
+              },
+              "schedule": {
+                "date": {
+                  "day": 0
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "emma",
+    "emotion": "proud"
   },
   {
     "key": "conjuration-1",
@@ -1497,7 +1832,6 @@
         }
       }
     ],
-    "optionTemplates": [],
-    "triggersOnce": true
+    "optionTemplates": []
   }
 ]

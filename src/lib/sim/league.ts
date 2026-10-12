@@ -1,15 +1,39 @@
-import { SchoolName, type Character } from '../_model';
+import { ActivityType, DayPeriod, SchoolName, type Character } from '../_model';
 import { gs } from '../_state';
 import { getRandomFromArray } from '../_utils/random';
 import { getCharactersAtScene } from './characters';
+import { findNextFreeDay } from './effects/schedule';
+import { narrateText } from './narration';
+import { scheduleActivity } from './schedule';
 
 const PLAYER_KEY = 'player';
 const BYE_KEY = '__bye__';
 
-export function newLeagueSeason() {
+export function newLeagueSeason(winnerKey: string) {
   gs.league.season++;
   gs.league.rankings = [{ characterKey: PLAYER_KEY, points: 0 }];
   gs.league.records = {};
+  if (winnerKey) {
+    gs.league.pastWinners = [winnerKey, ...gs.league.pastWinners];
+    const academyStudents = Object.values(gs.characters).filter(
+      (character) => character.school === SchoolName.Academy
+    );
+    scheduleActivity({
+      type: ActivityType.LeagueCeremony,
+      participants: [
+        ...academyStudents.map((character) => character.key),
+        'administrator',
+        'lombard',
+        'glutzenbaum',
+      ],
+      placeKey: 'academy-hall',
+      day: findNextFreeDay(DayPeriod.Evening),
+      period: DayPeriod.Evening,
+    });
+    narrateText(
+      `${winnerKey === PLAYER_KEY ? 'You' : gs.characters[winnerKey]?.name} has won the league championship! The students of the Academy gather to celebrate the victory.`
+    );
+  }
   for (const character of Object.values(gs.characters)) {
     if (character.school === SchoolName.Academy) {
       gs.league.rankings.push({ characterKey: character.key, points: 0 });
@@ -34,7 +58,54 @@ export function recordLeagueMatchResult(won: boolean) {
     gs.characters[gs.ongoingBattle.opponentKey].matchesRecord.lost++;
   }
   autoPlayOtherLeagueMatches();
+  // Odd-sized leagues give the player one bye round; those NPC-vs-NPC matches
+  // are never auto-played unless we resolve them once the player is done.
+  if (hasPlayerFinishedAllMatches()) {
+    resolveRemainingLeagueMatches();
+  }
   gs.league.playedToday = true;
+  if (isSeasonComplete()) {
+    newLeagueSeason(getSeasonWinner());
+  }
+}
+
+function isSeasonComplete(): boolean {
+  const participants = getLeagueParticipants();
+  const matchesPerPlayer = participants.length - 1;
+  if (matchesPerPlayer < 1) {
+    return false;
+  }
+  return participants.every((key) => (gs.league.records[key]?.length ?? 0) >= matchesPerPlayer);
+}
+
+function hasPlayerFinishedAllMatches(): boolean {
+  const participants = getLeagueParticipants();
+  return participants
+    .filter((key) => key !== PLAYER_KEY)
+    .every((key) => havePlayed(PLAYER_KEY, key));
+}
+
+/** Play any still-unplayed pairings (the player's bye round in odd-sized leagues). */
+function resolveRemainingLeagueMatches() {
+  const participants = getLeagueParticipants();
+  for (let i = 0; i < participants.length; i++) {
+    for (let j = i + 1; j < participants.length; j++) {
+      const aKey = participants[i];
+      const bKey = participants[j];
+      if (havePlayed(aKey, bKey)) {
+        continue;
+      }
+      const winnerKey = getRandomFromArray([aKey, bKey]);
+      recordPlayedMatch(aKey, bKey, winnerKey === aKey);
+    }
+  }
+}
+
+function getSeasonWinner(): string {
+  const [leader] = [...gs.league.rankings].sort(
+    (a, b) => b.points - a.points || a.characterKey.localeCompare(b.characterKey)
+  );
+  return leader?.characterKey ?? PLAYER_KEY;
 }
 
 function autoPlayOtherLeagueMatches() {

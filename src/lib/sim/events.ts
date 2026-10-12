@@ -48,6 +48,8 @@ export interface EventTriggerParameters {
   [EventTriggerType.ScheduledActivity]: Record<string, never>;
   /** Player has won at least `count` matches against this NPC (`matchesRecord.won`). */
   [EventTriggerType.MatchesWon]: { characterKey: string; count: number };
+  /** Character appears at least `count` times in `league.pastWinners`. */
+  [EventTriggerType.LeaguesWon]: { characterKey: string; count: number };
 }
 
 export type EventTrigger = {
@@ -92,9 +94,7 @@ export async function restoreEventTemplates() {
 export function rebuildWorkingEventTemplates() {
   ensureEventProgress();
   const occurred = new Set(gs.events.occurred);
-  eventTemplates = allEventTemplates.filter(
-    (template) => !(template.triggersOnce && occurred.has(template.key))
-  );
+  eventTemplates = allEventTemplates.filter((template) => !occurred.has(template.key));
 }
 
 export async function loadEventTemplates() {
@@ -158,7 +158,7 @@ export function getTriggeredSceneEvent():
 export function getSceneEventByKey(
   templateKey: string
 ): { event: SceneEvent; template: StoredEventTemplate } | undefined {
-  // Search full catalog so follow-ups / debug still resolve consumed once-events.
+  // Search full catalog so follow-ups / debug still resolve consumed events.
   const template = allEventTemplates.find((eventTemplate) => eventTemplate.key === templateKey);
   if (!template) {
     return undefined;
@@ -190,7 +190,7 @@ export function simulateEvent(templateKey: string) {
   return event;
 }
 
-/** Drop a once-event from the in-memory working set. Catalog stays intact. */
+/** Drop a fired event from the in-memory working set. Catalog stays intact. */
 export function consumeEventTemplate(template: StoredEventTemplate) {
   eventTemplates = eventTemplates.filter((eventTemplate) => eventTemplate !== template);
 }
@@ -278,6 +278,8 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       return getCurrentScheduledActivity()?.eventId === eventKey;
     case EventTriggerType.MatchesWon:
       return checkMatchesWon(trigger);
+    case EventTriggerType.LeaguesWon:
+      return checkLeaguesWon(trigger);
     default:
       return false;
   }
@@ -333,6 +335,14 @@ function checkMatchesWon(
   const character = gs.characters[characterKey];
   if (!character) return false;
   return (character.matchesRecord?.won ?? 0) >= count;
+}
+
+function checkLeaguesWon(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.LeaguesWon }>
+): boolean {
+  const { characterKey, count } = trigger.parameters;
+  const wins = gs.league.pastWinners.filter((winnerKey) => winnerKey === characterKey).length;
+  return wins >= count;
 }
 
 function buildOption(optionTemplate: EventOptionTemplate): EventOption {

@@ -7,5 +7,6 @@ export interface AddGoldParameters {
 export function addGold(parameters: AddGoldParameters): string {
   const { amount } = parameters;
   gs.player.gold += amount;
-  return `You gain ${amount} gold.`;
+  const verb = amount > 0 ? 'gain' : 'spend';
+  return `You ${verb} ${amount} gold.`;
 }

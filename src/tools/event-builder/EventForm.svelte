@@ -37,7 +37,6 @@
 
   let key = $state('');
   let text = $state('');
-  let triggersOnce = $state(true);
   let locked = $state(false);
   let characterArc = $state('');
   let emotion = $state('');
@@ -66,7 +65,6 @@
     if (!source) {
       key = '';
       text = '';
-      triggersOnce = true;
       locked = false;
       characterArc = '';
       emotion = '';
@@ -81,7 +79,6 @@
     const cloned = JSON.parse(JSON.stringify(source)) as EventTemplate;
     key = cloned.key;
     text = cloned.text;
-    triggersOnce = cloned.triggersOnce ?? false;
     locked = cloned.locked ?? false;
     characterArc = cloned.characterArc ?? '';
     emotion = cloned.emotion ?? '';
@@ -125,6 +122,7 @@
       [EventTriggerType.DayOfWeek]: { daysOfWeek: [6, 7] },
       [EventTriggerType.ScheduledActivity]: {},
       [EventTriggerType.MatchesWon]: { characterKey: '', count: 1 },
+      [EventTriggerType.LeaguesWon]: { characterKey: '', count: 1 },
     };
     return defaults[triggerType];
   }
@@ -363,7 +361,6 @@
           return next;
         })
         .filter((option) => option.text.length > 0),
-      triggersOnce,
     };
 
     if (locked) {
@@ -512,11 +509,6 @@
             </label>
           {/if}
         </div>
-
-        <label class="check">
-          <input type="checkbox" bind:checked={triggersOnce} />
-          <span>Triggers once</span>
-        </label>
 
         <label class="check">
           <input type="checkbox" bind:checked={locked} />
@@ -741,6 +733,21 @@
                     bind:value={trigger.parameters.count}
                     aria-label="Matches won count"
                     title="Requires matchesRecord.won ≥ count against this character"
+                  />
+                {:else if trigger.triggerType === EventTriggerType.LeaguesWon}
+                  <input
+                    class="input param-input"
+                    bind:value={trigger.parameters.characterKey}
+                    placeholder="character key"
+                    aria-label="Character key"
+                  />
+                  <input
+                    class="input narrow"
+                    type="number"
+                    min="1"
+                    bind:value={trigger.parameters.count}
+                    aria-label="Leagues won count"
+                    title="Requires league.pastWinners appearances ≥ count for this character"
                   />
                 {/if}
 

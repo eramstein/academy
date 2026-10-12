@@ -9,6 +9,7 @@ import { KEYWORD_KEYS } from '../../sim/cards/keywords';
 import { redeemBaseDeck } from '../../sim/deck';
 import { addResource } from '../../sim/effects/resources';
 import { simulateEvent } from '../../sim/events';
+import { newLeagueSeason } from '../../sim/league';
 import { initOngoingBattle } from '../../sim/ongoing-battle';
 import { goToPeriod } from '../../sim/time';
 
@@ -151,6 +152,13 @@ export async function executeCommand(input: string): Promise<CommandResult> {
       bs.playerIdWon = null;
       await initOngoingBattle(foe, playerDeck, foeDeck);
       return { ok: true, message: 'Started battle: Base Green vs Base Red' };
+    }
+
+    case 'win-league': {
+      // /win-league [character-key]
+      const winnerKey = parts[1] || 'player';
+      newLeagueSeason(winnerKey);
+      return { ok: true, message: `Started new league season; winner: ${winnerKey}` };
     }
 
     default:
