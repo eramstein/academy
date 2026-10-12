@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { CardTemplate, Character, Narration } from '@/lib/_model';
-  import { DayPeriod, NarrationType, ResourceType } from '@/lib/_model/enums-sim';
+  import { DayPeriod, Emotion, NarrationType, ResourceType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
   import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import { addCardToDeck } from '@/lib/sim/deck';
@@ -312,7 +312,10 @@
             </button>
           {:else if portraitChar}
             <span class="event-portrait" aria-hidden="true">
-              <CharacterPortrait character={portraitChar} emotion={entry.emotion} />
+              <CharacterPortrait
+                character={portraitChar}
+                emotion={entry.emotion ?? Emotion.Neutral}
+              />
             </span>
           {/if}
           <NarrationText
@@ -440,7 +443,7 @@
   <div class="match-result" class:won={entry.won === true} class:lost={entry.won === false}>
     {#if opponent}
       <span class="match-portrait">
-        <CharacterPortrait character={opponent} zoom={1.15} />
+        <CharacterPortrait character={opponent} emotion={Emotion.Neutral} zoom={1.15} />
       </span>
     {/if}
     <NarrationText

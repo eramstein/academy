@@ -17,7 +17,7 @@ use this shape:
 
 ```
 Event for <npc key | main story>:
-Trigger: <relation level, day/period, place, activity, activity history count, prior events, who is present>
+Trigger: <socialize type, relation level, day/period, place, activity, activity history count, prior events, who is present>
 Synopsis: <one or two sentences to elaborate into the event text>
 Emotion: <Emotion enum value> (optional; infer from synopsis when clear)
 Options:
@@ -85,7 +85,8 @@ event in file order whose triggers all match.
 
 | `triggerType`        | `parameters`                                                       | Notes                                                                                                                             |
 | -------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `relation_parameter` | `{ characterKey, relationParameter, value }`                       | `relationParameter` is `friendship`, `respect`, `love` or `rivalry`. Positive `value` means "at least"; negative means "at most". |
+| `socialize`          | `{ characterKey, socializeType }`                                  | Fires only when the player socializes with that NPC using that type (`befriend`, `taunt`, `impress`, `flirt`).                    |
+| `relation_parameter` | `{ characterKey, relationParameter, value }`                       | Cumulative `relationProgress`. `relationParameter` is `friendship`, `respect`, `love` or `rivalry`. Positive `value` = "at least"; negative = "at most". |
 | `character_present`  | `{ characterKey }`                                                 | The NPC is in the player's current place.                                                                                         |
 | `day`                | `{ day: 3 }`                                                       | Absolute day number; day 1 is a Monday.                                                                                           |
 | `period`             | `{ period: "morning" }` or `{ periods: ["morning", "afternoon"] }` | Single period, or any of several. `morning`, `afternoon`, `evening`.                                                              |
@@ -93,39 +94,49 @@ event in file order whose triggers all match.
 | `place`              | `{ placeKey }`                                                     | The player's current place.                                                                                                       |
 | `activity_type`      | `{ activityType }`                                                 | `class`, `work`, `social`, `date`, `training`, `study`; matches the currently scheduled activity.                                 |
 | `activity_history`   | `{ characterKey, activityType, value }`                            | NPC has shared that `activityType` with the player at least `value` times (`Npc.activityHistory`).                                |
+| `scheduled_activity` | `{}`                                                               | Current scheduled activity's `eventId` equals this event's `key`. Set `eventId` on the activity when scheduling it.              |
 | `previous_events`    | `{ "molly-1": true }`                                              | Map of event keys that must have happened first; add one entry per prerequisite.                                                  |
 
 Consequences of how the engine handles these:
 
-- A `relation_parameter` trigger **consumes** the relation value: when the event fires, that
-  relation resets to 0. So an arc that gates `molly-2` on friendship 1 after `molly-1` already
-  spent friendship 1 needs the player to earn it again. Combine with `previous_events` for ordering.
+- Prefer `socialize` for "when the player befriends / flirts / impresses / taunts this NPC"
+  beats. The socialize action does **not** change `relationProgress`; it only checks for a
+  matching event. If one matches, that event plays instead of the default socialize narration.
+  Pair with `previous_events` (and optional `character_present`) to order arc steps.
+- `relation_parameter` reads cumulative `relationProgress`, which only moves via the
+  `change_relation` effect (not via socialize). It does **not** reset when an event fires. Use it
+  for lasting thresholds (e.g. friendship ≥ 3), not for "just socialized" gates.
 - `activity_history` does **not** consume the count; it stays on the NPC. Prefer it for "we've
-  done this enough times" gates, and pair with `character_present` / `previous_events` as needed.
-- A "character offers you something" event needs `character_present` in addition to the relation
-  trigger, otherwise it can fire while the NPC is elsewhere. Existing arc events always pair them.
+  done this enough times" gates, and pair with `socialize` / `character_present` /
+  `previous_events` as needed.
+- `scheduled_activity` is for beats that fire when a previously scheduled activity becomes
+  current. Author the activity with `eventId` set to this event's key (via `schedule_activity`),
+  and put a bare `scheduled_activity` trigger on the target event.
+- A scene-entry offer (no socialize) still needs `character_present` so it cannot fire while the
+  NPC is elsewhere. Socialize-gated events already imply the player picked that NPC.
 
 ## Effects
 
 Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffectType` in
 `src/lib/_model/enums-sim.ts`:
 
-| `type`              | `parameters`                                                                                                                                                       |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `add_resource`      | `{ resourceType: "magic_dust" \| "mithril" \| "moxes", amount: 10 }`                                                                                               |
-| `add_gold`          | `{ amount: 10 }`                                                                                                                                                   |
-| `get_deck`          | `{ deckKey: "base_red" \| "base_black" \| "base_green" }`                                                                                                          |
-| `schedule_activity` | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, nextFree?: true, recurrence?: { maxCount, daysOfWeek, period } } }` |
-| `get_job`           | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                                              |
-| `unlock_event`      | `{ eventKey: "molly-2" }`                                                                                                                                          |
-| `follow_up_event`   | `{ eventKey: "molly-2" }`                                                                                                                                          |
-| `offer_card_gifts`  | `{ count: 2, poolKeys: ["molly", "base"] }`                                                                                                                        |
-| `teach_color`       | `{ color?: "red" \| "blue" \| "green" \| "black", characterKey?: "molly" }`                                                                                        |
-| `teach_ability`     | `{ ability?: "haste" \| "directDamage" \| …, characterKey?: "molly" }` (omit `ability` for random)                                                                 |
-| `narrate`           | `{ text: "Molly looks away, a little hurt." }`                                                                                                                     |
-| `level_attribute`   | `{ attribute: "dexterity" \| "intelligence" \| "vitality" \| "charisma" \| "aura", amount?: 1, characterKey?: "player" }`                                          |
-| `change_relation`   | `{ characterKey, relationParameter: "friendship" \| "respect" \| "love" \| "rivalry", amount: 1 }`                                                                 |
-| `move`              | `{ placeKey: "academy", characterKeys: ["player", "molly"] }`                                                                                                      |
+| `type`                      | `parameters`                                                                                                                                                       |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `add_resource`              | `{ resourceType: "magic_dust" \| "mithril" \| "moxes", amount: 10 }`                                                                                               |
+| `add_gold`                  | `{ amount: 10 }`                                                                                                                                                   |
+| `get_deck`                  | `{ deckKey: "base_red" \| "base_black" \| "base_green" }`                                                                                                          |
+| `schedule_activity`         | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, nextFree?: true, recurrence?: { maxCount, daysOfWeek, period } } }` |
+| `get_job`                   | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                                              |
+| `unlock_event`              | `{ eventKey: "molly-2" }`                                                                                                                                          |
+| `follow_up_event`           | `{ eventKey: "molly-2" }`                                                                                                                                          |
+| `offer_card_gifts`          | `{ count: 2, poolKeys: ["molly", "base"] }`                                                                                                                        |
+| `teach_color`               | `{ color?: "red" \| "blue" \| "green" \| "black", characterKey?: "molly" }`                                                                                        |
+| `teach_ability`             | `{ ability?: "haste" \| "directDamage" \| …, characterKey?: "molly" }` (omit `ability` for random)                                                                 |
+| `narrate`                   | `{ text: "Molly looks away, a little hurt." }`                                                                                                                     |
+| `level_attribute`           | `{ attribute: "dexterity" \| "intelligence" \| "vitality" \| "charisma" \| "aura", amount?: 1, characterKey?: "player" }`                                          |
+| `change_relation`           | `{ characterKey, relationParameter: "friendship" \| "respect" \| "love" \| "rivalry", amount: 1 }`                                                                 |
+| `update_relation_arc`       | `{ characterKey, text: "You and Molly share a quiet laugh.", image?: "events/molly-f1.jpg" }`                                                                      |
+| `move`                      | `{ placeKey: "academy", characterKeys: ["player", "molly"] }`                                                                                                      |
 
 `narrate` only posts the given sentence; it does not change game state. Use it on options that
 need a reaction beat with no reward or schedule.
@@ -133,9 +144,13 @@ need a reaction beat with no reward or schedule.
 `level_attribute` adds `amount` (default 1) to that character's `attributes` field. Omit
 `characterKey` or use `"player"` for the player; use an NPC key to level an NPC.
 
-`change_relation` takes a signed `amount`; a negative value damages the relation. Remember that a
-`relation_parameter` trigger resets the relation to 0 when the event fires, so an event that both
-requires and grants friendship ends up at the granted amount.
+`change_relation` takes a signed `amount`; a negative value damages the relation. It updates
+cumulative `relationProgress` (the only relation meter). Socialize actions do not change it; only
+this effect (and similar authored effects) do.
+
+`update_relation_arc` appends `{ text, image? }` to that NPC's `relationArc`. `image` is a path
+under `images/` as `folder/file` (e.g. `events/molly-f1.jpg`, `activities_more/emma-bed-2.png`).
+The effect also narrates `text`.
 
 `move` sets each listed character's `placeKey` immediately. Include `"player"` to relocate the
 player; NPC keys move those NPCs. This does not schedule travel or advance time.
@@ -145,7 +160,9 @@ absolute day. Omit `date.period` (without `nextFree`) to use the **current** per
 immediate “come with me now” beats. Set `schedule.nextFree: true` to pick the soonest free slot for
 `date.period` (defaults to evening) instead of a fixed offset. `participants` are character keys and
 include `"player"` when the player takes part. `daysOfWeek` uses 1 for Monday through 7 for Sunday.
-Never put `day`/`period` inside `activity`.
+Never put `day`/`period` inside `activity`. To fire a specific event when the activity becomes
+current, set `activity.eventId` to that event's `key` and give the target a `scheduled_activity`
+trigger.
 
 `get_job` hires the player: it adds the job and schedules the `work` activities from `job.schedule`,
 which takes the same shape and day-offset rules as `schedule_activity`'s. Give a recurring job a
@@ -177,9 +194,34 @@ to abilities that NPC already knows.
 `effects` on the event fire as soon as it triggers; `effects` on an option fire only if the player
 picks that option.
 
-Action templates (`optionTemplates[].actionTemplate`) start an interactive action instead of
-applying an effect. Only `enrollmentTransaction` and `enrollmentPayment` exist, both from
-`SceneActionTemplates` in `src/lib/sim/actions/_templates.ts`, and both take `args: {}`.
+An option may use **either** direct `effects` **or** an `attributeCheck` (not both). With
+`attributeCheck`, choosing the option rolls the player's attribute against a named difficulty
+(`trivial` / `veryeasy` / `easy` / `medium` / `hard` / `extreme` / `impossible`), narrates the
+check, then applies `successEffects` or `failureEffects`:
+
+```json
+{
+  "text": "Bluff",
+  "attributeCheck": {
+    "attribute": "charisma",
+    "difficulty": "medium",
+    "successEffects": [
+      {
+        "type": "change_relation",
+        "parameters": { "characterKey": "molly", "relationParameter": "friendship", "amount": 1 }
+      }
+    ],
+    "failureEffects": [{ "type": "narrate", "parameters": { "text": "Molly sees through it." } }]
+  }
+}
+```
+
+`attribute` is one of `dexterity`, `intelligence`, `vitality`, `charisma`, `aura`. Either branch's
+effects array may be omitted or empty.
+
+Action templates (`optionTemplates[].actionTemplate`) start an interactive action in addition to
+effects / the skill-check branch. Only `enrollmentTransaction` and `enrollmentPayment` exist, both
+from `SceneActionTemplates` in `src/lib/sim/actions/_templates.ts`, and both take `args: {}`.
 
 ## Keys to verify
 
@@ -234,8 +276,8 @@ Option labels are short imperative phrases of one to three words: `Accept`, `Dec
 
 ## Example
 
-Request: _"add event for molly: if friendship is 1, molly offers a choice between 2 gifts: 99 moxes,
-or 1 magic dust."_
+Request: _"add event for molly: when you befriend her, molly offers a choice between 2 gifts: 99
+moxes, or 1 magic dust."_
 
 ```json
 {
@@ -243,8 +285,8 @@ or 1 magic dust."_
   "text": "Molly approaches you and tells you she appreciated the way you made her feel welcome last time. She offers you a token of gratitude, pick your favorite.",
   "triggers": [
     {
-      "triggerType": "relation_parameter",
-      "parameters": { "characterKey": "molly", "relationParameter": "friendship", "value": 1 }
+      "triggerType": "socialize",
+      "parameters": { "characterKey": "molly", "socializeType": "befriend" }
     },
     { "triggerType": "character_present", "parameters": { "characterKey": "molly" } }
   ],
@@ -270,7 +312,8 @@ or 1 magic dust."_
 
 Note what the request did not spell out and the defaults filled in: `character_present`,
 `triggersOnce`, `characterArc`, `emotion` (warm gratitude → `happy`), the key, and a paragraph of
-prose that justifies the gift through Molly's friendship without naming the rewards.
+prose that justifies the gift through Molly's friendship without naming the rewards. Map "befriend
+/ flirt / impress / taunt" wording to `socialize`, not to a `relation_parameter` threshold.
 
 ## Editing an existing event
 

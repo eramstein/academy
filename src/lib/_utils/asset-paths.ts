@@ -1,10 +1,10 @@
 import { Emotion } from '@/lib/_model/enums-sim';
 
-/** Characters that have a 4×3 emotion spritesheet under images/characters/sheets. */
-const CHARACTER_EMOTION_SHEETS = new Set(['molly']);
+/** Characters with a 4×4 emotion spritesheet (314px cells → 1256×1256) under images/characters/sheets. */
+const CHARACTER_EMOTION_SHEETS = new Set(['molly', 'emma']);
 
 const EMOTION_SHEET_COLS = 4;
-const EMOTION_SHEET_ROWS = 3;
+const EMOTION_SHEET_ROWS = 4;
 
 /** Grid position [col, row] for each emotion on character sheets. */
 const EMOTION_SHEET_CELLS: Record<Emotion, readonly [number, number]> = {
@@ -20,6 +20,10 @@ const EMOTION_SHEET_CELLS: Record<Emotion, readonly [number, number]> = {
   [Emotion.Proud]: [1, 2],
   [Emotion.Embarrassed]: [2, 2],
   [Emotion.Scared]: [3, 2],
+  [Emotion.Amused]: [0, 3],
+  [Emotion.Disappointed]: [1, 3],
+  [Emotion.Excited]: [2, 3],
+  [Emotion.Disgusted]: [3, 3],
 };
 
 // Utility function to get the correct asset path for both development and production
@@ -55,13 +59,18 @@ export function hasCharacterEmotionSheet(characterKey: string): boolean {
   return CHARACTER_EMOTION_SHEETS.has(characterKey);
 }
 
-/** CSS background-position percentages for a cell on a 4×3 emotion sheet. */
+/** CSS background-position percentages for a cell on a 4×4 emotion sheet. */
 export function getEmotionSheetBackgroundPosition(emotion: Emotion): { x: number; y: number } {
   const [col, row] = EMOTION_SHEET_CELLS[emotion];
   return {
     x: (col / (EMOTION_SHEET_COLS - 1)) * 100,
     y: (row / (EMOTION_SHEET_ROWS - 1)) * 100,
   };
+}
+
+/** CSS background-size for a 4×4 emotion sheet (`400% 400%`). */
+export function getEmotionSheetBackgroundSize(): string {
+  return `${EMOTION_SHEET_COLS * 100}% ${EMOTION_SHEET_ROWS * 100}%`;
 }
 
 export function getSoundPath(soundName: string): string {
@@ -106,15 +115,12 @@ export function getEventImagePath(imageFileName: string): string {
 }
 
 /**
- * Event art filename: `{eventKey}.jpg` when the template opts in via `image`.
- * Place the file at public/assets/images/events/{eventKey}.jpg.
+ * Event art filename from the template's `image` field (e.g. `emma-l1.png`).
+ * Place the file at public/assets/images/events/{image}.
  */
-export function resolveEventImageFileName(
-  eventKey: string,
-  image?: string
-): string | undefined {
-  if (!image || !eventKey) return undefined;
-  return `${eventKey}.jpg`;
+export function resolveEventImageFileName(_eventKey: string, image?: string): string | undefined {
+  if (!image) return undefined;
+  return image;
 }
 
 export function getJobImagePath(jobName: string): string {
@@ -122,6 +128,9 @@ export function getJobImagePath(jobName: string): string {
 }
 
 const ACTIVITY_IMAGE_FOLDERS = ['activities', 'activities_more'] as const;
+
+/** Max N probed for `{character}-p-{N}.jpg` physical-romance art. */
+const PHYSICAL_ROMANCE_IMAGE_MAX = 12;
 
 /**
  * Activity illustration candidates, tried in order:
@@ -140,6 +149,18 @@ export function getActivityImagePath(
   ];
   return basenames.flatMap((basename) =>
     ACTIVITY_IMAGE_FOLDERS.map((folder) => getAssetPath(`images/${folder}/${basename}`))
+  );
+}
+
+/** Physical-romance art: `images/activities_more/{characterKey}-p-{n}.jpg`. */
+export function getPhysicalRomanceImagePath(characterKey: string, n: number): string {
+  return getAssetPath(`images/activities_more/${characterKey}-p-${n}.jpg`);
+}
+
+/** Candidate paths for `{characterKey}-p-1.jpg` … `p-{MAX}`. */
+export function getPhysicalRomanceImageCandidates(characterKey: string): string[] {
+  return Array.from({ length: PHYSICAL_ROMANCE_IMAGE_MAX }, (_, i) =>
+    getPhysicalRomanceImagePath(characterKey, i + 1)
   );
 }
 

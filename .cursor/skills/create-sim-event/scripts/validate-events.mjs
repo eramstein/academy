@@ -149,12 +149,24 @@ function checkTrigger(where, trigger) {
       ]);
       if (typeof params.value !== 'number') errors.push(`${where}: value must be a number`);
       break;
+    case 'socialize':
+      checkOneOf(where, 'characterKey', params.characterKey, npcKeys);
+      checkOneOf(where, 'socializeType', params.socializeType, [
+        'befriend',
+        'taunt',
+        'impress',
+        'flirt',
+      ]);
+      break;
     case 'activity_history':
       checkOneOf(where, 'characterKey', params.characterKey, npcKeys);
       checkOneOf(where, 'activityType', params.activityType, activityTypes);
       if (typeof params.value !== 'number' || !Number.isInteger(params.value) || params.value < 1) {
         errors.push(`${where}: value must be an integer ≥ 1`);
       }
+      break;
+    case 'scheduled_activity':
+      // No parameters: matches when current activity.eventId === this event's key.
       break;
   }
 }
@@ -307,6 +319,15 @@ function checkEffect(where, effect) {
       ]);
       if (typeof parameters.amount !== 'number') errors.push(`${where}: amount must be a number`);
       break;
+    case 'update_relation_arc':
+      checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
+      if (typeof parameters.text !== 'string' || !parameters.text) {
+        errors.push(`${where}: text must be a non-empty string`);
+      }
+      if (parameters.image !== undefined && typeof parameters.image !== 'string') {
+        errors.push(`${where}: image must be a string`);
+      }
+      break;
     case 'move':
       checkOneOf(where, 'placeKey', parameters.placeKey, placeKeys);
       if (!Array.isArray(parameters.characterKeys) || parameters.characterKeys.length === 0) {
@@ -331,6 +352,7 @@ const allowedEventProps = new Set([
   'characterArc',
   'emotion',
   'image',
+  'imageSize',
 ]);
 
 events.forEach((event, index) => {
@@ -376,6 +398,9 @@ events.forEach((event, index) => {
   if (event?.optionTemplates !== undefined && !Array.isArray(event.optionTemplates)) {
     errors.push(`${where}: optionTemplates must be an array`);
   }
+  const attributeKeys = ['dexterity', 'intelligence', 'vitality', 'charisma', 'aura'];
+  const difficultyKeys = ['trivial', 'veryeasy', 'easy', 'medium', 'hard', 'extreme', 'impossible'];
+
   (event?.optionTemplates ?? []).forEach((option, i) => {
     const optionWhere = `${where} option[${i}]`;
     if (typeof option?.text !== 'string' || !option.text.trim()) {
@@ -389,9 +414,28 @@ events.forEach((event, index) => {
         actionTemplates
       );
     }
+    if (option?.attributeCheck && option?.effects) {
+      errors.push(`${optionWhere}: use either effects or attributeCheck, not both`);
+    }
     (option?.effects ?? []).forEach((effect, j) =>
       checkEffect(`${optionWhere} effects[${j}]`, effect)
     );
+    if (option?.attributeCheck) {
+      const check = option.attributeCheck;
+      const checkWhere = `${optionWhere} attributeCheck`;
+      if (!check || typeof check !== 'object') {
+        errors.push(`${checkWhere}: must be an object`);
+      } else {
+        checkOneOf(checkWhere, 'attribute', check.attribute, attributeKeys);
+        checkOneOf(checkWhere, 'difficulty', check.difficulty, difficultyKeys);
+        (check.successEffects ?? []).forEach((effect, j) =>
+          checkEffect(`${checkWhere} successEffects[${j}]`, effect)
+        );
+        (check.failureEffects ?? []).forEach((effect, j) =>
+          checkEffect(`${checkWhere} failureEffects[${j}]`, effect)
+        );
+      }
+    }
   });
 });
 

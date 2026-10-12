@@ -19,6 +19,7 @@ export enum EventEffectType {
   Narrate = 'narrate',
   LevelAttribute = 'level_attribute',
   ChangeRelation = 'change_relation',
+  UpdateRelationArc = 'update_relation_arc',
   Move = 'move',
 }
 
@@ -62,6 +63,7 @@ export enum ActivityType {
   Romance = 'romance',
   Tournament = 'tournament',
   Exam = 'exam',
+  Event = 'event',
 }
 
 export enum ClassType {
@@ -105,8 +107,10 @@ export enum EventTriggerType {
   Place = 'place',
   CharacterPresent = 'character_present',
   RelationParameter = 'relation_parameter',
+  Socialize = 'socialize',
   ActivityHistory = 'activity_history',
   DayOfWeek = 'day_of_week',
+  ScheduledActivity = 'scheduled_activity',
 }
 
 export enum ResourceType {
@@ -136,4 +140,8 @@ export enum Emotion {
   Proud = 'proud',
   Embarrassed = 'embarrassed',
   Scared = 'scared',
+  Amused = 'amused',
+  Disappointed = 'disappointed',
+  Excited = 'excited',
+  Disgusted = 'disgusted',
 }

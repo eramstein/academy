@@ -14,6 +14,7 @@ import {
   type StoredEventTemplate,
 } from '../_state/event-templates';
 import { SceneActionTemplates } from './actions';
+import type { SocializeParameters } from './actions/socialize';
 import { getCharactersAtScene } from './characters';
 import { narrateText } from './narration';
 import { getCurrentScheduledActivity } from './schedule';
@@ -33,6 +34,7 @@ export interface EventTriggerParameters {
     relationParameter: keyof Npc['relationProgress'];
     value: number;
   };
+  [EventTriggerType.Socialize]: SocializeParameters;
   [EventTriggerType.ActivityHistory]: {
     characterKey: string;
     activityType: ActivityType;
@@ -40,6 +42,8 @@ export interface EventTriggerParameters {
   };
   /** 1 = Monday … 7 = Sunday; any listed weekday matches. */
   [EventTriggerType.DayOfWeek]: { daysOfWeek: number[] };
+  /** Matches when the current scheduled activity's `eventId` equals this event's key. */
+  [EventTriggerType.ScheduledActivity]: Record<string, never>;
 }
 
 export type EventTrigger = {
@@ -130,7 +134,9 @@ export function getTriggeredSceneEvent():
   const template = eventTemplates.find(
     (eventTemplate) =>
       isTemplateUnlocked(eventTemplate) &&
-      (eventTemplate.triggers ?? []).every(doesTriggerMatch)
+      (eventTemplate.triggers ?? []).every((trigger) =>
+        doesTriggerMatch(trigger, eventTemplate.key)
+      )
   );
   if (!template) {
     return undefined;
@@ -180,18 +186,9 @@ export function simulateEvent(templateKey: string) {
   return event;
 }
 
-/** Drop a once-event from the in-memory working set and reset relation triggers. Catalog stays intact. */
+/** Drop a once-event from the in-memory working set. Catalog stays intact. */
 export function consumeEventTemplate(template: StoredEventTemplate) {
   eventTemplates = eventTemplates.filter((eventTemplate) => eventTemplate !== template);
-  // for events requiring relation values, "consume" the relation value
-  // Follow-up-only events may omit triggers entirely.
-  for (const trigger of (template.triggers ?? []).filter(
-    (t) => t.triggerType === EventTriggerType.RelationParameter
-  )) {
-    const { characterKey, relationParameter } = trigger.parameters;
-    const character = gs.characters[characterKey];
-    character.relationProgress[relationParameter] = 0;
-  }
 }
 
 /** Record that an event fired (save-backed). Does not mutate catalog templates. */
@@ -215,7 +212,7 @@ export function unlockEventTemplate(templateKey: string): boolean {
   return true;
 }
 
-function doesTriggerMatch(trigger: EventTrigger): boolean {
+function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
   // Keep trigger intact so switch narrows parameters per triggerType
   switch (trigger.triggerType) {
     case EventTriggerType.PreviousEvents:
@@ -231,6 +228,8 @@ function doesTriggerMatch(trigger: EventTrigger): boolean {
       return gs.player.placeKey === trigger.parameters.placeKey;
     case EventTriggerType.RelationParameter:
       return checkRelationParameter(trigger);
+    case EventTriggerType.Socialize:
+      return checkSocialize(trigger);
     case EventTriggerType.CharacterPresent:
       return getCharactersAtScene().some(
         (character) => character.key === trigger.parameters.characterKey
@@ -239,6 +238,8 @@ function doesTriggerMatch(trigger: EventTrigger): boolean {
       return checkActivityHistory(trigger);
     case EventTriggerType.DayOfWeek:
       return trigger.parameters.daysOfWeek.includes(getWeekDay(gs.time.day));
+    case EventTriggerType.ScheduledActivity:
+      return getCurrentScheduledActivity()?.eventId === eventKey;
     default:
       return false;
   }
@@ -266,6 +267,19 @@ function checkRelationParameter(
   }
 }
 
+function checkSocialize(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.Socialize }>
+): boolean {
+  const context = gs.scene.socializeContext;
+  if (!context) {
+    return false;
+  }
+  return (
+    context.characterKey === trigger.parameters.characterKey &&
+    context.socializeType === trigger.parameters.socializeType
+  );
+}
+
 function checkActivityHistory(
   trigger: Extract<EventTrigger, { triggerType: EventTriggerType.ActivityHistory }>
 ): boolean {
@@ -283,7 +297,9 @@ function buildOption(optionTemplate: EventOptionTemplate): EventOption {
     const { actionTemplate, args } = optionTemplate.actionTemplate;
     option.outcome.action = SceneActionTemplates[actionTemplate](args);
   }
-  if (optionTemplate.effects) {
+  if (optionTemplate.attributeCheck) {
+    option.outcome.attributeCheck = optionTemplate.attributeCheck;
+  } else if (optionTemplate.effects) {
     option.outcome.effects = optionTemplate.effects;
   }
   return option;

@@ -1,4 +1,4 @@
-import type { TransactionParameters } from '../sim/actions';
+import type { SocializeParameters, TransactionParameters } from '../sim/actions';
 import type { EventTrigger } from '../sim/events';
 import type { CardColor } from './enums-battle';
 import type {
@@ -60,6 +60,8 @@ export interface Scene {
   actions: Action[]; // list of proactive actions the player can do currently
   selectingNextPlace?: boolean; // whether the player is selecting a next place
   image?: string;
+  /** Active socialize attempt; Socialize triggers only match while this is set. */
+  socializeContext?: SocializeParameters;
 }
 
 export interface SceneEvent {
@@ -76,6 +78,8 @@ export interface EventOption {
 export interface EventOutcome {
   action?: Action;
   effects?: EventEffect[];
+  /** When set, roll on select; apply successEffects or failureEffects instead of effects. */
+  attributeCheck?: EventOptionAttributeCheck;
 }
 
 export interface EventEffect {
@@ -84,6 +88,24 @@ export interface EventEffect {
 }
 
 export type EventImageSize = 'small' | 'medium' | 'large';
+
+/** Named difficulties for event option skill checks (see skillCheckDifficulty). */
+export type SkillCheckDifficultyName =
+  | 'trivial'
+  | 'veryeasy'
+  | 'easy'
+  | 'medium'
+  | 'hard'
+  | 'extreme'
+  | 'impossible';
+
+/** Authored skill check on an event option: roll attribute vs difficulty, then branch effects. */
+export interface EventOptionAttributeCheck {
+  attribute: keyof Attributes;
+  difficulty: SkillCheckDifficultyName;
+  successEffects?: EventEffect[];
+  failureEffects?: EventEffect[];
+}
 
 // An event template defines when a scene event triggers and how to generate its options
 export interface EventTemplate {
@@ -97,14 +119,16 @@ export interface EventTemplate {
   characterArc?: string; // npc key
   emotion?: Emotion;
   image?: string;
-  /** How static event art is shown. Defaults to `small` when `image` is set. */
   imageSize?: EventImageSize;
 }
 
 export interface EventOptionTemplate {
   text: string;
   actionTemplate?: ActionTemplate;
+  /** Direct effects when the option is chosen (no skill check). */
   effects?: EventEffect[];
+  /** Alternative to effects: roll, then apply success or failure effects. */
+  attributeCheck?: EventOptionAttributeCheck;
 }
 
 export interface ActionTemplate {
@@ -151,6 +175,7 @@ export interface ScheduledActivity {
   day: number;
   period: DayPeriod;
   jobId?: string;
+  eventId?: string;
 }
 
 export interface ClassActivity extends ScheduledActivity {
@@ -212,15 +237,18 @@ export interface Npc extends Character {
   traits: Partial<Record<CharacterTrait, boolean>>;
   school?: SchoolName;
   favoriteColors: CardColor[];
-  relationProgress: {
-    friendship: number;
-    respect: number;
-    love: number;
-    rivalry: number;
-  };
+  relationProgress: RelationProgress;
+  relationArc: { text: string; image?: string }[];
   activityHistory: Partial<Record<ActivityType, number>>;
   bio: string;
   favoritePlaces: Record<string, number>;
+}
+
+export interface RelationProgress {
+  friendship: number;
+  respect: number;
+  love: number;
+  rivalry: number;
 }
 
 export interface Place {

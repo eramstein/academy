@@ -12,6 +12,7 @@
     type CardSummonProgress,
     type ConjurationAugury,
   } from '@/lib/sim/actions';
+  import { skillCheckDifficultyLabels } from '@/lib/sim/attribute-checks';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import Conjure from './Conjure.svelte';
@@ -124,6 +125,11 @@
         .join(' ');
     }
     return option.charAt(0).toUpperCase() + option.slice(1);
+  }
+
+  function attributeCheckHint(attribute: string, difficulty: keyof typeof skillCheckDifficultyLabels): string {
+    const attr = attribute.charAt(0).toUpperCase() + attribute.slice(1);
+    return `${attr} · ${skillCheckDifficultyLabels[difficulty]}`;
   }
 
   function optionThumb(option: string | [string, string]): { path: string; portrait: boolean } | undefined {
@@ -320,7 +326,17 @@
     <div class="action-buttons">
       {#if event && event.options.length > 0}
         {#each event.options as option, i (i)}
-          <OrnateButton onclick={() => selectOption(option)}>{option.text}</OrnateButton>
+          <OrnateButton onclick={() => selectOption(option)}>
+            {option.text}
+            {#if option.outcome.attributeCheck}
+              <span class="skill-check-hint">
+                {attributeCheckHint(
+                  option.outcome.attributeCheck.attribute,
+                  option.outcome.attributeCheck.difficulty
+                )}
+              </span>
+            {/if}
+          </OrnateButton>
         {/each}
       {:else if pendingAction && currentParameterKey}
         {#key currentParameterKey}
@@ -406,6 +422,23 @@
   .action-buttons :global(.ornate-button .icon) {
     width: 1.65rem;
     height: 1.65rem;
+  }
+
+  .action-buttons :global(.ornate-button .label) {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15em;
+    line-height: 1.2;
+  }
+
+  .skill-check-hint {
+    font-size: 0.75em;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-cream) 65%, transparent);
   }
 
   .option-thumb {

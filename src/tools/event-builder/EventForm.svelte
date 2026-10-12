@@ -6,12 +6,19 @@
     EventTriggerType,
     type ActionTemplate,
     type EventEffect,
+    type EventOptionAttributeCheck,
     type EventOptionTemplate,
     type EventTemplate,
     type EventTrigger,
     type EventTriggerParameters,
+    type SkillCheckDifficultyName,
   } from '@/lib/_model';
   import { SceneActionTemplates } from '@/lib/sim/actions/_templates';
+  import { SocializeType } from '@/lib/sim/actions/socialize';
+  import {
+    skillCheckDifficultyKeys,
+    skillCheckDifficultyLabels,
+  } from '@/lib/sim/attribute-checks';
   import { WEEK_DAYS } from '@/lib/sim/time';
   import EffectsTemplatesEditor from './EffectsTemplatesEditor.svelte';
   import { saveEventTemplate } from './save-event';
@@ -50,8 +57,11 @@
   const activityTypes = Object.values(ActivityType);
   const emotions = Object.values(Emotion);
   const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
+  const socializeTypes = Object.values(SocializeType);
   const weekDays = WEEK_DAYS.map((name, index) => ({ name, value: index + 1 }));
   const actionNames = Object.keys(SceneActionTemplates);
+  const attributeKeys = ['dexterity', 'intelligence', 'vitality', 'charisma', 'aura'] as const;
+  const difficultyKeys = skillCheckDifficultyKeys;
 
   let previousEventDrafts = $state<Record<number, string>>({});
 
@@ -106,12 +116,17 @@
         relationParameter: 'friendship',
         value: 0,
       },
+      [EventTriggerType.Socialize]: {
+        characterKey: '',
+        socializeType: SocializeType.Befriend,
+      },
       [EventTriggerType.ActivityHistory]: {
         characterKey: '',
         activityType: ActivityType.Social,
         value: 1,
       },
       [EventTriggerType.DayOfWeek]: { daysOfWeek: [6, 7] },
+      [EventTriggerType.ScheduledActivity]: {},
     };
     return defaults[triggerType];
   }
@@ -249,6 +264,69 @@
     };
   }
 
+  function defaultAttributeCheck(): EventOptionAttributeCheck {
+    return {
+      attribute: 'charisma',
+      difficulty: 'medium',
+      successEffects: [],
+      failureEffects: [],
+    };
+  }
+
+  function cloneEffects(effects: EventEffect[] | undefined): EventEffect[] | undefined {
+    if (!effects || effects.length === 0) return undefined;
+    return effects.map((effect) => ({
+      type: effect.type,
+      parameters: { ...effect.parameters },
+    }));
+  }
+
+  function enableAttributeCheck(index: number) {
+    const option = options[index];
+    const { effects: _removed, ...rest } = option;
+    options[index] = {
+      ...rest,
+      attributeCheck: option.attributeCheck ?? defaultAttributeCheck(),
+    };
+  }
+
+  function clearAttributeCheck(index: number) {
+    const { attributeCheck: _removed, ...rest } = options[index];
+    options[index] = { ...rest, effects: rest.effects ?? [] };
+  }
+
+  function setAttributeCheckField<K extends keyof EventOptionAttributeCheck>(
+    index: number,
+    field: K,
+    value: EventOptionAttributeCheck[K]
+  ) {
+    const option = options[index];
+    if (!option.attributeCheck) return;
+    options[index] = {
+      ...option,
+      attributeCheck: {
+        ...option.attributeCheck,
+        [field]: value,
+      },
+    };
+  }
+
+  function setAttributeCheckEffects(
+    index: number,
+    branch: 'successEffects' | 'failureEffects',
+    next: EventEffect[]
+  ) {
+    const option = options[index];
+    if (!option.attributeCheck) return;
+    options[index] = {
+      ...option,
+      attributeCheck: {
+        ...option.attributeCheck,
+        [branch]: next,
+      },
+    };
+  }
+
   function buildEvent(): EventTemplate {
     const built: EventTemplate = {
       key: key.trim(),
@@ -270,11 +348,18 @@
             };
           }
 
-          if (option.effects && option.effects.length > 0) {
-            next.effects = option.effects.map((effect) => ({
-              type: effect.type,
-              parameters: { ...effect.parameters },
-            }));
+          if (option.attributeCheck) {
+            const check: EventOptionAttributeCheck = {
+              attribute: option.attributeCheck.attribute,
+              difficulty: option.attributeCheck.difficulty,
+            };
+            const successEffects = cloneEffects(option.attributeCheck.successEffects);
+            const failureEffects = cloneEffects(option.attributeCheck.failureEffects);
+            if (successEffects) check.successEffects = successEffects;
+            if (failureEffects) check.failureEffects = failureEffects;
+            next.attributeCheck = check;
+          } else if (option.effects && option.effects.length > 0) {
+            next.effects = cloneEffects(option.effects);
           }
 
           return next;
@@ -598,6 +683,22 @@
                     aria-label="Relation threshold"
                     title="Negative: ≤ value; non-negative: ≥ value"
                   />
+                {:else if trigger.triggerType === EventTriggerType.Socialize}
+                  <input
+                    class="input param-input"
+                    bind:value={trigger.parameters.characterKey}
+                    placeholder="character key"
+                    aria-label="Character key"
+                  />
+                  <select
+                    class="input param-select"
+                    bind:value={trigger.parameters.socializeType}
+                    aria-label="Socialize type"
+                  >
+                    {#each socializeTypes as socializeType (socializeType)}
+                      <option value={socializeType}>{socializeType}</option>
+                    {/each}
+                  </select>
                 {:else if trigger.triggerType === EventTriggerType.ActivityHistory}
                   <input
                     class="input param-input"
@@ -622,6 +723,10 @@
                     aria-label="Activity history count"
                     title="Requires activityHistory[activityType] ≥ value"
                   />
+                {:else if trigger.triggerType === EventTriggerType.ScheduledActivity}
+                  <span class="param-hint" title="Matches when the current activity's eventId equals this event's key"
+                    >activity.eventId = this key</span
+                  >
                 {/if}
 
                 <button
@@ -708,12 +813,85 @@
                 {/if}
               </div>
 
-              <EffectsTemplatesEditor
-                effects={option.effects ?? []}
-                onChange={(next) => setOptionEffects(i, next)}
-                title="Option effects"
-                nested
-              />
+              <div class="option-outcome">
+                <div class="section-header tight">
+                  <h3>Outcome</h3>
+                  <div class="outcome-mode">
+                    <button
+                      type="button"
+                      class="btn ghost compact"
+                      class:active={!option.attributeCheck}
+                      onclick={() => clearAttributeCheck(i)}>Direct effects</button
+                    >
+                    <button
+                      type="button"
+                      class="btn ghost compact"
+                      class:active={!!option.attributeCheck}
+                      onclick={() => enableAttributeCheck(i)}>Attribute check</button
+                    >
+                  </div>
+                </div>
+
+                {#if option.attributeCheck}
+                  <div class="check-fields">
+                    <label class="field">
+                      <span class="label">Attribute</span>
+                      <select
+                        class="input"
+                        value={option.attributeCheck.attribute}
+                        onchange={(e) =>
+                          setAttributeCheckField(
+                            i,
+                            'attribute',
+                            (e.currentTarget as HTMLSelectElement)
+                              .value as EventOptionAttributeCheck['attribute']
+                          )}
+                      >
+                        {#each attributeKeys as attr (attr)}
+                          <option value={attr}>{attr}</option>
+                        {/each}
+                      </select>
+                    </label>
+                    <label class="field">
+                      <span class="label">Difficulty</span>
+                      <select
+                        class="input"
+                        value={option.attributeCheck.difficulty}
+                        onchange={(e) =>
+                          setAttributeCheckField(
+                            i,
+                            'difficulty',
+                            (e.currentTarget as HTMLSelectElement).value as SkillCheckDifficultyName
+                          )}
+                      >
+                        {#each difficultyKeys as diff (diff)}
+                          <option value={diff}>{skillCheckDifficultyLabels[diff]}</option>
+                        {/each}
+                      </select>
+                    </label>
+                  </div>
+
+                  <EffectsTemplatesEditor
+                    effects={option.attributeCheck.successEffects ?? []}
+                    onChange={(next) => setAttributeCheckEffects(i, 'successEffects', next)}
+                    title="On success"
+                    nested
+                  />
+                  <EffectsTemplatesEditor
+                    effects={option.attributeCheck.failureEffects ?? []}
+                    onChange={(next) => setAttributeCheckEffects(i, 'failureEffects', next)}
+                    title="On failure"
+                    nested
+                  />
+                {:else}
+                  <EffectsTemplatesEditor
+                    effects={option.effects ?? []}
+                    onChange={(next) => setOptionEffects(i, next)}
+                    title="Option effects"
+                    nested
+                  />
+                {/if}
+              </div>
             </li>
           {/each}
         </ul>
@@ -917,6 +1095,11 @@
     width: 10rem;
   }
 
+  .param-hint {
+    color: #a89880;
+    font-size: 0.85rem;
+  }
+
   .previous-events {
     display: flex;
     align-items: center;
@@ -1018,10 +1201,29 @@
     text-transform: uppercase;
   }
 
-  .option-action {
+  .option-action,
+  .option-outcome {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.35rem;
+  }
+
+  .outcome-mode {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .outcome-mode .btn.active {
+    background: rgba(175, 142, 103, 0.22);
+    border-color: var(--color-brass);
+    color: var(--color-golden);
+  }
+
+  .check-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
   }
 
   .hint {

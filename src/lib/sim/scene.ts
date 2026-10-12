@@ -7,6 +7,7 @@ import {
   type ScheduledActivity,
 } from '../_model';
 import { gs } from '../_state';
+import { attributeCheck, skillCheckDifficulty } from './attribute-checks';
 import { consumeEventTemplate, getTriggeredSceneEvent, recordEventOccured } from './events';
 import { narrateText } from './narration';
 import { updateNpcLocations } from './npc';
@@ -36,7 +37,16 @@ export async function selectOption(option: EventOption) {
   console.log('selectOption', option, gs.scene.event);
   // Clear so a follow_up_event effect can claim the scene; otherwise setSceneEvents would wipe it.
   gs.scene.event = undefined;
-  if (option.outcome.effects) {
+  if (option.outcome.attributeCheck) {
+    const check = option.outcome.attributeCheck;
+    const { success } = attributeCheck(
+      gs.player.attributes[check.attribute],
+      skillCheckDifficulty[check.difficulty],
+      check.attribute
+    );
+    const branched = success ? check.successEffects : check.failureEffects;
+    branched?.forEach((effect) => applyEffect(effect));
+  } else if (option.outcome.effects) {
     option.outcome.effects.forEach((effect) => {
       applyEffect(effect);
     });

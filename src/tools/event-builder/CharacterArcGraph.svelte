@@ -42,6 +42,18 @@
       .filter((key): key is string => typeof key === 'string' && key.length > 0);
   }
 
+  function scheduledEventTargets(effects: EventEffect[] | undefined): string[] {
+    if (!effects?.length) return [];
+    return effects
+      .filter((effect) => effect.type === EventEffectType.ScheduleActivity)
+      .map((effect) => effect.parameters?.activity?.eventId)
+      .filter((key): key is string => typeof key === 'string' && key.length > 0);
+  }
+
+  function outgoingEventTargets(effects: EventEffect[] | undefined): string[] {
+    return [...followUpTargets(effects), ...scheduledEventTargets(effects)];
+  }
+
   const layout = $derived.by(() => {
     const byKey = new Map(events.map((event) => [event.key, event]));
     const adjacency = new Map<string, string[]>();
@@ -73,12 +85,20 @@
         }
       }
 
-      for (const nextKey of followUpTargets(event.effects)) {
+      for (const nextKey of outgoingEventTargets(event.effects)) {
         addEdge(event.key, nextKey);
       }
       for (const option of event.optionTemplates ?? []) {
-        for (const nextKey of followUpTargets(option.effects)) {
+        for (const nextKey of outgoingEventTargets(option.effects)) {
           addEdge(event.key, nextKey);
+        }
+        if (option.attributeCheck) {
+          for (const nextKey of outgoingEventTargets(option.attributeCheck.successEffects)) {
+            addEdge(event.key, nextKey);
+          }
+          for (const nextKey of outgoingEventTargets(option.attributeCheck.failureEffects)) {
+            addEdge(event.key, nextKey);
+          }
         }
       }
     }

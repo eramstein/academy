@@ -5,6 +5,7 @@
     getCharacterImagePath,
     getCharacterSheetPath,
     getEmotionSheetBackgroundPosition,
+    getEmotionSheetBackgroundSize,
     hasCharacterEmotionSheet,
   } from '@/lib/_utils/asset-paths';
 
@@ -26,6 +27,7 @@
   const sheetPosition = $derived(
     emotion ? getEmotionSheetBackgroundPosition(emotion) : undefined
   );
+  const sheetSize = getEmotionSheetBackgroundSize();
 </script>
 
 {#if useSheet && sheetPosition}
@@ -35,6 +37,7 @@
     class="character-portrait character-portrait-sheet"
     style:background-image="url('{sheetPath}')"
     style:background-position="{sheetPosition.x}% {sheetPosition.y}%"
+    style:background-size={sheetSize}
     style:transform="scale({zoom})"
   ></span>
 {:else}
@@ -58,7 +61,6 @@
   }
 
   .character-portrait-sheet {
-    background-size: 400% 300%;
     background-repeat: no-repeat;
   }
 </style>

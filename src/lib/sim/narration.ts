@@ -258,6 +258,8 @@ export function narrateText(
     characterKey?: string;
     emotion?: Emotion;
     image?: string;
+    /** Pre-resolved asset URL (e.g. activities_more); wins over `image`. */
+    imageUrl?: string;
     imageSize?: EventImageSize;
     eventKey?: string;
   }
@@ -265,7 +267,8 @@ export function narrateText(
   const imageFile = options?.image
     ? resolveEventImageFileName(options.eventKey ?? '', options.image)
     : undefined;
-  const imageUrl = imageFile ? getEventImagePath(imageFile) : undefined;
+  const imageUrl =
+    options?.imageUrl ?? (imageFile ? getEventImagePath(imageFile) : undefined);
   const imageSize = imageUrl ? (options?.imageSize ?? 'small') : undefined;
   if (imageUrl && imageSize === 'large') {
     gs.scene.image = imageUrl;

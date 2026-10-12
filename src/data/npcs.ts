@@ -27,6 +27,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
       love: 0,
       rivalry: 0,
     },
+    relationArc: [],
     favoriteColors: [],
     craftingKnowledge: {},
     craftingSkills: {

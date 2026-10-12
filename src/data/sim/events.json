@@ -132,11 +132,10 @@
     "text": "Moly tells you she appreciated the way you made her feel welcome. She offers you a token of gratitude, pick your favorite!",
     "triggers": [
       {
-        "triggerType": "relation_parameter",
+        "triggerType": "socialize",
         "parameters": {
           "characterKey": "molly",
-          "relationParameter": "friendship",
-          "value": 1
+          "socializeType": "befriend"
         }
       },
       {
@@ -200,11 +199,10 @@
         }
       },
       {
-        "triggerType": "relation_parameter",
+        "triggerType": "socialize",
         "parameters": {
           "characterKey": "molly",
-          "relationParameter": "friendship",
-          "value": 1
+          "socializeType": "befriend"
         }
       },
       {
@@ -223,10 +221,7 @@
             "parameters": {
               "activity": {
                 "type": "study",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "library"
               },
               "schedule": {
@@ -258,11 +253,10 @@
         }
       },
       {
-        "triggerType": "relation_parameter",
+        "triggerType": "socialize",
         "parameters": {
           "characterKey": "molly",
-          "relationParameter": "friendship",
-          "value": 1
+          "socializeType": "befriend"
         }
       },
       {
@@ -281,10 +275,7 @@
         "type": "offer_card_gifts",
         "parameters": {
           "count": 3,
-          "poolKeys": [
-            "molly",
-            "base"
-          ]
+          "poolKeys": ["molly", "base"]
         }
       }
     ]
@@ -302,19 +293,13 @@
       {
         "triggerType": "day_of_week",
         "parameters": {
-          "daysOfWeek": [
-            6,
-            7
-          ]
+          "daysOfWeek": [6, 7]
         }
       },
       {
         "triggerType": "period",
         "parameters": {
-          "periods": [
-            "morning",
-            "afternoon"
-          ]
+          "periods": ["morning", "afternoon"]
         }
       },
       {
@@ -427,10 +412,7 @@
         "type": "move",
         "parameters": {
           "placeKey": "gray_mountains",
-          "characterKeys": [
-            "player",
-            "molly"
-          ]
+          "characterKeys": ["player", "molly"]
         }
       }
     ]
@@ -440,11 +422,10 @@
     "text": "Molly seeks you out with a thoughtful look. She says she has been watching how you carry yourself, and she respects the care you put into your work. She asks if you would take on a mentoring post with her at the library on Tuesday evenings, helping younger students find their footing.",
     "triggers": [
       {
-        "triggerType": "relation_parameter",
+        "triggerType": "socialize",
         "parameters": {
           "characterKey": "molly",
-          "relationParameter": "respect",
-          "value": 1
+          "socializeType": "impress"
         }
       },
       {
@@ -471,9 +452,7 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [
-                      2
-                    ],
+                    "daysOfWeek": [2],
                     "period": "evening"
                   }
                 }
@@ -500,11 +479,10 @@
         }
       },
       {
-        "triggerType": "relation_parameter",
+        "triggerType": "socialize",
         "parameters": {
           "characterKey": "molly",
-          "relationParameter": "respect",
-          "value": 1
+          "socializeType": "impress"
         }
       },
       {
@@ -549,11 +527,10 @@
     "text": "Molly finds you with a tight smile that does not reach her eyes. Whatever has soured between you still sits heavy on her, and she makes no effort to hide it. She presses a small purse into your hands anyway, calling it charity for someone who clearly needs the help, and waits to see whether you will take the slight.",
     "triggers": [
       {
-        "triggerType": "relation_parameter",
+        "triggerType": "socialize",
         "parameters": {
           "characterKey": "molly",
-          "relationParameter": "rivalry",
-          "value": 1
+          "socializeType": "taunt"
         }
       },
       {
@@ -588,11 +565,10 @@
     "text": "Molly draws you aside, cheeks flushed, and admits she has noticed the way you have been flirting with her. She does not sound angry so much as uncertain, and she asks you plainly what your intentions are—whether this is a game, or something you mean to pursue.",
     "triggers": [
       {
-        "triggerType": "relation_parameter",
+        "triggerType": "socialize",
         "parameters": {
           "characterKey": "molly",
-          "relationParameter": "love",
-          "value": 1
+          "socializeType": "flirt"
         }
       },
       {
@@ -629,7 +605,7 @@
     ],
     "triggersOnce": true,
     "characterArc": "molly",
-    "emotion": "embarrassed"
+    "emotion": "flirtatious"
   },
   {
     "key": "molly-l2",
@@ -644,11 +620,10 @@
         }
       },
       {
-        "triggerType": "relation_parameter",
+        "triggerType": "socialize",
         "parameters": {
           "characterKey": "molly",
-          "relationParameter": "love",
-          "value": 1
+          "socializeType": "flirt"
         }
       },
       {
@@ -670,10 +645,7 @@
             "parameters": {
               "activity": {
                 "type": "date",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "royal-pigeon-inn"
               },
               "schedule": {
@@ -689,7 +661,7 @@
     ],
     "triggersOnce": true,
     "characterArc": "molly",
-    "emotion": "embarrassed"
+    "emotion": "happy"
   },
   {
     "key": "molly-l3",
@@ -704,11 +676,10 @@
         }
       },
       {
-        "triggerType": "relation_parameter",
+        "triggerType": "socialize",
         "parameters": {
           "characterKey": "molly",
-          "relationParameter": "love",
-          "value": 1
+          "socializeType": "flirt"
         }
       },
       {
@@ -730,10 +701,7 @@
             "parameters": {
               "activity": {
                 "type": "romance",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "molly-room"
               },
               "schedule": {
@@ -752,21 +720,55 @@
     "emotion": "flirtatious"
   },
   {
-    "key": "emma-1",
-    "text": "Emma asks you out",
+    "key": "emma-l1",
+    "text": "You notice Emma nearby and gather the courage to go speak to her, only to find yourself stunned by her charm—every word you meant to say slips away the moment her eyes meet yours. She watches your struggle with clear amusement, then teases you gently about the tongue-tied display before turning away with a smile that stays with you after she is gone.",
     "triggers": [
+      {
+        "triggerType": "socialize",
+        "parameters": {
+          "characterKey": "emma",
+          "socializeType": "flirt"
+        }
+      },
       {
         "triggerType": "character_present",
         "parameters": {
           "characterKey": "emma"
         }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Oh well"
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "emma",
+    "emotion": "amused",
+    "image": "emma-l1.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "emma-ball-invitation",
+    "text": "Emma is amused by your persistence in trying to woo her. She pretends to send you away with a cool little wave, then calls you back before you have gone three steps—she has an idea for how you might make yourself useful. She is attending a ball at the Academy and needs a faire valoir at her side. Wear your best, she says, and do not dare be late.",
+    "triggers": [
+      {
+        "triggerType": "previous_events",
+        "parameters": {
+          "emma-l1": true
+        }
       },
       {
-        "triggerType": "relation_parameter",
+        "triggerType": "socialize",
         "parameters": {
           "characterKey": "emma",
-          "relationParameter": "love",
-          "value": 1
+          "socializeType": "flirt"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
         }
       }
     ],
@@ -778,16 +780,14 @@
             "type": "schedule_activity",
             "parameters": {
               "activity": {
-                "type": "date",
-                "participants": [
-                  "player",
-                  "emma"
-                ],
-                "placeKey": "cafeteria"
+                "type": "social",
+                "participants": ["player", "emma"],
+                "placeKey": "cafeteria",
+                "eventId": "emma-ball"
               },
               "schedule": {
+                "nextFree": true,
                 "date": {
-                  "day": 0,
                   "period": "evening"
                 }
               }
@@ -796,11 +796,107 @@
         ]
       },
       {
-        "text": "Decline"
+        "text": "Refuse",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Emma's amusement fades. She had offered you a place at her side, and your refusal leaves her clearly disappointed."
+            }
+          }
+        ]
       }
     ],
     "triggersOnce": true,
-    "characterArc": "emma"
+    "characterArc": "emma",
+    "emotion": "amused"
+  },
+  {
+    "key": "emma-ball",
+    "text": "Emma greets you at the Academy ball with a bright, practiced smile, already weighing every glance from the professors and patrons she means to impress. She draws you close and makes it plain she is counting on you tonight—how you carry yourself beside her is part of the figure she wants to cut. The music swells, the room watches, and she waits to see which face you will show at her side.",
+    "triggers": [
+      {
+        "triggerType": "scheduled_activity",
+        "parameters": {}
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Stay modest",
+        "attributeCheck": {
+          "attribute": "charisma",
+          "difficulty": "trivial",
+          "successEffects": [
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            },
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Emma softens with quiet appreciation; your restraint has helped her more than flash ever would."
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Emma's smile thins. She had counted on you, and the evening leaves her disappointed."
+              }
+            }
+          ]
+        }
+      },
+      {
+        "text": "Be smart",
+        "attributeCheck": {
+          "attribute": "intelligence",
+          "difficulty": "easy",
+          "successEffects": [
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "love",
+                "amount": 1
+              }
+            },
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Emma looks genuinely surprised, then impressed—she had not expected you to shine quite like that."
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Emma's smile thins. She had counted on you, and the evening leaves her disappointed."
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "triggersOnce": true,
+    "characterArc": "emma",
+    "emotion": "excited",
+    "image": "emma-ball.jpg",
+    "imageSize": "large"
   },
   {
     "key": "conjuration-1",

@@ -14,7 +14,12 @@ import { addGold, type AddGoldParameters } from './gold';
 import { getJob, type GetJobParameters } from './jobs';
 import { narrate, type NarrateParameters } from './narrate';
 import { move, type MoveParameters } from './move';
-import { changeRelation, type ChangeRelationParameters } from './relations';
+import {
+  changeRelation,
+  updateRelationArc,
+  type ChangeRelationParameters,
+  type UpdateRelationArcParameters,
+} from './relations';
 import { addResource, type AddResourceParameters } from './resources';
 import { scheduleActivities, type ScheduleActivitiesParameters } from './schedule';
 import { subscribe, type TransactionSubscriptionParameters } from './subscribe';
@@ -54,5 +59,7 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     levelAttribute(parameters as LevelAttributeParameters),
   [EventEffectType.ChangeRelation]: (parameters) =>
     changeRelation(parameters as ChangeRelationParameters),
+  [EventEffectType.UpdateRelationArc]: (parameters) =>
+    updateRelationArc(parameters as UpdateRelationArcParameters),
   [EventEffectType.Move]: (parameters) => move(parameters as MoveParameters),
 };

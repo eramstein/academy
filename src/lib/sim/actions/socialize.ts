@@ -1,10 +1,15 @@
-import type { Action, Npc } from '@/lib/_model';
+import type { Action } from '@/lib/_model';
 import { ActionType, ActivityType } from '@/lib/_model/enums-sim';
 import { gs } from '@/lib/_state';
+import { getPhysicalRomanceImageCandidates } from '@/lib/_utils/asset-paths';
+import { getRandomFromArray } from '@/lib/_utils/random';
 import { attributeCheck, skillCheckDifficulty } from '../attribute-checks';
 import { getCharactersAtScene } from '../characters';
 import { offerCardGifts } from '../effects/gifts';
+import { changeRelation } from '../effects/relations';
+import { getTriggeredSceneEvent } from '../events';
 import { narrateAttemptedAction, narrateText } from '../narration';
+import { setEvent } from '../scene';
 import { getCurrentScheduledActivity } from '../schedule';
 
 export enum SocializeType {
@@ -29,18 +34,20 @@ export interface RomanceParameters {
   romanceType: RomanceType;
 }
 
-const SOCIALIZE_RELATION: Record<SocializeType, keyof Npc['relationProgress']> = {
-  [SocializeType.Befriend]: 'friendship',
-  [SocializeType.Taunt]: 'rivalry',
-  [SocializeType.Impress]: 'respect',
-  [SocializeType.Flirt]: 'love',
-};
-
-// progresses a relation parameter; used to trigger relation events
+/** Socialize: fire a matching event if one triggers, otherwise narrate the attempt. */
 export function socialize(parameters: SocializeParameters): string {
-  const partner = gs.characters[parameters.characterKey];
-  const relationKey = SOCIALIZE_RELATION[parameters.socializeType];
-  partner.relationProgress[relationKey] = (partner.relationProgress[relationKey] ?? 0) + 1;
+  gs.scene.socializeContext = {
+    characterKey: parameters.characterKey,
+    socializeType: parameters.socializeType,
+  };
+  const triggered = getTriggeredSceneEvent();
+  gs.scene.socializeContext = undefined;
+
+  if (triggered) {
+    setEvent(triggered.event, triggered.template);
+    return '';
+  }
+
   narrateAttemptedAction({
     label: 'Socialize',
     actionType: ActionType.Socialize,
@@ -93,7 +100,11 @@ export function romance(parameters: RomanceParameters): string {
   };
 
   if (parameters.romanceType === RomanceType.DeepenRelationship) {
-    partner.relationProgress.love = (partner.relationProgress.love ?? 0) + 1;
+    changeRelation({
+      characterKey: parameters.characterKey,
+      relationParameter: 'love',
+      amount: 1,
+    });
     narrateAttemptedAction(action);
     return '';
   }
@@ -106,18 +117,45 @@ export function romance(parameters: RomanceParameters): string {
       action
     );
     if (success) {
-      narrateText(`${partner.name} offers you a card as a gift.`, {
-        characterKey: parameters.characterKey,
-      });
-      offerCardGifts({
-        count: 3,
-        poolKeys: [parameters.characterKey, 'base'],
-      });
+      void narratePhysicalRomanceGift(partner.name, parameters.characterKey);
     }
     return '';
   }
 
   return '';
+}
+
+async function imageUrlExists(url: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
+}
+
+/** Pick a random existing `{character}-p-N.jpg` from activities_more, if any. */
+async function pickPhysicalRomanceImage(characterKey: string): Promise<string | undefined> {
+  const candidates = getPhysicalRomanceImageCandidates(characterKey);
+  const existing = (
+    await Promise.all(
+      candidates.map(async (url) => ((await imageUrlExists(url)) ? url : undefined))
+    )
+  ).filter((url): url is string => url !== undefined);
+  if (existing.length === 0) return undefined;
+  return getRandomFromArray(existing);
+}
+
+async function narratePhysicalRomanceGift(partnerName: string, characterKey: string) {
+  const imageUrl = await pickPhysicalRomanceImage(characterKey);
+  narrateText(`${partnerName} offers you a card as a gift.`, {
+    characterKey,
+    ...(imageUrl ? { imageUrl, imageSize: 'medium' } : {}),
+  });
+  offerCardGifts({
+    count: 3,
+    poolKeys: [characterKey, 'base'],
+  });
 }
 
 export function getRelationalActions() {

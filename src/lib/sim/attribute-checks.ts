@@ -10,6 +10,22 @@ export const skillCheckDifficulty = {
   hard: 3,
   extreme: 6,
   impossible: 1000,
+} as const;
+
+export type SkillCheckDifficultyKey = keyof typeof skillCheckDifficulty;
+
+export const skillCheckDifficultyKeys = Object.keys(
+  skillCheckDifficulty
+) as SkillCheckDifficultyKey[];
+
+export const skillCheckDifficultyLabels: Record<SkillCheckDifficultyKey, string> = {
+  trivial: 'Trivial',
+  veryeasy: 'Very Easy',
+  easy: 'Easy',
+  medium: 'Medium',
+  hard: 'Hard',
+  extreme: 'Extreme',
+  impossible: 'Impossible',
 };
 
 const difficultLabels = {

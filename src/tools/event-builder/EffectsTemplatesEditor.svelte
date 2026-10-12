@@ -128,6 +128,8 @@
         return { attribute: 'intelligence', amount: 1, characterKey: 'player' };
       case EventEffectType.ChangeRelation:
         return { characterKey: '', relationParameter: 'friendship', amount: 1 };
+      case EventEffectType.UpdateRelationArc:
+        return { characterKey: '', text: '', image: '' };
       case EventEffectType.Move:
         return { placeKey: placeKeys[0] ?? '', characterKeys: ['player'] };
       default:
@@ -563,6 +565,31 @@
                 oninput={(e) =>
                   setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
               />
+            {:else if effect.type === EventEffectType.UpdateRelationArc}
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? ''}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.text ?? ''}
+                placeholder="arc text"
+                aria-label="Text"
+                oninput={(e) =>
+                  setParameter(i, 'text', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.image ?? ''}
+                placeholder="folder/file.png"
+                aria-label="Image path"
+                oninput={(e) =>
+                  setParameter(i, 'image', (e.currentTarget as HTMLInputElement).value)}
+              />
             {:else if effect.type === EventEffectType.Move}
               <select
                 class="input arg"
@@ -646,6 +673,18 @@
                 placeholder="participants (comma-separated)"
                 aria-label="Participants"
                 oninput={(e) => setParticipants(i, (e.currentTarget as HTMLInputElement).value)}
+              />
+
+              <input
+                class="input arg"
+                value={args.activity.eventId ?? ''}
+                placeholder="event id (optional)"
+                aria-label="Event id"
+                title="When set, the scheduled_activity trigger on that event fires while this activity is current"
+                oninput={(e) => {
+                  const value = (e.currentTarget as HTMLInputElement).value.trim();
+                  setActivityField(i, 'eventId', value || undefined);
+                }}
               />
 
               {@render scheduleFields(i, args.schedule)}

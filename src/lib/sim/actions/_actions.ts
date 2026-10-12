@@ -102,7 +102,15 @@ export async function performAction(action: Action) {
   if (action.isLongAction) {
     gs.time.longActionPerformed = true;
   }
-  setSceneEvents();
+  // Socialize (and similar) may already have claimed the scene with an event.
+  if (!gs.scene.event) {
+    setSceneEvents();
+  } else {
+    gs.scene.actions = [];
+  }
+  if (gs.scene.event) {
+    return;
+  }
   if (
     action.actionType === ActionType.Wait ||
     (action.isLongAction && gs.scene.actions.filter((action) => !action.isLongAction).length === 0)
