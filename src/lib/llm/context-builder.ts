@@ -94,7 +94,8 @@ export function buildBattleGreetingContext(opponentKey: string): string {
       'Opponent, about to speak:',
       describeNpc(opponent, true),
       describeRelationToPlayer(opponent),
-      describeSharedHistory(opponent)
+      describeSharedHistory(opponent),
+      describeRelationArc(opponent)
     );
   }
   sections.push(
@@ -159,7 +160,8 @@ function buildPresentCharactersContext(focusKey?: string): string {
     lines.push(
       describeNpc(focus, true),
       describeRelationToPlayer(focus),
-      describeSharedHistory(focus)
+      describeSharedHistory(focus),
+      describeRelationArc(focus)
     );
   }
   for (const character of others) {
@@ -255,6 +257,19 @@ function describeSharedHistory(npc: Npc): string {
   return `Time already shared with the player: ${parts.join(', ')}. They have met before.`;
 }
 
+/** Latest story beats with this NPC; optional flavor the model may echo if relevant. */
+function describeRelationArc(npc: Npc): string {
+  const beats = (npc.relationArc ?? [])
+    .map((beat) => beat.text?.trim())
+    .filter((text): text is string => Boolean(text))
+    .slice(-2);
+  if (beats.length === 0) return '';
+  return [
+    `Recent story with ${npc.name} (optional — reference only if it fits this moment):`,
+    ...beats.map((text) => `- ${clip(text, 480)}`),
+  ].join('\n');
+}
+
 function bondLabel(
   value: number,
   none: string,
@@ -313,7 +328,8 @@ function describeAttemptedAction(action?: Action, focusKey?: string): string[] {
         choice,
         ...socializeLines(
           params.socializeType,
-          characterName(typeof params.characterKey === 'string' ? params.characterKey : undefined)
+          characterName(typeof params.characterKey === 'string' ? params.characterKey : undefined),
+          typeof params.intent === 'string' ? params.intent : undefined
         ),
       ].filter((line): line is string => Boolean(line));
     case ActionType.Negotiate:
@@ -341,27 +357,42 @@ function choiceLine(action: Action): string | undefined {
   return `The player's approach: "${label}".`;
 }
 
-function socializeLines(type: unknown, name: string): string[] {
+function socializeLines(type: unknown, name: string, intent?: string): string[] {
+  let lines: string[];
   switch (type) {
     case 'befriend':
-      return [
+      lines = [
         `Player action: you try to befriend ${name}. Put a confidence, a small kindness, or a joke that makes room for them into what you say or do.`,
       ];
+      break;
     case 'taunt':
-      return [
+      lines = [
         `Player action: you needle ${name}. Put a barb, a challenge, or a joke at their expense into what you say. Sharp, not cruel for its own sake.`,
       ];
+      break;
     case 'impress':
-      return [
+      lines = [
         `Player action: you try to earn ${name}'s respect. Show the skill, nerve, or competence they would actually notice.`,
       ];
+      break;
     case 'flirt':
-      return [
+      lines = [
         `Player action: you flirt with ${name}. Say a charged compliment, a bold question, or an invitation.`,
       ];
+      break;
     default:
-      return [`Player action: you spend a social moment with ${name}. Show what you say or do.`];
+      lines = [`Player action: you spend a social moment with ${name}. Show what you say or do.`];
   }
+  const intentLine = playerIntentLine(intent);
+  if (intentLine) lines.push(intentLine);
+  return lines;
+}
+
+/** Player free-text intent: shapes the attempt, never the engine outcome. */
+function playerIntentLine(intent?: string): string | undefined {
+  const trimmed = intent?.trim();
+  if (!trimmed) return undefined;
+  return `Player's intended approach (what they mean to try — not what happens): "${clip(trimmed, 280)}". Shape the attempt around this intent. The engine already decided success or failure; do not invent a different plan, and do not let the player decide the outcome.`;
 }
 
 function jobLines(
@@ -403,15 +434,19 @@ function romanceLines(params: Record<string, unknown>, choice?: string): string[
   const partner = characterName(
     typeof params.characterKey === 'string' ? params.characterKey : undefined
   );
+  const intent =
+    typeof params.intent === 'string' ? playerIntentLine(params.intent) : undefined;
   if (params.romanceType === 'physical') {
     return [
       choice,
       `Player action: you begin a sexual encounter with ${partner}. Show what you do before showing how they respond.`,
+      intent,
     ].filter((line): line is string => Boolean(line));
   }
   return [
     choice,
     `Player action: you offer ${partner} a stretch of closeness. Outcome: the relationship deepens. Show what you offer, then how they answer.`,
+    intent,
   ].filter((line): line is string => Boolean(line));
 }
 

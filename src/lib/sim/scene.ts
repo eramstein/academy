@@ -1,5 +1,6 @@
 import { performAction, setPossibleActions } from '@/lib/sim/actions';
 import { applyEffect } from '@/lib/sim/effects';
+import { appendRelationArcText } from '@/lib/sim/effects/relations';
 import {
   type EventEffect,
   type EventOption,
@@ -23,6 +24,19 @@ import { nextPeriod } from './time';
 
 function effectsIncludeNarrate(effects?: EventEffect[]): boolean {
   return effects?.some((effect) => effect.type === EventEffectType.Narrate) ?? false;
+}
+
+/** Apply an option effect; for character-arc events, mix narrate prose into the same arc beat. */
+function applyOptionEffect(effect: EventEffect, characterArc?: string) {
+  applyEffect(effect);
+  if (!characterArc || effect.type !== EventEffectType.Narrate) {
+    return;
+  }
+  const text = typeof effect.parameters?.text === 'string' ? effect.parameters.text.trim() : '';
+  if (!text) {
+    return;
+  }
+  appendRelationArcText(characterArc, text);
 }
 
 /** True when the player must pick an option before the scene continues. */
@@ -58,6 +72,9 @@ export function setSceneEvents() {
 
 export async function selectOption(option: EventOption) {
   console.log('selectOption', option, gs.scene.event);
+  const characterArc = gs.scene.event?.key
+    ? getSceneEventByKey(gs.scene.event.key)?.template.characterArc
+    : undefined;
   // Clear so a follow_up_event effect can claim the scene; otherwise setSceneEvents would wipe it.
   // Drop large event art so Location returns to the place/activity image unless a follow-up sets a new one.
   gs.scene.event = undefined;
@@ -77,10 +94,10 @@ export async function selectOption(option: EventOption) {
       }
     );
     const branched = success ? check.successEffects : check.failureEffects;
-    branched?.forEach((effect) => applyEffect(effect));
+    branched?.forEach((effect) => applyOptionEffect(effect, characterArc));
   } else if (option.outcome.effects) {
     option.outcome.effects.forEach((effect) => {
-      applyEffect(effect);
+      applyOptionEffect(effect, characterArc);
     });
   }
   if (option.outcome.action) {

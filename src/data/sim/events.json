@@ -2242,6 +2242,135 @@
     "emotion": "happy"
   },
   {
+    "key": "emma-ballet",
+    "text": "Elsa finds you with Ousmane, Henry, and Molly, giggling with barely contained excitement as she urges you all to follow—there is something hilarious she needs you to see. She leads you to a quiet room where Emma is alone at the barre, holding a long, poised leg stretch with perfect form. Elsa stifles a mocking laugh at the sight; Molly murmurs that it looks cool, while Ousmane and Henry go silent, staring. Elsa bristles at their reaction and Molly chuckles under her breath—until Emma notices the audience, stops mid-hold, and raises an eyebrow. Everyone scatters but you.",
+    "triggers": [
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "afternoon"
+        }
+      },
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 7
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "elsa"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "molly"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "ousmane"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "henry"
+        }
+      }
+    ],
+    "effects": [
+      {
+        "type": "move",
+        "parameters": {
+          "placeKey": "academy-hall",
+          "characterKeys": ["player", "emma", "elsa", "molly", "ousmane", "henry"]
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Compliment her",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You blush and compliment her form before bolting after the others. Emma's eyebrow softens; she relaxes and smiles."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Try some moves",
+        "attributeCheck": {
+          "attribute": "dexterity",
+          "difficulty": "hard",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Emma is impressed and says you would make a good dance partner."
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "love",
+                "amount": 1
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Emma laughs gently and helps you through the steps."
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "characterArc": "emma",
+    "emotion": "taunting",
+    "image": "emma-ballet.jpg",
+    "imageSize": "large"
+  },
+  {
     "key": "conjuration-1",
     "text": "This is an artificery class. Here, we'll learn how to create new cards. Conjuration consists in creating a new card from scratch. Try it!",
     "triggers": [

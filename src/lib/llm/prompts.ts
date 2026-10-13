@@ -65,6 +65,7 @@ function narrationRequest(extra?: string): string {
   return [
     'Narrate the engine result above.',
     'Show what you say or do first, then how they react. Do not skip the attempt and describe only their behavior.',
+    'If Recent story beats are listed, you may briefly reference them when it naturally fits; do not force a callback.',
     extra,
   ]
     .filter(Boolean)

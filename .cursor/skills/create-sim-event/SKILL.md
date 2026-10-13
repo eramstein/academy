@@ -188,8 +188,9 @@ Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffect
 | `move`                | `{ placeKey: "academy", characterKeys: ["player", "molly"] }`                                                                                                      |
 | `use_focus`           | `{ amount: 1 }`                                                                                                                                                    |
 
-`narrate` only posts the given sentence; it does not change game state. Use it on options that
-need a reaction beat with no reward or schedule.
+`narrate` posts the given sentence to the scene. On character-arc events (`characterArc` set),
+option (and attribute-check branch) `narrate` texts are mixed into the same `relationArc` beat as
+the base event text (one box). Use it on options that need a reaction beat with no reward or schedule.
 
 `level_attribute` adds `amount` (default 1) to that character's `attributes` field. Omit
 `characterKey` or use `"player"` for the player; use an NPC key to level an NPC.

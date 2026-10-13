@@ -46,6 +46,19 @@ export function updateRelationArc(parameters: UpdateRelationArcParameters): stri
   return text;
 }
 
+/** Mixes prose into the latest arc beat (same box as the event text). */
+export function appendRelationArcText(characterKey: string, text: string): void {
+  const character = gs.characters[characterKey];
+  if (!character || !text) {
+    return;
+  }
+  const entry = character.relationArc.at(-1);
+  if (!entry) {
+    return;
+  }
+  entry.text = `${entry.text.trimEnd()}\n\n${text.trim()}`;
+}
+
 const RELATION_TAG_LABELS: Record<RelationTag, string> = {
   [RelationTag.Teammate]: 'teammates',
   [RelationTag.Rival]: 'rivals',

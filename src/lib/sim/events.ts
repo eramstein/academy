@@ -213,9 +213,10 @@ function attachActivityImageToArc(characterKey: string, text: string) {
     if (!image) return;
     const character = gs.characters[characterKey];
     if (!character) return;
+    // Match the beat that started as this event text (outcome prose may already be mixed in).
     const entry = [...character.relationArc]
       .reverse()
-      .find((beat) => beat.text === text && !beat.image);
+      .find((beat) => !beat.image && (beat.text === text || beat.text.startsWith(text)));
     if (entry) {
       entry.image = image.stored;
     }

@@ -58,7 +58,10 @@
   };
 
   let pendingAction = $state<Action | null>(null);
+  let playerIntent = $state('');
   let enchantAction = $state<Action | null>(null);
+
+  const intentParameterKeys = new Set(['socializeType', 'romanceType']);
   let shopAction = $state<Action | null>(null);
   let cardCraftAction = $state<Action | null>(null);
   let cardCraftStep = $state<'invoke' | 'conjure'>('invoke');
@@ -283,11 +286,23 @@
 
   function pickParameter(value: string) {
     if (!pendingAction || !currentParameterKey) return;
-    commitAction(applyParameter(pendingAction, currentParameterKey, value));
+    let next = applyParameter(pendingAction, currentParameterKey, value);
+    if (intentParameterKeys.has(currentParameterKey)) {
+      const intent = playerIntent.trim();
+      if (intent) {
+        next = {
+          ...next,
+          actionParameters: { ...next.actionParameters, intent },
+        };
+      }
+      playerIntent = '';
+    }
+    commitAction(next);
   }
 
   function cancelParameterPick() {
     pendingAction = null;
+    playerIntent = '';
   }
 </script>
 
@@ -379,6 +394,19 @@
         {/each}
       {/if}
     </div>
+    {#if pendingAction && currentParameterKey && intentParameterKeys.has(currentParameterKey)}
+      <label class="intent-field">
+        <span class="intent-label">Intent (optional)</span>
+        <input
+          class="intent-input"
+          type="text"
+          maxlength="200"
+          placeholder="What do you intend to say or do?"
+          bind:value={playerIntent}
+          autocomplete="off"
+        />
+      </label>
+    {/if}
   </div>
 </div>
 
@@ -491,5 +519,49 @@
 
   .cancel-btn:active {
     background: var(--color-data-active);
+  }
+
+  .intent-field {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    width: min(28rem, 100%);
+    box-sizing: border-box;
+  }
+
+  .intent-label {
+    font-family: var(--font-narrative);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted-label);
+    text-align: center;
+  }
+
+  .intent-input {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0.55rem 0.85rem;
+    font-family: var(--font-narrative);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: var(--color-cream);
+    background: color-mix(in srgb, var(--color-data) 70%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-brass) 50%, transparent);
+    border-radius: 4px;
+    outline: none;
+    caret-color: var(--color-golden);
+  }
+
+  .intent-input::placeholder {
+    color: color-mix(in srgb, var(--color-muted-label) 85%, transparent);
+  }
+
+  .intent-input:focus {
+    border-color: var(--color-brass);
+    background: color-mix(in srgb, var(--color-data-hover) 80%, transparent);
   }
 </style>

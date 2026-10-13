@@ -22,6 +22,8 @@ export enum SocializeType {
 export interface SocializeParameters {
   characterKey: string;
   socializeType: SocializeType;
+  /** Optional player intent for LLM narration (does not affect the attribute check). */
+  intent?: string;
 }
 
 export enum RomanceType {
@@ -32,6 +34,8 @@ export enum RomanceType {
 export interface RomanceParameters {
   characterKey: string;
   romanceType: RomanceType;
+  /** Optional player intent for LLM narration (does not affect checks or relation changes). */
+  intent?: string;
 }
 
 function socializeAttribute(type: SocializeType): 'charisma' | 'intelligence' {
@@ -53,6 +57,7 @@ export async function socialize(parameters: SocializeParameters): Promise<string
     return '';
   }
 
+  const intent = parameters.intent?.trim();
   const action: Action = {
     label: 'Socialize',
     actionType: ActionType.Socialize,
@@ -60,6 +65,7 @@ export async function socialize(parameters: SocializeParameters): Promise<string
     actionParameters: {
       characterKey: parameters.characterKey,
       socializeType: parameters.socializeType,
+      ...(intent ? { intent } : {}),
     },
   };
   const attribute = socializeAttribute(parameters.socializeType);
@@ -106,6 +112,7 @@ export function getSocializeActions(): Action[] {
 
 export async function romance(parameters: RomanceParameters): Promise<string> {
   const partner = gs.characters[parameters.characterKey];
+  const intent = parameters.intent?.trim();
   const action: Action = {
     label:
       parameters.romanceType === RomanceType.DeepenRelationship
@@ -116,6 +123,7 @@ export async function romance(parameters: RomanceParameters): Promise<string> {
     actionParameters: {
       characterKey: parameters.characterKey,
       romanceType: parameters.romanceType,
+      ...(intent ? { intent } : {}),
     },
   };
 
@@ -233,21 +241,14 @@ export function getRelationalActions() {
     }
     return [
       {
-        label: 'Deepen Relationship',
+        label: 'Romance',
         actionType: ActionType.Romance,
         isLongAction: false,
         actionParameters: {
           characterKey: partner,
-          romanceType: RomanceType.DeepenRelationship,
         },
-      },
-      {
-        label: 'Physical Interaction',
-        actionType: ActionType.Romance,
-        isLongAction: false,
-        actionParameters: {
-          characterKey: partner,
-          romanceType: RomanceType.Physical,
+        missingParameters: {
+          romanceType: [RomanceType.DeepenRelationship, RomanceType.Physical],
         },
       },
     ];
