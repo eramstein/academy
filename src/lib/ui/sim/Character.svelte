@@ -47,6 +47,14 @@
       : []
   );
 
+  const relationTags = $derived(
+    'relationTags' in character ? ((character as Npc).relationTags ?? []) : []
+  );
+
+  function relationTagLabel(tag: string): string {
+    return tag.replaceAll('_', ' ');
+  }
+
   const subscriptions = $derived(
     Object.values(SubscriptionType).map((type) => ({
       type,
@@ -249,29 +257,38 @@
         </section>
       {/if}
 
-      <div class="two-col" class:single={relations.length === 0}>
-        {#if relations.length > 0}
+      <div class="two-col" class:single={relations.length === 0 && relationTags.length === 0}>
+        {#if relations.length > 0 || relationTags.length > 0}
           <section class="section">
             <h3 class="section-title">
               {@render icon('people')}
               Relations
             </h3>
             {@render divider()}
-            <ul class="relation-list">
-              {#each relations as rel (rel.key)}
-                <li class="relation-row">
-                  <span class="relation-name">{rel.key}</span>
-                  <button
-                    type="button"
-                    class="relation-value"
-                    title="Click to +1"
-                    onclick={() => incrementRelation(rel.key)}
-                  >
-                    {rel.value}
-                  </button>
-                </li>
-              {/each}
-            </ul>
+            {#if relationTags.length > 0}
+              <ul class="trait-list">
+                {#each relationTags as tag (tag)}
+                  <li class="trait-item relation-tag">{relationTagLabel(tag)}</li>
+                {/each}
+              </ul>
+            {/if}
+            {#if relations.length > 0}
+              <ul class="relation-list">
+                {#each relations as rel (rel.key)}
+                  <li class="relation-row">
+                    <span class="relation-name">{rel.key}</span>
+                    <button
+                      type="button"
+                      class="relation-value"
+                      title="Click to +1"
+                      onclick={() => incrementRelation(rel.key)}
+                    >
+                      {rel.value}
+                    </button>
+                  </li>
+                {/each}
+              </ul>
+            {/if}
           </section>
         {/if}
 
@@ -490,6 +507,12 @@
     color: #d4b8a8;
     border-color: #a07050;
     background: #2a1c18;
+  }
+
+  .trait-item.relation-tag {
+    color: var(--color-cream);
+    border-color: color-mix(in srgb, var(--color-brass) 70%, transparent);
+    background: color-mix(in srgb, var(--color-brass) 18%, rgba(0, 0, 0, 0.28));
   }
 
   .relation-row {

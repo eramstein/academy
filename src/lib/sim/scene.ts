@@ -1,11 +1,13 @@
 import { performAction, setPossibleActions } from '@/lib/sim/actions';
 import { applyEffect } from '@/lib/sim/effects';
 import {
+  type EventEffect,
   type EventOption,
   type EventTemplate,
   type SceneEvent,
   type ScheduledActivity,
 } from '../_model';
+import { EventEffectType } from '../_model/enums-sim';
 import { gs } from '../_state';
 import { attributeCheck, skillCheckDifficulty } from './attribute-checks';
 import { consumeEventTemplate, getTriggeredSceneEvent, recordEventOccured } from './events';
@@ -13,6 +15,10 @@ import { narrateText } from './narration';
 import { updateNpcLocations } from './npc';
 import { getCurrentScheduledActivity, narrateScheduledActivity } from './schedule';
 import { nextPeriod } from './time';
+
+function effectsIncludeNarrate(effects?: EventEffect[]): boolean {
+  return effects?.some((effect) => effect.type === EventEffectType.Narrate) ?? false;
+}
 
 /* 
 The scene first loops events until it runs out. Player has to react to each event by chosing an option.
@@ -36,13 +42,22 @@ export function setSceneEvents() {
 export async function selectOption(option: EventOption) {
   console.log('selectOption', option, gs.scene.event);
   // Clear so a follow_up_event effect can claim the scene; otherwise setSceneEvents would wipe it.
+  // Drop large event art so Location returns to the place/activity image unless a follow-up sets a new one.
   gs.scene.event = undefined;
+  gs.scene.image = undefined;
   if (option.outcome.attributeCheck) {
     const check = option.outcome.attributeCheck;
     const { success } = await attributeCheck(
       gs.player.attributes[check.attribute],
       skillCheckDifficulty[check.difficulty],
-      check.attribute
+      check.attribute,
+      undefined,
+      undefined,
+      {
+        // Authored narrate effects already describe the outcome — don't LLM on top.
+        skipLlmNarration: (result) =>
+          effectsIncludeNarrate(result.success ? check.successEffects : check.failureEffects),
+      }
     );
     const branched = success ? check.successEffects : check.failureEffects;
     branched?.forEach((effect) => applyEffect(effect));

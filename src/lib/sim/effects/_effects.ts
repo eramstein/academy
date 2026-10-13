@@ -15,8 +15,10 @@ import { getJob, type GetJobParameters } from './jobs';
 import { narrate, type NarrateParameters } from './narrate';
 import { move, type MoveParameters } from './move';
 import {
+  addRelationTag,
   changeRelation,
   updateRelationArc,
+  type AddRelationTagParameters,
   type ChangeRelationParameters,
   type UpdateRelationArcParameters,
 } from './relations';
@@ -61,5 +63,7 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     changeRelation(parameters as ChangeRelationParameters),
   [EventEffectType.UpdateRelationArc]: (parameters) =>
     updateRelationArc(parameters as UpdateRelationArcParameters),
+  [EventEffectType.AddRelationTag]: (parameters) =>
+    addRelationTag(parameters as AddRelationTagParameters),
   [EventEffectType.Move]: (parameters) => move(parameters as MoveParameters),
 };

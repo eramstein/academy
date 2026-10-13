@@ -57,6 +57,12 @@
           : [];
       return list.length ? `${trigger.triggerType}: ${list.join(',')}` : trigger.triggerType;
     }
+    if (trigger.triggerType === EventTriggerType.Day) {
+      const parts: string[] = [];
+      if (trigger.parameters.minDay != null) parts.push(`≥${trigger.parameters.minDay}`);
+      if (trigger.parameters.day != null) parts.push(`=${trigger.parameters.day}`);
+      return parts.length ? `${trigger.triggerType}: ${parts.join(' ')}` : trigger.triggerType;
+    }
     const value = Object.values(trigger.parameters)[0];
     return value !== undefined ? `${trigger.triggerType}: ${value}` : trigger.triggerType;
   }
@@ -118,7 +124,7 @@
   {#if selectedArc}
     <CharacterArcGraph events={arcEvents} {onEdit} {onCreateFollowUp} />
   {:else if events.length === 0}
-    <p class="empty">No events in events.json.</p>
+    <p class="empty">No events.</p>
   {:else}
     <ul class="list">
       {#each events as event (event.key)}

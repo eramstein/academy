@@ -12,6 +12,7 @@ import type {
   EventEffectType,
   JobType,
   NarrationType,
+  RelationTag,
   ResourceType,
   SchoolName,
   SubscriptionType,
@@ -142,6 +143,11 @@ export interface Narration {
   type: NarrationType;
   mentions?: Mentions;
   attributeCheck?: AttributeCheck;
+  /**
+   * When true, this attribute-check entry has no LLM/authored text of its own
+   * (e.g. a narrate effect supplies the prose instead). UI can complete without waiting for text.
+   */
+  skipCheckText?: boolean;
   /** Action being narrated when there is no attribute check (e.g. socialize). */
   attemptedAction?: Action;
   /** Short visual description for generating an image of this scene. */
@@ -245,6 +251,7 @@ export interface Npc extends Character {
   favoriteColors: CardColor[];
   relationProgress: RelationProgress;
   relationArc: { text: string; image?: string }[];
+  relationTags: RelationTag[];
   activityHistory: Partial<Record<ActivityType, number>>;
   bio: string;
   favoritePlaces: Record<string, number>;

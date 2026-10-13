@@ -556,8 +556,17 @@
                     class="input narrow"
                     type="number"
                     min="0"
+                    placeholder="day"
                     bind:value={trigger.parameters.day}
-                    aria-label="Day"
+                    aria-label="Day (exact)"
+                  />
+                  <input
+                    class="input narrow"
+                    type="number"
+                    min="0"
+                    placeholder="minDay"
+                    bind:value={trigger.parameters.minDay}
+                    aria-label="Min day"
                   />
                 {:else if trigger.triggerType === EventTriggerType.Period}
                   <div class="days" role="group" aria-label="Periods">

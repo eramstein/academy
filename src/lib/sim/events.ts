@@ -25,7 +25,8 @@ import { getWeekDay } from './time';
 /** Parameter shapes expected by each EventTriggerType (see doesTriggerMatch). */
 export interface EventTriggerParameters {
   [EventTriggerType.PreviousEvents]: Record<string, unknown>; // required prior event keys
-  [EventTriggerType.Day]: { day: number };
+  /** Exact `day`, and/or `minDay` (day >= minDay). At least one required. */
+  [EventTriggerType.Day]: { day?: number; minDay?: number };
   /** Single `period` or `periods` (any match). Prefer `periods` when listing more than one. */
   [EventTriggerType.Period]: { period?: DayPeriod; periods?: DayPeriod[] };
   [EventTriggerType.ActivityType]: { activityType: ActivityType };
@@ -75,6 +76,7 @@ function ensureEventProgress() {
 
 async function readEventTemplatesSource(): Promise<EventTemplate[]> {
   try {
+    // Dev server merges events.json + optional gitignored events_more.json.
     const response = await fetch('/api/events', { cache: 'no-store' });
     if (response.ok) {
       return (await response.json()) as EventTemplate[];
@@ -254,8 +256,13 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
     case EventTriggerType.PreviousEvents:
       ensureEventProgress();
       return Object.keys(trigger.parameters).every((key) => gs.events.occurred.includes(key));
-    case EventTriggerType.Day:
-      return gs.time.day === trigger.parameters.day;
+    case EventTriggerType.Day: {
+      const { day, minDay } = trigger.parameters;
+      if (day == null && minDay == null) return false;
+      if (minDay != null && gs.time.day < minDay) return false;
+      if (day != null && gs.time.day !== day) return false;
+      return true;
+    }
     case EventTriggerType.Period:
       return checkPeriod(trigger);
     case EventTriggerType.ActivityType:

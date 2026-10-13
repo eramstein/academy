@@ -6,6 +6,7 @@
   import EventForm from './EventForm.svelte';
   import EventList from './EventList.svelte';
 
+  // Bundled fallback is events.json only; /api/events merges events_more.json in dev.
   let events = $state<EventTemplate[]>([...(eventsData as EventTemplate[])]);
   let editingEvent = $state<EventTemplate | null>(null);
   let showForm = $state(false);
@@ -21,7 +22,7 @@
         events = (await response.json()) as EventTemplate[];
       }
     } catch {
-      // Keep bundled import fallback.
+      // Keep bundled import fallback (events.json only).
     } finally {
       loading = false;
     }

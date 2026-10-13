@@ -42,6 +42,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     activityHistory: {},
     favoritePlaces: {},
     matchesRecord: { won: 0, lost: 0 },
+    relationTags: [],
   };
 }
 

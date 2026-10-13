@@ -7,6 +7,7 @@
     DayPeriod,
     EventEffectType,
     JobType,
+    RelationTag,
     ResourceType,
     type EventEffect,
     type Job,
@@ -46,6 +47,7 @@
   const weekDays = WEEK_DAYS.map((name, index) => ({ name, value: index + 1 }));
   const attributeKeys = ['dexterity', 'intelligence', 'vitality', 'charisma', 'aura'] as const;
   const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
+  const relationTags = Object.values(RelationTag);
 
   type ActivityArgs = Omit<ScheduledActivity, 'day' | 'period'> & { classType?: ClassType };
 
@@ -130,6 +132,8 @@
         return { characterKey: '', relationParameter: 'friendship', amount: 1 };
       case EventEffectType.UpdateRelationArc:
         return { characterKey: '', text: '', image: '' };
+      case EventEffectType.AddRelationTag:
+        return { characterKey: '', relationTag: RelationTag.Friend };
       case EventEffectType.Move:
         return { placeKey: placeKeys[0] ?? '', characterKeys: ['player'] };
       default:
@@ -590,6 +594,26 @@
                 oninput={(e) =>
                   setParameter(i, 'image', (e.currentTarget as HTMLInputElement).value)}
               />
+            {:else if effect.type === EventEffectType.AddRelationTag}
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? ''}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <select
+                class="input arg"
+                value={effect.parameters.relationTag ?? RelationTag.Friend}
+                aria-label="Relation tag"
+                onchange={(e) =>
+                  setParameter(i, 'relationTag', (e.currentTarget as HTMLSelectElement).value)}
+              >
+                {#each relationTags as tag (tag)}
+                  <option value={tag}>{tag}</option>
+                {/each}
+              </select>
             {:else if effect.type === EventEffectType.Move}
               <select
                 class="input arg"

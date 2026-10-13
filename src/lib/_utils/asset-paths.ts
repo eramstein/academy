@@ -109,14 +109,32 @@ export function getPlaceImagePath(placeKey: string): string {
   return getAssetPath(`images/places/${placeKey}.jpg`);
 }
 
-/** Event illustration at images/events/{fileName}. */
-export function getEventImagePath(imageFileName: string): string {
-  return getAssetPath(`images/events/${imageFileName}`);
+const EVENT_IMAGE_FOLDERS = ['events', 'events_more'] as const;
+
+/**
+ * Event illustration candidates relative to `images/`, tried in order:
+ * `events/{fileName}` then `events_more/{fileName}`.
+ */
+export function getEventImageRelPath(imageFileName: string): string[] {
+  return EVENT_IMAGE_FOLDERS.map((folder) => `${folder}/${imageFileName}`);
+}
+
+/** Full asset URLs for event art candidates (`events` then `events_more`). */
+export function getEventImageCandidates(imageFileName: string): string[] {
+  return getEventImageRelPath(imageFileName).map((rel) => getAssetPath(`images/${rel}`));
 }
 
 /**
- * Event art filename from the template's `image` field (e.g. `emma-l1.png`).
- * Place the file at public/assets/images/events/{image}.
+ * First event-illustration candidate URL (`images/events/{fileName}`).
+ * Prefer {@link getEventImageCandidates} / probing when the file may live in `events_more`.
+ */
+export function getEventImagePath(imageFileName: string): string {
+  return getEventImageCandidates(imageFileName)[0];
+}
+
+/**
+ * Event art filename from the template's `image` field (e.g. `emma-l1.jpg`).
+ * Place the file at public/assets/images/events/{image} or events_more/{image}.
  */
 export function resolveEventImageFileName(_eventKey: string, image?: string): string | undefined {
   if (!image) return undefined;

@@ -2,6 +2,7 @@
   import type { Npc } from '@/lib/_model/model-sim';
   import {
     getAssetPath,
+    getEventImageCandidates,
     getEventImagePath,
     getUiIconPath,
     isPaintedUiIcon,
@@ -30,6 +31,19 @@
       return getAssetPath(`images/${image.replace(/\\/g, '/')}`);
     }
     return getEventImagePath(image);
+  }
+
+  /** Bare event filenames: try `events/` then `events_more/`. */
+  function onBeatImageError(event: Event, image: string) {
+    if (image.includes('/') || image.includes('\\')) return;
+    const img = event.currentTarget as HTMLImageElement;
+    const candidates = getEventImageCandidates(image);
+    const attrSrc = img.getAttribute('src') ?? '';
+    const failedIndex = candidates.findIndex((url) => attrSrc === url || attrSrc.endsWith(url));
+    const fallback = candidates[failedIndex + 1];
+    if (fallback) {
+      img.src = fallback;
+    }
   }
 
   function toggleImage(index: number) {
@@ -78,7 +92,12 @@
                 aria-label={expanded ? 'Shrink image' : 'Enlarge image'}
                 onclick={() => toggleImage(i)}
               >
-                <img class="beat-image" src={resolveImage(beat.image)} alt="" />
+                <img
+                  class="beat-image"
+                  src={resolveImage(beat.image)}
+                  alt=""
+                  onerror={(e) => onBeatImageError(e, beat.image)}
+                />
               </button>
             {/if}
             <p class="beat-text">{beat.text}</p>
@@ -227,12 +246,18 @@
       height 0.2s ease;
   }
 
+  .beat-card.expanded {
+    flex-direction: column;
+  }
+
   .beat-image-btn.expanded {
     flex: 0 0 auto;
     align-self: stretch;
-    aspect-ratio: 1;
-    width: auto;
+    width: 100%;
     height: auto;
+    aspect-ratio: 1;
+    border-right: none;
+    border-bottom: 1px solid rgba(90, 75, 60, 0.35);
     cursor: zoom-out;
   }
 

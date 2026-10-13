@@ -31,3 +31,7 @@ chroma
 # Generated artwork
 public/assets/images/scenes
 public/assets/images/activities_more
+public/assets/images/events_more
+
+# Local experimental event catalog (merged at runtime with events.json)
+src/data/sim/events_more.json

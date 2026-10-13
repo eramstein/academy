@@ -96,7 +96,7 @@
 
   // Empty text means an LLM fill is in flight — keep the page scrolled to the caret.
   $effect(() => {
-    if (activeEntry && !activeEntry.text) {
+    if (activeEntry && !activeEntry.text && !activeEntry.skipCheckText) {
       onProgress?.('smooth');
     }
   });
@@ -182,10 +182,16 @@
     entry: Narration,
     ready: { checkDone?: boolean; textDone?: boolean } = {}
   ) {
-    if (!entry.attributeCheck || !entry.text) return;
+    if (!entry.attributeCheck) return;
     const checkDone = ready.checkDone || checkDoneSet.has(entry.id);
+    if (!checkDone) return;
+    if (entry.skipCheckText) {
+      completeEntry(entry.id);
+      return;
+    }
+    if (!entry.text) return;
     const textDone = ready.textDone || textDoneSet.has(entry.id);
-    if (!checkDone || !textDone) return;
+    if (!textDone) return;
     completeEntry(entry.id);
   }
 
@@ -339,7 +345,7 @@
           onDone={() => onTextDone(entry)}
         />
       {/if}
-    {:else if animate && !entry.attributeCheck?.pending}
+    {:else if animate && !entry.attributeCheck?.pending && !entry.skipCheckText}
       <div class="narration narration-pending" role="status" aria-label="Writing">
         <span aria-hidden="true">Writing…</span>
         <span class="caret" aria-hidden="true"></span>

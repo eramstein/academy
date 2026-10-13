@@ -1,5 +1,5 @@
-// Validates src/data/sim/events.json against the EventTemplate schema and the
-// keys/templates actually registered in the codebase.
+// Validates src/data/sim/events.json (+ optional events_more.json) against the
+// EventTemplate schema and the keys/templates actually registered in the codebase.
 // Usage: node .cursor/skills/create-sim-event/scripts/validate-events.mjs
 import fs from 'node:fs';
 import path from 'node:path';
@@ -7,6 +7,15 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf-8');
+const readOptionalJsonArray = (relative) => {
+  const full = path.join(root, relative);
+  if (!fs.existsSync(full)) return [];
+  const parsed = JSON.parse(fs.readFileSync(full, 'utf-8'));
+  if (!Array.isArray(parsed)) {
+    throw new Error(`${relative} must be an array`);
+  }
+  return parsed;
+};
 const errors = [];
 
 function enumValues(source, enumName) {
@@ -29,6 +38,7 @@ const activityTypes = enumValues(enums, 'ActivityType');
 const classTypes = enumValues(enums, 'ClassType');
 const jobTypes = enumValues(enums, 'JobType');
 const emotions = enumValues(enums, 'Emotion');
+const relationTags = enumValues(enums, 'RelationTag');
 const cardColors = enumValues(battleEnums, 'CardColor');
 
 const effectTypes = enumValues(enums, 'EventEffectType');
@@ -62,21 +72,36 @@ const actionTemplateKeys = [
 ].map((m) => m[1]);
 const abilityKeys = [...keywordKeys, ...actionTemplateKeys];
 
-const raw = read('src/data/sim/events.json');
-let events;
+let mainEvents;
+let moreEvents;
 try {
-  events = JSON.parse(raw);
+  mainEvents = JSON.parse(read('src/data/sim/events.json'));
+  moreEvents = readOptionalJsonArray('src/data/sim/events_more.json');
 } catch (e) {
-  console.error(`events.json is not valid JSON: ${e.message}`);
+  console.error(`Failed to read event catalogs: ${e.message}`);
   process.exit(1);
 }
-if (!Array.isArray(events)) {
+if (!Array.isArray(mainEvents)) {
   console.error('events.json must be an array.');
   process.exit(1);
 }
 
+const events = [...mainEvents, ...moreEvents];
 const eventKeys = events.map((event) => event?.key);
 const at = (event, index) => `${event?.key ?? `#${index}`}`;
+
+const seenKeys = new Map();
+eventKeys.forEach((key, index) => {
+  if (typeof key !== 'string' || !key) return;
+  if (seenKeys.has(key)) {
+    errors.push(
+      `${at(events[index], index)}: duplicate key also used by ${seenKeys.get(key)} (events.json and events_more.json share one key space)`
+    );
+  } else {
+    const source = index < mainEvents.length ? 'events.json' : 'events_more.json';
+    seenKeys.set(key, `${source}:${key}`);
+  }
+});
 
 function checkOneOf(where, label, value, allowed) {
   if (!allowed.includes(value)) {
@@ -101,9 +126,18 @@ function checkTrigger(where, trigger) {
       }
       break;
     }
-    case 'day':
-      if (!Number.isInteger(params.day)) errors.push(`${where}: day must be an integer`);
+    case 'day': {
+      if (params.day == null && params.minDay == null) {
+        errors.push(`${where}: day needs day and/or minDay`);
+      }
+      if (params.day != null && !Number.isInteger(params.day)) {
+        errors.push(`${where}: day must be an integer`);
+      }
+      if (params.minDay != null && !Number.isInteger(params.minDay)) {
+        errors.push(`${where}: minDay must be an integer`);
+      }
       break;
+    }
     case 'period': {
       const list = Array.isArray(params.periods)
         ? params.periods
@@ -340,6 +374,10 @@ function checkEffect(where, effect) {
         errors.push(`${where}: image must be a string`);
       }
       break;
+    case 'add_relation_tag':
+      checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
+      checkOneOf(where, 'relationTag', parameters.relationTag, relationTags);
+      break;
     case 'move':
       checkOneOf(where, 'placeKey', parameters.placeKey, placeKeys);
       if (!Array.isArray(parameters.characterKeys) || parameters.characterKeys.length === 0) {
@@ -451,8 +489,9 @@ events.forEach((event, index) => {
 });
 
 if (errors.length > 0) {
-  console.error(`${errors.length} problem(s) in src/data/sim/events.json:`);
+  console.error(`${errors.length} problem(s) in event catalogs (events.json + events_more.json):`);
   for (const error of errors) console.error(`  - ${error}`);
   process.exit(1);
 }
-console.log(`OK: ${events.length} events valid.`);
+const moreNote = moreEvents.length > 0 ? ` (+ ${moreEvents.length} from events_more.json)` : '';
+console.log(`OK: ${events.length} events valid${moreNote}.`);

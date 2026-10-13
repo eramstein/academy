@@ -1,6 +1,8 @@
 import {
+  getAssetPath,
   getCharacterImagePath,
   getEventImagePath,
+  getEventImageRelPath,
   resolveEventImageFileName,
 } from '@/lib/_utils/asset-paths';
 import { generateImage, isImageGenAvailable } from '@/lib/image_gen';
@@ -20,6 +22,7 @@ import type {
 } from '../_model/model-sim';
 import { gs } from '../_state';
 import type { TransactionParameters } from './actions';
+import { probeFirstExistingImageRel } from './activity-image';
 import { actionTemplates, getActionTemplateMeta } from './cards/action-templates';
 import { formatKeywordLabel, KEYWORD_KEYS } from './cards/keywords';
 import { getCachedSceneImageUrl, saveCachedSceneImage } from './scene-image-cache';
@@ -274,23 +277,40 @@ export function narrateText(
     eventKey?: string;
   }
 ) {
+  const id = crypto.randomUUID();
   const imageFile = options?.image
     ? resolveEventImageFileName(options.eventKey ?? '', options.image)
     : undefined;
-  const imageUrl =
-    options?.imageUrl ?? (imageFile ? getEventImagePath(imageFile) : undefined);
+  let imageUrl = options?.imageUrl ?? (imageFile ? getEventImagePath(imageFile) : undefined);
   const imageSize = imageUrl ? (options?.imageSize ?? 'small') : undefined;
   if (imageUrl && imageSize === 'large') {
     gs.scene.image = imageUrl;
   }
   narrate({
-    id: crypto.randomUUID(),
+    id,
     text,
     type: NarrationType.Text,
     ...(options?.characterKey ? { characters: [options.characterKey] } : {}),
     ...(options?.emotion ? { emotion: options.emotion } : {}),
     ...(imageUrl ? { imageUrl, imageSize } : {}),
   });
+
+  // Prefer events/, fall back to events_more/ when the file only exists there.
+  if (!options?.imageUrl && imageFile) {
+    const provisionalUrl = imageUrl;
+    void probeFirstExistingImageRel(getEventImageRelPath(imageFile)).then((rel) => {
+      if (!rel) return;
+      const resolved = getAssetPath(`images/${rel}`);
+      if (resolved === provisionalUrl) return;
+      const entry = gs.scene.narration.find((n) => n.id === id);
+      if (entry?.imageUrl === provisionalUrl) {
+        entry.imageUrl = resolved;
+      }
+      if (imageSize === 'large' && gs.scene.image === provisionalUrl) {
+        gs.scene.image = resolved;
+      }
+    });
+  }
 }
 
 export function narrateNewPeriod(day: number, period: DayPeriod) {

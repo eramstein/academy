@@ -1,4 +1,4 @@
-import type { RelationProgress } from '@/lib/_model';
+import { RelationTag, type RelationProgress } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 
 export type RelationParameter = keyof RelationProgress;
@@ -44,4 +44,37 @@ export function updateRelationArc(parameters: UpdateRelationArcParameters): stri
   }
   character.relationArc.push(entry);
   return text;
+}
+
+const RELATION_TAG_LABELS: Record<RelationTag, string> = {
+  [RelationTag.Teammate]: 'teammates',
+  [RelationTag.Rival]: 'rivals',
+  [RelationTag.Friend]: 'friends',
+  [RelationTag.Lover]: 'lovers',
+  [RelationTag.SignificantOther]: 'significant others',
+};
+
+export interface AddRelationTagParameters {
+  characterKey: string;
+  relationTag: RelationTag;
+}
+
+/** Adds a relation tag to an NPC if not already present. */
+export function addRelationTag(parameters: AddRelationTagParameters): string {
+  const { characterKey, relationTag } = parameters;
+  const character = gs.characters[characterKey];
+  if (!character) {
+    return `Invalid character key: ${characterKey}.`;
+  }
+  if (!Object.values(RelationTag).includes(relationTag)) {
+    return `Invalid relation tag: ${relationTag}.`;
+  }
+  if (!character.relationTags) {
+    character.relationTags = [];
+  }
+  if (character.relationTags.includes(relationTag)) {
+    return `You and ${character.name} are already ${RELATION_TAG_LABELS[relationTag]}.`;
+  }
+  character.relationTags.push(relationTag);
+  return `You and ${character.name} are now ${RELATION_TAG_LABELS[relationTag]}.`;
 }

@@ -3,6 +3,28 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import path from 'path';
 import fs from 'fs';
 
+const EVENTS_JSON = path.resolve(__dirname, 'src/data/sim/events.json');
+const EVENTS_MORE_JSON = path.resolve(__dirname, 'src/data/sim/events_more.json');
+
+type EventRow = { key?: string; [field: string]: unknown };
+
+function readEventsArray(filePath: string, { optional = false } = {}): EventRow[] {
+  if (optional && !fs.existsSync(filePath)) return [];
+  const parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  if (!Array.isArray(parsed)) {
+    throw new Error(`${path.basename(filePath)} is not an array`);
+  }
+  return parsed;
+}
+
+function writeEventsArray(filePath: string, events: EventRow[]) {
+  fs.writeFileSync(filePath, JSON.stringify(events, null, 2) + '\n', 'utf-8');
+}
+
+function readMergedEvents(): EventRow[] {
+  return [...readEventsArray(EVENTS_JSON), ...readEventsArray(EVENTS_MORE_JSON, { optional: true })];
+}
+
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
   plugins: [
@@ -126,10 +148,7 @@ export default defineConfig(({ command }) => ({
 
           if (req.method === 'GET' && req.url === '/api/events') {
             try {
-              const filePath = path.resolve(__dirname, 'src/data/sim/events.json');
-              const fileContent = fs.readFileSync(filePath, 'utf-8');
-              const events = JSON.parse(fileContent);
-              sendJson(200, events);
+              sendJson(200, readMergedEvents());
             } catch (error) {
               console.error('Error reading events:', error);
               sendJson(500, { error: 'Failed to read events' });
@@ -140,29 +159,29 @@ export default defineConfig(({ command }) => ({
           if (req.method === 'POST' && req.url === '/api/save-event') {
             readBody()
               .then((body) => {
-                const newEvent = JSON.parse(body);
+                const newEvent = JSON.parse(body) as EventRow;
                 if (!newEvent?.key || typeof newEvent.key !== 'string') {
                   sendJson(400, { error: 'Event key is required' });
                   return;
                 }
 
-                const filePath = path.resolve(__dirname, 'src/data/sim/events.json');
-                const fileContent = fs.readFileSync(filePath, 'utf-8');
-                const events = JSON.parse(fileContent);
+                const mainEvents = readEventsArray(EVENTS_JSON);
+                const moreEvents = readEventsArray(EVENTS_MORE_JSON, { optional: true });
+                const inMore = moreEvents.findIndex((e) => e.key === newEvent.key);
+                const inMain = mainEvents.findIndex((e) => e.key === newEvent.key);
 
-                if (!Array.isArray(events)) {
-                  sendJson(500, { error: 'events.json is not an array' });
-                  return;
-                }
-
-                const existingIndex = events.findIndex((e: any) => e.key === newEvent.key);
-                if (existingIndex !== -1) {
-                  events[existingIndex] = newEvent;
+                // Keep experimental events in events_more; new events default to events.json.
+                if (inMore !== -1) {
+                  moreEvents[inMore] = newEvent;
+                  writeEventsArray(EVENTS_MORE_JSON, moreEvents);
+                } else if (inMain !== -1) {
+                  mainEvents[inMain] = newEvent;
+                  writeEventsArray(EVENTS_JSON, mainEvents);
                 } else {
-                  events.push(newEvent);
+                  mainEvents.push(newEvent);
+                  writeEventsArray(EVENTS_JSON, mainEvents);
                 }
 
-                fs.writeFileSync(filePath, JSON.stringify(events, null, 2) + '\n', 'utf-8');
                 sendJson(200, { success: true, event: newEvent });
               })
               .catch((error) => {
@@ -333,7 +352,11 @@ export default defineConfig(({ command }) => ({
   server: {
     watch: {
       // Avoid full reloads when editors / flavor pipeline write these files.
-      ignored: ['**/src/data/sim/events.json', '**/src/data/sim/card_flavor_templates.json'],
+      ignored: [
+        '**/src/data/sim/events.json',
+        '**/src/data/sim/events_more.json',
+        '**/src/data/sim/card_flavor_templates.json',
+      ],
     },
     proxy: {
       '/mistral-api': {

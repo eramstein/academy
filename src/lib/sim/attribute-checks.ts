@@ -136,13 +136,48 @@ export function commitAttributeCheck(narrationId: string, usedFocus: number) {
   resolve(usedFocus);
 }
 
+export type AttributeCheckOptions = {
+  /**
+   * Skip LLM flavor for this check. Pass a predicate to decide after the roll
+   * (e.g. when a narrate effect already covers the outcome).
+   */
+  skipLlmNarration?: boolean | ((result: AttributeCheckResult) => boolean);
+};
+
+function shouldSkipLlmNarration(
+  result: AttributeCheckResult,
+  options?: AttributeCheckOptions
+): boolean {
+  const skip = options?.skipLlmNarration;
+  if (typeof skip === 'function') return skip(result);
+  return !!skip;
+}
+
+function finishAttributeCheckNarration(
+  narrationId: string,
+  check: AttributeCheck,
+  result: AttributeCheckResult,
+  options?: AttributeCheckOptions
+) {
+  if (shouldSkipLlmNarration(result, options)) {
+    const entry = gs.scene.narration.find((narration) => narration.id === narrationId);
+    if (entry) {
+      entry.attributeCheck = check;
+      entry.skipCheckText = true;
+    }
+    return;
+  }
+  void resolveAttributeCheckNarration(narrationId, check);
+}
+
 // This is DnD style, very random. A attribute of 10/20 can succeed an extreme difficulty check with some luck.
 export function attributeCheck(
   attribute: number,
   difficulty: number,
   attributeName: keyof Attributes,
   attemptedAction?: Action,
-  usedFocus?: number
+  usedFocus?: number,
+  options?: AttributeCheckOptions
 ): Promise<AttributeCheckResult> {
   ensurePlayerFocus();
   const availableFocus = gs.player.focus;
@@ -165,7 +200,7 @@ export function attributeCheck(
     const spent = spendFocus(usedFocus ?? 0, availableFocus);
     const result = writeRoll(check, attribute, difficulty, spent);
     const narrationId = narrateAttributeCheck(check);
-    void resolveAttributeCheckNarration(narrationId, check);
+    finishAttributeCheckNarration(narrationId, check, result, options);
     return Promise.resolve(result);
   }
 
@@ -178,7 +213,7 @@ export function attributeCheck(
     pendingResolvers.set(narrationId, (requested) => {
       const spent = spendFocus(requested, availableFocus);
       const result = writeRoll(check, attribute, difficulty, spent);
-      void resolveAttributeCheckNarration(narrationId, check);
+      finishAttributeCheckNarration(narrationId, check, result, options);
       resolve(result);
     });
   });

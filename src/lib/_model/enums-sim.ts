@@ -20,6 +20,7 @@ export enum EventEffectType {
   LevelAttribute = 'level_attribute',
   ChangeRelation = 'change_relation',
   UpdateRelationArc = 'update_relation_arc',
+  AddRelationTag = 'add_relation_tag',
   Move = 'move',
 }
 
@@ -149,4 +150,12 @@ export enum Emotion {
   Disappointed = 'disappointed',
   Excited = 'excited',
   Disgusted = 'disgusted',
+}
+
+export enum RelationTag {
+  Teammate = 'teammate',
+  Rival = 'rival',
+  Friend = 'friend',
+  Lover = 'lover',
+  SignificantOther = 'significant_other',
 }

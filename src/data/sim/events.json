@@ -1039,6 +1039,12 @@
               "relationParameter": "rivalry",
               "amount": 1
             }
+          },
+          {
+            "type": "unlock_event",
+            "parameters": {
+              "eventKey": "emma-taunt-spk"
+            }
           }
         ]
       }
@@ -1816,6 +1822,84 @@
     "emotion": "proud"
   },
   {
+    "key": "emma-team",
+    "text": "Emma approaches you with unusual hesitation, as if the words she needs cost her something. She admits—reluctantly, and with carefully measured pride—that she has come to respect your skill, and that a reliable teammate would serve her ascent in society, starting with winning more tournaments. She asks whether you would join her, proposing Thursday evenings to train together.",
+    "triggers": [
+      {
+        "triggerType": "previous_events",
+        "parameters": {
+          "emma-match1": true
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "respect",
+          "value": 2
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "friendship",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept",
+        "effects": [
+          {
+            "type": "add_relation_tag",
+            "parameters": {
+              "characterKey": "emma",
+              "relationTag": "teammate"
+            }
+          },
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "training",
+                "participants": ["player", "emma"],
+                "placeKey": "emma-room"
+              },
+              "schedule": {
+                "recurrence": {
+                  "maxCount": 12,
+                  "daysOfWeek": [4],
+                  "period": "evening"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "text": "Decline",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Emma's composure holds, but disappointment flickers plainly across her face. She had offered you a place at her side, and your refusal leaves her cool and quiet."
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "emma",
+    "emotion": "happy"
+  },
+  {
     "key": "conjuration-1",
     "text": "This is an artificery class. Here, we'll learn how to create new cards. Conjuration consists in creating a new card from scratch. Try it!",
     "triggers": [
@@ -1833,5 +1917,174 @@
       }
     ],
     "optionTemplates": []
+  },
+  {
+    "key": "running-class",
+    "text": "Before enchanting class, the academy sometimes runs a sports hour—mostly laps, and plenty of them. Across the track you spot Emma and Molly jogging side by side, chatting pleasantly as they go. Molly looks thoroughly at ease, sporty and unfazed, while Emma is clearly struggling to keep up, gasping between words as she tries to hold the conversation.",
+    "triggers": [
+      {
+        "triggerType": "activity_type",
+        "parameters": {
+          "activityType": "class"
+        }
+      },
+      {
+        "triggerType": "place",
+        "parameters": {
+          "placeKey": "enchanting-room"
+        }
+      },
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 4
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "molly"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Compliment Molly",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You compliment Molly on her shape. She beams, clearly pleased."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "love",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Compliment Emma",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You compliment Emma on her figure. She scoffs—but you catch her smile."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "love",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Taunt Emma",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You taunt Emma as you pass them. She smirks."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "image": "running-class.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "emma-elsa-coffee",
+    "text": "At the cafeteria, Emma and Elsa sit over coffee in a thinly veiled contest of wit and poise, each clearly intent on outshining the other. You take a seat and try to ease the tension with a deliberately stupid joke. Emma laughs, amused despite herself, while Elsa looks distinctly annoyed.",
+    "triggers": [
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "morning"
+        }
+      },
+      {
+        "triggerType": "place",
+        "parameters": {
+          "placeKey": "cafeteria"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "elsa"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Add a joke",
+        "attributeCheck": {
+          "attribute": "intelligence",
+          "difficulty": "medium",
+          "successEffects": [
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "Your second joke lands flat. Emma offers a polite smile; Elsa does not bother."
+              }
+            }
+          ]
+        }
+      },
+      {
+        "text": "Excuse yourself",
+        "effects": [
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "elsa",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "image": "emma-elsa-coffee.jpg",
+    "imageSize": "large"
   }
 ]

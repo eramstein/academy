@@ -1,14 +1,24 @@
 ---
 name: create-sim-event
-description: Creates or edits sim events in src/data/sim/events.json from a natural-language description, elaborating a short synopsis into event prose and mapping conditions and rewards onto triggers, option templates, and effects. Use when the user asks to add, write, or change a game event, a character arc beat (e.g. "add an event for molly where..."), or the triggers/options of an existing event.
+description: Creates or edits sim events in src/data/sim/events.json (or experimental events_more.json when asked) from a natural-language description, elaborating a short synopsis into event prose and mapping conditions and rewards onto triggers, option templates, and effects. Use when the user asks to add, write, or change a game event, a character arc beat (e.g. "add an event for molly where..."), or the triggers/options of an existing event.
 ---
 
 # Create a sim event
 
-Events are `EventTemplate` entries in `src/data/sim/events.json`. Each one declares _when_ it fires
-(triggers), _what the player reads_ (text), and _what happens_ (event effects and player options).
-The type lives in `src/lib/_model/model-sim.ts`; the runtime that consumes it is
-`src/lib/sim/events.ts`.
+Events are `EventTemplate` entries in `src/data/sim/events.json`, plus an optional local
+`src/data/sim/events_more.json` for experiments. The runtime and event builder merge both files
+into one catalog (`events.json` first, then `events_more.json`). `events_more.json` is gitignored.
+Each event declares _when_ it fires (triggers), _what the player reads_ (text), and _what happens_
+(event effects and player options). The type lives in `src/lib/_model/model-sim.ts`; the runtime
+that consumes it is `src/lib/sim/events.ts`.
+
+## Which file to write
+
+- **Default:** append or edit in `src/data/sim/events.json`.
+- **Only when the user asks** (e.g. "put it in events_more", "experimental", "don't commit this"):
+  write to `src/data/sim/events_more.json`. Create the file as `[]` if it is missing.
+- Keys are shared across both files — never reuse a key that already exists in either.
+- When editing an existing event, change the file that already contains that `key`.
 
 ## Request template
 
@@ -31,23 +41,27 @@ request did not imply.
 
 ## Workflow
 
-1. Read `src/data/sim/events.json` to see existing keys, arc grouping, and house style.
+1. Read `src/data/sim/events.json` and, if present, `src/data/sim/events_more.json` to see existing
+   keys, arc grouping, and house style. Treat them as one key space.
 2. Pick the key: `<npcKey>-<n>` for a character arc event, `event-<n>` for main story, using the
-   next free number in that series. Keys are permanent identifiers, not prose.
+   next free number in that series across both files. Keys are permanent identifiers, not prose.
 3. Write `text` (see _Writing the text_). Set `emotion` when appropriate (see _Emotion_).
 4. Map every condition in the request to a trigger, and every outcome to an `EventEffect`.
    Verify character, place, and deck keys against the source files listed below.
-5. Insert the event object after the last event of the same `characterArc`, or append it at the end
-   of the array for a main-story event.
-6. Format and validate:
+5. Insert the event object after the last event of the same `characterArc` in the **target file**,
+   or append it at the end of that file's array for a main-story event. Target file is
+   `events.json` unless the user asked for `events_more.json`.
+6. Format and validate (prettier only the file you changed):
    ```
    npx prettier --write src/data/sim/events.json
+   # or, when writing experiments:
+   # npx prettier --write src/data/sim/events_more.json
    node .cursor/skills/create-sim-event/scripts/validate-events.mjs
    ```
    Fix every reported problem and re-run until it prints `OK`.
-7. Report the new key, the trigger conditions in plain words, and each option with its effect. Tell
-   the user to reload the running page: the dev server serves this file through `/api/events` at
-   init and Vite intentionally skips HMR for it.
+7. Report the new key, which file it was written to, the trigger conditions in plain words, and each
+   option with its effect. Tell the user to reload the running page: the dev server serves the
+   merged catalog through `/api/events` at init and Vite intentionally skips HMR for both files.
 
 If a requested outcome has no matching effect type, or a condition has no matching trigger type,
 stop and say which `EventEffectType` and effect function would have to be added (see the
@@ -85,7 +99,7 @@ follows the existing entries: `key`, `text`, `triggers`, `effects`, `optionTempl
 When setting `image` on an event:
 
 - Use a **`.jpg`** filename only (e.g. `emma-hospital.jpg`). Never author `.png` in
-  `events.json`.
+  event JSON.
 - Place the file at `public/assets/images/events/{image}`.
 - If the source asset is a PNG, convert it first (e.g. `node src/tools/convert-images.js`,
   which targets the events folder) and reference the resulting `.jpg`.
@@ -109,7 +123,7 @@ event in file order whose triggers all match.
 | `activity_type`      | `{ activityType }`                                                 | `class`, `work`, `social`, `date`, `training`, `study`; matches the currently scheduled activity.                                                        |
 | `activity_history`   | `{ characterKey, activityType, value }`                            | NPC has shared that `activityType` with the player at least `value` times (`Npc.activityHistory`).                                                       |
 | `matches_won`        | `{ characterKey, count }`                                          | Player has won at least `count` matches against that NPC (`npc.matchesRecord.won`). Does not consume the count.                                          |
-| `leagues_won`        | `{ characterKey, count }`                                          | Character appears at least `count` times in `league.pastWinners` (season titles). Does not consume the count. `characterKey` may be `"player"`.         |
+| `leagues_won`        | `{ characterKey, count }`                                          | Character appears at least `count` times in `league.pastWinners` (season titles). Does not consume the count. `characterKey` may be `"player"`.          |
 | `scheduled_activity` | `{}`                                                               | Current scheduled activity's `eventId` equals this event's `key`. Set `eventId` on the activity when scheduling it.                                      |
 | `previous_events`    | `{ "molly-1": true }`                                              | Map of event keys that must have happened first; add one entry per prerequisite.                                                                         |
 
@@ -157,6 +171,7 @@ Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffect
 | `level_attribute`     | `{ attribute: "dexterity" \| "intelligence" \| "vitality" \| "charisma" \| "aura", amount?: 1, characterKey?: "player" }`                                          |
 | `change_relation`     | `{ characterKey, relationParameter: "friendship" \| "respect" \| "love" \| "rivalry", amount: 1 }`                                                                 |
 | `update_relation_arc` | `{ characterKey, text: "You and Molly share a quiet laugh.", image?: "events/molly-f1.jpg" }`                                                                      |
+| `add_relation_tag`    | `{ characterKey, relationTag: "teammate" \| "rival" \| "friend" \| "lover" \| "significant_other" }`                                                               |
 | `move`                | `{ placeKey: "academy", characterKeys: ["player", "molly"] }`                                                                                                      |
 
 `narrate` only posts the given sentence; it does not change game state. Use it on options that
@@ -172,6 +187,9 @@ this effect (and similar authored effects) do.
 `update_relation_arc` appends `{ text, image? }` to that NPC's `relationArc`. `image` is a path
 under `images/` as `folder/file` (e.g. `events/molly-f1.jpg`, `activities_more/emma-bed-2.jpg`).
 Prefer `.jpg` over `.png`. The effect also narrates `text`.
+
+`add_relation_tag` appends a `RelationTag` to that NPC's `relationTags` if it is not already
+present. Use an NPC key (not `"player"`); only NPCs have relation tags.
 
 `move` sets each listed character's `placeKey` immediately. Include `"player"` to relocate the
 player; NPC keys move those NPCs. This does not schedule travel or advance time.
@@ -191,11 +209,11 @@ which takes the same shape and day-offset rules as `schedule_activity`'s. Give a
 `payPerActivity` is the gold earned per shift.
 
 `unlock_event` clears `locked` on another event by key so it can start triggering. The target must
-already exist in `events.json`.
+already exist in the merged catalog (`events.json` or `events_more.json`).
 
 `follow_up_event` immediately queues another event by key via `setEvent`, bypassing that event's
 triggers. Prefer it on an option when the next beat should fire in the same scene. The target must
-already exist in `events.json` and not already be consumed.
+already exist in the merged catalog and not already be consumed.
 
 `offer_card_gifts` samples `count` card templates whose `poolKeys` include every listed key
 (`getCardTemplatesByPoolKeys`), then posts a `gift_card_choice` narration so the player can pick
