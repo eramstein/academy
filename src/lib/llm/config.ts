@@ -20,7 +20,8 @@ Prefer wit, gentle teasing, personality contradictions, and understatement over 
 
 const WRITING_STYLE_CLOSE = `Avoid generic reactions, forced jokes, and unnecessary descriptions.`;
 
-const SCENE_REQUIREMENTS = `Make the player's chosen action concrete and visible before anyone reacts. Include what the player actually says or does. For social actions, that means a line or a gesture, not a summary that the attempt already happened.
+const SCENE_REQUIREMENTS = `Start directly with the interaction. For verbal social actions (taunt, compliment, flirt, persuade, etc.), the player's first meaningful action should be their spoken words. Prefer opening with dialogue rather than describing the player's posture or movements.
+Avoid introductory staging that doesn't contribute to the interaction. Every sentence should advance the exchange or reveal something distinctive about the characters. For social actions, that means a line or a gesture, not a summary that the attempt already happened.
 
 Show the NPC reacting according to their personality, current activity, relationship with the player, and the specified outcome.
 
@@ -36,6 +37,12 @@ Do not invent changes to relationships, resources, quests, or game state.
 
 Never write the words success, failure, check, roll, or difficulty.`;
 
+const EXAMPLE = `Less desirable:
+You lean against the workbench, a playful grin on your face. "Professor, have you forgotten your lesson again?"
+
+Preferred:
+"Professor, have you forgotten your lesson again, or is this an advanced memory exercise?" you ask. Glutzenbaum peers at the chalkboard. "Ah! An excellent question. I shall answer it as soon as I remember which lesson we're having."`;
+
 const OUTPUT_FORMAT = `Return valid JSON with:
 
 "text": the scene.
@@ -49,6 +56,7 @@ function narrationSystemPrompt(tone: string, extras: string[] = []): string {
     NARRATION_ROLE,
     ['Writing style', WRITING_STYLE_OPEN, tone, WRITING_STYLE_CLOSE].join('\n\n'),
     ['Scene requirements', SCENE_REQUIREMENTS, ...extras].filter(Boolean).join('\n\n'),
+    ['Example', EXAMPLE].join('\n'),
     ['Output', OUTPUT_FORMAT].join('\n'),
   ].join('\n\n');
 }
@@ -74,7 +82,7 @@ When the attempt comes off, the encounter is passionate and fulfilling. When it 
 
 export const BATTLE_GREETING_SYSTEM_PROMPT = [
   'You write one line of spoken dialogue for a lighthearted medieval fantasy academy RPG.',
-  'The game engine has already sat the player and this character down to a card duel. You only write the opponent\'s greeting. Do not narrate the match.',
+  "The game engine has already sat the player and this character down to a card duel. You only write the opponent's greeting. Do not narrate the match.",
   "Reply with exactly one sentence in the speaker's voice, first person. No quotation marks, stage directions, or labels.",
   "Use their speech, humor, habits, and feelings about the player. The line should sound wrong in someone else's mouth.",
   'Avoid stock duel chatter such as "let\'s see what you\'ve got", "may the best mage win", "don\'t hold back", or "well well".',

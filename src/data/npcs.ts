@@ -83,7 +83,7 @@ export const npcs: Record<string, Npc> = {
       speech:
         'Plain farmhand talk: short sentences, no polish, a laugh from the chest. He calls a stranger by what they look like until the name sticks.',
       humor:
-        'Broad, warm, and never at a guest\'s expense. Tankard stories, a clap on the back, a joke that makes the room noisier.',
+        "Broad, warm, and never at a guest's expense. Tankard stories, a clap on the back, a joke that makes the room noisier.",
       conflicts:
         'Slow to take a side. He puts food and a refill between people before he will judge. Once he has decided someone is hungry or welcome, he is stubborn about it.',
       habits: [
@@ -157,7 +157,7 @@ export const npcs: Record<string, Npc> = {
     personality: {
       traits: { [CharacterTrait.Friendly]: true, [CharacterTrait.Shy]: true },
       speech:
-        'Soft, modest, almost apologetic. She starts with the other person\'s comfort, and praise makes her stumble over the next word.',
+        "Soft, modest, almost apologetic. She starts with the other person's comfort, and praise makes her stumble over the next word.",
       humor:
         'Small and kind. She laughs with people, never at them, and turns a joke into an offer of help.',
       conflicts:
@@ -201,7 +201,7 @@ export const npcs: Record<string, Npc> = {
     },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
-    favoriteColors: [CardColor.Red],
+    favoriteColors: [CardColor.Black],
     bio: `Elsa Falkenstein attends the Academy the way other young nobles take the waters: as an occupation, not a necessity. She expects, in due course, to inherit the family estate, and she has never been required to work, nor even to succeed. Twenty-four and already practiced in disdain, she carries herself as if the rooms she enters were slightly beneath her. The haughtiness is not entirely a pose. She grew up alone in a house that offered rank instead of affection, and she learned early that pride could pass for armor. Beneath it, however, she is lonely in a way she cannot name. She would like friends—true ones, not courtiers—but she has never been taught how to ask, and her manner drives away the very people she secretly hopes will stay. Those who endure the frost may find, at last, a young woman who has spent her life waiting to be wanted, and who still does not know how to begin.`,
     age: 24,
     favoritePlaces: {
@@ -217,7 +217,7 @@ export const npcs: Record<string, Npc> = {
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
       speech:
-        'Easy, direct, and catching, a soldier\'s plainness warmed by cheer. He will not speak of home unless he must. When the old war returns, the sentences simply stop.',
+        "Easy, direct, and catching, a soldier's plainness warmed by cheer. He will not speak of home unless he must. When the old war returns, the sentences simply stop.",
       humor:
         'Physical and infectious: a challenge turned into a grin. He does not make light of what he saw; he goes quiet instead.',
       conflicts:
@@ -266,7 +266,7 @@ export const npcs: Record<string, Npc> = {
     },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
-    favoriteColors: [CardColor.Red],
+    favoriteColors: [CardColor.Blue],
     bio: `Emma Delamain was born poor and raised as if poverty were a problem to be solved by books. Her family had little money and a great deal of culture, and they spent what they had on an education of the highest order. She repaid them by becoming brilliant. At twenty-seven she is already a force at the Academy: ambitious, exacting, and, when a goal is in sight, capable of a ruthlessness that startles even those who admire her. Beauty is another of her instruments. She is strikingly lovely and does not pretend otherwise; charm, for her, is a tool as legitimate as any theorem. Yet she is not all calculation. She reads voraciously, plays the violin with real feeling, and possesses a sharp, delighted humor. Those she likes she teases without mercy, as if affection were a sport. To be chosen by Emma is to be both flattered and a little afraid, for she gives her attention the way a duelist gives a salute: gracefully, and with every intention of winning.`,
     age: 27,
     favoritePlaces: {
@@ -283,8 +283,7 @@ export const npcs: Record<string, Npc> = {
       traits: { [CharacterTrait.Grumpy]: true },
       speech:
         'Few words, flat, and unimpressed. Tomboy-blunt: she says the thing and stops. Quiet is a preference, not a hesitation.',
-      humor:
-        'Dry and wager-shaped. Glory gets a shrug; a dare or a game gets the only real smile.',
+      humor: 'Dry and wager-shaped. Glory gets a shrug; a dare or a game gets the only real smile.',
       conflicts:
         'She will not be walked over, and she will not be made to care. Pushed, she digs in. No shout — she simply does not move.',
       habits: [
@@ -296,7 +295,7 @@ export const npcs: Record<string, Npc> = {
     },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
-    favoriteColors: [CardColor.Green],
+    favoriteColors: [CardColor.Red],
     bio: `Vaiana Chen grew up among ledgers and cargo, the daughter of merchants who recognized a rarer talent than trade and refused to let it go unused. She did not want to study magic. She was pushed into it by parents who saw her gifts more clearly than she wished to, and who treated genius as an obligation. At twenty-two she remains what she has always been: a prodigy without appetite, capable of work that startles her teachers and unwilling, most days, to be startled herself. Games interest her more than glory; she has a tomboy's ease with contests, dirt, and dare, and she would rather win a wager than a prize. She is introverted but not shy. Silence, for her, is a preference, not a fear, and she will not be walked over by anyone who mistakes her quiet for compliance. Those who try find a young woman who can be pushed into a school, but not, it seems, into caring.`,
     age: 22,
     favoritePlaces: {
@@ -314,11 +313,11 @@ export const npcs: Record<string, Npc> = {
       speech:
         'Warm, quick, and a little too eager. He apologizes before anyone has blamed him, and he smiles as if hoping that will be enough.',
       humor:
-        'Gentle and aimed at himself. He laughs first at his own expense, believes other people\'s jokes, and almost never lands a barb.',
+        "Gentle and aimed at himself. He laughs first at his own expense, believes other people's jokes, and almost never lands a barb.",
       conflicts:
         'He folds. He believes the kindest explanation until it is impossible, and he will agree rather than disappoint. He is easy to use.',
       habits: [
-        'Measures his work out loud against his mother\'s standard',
+        "Measures his work out loud against his mother's standard",
         'Agrees before he has understood the ask',
         'Smiles too fast when someone is kind to him',
         'Checks, mid-sentence, whether he has already let someone down',
@@ -380,7 +379,7 @@ export const npcs: Record<string, Npc> = {
       habits: [
         'Does exactly enough to avoid expulsion',
         'Smiles and refuses to confirm the rumor',
-        'Drifts through other people\'s crises at the same pace as a lecture',
+        "Drifts through other people's crises at the same pace as a lecture",
         'Cultivates mystery and enjoys being seen doing it',
       ],
     },

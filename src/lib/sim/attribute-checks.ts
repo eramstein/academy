@@ -142,6 +142,10 @@ export type AttributeCheckOptions = {
    * (e.g. when a narrate effect already covers the outcome).
    */
   skipLlmNarration?: boolean | ((result: AttributeCheckResult) => boolean);
+  /**
+   * Roll and return the result only. No narration entry, and no focus prompt.
+   */
+  silent?: boolean;
 };
 
 function shouldSkipLlmNarration(
@@ -193,6 +197,11 @@ export function attributeCheck(
     usedFocus: 0,
     pending: false,
   };
+
+  if (options?.silent) {
+    const result = writeRoll(check, attribute, difficulty, 0);
+    return Promise.resolve(result);
+  }
 
   const needsCommit = usedFocus === undefined && !uiState.isHeadless && availableFocus > 0;
 

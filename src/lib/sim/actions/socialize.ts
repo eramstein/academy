@@ -34,8 +34,13 @@ export interface RomanceParameters {
   romanceType: RomanceType;
 }
 
-/** Socialize: fire a matching event if one triggers, otherwise narrate the attempt. */
-export function socialize(parameters: SocializeParameters): string {
+function socializeAttribute(type: SocializeType): 'charisma' | 'intelligence' {
+  if (type === SocializeType.Befriend || type === SocializeType.Flirt) return 'charisma';
+  return 'intelligence';
+}
+
+/** Socialize: fire a matching event if one triggers, otherwise roll silently and narrate the outcome. */
+export async function socialize(parameters: SocializeParameters): Promise<string> {
   gs.scene.socializeContext = {
     characterKey: parameters.characterKey,
     socializeType: parameters.socializeType,
@@ -48,7 +53,7 @@ export function socialize(parameters: SocializeParameters): string {
     return '';
   }
 
-  narrateAttemptedAction({
+  const action: Action = {
     label: 'Socialize',
     actionType: ActionType.Socialize,
     isLongAction: false,
@@ -56,6 +61,21 @@ export function socialize(parameters: SocializeParameters): string {
       characterKey: parameters.characterKey,
       socializeType: parameters.socializeType,
     },
+  };
+  const attribute = socializeAttribute(parameters.socializeType);
+  const { success, critical } = await attributeCheck(
+    gs.player.attributes[attribute],
+    skillCheckDifficulty.medium,
+    attribute,
+    action,
+    undefined,
+    { silent: true }
+  );
+  narrateAttemptedAction(action, {
+    success,
+    critical,
+    attribute,
+    difficulty: 'Medium',
   });
   return '';
 }
@@ -110,12 +130,20 @@ export async function romance(parameters: RomanceParameters): Promise<string> {
   }
 
   if (parameters.romanceType === RomanceType.Physical) {
-    const { success } = await attributeCheck(
+    const { success, critical } = await attributeCheck(
       gs.player.attributes.vitality,
       skillCheckDifficulty.trivial,
       'vitality',
-      action
+      action,
+      undefined,
+      { silent: true }
     );
+    narrateAttemptedAction(action, {
+      success,
+      critical,
+      attribute: 'vitality',
+      difficulty: 'Trivial',
+    });
     if (success) {
       void narratePhysicalRomanceGift(partner.name, parameters.characterKey);
     }

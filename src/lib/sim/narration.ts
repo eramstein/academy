@@ -217,7 +217,15 @@ function fallbackAttributeCheckText(attributeCheck: AttributeCheck): string {
   return `You ${verb} your ${attributeCheck.attribute}.`;
 }
 
-export function narrateAttemptedAction(action: Action) {
+/** Outcome of a check that should shape the prose without appearing as its own narration. */
+export type SilentCheckOutcome = {
+  success: boolean;
+  critical: boolean;
+  attribute: string;
+  difficulty: string;
+};
+
+export function narrateAttemptedAction(action: Action, outcome?: SilentCheckOutcome) {
   const id = crypto.randomUUID();
   narrate({
     id,
@@ -225,14 +233,28 @@ export function narrateAttemptedAction(action: Action) {
     type: NarrationType.Text,
     attemptedAction: action,
   });
-  void fillAttemptedActionNarration(id, action);
+  void fillAttemptedActionNarration(id, action, outcome);
 }
 
-async function fillAttemptedActionNarration(id: string, action: Action) {
+async function fillAttemptedActionNarration(
+  id: string,
+  action: Action,
+  outcome?: SilentCheckOutcome
+) {
   let text: string;
   let imagePrompt: string | undefined;
   try {
-    const result = await generateAttemptedActionNarration(action);
+    const result = outcome
+      ? await generateAttributeCheckNarration({
+          success: outcome.success,
+          critical: outcome.critical,
+          roll: 0,
+          attribute: outcome.attribute,
+          difficulty: outcome.difficulty,
+          target: 0,
+          attemptedAction: action,
+        })
+      : await generateAttemptedActionNarration(action);
     text = result.text;
     imagePrompt = result.imagePrompt;
   } catch (error) {
