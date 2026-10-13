@@ -22,6 +22,7 @@ export enum EventEffectType {
   UpdateRelationArc = 'update_relation_arc',
   AddRelationTag = 'add_relation_tag',
   Move = 'move',
+  UseFocus = 'use_focus',
 }
 
 export enum ActionType {

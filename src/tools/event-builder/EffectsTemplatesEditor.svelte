@@ -136,6 +136,8 @@
         return { characterKey: '', relationTag: RelationTag.Friend };
       case EventEffectType.Move:
         return { placeKey: placeKeys[0] ?? '', characterKeys: ['player'] };
+      case EventEffectType.UseFocus:
+        return { amount: 1 };
       default:
         return {};
     }
@@ -407,6 +409,16 @@
                 min="0"
                 value={effect.parameters.amount ?? 0}
                 aria-label="Gold amount"
+                oninput={(e) =>
+                  setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+              />
+            {:else if effect.type === EventEffectType.UseFocus}
+              <input
+                class="input narrow"
+                type="number"
+                min="0"
+                value={effect.parameters.amount ?? 0}
+                aria-label="Focus amount"
                 oninput={(e) =>
                   setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
               />

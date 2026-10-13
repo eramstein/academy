@@ -10,7 +10,12 @@ import {
 import { EventEffectType } from '../_model/enums-sim';
 import { gs } from '../_state';
 import { attributeCheck, skillCheckDifficulty } from './attribute-checks';
-import { consumeEventTemplate, getTriggeredSceneEvent, recordEventOccured } from './events';
+import {
+  consumeEventTemplate,
+  getSceneEventByKey,
+  getTriggeredSceneEvent,
+  recordEventOccured,
+} from './events';
 import { narrateText } from './narration';
 import { updateNpcLocations } from './npc';
 import { getCurrentScheduledActivity, narrateScheduledActivity } from './schedule';
@@ -20,21 +25,33 @@ function effectsIncludeNarrate(effects?: EventEffect[]): boolean {
   return effects?.some((effect) => effect.type === EventEffectType.Narrate) ?? false;
 }
 
+/** True when the player must pick an option before the scene continues. */
+export function sceneWaitingOnEventChoice(event = gs.scene.event): boolean {
+  return (event?.options?.length ?? 0) > 0;
+}
+
 /* 
 The scene first loops events until it runs out. Player has to react to each event by chosing an option.
 Once the events are done (no new events are set), the player can get proactive and choose actions.
 A long action advances the period and ends the scene; the next scene is set based either on the next scheduled activity or the player's choice of next place.
+Optionless events resolve immediately (narrate + effects) and do not hold the scene.
 */
 
 export function setSceneEvents() {
   gs.scene.event = undefined;
-  const triggeredEvent = getTriggeredSceneEvent();
-  if (triggeredEvent) {
+  // Keep resolving optionless events in one pass; stop when the player must choose.
+  const resolvedKeys = new Set<string>();
+  while (true) {
+    const triggeredEvent = getTriggeredSceneEvent();
+    if (!triggeredEvent || resolvedKeys.has(triggeredEvent.event.key)) break;
+    resolvedKeys.add(triggeredEvent.event.key);
     setEvent(triggeredEvent.event, triggeredEvent.template);
+    if (sceneWaitingOnEventChoice()) break;
   }
   console.log('setSceneEvents', gs.scene.event);
-  if (gs.scene.event === undefined) {
-    console.log('no event, setting possible actions');
+  if (!sceneWaitingOnEventChoice()) {
+    console.log('no event choices, setting possible actions');
+    gs.scene.event = undefined;
     setPossibleActions();
   }
 }
@@ -68,7 +85,7 @@ export async function selectOption(option: EventOption) {
   }
   if (option.outcome.action) {
     await performAction(option.outcome.action);
-  } else if (!gs.scene.event) {
+  } else if (!sceneWaitingOnEventChoice()) {
     setSceneEvents();
   }
 }
@@ -113,7 +130,9 @@ export function selectNextScene(placeKey: string) {
 }
 
 export function setEvent(event: SceneEvent, template: EventTemplate) {
-  if (event.text === gs.scene.event?.text) {
+  // Only skip re-entry while waiting on the same choosable event. Optionless leftovers
+  // (e.g. from /e) must not block re-resolution or clear-and-restore of actions.
+  if (event.text === gs.scene.event?.text && sceneWaitingOnEventChoice()) {
     return;
   }
   narrateText(event.text, {
@@ -123,10 +142,30 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
     imageSize: template.imageSize,
     eventKey: template.key,
   });
-  gs.scene.event = event.options.length > 0 ? event : undefined;
+  // Claim the scene only when there are choices. Effects may still install a follow-up.
+  gs.scene.event = sceneWaitingOnEventChoice(event) ? event : undefined;
   consumeEventTemplate(template);
   if (template.effects) {
     template.effects.forEach((effect) => applyEffect(effect));
   }
   recordEventOccured(template);
+  // Follow-up may have claimed the scene; drop optionless leftovers so callers restore actions.
+  if (!sceneWaitingOnEventChoice()) {
+    gs.scene.event = undefined;
+  }
+}
+
+/** Debug/console: fire an event by key. Optionless events resolve and restore actions. */
+export function simulateEvent(templateKey: string) {
+  const resolved = getSceneEventByKey(templateKey);
+  if (!resolved) {
+    return undefined;
+  }
+  setEvent(resolved.event, resolved.template);
+  if (sceneWaitingOnEventChoice()) {
+    gs.scene.actions = [];
+  } else {
+    setSceneEvents();
+  }
+  return resolved.event;
 }

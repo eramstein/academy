@@ -8,9 +8,9 @@ import { ACTION_TEMPLATE_KEYS } from '../../sim/cards/action-templates';
 import { KEYWORD_KEYS } from '../../sim/cards/keywords';
 import { redeemBaseDeck } from '../../sim/deck';
 import { addResource } from '../../sim/effects/resources';
-import { simulateEvent } from '../../sim/events';
 import { newLeagueSeason } from '../../sim/league';
 import { initOngoingBattle } from '../../sim/ongoing-battle';
+import { simulateEvent } from '../../sim/scene';
 import { goToPeriod } from '../../sim/time';
 
 const PERIODS = [DayPeriod.Morning, DayPeriod.Afternoon, DayPeriod.Evening];

@@ -9,6 +9,7 @@ import {
   type FollowUpEventParameters,
   type UnlockEventParameters,
 } from './events';
+import { useFocus, type UseFocusParameters } from './focus';
 import { offerCardGifts, type OfferCardGiftsParameters } from './gifts';
 import { addGold, type AddGoldParameters } from './gold';
 import { getJob, type GetJobParameters } from './jobs';
@@ -66,4 +67,5 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.AddRelationTag]: (parameters) =>
     addRelationTag(parameters as AddRelationTagParameters),
   [EventEffectType.Move]: (parameters) => move(parameters as MoveParameters),
+  [EventEffectType.UseFocus]: (parameters) => useFocus(parameters as UseFocusParameters),
 };

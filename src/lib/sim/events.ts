@@ -19,7 +19,6 @@ import { getActivityIllustrationRefs, probeFirstExistingImage } from './activity
 import { getLoadedModEvents, loadMods } from '../mods';
 import { getCharactersAtScene } from './characters';
 import { updateRelationArc } from './effects/relations';
-import { narrateText } from './narration';
 import { getCurrentScheduledActivity } from './schedule';
 import { getWeekDay } from './time';
 
@@ -175,23 +174,6 @@ export function getSceneEventByKey(
       options: template.optionTemplates?.map(buildOption) ?? [],
     },
   };
-}
-
-export function simulateEvent(templateKey: string) {
-  const resolved = getSceneEventByKey(templateKey);
-  if (!resolved) {
-    return undefined;
-  }
-  const { event, template } = resolved;
-  narrateText(event.text, {
-    characterKey: template.characterArc,
-    emotion: template.emotion,
-    image: template.image,
-    imageSize: template.imageSize,
-    eventKey: template.key,
-  });
-  gs.scene.event = event;
-  return event;
 }
 
 /** Drop a fired event from the in-memory working set. Catalog stays intact. */

@@ -406,6 +406,9 @@ function checkEffect(where, effect) {
         }
       }
       break;
+    case 'use_focus':
+      if (typeof parameters.amount !== 'number') errors.push(`${where}: amount must be a number`);
+      break;
   }
 }
 
@@ -507,7 +510,9 @@ events.forEach((event, index) => {
 });
 
 if (errors.length > 0) {
-  console.error(`${errors.length} problem(s) in event catalogs (events.json + mods/*/events.json):`);
+  console.error(
+    `${errors.length} problem(s) in event catalogs (events.json + mods/*/events.json):`
+  );
   for (const error of errors) console.error(`  - ${error}`);
   process.exit(1);
 }

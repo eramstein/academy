@@ -10,7 +10,7 @@ import {
 import { getJobActions, performJob } from '../jobs';
 import { getLessonActions, getStudyActions } from '../lesson';
 import { narrateText } from '../narration';
-import { nextScene, setSceneEvents } from '../scene';
+import { nextScene, sceneWaitingOnEventChoice, setSceneEvents } from '../scene';
 import { formatActivityShortLabel, getNextPeriodScheduledActivity } from '../schedule';
 import { getNextPeriod } from '../time';
 import { ActionsLimitByPeriod } from './_action-types';
@@ -102,13 +102,15 @@ export async function performAction(action: Action) {
   if (action.isLongAction) {
     gs.time.longActionPerformed = true;
   }
-  // Socialize (and similar) may already have claimed the scene with an event.
-  if (!gs.scene.event) {
-    setSceneEvents();
-  } else {
+  // Socialize (and similar) may already have claimed the scene with a choosable event.
+  // Optionless events resolve immediately and must not leave actions cleared.
+  if (sceneWaitingOnEventChoice()) {
     gs.scene.actions = [];
+    return;
   }
-  if (gs.scene.event) {
+  gs.scene.event = undefined;
+  setSceneEvents();
+  if (sceneWaitingOnEventChoice()) {
     return;
   }
   if (

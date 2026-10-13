@@ -186,6 +186,7 @@ Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffect
 | `update_relation_arc` | `{ characterKey, text: "You and Molly share a quiet laugh.", image?: "events/molly-f1.jpg" }`                                                                      |
 | `add_relation_tag`    | `{ characterKey, relationTag: "teammate" \| "rival" \| "friend" \| "lover" \| "significant_other" }`                                                               |
 | `move`                | `{ placeKey: "academy", characterKeys: ["player", "molly"] }`                                                                                                      |
+| `use_focus`           | `{ amount: 1 }`                                                                                                                                                    |
 
 `narrate` only posts the given sentence; it does not change game state. Use it on options that
 need a reaction beat with no reward or schedule.
@@ -206,6 +207,8 @@ present. Use an NPC key (not `"player"`); only NPCs have relation tags.
 
 `move` sets each listed character's `placeKey` immediately. Include `"player"` to relocate the
 player; NPC keys move those NPCs. This does not schedule travel or advance time.
+
+`use_focus` spends `amount` from the player's focus, clamped so focus cannot go below 0.
 
 For `schedule_activity`: `schedule.date.day` is an **offset in days from now** (`0` = today), not an
 absolute day. Omit `date.period` (without `nextFree`) to use the **current** period—useful for
