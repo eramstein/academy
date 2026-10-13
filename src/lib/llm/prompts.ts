@@ -21,22 +21,15 @@ const SceneNarrationSchema = z.object({
     .min(1)
     .max(320)
     .describe(
-      "One or two short sentences: the focus character's physical action, a visible expression such as laughing or scowling, and the named place with two or three concrete objects. No appearance, clothing, or inner feelings."
+      "25–40 words: the NPC's physical action, a visible expression, the place, and relevant objects. No appearance, clothing, or inner feelings."
     ),
 });
 
 export type SceneNarration = z.infer<typeof SceneNarrationSchema>;
 export type AttributeCheckNarration = SceneNarration;
 
-const OPENING_ANGLES = [
-  'Start with a line of dialogue only the focus character would say.',
-  'Start with an object in this place that the focus character is already handling.',
-  'Start with the focus character mid-habit, drawn from their character notes, before the player gets a word in.',
-  'Start with a sound, smell, or mess particular to this place, then bring the focus character into it.',
-];
-
 const GREETING_ANGLES = [
-  'Let a habit or grudge from their character notes show in the wording.',
+  'Let their speech, or how they handle conflict, show in the wording.',
   'Talk about the duel through whatever this person actually cares about.',
   'If they barely know the player, the sentence should size the player up. If they have history, that history should be specific.',
 ];
@@ -69,14 +62,10 @@ async function generateSceneNarration(
 }
 
 function narrationRequest(extra?: string): string {
-  const angle = OPENING_ANGLES[Math.floor(Math.random() * OPENING_ANGLES.length)];
   return [
-    'Write the scene as JSON with "text" and "imagePrompt".',
-    angle,
-    'The first words must not be "You lean", "You smile", "You approach", "You glance", or "You chuckle".',
-    'Name the focus character and include one detail from their character notes.',
+    'Narrate the engine result above.',
+    'Show what you say or do first, then how they react. Do not skip the attempt and describe only their behavior.',
     extra,
-    'imagePrompt: a visible expression, what the focus character is physically doing, the place name, and two or three objects that belong there. No clothing, appearance, or inner feelings.',
   ]
     .filter(Boolean)
     .join('\n');
@@ -88,12 +77,11 @@ function romanceSystemPrompt(action?: Action): string {
     : ROMANCE_DEEPEN_SYSTEM_PROMPT;
 }
 
-function romanceUserGuidance(action?: Action): string {
-  const partner = 'the focus character';
+function romanceUserGuidance(action?: Action): string | undefined {
   if (action?.actionParameters?.romanceType === 'physical') {
-    return `Write an adult erotic scene of sexual intimacy between the player and ${partner}. Explicit detail is allowed. Filter it through their habits and inhibitions from the character notes, not a generic embrace.`;
+    return 'This is a sexual encounter. Show what you do, then how they respond. Explicit detail is allowed.';
   }
-  return `Write a cosy scene of emotional intimacy. The tenderness should look like ${partner} specifically — their shyness, pride, humor, or loneliness — not a generic cuddle.`;
+  return 'This is emotional intimacy. Show what you offer, then how they answer, in their own voice.';
 }
 
 /** Romance scenes use dedicated system prompts (cosy deepen vs adult physical). */

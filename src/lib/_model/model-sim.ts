@@ -246,7 +246,6 @@ export interface Player extends Character {
 export interface Npc extends Character {
   gender: CharacterGender;
   age: number;
-  traits: Partial<Record<CharacterTrait, boolean>>;
   school?: SchoolName;
   favoriteColors: CardColor[];
   relationProgress: RelationProgress;
@@ -256,6 +255,15 @@ export interface Npc extends Character {
   bio: string;
   favoritePlaces: Record<string, number>;
   matchesRecord: { won: number; lost: number };
+  personality: Personality;
+}
+
+export interface Personality {
+  traits: Partial<Record<CharacterTrait, boolean>>;
+  speech: string; // way of talking, mannerisms, etc.
+  humor: string; // sense of humor, favorite style of humor, etc.
+  conflicts: string; // how they react to conflict and arguments, etc.
+  habits: string[]; // typical patterns of behavior, etc.
 }
 
 export interface RelationProgress {

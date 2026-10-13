@@ -21,14 +21,11 @@ const TRAIT_HINT: Record<string, string> = {
 };
 
 const ATTRIBUTE_BEAT: Record<string, string> = {
-  charisma:
-    'This moment turns on charm, timing, and reading this particular person — a remark, a joke, or a tone aimed at them.',
-  intelligence:
-    'This moment turns on wit or knowledge — a real observation, a correction, something they would respect or see through.',
-  vitality:
-    'This moment turns on stamina and nerve — breath, grip, how long the body can keep the moment going.',
-  dexterity: 'This moment turns on the hands. Use a specific object in the room.',
-  aura: 'This moment turns on magical presence. The working should be visible in the room: light, weight, a charm that holds or frays.',
+  charisma: 'You make the attempt through charm, timing, or a remark aimed at this person.',
+  intelligence: 'You make the attempt through wit or knowledge — an observation or a correction.',
+  vitality: 'You make the attempt through stamina and nerve.',
+  dexterity: 'You make the attempt with your hands, using a specific object in the room.',
+  aura: 'You make the attempt through visible magic: light, weight, a charm that holds or frays.',
 };
 
 const DIFFICULTY_NOTE: Record<string, string> = {
@@ -108,7 +105,7 @@ export function buildBattleGreetingContext(opponentKey: string): string {
 }
 
 function buildPlayerContext(): string {
-  return `Player: ${gs.player.name}. In the prose, call the player "you".`;
+  return `Player: ${gs.player.name}. Address them as "you".`;
 }
 
 function buildWhenContext(): string {
@@ -120,8 +117,8 @@ function buildWhenContext(): string {
   );
   lines.push(
     activity
-      ? `Occasion: ${describeActivity(activity)} Shape the scene around that.`
-      : 'No class, job, or date is scheduled. This is unstructured time.'
+      ? `Ongoing activity: ${describeActivity(activity)}`
+      : 'Ongoing activity: none. This is unstructured time.'
   );
   return lines.join('\n');
 }
@@ -142,11 +139,7 @@ function buildPlaceContext(): string {
   const place = gs.places[gs.player.placeKey];
   if (!place) return 'Place: unknown.';
   const region = gs.regions?.[place.regionKey]?.name;
-  return [
-    `Place: ${place.name}${region ? `, in ${region}` : ''}.`,
-    place.description,
-    'Use objects and clutter that belong in this specific place.',
-  ]
+  return [`Place: ${place.name}${region ? `, in ${region}` : ''}.`, place.description]
     .filter(Boolean)
     .join(' ');
 }
@@ -193,17 +186,31 @@ function buildRecentContext(): string {
 }
 
 function describeNpc(npc: Npc, isFocus: boolean): string {
-  const label = isFocus ? 'Focus' : 'Also here';
+  const label = isFocus ? 'NPC' : 'Also here';
   const lines = [`${label}: ${npc.name} — ${describeIdentity(npc)}.`];
-  const notes = isFocus ? npc.bio?.trim() : bioLead(npc.bio ?? '');
-  if (notes) {
-    lines.push(
-      isFocus
-        ? `Character notes for ${npc.name} — use a habit, a worry, or a way of speaking from this:\n${notes}`
-        : `In brief: ${notes}`
-    );
-  }
+  const voice = describeVoice(npc, isFocus);
+  if (voice) lines.push(voice);
   return lines.join('\n');
+}
+
+function describeVoice(npc: Npc, isFocus: boolean): string | undefined {
+  const { speech, humor, conflicts, habits } = npc.personality;
+  const speechLine = speech?.trim() ?? '';
+  const humorLine = humor?.trim() ?? '';
+  const conflictLine = conflicts?.trim() ?? '';
+  const habitLines = (habits ?? []).map((habit) => habit.trim()).filter(Boolean);
+  if (!isFocus) {
+    const bits = [speechLine, habitLines.slice(0, 2).join('; ')].filter(Boolean);
+    return bits.length > 0 ? `In brief: ${bits.join(' ')}` : undefined;
+  }
+  const lines = [
+    speechLine ? `Speech: ${speechLine}` : undefined,
+    humorLine ? `Humor: ${humorLine}` : undefined,
+    conflictLine ? `In conflict: ${conflictLine}` : undefined,
+    habitLines.length > 0 ? `Habits: ${habitLines.join('; ')}` : undefined,
+  ].filter((line): line is string => Boolean(line));
+  if (lines.length === 0) return undefined;
+  return [`How ${npc.name} speaks and behaves:`, ...lines].join('\n');
 }
 
 function describeIdentity(npc: Npc): string {
@@ -216,7 +223,7 @@ function describeIdentity(npc: Npc): string {
 }
 
 function describeTraits(npc: Npc): string | undefined {
-  const traits = Object.entries(npc.traits)
+  const traits = Object.entries(npc.personality.traits)
     .filter(([, active]) => active)
     .map(([trait]) => {
       const hint = TRAIT_HINT[trait];
@@ -264,36 +271,36 @@ function bondLabel(
 function buildAttributeCheckContext(check: AttributeCheck, focusKey?: string): string {
   const name = characterName(focusKey);
   return [
-    'What is happening:',
-    ATTRIBUTE_BEAT[check.attribute] ?? `This moment turns on ${check.attribute}.`,
+    'Engine result (already decided — narrate it, do not change it):',
+    ...describeAttemptedAction(check.attemptedAction, focusKey),
+    ATTRIBUTE_BEAT[check.attribute] ?? `You make the attempt through ${check.attribute}.`,
     DIFFICULTY_NOTE[check.difficulty] ??
       `The attempt is ${check.difficulty.toLowerCase()} for the player.`,
     outcomeBrief(check, name),
-    ...describeAttemptedAction(check.attemptedAction, focusKey),
-    focusReminder(name),
+    voiceReminder(name),
   ].join('\n');
 }
 
 function buildAttemptedActionContext(action: Action, focusKey?: string): string {
   return [
-    'What is happening:',
+    'Engine result (already decided — narrate it, do not change it):',
     ...describeAttemptedAction(action, focusKey),
-    focusReminder(characterName(focusKey)),
+    voiceReminder(characterName(focusKey)),
   ].join('\n');
 }
 
 function outcomeBrief(check: AttributeCheck, name: string): string {
-  const who = name === 'someone' ? 'the other person' : name;
+  const who = name === 'someone' ? 'them' : name;
   if (check.critical && check.success) {
-    return `Outcome: the attempt comes off in a way people will retell. Keep it something ${who} would actually do.`;
+    return `Outcome: the attempt comes off in a way people will retell. Show what you do, then a reaction ${who} would actually have.`;
   }
   if (check.critical && !check.success) {
-    return `Outcome: the attempt collapses in a conspicuous, specific mishap — a snapped retort, a spill, a working that frays — that ${who} will remember.`;
+    return `Outcome: the attempt collapses in a conspicuous mishap. Show what you try, then the specific way it goes wrong — something ${who} will remember.`;
   }
   if (check.success) {
-    return `Outcome: the attempt comes off. ${who} is moved, convinced, amused, or disarmed in their own way.`;
+    return `Outcome: the attempt comes off. Show what you do, then ${who} moved, convinced, amused, or disarmed in their own way.`;
   }
-  return `Outcome: the attempt misses. Show ${who} closing off, outpacing the player, or letting the moment die, in a way that fits them.`;
+  return `Outcome: the attempt misses. Show what you try, then ${who} closing off, outpacing you, or letting the moment die.`;
 }
 
 function describeAttemptedAction(action?: Action, focusKey?: string): string[] {
@@ -312,8 +319,7 @@ function describeAttemptedAction(action?: Action, focusKey?: string): string[] {
     case ActionType.Negotiate:
       return [
         choice,
-        `The player is haggling with ${characterName(typeof params.partner === 'string' ? params.partner : undefined)}${dealPhrase(params.subscriptionType)}.`,
-        'Put the bargain in dialogue: a price, a condition, a hesitation. Show them giving ground or holding the line.',
+        `Player action: you haggle with ${characterName(typeof params.partner === 'string' ? params.partner : undefined)}${dealPhrase(params.subscriptionType)}. Name a price, a condition, or a hesitation out loud, then show them giving ground or holding the line.`,
       ].filter((line): line is string => Boolean(line));
     case ActionType.PerformJob:
       return jobLines(params.job, choice);
@@ -324,8 +330,7 @@ function describeAttemptedAction(action?: Action, focusKey?: string): string[] {
     default:
       return [
         choice,
-        `Action: ${String(action.actionType).replace(/_/g, ' ')}.`,
-        focusKey ? `The player is dealing with ${characterName(focusKey)}.` : undefined,
+        `Player action: ${String(action.actionType).replace(/_/g, ' ')}.${focusKey ? ` You are dealing with ${characterName(focusKey)}.` : ''}`,
       ].filter((line): line is string => Boolean(line));
   }
 }
@@ -337,31 +342,25 @@ function choiceLine(action: Action): string | undefined {
 }
 
 function socializeLines(type: unknown, name: string): string[] {
-  const lands = `The gesture reaches ${name}. Show it landing in a way that is particular to them — a thaw, an unplanned laugh, a favor, a barb they enjoy — not instant devotion.`;
   switch (type) {
     case 'befriend':
       return [
-        `The player is bidding for friendship with ${name}: a confidence, a small kindness, or a joke that makes room for them.`,
-        lands,
+        `Player action: you try to befriend ${name}. Put a confidence, a small kindness, or a joke that makes room for them into what you say or do.`,
       ];
     case 'taunt':
       return [
-        `The player is needling ${name}: a barb, a challenge, or a joke at their expense that invites rivalry. Sharp, not cruel for its own sake.`,
-        lands,
+        `Player action: you needle ${name}. Put a barb, a challenge, or a joke at their expense into what you say. Sharp, not cruel for its own sake.`,
       ];
     case 'impress':
       return [
-        `The player is trying to earn ${name}'s respect with skill, nerve, or competence they would actually notice.`,
-        lands,
+        `Player action: you try to earn ${name}'s respect. Show the skill, nerve, or competence they would actually notice.`,
       ];
     case 'flirt':
       return [
-        `The player is flirting with ${name}: a charged compliment, a bold question, an invitation in how they speak.`,
-        `Let ${name} receive it as themselves. Shy, proud, grumpy, and lonely people do not answer a flirt the same way.`,
-        lands,
+        `Player action: you flirt with ${name}. Say a charged compliment, a bold question, or an invitation.`,
       ];
     default:
-      return [`The player is spending a social moment with ${name}.`, lands];
+      return [`Player action: you spend a social moment with ${name}. Show what you say or do.`];
   }
 }
 
@@ -371,15 +370,13 @@ function jobLines(
 ): string[] {
   const lines = [
     choice,
-    `The player is working${job?.name ? ` as ${job.name}` : ''}.`,
+    `Player action: you work${job?.name ? ` as ${job.name}` : ''}. Show the work you do, not only how someone watches it.`,
     job?.description ? `The work itself: ${clip(String(job.description), 400)}` : undefined,
   ];
   if (job?.jobType === JobType.Mentoring) {
-    lines.push(
-      'Dramatize teaching: an explanation, a correction, someone who follows or gets lost.'
-    );
+    lines.push('Include an explanation or a correction, and someone who follows it or gets lost.');
   } else if (job?.jobType === JobType.Coaching) {
-    lines.push('Dramatize coaching: reading a person and getting them to try.');
+    lines.push('Include you reading a person and getting them to try.');
   }
   if (job?.employerKey) {
     lines.push(`The employer watching the work: ${characterName(job.employerKey)}.`);
@@ -397,8 +394,8 @@ function inviteLines(params: Record<string, unknown>, choice?: string): string[]
   const when = typeof params.period === 'string' ? ` in the ${params.period}` : '';
   return [
     choice,
-    `The player is asking ${who} to a ${activity}${place ? ` at ${place}` : ''}${when}.`,
-    'The question is happening in the current place. Show the ask and their answer. Do not skip ahead to the outing.',
+    `Player action: you ask ${who} to a ${activity}${place ? ` at ${place}` : ''}${when}.`,
+    'The question happens in the current place. Show what you say, then their answer. Do not skip ahead to the outing.',
   ].filter((line): line is string => Boolean(line));
 }
 
@@ -409,14 +406,12 @@ function romanceLines(params: Record<string, unknown>, choice?: string): string[
   if (params.romanceType === 'physical') {
     return [
       choice,
-      `The player is in a sexual encounter with ${partner}.`,
-      `Write it through ${partner}'s body, inhibitions, and the room. Not a clinch that would fit any lover.`,
+      `Player action: you begin a sexual encounter with ${partner}. Show what you do before showing how they respond.`,
     ].filter((line): line is string => Boolean(line));
   }
   return [
     choice,
-    `The player is spending a stretch of emotional intimacy with ${partner}, and the relationship deepens.`,
-    `Write the tenderness as ${partner} actually offers it. The closeness is real, and it does not have to be dramatic.`,
+    `Player action: you offer ${partner} a stretch of closeness. Outcome: the relationship deepens. Show what you offer, then how they answer.`,
   ].filter((line): line is string => Boolean(line));
 }
 
@@ -427,9 +422,9 @@ function dealPhrase(subscriptionType: unknown): string {
   return ` over ${deal}`;
 }
 
-function focusReminder(name: string): string {
+function voiceReminder(name: string): string {
   if (name === 'someone') return 'Keep the scene specific to this place and this attempt.';
-  return `Center ${name}. If their name were swapped for someone else's, the scene should stop making sense.`;
+  return `${name}'s reply should sound wrong in anyone else's mouth.`;
 }
 
 function getFocusCharacterKey(action?: Action): string | undefined {
@@ -458,14 +453,6 @@ function formatList(items: string[]): string {
   if (items.length <= 1) return items[0] ?? '';
   if (items.length === 2) return `${items[0]} and ${items[1]}`;
   return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
-}
-
-function bioLead(bio: string): string | undefined {
-  const trimmed = bio.trim();
-  if (!trimmed) return undefined;
-  const match = trimmed.match(/^[\s\S]*?[.!?](?:\s|$)/);
-  const sentence = (match?.[0] ?? trimmed).trim();
-  return sentence.length > 280 ? `${sentence.slice(0, 277).trim()}…` : sentence;
 }
 
 function clip(text: string, max: number): string {

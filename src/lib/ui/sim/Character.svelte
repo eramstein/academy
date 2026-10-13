@@ -31,8 +31,8 @@
   };
 
   const traits = $derived(
-    'traits' in character
-      ? Object.entries((character as Npc).traits)
+    npc
+      ? Object.entries(npc.personality.traits)
           .filter(([, active]) => active)
           .map(([trait]) => trait)
       : []
