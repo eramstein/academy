@@ -4,6 +4,7 @@
   import { loadGameStateFromLocalStorage, uiState } from './lib/_state';
   import { initImageGen } from './lib/image_gen';
   import { loadCardTemplates } from './lib/sim/cards/npc-card-templates';
+  import { loadMods } from './lib/mods';
   import { loadEventTemplates } from './lib/sim/events';
   import { handleKeybinds } from './lib/ui/_keybinds/keybinds';
   import Main from './lib/ui/Main.svelte';
@@ -17,6 +18,8 @@
   onMount(async () => {
     window.addEventListener('keydown', handleKeybinds);
     try {
+      // Mods first so image lookup and the static-build event fallback can see them.
+      await loadMods();
       // Catalog must load before game state so progress can prune the in-memory working set.
       await loadEventTemplates();
       await Promise.all([

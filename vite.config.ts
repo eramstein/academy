@@ -2,28 +2,21 @@ import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import path from 'path';
 import fs from 'fs';
+import type { IncomingMessage, ServerResponse } from 'http';
+import {
+  buildModsManifest,
+  imageContentType,
+  readMergedEvents,
+  resolveModImageFile,
+  saveCatalogEvent,
+  setProjectRoot,
+  writeModsBundle,
+  type EventRow,
+} from './vite/mods.ts';
+
+setProjectRoot(__dirname);
 
 const EVENTS_JSON = path.resolve(__dirname, 'src/data/sim/events.json');
-const EVENTS_MORE_JSON = path.resolve(__dirname, 'src/data/sim/events_more.json');
-
-type EventRow = { key?: string; [field: string]: unknown };
-
-function readEventsArray(filePath: string, { optional = false } = {}): EventRow[] {
-  if (optional && !fs.existsSync(filePath)) return [];
-  const parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-  if (!Array.isArray(parsed)) {
-    throw new Error(`${path.basename(filePath)} is not an array`);
-  }
-  return parsed;
-}
-
-function writeEventsArray(filePath: string, events: EventRow[]) {
-  fs.writeFileSync(filePath, JSON.stringify(events, null, 2) + '\n', 'utf-8');
-}
-
-function readMergedEvents(): EventRow[] {
-  return [...readEventsArray(EVENTS_JSON), ...readEventsArray(EVENTS_MORE_JSON, { optional: true })];
-}
 
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
@@ -32,319 +25,13 @@ export default defineConfig(({ command }) => ({
     {
       name: 'save-data-plugin',
       configureServer(server) {
-        server.middlewares.use((req, res, next) => {
-          const sendJson = (status: number, payload: unknown) => {
-            res.statusCode = status;
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify(payload));
-          };
-
-          const readBody = (): Promise<string> =>
-            new Promise((resolve, reject) => {
-              let body = '';
-              req.on('data', (chunk) => {
-                body += chunk.toString();
-              });
-              req.on('end', () => resolve(body));
-              req.on('error', reject);
-            });
-
-          if (req.method === 'POST' && req.url === '/api/save-card') {
-            readBody()
-              .then((body) => {
-                const newCard = JSON.parse(body);
-                const filePath = path.resolve(__dirname, 'src/data/_all_cards.json');
-                const fileContent = fs.readFileSync(filePath, 'utf-8');
-                let allCards = JSON.parse(fileContent);
-
-                const existingIndex = allCards.findIndex((c: any) => c.id === newCard.id);
-                if (existingIndex !== -1) {
-                  allCards[existingIndex] = newCard;
-                } else {
-                  allCards.push(newCard);
-                }
-
-                allCards.sort((a: any, b: any) => (a.name || a.id).localeCompare(b.name || b.id));
-
-                fs.writeFileSync(filePath, JSON.stringify(allCards, null, 2), 'utf-8');
-                sendJson(200, { success: true });
-              })
-              .catch((error) => {
-                console.error('Error saving card:', error);
-                sendJson(500, { error: 'Failed to save card' });
-              });
-            return;
-          }
-
-          if (req.method === 'GET' && req.url === '/api/flavor-templates') {
-            try {
-              const filePath = path.resolve(__dirname, 'src/data/sim/card_flavor_templates.json');
-              const fileContent = fs.readFileSync(filePath, 'utf-8');
-              sendJson(200, JSON.parse(fileContent));
-            } catch (error) {
-              console.error('Error reading flavor templates:', error);
-              sendJson(500, { error: 'Failed to read flavor templates' });
-            }
-            return;
-          }
-
-          if (req.method === 'GET' && req.url === '/api/missing-card-images') {
-            try {
-              const templatesPath = path.resolve(
-                __dirname,
-                'src/data/sim/card_flavor_templates.json'
-              );
-              const cardsDir = path.resolve(__dirname, 'public/assets/images/cards');
-              const templates = JSON.parse(fs.readFileSync(templatesPath, 'utf-8'));
-              if (!Array.isArray(templates)) {
-                sendJson(500, { error: 'card_flavor_templates.json is not an array' });
-                return;
-              }
-
-              const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
-              const existingBasenames = new Set<string>();
-              if (fs.existsSync(cardsDir)) {
-                for (const entry of fs.readdirSync(cardsDir, { withFileTypes: true })) {
-                  if (!entry.isFile()) continue;
-                  const ext = path.extname(entry.name).toLowerCase();
-                  if (!IMAGE_EXTS.has(ext)) continue;
-                  existingBasenames.add(path.basename(entry.name, path.extname(entry.name)));
-                }
-              }
-
-              const missing = templates
-                .filter(
-                  (row: { imageName?: string }) =>
-                    typeof row.imageName === 'string' &&
-                    row.imageName &&
-                    !existingBasenames.has(row.imageName)
-                )
-                .map((row: { imageName: string; imagePrompt?: string; name?: string }) => ({
-                  fileName: `${row.imageName}.jpg`,
-                  imageName: row.imageName,
-                  imagePrompt:
-                    typeof row.imagePrompt === 'string' ? row.imagePrompt : (row.name ?? ''),
-                  name: typeof row.name === 'string' ? row.name : row.imageName,
-                }))
-                .sort(
-                  (
-                    a: { fileName: string; name: string },
-                    b: { fileName: string; name: string }
-                  ) => a.fileName.localeCompare(b.fileName) || a.name.localeCompare(b.name)
-                );
-
-              sendJson(200, {
-                missing,
-                count: missing.length,
-                existingCount: existingBasenames.size,
-                templateCount: templates.length,
-              });
-            } catch (error) {
-              console.error('Error listing missing card images:', error);
-              sendJson(500, { error: 'Failed to list missing card images' });
-            }
-            return;
-          }
-
-          if (req.method === 'GET' && req.url === '/api/events') {
-            try {
-              sendJson(200, readMergedEvents());
-            } catch (error) {
-              console.error('Error reading events:', error);
-              sendJson(500, { error: 'Failed to read events' });
-            }
-            return;
-          }
-
-          if (req.method === 'POST' && req.url === '/api/save-event') {
-            readBody()
-              .then((body) => {
-                const newEvent = JSON.parse(body) as EventRow;
-                if (!newEvent?.key || typeof newEvent.key !== 'string') {
-                  sendJson(400, { error: 'Event key is required' });
-                  return;
-                }
-
-                const mainEvents = readEventsArray(EVENTS_JSON);
-                const moreEvents = readEventsArray(EVENTS_MORE_JSON, { optional: true });
-                const inMore = moreEvents.findIndex((e) => e.key === newEvent.key);
-                const inMain = mainEvents.findIndex((e) => e.key === newEvent.key);
-
-                // Keep experimental events in events_more; new events default to events.json.
-                if (inMore !== -1) {
-                  moreEvents[inMore] = newEvent;
-                  writeEventsArray(EVENTS_MORE_JSON, moreEvents);
-                } else if (inMain !== -1) {
-                  mainEvents[inMain] = newEvent;
-                  writeEventsArray(EVENTS_JSON, mainEvents);
-                } else {
-                  mainEvents.push(newEvent);
-                  writeEventsArray(EVENTS_JSON, mainEvents);
-                }
-
-                sendJson(200, { success: true, event: newEvent });
-              })
-              .catch((error) => {
-                console.error('Error saving event:', error);
-                sendJson(500, { error: 'Failed to save event' });
-              });
-            return;
-          }
-
-          if (req.method === 'POST' && req.url === '/api/save-flavor') {
-            readBody()
-              .then((body) => {
-                const newFlavor = JSON.parse(body);
-                if (!newFlavor?.imageName || typeof newFlavor.imageName !== 'string') {
-                  sendJson(400, { error: 'imageName is required' });
-                  return;
-                }
-
-                const filePath = path.resolve(__dirname, 'src/data/sim/card_flavor_templates.json');
-                const fileContent = fs.readFileSync(filePath, 'utf-8');
-                const flavors = JSON.parse(fileContent);
-
-                if (!Array.isArray(flavors)) {
-                  sendJson(500, { error: 'card_flavor_templates.json is not an array' });
-                  return;
-                }
-
-                const existingIndex = flavors.findIndex(
-                  (f: any) => f.imageName === newFlavor.imageName
-                );
-                if (existingIndex !== -1) {
-                  flavors[existingIndex] = newFlavor;
-                } else {
-                  flavors.push(newFlavor);
-                }
-
-                flavors.sort((a: any, b: any) =>
-                  (a.name || a.imageName).localeCompare(b.name || b.imageName)
-                );
-
-                fs.writeFileSync(filePath, JSON.stringify(flavors, null, 2) + '\n', 'utf-8');
-                sendJson(200, { success: true, flavor: newFlavor });
-              })
-              .catch((error) => {
-                console.error('Error saving flavor:', error);
-                sendJson(500, { error: 'Failed to save flavor' });
-              });
-            return;
-          }
-
-          if (req.method === 'POST' && req.url === '/api/set-flavor-cheap-image') {
-            readBody()
-              .then((body) => {
-                const payload = JSON.parse(body) as {
-                  imageName?: string;
-                  cheapImage?: boolean;
-                };
-                if (!payload.imageName || typeof payload.imageName !== 'string') {
-                  sendJson(400, { error: 'imageName is required' });
-                  return;
-                }
-                if (typeof payload.cheapImage !== 'boolean') {
-                  sendJson(400, { error: 'cheapImage boolean is required' });
-                  return;
-                }
-
-                const filePath = path.resolve(__dirname, 'src/data/sim/card_flavor_templates.json');
-                const flavors = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-                if (!Array.isArray(flavors)) {
-                  sendJson(500, { error: 'card_flavor_templates.json is not an array' });
-                  return;
-                }
-
-                const existingIndex = flavors.findIndex(
-                  (f: { imageName?: string }) => f.imageName === payload.imageName
-                );
-                if (existingIndex === -1) {
-                  sendJson(404, { error: `No flavor with imageName ${payload.imageName}` });
-                  return;
-                }
-
-                flavors[existingIndex] = {
-                  ...flavors[existingIndex],
-                  cheapImage: payload.cheapImage,
-                };
-                fs.writeFileSync(filePath, JSON.stringify(flavors, null, 2) + '\n', 'utf-8');
-                sendJson(200, { success: true, flavor: flavors[existingIndex] });
-              })
-              .catch((error) => {
-                console.error('Error setting flavor cheapImage:', error);
-                sendJson(500, { error: 'Failed to set flavor cheapImage' });
-              });
-            return;
-          }
-
-          if (req.method === 'POST' && req.url === '/api/save-card-image') {
-            readBody()
-              .then((body) => {
-                const payload = JSON.parse(body) as {
-                  imageName?: string;
-                  imageBase64?: string;
-                };
-                if (!payload.imageName || typeof payload.imageName !== 'string') {
-                  sendJson(400, { error: 'imageName is required' });
-                  return;
-                }
-                if (!payload.imageBase64 || typeof payload.imageBase64 !== 'string') {
-                  sendJson(400, { error: 'imageBase64 is required' });
-                  return;
-                }
-
-                const safeName = payload.imageName.replace(/[^a-zA-Z0-9_-]/g, '_');
-                const dir = path.resolve(__dirname, 'public/assets/images/cards');
-                if (!fs.existsSync(dir)) {
-                  fs.mkdirSync(dir, { recursive: true });
-                }
-                const filePath = path.join(dir, `${safeName}.jpg`);
-                const buffer = Buffer.from(payload.imageBase64, 'base64');
-                fs.writeFileSync(filePath, buffer);
-                sendJson(200, { success: true, path: filePath });
-              })
-              .catch((error) => {
-                console.error('Error saving card image:', error);
-                sendJson(500, { error: 'Failed to save card image' });
-              });
-            return;
-          }
-
-          if (req.method === 'POST' && req.url === '/api/save-scene-image') {
-            readBody()
-              .then((body) => {
-                const payload = JSON.parse(body) as {
-                  imageName?: string;
-                  imageBase64?: string;
-                };
-                if (!payload.imageName || typeof payload.imageName !== 'string') {
-                  sendJson(400, { error: 'imageName is required' });
-                  return;
-                }
-                if (!payload.imageBase64 || typeof payload.imageBase64 !== 'string') {
-                  sendJson(400, { error: 'imageBase64 is required' });
-                  return;
-                }
-
-                const safeName = payload.imageName.replace(/[^a-zA-Z0-9_-]/g, '_');
-                const dir = path.resolve(__dirname, 'public/assets/images/scenes');
-                if (!fs.existsSync(dir)) {
-                  fs.mkdirSync(dir, { recursive: true });
-                }
-                const filePath = path.join(dir, `${safeName}.jpg`);
-                const buffer = Buffer.from(payload.imageBase64, 'base64');
-                fs.writeFileSync(filePath, buffer);
-                sendJson(200, { success: true, path: filePath });
-              })
-              .catch((error) => {
-                console.error('Error saving scene image:', error);
-                sendJson(500, { error: 'Failed to save scene image' });
-              });
-            return;
-          }
-
-          next();
-        });
+        server.middlewares.use(devApiMiddleware);
+      },
+      configurePreviewServer(server) {
+        server.middlewares.use(devApiMiddleware);
+      },
+      closeBundle() {
+        writeModsBundle(path.resolve(__dirname, 'dist'));
       },
     },
   ],
@@ -354,7 +41,7 @@ export default defineConfig(({ command }) => ({
       // Avoid full reloads when editors / flavor pipeline write these files.
       ignored: [
         '**/src/data/sim/events.json',
-        '**/src/data/sim/events_more.json',
+        '**/mods/**',
         '**/src/data/sim/card_flavor_templates.json',
       ],
     },
@@ -390,3 +77,322 @@ export default defineConfig(({ command }) => ({
     },
   },
 }));
+
+function devApiMiddleware(req: IncomingMessage, res: ServerResponse, next: () => void) {
+  const sendJson = (status: number, payload: unknown) => {
+    res.statusCode = status;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(payload));
+  };
+
+  const readBody = (): Promise<string> =>
+    new Promise((resolve, reject) => {
+      let body = '';
+      req.on('data', (chunk) => {
+        body += chunk.toString();
+      });
+      req.on('end', () => resolve(body));
+      req.on('error', reject);
+    });
+
+  if (req.method === 'POST' && req.url === '/api/save-card') {
+    readBody()
+      .then((body) => {
+        const newCard = JSON.parse(body);
+        const filePath = path.resolve(__dirname, 'src/data/_all_cards.json');
+        const fileContent = fs.readFileSync(filePath, 'utf-8');
+        let allCards = JSON.parse(fileContent);
+
+        const existingIndex = allCards.findIndex((c: any) => c.id === newCard.id);
+        if (existingIndex !== -1) {
+          allCards[existingIndex] = newCard;
+        } else {
+          allCards.push(newCard);
+        }
+
+        allCards.sort((a: any, b: any) => (a.name || a.id).localeCompare(b.name || b.id));
+
+        fs.writeFileSync(filePath, JSON.stringify(allCards, null, 2), 'utf-8');
+        sendJson(200, { success: true });
+      })
+      .catch((error) => {
+        console.error('Error saving card:', error);
+        sendJson(500, { error: 'Failed to save card' });
+      });
+    return;
+  }
+
+  if (req.method === 'GET' && req.url === '/api/flavor-templates') {
+    try {
+      const filePath = path.resolve(__dirname, 'src/data/sim/card_flavor_templates.json');
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      sendJson(200, JSON.parse(fileContent));
+    } catch (error) {
+      console.error('Error reading flavor templates:', error);
+      sendJson(500, { error: 'Failed to read flavor templates' });
+    }
+    return;
+  }
+
+  if (req.method === 'GET' && req.url === '/api/missing-card-images') {
+    try {
+      const templatesPath = path.resolve(__dirname, 'src/data/sim/card_flavor_templates.json');
+      const cardsDir = path.resolve(__dirname, 'public/assets/images/cards');
+      const templates = JSON.parse(fs.readFileSync(templatesPath, 'utf-8'));
+      if (!Array.isArray(templates)) {
+        sendJson(500, { error: 'card_flavor_templates.json is not an array' });
+        return;
+      }
+
+      const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+      const existingBasenames = new Set<string>();
+      if (fs.existsSync(cardsDir)) {
+        for (const entry of fs.readdirSync(cardsDir, { withFileTypes: true })) {
+          if (!entry.isFile()) continue;
+          const ext = path.extname(entry.name).toLowerCase();
+          if (!IMAGE_EXTS.has(ext)) continue;
+          existingBasenames.add(path.basename(entry.name, path.extname(entry.name)));
+        }
+      }
+
+      const missing = templates
+        .filter(
+          (row: { imageName?: string }) =>
+            typeof row.imageName === 'string' &&
+            row.imageName &&
+            !existingBasenames.has(row.imageName)
+        )
+        .map((row: { imageName: string; imagePrompt?: string; name?: string }) => ({
+          fileName: `${row.imageName}.jpg`,
+          imageName: row.imageName,
+          imagePrompt: typeof row.imagePrompt === 'string' ? row.imagePrompt : (row.name ?? ''),
+          name: typeof row.name === 'string' ? row.name : row.imageName,
+        }))
+        .sort(
+          (a: { fileName: string; name: string }, b: { fileName: string; name: string }) =>
+            a.fileName.localeCompare(b.fileName) || a.name.localeCompare(b.name)
+        );
+
+      sendJson(200, {
+        missing,
+        count: missing.length,
+        existingCount: existingBasenames.size,
+        templateCount: templates.length,
+      });
+    } catch (error) {
+      console.error('Error listing missing card images:', error);
+      sendJson(500, { error: 'Failed to list missing card images' });
+    }
+    return;
+  }
+
+  if (req.method === 'GET' && req.url === '/api/mods') {
+    try {
+      sendJson(200, buildModsManifest());
+    } catch (error) {
+      console.error('Error reading mods:', error);
+      sendJson(500, { error: 'Failed to read mods' });
+    }
+    return;
+  }
+
+  const modImageMatch = req.url?.match(/^\/mods\/([^/]+)\/images\/(activities|events)\/([^/?]+)/);
+  if (req.method === 'GET' && modImageMatch) {
+    const filePath = resolveModImageFile(modImageMatch[1], modImageMatch[2], modImageMatch[3]);
+    if (!filePath) {
+      sendJson(404, { error: 'Mod image not found' });
+      return;
+    }
+    const contentType = imageContentType(filePath);
+    if (!contentType) {
+      sendJson(404, { error: 'Mod image not found' });
+      return;
+    }
+    res.statusCode = 200;
+    res.setHeader('Content-Type', contentType);
+    fs.createReadStream(filePath).pipe(res);
+    return;
+  }
+
+  if (req.method === 'GET' && req.url === '/api/events') {
+    try {
+      sendJson(200, readMergedEvents(EVENTS_JSON));
+    } catch (error) {
+      console.error('Error reading events:', error);
+      sendJson(500, { error: 'Failed to read events' });
+    }
+    return;
+  }
+
+  if (req.method === 'POST' && req.url === '/api/save-event') {
+    readBody()
+      .then((body) => {
+        const newEvent = JSON.parse(body) as EventRow;
+        if (!newEvent?.key || typeof newEvent.key !== 'string') {
+          sendJson(400, { error: 'Event key is required' });
+          return;
+        }
+
+        // Mod events stay in that mod's events.json. New keys go to events.json.
+        saveCatalogEvent(EVENTS_JSON, newEvent);
+        sendJson(200, { success: true, event: newEvent });
+      })
+      .catch((error) => {
+        console.error('Error saving event:', error);
+        sendJson(500, { error: 'Failed to save event' });
+      });
+    return;
+  }
+
+  if (req.method === 'POST' && req.url === '/api/save-flavor') {
+    readBody()
+      .then((body) => {
+        const newFlavor = JSON.parse(body);
+        if (!newFlavor?.imageName || typeof newFlavor.imageName !== 'string') {
+          sendJson(400, { error: 'imageName is required' });
+          return;
+        }
+
+        const filePath = path.resolve(__dirname, 'src/data/sim/card_flavor_templates.json');
+        const fileContent = fs.readFileSync(filePath, 'utf-8');
+        const flavors = JSON.parse(fileContent);
+
+        if (!Array.isArray(flavors)) {
+          sendJson(500, { error: 'card_flavor_templates.json is not an array' });
+          return;
+        }
+
+        const existingIndex = flavors.findIndex((f: any) => f.imageName === newFlavor.imageName);
+        if (existingIndex !== -1) {
+          flavors[existingIndex] = newFlavor;
+        } else {
+          flavors.push(newFlavor);
+        }
+
+        flavors.sort((a: any, b: any) =>
+          (a.name || a.imageName).localeCompare(b.name || b.imageName)
+        );
+
+        fs.writeFileSync(filePath, JSON.stringify(flavors, null, 2) + '\n', 'utf-8');
+        sendJson(200, { success: true, flavor: newFlavor });
+      })
+      .catch((error) => {
+        console.error('Error saving flavor:', error);
+        sendJson(500, { error: 'Failed to save flavor' });
+      });
+    return;
+  }
+
+  if (req.method === 'POST' && req.url === '/api/set-flavor-cheap-image') {
+    readBody()
+      .then((body) => {
+        const payload = JSON.parse(body) as {
+          imageName?: string;
+          cheapImage?: boolean;
+        };
+        if (!payload.imageName || typeof payload.imageName !== 'string') {
+          sendJson(400, { error: 'imageName is required' });
+          return;
+        }
+        if (typeof payload.cheapImage !== 'boolean') {
+          sendJson(400, { error: 'cheapImage boolean is required' });
+          return;
+        }
+
+        const filePath = path.resolve(__dirname, 'src/data/sim/card_flavor_templates.json');
+        const flavors = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        if (!Array.isArray(flavors)) {
+          sendJson(500, { error: 'card_flavor_templates.json is not an array' });
+          return;
+        }
+
+        const existingIndex = flavors.findIndex(
+          (f: { imageName?: string }) => f.imageName === payload.imageName
+        );
+        if (existingIndex === -1) {
+          sendJson(404, { error: `No flavor with imageName ${payload.imageName}` });
+          return;
+        }
+
+        flavors[existingIndex] = {
+          ...flavors[existingIndex],
+          cheapImage: payload.cheapImage,
+        };
+        fs.writeFileSync(filePath, JSON.stringify(flavors, null, 2) + '\n', 'utf-8');
+        sendJson(200, { success: true, flavor: flavors[existingIndex] });
+      })
+      .catch((error) => {
+        console.error('Error setting flavor cheapImage:', error);
+        sendJson(500, { error: 'Failed to set flavor cheapImage' });
+      });
+    return;
+  }
+
+  if (req.method === 'POST' && req.url === '/api/save-card-image') {
+    readBody()
+      .then((body) => {
+        const payload = JSON.parse(body) as {
+          imageName?: string;
+          imageBase64?: string;
+        };
+        if (!payload.imageName || typeof payload.imageName !== 'string') {
+          sendJson(400, { error: 'imageName is required' });
+          return;
+        }
+        if (!payload.imageBase64 || typeof payload.imageBase64 !== 'string') {
+          sendJson(400, { error: 'imageBase64 is required' });
+          return;
+        }
+
+        const safeName = payload.imageName.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const dir = path.resolve(__dirname, 'public/assets/images/cards');
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        const filePath = path.join(dir, `${safeName}.jpg`);
+        const buffer = Buffer.from(payload.imageBase64, 'base64');
+        fs.writeFileSync(filePath, buffer);
+        sendJson(200, { success: true, path: filePath });
+      })
+      .catch((error) => {
+        console.error('Error saving card image:', error);
+        sendJson(500, { error: 'Failed to save card image' });
+      });
+    return;
+  }
+
+  if (req.method === 'POST' && req.url === '/api/save-scene-image') {
+    readBody()
+      .then((body) => {
+        const payload = JSON.parse(body) as {
+          imageName?: string;
+          imageBase64?: string;
+        };
+        if (!payload.imageName || typeof payload.imageName !== 'string') {
+          sendJson(400, { error: 'imageName is required' });
+          return;
+        }
+        if (!payload.imageBase64 || typeof payload.imageBase64 !== 'string') {
+          sendJson(400, { error: 'imageBase64 is required' });
+          return;
+        }
+
+        const safeName = payload.imageName.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const dir = path.resolve(__dirname, 'public/assets/images/scenes');
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        const filePath = path.join(dir, `${safeName}.jpg`);
+        const buffer = Buffer.from(payload.imageBase64, 'base64');
+        fs.writeFileSync(filePath, buffer);
+        sendJson(200, { success: true, path: filePath });
+      })
+      .catch((error) => {
+        console.error('Error saving scene image:', error);
+        sendJson(500, { error: 'Failed to save scene image' });
+      });
+    return;
+  }
+
+  next();
+}

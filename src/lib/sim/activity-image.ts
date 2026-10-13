@@ -1,46 +1,51 @@
 import { ActivityType, type ScheduledActivity } from '@/lib/_model';
 import { gs } from '@/lib/_state';
-import { getActivityImageRelPath, getAssetPath } from '@/lib/_utils/asset-paths';
+import { getActivityImageRefs, getJobImagePath, type ImageRef } from '@/lib/_utils/asset-paths';
 
 /**
  * Illustration candidates for a scheduled activity (same order as Location):
- * job art when working, else activity participant art. Paths are relative to `images/`.
+ * job art when working, else activity participant art (built-in, then mods).
  */
-export function getActivityImageRelCandidates(activity: ScheduledActivity): string[] {
+export function getActivityIllustrationRefs(activity: ScheduledActivity): ImageRef[] {
   if (activity.type === ActivityType.Work && activity.jobId) {
     const job = gs.player.jobs.find((j) => j.id === activity.jobId);
     if (job) {
-      return [`jobs/${job.name}.jpg`];
+      return [
+        {
+          url: getJobImagePath(job.name),
+          stored: `jobs/${job.name}.jpg`,
+        },
+      ];
     }
   }
 
   const others = activity.participants.filter((key) => key !== gs.player.key);
   if (others.length === 0) return [];
 
-  return getActivityImageRelPath(activity.type, others, activity.placeKey);
+  return getActivityImageRefs(activity.type, others, activity.placeKey);
 }
 
 /** Full asset URLs for a scheduled activity's illustration candidates. */
 export function getActivityImageCandidates(activity: ScheduledActivity): string[] {
-  return getActivityImageRelCandidates(activity).map((rel) => getAssetPath(`images/${rel}`));
+  return getActivityIllustrationRefs(activity).map((ref) => ref.url);
 }
 
 /** First candidate whose image loads; undefined if none exist. */
-export function probeFirstExistingImageRel(relPaths: string[]): Promise<string | undefined> {
-  if (relPaths.length === 0) return Promise.resolve(undefined);
+export function probeFirstExistingImage(candidates: ImageRef[]): Promise<ImageRef | undefined> {
+  if (candidates.length === 0) return Promise.resolve(undefined);
 
   return new Promise((resolve) => {
     let index = 0;
     const img = new Image();
-    let current: string | undefined;
+    let current: ImageRef | undefined;
 
     const tryNext = () => {
-      if (index >= relPaths.length) {
+      if (index >= candidates.length) {
         resolve(undefined);
         return;
       }
-      current = relPaths[index++];
-      img.src = getAssetPath(`images/${current}`);
+      current = candidates[index++];
+      img.src = current.url;
     };
 
     img.onload = () => resolve(current);

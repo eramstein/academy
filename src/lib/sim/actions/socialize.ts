@@ -134,7 +134,7 @@ async function imageUrlExists(url: string): Promise<boolean> {
   });
 }
 
-/** Pick a random existing `{character}-p-N.jpg` from activities_more, if any. */
+/** Pick a random existing `{character}-p-N.jpg` from loaded mods, if any. */
 async function pickPhysicalRomanceImage(characterKey: string): Promise<string | undefined> {
   const candidates = getPhysicalRomanceImageCandidates(characterKey);
   const existing = (

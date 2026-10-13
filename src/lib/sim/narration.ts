@@ -1,8 +1,7 @@
 import {
-  getAssetPath,
   getCharacterImagePath,
   getEventImagePath,
-  getEventImageRelPath,
+  getEventImageRefs,
   resolveEventImageFileName,
 } from '@/lib/_utils/asset-paths';
 import { generateImage, isImageGenAvailable } from '@/lib/image_gen';
@@ -22,7 +21,7 @@ import type {
 } from '../_model/model-sim';
 import { gs } from '../_state';
 import type { TransactionParameters } from './actions';
-import { probeFirstExistingImageRel } from './activity-image';
+import { probeFirstExistingImage } from './activity-image';
 import { actionTemplates, getActionTemplateMeta } from './cards/action-templates';
 import { formatKeywordLabel, KEYWORD_KEYS } from './cards/keywords';
 import { getCachedSceneImageUrl, saveCachedSceneImage } from './scene-image-cache';
@@ -271,7 +270,7 @@ export function narrateText(
     characterKey?: string;
     emotion?: Emotion;
     image?: string;
-    /** Pre-resolved asset URL (e.g. activities_more); wins over `image`. */
+    /** Pre-resolved asset URL (built-in or mod); wins over `image`. */
     imageUrl?: string;
     imageSize?: EventImageSize;
     eventKey?: string;
@@ -295,15 +294,15 @@ export function narrateText(
     ...(imageUrl ? { imageUrl, imageSize } : {}),
   });
 
-  // Prefer events/, fall back to events_more/ when the file only exists there.
+  // Prefer images/events/, then any mod that ships the same filename.
   if (!options?.imageUrl && imageFile) {
     const provisionalUrl = imageUrl;
-    void probeFirstExistingImageRel(getEventImageRelPath(imageFile)).then((rel) => {
-      if (!rel) return;
-      const resolved = getAssetPath(`images/${rel}`);
+    void probeFirstExistingImage(getEventImageRefs(imageFile)).then((ref) => {
+      if (!ref) return;
+      const resolved = ref.url;
       if (resolved === provisionalUrl) return;
       const entry = gs.scene.narration.find((n) => n.id === id);
-      if (entry?.imageUrl === provisionalUrl) {
+      if (entry && entry.imageUrl === provisionalUrl) {
         entry.imageUrl = resolved;
       }
       if (imageSize === 'large' && gs.scene.image === provisionalUrl) {

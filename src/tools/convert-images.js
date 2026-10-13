@@ -38,13 +38,6 @@ const targets = [
     maxFileSizeKB: 300,
   },
   {
-    dir: './public/assets/images/events_more',
-    quality: 90,
-    width: 1024,
-    height: 1024,
-    maxFileSizeKB: 300,
-  },
-  {
     dir: './public/assets/images/jobs',
     quality: 90,
     width: 1024,
@@ -58,14 +51,23 @@ const targets = [
     height: 1024,
     maxFileSizeKB: 300,
   },
-  {
-    dir: './public/assets/images/activities_more',
-    quality: 90,
-    width: 1024,
-    height: 1024,
-    maxFileSizeKB: 300,
-  },
 ];
+
+const modsRoot = './mods';
+if (fs.existsSync(modsRoot)) {
+  for (const entry of fs.readdirSync(modsRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    for (const kind of ['events', 'activities']) {
+      targets.push({
+        dir: `./mods/${entry.name}/images/${kind}`,
+        quality: 90,
+        width: 1024,
+        height: 1024,
+        maxFileSizeKB: 300,
+      });
+    }
+  }
+}
 
 async function matchesTargetDimensions(inputPath, width, height) {
   if (!width && !height) return true;

@@ -1,24 +1,37 @@
 ---
 name: create-sim-event
-description: Creates or edits sim events in src/data/sim/events.json (or experimental events_more.json when asked) from a natural-language description, elaborating a short synopsis into event prose and mapping conditions and rewards onto triggers, option templates, and effects. Use when the user asks to add, write, or change a game event, a character arc beat (e.g. "add an event for molly where..."), or the triggers/options of an existing event.
+description: Creates or edits sim events in src/data/sim/events.json (or a gitignored mod under mods/<id>/events.json when asked) from a natural-language description, elaborating a short synopsis into event prose and mapping conditions and rewards onto triggers, option templates, and effects. Use when the user asks to add, write, or change a game event, a character arc beat (e.g. "add an event for molly where..."), or the triggers/options of an existing event.
 ---
 
 # Create a sim event
 
-Events are `EventTemplate` entries in `src/data/sim/events.json`, plus an optional local
-`src/data/sim/events_more.json` for experiments. The runtime and event builder merge both files
-into one catalog (`events.json` first, then `events_more.json`). `events_more.json` is gitignored.
-Each event declares _when_ it fires (triggers), _what the player reads_ (text), and _what happens_
-(event effects and player options). The type lives in `src/lib/_model/model-sim.ts`; the runtime
-that consumes it is `src/lib/sim/events.ts`.
+Events are `EventTemplate` entries in `src/data/sim/events.json`, plus any local mods under
+`mods/<mod-id>/` (gitignored). The runtime and event builder merge `events.json` first, then each
+mod's `events.json` in folder-name order. Each event declares _when_ it fires (triggers), _what the
+player reads_ (text), and _what happens_ (event effects and player options). The type lives in
+`src/lib/_model/model-sim.ts`; the runtime that consumes it is `src/lib/sim/events.ts`.
+
+A mod folder looks like this:
+
+```
+mods/<mod-id>/
+  events.json
+  images/activities/    # activity art and {character}-p-N.jpg
+  images/events/        # event illustrations named by the event's image field
+```
+
+`<mod-id>` is letters, digits, `_`, and `-`. The dev server scans `mods/` at startup.
 
 ## Which file to write
 
 - **Default:** append or edit in `src/data/sim/events.json`.
-- **Only when the user asks** (e.g. "put it in events_more", "experimental", "don't commit this"):
-  write to `src/data/sim/events_more.json`. Create the file as `[]` if it is missing.
-- Keys are shared across both files — never reuse a key that already exists in either.
-- When editing an existing event, change the file that already contains that `key`.
+- **Only when the user asks** (e.g. "put it in a mod", "experimental", "don't commit this"):
+  write to `mods/<mod-id>/events.json`. If they name a mod, use that id. Otherwise use `mods/more`.
+  Create the file as `[]` if it is missing, and create the folder if needed.
+- Put that mod's pictures in `mods/<mod-id>/images/events/` or `images/activities/`, not under `public/`.
+- Keys are shared across the main file and every mod — never reuse a key that already exists.
+- When editing an existing event, change the file that already contains that `key`. The event editor
+  does the same: a mod event is written back to that mod's `events.json`.
 
 ## Request template
 
@@ -41,8 +54,8 @@ request did not imply.
 
 ## Workflow
 
-1. Read `src/data/sim/events.json` and, if present, `src/data/sim/events_more.json` to see existing
-   keys, arc grouping, and house style. Treat them as one key space.
+1. Read `src/data/sim/events.json` and every `mods/*/events.json` to see existing keys, arc grouping,
+   and house style. Treat them as one key space.
 2. Pick the key: `<npcKey>-<n>` for a character arc event, `event-<n>` for main story, using the
    next free number in that series across both files. Keys are permanent identifiers, not prose.
 3. Write `text` (see _Writing the text_). Set `emotion` when appropriate (see _Emotion_).
@@ -50,18 +63,18 @@ request did not imply.
    Verify character, place, and deck keys against the source files listed below.
 5. Insert the event object after the last event of the same `characterArc` in the **target file**,
    or append it at the end of that file's array for a main-story event. Target file is
-   `events.json` unless the user asked for `events_more.json`.
+   `events.json` unless the user asked for a mod.
 6. Format and validate (prettier only the file you changed):
    ```
    npx prettier --write src/data/sim/events.json
-   # or, when writing experiments:
-   # npx prettier --write src/data/sim/events_more.json
+   # or, when writing a mod:
+   # npx prettier --write mods/<mod-id>/events.json
    node .cursor/skills/create-sim-event/scripts/validate-events.mjs
    ```
    Fix every reported problem and re-run until it prints `OK`.
 7. Report the new key, which file it was written to, the trigger conditions in plain words, and each
    option with its effect. Tell the user to reload the running page: the dev server serves the
-   merged catalog through `/api/events` at init and Vite intentionally skips HMR for both files.
+   merged catalog through `/api/events` at init and Vite intentionally skips HMR for `events.json` and `mods/`.
 
 If a requested outcome has no matching effect type, or a condition has no matching trigger type,
 stop and say which `EventEffectType` and effect function would have to be added (see the
@@ -185,7 +198,7 @@ cumulative `relationProgress` (the only relation meter). Socialize actions do no
 this effect (and similar authored effects) do.
 
 `update_relation_arc` appends `{ text, image? }` to that NPC's `relationArc`. `image` is a path
-under `images/` as `folder/file` (e.g. `events/molly-f1.jpg`, `activities_more/emma-bed-2.jpg`).
+under `images/` as `folder/file` (e.g. `events/molly-f1.jpg`). Mod art is `mod/<mod-id>/activities/emma-bed-2.jpg` or `mod/<mod-id>/events/emma-l1.jpg`.
 Prefer `.jpg` over `.png`. The effect also narrates `text`.
 
 `add_relation_tag` appends a `RelationTag` to that NPC's `relationTags` if it is not already
@@ -209,7 +222,7 @@ which takes the same shape and day-offset rules as `schedule_activity`'s. Give a
 `payPerActivity` is the gold earned per shift.
 
 `unlock_event` clears `locked` on another event by key so it can start triggering. The target must
-already exist in the merged catalog (`events.json` or `events_more.json`).
+already exist in the merged catalog (`events.json` or any `mods/<mod-id>/events.json`).
 
 `follow_up_event` immediately queues another event by key via `setEvent`, bypassing that event's
 triggers. Prefer it on an option when the next beat should fire in the same scene. The target must

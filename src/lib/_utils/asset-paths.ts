@@ -1,4 +1,5 @@
 import { Emotion } from '@/lib/_model/enums-sim';
+import { findModImages, modImageUrl, type ModImageKind } from '@/lib/mods';
 
 /** Characters with a 4×4 emotion spritesheet (314px cells → 1256×1256) under images/characters/sheets. */
 const CHARACTER_EMOTION_SHEETS = new Set(['molly', 'emma']);
@@ -109,24 +110,37 @@ export function getPlaceImagePath(placeKey: string): string {
   return getAssetPath(`images/places/${placeKey}.jpg`);
 }
 
-const EVENT_IMAGE_FOLDERS = ['events', 'events_more'] as const;
+/** A loadable illustration and the value stored on relation-arc beats. */
+export type ImageRef = { url: string; stored: string };
 
 /**
- * Event illustration candidates relative to `images/`, tried in order:
- * `events/{fileName}` then `events_more/{fileName}`.
+ * Event illustration candidates, tried in order:
+ * `images/events/{fileName}`, then each loaded mod that has that file.
  */
-export function getEventImageRelPath(imageFileName: string): string[] {
-  return EVENT_IMAGE_FOLDERS.map((folder) => `${folder}/${imageFileName}`);
+export function getEventImageRefs(imageFileName: string): ImageRef[] {
+  const refs: ImageRef[] = [
+    {
+      url: getAssetPath(`images/events/${imageFileName}`),
+      stored: imageFileName,
+    },
+  ];
+  for (const hit of findModImages('events', imageFileName)) {
+    refs.push({
+      url: hit.url,
+      stored: `mod/${hit.modId}/events/${imageFileName}`,
+    });
+  }
+  return refs;
 }
 
-/** Full asset URLs for event art candidates (`events` then `events_more`). */
+/** Full URLs for event art candidates (built-in `events/`, then mods). */
 export function getEventImageCandidates(imageFileName: string): string[] {
-  return getEventImageRelPath(imageFileName).map((rel) => getAssetPath(`images/${rel}`));
+  return getEventImageRefs(imageFileName).map((ref) => ref.url);
 }
 
 /**
  * First event-illustration candidate URL (`images/events/{fileName}`).
- * Prefer {@link getEventImageCandidates} / probing when the file may live in `events_more`.
+ * Prefer {@link getEventImageCandidates} when the file may live in a mod.
  */
 export function getEventImagePath(imageFileName: string): string {
   return getEventImageCandidates(imageFileName)[0];
@@ -134,67 +148,98 @@ export function getEventImagePath(imageFileName: string): string {
 
 /**
  * Event art filename from the template's `image` field (e.g. `emma-l1.jpg`).
- * Place the file at public/assets/images/events/{image} or events_more/{image}.
+ * Place the file at public/assets/images/events/{image} or mods/<id>/images/events/{image}.
  */
 export function resolveEventImageFileName(_eventKey: string, image?: string): string | undefined {
   if (!image) return undefined;
   return image;
 }
 
+const LEGACY_MOD_FOLDERS: Record<string, ModImageKind> = {
+  activities_more: 'activities',
+  events_more: 'events',
+};
+
+/** Resolve a stored illustration (`events/file`, bare event file, `mod/<id>/...`, or legacy `*_more/`). */
+export function resolveStoredImage(image: string): string {
+  return storedImageCandidates(image)[0];
+}
+
+/** Candidate URLs for a stored illustration, in lookup order. */
+export function storedImageCandidates(image: string): string[] {
+  const normalized = image.replace(/\\/g, '/');
+  const modStored = /^mod\/([^/]+)\/(activities|events)\/([^/]+)$/.exec(normalized);
+  if (modStored) {
+    return [modImageUrl(modStored[1], modStored[2] as ModImageKind, modStored[3])];
+  }
+  const legacy = /^(activities_more|events_more)\/([^/]+)$/.exec(normalized);
+  if (legacy) {
+    const hits = findModImages(LEGACY_MOD_FOLDERS[legacy[1]], legacy[2]).map((hit) => hit.url);
+    if (hits.length > 0) return hits;
+    return [getAssetPath(`images/${normalized}`)];
+  }
+  if (normalized.includes('/')) {
+    return [getAssetPath(`images/${normalized}`)];
+  }
+  return getEventImageCandidates(normalized);
+}
+
 export function getJobImagePath(jobName: string): string {
   return getAssetPath(`images/jobs/${jobName}.jpg`);
 }
-
-const ACTIVITY_IMAGE_FOLDERS = ['activities', 'activities_more'] as const;
 
 /** Max N probed for `{character}-p-{N}.jpg` physical-romance art. */
 const PHYSICAL_ROMANCE_IMAGE_MAX = 12;
 
 /**
- * Activity illustration candidates relative to `images/`, tried in order:
+ * Activity illustration candidates, tried in order:
  * `{type}_{participants}_{placeKey}.jpg` then `{type}_{participants}.jpg`,
- * each under `activities` then `activities_more`.
+ * each under `images/activities` and then any mod that has that file.
  */
-export function getActivityImageRelPath(
+export function getActivityImageRefs(
   activityType: string,
   characterKeys: string[],
   placeKey?: string
-): string[] {
+): ImageRef[] {
   const participants = [...characterKeys].sort().join('_');
   const basenames = [
     ...(placeKey ? [`${activityType}_${participants}_${placeKey}.jpg`] : []),
     `${activityType}_${participants}.jpg`,
   ];
-  return basenames.flatMap((basename) =>
-    ACTIVITY_IMAGE_FOLDERS.map((folder) => `${folder}/${basename}`)
-  );
+  const refs: ImageRef[] = [];
+  for (const basename of basenames) {
+    refs.push({
+      url: getAssetPath(`images/activities/${basename}`),
+      stored: `activities/${basename}`,
+    });
+    for (const hit of findModImages('activities', basename)) {
+      refs.push({
+        url: hit.url,
+        stored: `mod/${hit.modId}/activities/${basename}`,
+      });
+    }
+  }
+  return refs;
 }
 
-/**
- * Activity illustration candidates, tried in order:
- * `{type}_{participants}_{placeKey}.jpg` then `{type}_{participants}.jpg`,
- * each under `images/activities` then `images/activities_more`.
- */
+/** Activity illustration URLs. See {@link getActivityImageRefs}. */
 export function getActivityImagePath(
   activityType: string,
   characterKeys: string[],
   placeKey?: string
 ): string[] {
-  return getActivityImageRelPath(activityType, characterKeys, placeKey).map((rel) =>
-    getAssetPath(`images/${rel}`)
-  );
+  return getActivityImageRefs(activityType, characterKeys, placeKey).map((ref) => ref.url);
 }
 
-/** Physical-romance art: `images/activities_more/{characterKey}-p-{n}.jpg`. */
-export function getPhysicalRomanceImagePath(characterKey: string, n: number): string {
-  return getAssetPath(`images/activities_more/${characterKey}-p-${n}.jpg`);
-}
-
-/** Candidate paths for `{characterKey}-p-1.jpg` … `p-{MAX}`. */
+/** `{characterKey}-p-{n}.jpg` from loaded mods' activity images. */
 export function getPhysicalRomanceImageCandidates(characterKey: string): string[] {
-  return Array.from({ length: PHYSICAL_ROMANCE_IMAGE_MAX }, (_, i) =>
-    getPhysicalRomanceImagePath(characterKey, i + 1)
-  );
+  const urls: string[] = [];
+  for (let n = 1; n <= PHYSICAL_ROMANCE_IMAGE_MAX; n++) {
+    for (const hit of findModImages('activities', `${characterKey}-p-${n}.jpg`)) {
+      urls.push(hit.url);
+    }
+  }
+  return urls;
 }
 
 /** Semantic UI icon names → painted PNG files in images/ui/icons. */

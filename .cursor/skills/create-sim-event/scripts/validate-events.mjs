@@ -1,4 +1,4 @@
-// Validates src/data/sim/events.json (+ optional events_more.json) against the
+// Validates src/data/sim/events.json and mods/<id>/events.json against the
 // EventTemplate schema and the keys/templates actually registered in the codebase.
 // Usage: node .cursor/skills/create-sim-event/scripts/validate-events.mjs
 import fs from 'node:fs';
@@ -7,16 +7,34 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf-8');
-const readOptionalJsonArray = (relative) => {
-  const full = path.join(root, relative);
-  if (!fs.existsSync(full)) return [];
-  const parsed = JSON.parse(fs.readFileSync(full, 'utf-8'));
-  if (!Array.isArray(parsed)) {
-    throw new Error(`${relative} must be an array`);
-  }
-  return parsed;
-};
 const errors = [];
+
+function readModCatalogs() {
+  const modsRoot = path.join(root, 'mods');
+  if (!fs.existsSync(modsRoot)) return [];
+  const catalogs = [];
+  for (const entry of fs
+    .readdirSync(modsRoot, { withFileTypes: true })
+    .sort((a, b) => a.name.localeCompare(b.name))) {
+    if (!entry.isDirectory() || !/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(entry.name)) continue;
+    const relative = `mods/${entry.name}/events.json`;
+    const full = path.join(modsRoot, entry.name, 'events.json');
+    if (!fs.existsSync(full)) continue;
+    let parsed;
+    try {
+      parsed = JSON.parse(fs.readFileSync(full, 'utf-8'));
+    } catch (error) {
+      errors.push(`${relative}: ${error.message}`);
+      continue;
+    }
+    if (!Array.isArray(parsed)) {
+      errors.push(`${relative} must be an array`);
+      continue;
+    }
+    catalogs.push({ source: relative, events: parsed });
+  }
+  return catalogs;
+}
 
 function enumValues(source, enumName) {
   const body = source.match(new RegExp(`export enum ${enumName} \\{([^}]*)\\}`))?.[1] ?? '';
@@ -73,10 +91,8 @@ const actionTemplateKeys = [
 const abilityKeys = [...keywordKeys, ...actionTemplateKeys];
 
 let mainEvents;
-let moreEvents;
 try {
   mainEvents = JSON.parse(read('src/data/sim/events.json'));
-  moreEvents = readOptionalJsonArray('src/data/sim/events_more.json');
 } catch (e) {
   console.error(`Failed to read event catalogs: ${e.message}`);
   process.exit(1);
@@ -86,7 +102,10 @@ if (!Array.isArray(mainEvents)) {
   process.exit(1);
 }
 
-const events = [...mainEvents, ...moreEvents];
+const modCatalogs = readModCatalogs();
+const catalogs = [{ source: 'events.json', events: mainEvents }, ...modCatalogs];
+const events = catalogs.flatMap((catalog) => catalog.events);
+const eventSources = catalogs.flatMap((catalog) => catalog.events.map(() => catalog.source));
 const eventKeys = events.map((event) => event?.key);
 const at = (event, index) => `${event?.key ?? `#${index}`}`;
 
@@ -95,11 +114,10 @@ eventKeys.forEach((key, index) => {
   if (typeof key !== 'string' || !key) return;
   if (seenKeys.has(key)) {
     errors.push(
-      `${at(events[index], index)}: duplicate key also used by ${seenKeys.get(key)} (events.json and events_more.json share one key space)`
+      `${at(events[index], index)}: duplicate key also used by ${seenKeys.get(key)} (events.json and mod catalogs share one key space)`
     );
   } else {
-    const source = index < mainEvents.length ? 'events.json' : 'events_more.json';
-    seenKeys.set(key, `${source}:${key}`);
+    seenKeys.set(key, `${eventSources[index]}:${key}`);
   }
 });
 
@@ -489,9 +507,10 @@ events.forEach((event, index) => {
 });
 
 if (errors.length > 0) {
-  console.error(`${errors.length} problem(s) in event catalogs (events.json + events_more.json):`);
+  console.error(`${errors.length} problem(s) in event catalogs (events.json + mods/*/events.json):`);
   for (const error of errors) console.error(`  - ${error}`);
   process.exit(1);
 }
-const moreNote = moreEvents.length > 0 ? ` (+ ${moreEvents.length} from events_more.json)` : '';
-console.log(`OK: ${events.length} events valid${moreNote}.`);
+const modCount = modCatalogs.reduce((count, catalog) => count + catalog.events.length, 0);
+const modNote = modCount > 0 ? ` (+ ${modCount} from mods)` : '';
+console.log(`OK: ${events.length} events valid${modNote}.`);

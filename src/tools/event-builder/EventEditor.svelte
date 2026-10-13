@@ -2,11 +2,12 @@
   import { onMount } from 'svelte';
   import eventsData from '@/data/sim/events.json';
   import { EventTriggerType, type EventTemplate } from '@/lib/_model';
+  import { getLoadedModEvents } from '@/lib/mods';
   import { syncEventTemplates } from '@/lib/sim/events';
   import EventForm from './EventForm.svelte';
   import EventList from './EventList.svelte';
 
-  // Bundled fallback is events.json only; /api/events merges events_more.json in dev.
+  // Bundled fallback is events.json; /api/events merges mods/<id>/events.json in dev.
   let events = $state<EventTemplate[]>([...(eventsData as EventTemplate[])]);
   let editingEvent = $state<EventTemplate | null>(null);
   let showForm = $state(false);
@@ -20,9 +21,11 @@
       const response = await fetch('/api/events', { cache: 'no-store' });
       if (response.ok) {
         events = (await response.json()) as EventTemplate[];
+      } else {
+        events = [...(eventsData as EventTemplate[]), ...getLoadedModEvents<EventTemplate>()];
       }
     } catch {
-      // Keep bundled import fallback (events.json only).
+      events = [...(eventsData as EventTemplate[]), ...getLoadedModEvents<EventTemplate>()];
     } finally {
       loading = false;
     }
@@ -67,9 +70,7 @@
   async function handleSaved(event: EventTemplate) {
     const index = events.findIndex((item) => item.key === event.key);
     const nextEvents =
-      index === -1
-        ? [...events, event]
-        : events.map((item, i) => (i === index ? event : item));
+      index === -1 ? [...events, event] : events.map((item, i) => (i === index ? event : item));
     events = nextEvents;
     await syncEventTemplates(nextEvents);
     closeForm();
@@ -81,12 +82,7 @@
     <p class="loading">Loading events…</p>
   {:else if showForm}
     {#key editingEvent?.key ?? '__new__'}
-      <EventForm
-        event={editingEvent}
-        {existingKeys}
-        onSaved={handleSaved}
-        onCancel={closeForm}
-      />
+      <EventForm event={editingEvent} {existingKeys} onSaved={handleSaved} onCancel={closeForm} />
     {/key}
   {:else}
     <EventList

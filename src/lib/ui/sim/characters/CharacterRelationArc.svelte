@@ -2,10 +2,10 @@
   import type { Npc } from '@/lib/_model/model-sim';
   import {
     getAssetPath,
-    getEventImageCandidates,
-    getEventImagePath,
     getUiIconPath,
     isPaintedUiIcon,
+    resolveStoredImage,
+    storedImageCandidates,
   } from '@/lib/_utils/asset-paths';
 
   let {
@@ -25,19 +25,15 @@
     return getUiIconPath(name);
   }
 
-  /** Event filenames or `folder/file` paths under images/. */
+  /** Event filenames, `folder/file` under images/, or `mod/<id>/...`. */
   function resolveImage(image: string): string {
-    if (image.includes('/') || image.includes('\\')) {
-      return getAssetPath(`images/${image.replace(/\\/g, '/')}`);
-    }
-    return getEventImagePath(image);
+    return resolveStoredImage(image);
   }
 
-  /** Bare event filenames: try `events/` then `events_more/`. */
+  /** Try the next candidate: built-in art, then mods, including legacy `*_more/` paths. */
   function onBeatImageError(event: Event, image: string) {
-    if (image.includes('/') || image.includes('\\')) return;
     const img = event.currentTarget as HTMLImageElement;
-    const candidates = getEventImageCandidates(image);
+    const candidates = storedImageCandidates(image);
     const attrSrc = img.getAttribute('src') ?? '';
     const failedIndex = candidates.findIndex((url) => attrSrc === url || attrSrc.endsWith(url));
     const fallback = candidates[failedIndex + 1];

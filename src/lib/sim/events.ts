@@ -15,7 +15,8 @@ import {
 } from '../_state/event-templates';
 import { SceneActionTemplates } from './actions';
 import type { SocializeParameters } from './actions/socialize';
-import { getActivityImageRelCandidates, probeFirstExistingImageRel } from './activity-image';
+import { getActivityIllustrationRefs, probeFirstExistingImage } from './activity-image';
+import { getLoadedModEvents, loadMods } from '../mods';
 import { getCharactersAtScene } from './characters';
 import { updateRelationArc } from './effects/relations';
 import { narrateText } from './narration';
@@ -76,15 +77,16 @@ function ensureEventProgress() {
 
 async function readEventTemplatesSource(): Promise<EventTemplate[]> {
   try {
-    // Dev server merges events.json + optional gitignored events_more.json.
+    // Dev and preview merge events.json with every mods/<id>/events.json.
     const response = await fetch('/api/events', { cache: 'no-store' });
     if (response.ok) {
       return (await response.json()) as EventTemplate[];
     }
   } catch {
-    // Fall back to the bundled import outside the Vite dev server.
+    // Static builds have no API; use the bundled catalog plus mods/index.json.
   }
-  return eventsData as EventTemplate[];
+  await loadMods();
+  return [...(eventsData as EventTemplate[]), ...getLoadedModEvents<EventTemplate>()];
 }
 
 export async function restoreEventTemplates() {
@@ -222,10 +224,10 @@ function attachActivityImageToArc(characterKey: string, text: string) {
   const activity = getCurrentScheduledActivity();
   if (!activity) return;
 
-  const candidates = getActivityImageRelCandidates(activity);
+  const candidates = getActivityIllustrationRefs(activity);
   if (candidates.length === 0) return;
 
-  void probeFirstExistingImageRel(candidates).then((image) => {
+  void probeFirstExistingImage(candidates).then((image) => {
     if (!image) return;
     const character = gs.characters[characterKey];
     if (!character) return;
@@ -233,7 +235,7 @@ function attachActivityImageToArc(characterKey: string, text: string) {
       .reverse()
       .find((beat) => beat.text === text && !beat.image);
     if (entry) {
-      entry.image = image;
+      entry.image = image.stored;
     }
   });
 }
