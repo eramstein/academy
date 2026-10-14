@@ -28,6 +28,7 @@ import {
   type TeachAbilityParameters,
   type TeachColorParameters,
 } from './teach';
+import { addKnownTrait, type AddKnownTraitParameters } from './traits';
 
 export function applyEffect(effect: EventEffect) {
   const result = effectFunctions[effect.type](effect.parameters);
@@ -62,6 +63,8 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.AddRelationTag]: (parameters) =>
     addRelationTag(parameters as AddRelationTagParameters),
   [EventEffectType.AddStoryTag]: (parameters) => addStoryTag(parameters as AddStoryTagParameters),
+  [EventEffectType.AddKnownTrait]: (parameters) =>
+    addKnownTrait(parameters as AddKnownTraitParameters),
   [EventEffectType.Move]: (parameters) => move(parameters as MoveParameters),
   [EventEffectType.UseFocus]: (parameters) => useFocus(parameters as UseFocusParameters),
 };

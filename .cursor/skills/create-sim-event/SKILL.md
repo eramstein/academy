@@ -132,21 +132,21 @@ When setting `image` on an event:
 Every trigger in the array must match at the same time (logical AND). The engine picks the first
 event in file order whose triggers all match.
 
-| `triggerType`        | `parameters`                                                       | Notes                                                                                                                                                    |
-| -------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `socialize`          | `{ characterKey, socializeType }`                                  | Fires only when the player socializes with that NPC using that type (`befriend`, `taunt`, `impress`, `flirt`).                                           |
-| `relation_parameter` | `{ characterKey, relationParameter, value }`                       | Cumulative `relationProgress`. `relationParameter` is `friendship`, `respect`, `love` or `rivalry`. Positive `value` = "at least"; negative = "at most". |
-| `character_present`  | `{ characterKey }`                                                 | The NPC is in the player's current place.                                                                                                                |
-| `day`                | `{ day: 3 }`                                                       | Absolute day number; day 1 is a Monday.                                                                                                                  |
-| `period`             | `{ period: "morning" }` or `{ periods: ["morning", "afternoon"] }` | Single period, or any of several. `morning`, `afternoon`, `evening`.                                                                                     |
-| `day_of_week`        | `{ daysOfWeek: [6, 7] }`                                           | 1 = Monday … 7 = Sunday; matches if today is any listed weekday.                                                                                         |
-| `place`              | `{ placeKey }`                                                     | The player's current place.                                                                                                                              |
-| `activity_type`      | `{ activityType }`                                                 | `class`, `work`, `social`, `date`, `training`, `study`; matches the currently scheduled activity.                                                        |
-| `activity_history`   | `{ characterKey, activityType, value }`                            | NPC has shared that `activityType` with the player at least `value` times (`Npc.activityHistory`).                                                       |
-| `matches_won`        | `{ characterKey, count }`                                          | Player has won at least `count` matches against that NPC (`npc.matchesRecord.won`). Does not consume the count.                                          |
-| `leagues_won`        | `{ characterKey, count }`                                          | Character appears at least `count` times in `league.pastWinners` (season titles). Does not consume the count. `characterKey` may be `"player"`.          |
-| `story_tag`          | `{ tag: "molly-f1", value: 1 }`                                    | `gs.storyTags[tag]` ≥ `value`. Event keys are auto-stamped on fire; use `add_story_tag` for choice-specific tags. Does not consume the count.            |
-| `scheduled_activity` | `{}`                                                               | Current scheduled activity's `eventId` equals this event's `key`. Set `eventId` on the activity when scheduling it.                                      |
+| `triggerType`        | `parameters`                                                       | Notes                                                                                                                                                                                         |
+| -------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `socialize`          | `{ characterKey, socializeType }`                                  | Fires only when the player socializes with that NPC using that type (`befriend`, `taunt`, `impress`, `flirt`).                                                                                |
+| `relation_parameter` | `{ characterKey, relationParameter, value }`                       | Cumulative `relationProgress`. `relationParameter` is `friendship`, `respect`, `love` or `rivalry`. Positive `value` = "at least"; negative = "at most".                                      |
+| `character_present`  | `{ characterKey }`                                                 | The NPC is in the player's current place.                                                                                                                                                     |
+| `day`                | `{ day: 3 }`                                                       | Absolute day number; day 1 is a Monday.                                                                                                                                                       |
+| `period`             | `{ period: "morning" }` or `{ periods: ["morning", "afternoon"] }` | Single period, or any of several. `morning`, `afternoon`, `evening`.                                                                                                                          |
+| `day_of_week`        | `{ daysOfWeek: [6, 7] }`                                           | 1 = Monday … 7 = Sunday; matches if today is any listed weekday.                                                                                                                              |
+| `place`              | `{ placeKey }`                                                     | The player's current place.                                                                                                                                                                   |
+| `activity_type`      | `{ activityType }`                                                 | `class`, `work`, `social`, `date`, `training`, `study`; matches the currently scheduled activity.                                                                                             |
+| `activity_history`   | `{ characterKey, activityType, value }`                            | NPC has shared that `activityType` with the player at least `value` times (`Npc.activityHistory`).                                                                                            |
+| `matches_won`        | `{ characterKey, count }`                                          | Player has won at least `count` matches against that NPC (`npc.matchesRecord.won`). Does not consume the count.                                                                               |
+| `leagues_won`        | `{ characterKey, count }`                                          | Character appears at least `count` times in `league.pastWinners` (season titles). Does not consume the count. `characterKey` may be `"player"`.                                               |
+| `story_tag`          | `{ tag: "molly-f1", value: 1 }`                                    | `gs.storyTags[tag]` ≥ `value`. Pass `value: -1` for tag absent (missing or 0). Event keys are auto-stamped on fire; use `add_story_tag` for choice-specific tags. Does not consume the count. |
+| `scheduled_activity` | `{}`                                                               | Current scheduled activity's `eventId` equals this event's `key`. Set `eventId` on the activity when scheduling it.                                                                           |
 
 Consequences of how the engine handles these:
 
@@ -168,7 +168,8 @@ Consequences of how the engine handles these:
   `story_tag` / ceremony `activity_type` as needed.
 - `story_tag` reads `gs.storyTags`. Firing any event auto-increments `storyTags[thatEvent.key]`.
   Use tag = prior event key for “this beat happened”; use a free-form tag via `add_story_tag` on
-  an option for choice-specific gates. It does **not** reset when an event fires.
+  an option for choice-specific gates. Pass `value: -1` to require the tag be absent. It does
+  **not** reset when an event fires.
 - `scheduled_activity` is for beats that fire when a previously scheduled activity becomes
   current. Author the activity with `eventId` set to this event's key (via `schedule_activity`),
   and put a bare `scheduled_activity` trigger on the target event.
@@ -230,6 +231,7 @@ Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffect
 | `update_relation_arc` | `{ characterKey, text: "You and Molly share a quiet laugh.", image?: "events/molly-f1.jpg" }`                                                                      |
 | `add_relation_tag`    | `{ characterKey, relationTag: "teammate" \| "rival" \| "friend" \| "lover" \| "significant_other" }`                                                               |
 | `add_story_tag`       | `{ tag: "helped-molly-lake", amount?: 1 }`                                                                                                                         |
+| `add_known_trait`     | `{ characterKey: "molly", text: "She still keeps the lake map folded in her sleeve." }`                                                                            |
 | `move`                | `{ placeKey: "academy", characterKeys: ["player", "molly"] }`                                                                                                      |
 | `use_focus`           | `{ amount: 1 }`                                                                                                                                                    |
 
@@ -257,6 +259,10 @@ The effect is silent — pair with `narrate` when the player should see prose. G
 with a `story_tag` trigger on the same `tag`. Do **not** stamp an event's own `key` before that
 event fires — that would consume it from the auto-trigger pool. To unlock a gated beat, use a
 distinct tag such as `unlock:<eventKey>` and put a matching `story_tag` trigger on the target.
+
+`add_known_trait` appends prose to that NPC's `knownTraits` (what the player has learned about
+them). Use an NPC key (not `"player"`). Duplicate exact strings are ignored. The effect is silent
+— pair with `narrate` when the scene should show the discovery.
 
 `move` sets each listed character's `placeKey` immediately. Include `"player"` to relocate the
 player; NPC keys move those NPCs. This does not schedule travel or advance time.

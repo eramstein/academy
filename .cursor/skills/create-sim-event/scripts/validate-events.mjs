@@ -400,6 +400,12 @@ function checkEffect(where, effect) {
         errors.push(`${where}: amount must be a number`);
       }
       break;
+    case 'add_known_trait':
+      checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
+      if (typeof parameters.text !== 'string' || !parameters.text.trim()) {
+        errors.push(`${where}: text must be a non-empty string`);
+      }
+      break;
     case 'move':
       checkOneOf(where, 'placeKey', parameters.placeKey, placeKeys);
       if (!Array.isArray(parameters.characterKeys) || parameters.characterKeys.length === 0) {

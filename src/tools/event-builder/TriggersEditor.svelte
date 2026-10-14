@@ -315,10 +315,9 @@
             <input
               class="input narrow"
               type="number"
-              min="1"
               bind:value={trigger.parameters.value}
               aria-label="Story tag value"
-              title="Requires storyTags[tag] ≥ value"
+              title="Requires storyTags[tag] ≥ value; -1 = tag absent"
             />
           {/if}
 

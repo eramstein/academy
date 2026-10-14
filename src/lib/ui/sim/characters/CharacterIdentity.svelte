@@ -7,9 +7,11 @@
   let {
     character,
     onStory,
+    onNotes,
   }: {
     character: Character;
     onStory?: () => void;
+    onNotes?: () => void;
   } = $props();
 
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
@@ -52,11 +54,18 @@
 
 <header
   class="identity-card"
-  class:has-story={!!onStory}
+  class:has-actions={!!onStory || !!onNotes}
   style="--parchment: url('{parchmentPath}'); --corner: url('{cornerPath}');"
 >
-  {#if onStory}
-    <button type="button" class="story-btn" onclick={onStory}>Story</button>
+  {#if onStory || onNotes}
+    <div class="sheet-actions">
+      {#if onStory}
+        <button type="button" class="sheet-btn" onclick={onStory}>Story</button>
+      {/if}
+      {#if onNotes}
+        <button type="button" class="sheet-btn" onclick={onNotes}>Notes</button>
+      {/if}
+    </div>
   {/if}
   <div class="identity-top">
     <div class="portrait-frame">
@@ -127,15 +136,21 @@
       0 8px 18px rgba(0, 0, 0, 0.35);
   }
 
-  .identity-card.has-story .identity {
+  .identity-card.has-actions .identity {
     padding-right: 5.25rem;
   }
 
-  .story-btn {
+  .sheet-actions {
     position: absolute;
     top: 1.1rem;
     right: 1.1rem;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .sheet-btn {
     padding: 0.5rem 0.95rem;
     background: var(--color-data);
     border: 1px solid var(--color-brass);
@@ -146,7 +161,7 @@
     cursor: pointer;
   }
 
-  .story-btn:hover {
+  .sheet-btn:hover {
     background: var(--color-data-hover);
     border-color: var(--color-brass);
   }

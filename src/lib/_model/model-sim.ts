@@ -126,10 +126,6 @@ export interface EventOptionTemplate {
   effects?: EventEffect[];
   /** Alternative to effects: roll, then apply success or failure effects. */
   attributeCheck?: EventOptionAttributeCheck;
-  /**
-   * When non-empty, the option is offered only if every trigger matches
-   * (same rules as event triggers). Omit to always offer the choice.
-   */
   triggers?: EventTrigger[];
 }
 
@@ -144,10 +140,6 @@ export interface Narration {
   type: NarrationType;
   mentions?: Mentions;
   attributeCheck?: AttributeCheck;
-  /**
-   * When true, this attribute-check entry has no LLM/authored text of its own
-   * (e.g. a narrate effect supplies the prose instead). UI can complete without waiting for text.
-   */
   skipCheckText?: boolean;
   /** Action being narrated when there is no attribute check (e.g. socialize). */
   attemptedAction?: Action;
@@ -257,6 +249,7 @@ export interface Npc extends Character {
   favoritePlaces: Record<string, number>;
   matchesRecord: { won: number; lost: number };
   personality: Personality;
+  knownTraits: string[];
 }
 
 export interface Personality {

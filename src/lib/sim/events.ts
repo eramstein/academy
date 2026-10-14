@@ -50,7 +50,10 @@ export interface EventTriggerParameters {
   [EventTriggerType.MatchesWon]: { characterKey: string; count: number };
   /** Character appears at least `count` times in `league.pastWinners`. */
   [EventTriggerType.LeaguesWon]: { characterKey: string; count: number };
-  /** `gs.storyTags[tag]` is at least `value` (auto-stamped event keys or `add_story_tag`). */
+  /**
+   * `gs.storyTags[tag]` is at least `value` (auto-stamped event keys or `add_story_tag`).
+   * Pass `value: -1` to require the tag be absent (missing or 0).
+   */
   [EventTriggerType.StoryTag]: { tag: string; value: number };
 }
 
@@ -314,7 +317,11 @@ function checkStoryTag(
   trigger: Extract<EventTrigger, { triggerType: EventTriggerType.StoryTag }>
 ): boolean {
   const { tag, value } = trigger.parameters;
-  return (gs.storyTags?.[tag] ?? 0) >= value;
+  const current = gs.storyTags?.[tag] ?? 0;
+  if (value === -1) {
+    return current === 0;
+  }
+  return current >= value;
 }
 
 function sceneEventFromTemplate(template: StoredEventTemplate): SceneEvent {

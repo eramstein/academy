@@ -8,12 +8,14 @@
   import Attributes from './Attributes.svelte';
   import CardCrafting from './characters/CardCrafting.svelte';
   import CharacterIdentity from './characters/CharacterIdentity.svelte';
+  import CharacterKnownTraits from './characters/CharacterKnownTraits.svelte';
   import CharacterRelationArc from './characters/CharacterRelationArc.svelte';
 
   let { character }: { character: CharacterModel } = $props();
 
   const npc = $derived('relationArc' in character ? (character as Npc) : null);
   let viewingArc = $state(false);
+  let viewingNotes = $state(false);
 
   const SUB_ICONS: Record<SubscriptionType, string> = {
     [SubscriptionType.Academy]: 'sun',
@@ -119,6 +121,7 @@
     canStartMatch;
     pickingMatchDeck = false;
     viewingArc = false;
+    viewingNotes = false;
   });
 
   function iconUrl(name: string) {
@@ -193,13 +196,37 @@
 
 <div class="character">
   {#if viewingArc && npc}
-    <CharacterRelationArc character={npc} onClose={() => (viewingArc = false)} />
+    <CharacterRelationArc
+      character={npc}
+      onClose={() => (viewingArc = false)}
+    />
+  {/if}
+  {#if viewingNotes && npc}
+    <CharacterKnownTraits
+      character={npc}
+      onClose={() => (viewingNotes = false)}
+    />
   {/if}
 
   <div class="sheet">
     <CharacterIdentity
       {character}
-      onStory={npc ? () => (viewingArc = true) : undefined}
+      onStory={
+        npc
+          ? () => {
+              viewingNotes = false;
+              viewingArc = true;
+            }
+          : undefined
+      }
+      onNotes={
+        npc
+          ? () => {
+              viewingArc = false;
+              viewingNotes = true;
+            }
+          : undefined
+      }
     />
 
     {#if showCharacterActions}

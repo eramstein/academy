@@ -29,3 +29,13 @@ Depending on the player's relationship with her, this could become:
   The central dilemma remains the same, but the player's involvement changes substantially.
   And importantly, Emma should retain her own agency. She shouldn't automatically abandon a lifelong ambition because the player's love value is high enough.
   That would make her feel more like a believable character.
+
+Event Narrative purpose Mechanics tested
+
+1. First encounter Introduce Emma's personality and humor Optional relationship tag, conditional dialogue
+2. First TCG match Establish competitive relationship Win/loss triggers, respect and rivalry
+3. Handmade card Introduce a meaningful sacrifice Card ownership, respect, friendship, mastery
+4. Tuition problem Reveal Emma's background and ambitions NPC knowledge, cross-character triggers, mini-arc
+5. Ballet incident Show Emma outside academia Ensemble scene, humor, optional trait callbacks
+6. League victory Recognize major player achievements Global gameplay triggers, respect
+7. Partnership offer Culminate the first stage Milestone, relationship tag, new activities

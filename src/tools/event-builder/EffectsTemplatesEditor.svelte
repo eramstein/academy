@@ -134,6 +134,8 @@
         return { characterKey: '', relationTag: RelationTag.Friend };
       case EventEffectType.AddStoryTag:
         return { tag: '', amount: 1 };
+      case EventEffectType.AddKnownTrait:
+        return { characterKey: '', text: '' };
       case EventEffectType.Move:
         return { placeKey: placeKeys[0] ?? '', characterKeys: ['player'] };
       case EventEffectType.UseFocus:
@@ -632,6 +634,23 @@
                 aria-label="Amount"
                 oninput={(e) =>
                   setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+              />
+            {:else if effect.type === EventEffectType.AddKnownTrait}
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? ''}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.text ?? ''}
+                placeholder="known trait prose"
+                aria-label="Known trait text"
+                oninput={(e) =>
+                  setParameter(i, 'text', (e.currentTarget as HTMLInputElement).value)}
               />
             {:else if effect.type === EventEffectType.Move}
               <select
