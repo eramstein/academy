@@ -476,6 +476,15 @@ events.forEach((event, index) => {
     if (typeof option?.text !== 'string' || !option.text.trim()) {
       errors.push(`${optionWhere}: text is required`);
     }
+    if (option?.triggers !== undefined) {
+      if (!Array.isArray(option.triggers)) {
+        errors.push(`${optionWhere}: triggers must be an array`);
+      } else {
+        option.triggers.forEach((trigger, j) =>
+          checkTrigger(`${optionWhere} trigger[${j}]`, trigger)
+        );
+      }
+    }
     if (option?.actionTemplate) {
       checkOneOf(
         optionWhere,

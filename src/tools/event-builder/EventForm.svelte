@@ -1,23 +1,18 @@
 <script lang="ts">
   import {
-    ActivityType,
-    DayPeriod,
     Emotion,
-    EventTriggerType,
     type ActionTemplate,
     type EventEffect,
     type EventOptionAttributeCheck,
     type EventOptionTemplate,
     type EventTemplate,
     type EventTrigger,
-    type EventTriggerParameters,
     type SkillCheckDifficultyName,
   } from '@/lib/_model';
   import { SceneActionTemplates } from '@/lib/sim/actions/_templates';
-  import { SocializeType } from '@/lib/sim/actions/socialize';
   import { skillCheckDifficultyKeys, skillCheckDifficultyLabels } from '@/lib/sim/attribute-checks';
-  import { WEEK_DAYS } from '@/lib/sim/time';
   import EffectsTemplatesEditor from './EffectsTemplatesEditor.svelte';
+  import TriggersEditor from './TriggersEditor.svelte';
   import { saveEventTemplate } from './save-event';
 
   let {
@@ -47,13 +42,7 @@
   let error = $state('');
   let saving = $state(false);
 
-  const triggerTypes = Object.values(EventTriggerType);
-  const periods = Object.values(DayPeriod);
-  const activityTypes = Object.values(ActivityType);
   const emotions = Object.values(Emotion);
-  const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
-  const socializeTypes = Object.values(SocializeType);
-  const weekDays = WEEK_DAYS.map((name, index) => ({ name, value: index + 1 }));
   const actionNames = Object.keys(SceneActionTemplates);
   const attributeKeys = ['dexterity', 'intelligence', 'vitality', 'charisma', 'aura'] as const;
   const difficultyKeys = skillCheckDifficultyKeys;
@@ -91,85 +80,6 @@
   }
 
   cloneEventFields(event);
-
-  function defaultParams<T extends EventTriggerType>(triggerType: T): EventTriggerParameters[T] {
-    const defaults: EventTriggerParameters = {
-      [EventTriggerType.Day]: { day: 1 },
-      [EventTriggerType.Period]: { periods: [DayPeriod.Morning] },
-      [EventTriggerType.ActivityType]: { activityType: ActivityType.Class },
-      [EventTriggerType.Place]: { placeKey: '' },
-      [EventTriggerType.CharacterPresent]: { characterKey: '' },
-      [EventTriggerType.RelationParameter]: {
-        characterKey: '',
-        relationParameter: 'friendship',
-        value: 0,
-      },
-      [EventTriggerType.Socialize]: {
-        characterKey: '',
-        socializeType: SocializeType.Befriend,
-      },
-      [EventTriggerType.ActivityHistory]: {
-        characterKey: '',
-        activityType: ActivityType.Social,
-        value: 1,
-      },
-      [EventTriggerType.DayOfWeek]: { daysOfWeek: [6, 7] },
-      [EventTriggerType.ScheduledActivity]: {},
-      [EventTriggerType.MatchesWon]: { characterKey: '', count: 1 },
-      [EventTriggerType.LeaguesWon]: { characterKey: '', count: 1 },
-      [EventTriggerType.StoryTag]: { tag: '', value: 1 },
-    };
-    return defaults[triggerType];
-  }
-
-  function periodList(
-    trigger: Extract<EventTrigger, { triggerType: EventTriggerType.Period }>
-  ): DayPeriod[] {
-    if (trigger.parameters.periods?.length) return trigger.parameters.periods;
-    if (trigger.parameters.period) return [trigger.parameters.period];
-    return [];
-  }
-
-  function togglePeriod(index: number, period: DayPeriod) {
-    const trigger = triggers[index];
-    if (trigger?.triggerType !== EventTriggerType.Period) return;
-    const current = periodList(trigger);
-    const next = current.includes(period)
-      ? current.filter((p) => p !== period)
-      : [...current, period];
-    triggers[index] = {
-      ...trigger,
-      parameters: { periods: next },
-    };
-    triggers = [...triggers];
-  }
-
-  function toggleDayOfWeek(index: number, day: number) {
-    const trigger = triggers[index];
-    if (trigger?.triggerType !== EventTriggerType.DayOfWeek) return;
-    const current = trigger.parameters.daysOfWeek ?? [];
-    const next = current.includes(day) ? current.filter((d) => d !== day) : [...current, day];
-    triggers[index] = {
-      ...trigger,
-      parameters: { daysOfWeek: next.sort((a, b) => a - b) },
-    };
-    triggers = [...triggers];
-  }
-
-  function setTriggerType(index: number, triggerType: EventTriggerType) {
-    triggers[index] = { triggerType, parameters: defaultParams(triggerType) } as EventTrigger;
-  }
-
-  function addTrigger() {
-    triggers = [
-      ...triggers,
-      { triggerType: EventTriggerType.Day, parameters: defaultParams(EventTriggerType.Day) },
-    ];
-  }
-
-  function removeTrigger(index: number) {
-    triggers = triggers.filter((_, i) => i !== index);
-  }
 
   function defaultActionTemplate(): ActionTemplate {
     return {
@@ -214,6 +124,21 @@
       ...options[index],
       effects: next,
     };
+  }
+
+  function setOptionTriggers(index: number, next: EventTrigger[]) {
+    options[index] = {
+      ...options[index],
+      triggers: next,
+    };
+  }
+
+  function cloneTriggers(optionTriggers: EventTrigger[] | undefined): EventTrigger[] | undefined {
+    if (!optionTriggers || optionTriggers.length === 0) return undefined;
+    return optionTriggers.map((trigger) => ({
+      triggerType: trigger.triggerType,
+      parameters: { ...trigger.parameters },
+    })) as EventTrigger[];
   }
 
   function defaultAttributeCheck(): EventOptionAttributeCheck {
@@ -292,6 +217,11 @@
           const next: EventOptionTemplate = {
             text: option.text.trim(),
           };
+
+          const optionTriggers = cloneTriggers(option.triggers);
+          if (optionTriggers) {
+            next.triggers = optionTriggers;
+          }
 
           if (option.actionTemplate?.actionTemplate) {
             next.actionTemplate = {
@@ -472,225 +402,13 @@
 
     <div class="mid-row">
       <section class="panel triggers">
-        <div class="section-header">
-          <h2>Triggers</h2>
-          <button type="button" class="btn ghost" onclick={addTrigger}>Add</button>
-        </div>
-
-        {#if triggers.length === 0}
-          <p class="hint">No triggers — follow-up / debug-only events can stay empty.</p>
-        {:else}
-          <ul class="stack">
-            {#each triggers as trigger, i (i)}
-              <li class="inline-row">
-                <select
-                  class="input type-select"
-                  value={trigger.triggerType}
-                  aria-label="Trigger type"
-                  onchange={(e) =>
-                    setTriggerType(
-                      i,
-                      (e.currentTarget as HTMLSelectElement).value as EventTriggerType
-                    )}
-                >
-                  {#each triggerTypes as type (type)}
-                    <option value={type}>{type}</option>
-                  {/each}
-                </select>
-
-                {#if trigger.triggerType === EventTriggerType.Day}
-                  <input
-                    class="input narrow"
-                    type="number"
-                    min="0"
-                    placeholder="day"
-                    bind:value={trigger.parameters.day}
-                    aria-label="Day (exact)"
-                  />
-                  <input
-                    class="input narrow"
-                    type="number"
-                    min="0"
-                    placeholder="minDay"
-                    bind:value={trigger.parameters.minDay}
-                    aria-label="Min day"
-                  />
-                {:else if trigger.triggerType === EventTriggerType.Period}
-                  <div class="days" role="group" aria-label="Periods">
-                    {#each periods as period (period)}
-                      <label class="check day">
-                        <input
-                          type="checkbox"
-                          checked={periodList(trigger).includes(period)}
-                          onchange={() => togglePeriod(i, period)}
-                        />
-                        {period}
-                      </label>
-                    {/each}
-                  </div>
-                {:else if trigger.triggerType === EventTriggerType.DayOfWeek}
-                  <div class="days" role="group" aria-label="Days of week">
-                    {#each weekDays as day (day.value)}
-                      <label class="check day">
-                        <input
-                          type="checkbox"
-                          checked={trigger.parameters.daysOfWeek?.includes(day.value) ?? false}
-                          onchange={() => toggleDayOfWeek(i, day.value)}
-                        />
-                        {day.name.slice(0, 3)}
-                      </label>
-                    {/each}
-                  </div>
-                {:else if trigger.triggerType === EventTriggerType.ActivityType}
-                  <select
-                    class="input param-select"
-                    bind:value={trigger.parameters.activityType}
-                    aria-label="Activity"
-                  >
-                    {#each activityTypes as activity (activity)}
-                      <option value={activity}>{activity}</option>
-                    {/each}
-                  </select>
-                {:else if trigger.triggerType === EventTriggerType.Place}
-                  <input
-                    class="input param-input"
-                    bind:value={trigger.parameters.placeKey}
-                    placeholder="place key"
-                    aria-label="Place key"
-                  />
-                {:else if trigger.triggerType === EventTriggerType.CharacterPresent}
-                  <input
-                    class="input param-input"
-                    bind:value={trigger.parameters.characterKey}
-                    placeholder="character key"
-                    aria-label="Character key"
-                  />
-                {:else if trigger.triggerType === EventTriggerType.RelationParameter}
-                  <input
-                    class="input param-input"
-                    bind:value={trigger.parameters.characterKey}
-                    placeholder="character key"
-                    aria-label="Character key"
-                  />
-                  <select
-                    class="input param-select"
-                    bind:value={trigger.parameters.relationParameter}
-                    aria-label="Relation parameter"
-                  >
-                    {#each relationParameters as param (param)}
-                      <option value={param}>{param}</option>
-                    {/each}
-                  </select>
-                  <input
-                    class="input narrow"
-                    type="number"
-                    bind:value={trigger.parameters.value}
-                    aria-label="Relation threshold"
-                    title="Negative: ≤ value; non-negative: ≥ value"
-                  />
-                {:else if trigger.triggerType === EventTriggerType.Socialize}
-                  <input
-                    class="input param-input"
-                    bind:value={trigger.parameters.characterKey}
-                    placeholder="character key"
-                    aria-label="Character key"
-                  />
-                  <select
-                    class="input param-select"
-                    bind:value={trigger.parameters.socializeType}
-                    aria-label="Socialize type"
-                  >
-                    {#each socializeTypes as socializeType (socializeType)}
-                      <option value={socializeType}>{socializeType}</option>
-                    {/each}
-                  </select>
-                {:else if trigger.triggerType === EventTriggerType.ActivityHistory}
-                  <input
-                    class="input param-input"
-                    bind:value={trigger.parameters.characterKey}
-                    placeholder="character key"
-                    aria-label="Character key"
-                  />
-                  <select
-                    class="input param-select"
-                    bind:value={trigger.parameters.activityType}
-                    aria-label="Activity"
-                  >
-                    {#each activityTypes as activity (activity)}
-                      <option value={activity}>{activity}</option>
-                    {/each}
-                  </select>
-                  <input
-                    class="input narrow"
-                    type="number"
-                    min="1"
-                    bind:value={trigger.parameters.value}
-                    aria-label="Activity history count"
-                    title="Requires activityHistory[activityType] ≥ value"
-                  />
-                {:else if trigger.triggerType === EventTriggerType.ScheduledActivity}
-                  <span
-                    class="param-hint"
-                    title="Matches when the current activity's eventId equals this event's key"
-                    >activity.eventId = this key</span
-                  >
-                {:else if trigger.triggerType === EventTriggerType.MatchesWon}
-                  <input
-                    class="input param-input"
-                    bind:value={trigger.parameters.characterKey}
-                    placeholder="character key"
-                    aria-label="Character key"
-                  />
-                  <input
-                    class="input narrow"
-                    type="number"
-                    min="1"
-                    bind:value={trigger.parameters.count}
-                    aria-label="Matches won count"
-                    title="Requires matchesRecord.won ≥ count against this character"
-                  />
-                {:else if trigger.triggerType === EventTriggerType.LeaguesWon}
-                  <input
-                    class="input param-input"
-                    bind:value={trigger.parameters.characterKey}
-                    placeholder="character key"
-                    aria-label="Character key"
-                  />
-                  <input
-                    class="input narrow"
-                    type="number"
-                    min="1"
-                    bind:value={trigger.parameters.count}
-                    aria-label="Leagues won count"
-                    title="Requires league.pastWinners appearances ≥ count for this character"
-                  />
-                {:else if trigger.triggerType === EventTriggerType.StoryTag}
-                  <input
-                    class="input param-input"
-                    bind:value={trigger.parameters.tag}
-                    placeholder="story tag"
-                    aria-label="Story tag"
-                  />
-                  <input
-                    class="input narrow"
-                    type="number"
-                    min="1"
-                    bind:value={trigger.parameters.value}
-                    aria-label="Story tag value"
-                    title="Requires storyTags[tag] ≥ value"
-                  />
-                {/if}
-
-                <button
-                  type="button"
-                  class="btn icon danger"
-                  onclick={() => removeTrigger(i)}
-                  aria-label="Remove trigger">×</button
-                >
-              </li>
-            {/each}
-          </ul>
-        {/if}
+        <TriggersEditor
+          {triggers}
+          onChange={(next) => (triggers = next)}
+          title="Triggers"
+          description="Every trigger must match. Leave empty for follow-up / debug-only events."
+          emptyHint="No triggers — follow-up / debug-only events can stay empty."
+        />
       </section>
 
       <section class="panel effects">
@@ -729,6 +447,15 @@
                 <span class="label">Choice text</span>
                 <input class="input" bind:value={option.text} placeholder="Choice label" />
               </label>
+
+              <TriggersEditor
+                triggers={option.triggers ?? []}
+                onChange={(next) => setOptionTriggers(i, next)}
+                title="Triggers"
+                description="Hidden unless every trigger matches."
+                emptyHint="Always available."
+                nested
+              />
 
               <div class="option-action">
                 <div class="section-header tight">
@@ -1028,67 +755,6 @@
     resize: vertical;
     min-height: 4.5rem;
     line-height: 1.4;
-  }
-
-  .narrow {
-    width: 4.5rem;
-  }
-
-  .type-select {
-    width: 12.5rem;
-    flex-shrink: 0;
-  }
-
-  .param-select {
-    width: 9rem;
-  }
-
-  .param-input {
-    width: 10rem;
-  }
-
-  .param-hint {
-    color: #a89880;
-    font-size: 0.85rem;
-  }
-
-  .days {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem 0.55rem;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .check {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding-bottom: 0.4rem;
-    cursor: pointer;
-    font-size: 0.9rem;
-    white-space: nowrap;
-  }
-
-  .check.day {
-    padding-bottom: 0;
-    font-size: 0.75rem;
-  }
-
-  .stack {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-  }
-
-  .inline-row {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    flex-wrap: wrap;
   }
 
   .options-grid {

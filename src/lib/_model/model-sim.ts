@@ -126,6 +126,11 @@ export interface EventOptionTemplate {
   effects?: EventEffect[];
   /** Alternative to effects: roll, then apply success or failure effects. */
   attributeCheck?: EventOptionAttributeCheck;
+  /**
+   * When non-empty, the option is offered only if every trigger matches
+   * (same rules as event triggers). Omit to always offer the choice.
+   */
+  triggers?: EventTrigger[];
 }
 
 export interface ActionTemplate {

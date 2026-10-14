@@ -45,7 +45,7 @@ Synopsis: <one or two sentences to elaborate into the event text>
 Emotion: <Emotion enum value> (optional; infer from synopsis when clear)
 Options:
   - <label>: <reward or consequence>
-  - <label>: <reward or consequence>
+  - <label> [only if <game-state condition>]: <reward or consequence>
 Always: <effects applied on trigger, before any choice> (optional)
 ```
 
@@ -60,7 +60,9 @@ request did not imply.
    next free number in that series across both files. Keys are permanent identifiers, not prose.
 3. Write `text` (see _Writing the text_). Set `emotion` when appropriate (see _Emotion_).
 4. Map every condition in the request to a trigger, and every outcome to an `EventEffect`.
-   Verify character, place, and deck keys against the source files listed below.
+   A condition that gates the whole beat goes on the event. A condition that only unlocks an
+   extra choice goes on that option's `triggers`. Verify character, place, and deck keys against
+   the source files listed below.
 5. Insert the event object after the last event of the same `characterArc` in the **target file**,
    or append it at the end of that file's array for a main-story event. Target file is
    `events.json` unless the user asked for a mod.
@@ -91,7 +93,9 @@ event fires.
     /* ALL must match */
   ],
   "optionTemplates": [
-    /* player choices; [] means the event is pure narration */
+    /* player choices; [] means the event is pure narration.
+       Optional `triggers` on a choice: ALL must match or that choice is hidden.
+       Omit `triggers` to always offer the choice. */
   ],
   "effects": [
     /* optional: applied on trigger, before options */
@@ -107,7 +111,9 @@ Every event triggers at most once: firing auto-stamps `gs.storyTags[event.key]`,
 removes it from the auto-trigger pool. Empty `triggers` means follow-up / debug only
 (`follow_up_event` or `/e`) — those never auto-fire. Property order in the file follows the
 existing entries: `key`, `text`, `triggers`, `effects`, `optionTemplates`, `characterArc`,
-`emotion`, `image`, `imageSize`.
+`emotion`, `image`, `imageSize`. Option objects use `text`, optional `triggers`, then `effects`
+or `attributeCheck`, then optional `actionTemplate`. Omit option `triggers` when the choice is
+always available.
 
 ## Images
 
@@ -169,6 +175,38 @@ Consequences of how the engine handles these:
 - A scene-entry offer (no socialize) still needs `character_present` so it cannot fire while the
   NPC is elsewhere. Socialize-gated events already imply the player picked that NPC.
 - Empty `triggers: []` never auto-fires (follow-up / debug only).
+
+## Option triggers
+
+`optionTemplates[].triggers` is optional and uses the same trigger types, parameters, and AND
+logic as event `triggers`. Omit it, or leave it empty, and the choice is always offered. When it
+is non-empty, the option is included only if every trigger matches at the moment the event is
+built. `scheduled_activity` still compares the current activity's `eventId` to this event's key.
+
+Use option triggers for an extra choice that should appear only in a certain game state (a prior
+story tag, a relation threshold, a league title, and so on). A condition that gates the whole
+beat stays on the event.
+
+Empty event `triggers` means the event never auto-fires. Empty option `triggers` means the option
+is always available.
+
+If every option is gated and none of them match when the event fires, the event plays as narration
+with no choice. Keep at least one ungated option when the player should always be able to respond.
+
+```json
+{
+  "text": "Ask about the title",
+  "triggers": [
+    {
+      "triggerType": "leagues_won",
+      "parameters": { "characterKey": "player", "count": 1 }
+    }
+  ],
+  "effects": [
+    { "type": "narrate", "parameters": { "text": "Molly grins. You earned that title." } }
+  ]
+}
+```
 
 ## Effects
 

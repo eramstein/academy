@@ -147,11 +147,7 @@ export function getTriggeredSceneEvent():
   }
   return {
     template,
-    event: {
-      key: template.key,
-      text: template.text,
-      options: template.optionTemplates?.map(buildOption) ?? [],
-    },
+    event: sceneEventFromTemplate(template),
   };
 }
 
@@ -165,11 +161,7 @@ export function getSceneEventByKey(
   }
   return {
     template,
-    event: {
-      key: template.key,
-      text: template.text,
-      options: template.optionTemplates?.map(buildOption) ?? [],
-    },
+    event: sceneEventFromTemplate(template),
   };
 }
 
@@ -323,6 +315,26 @@ function checkStoryTag(
 ): boolean {
   const { tag, value } = trigger.parameters;
   return (gs.storyTags?.[tag] ?? 0) >= value;
+}
+
+function sceneEventFromTemplate(template: StoredEventTemplate): SceneEvent {
+  return {
+    key: template.key,
+    text: template.text,
+    options: buildOptions(template),
+  };
+}
+
+/** Omit triggers (or leave them empty) to always offer the option. Otherwise every trigger must match. */
+function optionIsAvailable(optionTemplate: EventOptionTemplate, eventKey: string): boolean {
+  const triggers = optionTemplate.triggers ?? [];
+  return triggers.length === 0 || triggers.every((trigger) => doesTriggerMatch(trigger, eventKey));
+}
+
+function buildOptions(template: StoredEventTemplate): EventOption[] {
+  return (template.optionTemplates ?? [])
+    .filter((optionTemplate) => optionIsAvailable(optionTemplate, template.key))
+    .map(buildOption);
 }
 
 function buildOption(optionTemplate: EventOptionTemplate): EventOption {
