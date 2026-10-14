@@ -49,8 +49,8 @@
           parameters: { characterKey },
         },
         {
-          triggerType: EventTriggerType.PreviousEvents,
-          parameters: { [fromEvent.key]: true },
+          triggerType: EventTriggerType.StoryTag,
+          parameters: { tag: fromEvent.key, value: 1 },
         },
       ],
     };

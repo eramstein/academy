@@ -24,7 +24,6 @@ import { getWeekDay } from './time';
 
 /** Parameter shapes expected by each EventTriggerType (see doesTriggerMatch). */
 export interface EventTriggerParameters {
-  [EventTriggerType.PreviousEvents]: Record<string, unknown>; // required prior event keys
   /** Exact `day`, and/or `minDay` (day >= minDay). At least one required. */
   [EventTriggerType.Day]: { day?: number; minDay?: number };
   /** Single `period` or `periods` (any match). Prefer `periods` when listing more than one. */
@@ -51,6 +50,8 @@ export interface EventTriggerParameters {
   [EventTriggerType.MatchesWon]: { characterKey: string; count: number };
   /** Character appears at least `count` times in `league.pastWinners`. */
   [EventTriggerType.LeaguesWon]: { characterKey: string; count: number };
+  /** `gs.storyTags[tag]` is at least `value` (auto-stamped event keys or `add_story_tag`). */
+  [EventTriggerType.StoryTag]: { tag: string; value: number };
 }
 
 export type EventTrigger = {
@@ -62,16 +63,18 @@ export type EventTrigger = {
 
 /** Full immutable catalog (from IndexedDB / source). Never pruned during play. */
 let allEventTemplates: StoredEventTemplate[] = [];
-/** In-memory working set: catalog minus once-events already in gs.events.occurred. */
+/** In-memory working set: catalog minus events already stamped in `gs.storyTags`. */
 let eventTemplates: StoredEventTemplate[] = [];
 
-function ensureEventProgress() {
-  if (!gs.events) {
-    gs.events = { occurred: [], unlocked: [] };
-  } else {
-    gs.events.occurred ??= [];
-    gs.events.unlocked ??= [];
+function ensureStoryTags() {
+  if (!gs.storyTags) {
+    gs.storyTags = {};
   }
+}
+
+function hasEventOccurred(key: string): boolean {
+  ensureStoryTags();
+  return (gs.storyTags[key] ?? 0) > 0;
 }
 
 async function readEventTemplatesSource(): Promise<EventTemplate[]> {
@@ -95,9 +98,8 @@ export async function restoreEventTemplates() {
 
 /** Rebuild the working set from the full catalog + current game progress. */
 export function rebuildWorkingEventTemplates() {
-  ensureEventProgress();
-  const occurred = new Set(gs.events.occurred);
-  eventTemplates = allEventTemplates.filter((template) => !occurred.has(template.key));
+  ensureStoryTags();
+  eventTemplates = allEventTemplates.filter((template) => !hasEventOccurred(template.key));
 }
 
 export async function loadEventTemplates() {
@@ -129,22 +131,17 @@ export async function syncEventTemplates(templates: EventTemplate[]) {
   rebuildWorkingEventTemplates();
 }
 
-function isTemplateUnlocked(template: StoredEventTemplate): boolean {
-  ensureEventProgress();
-  if (!template.locked) return true;
-  return gs.events.unlocked.includes(template.key);
-}
-
 export function getTriggeredSceneEvent():
   | { event: SceneEvent; template: StoredEventTemplate }
   | undefined {
-  const template = eventTemplates.find(
-    (eventTemplate) =>
-      isTemplateUnlocked(eventTemplate) &&
-      (eventTemplate.triggers ?? []).every((trigger) =>
-        doesTriggerMatch(trigger, eventTemplate.key)
-      )
-  );
+  // Empty triggers = follow-up / debug only (getSceneEventByKey); never auto-fire.
+  const template = eventTemplates.find((eventTemplate) => {
+    const triggers = eventTemplate.triggers ?? [];
+    return (
+      triggers.length > 0 &&
+      triggers.every((trigger) => doesTriggerMatch(trigger, eventTemplate.key))
+    );
+  });
   if (!template) {
     return undefined;
   }
@@ -183,12 +180,9 @@ export function consumeEventTemplate(template: StoredEventTemplate) {
 
 /** Record that an event fired (save-backed). Does not mutate catalog templates. */
 export function recordEventOccured(template: StoredEventTemplate) {
-  ensureEventProgress();
+  ensureStoryTags();
   const key = template.key;
-  if (gs.events.occurred.includes(key)) {
-    return;
-  }
-  gs.events.occurred.push(key);
+  gs.storyTags[key] = (gs.storyTags[key] ?? 0) + 1;
   if (template.characterArc) {
     updateRelationArc({
       characterKey: template.characterArc,
@@ -223,24 +217,9 @@ function attachActivityImageToArc(characterKey: string, text: string) {
   });
 }
 
-export function unlockEventTemplate(templateKey: string): boolean {
-  const template = allEventTemplates.find((eventTemplate) => eventTemplate.key === templateKey);
-  if (!template) {
-    return false;
-  }
-  ensureEventProgress();
-  if (!gs.events.unlocked.includes(templateKey)) {
-    gs.events.unlocked.push(templateKey);
-  }
-  return true;
-}
-
 function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
   // Keep trigger intact so switch narrows parameters per triggerType
   switch (trigger.triggerType) {
-    case EventTriggerType.PreviousEvents:
-      ensureEventProgress();
-      return Object.keys(trigger.parameters).every((key) => gs.events.occurred.includes(key));
     case EventTriggerType.Day: {
       const { day, minDay } = trigger.parameters;
       if (day == null && minDay == null) return false;
@@ -272,6 +251,8 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       return checkMatchesWon(trigger);
     case EventTriggerType.LeaguesWon:
       return checkLeaguesWon(trigger);
+    case EventTriggerType.StoryTag:
+      return checkStoryTag(trigger);
     default:
       return false;
   }
@@ -335,6 +316,13 @@ function checkLeaguesWon(
   const { characterKey, count } = trigger.parameters;
   const wins = gs.league.pastWinners.filter((winnerKey) => winnerKey === characterKey).length;
   return wins >= count;
+}
+
+function checkStoryTag(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.StoryTag }>
+): boolean {
+  const { tag, value } = trigger.parameters;
+  return (gs.storyTags?.[tag] ?? 0) >= value;
 }
 
 function buildOption(optionTemplate: EventOptionTemplate): EventOption {

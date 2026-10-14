@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { EventEffectType, EventTriggerType, type EventEffect, type EventTemplate } from '@/lib/_model';
+  import {
+    EventEffectType,
+    EventTriggerType,
+    type EventEffect,
+    type EventTemplate,
+  } from '@/lib/_model';
 
   let {
     events,
@@ -79,9 +84,10 @@
 
     for (const event of events) {
       for (const trigger of event.triggers ?? []) {
-        if (trigger.triggerType !== EventTriggerType.PreviousEvents) continue;
-        for (const prevKey of Object.keys(trigger.parameters ?? {})) {
-          addEdge(prevKey, event.key);
+        if (trigger.triggerType !== EventTriggerType.StoryTag) continue;
+        const tag = trigger.parameters?.tag;
+        if (typeof tag === 'string' && byKey.has(tag)) {
+          addEdge(tag, event.key);
         }
       }
 
@@ -227,7 +233,8 @@
       {#each layout.edges as edge (`${edge.fromKey}->${edge.toKey}`)}
         <path
           class="edge"
-          d="M {edge.x1} {edge.y1} C {(edge.x1 + edge.x2) / 2} {edge.y1}, {(edge.x1 + edge.x2) / 2} {edge.y2}, {edge.x2} {edge.y2}"
+          d="M {edge.x1} {edge.y1} C {(edge.x1 + edge.x2) / 2} {edge.y1}, {(edge.x1 + edge.x2) /
+            2} {edge.y2}, {edge.x2} {edge.y2}"
           marker-end="url(#arc-arrow)"
         />
       {/each}
@@ -252,9 +259,6 @@
             <text class="node-text" x="12" y="46">
               {truncate(node.event.text, 28)}
             </text>
-            {#if node.event.locked}
-              <text class="node-meta" x="12" y="62">locked</text>
-            {/if}
           </g>
           <g
             class="add-btn"
@@ -334,12 +338,6 @@
   .node-text {
     fill: var(--color-cream);
     font-size: 11px;
-    font-family: var(--font-narrative);
-  }
-
-  .node-meta {
-    fill: var(--color-muted-label);
-    font-size: 10px;
     font-family: var(--font-narrative);
   }
 

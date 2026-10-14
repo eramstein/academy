@@ -76,10 +76,7 @@ export const defaultGameState: GameState = {
     pastWinners: [],
   },
   ongoingBattle: null,
-  events: {
-    occurred: [],
-    unlocked: [],
-  },
+  storyTags: {},
 };
 
 export const initSim = async () => {
@@ -87,7 +84,7 @@ export const initSim = async () => {
   const fresh = structuredClone(defaultGameState);
   Object.assign(gs, fresh);
   gs.player = fresh.player;
-  gs.events = { occurred: [], unlocked: [] };
+  gs.storyTags = {};
   await clearUsedFlavors();
   await restoreEventTemplates();
   await loadEventTemplates();

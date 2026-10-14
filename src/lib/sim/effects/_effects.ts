@@ -3,12 +3,7 @@ import { EventEffectType } from '@/lib/_model/enums-sim';
 import { narrateText } from '../narration';
 import { levelAttribute, type LevelAttributeParameters } from './attributes';
 import { getDeck, type GetDeckParameters } from './decks';
-import {
-  followUpEvent,
-  unlockEvent,
-  type FollowUpEventParameters,
-  type UnlockEventParameters,
-} from './events';
+import { followUpEvent, type FollowUpEventParameters } from './events';
 import { useFocus, type UseFocusParameters } from './focus';
 import { offerCardGifts, type OfferCardGiftsParameters } from './gifts';
 import { addGold, type AddGoldParameters } from './gold';
@@ -26,6 +21,7 @@ import {
 import { addResource, type AddResourceParameters } from './resources';
 import { scheduleActivities, type ScheduleActivitiesParameters } from './schedule';
 import { subscribe, type TransactionSubscriptionParameters } from './subscribe';
+import { addStoryTag, type AddStoryTagParameters } from './story-tags';
 import {
   teachAbility,
   teachColor,
@@ -49,7 +45,6 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.ScheduleActivity]: (parameters) =>
     scheduleActivities(parameters as ScheduleActivitiesParameters),
   [EventEffectType.GetJob]: (parameters) => getJob(parameters as GetJobParameters),
-  [EventEffectType.UnlockEvent]: (parameters) => unlockEvent(parameters as UnlockEventParameters),
   [EventEffectType.FollowUpEvent]: (parameters) =>
     followUpEvent(parameters as FollowUpEventParameters),
   [EventEffectType.OfferCardGifts]: (parameters) =>
@@ -66,6 +61,7 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     updateRelationArc(parameters as UpdateRelationArcParameters),
   [EventEffectType.AddRelationTag]: (parameters) =>
     addRelationTag(parameters as AddRelationTagParameters),
+  [EventEffectType.AddStoryTag]: (parameters) => addStoryTag(parameters as AddStoryTagParameters),
   [EventEffectType.Move]: (parameters) => move(parameters as MoveParameters),
   [EventEffectType.UseFocus]: (parameters) => useFocus(parameters as UseFocusParameters),
 };

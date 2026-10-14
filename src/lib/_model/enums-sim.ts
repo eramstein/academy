@@ -11,7 +11,6 @@ export enum EventEffectType {
   AddGold = 'add_gold',
   ScheduleActivity = 'schedule_activity',
   GetJob = 'get_job',
-  UnlockEvent = 'unlock_event',
   FollowUpEvent = 'follow_up_event',
   OfferCardGifts = 'offer_card_gifts',
   TeachColor = 'teach_color',
@@ -21,6 +20,7 @@ export enum EventEffectType {
   ChangeRelation = 'change_relation',
   UpdateRelationArc = 'update_relation_arc',
   AddRelationTag = 'add_relation_tag',
+  AddStoryTag = 'add_story_tag',
   Move = 'move',
   UseFocus = 'use_focus',
 }
@@ -104,7 +104,6 @@ export enum SchoolName {
 }
 
 export enum EventTriggerType {
-  PreviousEvents = 'previous_events',
   Day = 'day',
   Period = 'period',
   ActivityType = 'activity_type',
@@ -117,6 +116,7 @@ export enum EventTriggerType {
   ScheduledActivity = 'scheduled_activity',
   MatchesWon = 'matches_won',
   LeaguesWon = 'leagues_won',
+  StoryTag = 'story_tag',
 }
 
 export enum ResourceType {

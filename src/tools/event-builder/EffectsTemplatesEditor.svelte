@@ -114,8 +114,6 @@
         return defaultScheduleArgs();
       case EventEffectType.GetJob:
         return defaultJobArgs();
-      case EventEffectType.UnlockEvent:
-        return { eventKey: '' };
       case EventEffectType.FollowUpEvent:
         return { eventKey: '' };
       case EventEffectType.OfferCardGifts:
@@ -134,6 +132,8 @@
         return { characterKey: '', text: '', image: '' };
       case EventEffectType.AddRelationTag:
         return { characterKey: '', relationTag: RelationTag.Friend };
+      case EventEffectType.AddStoryTag:
+        return { tag: '', amount: 1 };
       case EventEffectType.Move:
         return { placeKey: placeKeys[0] ?? '', characterKeys: ['player'] };
       case EventEffectType.UseFocus:
@@ -422,15 +422,6 @@
                 oninput={(e) =>
                   setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
               />
-            {:else if effect.type === EventEffectType.UnlockEvent}
-              <input
-                class="input arg"
-                value={effect.parameters.eventKey ?? ''}
-                placeholder="event key"
-                aria-label="Event key"
-                oninput={(e) =>
-                  setParameter(i, 'eventKey', (e.currentTarget as HTMLInputElement).value)}
-              />
             {:else if effect.type === EventEffectType.FollowUpEvent}
               <input
                 class="input arg"
@@ -626,6 +617,22 @@
                   <option value={tag}>{tag}</option>
                 {/each}
               </select>
+            {:else if effect.type === EventEffectType.AddStoryTag}
+              <input
+                class="input arg"
+                value={effect.parameters.tag ?? ''}
+                placeholder="story tag"
+                aria-label="Story tag"
+                oninput={(e) => setParameter(i, 'tag', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input narrow"
+                type="number"
+                value={effect.parameters.amount ?? 1}
+                aria-label="Amount"
+                oninput={(e) =>
+                  setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+              />
             {:else if effect.type === EventEffectType.Move}
               <select
                 class="input arg"

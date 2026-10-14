@@ -103,9 +103,11 @@ event fires.
 }
 ```
 
-Every event triggers at most once (consumed after it fires). Property order in the file
-follows the existing entries: `key`, `text`, `triggers`, `effects`, `optionTemplates`,
-`characterArc`, `emotion`, `image`, `imageSize`.
+Every event triggers at most once: firing auto-stamps `gs.storyTags[event.key]`, which
+removes it from the auto-trigger pool. Empty `triggers` means follow-up / debug only
+(`follow_up_event` or `/e`) — those never auto-fire. Property order in the file follows the
+existing entries: `key`, `text`, `triggers`, `effects`, `optionTemplates`, `characterArc`,
+`emotion`, `image`, `imageSize`.
 
 ## Images
 
@@ -137,31 +139,36 @@ event in file order whose triggers all match.
 | `activity_history`   | `{ characterKey, activityType, value }`                            | NPC has shared that `activityType` with the player at least `value` times (`Npc.activityHistory`).                                                       |
 | `matches_won`        | `{ characterKey, count }`                                          | Player has won at least `count` matches against that NPC (`npc.matchesRecord.won`). Does not consume the count.                                          |
 | `leagues_won`        | `{ characterKey, count }`                                          | Character appears at least `count` times in `league.pastWinners` (season titles). Does not consume the count. `characterKey` may be `"player"`.          |
+| `story_tag`          | `{ tag: "molly-f1", value: 1 }`                                    | `gs.storyTags[tag]` ≥ `value`. Event keys are auto-stamped on fire; use `add_story_tag` for choice-specific tags. Does not consume the count.            |
 | `scheduled_activity` | `{}`                                                               | Current scheduled activity's `eventId` equals this event's `key`. Set `eventId` on the activity when scheduling it.                                      |
-| `previous_events`    | `{ "molly-1": true }`                                              | Map of event keys that must have happened first; add one entry per prerequisite.                                                                         |
 
 Consequences of how the engine handles these:
 
 - Prefer `socialize` for "when the player befriends / flirts / impresses / taunts this NPC"
   beats. The socialize action does **not** change `relationProgress`; it only checks for a
   matching event. If one matches, that event plays instead of the default socialize narration.
-  Pair with `previous_events` (and optional `character_present`) to order arc steps.
+  Pair with `story_tag` on the prior event's key (and optional `character_present`) to order
+  arc steps.
 - `relation_parameter` reads cumulative `relationProgress`, which only moves via the
   `change_relation` effect (not via socialize). It does **not** reset when an event fires. Use it
   for lasting thresholds (e.g. friendship ≥ 3), not for "just socialized" gates.
 - `activity_history` does **not** consume the count; it stays on the NPC. Prefer it for "we've
   done this enough times" gates, and pair with `socialize` / `character_present` /
-  `previous_events` as needed.
+  `story_tag` as needed.
 - `matches_won` reads cumulative league wins against that NPC (`matchesRecord.won`). It does
-  **not** reset when an event fires. Pair with `character_present` / `previous_events` as needed.
+  **not** reset when an event fires. Pair with `character_present` / `story_tag` as needed.
 - `leagues_won` counts how often `characterKey` appears in `league.pastWinners` (one entry per
   season title). It does **not** reset when an event fires. Pair with `character_present` /
-  `previous_events` / ceremony `activity_type` as needed.
+  `story_tag` / ceremony `activity_type` as needed.
+- `story_tag` reads `gs.storyTags`. Firing any event auto-increments `storyTags[thatEvent.key]`.
+  Use tag = prior event key for “this beat happened”; use a free-form tag via `add_story_tag` on
+  an option for choice-specific gates. It does **not** reset when an event fires.
 - `scheduled_activity` is for beats that fire when a previously scheduled activity becomes
   current. Author the activity with `eventId` set to this event's key (via `schedule_activity`),
   and put a bare `scheduled_activity` trigger on the target event.
 - A scene-entry offer (no socialize) still needs `character_present` so it cannot fire while the
   NPC is elsewhere. Socialize-gated events already imply the player picked that NPC.
+- Empty `triggers: []` never auto-fires (follow-up / debug only).
 
 ## Effects
 
@@ -175,7 +182,6 @@ Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffect
 | `get_deck`            | `{ deckKey: "base_red" \| "base_black" \| "base_green" }`                                                                                                          |
 | `schedule_activity`   | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, nextFree?: true, recurrence?: { maxCount, daysOfWeek, period } } }` |
 | `get_job`             | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                                              |
-| `unlock_event`        | `{ eventKey: "molly-2" }`                                                                                                                                          |
 | `follow_up_event`     | `{ eventKey: "molly-2" }`                                                                                                                                          |
 | `offer_card_gifts`    | `{ count: 2, poolKeys: ["molly", "base"] }`                                                                                                                        |
 | `teach_color`         | `{ color?: "red" \| "blue" \| "green" \| "black", characterKey?: "molly" }`                                                                                        |
@@ -185,6 +191,7 @@ Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffect
 | `change_relation`     | `{ characterKey, relationParameter: "friendship" \| "respect" \| "love" \| "rivalry", amount: 1 }`                                                                 |
 | `update_relation_arc` | `{ characterKey, text: "You and Molly share a quiet laugh.", image?: "events/molly-f1.jpg" }`                                                                      |
 | `add_relation_tag`    | `{ characterKey, relationTag: "teammate" \| "rival" \| "friend" \| "lover" \| "significant_other" }`                                                               |
+| `add_story_tag`       | `{ tag: "helped-molly-lake", amount?: 1 }`                                                                                                                         |
 | `move`                | `{ placeKey: "academy", characterKeys: ["player", "molly"] }`                                                                                                      |
 | `use_focus`           | `{ amount: 1 }`                                                                                                                                                    |
 
@@ -206,6 +213,13 @@ Prefer `.jpg` over `.png`. The effect also narrates `text`.
 `add_relation_tag` appends a `RelationTag` to that NPC's `relationTags` if it is not already
 present. Use an NPC key (not `"player"`); only NPCs have relation tags.
 
+`add_story_tag` increments `gs.storyTags[tag]` by `amount` (default 1). Use free-form kebab-case
+tags for choice outcomes (firing an event already stamps `storyTags[event.key]` automatically).
+The effect is silent — pair with `narrate` when the player should see prose. Gate later events
+with a `story_tag` trigger on the same `tag`. Do **not** stamp an event's own `key` before that
+event fires — that would consume it from the auto-trigger pool. To unlock a gated beat, use a
+distinct tag such as `unlock:<eventKey>` and put a matching `story_tag` trigger on the target.
+
 `move` sets each listed character's `placeKey` immediately. Include `"player"` to relocate the
 player; NPC keys move those NPCs. This does not schedule travel or advance time.
 
@@ -225,12 +239,9 @@ which takes the same shape and day-offset rules as `schedule_activity`'s. Give a
 `recurrence`, or it turns into a single shift. `employerKey` is an NPC key (never `"player"`) and
 `payPerActivity` is the gold earned per shift.
 
-`unlock_event` clears `locked` on another event by key so it can start triggering. The target must
-already exist in the merged catalog (`events.json` or any `mods/<mod-id>/events.json`).
-
 `follow_up_event` immediately queues another event by key via `setEvent`, bypassing that event's
 triggers. Prefer it on an option when the next beat should fire in the same scene. The target must
-already exist in the merged catalog and not already be consumed.
+already exist in the merged catalog; give it `triggers: []` so it never auto-fires on its own.
 
 `offer_card_gifts` samples `count` card templates whose `poolKeys` include every listed key
 (`getCardTemplatesByPoolKeys`), then posts a `gift_card_choice` narration so the player can pick
@@ -372,6 +383,5 @@ impress / taunt" wording to `socialize`, not to a `relation_parameter` threshold
 
 ## Editing an existing event
 
-Same workflow, but keep `key` unchanged so `previous_events` references elsewhere in the file keep
-working. If the user does want a rename, update every `previous_events` map that mentions the old
-key; the validator reports dangling references.
+Same workflow, but keep `key` unchanged so `story_tag` triggers that use the old key as `tag` keep
+working. If the user does want a rename, update every `story_tag` whose `tag` is the old key.

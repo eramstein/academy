@@ -35,10 +35,7 @@ export interface GameState {
   scheduledActivities: ScheduledActivity[];
   league: League;
   ongoingBattle: OngoingBattle | null;
-  events: {
-    occurred: string[];
-    unlocked: string[];
-  };
+  storyTags: Record<string, number>;
 }
 
 export interface OngoingBattle {
@@ -115,7 +112,6 @@ export interface EventTemplate {
   text: string;
   optionTemplates: EventOptionTemplate[];
   triggers: EventTrigger[];
-  locked?: boolean;
   effects?: EventEffect[];
   characterArc?: string; // npc key
   emotion?: Emotion;

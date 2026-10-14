@@ -135,15 +135,6 @@ function checkTrigger(where, trigger) {
   }
   checkOneOf(where, 'triggerType', trigger.triggerType, triggerTypes);
   switch (trigger.triggerType) {
-    case 'previous_events': {
-      const keys = Object.keys(params);
-      if (keys.length === 0) errors.push(`${where}: previous_events has no event keys`);
-      for (const key of keys) {
-        if (!eventKeys.includes(key)) errors.push(`${where}: unknown previous event "${key}"`);
-        if (params[key] !== true) errors.push(`${where}: previous_events["${key}"] must be true`);
-      }
-      break;
-    }
     case 'day': {
       if (params.day == null && params.minDay == null) {
         errors.push(`${where}: day needs day and/or minDay`);
@@ -227,6 +218,14 @@ function checkTrigger(where, trigger) {
       checkOneOf(where, 'characterKey', params.characterKey, characterKeys);
       if (typeof params.count !== 'number' || !Number.isInteger(params.count) || params.count < 1) {
         errors.push(`${where}: count must be an integer ≥ 1`);
+      }
+      break;
+    case 'story_tag':
+      if (typeof params.tag !== 'string' || !params.tag.trim()) {
+        errors.push(`${where}: tag must be a non-empty string`);
+      }
+      if (typeof params.value !== 'number' || !Number.isInteger(params.value) || params.value < 1) {
+        errors.push(`${where}: value must be an integer ≥ 1`);
       }
       break;
     case 'scheduled_activity':
@@ -317,9 +316,6 @@ function checkEffect(where, effect) {
       checkSchedule(where, job.schedule);
       break;
     }
-    case 'unlock_event':
-      checkOneOf(where, 'eventKey', parameters.eventKey, eventKeys);
-      break;
     case 'follow_up_event':
       checkOneOf(where, 'eventKey', parameters.eventKey, eventKeys);
       break;
@@ -396,6 +392,14 @@ function checkEffect(where, effect) {
       checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
       checkOneOf(where, 'relationTag', parameters.relationTag, relationTags);
       break;
+    case 'add_story_tag':
+      if (typeof parameters.tag !== 'string' || !parameters.tag.trim()) {
+        errors.push(`${where}: tag must be a non-empty string`);
+      }
+      if (parameters.amount !== undefined && typeof parameters.amount !== 'number') {
+        errors.push(`${where}: amount must be a number`);
+      }
+      break;
     case 'move':
       checkOneOf(where, 'placeKey', parameters.placeKey, placeKeys);
       if (!Array.isArray(parameters.characterKeys) || parameters.characterKeys.length === 0) {
@@ -417,7 +421,6 @@ const allowedEventProps = new Set([
   'text',
   'optionTemplates',
   'triggers',
-  'locked',
   'effects',
   'characterArc',
   'emotion',
@@ -443,9 +446,6 @@ events.forEach((event, index) => {
   }
   if (event?.emotion !== undefined) {
     checkOneOf(where, 'emotion', event.emotion, emotions);
-  }
-  if (event?.locked !== undefined && typeof event.locked !== 'boolean') {
-    errors.push(`${where}: locked must be a boolean when set`);
   }
   if (event?.image !== undefined) {
     if (typeof event.image !== 'string' || !event.image.trim()) {

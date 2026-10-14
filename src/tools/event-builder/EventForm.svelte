@@ -37,7 +37,6 @@
 
   let key = $state('');
   let text = $state('');
-  let locked = $state(false);
   let characterArc = $state('');
   let emotion = $state('');
   let image = $state('');
@@ -59,13 +58,10 @@
   const attributeKeys = ['dexterity', 'intelligence', 'vitality', 'charisma', 'aura'] as const;
   const difficultyKeys = skillCheckDifficultyKeys;
 
-  let previousEventDrafts = $state<Record<number, string>>({});
-
   function cloneEventFields(source: EventTemplate | null | undefined) {
     if (!source) {
       key = '';
       text = '';
-      locked = false;
       characterArc = '';
       emotion = '';
       image = '';
@@ -79,7 +75,6 @@
     const cloned = JSON.parse(JSON.stringify(source)) as EventTemplate;
     key = cloned.key;
     text = cloned.text;
-    locked = cloned.locked ?? false;
     characterArc = cloned.characterArc ?? '';
     emotion = cloned.emotion ?? '';
     image = cloned.image ?? '';
@@ -99,7 +94,6 @@
 
   function defaultParams<T extends EventTriggerType>(triggerType: T): EventTriggerParameters[T] {
     const defaults: EventTriggerParameters = {
-      [EventTriggerType.PreviousEvents]: {},
       [EventTriggerType.Day]: { day: 1 },
       [EventTriggerType.Period]: { periods: [DayPeriod.Morning] },
       [EventTriggerType.ActivityType]: { activityType: ActivityType.Class },
@@ -123,6 +117,7 @@
       [EventTriggerType.ScheduledActivity]: {},
       [EventTriggerType.MatchesWon]: { characterKey: '', count: 1 },
       [EventTriggerType.LeaguesWon]: { characterKey: '', count: 1 },
+      [EventTriggerType.StoryTag]: { tag: '', value: 1 },
     };
     return defaults[triggerType];
   }
@@ -163,8 +158,6 @@
 
   function setTriggerType(index: number, triggerType: EventTriggerType) {
     triggers[index] = { triggerType, parameters: defaultParams(triggerType) } as EventTrigger;
-    const { [index]: _, ...rest } = previousEventDrafts;
-    previousEventDrafts = rest;
   }
 
   function addTrigger() {
@@ -176,43 +169,6 @@
 
   function removeTrigger(index: number) {
     triggers = triggers.filter((_, i) => i !== index);
-    previousEventDrafts = Object.fromEntries(
-      Object.entries(previousEventDrafts)
-        .filter(([i]) => Number(i) !== index)
-        .map(([i, value]) => {
-          const n = Number(i);
-          return [n > index ? n - 1 : n, value];
-        })
-    );
-  }
-
-  function addPreviousEventKey(index: number, eventKey: string) {
-    const trimmed = eventKey.trim();
-    const trigger = triggers[index];
-    if (!trimmed || trigger?.triggerType !== EventTriggerType.PreviousEvents) return;
-    triggers[index] = {
-      ...trigger,
-      parameters: { ...trigger.parameters, [trimmed]: true },
-    };
-    triggers = [...triggers];
-  }
-
-  function removePreviousEventKey(index: number, eventKey: string) {
-    const trigger = triggers[index];
-    if (trigger?.triggerType !== EventTriggerType.PreviousEvents) return;
-    const { [eventKey]: _, ...rest } = trigger.parameters;
-    triggers[index] = { ...trigger, parameters: rest };
-    triggers = [...triggers];
-  }
-
-  function beginPreviousEventDraft(index: number) {
-    previousEventDrafts = { ...previousEventDrafts, [index]: '' };
-  }
-
-  function commitPreviousEventDraft(index: number) {
-    addPreviousEventKey(index, previousEventDrafts[index] ?? '');
-    const { [index]: _, ...rest } = previousEventDrafts;
-    previousEventDrafts = rest;
   }
 
   function defaultActionTemplate(): ActionTemplate {
@@ -330,7 +286,7 @@
       triggers: triggers.map((trigger) => ({
         triggerType: trigger.triggerType,
         parameters: { ...trigger.parameters },
-      })),
+      })) as EventTrigger[],
       optionTemplates: options
         .map((option) => {
           const next: EventOptionTemplate = {
@@ -362,10 +318,6 @@
         })
         .filter((option) => option.text.length > 0),
     };
-
-    if (locked) {
-      built.locked = true;
-    }
 
     const arc = characterArc.trim();
     if (arc) {
@@ -509,11 +461,6 @@
             </label>
           {/if}
         </div>
-
-        <label class="check">
-          <input type="checkbox" bind:checked={locked} />
-          <span>Locked</span>
-        </label>
       </div>
 
       <label class="field text-field">
@@ -531,7 +478,7 @@
         </div>
 
         {#if triggers.length === 0}
-          <p class="hint">No triggers — follow-up / unlocked events can stay empty.</p>
+          <p class="hint">No triggers — follow-up / debug-only events can stay empty.</p>
         {:else}
           <ul class="stack">
             {#each triggers as trigger, i (i)}
@@ -618,47 +565,6 @@
                     placeholder="character key"
                     aria-label="Character key"
                   />
-                {:else if trigger.triggerType === EventTriggerType.PreviousEvents}
-                  <div class="previous-events">
-                    {#each Object.keys(trigger.parameters) as eventKey (eventKey)}
-                      <span class="chip">
-                        {eventKey}
-                        <button
-                          type="button"
-                          class="btn icon danger chip-remove"
-                          onclick={() => removePreviousEventKey(i, eventKey)}
-                          aria-label="Remove {eventKey}">×</button
-                        >
-                      </span>
-                    {/each}
-                    {#if Object.keys(trigger.parameters).length === 0 || previousEventDrafts[i] !== undefined}
-                      <input
-                        class="input param-input"
-                        placeholder="event key"
-                        aria-label="Previous event key"
-                        value={previousEventDrafts[i] ?? ''}
-                        oninput={(e) =>
-                          (previousEventDrafts[i] = (e.currentTarget as HTMLInputElement).value)}
-                        onkeydown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            commitPreviousEventDraft(i);
-                          }
-                        }}
-                      />
-                      <button
-                        type="button"
-                        class="btn ghost compact"
-                        onclick={() => commitPreviousEventDraft(i)}>Add key</button
-                      >
-                    {:else}
-                      <button
-                        type="button"
-                        class="btn ghost compact"
-                        onclick={() => beginPreviousEventDraft(i)}>Add key</button
-                      >
-                    {/if}
-                  </div>
                 {:else if trigger.triggerType === EventTriggerType.RelationParameter}
                   <input
                     class="input param-input"
@@ -757,6 +663,21 @@
                     bind:value={trigger.parameters.count}
                     aria-label="Leagues won count"
                     title="Requires league.pastWinners appearances ≥ count for this character"
+                  />
+                {:else if trigger.triggerType === EventTriggerType.StoryTag}
+                  <input
+                    class="input param-input"
+                    bind:value={trigger.parameters.tag}
+                    placeholder="story tag"
+                    aria-label="Story tag"
+                  />
+                  <input
+                    class="input narrow"
+                    type="number"
+                    min="1"
+                    bind:value={trigger.parameters.value}
+                    aria-label="Story tag value"
+                    title="Requires storyTags[tag] ≥ value"
                   />
                 {/if}
 
@@ -1129,32 +1050,6 @@
   .param-hint {
     color: #a89880;
     font-size: 0.85rem;
-  }
-
-  .previous-events {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    flex-wrap: wrap;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.15rem;
-    padding: 0.15rem 0.2rem 0.15rem 0.45rem;
-    background: rgba(175, 142, 103, 0.15);
-    border: 1px solid rgba(175, 142, 103, 0.35);
-    border-radius: 3px;
-    font-size: 0.8rem;
-  }
-
-  .chip-remove {
-    padding: 0 0.25rem;
-    font-size: 0.95rem;
-    border: none;
   }
 
   .days {

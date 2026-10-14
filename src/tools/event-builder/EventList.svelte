@@ -46,6 +46,10 @@
       const { characterKey, count } = trigger.parameters;
       return `${trigger.triggerType}: ${characterKey} ≥${count}`;
     }
+    if (trigger.triggerType === EventTriggerType.StoryTag) {
+      const { tag, value } = trigger.parameters;
+      return `${trigger.triggerType}: ${tag} ≥${value}`;
+    }
     if (trigger.triggerType === EventTriggerType.DayOfWeek) {
       return `${trigger.triggerType}: ${trigger.parameters.daysOfWeek.join(',')}`;
     }
@@ -134,9 +138,6 @@
               <span class="key">{event.key}</span>
               <span class="meta">
                 {optionCount(event)} option{optionCount(event) === 1 ? '' : 's'}
-                {#if event.locked}
-                  · locked
-                {/if}
                 {#if event.characterArc}
                   · {displayName(event.characterArc)}
                 {/if}

@@ -33,13 +33,20 @@ export const loadGameStateFromLocalStorage = async (id: string) => {
     // sim state
     const savedState = id ? await getGame(id) : await getLatestGame();
     if (savedState) {
-      const parsedState: GameState = savedState.gameState;
+      const parsedState: GameState & {
+        events?: { occurred?: string[]; unlocked?: string[] };
+      } = savedState.gameState;
       Object.assign(gs, parsedState);
-      // Always replace from the save (Object.assign keeps prior gs.events if the field is missing).
-      gs.events = {
-        occurred: [...(parsedState.events?.occurred ?? [])],
-        unlocked: [...(parsedState.events?.unlocked ?? [])],
-      };
+      // Story tags + migration from older saves that used events.occurred / unlocked.
+      const storyTags: Record<string, number> = { ...(parsedState.storyTags ?? {}) };
+      for (const key of parsedState.events?.occurred ?? []) {
+        if ((storyTags[key] ?? 0) < 1) storyTags[key] = 1;
+      }
+      for (const key of parsedState.events?.unlocked ?? []) {
+        if ((storyTags[key] ?? 0) < 1) storyTags[key] = 1;
+      }
+      gs.storyTags = storyTags;
+      delete (gs as { events?: unknown }).events;
       // Older saves predate player focus.
       if (typeof gs.player.focus !== 'number') {
         gs.player.focus = defaultGameState.player.focus;
