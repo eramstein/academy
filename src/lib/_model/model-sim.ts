@@ -109,6 +109,8 @@ export interface EventOptionAttributeCheck {
 // An event template defines when a scene event triggers and how to generate its options
 export interface EventTemplate {
   key: string;
+  /** Short heading shown above event narration / relation-arc beats. */
+  title?: string;
   text: string;
   optionTemplates: EventOptionTemplate[];
   triggers: EventTrigger[];
@@ -136,6 +138,8 @@ export interface ActionTemplate {
 
 export interface Narration {
   id: string;
+  /** Optional heading for authored event beats. */
+  title?: string;
   text: string;
   type: NarrationType;
   mentions?: Mentions;
@@ -242,14 +246,20 @@ export interface Npc extends Character {
   school?: SchoolName;
   favoriteColors: CardColor[];
   relationProgress: RelationProgress;
-  relationArc: { text: string; image?: string }[];
+  relationArc: { title?: string; text: string; image?: string }[];
   relationTags: RelationTag[];
   activityHistory: Partial<Record<ActivityType, number>>;
   bio: string;
   favoritePlaces: Record<string, number>;
   matchesRecord: { won: number; lost: number };
   personality: Personality;
-  knownTraits: string[];
+  knownTraits: KnownTrait[];
+  tcgSkill: number;
+}
+
+export interface KnownTrait {
+  title: string;
+  description: string;
 }
 
 export interface Personality {

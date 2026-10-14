@@ -17,6 +17,9 @@
   const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const PERIODS = [DayPeriod.Morning, DayPeriod.Afternoon, DayPeriod.Evening];
 
+  // Place art is the default backdrop. When an event supplies a scene image, keep showing
+  // that event image until the player changes place or another event sets a new one —
+  // do not clear it when the event options resolve or narration advances.
   const imagePath = $derived(getPlaceImagePath(place.key));
   const region = $derived(gs.regions[place.regionKey]);
   const playerHere = $derived(gs.player.placeKey === place.key);

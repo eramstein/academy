@@ -1,314 +1,262 @@
 ---
 name: create-sim-event
-description: Creates or edits sim events in src/data/sim/events.json (or a gitignored mod under mods/<id>/events.json when asked) from a natural-language description, elaborating a short synopsis into event prose and mapping conditions and rewards onto triggers, option templates, and effects. Use when the user asks to add, write, or change a game event, a character arc beat (e.g. "add an event for molly where..."), or the triggers/options of an existing event.
+description: >-
+  Compiles authored sim event markdown under src/data/sim/events/ into
+  EventTemplate JSON in src/data/sim/events.json (or a gitignored mod under
+  mods/<id>/events.json when asked). Maps front matter, triggers, effects, and
+  options onto the schema without rewriting prose. Use when the user asks to
+  create, compile, sync, or update a game event from a markdown source, or points
+  at a file under src/data/sim/events/.
 ---
 
-# Create a sim event
+# Create a sim event (markdown → JSON)
 
-Events are `EventTemplate` entries in `src/data/sim/events.json`, plus any local mods under
-`mods/<mod-id>/` (gitignored). The runtime and event builder merge `events.json` first, then each
-mod's `events.json` in folder-name order. Each event declares _when_ it fires (triggers), _what the
-player reads_ (text), and _what happens_ (event effects and player options). The type lives in
-`src/lib/_model/model-sim.ts`; the runtime that consumes it is `src/lib/sim/events.ts`.
+**Source of truth for prose and intent:** markdown under `src/data/sim/events/`.
+**Runtime catalog:** `EventTemplate` entries in `src/data/sim/events.json`, plus any
+local mods under `mods/<mod-id>/` (gitignored). The runtime and event builder merge
+`events.json` first, then each mod's `events.json` in folder-name order.
 
-A mod folder looks like this:
+Your job is **structure only**: turn the markdown into valid JSON. **Do not rewrite,
+shorten, polish, or paraphrase** event text or option narration — copy them
+verbatim (paragraph breaks → `\n\n` in JSON strings).
+
+Type: `src/lib/_model/model-sim.ts`. Consumer: `src/lib/sim/events.ts`.
+
+A mod folder looks like:
 
 ```
 mods/<mod-id>/
   events.json
-  images/activities/    # activity art and {character}-p-N.jpg
-  images/events/        # event illustrations named by the event's image field
+  images/activities/
+  images/events/
 ```
 
 `<mod-id>` is letters, digits, `_`, and `-`. The dev server scans `mods/` at startup.
 
-## Which file to write
+## Which JSON file to write
 
 - **Default:** append or edit in `src/data/sim/events.json`.
-- **Only when the user asks** (e.g. "put it in a mod", "experimental", "don't commit this"):
-  write to `mods/<mod-id>/events.json`. If they name a mod, use that id. Otherwise use `mods/more`.
-  Create the file as `[]` if it is missing, and create the folder if needed.
-- Put that mod's pictures in `mods/<mod-id>/images/events/` or `images/activities/`, not under `public/`.
-- Keys are shared across the main file and every mod — never reuse a key that already exists.
-- When editing an existing event, change the file that already contains that `key`. The event editor
-  does the same: a mod event is written back to that mod's `events.json`.
+- **Only when the user asks** (e.g. "put it in a mod", "experimental"):
+  write to `mods/<mod-id>/events.json`. If they name a mod, use that id; otherwise
+  `mods/more`. Create `[]` / the folder if missing.
+- Keys are shared across the main file and every mod — never reuse a key.
+- When updating an existing event, change the JSON file that already contains that
+  `key`. Prefer matching the markdown path (`events/<npc>/…` → that NPC's
+  `characterArc` group in the target file).
 
-## Request template
+## Markdown source layout
 
-Free-form descriptions are fine. When the user asks for a template, or when a request is ambiguous,
-use this shape:
+Files live at `src/data/sim/events/<npc-or-arc>/<slug>.md` (or a flat path the user
+names). Canonical shape:
 
+```markdown
+# Event: <Title>
+
+**NPC:** <npc key>.          # omit or use `main` / none for main-story
+**Event ID:** `<key>`        # permanent JSON key; required
+**Trigger:** <plain-language conditions>
+**Image:** <filename.jpg and/or small|medium|large>.   # optional
+**Emotion:** <Emotion enum value>.                     # optional
+
+## Text
+
+<verbatim event body; blank lines = paragraph breaks>
+
+## Effects
+
+- <always-on outcomes when the event fires, before choices>
+  - **<trait title>:** <description>     # for known traits
+
+## Options
+
+### Option A: <option label>
+
+**Text:**
+
+<option narration, verbatim>
+
+**Outcomes:**
+
+- <effects for this choice, or "No additional game-state effects.">
+
+### Option B: <option label>
+…
 ```
-Event for <npc key | main story>:
-Trigger: <socialize type, relation level, day/period, place, activity, activity history count, prior events, who is present>
-Synopsis: <one or two sentences to elaborate into the event text>
-Emotion: <Emotion enum value> (optional; infer from synopsis when clear)
-Options:
-  - <label>: <reward or consequence>
-  - <label> [only if <game-state condition>]: <reward or consequence>
-Always: <effects applied on trigger, before any choice> (optional)
-```
 
-Anything omitted follows the defaults below. Never invent a reward, condition, or NPC that the
-request did not imply.
+Optional sections:
+
+- `## Option triggers` / per-option `**Only if:**` — conditions that gate that choice
+  only (same trigger vocabulary as event `**Trigger:**`).
+- Attribute checks: `**Check:** charisma medium` plus `**On success:**` /
+  `**On failure:**` instead of flat outcomes (maps to `attributeCheck`).
+- Empty `## Options` (or omit options) → `optionTemplates: []` (narration-only).
+
+Folder name and `**NPC:**` should agree; `characterArc` is the NPC key for arc
+events. Main-story events omit `characterArc`.
 
 ## Workflow
 
-1. Read `src/data/sim/events.json` and every `mods/*/events.json` to see existing keys, arc grouping,
-   and house style. Treat them as one key space.
-2. Pick the key: `<npcKey>-<n>` for a character arc event, `event-<n>` for main story, using the
-   next free number in that series across both files. Keys are permanent identifiers, not prose.
-3. Write `text` (see _Writing the text_). Set `emotion` when appropriate (see _Emotion_).
-4. Map every condition in the request to a trigger, and every outcome to an `EventEffect`.
-   A condition that gates the whole beat goes on the event. A condition that only unlocks an
-   extra choice goes on that option's `triggers`. Verify character, place, and deck keys against
-   the source files listed below.
-5. Insert the event object after the last event of the same `characterArc` in the **target file**,
-   or append it at the end of that file's array for a main-story event. Target file is
-   `events.json` unless the user asked for a mod.
-6. Format and validate (prettier only the file you changed):
+1. Read the markdown file the user named (and sibling docs only if keys/names are
+   unclear — e.g. `src/data/npcs.ts`, `src/doc/npc/<npc>.md`).
+2. Read `src/data/sim/events.json` and every `mods/*/events.json` for existing keys
+   and insertion point. Treat them as one key space.
+3. Build the `EventTemplate`:
+   - `key` ← `**Event ID:**` (keep exactly; do not rename to “fit” house style).
+   - `title` ← `# Event: …` heading text (strip the `Event:` prefix).
+   - `text` ← `## Text` body, verbatim, paragraphs joined with `\n\n`.
+   - `emotion` / `image` / `imageSize` ← front matter when present.
+   - `characterArc` ← `**NPC:**` when it is an NPC key.
+   - `triggers` ← map `**Trigger:**` (see Triggers).
+   - `effects` ← map `## Effects` (see Effects).
+   - `optionTemplates` ← each `### Option …`:
+     - `text` ← the option **label** (heading after `Option A:`).
+     - option body under `**Text:**` → a `narrate` effect with that prose
+       verbatim (unless the markdown says the choice has no narration).
+     - `**Outcomes:**` → further effects (skip “no additional…”).
+     - Optional option-only triggers → `triggers` on that option.
+4. If a key already exists, **replace** that object in place; otherwise insert after
+   the last event of the same `characterArc` (or append for main story) in the
+   **target** JSON file.
+5. Format and validate:
    ```
    npx prettier --write src/data/sim/events.json
-   # or, when writing a mod:
-   # npx prettier --write mods/<mod-id>/events.json
+   # or: npx prettier --write mods/<mod-id>/events.json
    node .cursor/skills/create-sim-event/scripts/validate-events.mjs
    ```
-   Fix every reported problem and re-run until it prints `OK`.
-7. Report the new key, which file it was written to, the trigger conditions in plain words, and each
-   option with its effect. Tell the user to reload the running page: the dev server serves the
-   merged catalog through `/api/events` at init and Vite intentionally skips HMR for `events.json` and `mods/`.
+   Fix until the script prints `OK`.
+6. Report: key, target file, triggers in plain words, each option + effects. Tell
+   the user to reload: `/api/events` at init; Vite skips HMR for `events.json` and
+   `mods/`.
 
-If a requested outcome has no matching effect type, or a condition has no matching trigger type,
-stop and say which `EventEffectType` and effect function would have to be added (see the
-`create-sim-effect` skill). Do not invent type names: unknown types crash at runtime when the
-event fires.
+**Never invent** NPCs, rewards, or conditions the markdown did not state. If a
+stated outcome has no `EventEffectType`, or a condition has no trigger type, stop
+and name what `create-sim-effect` (or a new trigger) would need — do not invent
+type strings (unknown types crash when the event fires).
+
+## Prose rules (non-negotiable)
+
+- Copy `## Text` and option `**Text:**` **exactly** (wording, punctuation, quotes).
+- Preserve paragraph breaks as `\n\n`; trim only a single trailing newline on the
+  whole string if needed for tidy JSON.
+- Do not collapse multi-paragraph beats into one paragraph.
+- Do not move option narration into the event `text` or the reverse.
+- Escape JSON only as required (`"`, `\`, newlines as `\n`).
 
 ## Schema
 
 ```jsonc
 {
-  "key": "molly-4", // unique, permanent
-  "text": "One paragraph...", // what the player reads
-  "triggers": [
-    /* ALL must match */
-  ],
+  "key": "emma_first_encounter",
+  "title": "A Rather Unfortunate First Impression",
+  "text": "Paragraph one…\n\nParagraph two…",
+  "triggers": [ /* ALL must match */ ],
+  "effects": [ /* optional; on fire, before options */ ],
   "optionTemplates": [
-    /* player choices; [] means the event is pure narration.
-       Optional `triggers` on a choice: ALL must match or that choice is hidden.
-       Omit `triggers` to always offer the choice. */
+    /* [] = narration only.
+       Optional per-option `triggers`: ALL must match or the choice is hidden. */
   ],
-  "effects": [
-    /* optional: applied on trigger, before options */
-  ],
-  "characterArc": "molly", // npc key, only for character arc events
-  "emotion": "happy", // optional; how the speaking NPC presents in this beat
-  "image": "molly-4.jpg", // optional; filename under public/assets/images/events/
-  "imageSize": "large", // optional; "small" | "medium" | "large"
+  "characterArc": "emma",
+  "emotion": "neutral",
+  "image": "emma_first_encounter.jpg",
+  "imageSize": "large"
 }
 ```
 
-Every event triggers at most once: firing auto-stamps `gs.storyTags[event.key]`, which
-removes it from the auto-trigger pool. Empty `triggers` means follow-up / debug only
-(`follow_up_event` or `/e`) — those never auto-fire. Property order in the file follows the
-existing entries: `key`, `text`, `triggers`, `effects`, `optionTemplates`, `characterArc`,
-`emotion`, `image`, `imageSize`. Option objects use `text`, optional `triggers`, then `effects`
-or `attributeCheck`, then optional `actionTemplate`. Omit option `triggers` when the choice is
-always available.
+Every event fires at most once: firing stamps `gs.storyTags[event.key]`. Empty
+`triggers` means follow-up / debug only (`follow_up_event` or `/e`) — never
+auto-fires. Property order: `key`, `title`, `text`, `triggers`, `effects`,
+`optionTemplates`, `characterArc`, `emotion`, `image`, `imageSize`. Options:
+`text`, optional `triggers`, then `effects` or `attributeCheck`, then optional
+`actionTemplate`.
 
 ## Images
 
-When setting `image` on an event:
+From `**Image:**`:
 
-- Use a **`.jpg`** filename only (e.g. `emma-hospital.jpg`). Never author `.png` in
-  event JSON.
-- Place the file at `public/assets/images/events/{image}`.
-- If the source asset is a PNG, convert it first (e.g. `node src/tools/convert-images.js`,
-  which targets the events folder) and reference the resulting `.jpg`.
-- For full-bleed scene art, set `imageSize` to `"large"` when the user asks for a large
-  image; otherwise omit or use the size they named.
+- A bare size (`small` / `medium` / `large`) → set `imageSize` only.
+- A `.jpg` filename → set `image` (never author `.png` in event JSON).
+- Both → set both. Asset path: `public/assets/images/events/{image}` (or the mod’s
+  `images/events/`).
 
 ## Triggers
 
-Every trigger in the array must match at the same time (logical AND). The engine picks the first
-event in file order whose triggers all match.
+Every entry in `triggers` must match (AND). The engine picks the first event in
+file order whose triggers all match.
 
 | `triggerType`        | `parameters`                                                       | Notes                                                                                                                                                                                         |
 | -------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `socialize`          | `{ characterKey, socializeType }`                                  | Fires only when the player socializes with that NPC using that type (`befriend`, `taunt`, `impress`, `flirt`).                                                                                |
-| `relation_parameter` | `{ characterKey, relationParameter, value }`                       | Cumulative `relationProgress`. `relationParameter` is `friendship`, `respect`, `love` or `rivalry`. Positive `value` = "at least"; negative = "at most".                                      |
-| `character_present`  | `{ characterKey }`                                                 | The NPC is in the player's current place.                                                                                                                                                     |
-| `day`                | `{ day: 3 }`                                                       | Absolute day number; day 1 is a Monday.                                                                                                                                                       |
-| `period`             | `{ period: "morning" }` or `{ periods: ["morning", "afternoon"] }` | Single period, or any of several. `morning`, `afternoon`, `evening`.                                                                                                                          |
-| `day_of_week`        | `{ daysOfWeek: [6, 7] }`                                           | 1 = Monday … 7 = Sunday; matches if today is any listed weekday.                                                                                                                              |
-| `place`              | `{ placeKey }`                                                     | The player's current place.                                                                                                                                                                   |
-| `activity_type`      | `{ activityType }`                                                 | `class`, `work`, `social`, `date`, `training`, `study`; matches the currently scheduled activity.                                                                                             |
-| `activity_history`   | `{ characterKey, activityType, value }`                            | NPC has shared that `activityType` with the player at least `value` times (`Npc.activityHistory`).                                                                                            |
-| `matches_won`        | `{ characterKey, count }`                                          | Player has won at least `count` matches against that NPC (`npc.matchesRecord.won`). Does not consume the count.                                                                               |
-| `leagues_won`        | `{ characterKey, count }`                                          | Character appears at least `count` times in `league.pastWinners` (season titles). Does not consume the count. `characterKey` may be `"player"`.                                               |
-| `story_tag`          | `{ tag: "molly-f1", value: 1 }`                                    | `gs.storyTags[tag]` ≥ `value`. Pass `value: -1` for tag absent (missing or 0). Event keys are auto-stamped on fire; use `add_story_tag` for choice-specific tags. Does not consume the count. |
-| `scheduled_activity` | `{}`                                                               | Current scheduled activity's `eventId` equals this event's `key`. Set `eventId` on the activity when scheduling it.                                                                           |
+| `socialize`          | `{ characterKey, socializeType }`                                  | `befriend`, `taunt`, `impress`, `flirt`.                                                                                                                                                      |
+| `relation_parameter` | `{ characterKey, relationParameter, value }`                       | Cumulative `relationProgress`. Positive `value` = at least; negative = at most.                                                                                                               |
+| `character_present`  | `{ characterKey }`                                                 | NPC in the player's current place.                                                                                                                                                            |
+| `day`                | `{ day?: 3, minDay?: 4 }`                                          | Exact day and/or `day >= minDay`. Day 1 = Monday.                                                                                                                                             |
+| `period`             | `{ period: "morning" }` or `{ periods: ["morning", "afternoon"] }` | `morning`, `afternoon`, `evening`.                                                                                                                                                            |
+| `day_of_week`        | `{ daysOfWeek: [6, 7] }`                                           | 1 = Monday … 7 = Sunday.                                                                                                                                                                      |
+| `place`              | `{ placeKey }`                                                     | Player's current place.                                                                                                                                                                       |
+| `activity_type`      | `{ activityType }`                                                 | Matches the current scheduled activity.                                                                                                                                                       |
+| `activity_history`   | `{ characterKey, activityType, value }`                            | Shared that activity at least `value` times.                                                                                                                                                  |
+| `matches_won`        | `{ characterKey, count }`                                          | Wins vs that NPC ≥ `count`.                                                                                                                                                                   |
+| `matches_lost`       | `{ characterKey, count }`                                          | Losses vs that NPC ≥ `count`.                                                                                                                                                                 |
+| `leagues_won`        | `{ characterKey, count }`                                          | Appearances in `league.pastWinners` ≥ `count`; `characterKey` may be `"player"`.                                                                                                              |
+| `story_tag`          | `{ tag: "molly-f1", value: 1 }`                                    | `gs.storyTags[tag]` ≥ `value`. `value: -1` = tag absent. Event keys auto-stamp on fire.                                                                                                       |
+| `relation_tag`       | `{ characterKey, relationTag }`                                    | NPC has that `RelationTag` on `relationTags`. Optional `value: -1` = tag absent.                                                                                                              |
+| `scheduled_activity` | `{}`                                                               | Current activity `eventId` equals this event's `key`.                                                                                                                                         |
 
-Consequences of how the engine handles these:
+### Mapping plain-language `**Trigger:**`
 
-- Prefer `socialize` for "when the player befriends / flirts / impresses / taunts this NPC"
-  beats. The socialize action does **not** change `relationProgress`; it only checks for a
-  matching event. If one matches, that event plays instead of the default socialize narration.
-  Pair with `story_tag` on the prior event's key (and optional `character_present`) to order
-  arc steps.
-- `relation_parameter` reads cumulative `relationProgress`, which only moves via the
-  `change_relation` effect (not via socialize). It does **not** reset when an event fires. Use it
-  for lasting thresholds (e.g. friendship ≥ 3), not for "just socialized" gates.
-- `activity_history` does **not** consume the count; it stays on the NPC. Prefer it for "we've
-  done this enough times" gates, and pair with `socialize` / `character_present` /
-  `story_tag` as needed.
-- `matches_won` reads cumulative league wins against that NPC (`matchesRecord.won`). It does
-  **not** reset when an event fires. Pair with `character_present` / `story_tag` as needed.
-- `leagues_won` counts how often `characterKey` appears in `league.pastWinners` (one entry per
-  season title). It does **not** reset when an event fires. Pair with `character_present` /
-  `story_tag` / ceremony `activity_type` as needed.
-- `story_tag` reads `gs.storyTags`. Firing any event auto-increments `storyTags[thatEvent.key]`.
-  Use tag = prior event key for “this beat happened”; use a free-form tag via `add_story_tag` on
-  an option for choice-specific gates. Pass `value: -1` to require the tag be absent. It does
-  **not** reset when an event fires.
-- `scheduled_activity` is for beats that fire when a previously scheduled activity becomes
-  current. Author the activity with `eventId` set to this event's key (via `schedule_activity`),
-  and put a bare `scheduled_activity` trigger on the target event.
-- A scene-entry offer (no socialize) still needs `character_present` so it cannot fire while the
-  NPC is elsewhere. Socialize-gated events already imply the player picked that NPC.
-- Empty `triggers: []` never auto-fires (follow-up / debug only).
+| Markdown phrasing (examples)                         | JSON                                                                 |
+| ---------------------------------------------------- | -------------------------------------------------------------------- |
+| First time / when \<NPC\> is present                 | `character_present` (once-only is automatic via story tag on fire)   |
+| When the player befriends / flirts / … \<NPC\>       | `socialize` + usually `character_present`                            |
+| After event \<key\> / once \<key\> happened          | `story_tag` `{ tag: "<key>", value: 1 }`                             |
+| Friendship / respect / … at least N                  | `relation_parameter` with positive `value`                           |
+| At the library / academy-hall / …                    | `place`                                                              |
+| During class / work / …                              | `activity_type`                                                      |
+| Morning / afternoon / evening                        | `period`                                                             |
+| Day N / on or after day N                            | `day` with `day` and/or `minDay`                                     |
+| Weekend                                              | `day_of_week` `[6, 7]`                                               |
+| Follow-up only / queued by another option            | `triggers: []`                                                       |
+| Has / lacks relation tag (e.g. EmmaSmitten)          | `relation_tag` `{ characterKey, relationTag }` (+ optional `value: -1`) |
+
+Prefer `socialize` for befriend/flirt/impress/taunt beats — socialize does **not**
+change `relationProgress`. Prefer `relation_parameter` for lasting thresholds.
+Scene-entry offers (no socialize) still need `character_present` so they cannot
+fire while the NPC is elsewhere.
 
 ## Option triggers
 
-`optionTemplates[].triggers` is optional and uses the same trigger types, parameters, and AND
-logic as event `triggers`. Omit it, or leave it empty, and the choice is always offered. When it
-is non-empty, the option is included only if every trigger matches at the moment the event is
-built. `scheduled_activity` still compares the current activity's `eventId` to this event's key.
-
-Use option triggers for an extra choice that should appear only in a certain game state (a prior
-story tag, a relation threshold, a league title, and so on). A condition that gates the whole
-beat stays on the event.
-
-Empty event `triggers` means the event never auto-fires. Empty option `triggers` means the option
-is always available.
-
-If every option is gated and none of them match when the event fires, the event plays as narration
-with no choice. Keep at least one ungated option when the player should always be able to respond.
-
-```json
-{
-  "text": "Ask about the title",
-  "triggers": [
-    {
-      "triggerType": "leagues_won",
-      "parameters": { "characterKey": "player", "count": 1 }
-    }
-  ],
-  "effects": [
-    { "type": "narrate", "parameters": { "text": "Molly grins. You earned that title." } }
-  ]
-}
-```
+Same types and AND logic as event triggers. Omit or leave empty → always offered.
+If every option is gated and none match, the event plays with no choice — keep at
+least one ungated option when the player must always respond.
 
 ## Effects
 
-Authored as `EventEffect` objects (`type` + `parameters`), matching `EventEffectType` in
-`src/lib/_model/enums-sim.ts`:
+`EventEffect` objects (`type` + `parameters`). Types live in `EventEffectType`
+(`src/lib/_model/enums-sim.ts`):
 
 | `type`                | `parameters`                                                                                                                                                       |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `add_resource`        | `{ resourceType: "magic_dust" \| "mithril" \| "moxes", amount: 10 }`                                                                                               |
-| `add_gold`            | `{ amount: 10 }`                                                                                                                                                   |
-| `get_deck`            | `{ deckKey: "base_red" \| "base_black" \| "base_green" }`                                                                                                          |
-| `schedule_activity`   | `{ activity: { type, participants, placeKey, classType? }, schedule: { date?: { day, period }, nextFree?: true, recurrence?: { maxCount, daysOfWeek, period } } }` |
-| `get_job`             | `{ job: { jobType: "mentoring" \| "coaching", name, description, payPerActivity, employerKey, placeKey, schedule } }`                                              |
-| `follow_up_event`     | `{ eventKey: "molly-2" }`                                                                                                                                          |
-| `offer_card_gifts`    | `{ count: 2, poolKeys: ["molly", "base"] }`                                                                                                                        |
-| `teach_color`         | `{ color?: "red" \| "blue" \| "green" \| "black", characterKey?: "molly" }`                                                                                        |
-| `teach_ability`       | `{ ability?: "haste" \| "directDamage" \| …, characterKey?: "molly" }` (omit `ability` for random)                                                                 |
-| `narrate`             | `{ text: "Molly looks away, a little hurt." }`                                                                                                                     |
-| `level_attribute`     | `{ attribute: "dexterity" \| "intelligence" \| "vitality" \| "charisma" \| "aura", amount?: 1, characterKey?: "player" }`                                          |
-| `change_relation`     | `{ characterKey, relationParameter: "friendship" \| "respect" \| "love" \| "rivalry", amount: 1 }`                                                                 |
-| `update_relation_arc` | `{ characterKey, text: "You and Molly share a quiet laugh.", image?: "events/molly-f1.jpg" }`                                                                      |
-| `add_relation_tag`    | `{ characterKey, relationTag: "teammate" \| "rival" \| "friend" \| "lover" \| "significant_other" }`                                                               |
-| `add_story_tag`       | `{ tag: "helped-molly-lake", amount?: 1 }`                                                                                                                         |
-| `add_known_trait`     | `{ characterKey: "molly", text: "She still keeps the lake map folded in her sleeve." }`                                                                            |
-| `move`                | `{ placeKey: "academy", characterKeys: ["player", "molly"] }`                                                                                                      |
-| `use_focus`           | `{ amount: 1 }`                                                                                                                                                    |
+| `add_resource`        | `{ resourceType: "magic_dust" \| "mithril" \| "moxes" \| …, amount }`                                                                                              |
+| `add_gold`            | `{ amount }`                                                                                                                                                       |
+| `get_deck`            | `{ deckKey }`                                                                                                                                                      |
+| `schedule_activity`   | `{ activity: { type, participants, placeKey, classType?, eventId? }, schedule: { date?: { day, period }, nextFree?: true, recurrence?: { … } } }`                 |
+| `get_job`             | `{ job: { jobType, name, description, payPerActivity, employerKey, placeKey, schedule } }`                                                                         |
+| `follow_up_event`     | `{ eventKey }`                                                                                                                                                     |
+| `offer_card_gifts`    | `{ count, poolKeys }`                                                                                                                                              |
+| `teach_color`         | `{ color?, characterKey? }`                                                                                                                                        |
+| `teach_ability`       | `{ ability?, characterKey? }`                                                                                                                                      |
+| `narrate`             | `{ text }` — use for option `**Text:**` bodies                                                                                                                     |
+| `level_attribute`     | `{ attribute, amount?, characterKey? }`                                                                                                                            |
+| `change_relation`     | `{ characterKey, relationParameter, amount }`                                                                                                                      |
+| `update_relation_arc` | `{ characterKey, text, image? }`                                                                                                                                   |
+| `add_relation_tag`    | `{ characterKey, relationTag }` — value must be the **enum string** from `RelationTag` in `enums-sim.ts` (markdown may use the member name; resolve it)          |
+| `add_story_tag`       | `{ tag, amount? }`                                                                                                                                                 |
+| `add_known_trait`     | `{ characterKey, title, description }` — map “Add to X's known traits: **Title:** desc”                                                                            |
+| `move`                | `{ placeKey, characterKeys }`                                                                                                                                      |
+| `use_focus`           | `{ amount }`                                                                                                                                                       |
 
-`narrate` posts the given sentence to the scene. On character-arc events (`characterArc` set),
-option (and attribute-check branch) `narrate` texts are mixed into the same `relationArc` beat as
-the base event text (one box). Use it on options that need a reaction beat with no reward or schedule.
+Event-level `effects` run on fire; option `effects` run only if chosen.
 
-`level_attribute` adds `amount` (default 1) to that character's `attributes` field. Omit
-`characterKey` or use `"player"` for the player; use an NPC key to level an NPC.
-
-`change_relation` takes a signed `amount`; a negative value damages the relation. It updates
-cumulative `relationProgress` (the only relation meter). Socialize actions do not change it; only
-this effect (and similar authored effects) do.
-
-`update_relation_arc` appends `{ text, image? }` to that NPC's `relationArc`. `image` is a path
-under `images/` as `folder/file` (e.g. `events/molly-f1.jpg`). Mod art is `mod/<mod-id>/activities/emma-bed-2.jpg` or `mod/<mod-id>/events/emma-l1.jpg`.
-Prefer `.jpg` over `.png`. The effect also narrates `text`.
-
-`add_relation_tag` appends a `RelationTag` to that NPC's `relationTags` if it is not already
-present. Use an NPC key (not `"player"`); only NPCs have relation tags.
-
-`add_story_tag` increments `gs.storyTags[tag]` by `amount` (default 1). Use free-form kebab-case
-tags for choice outcomes (firing an event already stamps `storyTags[event.key]` automatically).
-The effect is silent — pair with `narrate` when the player should see prose. Gate later events
-with a `story_tag` trigger on the same `tag`. Do **not** stamp an event's own `key` before that
-event fires — that would consume it from the auto-trigger pool. To unlock a gated beat, use a
-distinct tag such as `unlock:<eventKey>` and put a matching `story_tag` trigger on the target.
-
-`add_known_trait` appends prose to that NPC's `knownTraits` (what the player has learned about
-them). Use an NPC key (not `"player"`). Duplicate exact strings are ignored. The effect is silent
-— pair with `narrate` when the scene should show the discovery.
-
-`move` sets each listed character's `placeKey` immediately. Include `"player"` to relocate the
-player; NPC keys move those NPCs. This does not schedule travel or advance time.
-
-`use_focus` spends `amount` from the player's focus, clamped so focus cannot go below 0.
-
-For `schedule_activity`: `schedule.date.day` is an **offset in days from now** (`0` = today), not an
-absolute day. Omit `date.period` (without `nextFree`) to use the **current** period—useful for
-immediate “come with me now” beats. Set `schedule.nextFree: true` to pick the soonest free slot for
-`date.period` (defaults to evening) instead of a fixed offset. `participants` are character keys and
-include `"player"` when the player takes part. `daysOfWeek` uses 1 for Monday through 7 for Sunday.
-Never put `day`/`period` inside `activity`. To fire a specific event when the activity becomes
-current, set `activity.eventId` to that event's `key` and give the target a `scheduled_activity`
-trigger.
-
-`get_job` hires the player: it adds the job and schedules the `work` activities from `job.schedule`,
-which takes the same shape and day-offset rules as `schedule_activity`'s. Give a recurring job a
-`recurrence`, or it turns into a single shift. `employerKey` is an NPC key (never `"player"`) and
-`payPerActivity` is the gold earned per shift.
-
-`follow_up_event` immediately queues another event by key via `setEvent`, bypassing that event's
-triggers. Prefer it on an option when the next beat should fire in the same scene. The target must
-already exist in the merged catalog; give it `triggers: []` so it never auto-fires on its own.
-
-`offer_card_gifts` samples `count` card templates whose `poolKeys` include every listed key
-(`getCardTemplatesByPoolKeys`), then posts a `gift_card_choice` narration so the player can pick
-one card into their collection. Prefer it on the event (not an option) so the offer appears with
-the scene.
-
-`teach_color` adds the color to the player's `craftingKnowledge.colors` at 1 if unknown, or
-increments the existing level by 1. Provide `color`, or `characterKey` to pick from that NPC's known
-colors (preferring ones the player does not know yet). With `characterKey`, if the player owns no
-collection card of the taught color, they also receive the matching `base_*` deck via `get_deck`.
-
-`teach_ability` does the same for a unit keyword (`craftingKnowledge.keywords`) or action template
-(`craftingKnowledge.actions`). `ability` is optional; omit it (or leave it empty) to pick a random
-keyword or action-template key. With `characterKey` and no `ability`, the random pool is restricted
-to abilities that NPC already knows.
-
-`effects` on the event fire as soon as it triggers; `effects` on an option fire only if the player
-picks that option.
-
-An option may use **either** direct `effects` **or** an `attributeCheck` (not both). With
-`attributeCheck`, choosing the option rolls the player's attribute against a named difficulty
-(`trivial` / `veryeasy` / `easy` / `medium` / `hard` / `extreme` / `impossible`), narrates the
-check, then applies `successEffects` or `failureEffects`:
+An option uses **either** `effects` **or** `attributeCheck` (not both):
 
 ```json
 {
@@ -316,23 +264,19 @@ check, then applies `successEffects` or `failureEffects`:
   "attributeCheck": {
     "attribute": "charisma",
     "difficulty": "medium",
-    "successEffects": [
-      {
-        "type": "change_relation",
-        "parameters": { "characterKey": "molly", "relationParameter": "friendship", "amount": 1 }
-      }
-    ],
-    "failureEffects": [{ "type": "narrate", "parameters": { "text": "Molly sees through it." } }]
+    "successEffects": [],
+    "failureEffects": [{ "type": "narrate", "parameters": { "text": "…" } }]
   }
 }
 ```
 
-`attribute` is one of `dexterity`, `intelligence`, `vitality`, `charisma`, `aura`. Either branch's
-effects array may be omitted or empty.
+Difficulties: `trivial` / `veryeasy` / `easy` / `medium` / `hard` / `extreme` /
+`impossible`. Action templates on options: only `enrollmentTransaction` and
+`enrollmentPayment` (`args: {}`).
 
-Action templates (`optionTemplates[].actionTemplate`) start an interactive action in addition to
-effects / the skill-check branch. Only `enrollmentTransaction` and `enrollmentPayment` exist, both
-from `SceneActionTemplates` in `src/lib/sim/actions/_templates.ts`, and both take `args: {}`.
+`schedule_activity`: `schedule.date.day` is an **offset from today** (`0` = today).
+`follow_up_event` queues by key and bypasses that event's triggers — target should
+use `triggers: []`.
 
 ## Keys to verify
 
@@ -341,91 +285,36 @@ from `SceneActionTemplates` in `src/lib/sim/actions/_templates.ts`, and both tak
 | Character keys, display names, gender      | `src/data/npcs.ts` (plus `"player"`)        |
 | Place keys                                 | `PLACES` in `src/data/sim/places.ts`        |
 | Deck keys                                  | `getDeck` in `src/lib/sim/effects/decks.ts` |
-| Resource, period, activity, class, emotion | `src/lib/_model/enums-sim.ts`               |
+| Resource, period, activity, class, emotion, relation tags | `src/lib/_model/enums-sim.ts`   |
 
-The validator enumerates the valid values in its error messages, so a run also doubles as a
-reference when unsure.
+The validator lists allowed values in errors — re-run it when unsure.
 
 ## Emotion
 
-`emotion` is optional on `EventTemplate`. It tags the speaking NPC's affect for this beat (portrait /
-presentation), using `Emotion` from `src/lib/_model/enums-sim.ts`:
+Optional. Use the markdown value if present; it must be an `Emotion` enum string
+from `enums-sim.ts`. Omit when absent or unclear. Do not invent values.
 
-`neutral`, `happy`, `joyful`, `laughing`, `sad`, `angry`, `annoyed`, `surprised`, `provocative`,
-`in_love`, `proud`, `embarrassed`.
+## Editing
 
-When to set it:
+Same compile workflow. Keep `key` unchanged so `story_tag` references stay valid.
+If the user renames a key in markdown, update every `story_tag` / `follow_up_event`
+/ `eventId` that referenced the old key.
 
-- Use the value the user named, if they did.
-- Otherwise, for character-arc events (`characterArc` set), infer from the synopsis and written
-  text when the NPC's mood is clear (gratitude gift → `happy`, job offer with pride → `proud`,
-  awkward confession → `embarrassed`, sharp rivalry → `annoyed` or `angry`).
-- Prefer a specific value over `neutral` when the prose already signals a mood.
-
-When to omit it:
-
-- Mood is ambiguous, mixed, or not about an NPC's expression.
-- Main-story events with no clear speaking NPC emotion.
-- Do not invent a feeling the request and prose do not support.
-
-Never invent enum values outside the list above.
-
-## Writing the text
-
-Elaborate the synopsis into **one paragraph, two to four sentences**, matching the existing entries:
-
-- Second person present tense, addressing the player: the NPC approaches _you_.
-- Use the NPC's first name from `src/data/npcs.ts`, and pronouns consistent with their gender.
-- Describe the offer or situation qualitatively; keep amounts, resource names and mechanics out of
-  the prose. The option labels and effects carry the numbers.
-- Reference what the trigger implies (a warm friendship, a rivalry, a class in progress) so the
-  event reads as a consequence of the player's history rather than a random encounter.
-- Plain text only: no markdown, no line breaks. Escape quotes for spoken lines.
-
-Option labels are short imperative phrases of one to three words: `Accept`, `Decline`, `Pay`,
-`Get a Mox`, `Get some Dust`. An option with no effects and no action is a valid way to decline.
+When re-compiling, refresh JSON fields from the markdown; do not leave stale prose
+in JSON after the markdown changed.
 
 ## Example
 
-Request: _"add event for molly: when you befriend her, molly offers a choice between 2 gifts: 99
-moxes, or 1 magic dust."_
+Source: `src/data/sim/events/emma/first_impression.md` (abbreviated mapping):
 
-```json
-{
-  "key": "molly-1",
-  "text": "Molly approaches you and tells you she appreciated the way you made her feel welcome last time. She offers you a token of gratitude, pick your favorite.",
-  "triggers": [
-    {
-      "triggerType": "socialize",
-      "parameters": { "characterKey": "molly", "socializeType": "befriend" }
-    },
-    { "triggerType": "character_present", "parameters": { "characterKey": "molly" } }
-  ],
-  "optionTemplates": [
-    {
-      "text": "Get a Mox",
-      "effects": [
-        { "type": "add_resource", "parameters": { "resourceType": "moxes", "amount": 99 } }
-      ]
-    },
-    {
-      "text": "Get some Dust",
-      "effects": [
-        { "type": "add_resource", "parameters": { "resourceType": "magic_dust", "amount": 1 } }
-      ]
-    }
-  ],
-  "characterArc": "molly",
-  "emotion": "happy"
-}
-```
-
-Note what the request did not spell out and the defaults filled in: `character_present`,
-`characterArc`, `emotion` (warm gratitude → `happy`), the key, and a paragraph of prose that
-justifies the gift through Molly's friendship without naming the rewards. Map "befriend / flirt /
-impress / taunt" wording to `socialize`, not to a `relation_parameter` threshold.
-
-## Editing an existing event
-
-Same workflow, but keep `key` unchanged so `story_tag` triggers that use the old key as `tag` keep
-working. If the user does want a rename, update every `story_tag` whose `tag` is the old key.
+- `# Event: A Rather Unfortunate First Impression` → `title`
+- `**Event ID:** emma_first_encounter` → `key`
+- `**NPC:** emma` → `characterArc: "emma"`
+- `**Trigger:** First time Emma is present…` →
+  `[{ "triggerType": "character_present", "parameters": { "characterKey": "emma" } }]`
+- `**Image:** large` → `imageSize: "large"` (no filename → omit `image`)
+- `**Emotion:** neutral` → `emotion: "neutral"`
+- `## Text` → `text` with `\n\n` between paragraphs
+- Known trait under `## Effects` → event `effects`: `add_known_trait`
+- Option labels → `optionTemplates[].text`; option bodies → `narrate`; 
+  `EmmaSmitten` → `add_relation_tag` with the `RelationTag.EmmaSmitten` string value

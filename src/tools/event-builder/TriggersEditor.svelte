@@ -3,6 +3,7 @@
     ActivityType,
     DayPeriod,
     EventTriggerType,
+    RelationTag,
     type EventTrigger,
     type EventTriggerParameters,
   } from '@/lib/_model';
@@ -29,6 +30,7 @@
   const periods = Object.values(DayPeriod);
   const activityTypes = Object.values(ActivityType);
   const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
+  const relationTagValues = Object.values(RelationTag);
   const socializeTypes = Object.values(SocializeType);
   const weekDays = WEEK_DAYS.map((name, index) => ({ name, value: index + 1 }));
 
@@ -56,8 +58,13 @@
       [EventTriggerType.DayOfWeek]: { daysOfWeek: [6, 7] },
       [EventTriggerType.ScheduledActivity]: {},
       [EventTriggerType.MatchesWon]: { characterKey: '', count: 1 },
+      [EventTriggerType.MatchesLost]: { characterKey: '', count: 1 },
       [EventTriggerType.LeaguesWon]: { characterKey: '', count: 1 },
       [EventTriggerType.StoryTag]: { tag: '', value: 1 },
+      [EventTriggerType.RelationTag]: {
+        characterKey: '',
+        relationTag: RelationTag.EmmaSmitten,
+      },
     };
     return defaults[triggerType];
   }
@@ -290,6 +297,21 @@
               aria-label="Matches won count"
               title="Requires matchesRecord.won ≥ count against this character"
             />
+          {:else if trigger.triggerType === EventTriggerType.MatchesLost}
+            <input
+              class="input param-input"
+              bind:value={trigger.parameters.characterKey}
+              placeholder="character key"
+              aria-label="Character key"
+            />
+            <input
+              class="input narrow"
+              type="number"
+              min="1"
+              bind:value={trigger.parameters.count}
+              aria-label="Matches lost count"
+              title="Requires matchesRecord.lost ≥ count against this character"
+            />
           {:else if trigger.triggerType === EventTriggerType.LeaguesWon}
             <input
               class="input param-input"
@@ -318,6 +340,30 @@
               bind:value={trigger.parameters.value}
               aria-label="Story tag value"
               title="Requires storyTags[tag] ≥ value; -1 = tag absent"
+            />
+          {:else if trigger.triggerType === EventTriggerType.RelationTag}
+            <input
+              class="input param-input"
+              bind:value={trigger.parameters.characterKey}
+              placeholder="character key"
+              aria-label="Character key"
+            />
+            <select
+              class="input param-input"
+              bind:value={trigger.parameters.relationTag}
+              aria-label="Relation tag"
+            >
+              {#each relationTagValues as tag (tag)}
+                <option value={tag}>{tag}</option>
+              {/each}
+            </select>
+            <input
+              class="input narrow"
+              type="number"
+              bind:value={trigger.parameters.value}
+              placeholder="1"
+              aria-label="Relation tag value"
+              title="Omit or ≥1 = has tag; -1 = tag absent"
             />
           {/if}
 

@@ -95,7 +95,7 @@ function resolveRemainingLeagueMatches() {
       if (havePlayed(aKey, bKey)) {
         continue;
       }
-      const winnerKey = getRandomFromArray([aKey, bKey]);
+      const winnerKey = resolveNpcMatchWinner(aKey, bKey);
       recordPlayedMatch(aKey, bKey, winnerKey === aKey);
     }
   }
@@ -117,9 +117,19 @@ function autoPlayOtherLeagueMatches() {
     if (havePlayed(aKey, bKey)) {
       continue;
     }
-    const winnerKey = getRandomFromArray([aKey, bKey]);
+    const winnerKey = resolveNpcMatchWinner(aKey, bKey);
     recordPlayedMatch(aKey, bKey, winnerKey === aKey);
   }
+}
+
+/** Higher tcgSkill wins; coin flip when skills are equal. */
+function resolveNpcMatchWinner(aKey: string, bKey: string): string {
+  const aSkill = gs.characters[aKey]?.tcgSkill ?? 0;
+  const bSkill = gs.characters[bKey]?.tcgSkill ?? 0;
+  if (aSkill !== bSkill) {
+    return aSkill > bSkill ? aKey : bKey;
+  }
+  return getRandomFromArray([aKey, bKey]);
 }
 
 function havePlayed(aKey: string, bKey: string): boolean {

@@ -25,12 +25,13 @@ export function changeRelation(parameters: ChangeRelationParameters): string {
 export interface UpdateRelationArcParameters {
   characterKey: string;
   text: string;
+  title?: string;
   image?: string;
 }
 
-/** Appends a relation-arc beat (text + optional folder/file image path under images/). */
+/** Appends a relation-arc beat (text + optional title / folder/file image path under images/). */
 export function updateRelationArc(parameters: UpdateRelationArcParameters): string {
-  const { characterKey, text, image } = parameters;
+  const { characterKey, text, title, image } = parameters;
   const character = gs.characters[characterKey];
   if (!character) {
     return `Invalid character key: ${characterKey}.`;
@@ -38,7 +39,10 @@ export function updateRelationArc(parameters: UpdateRelationArcParameters): stri
   if (!text) {
     return `Relation arc text is required.`;
   }
-  const entry: { text: string; image?: string } = { text };
+  const entry: { title?: string; text: string; image?: string } = { text };
+  if (title) {
+    entry.title = title;
+  }
   if (image) {
     entry.image = image;
   }

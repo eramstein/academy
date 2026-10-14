@@ -214,6 +214,12 @@ function checkTrigger(where, trigger) {
         errors.push(`${where}: count must be an integer ≥ 1`);
       }
       break;
+    case 'matches_lost':
+      checkOneOf(where, 'characterKey', params.characterKey, npcKeys);
+      if (typeof params.count !== 'number' || !Number.isInteger(params.count) || params.count < 1) {
+        errors.push(`${where}: count must be an integer ≥ 1`);
+      }
+      break;
     case 'leagues_won':
       checkOneOf(where, 'characterKey', params.characterKey, characterKeys);
       if (typeof params.count !== 'number' || !Number.isInteger(params.count) || params.count < 1) {
@@ -226,6 +232,18 @@ function checkTrigger(where, trigger) {
       }
       if (typeof params.value !== 'number' || !Number.isInteger(params.value) || params.value < 1) {
         errors.push(`${where}: value must be an integer ≥ 1`);
+      }
+      break;
+    case 'relation_tag':
+      checkOneOf(where, 'characterKey', params.characterKey, characterKeys);
+      checkOneOf(where, 'relationTag', params.relationTag, relationTags);
+      if (
+        params.value != null &&
+        (typeof params.value !== 'number' ||
+          !Number.isInteger(params.value) ||
+          (params.value !== -1 && params.value < 1))
+      ) {
+        errors.push(`${where}: value must be an integer ≥ 1, or -1 for tag absent`);
       }
       break;
     case 'scheduled_activity':
@@ -402,8 +420,11 @@ function checkEffect(where, effect) {
       break;
     case 'add_known_trait':
       checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
-      if (typeof parameters.text !== 'string' || !parameters.text.trim()) {
-        errors.push(`${where}: text must be a non-empty string`);
+      if (typeof parameters.title !== 'string' || !parameters.title.trim()) {
+        errors.push(`${where}: title must be a non-empty string`);
+      }
+      if (typeof parameters.description !== 'string' || !parameters.description.trim()) {
+        errors.push(`${where}: description must be a non-empty string`);
       }
       break;
     case 'move':
@@ -424,6 +445,7 @@ function checkEffect(where, effect) {
 
 const allowedEventProps = new Set([
   'key',
+  'title',
   'text',
   'optionTemplates',
   'triggers',
@@ -443,6 +465,11 @@ events.forEach((event, index) => {
   }
   if (typeof event?.text !== 'string' || !event.text.trim()) {
     errors.push(`${where}: text is required`);
+  }
+  if (event?.title !== undefined) {
+    if (typeof event.title !== 'string' || !event.title.trim()) {
+      errors.push(`${where}: title must be a non-empty string when set`);
+    }
   }
   for (const prop of Object.keys(event ?? {})) {
     if (!allowedEventProps.has(prop)) errors.push(`${where}: unknown property "${prop}"`);

@@ -326,6 +326,25 @@
               />
             </span>
           {/if}
+          <div class="narration-body">
+            {#if entry.title}
+              <h3 class="narration-title">{entry.title}</h3>
+            {/if}
+            <NarrationText
+              class="narration"
+              text={entry.text}
+              mentions={entry.mentions}
+              {animate}
+              onProgress={() => onProgress?.('auto')}
+              onDone={() => onTextDone(entry)}
+            />
+          </div>
+        </div>
+      {:else}
+        <div class="narration-body">
+          {#if entry.title}
+            <h3 class="narration-title">{entry.title}</h3>
+          {/if}
           <NarrationText
             class="narration"
             text={entry.text}
@@ -335,15 +354,6 @@
             onDone={() => onTextDone(entry)}
           />
         </div>
-      {:else}
-        <NarrationText
-          class="narration"
-          text={entry.text}
-          mentions={entry.mentions}
-          {animate}
-          onProgress={() => onProgress?.('auto')}
-          onDone={() => onTextDone(entry)}
-        />
       {/if}
     {:else if animate && !entry.attributeCheck?.pending && !entry.skipCheckText}
       <div class="narration narration-pending" role="status" aria-label="Writing">
@@ -517,9 +527,30 @@
     white-space: pre-line;
   }
 
+  .narration-body {
+    margin: 0 0 1.25em;
+  }
+
+  .narration-body :global(.narration) {
+    margin: 0;
+  }
+
+  .narration-title {
+    margin: 0 0 0.35em;
+    font-family: var(--font-narrative);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--color-ink);
+  }
+
   .event-with-portrait {
     margin: 0 0 1.25em;
     overflow: auto;
+  }
+
+  .event-with-portrait .narration-body {
+    margin: 0;
   }
 
   .event-with-portrait :global(.narration) {

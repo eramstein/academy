@@ -31,6 +31,7 @@
   const originalKey = $derived(isEdit ? (event?.key ?? null) : null);
 
   let key = $state('');
+  let title = $state('');
   let text = $state('');
   let characterArc = $state('');
   let emotion = $state('');
@@ -50,6 +51,7 @@
   function cloneEventFields(source: EventTemplate | null | undefined) {
     if (!source) {
       key = '';
+      title = '';
       text = '';
       characterArc = '';
       emotion = '';
@@ -63,6 +65,7 @@
 
     const cloned = JSON.parse(JSON.stringify(source)) as EventTemplate;
     key = cloned.key;
+    title = cloned.title ?? '';
     text = cloned.text;
     characterArc = cloned.characterArc ?? '';
     emotion = cloned.emotion ?? '';
@@ -249,6 +252,11 @@
         .filter((option) => option.text.length > 0),
     };
 
+    const trimmedTitle = title.trim();
+    if (trimmedTitle) {
+      built.title = trimmedTitle;
+    }
+
     const arc = characterArc.trim();
     if (arc) {
       built.characterArc = arc;
@@ -337,6 +345,16 @@
             placeholder="event-4"
             autocomplete="off"
             readonly={isEdit}
+          />
+        </label>
+
+        <label class="field title-field">
+          <span class="label">Title</span>
+          <input
+            class="input"
+            bind:value={title}
+            placeholder="Short heading (optional)"
+            autocomplete="off"
           />
         </label>
 
@@ -670,6 +688,11 @@
 
   .key-field {
     width: 11rem;
+    flex-shrink: 0;
+  }
+
+  .title-field {
+    width: 16rem;
     flex-shrink: 0;
   }
 

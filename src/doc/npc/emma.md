@@ -37,3 +37,48 @@ Emma is not completely insensible to charm though. It will not be enough, and sh
 ## Emma as a rival
 
 If you do well in tournaments and classes, but are not friendly to her, Emma might see you as a rival rather than a partner. Expect to be made fun of, and lots of sarcasm. But it might also be an indirect way to get into a romantic relation with her, as if you prove yourself an opponent both formidable and charming, she might have a weak moment and let herself go.
+
+# Writing and dialogue guide (October 2026)
+
+This section complements the established backstory and arc options above. For global prose conventions, see `writing-bible.md`.
+
+## Emma's voice
+
+- **Precise, articulate, self-possessed.** She is intelligent without constantly announcing it; she prefers economical, well-timed remarks to elaborate speeches.
+- **Dry, sharp, mischievous humor.** She teases when she finds someone interesting or an opportunity irresistible. The humor can sting, but she is not deliberately cruel.
+- **Proud and independent.** She dislikes condescension, hollow flattery, pity, and being treated as a pretty face rather than a serious scholar.
+- **Competitive and demanding.** She acknowledges genuine achievement, even by rivals, but is quick to promise a rematch.
+- **Guarded rather than emotionless.** Emma is capable of attraction and of developing genuine romantic feelings, even early on. What distinguishes her is her determination to resist acting on those feelings: her ambitions, financial security, and future matter too much to risk distraction. A `love` increase may reflect private affection or attraction without visible romantic commitment. Trust and tenderness emerge gradually in her behavior; a rare loss of verbal composure is especially meaningful.
+- **Earned competence.** Her scholarship, violin virtuosity, and ballet skill reflect years of hard work, not effortless perfection.
+- **Independent ambition.** Emma is forging her own destiny; her career, financial difficulties, and major life choices progress whether or not Antonio helps.
+
+## Dialogue habits and examples
+
+- Often begins with a measured observation and finishes with a playful barb.
+- A raised eyebrow, controlled smile, or precisely timed pause may do more than a paragraph of banter.
+- When impressed, she can offer sincere recognition while retaining competitive pride.
+- Avoid making every line sarcastic: she can be gracious, direct, serious, or genuinely warm.
+
+**First encounter (working reference):**
+
+> "Take your time. It's not as though I'm carrying half the Academy library."
+
+> "Emma. A pleasure, Antonio. And thank you, but I'm rather stronger than I look."
+
+> "The dark, silent, mysterious type? Doesn't work on me."
+
+## Early relationship design notes
+
+- The first major milestone is Emma's **informal partnership offer**, triggered when hidden respect reaches **5**. The offer should reflect her ambitions and can vary in wording according to the player's route to that threshold.
+- Respect can come from TCG victories, clever play, crafting, academic competence, integrity, and meaningful help. Individual events can instead reward friendship, rivalry, love, card ownership, resources, or other benefits. Avoid obvious correct answers.
+- An optional first-encounter tag, `emma_smitten`, records Antonio's comic inability to resist Emma's legs. It enables occasional relevant teasing and internal monologue, **not** automatic love points or a romance commitment.
+- Emma's financial troubles may intersect with Molly's wish to fund tutoring for disadvantaged children. Offering Emma dignified paid work is more consistent with her pride than simple charity. Her situation must have a plausible resolution even without player intervention.
+- Early prototype events: first encounter; first TCG match; exceptional handmade card; tuition/tutoring problem; ballet incident involving Elsa, Molly, Henry, and Ousmane; league victory; partnership offer.
+- The player's knowledge of Emma should accumulate as narrative discoveries in her character sheet, separately from the chronological illustrated relationship book.
+
+## Avoid
+
+- Turning Emma into a trophy or a relationship meter with dialogue attached.
+- Making her omniscient, invulnerable, or always right.
+- Treating her looks as her defining quality; attraction may be a comic opening but her intelligence, effort, agency, and humor carry the arc.
+- Making her openly pursue romance or abandon her priorities simply because she feels attracted, or because Antonio helps once, wins once, or gives her money.

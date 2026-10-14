@@ -76,9 +76,8 @@ export async function selectOption(option: EventOption) {
     ? getSceneEventByKey(gs.scene.event.key)?.template.characterArc
     : undefined;
   // Clear so a follow_up_event effect can claim the scene; otherwise setSceneEvents would wipe it.
-  // Drop large event art so Location returns to the place/activity image unless a follow-up sets a new one.
+  // Keep gs.scene.image until place change or a later event sets a new one.
   gs.scene.event = undefined;
-  gs.scene.image = undefined;
   if (option.outcome.attributeCheck) {
     const check = option.outcome.attributeCheck;
     const { success } = await attributeCheck(
@@ -108,7 +107,6 @@ export async function selectOption(option: EventOption) {
 }
 
 export function startScene() {
-  gs.scene.image = undefined;
   updateNpcLocations();
   const currentScheduledActivity = getCurrentScheduledActivity();
   console.log('nextScene', currentScheduledActivity);
@@ -121,6 +119,9 @@ export function startScene() {
 }
 
 export function setCurrentActivity(currentScheduledActivity: ScheduledActivity) {
+  if (gs.player.placeKey !== currentScheduledActivity.placeKey) {
+    gs.scene.image = undefined;
+  }
   gs.player.placeKey = currentScheduledActivity.placeKey;
   currentScheduledActivity.participants.forEach((participant) => {
     if (participant === gs.player.key) {
@@ -153,6 +154,7 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
     return;
   }
   narrateText(event.text, {
+    title: template.title,
     characterKey: template.characterArc,
     emotion: template.emotion,
     image: template.image,

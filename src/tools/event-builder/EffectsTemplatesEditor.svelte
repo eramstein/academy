@@ -135,7 +135,7 @@
       case EventEffectType.AddStoryTag:
         return { tag: '', amount: 1 };
       case EventEffectType.AddKnownTrait:
-        return { characterKey: '', text: '' };
+        return { characterKey: '', title: '', description: '' };
       case EventEffectType.Move:
         return { placeKey: placeKeys[0] ?? '', characterKeys: ['player'] };
       case EventEffectType.UseFocus:
@@ -646,11 +646,19 @@
               />
               <input
                 class="input arg"
-                value={effect.parameters.text ?? ''}
-                placeholder="known trait prose"
-                aria-label="Known trait text"
+                value={effect.parameters.title ?? ''}
+                placeholder="trait title"
+                aria-label="Known trait title"
                 oninput={(e) =>
-                  setParameter(i, 'text', (e.currentTarget as HTMLInputElement).value)}
+                  setParameter(i, 'title', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.description ?? ''}
+                placeholder="trait description"
+                aria-label="Known trait description"
+                oninput={(e) =>
+                  setParameter(i, 'description', (e.currentTarget as HTMLInputElement).value)}
               />
             {:else if effect.type === EventEffectType.Move}
               <select

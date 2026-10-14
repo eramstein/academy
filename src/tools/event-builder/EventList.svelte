@@ -42,6 +42,10 @@
       const { characterKey, count } = trigger.parameters;
       return `${trigger.triggerType}: ${characterKey} ≥${count}`;
     }
+    if (trigger.triggerType === EventTriggerType.MatchesLost) {
+      const { characterKey, count } = trigger.parameters;
+      return `${trigger.triggerType}: ${characterKey} ≥${count}`;
+    }
     if (trigger.triggerType === EventTriggerType.LeaguesWon) {
       const { characterKey, count } = trigger.parameters;
       return `${trigger.triggerType}: ${characterKey} ≥${count}`;
@@ -49,6 +53,11 @@
     if (trigger.triggerType === EventTriggerType.StoryTag) {
       const { tag, value } = trigger.parameters;
       return `${trigger.triggerType}: ${tag} ≥${value}`;
+    }
+    if (trigger.triggerType === EventTriggerType.RelationTag) {
+      const { characterKey, relationTag, value } = trigger.parameters;
+      const op = value === -1 ? 'absent' : 'has';
+      return `${trigger.triggerType}: ${characterKey} ${op} ${relationTag}`;
     }
     if (trigger.triggerType === EventTriggerType.DayOfWeek) {
       return `${trigger.triggerType}: ${trigger.parameters.daysOfWeek.join(',')}`;

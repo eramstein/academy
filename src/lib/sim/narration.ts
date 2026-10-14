@@ -289,6 +289,7 @@ function fallbackAttemptedActionText(action: Action): string {
 export function narrateText(
   text: string,
   options?: {
+    title?: string;
     characterKey?: string;
     emotion?: Emotion;
     image?: string;
@@ -311,6 +312,7 @@ export function narrateText(
     id,
     text,
     type: NarrationType.Text,
+    ...(options?.title ? { title: options.title } : {}),
     ...(options?.characterKey ? { characters: [options.characterKey] } : {}),
     ...(options?.emotion ? { emotion: options.emotion } : {}),
     ...(imageUrl ? { imageUrl, imageSize } : {}),

@@ -44,6 +44,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     matchesRecord: { won: 0, lost: 0 },
     relationTags: [],
     knownTraits: [],
+    tcgSkill: 0,
   };
 }
 
@@ -178,6 +179,7 @@ export const npcs: Record<string, Npc> = {
     favoritePlaces: {
       'royal-pigeon-inn': 1,
     },
+    tcgSkill: 0,
   },
   elsa: {
     ...createDefaultNpc(),
@@ -208,6 +210,7 @@ export const npcs: Record<string, Npc> = {
     favoritePlaces: {
       'royal-pigeon-inn': 1,
     },
+    tcgSkill: 1,
   },
   ousmane: {
     ...createDefaultNpc(),
@@ -238,6 +241,7 @@ export const npcs: Record<string, Npc> = {
     favoritePlaces: {
       'old-monk-inn': 1,
     },
+    tcgSkill: 2,
   },
   emma: {
     ...createDefaultNpc(),
@@ -273,6 +277,7 @@ export const npcs: Record<string, Npc> = {
     favoritePlaces: {
       'old-monk-inn': 1,
     },
+    tcgSkill: 3,
   },
   vai: {
     ...createDefaultNpc(),
@@ -302,6 +307,7 @@ export const npcs: Record<string, Npc> = {
     favoritePlaces: {
       'old-monk-inn': 1,
     },
+    tcgSkill: 2,
   },
   henry: {
     ...createDefaultNpc(),
@@ -332,6 +338,7 @@ export const npcs: Record<string, Npc> = {
     favoritePlaces: {
       'old-monk-inn': 1,
     },
+    tcgSkill: 0,
   },
   farid: {
     ...createDefaultNpc(),
@@ -362,6 +369,7 @@ export const npcs: Record<string, Npc> = {
     favoritePlaces: {
       'royal-pigeon-inn': 1,
     },
+    tcgSkill: 1,
   },
   'the-dude': {
     ...createDefaultNpc(),
@@ -392,6 +400,7 @@ export const npcs: Record<string, Npc> = {
     favoritePlaces: {
       'royal-pigeon-inn': 1,
     },
+    tcgSkill: 2,
   },
   lombard: {
     ...createDefaultNpc(),
@@ -417,6 +426,7 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Female,
     bio: `Professor Lombard teaches artificery as if the craft were a form of moral instruction, and she does not forgive a slovenly line. She is thirty-eight, elegant to the point of severity, and she moves through the workshops with a nobility that has nothing to do with birth and everything to do with standards. Students learn quickly that her praise is rare and her disappointment precise. She is strict, demanding, and entirely unmoved by charm; a piece of work is either worthy or it is not, and she will say so. Her clothes are always exact, her posture never casual, her voice low enough that the room goes still to hear it. Those who survive her courses emerge sharper than they arrived, and they rarely thank her until years later. She is, to her son Henry, both north star and weather. To everyone else she is simply the mistress of the artificery room: brilliant, unyielding, and dressed as if the work itself were a court.`,
     age: 38,
+    tcgSkill: 10,
   },
   glutzenbaum: {
     ...createDefaultNpc(),
@@ -442,5 +452,6 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Male,
     bio: `Professor Glutzenbaum teaches enchantment, though it is not always clear, from one hour to the next, whether he remembers he has a class. He is sixty-five, kindly, and habitually elsewhere. His clothes look as if they were chosen by a magpie with a sense of humor; his hair has not been convinced to lie down in living memory. Students find him wandering the corridors with the air of a man who has just remembered an important thought and then forgotten where he put it. He is not a fool. Magic gathers around him with an ease that makes younger prodigies look effortful, and his absent-mindedness is the weather of a mind still traveling. He will pause mid-sentence to admire a dust mote, then complete a theory no one else could have reached. Those who are patient with him are rewarded; those who are not still tend to like him. He is the Academy's gentlest riddle: lost, luminous, and never quite on time.`,
     age: 65,
+    tcgSkill: 10,
   },
 };

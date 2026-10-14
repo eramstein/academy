@@ -116,8 +116,11 @@ export enum EventTriggerType {
   DayOfWeek = 'day_of_week',
   ScheduledActivity = 'scheduled_activity',
   MatchesWon = 'matches_won',
+  MatchesLost = 'matches_lost',
   LeaguesWon = 'leagues_won',
   StoryTag = 'story_tag',
+  /** NPC has (or lacks) a `RelationTag` on `relationTags`. */
+  RelationTag = 'relation_tag',
 }
 
 export enum ResourceType {
@@ -155,9 +158,12 @@ export enum Emotion {
 }
 
 export enum RelationTag {
+  // general tags
   Teammate = 'teammate',
   Rival = 'rival',
   Friend = 'friend',
   Lover = 'lover',
   SignificantOther = 'significant_other',
+  // NPC specific tags
+  EmmaSmitten = 'Legs like that should be forbidden by law',
 }

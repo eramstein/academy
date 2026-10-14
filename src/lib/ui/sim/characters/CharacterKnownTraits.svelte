@@ -50,7 +50,8 @@
       <ul class="trait-list">
         {#each traits as trait, i (i)}
           <li class="trait-card">
-            <p class="trait-text">{trait}</p>
+            <h3 class="trait-title">{trait.title}</h3>
+            <p class="trait-text">{trait.description}</p>
           </li>
         {/each}
       </ul>
@@ -159,7 +160,8 @@
 
   .trait-card {
     display: flex;
-    align-items: stretch;
+    flex-direction: column;
+    gap: 0.35rem;
     min-width: 0;
     overflow: hidden;
     box-sizing: border-box;
@@ -174,13 +176,21 @@
       0 4px 12px rgba(0, 0, 0, 0.28);
   }
 
+  .trait-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--color-ink);
+  }
+
   .trait-text {
     flex: 1 1 auto;
     min-width: 0;
     margin: 0;
     font-size: 1.02rem;
     line-height: 1.65;
-    color: var(--color-ink);
+    color: var(--color-ink-muted);
     white-space: pre-wrap;
   }
 </style>

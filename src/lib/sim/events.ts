@@ -1,5 +1,5 @@
 import eventsData from '@/data/sim/events.json';
-import { ActivityType, DayPeriod, EventTriggerType } from '../_model/enums-sim';
+import { ActivityType, DayPeriod, EventTriggerType, RelationTag } from '../_model/enums-sim';
 import type {
   EventOption,
   EventOptionTemplate,
@@ -48,6 +48,8 @@ export interface EventTriggerParameters {
   [EventTriggerType.ScheduledActivity]: Record<string, never>;
   /** Player has won at least `count` matches against this NPC (`matchesRecord.won`). */
   [EventTriggerType.MatchesWon]: { characterKey: string; count: number };
+  /** Player has lost at least `count` matches against this NPC (`matchesRecord.lost`). */
+  [EventTriggerType.MatchesLost]: { characterKey: string; count: number };
   /** Character appears at least `count` times in `league.pastWinners`. */
   [EventTriggerType.LeaguesWon]: { characterKey: string; count: number };
   /**
@@ -55,6 +57,14 @@ export interface EventTriggerParameters {
    * Pass `value: -1` to require the tag be absent (missing or 0).
    */
   [EventTriggerType.StoryTag]: { tag: string; value: number };
+  /**
+   * NPC has `relationTag` on `relationTags`. Pass `value: -1` to require it absent.
+   */
+  [EventTriggerType.RelationTag]: {
+    characterKey: string;
+    relationTag: RelationTag;
+    value?: number;
+  };
 }
 
 export type EventTrigger = {
@@ -182,6 +192,7 @@ export function recordEventOccured(template: StoredEventTemplate) {
     updateRelationArc({
       characterKey: template.characterArc,
       text: template.text,
+      title: template.title,
       image: template.image,
     });
     if (!template.image) {
@@ -244,10 +255,14 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       return getCurrentScheduledActivity()?.eventId === eventKey;
     case EventTriggerType.MatchesWon:
       return checkMatchesWon(trigger);
+    case EventTriggerType.MatchesLost:
+      return checkMatchesLost(trigger);
     case EventTriggerType.LeaguesWon:
       return checkLeaguesWon(trigger);
     case EventTriggerType.StoryTag:
       return checkStoryTag(trigger);
+    case EventTriggerType.RelationTag:
+      return checkRelationTag(trigger);
     default:
       return false;
   }
@@ -305,6 +320,15 @@ function checkMatchesWon(
   return (character.matchesRecord?.won ?? 0) >= count;
 }
 
+function checkMatchesLost(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.MatchesLost }>
+): boolean {
+  const { characterKey, count } = trigger.parameters;
+  const character = gs.characters[characterKey];
+  if (!character) return false;
+  return (character.matchesRecord?.lost ?? 0) >= count;
+}
+
 function checkLeaguesWon(
   trigger: Extract<EventTrigger, { triggerType: EventTriggerType.LeaguesWon }>
 ): boolean {
@@ -322,6 +346,19 @@ function checkStoryTag(
     return current === 0;
   }
   return current >= value;
+}
+
+function checkRelationTag(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.RelationTag }>
+): boolean {
+  const { characterKey, relationTag, value } = trigger.parameters;
+  const character = gs.characters[characterKey];
+  if (!character) return false;
+  const hasTag = (character.relationTags ?? []).includes(relationTag);
+  if (value === -1) {
+    return !hasTag;
+  }
+  return hasTag;
 }
 
 function sceneEventFromTemplate(template: StoredEventTemplate): SceneEvent {

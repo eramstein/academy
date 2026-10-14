@@ -96,7 +96,12 @@
                 />
               </button>
             {/if}
-            <p class="beat-text">{beat.text}</p>
+            <div class="beat-copy">
+              {#if beat.title}
+                <h3 class="beat-title">{beat.title}</h3>
+              {/if}
+              <p class="beat-text">{beat.text}</p>
+            </div>
           </li>
         {/each}
       </ul>
@@ -265,17 +270,31 @@
     object-position: center;
   }
 
-  .beat-text {
+  .beat-copy {
     flex: 1 1 auto;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .beat-card.has-image .beat-copy {
+    padding: 0.75rem 0.85rem;
+  }
+
+  .beat-title {
+    margin: 0;
+    font-size: 1.08rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--color-ink);
+  }
+
+  .beat-text {
     margin: 0;
     font-size: 1.02rem;
     line-height: 1.65;
     color: var(--color-ink);
     white-space: pre-wrap;
-  }
-
-  .beat-card.has-image .beat-text {
-    padding: 0.75rem 0.85rem;
   }
 </style>
