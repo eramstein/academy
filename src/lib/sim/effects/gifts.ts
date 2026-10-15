@@ -1,11 +1,8 @@
-import type { CardTemplate } from '@/lib/_model';
+import { isLandCard, type CardTemplate } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getRandomFromArray } from '@/lib/_utils/random';
-import {
-  getCardTemplatesByPoolKeys,
-  getLoadedCardTemplate,
-} from '../cards/npc-card-templates';
-import { makeUniqueId } from '../deck';
+import { getCardTemplatesByPoolKeys, getLoadedCardTemplate } from '../cards/npc-card-templates';
+import { addCardToDeck, makeUniqueId } from '../deck';
 import { narrateGiftCardChoice } from '../narration';
 
 export interface OfferCardGiftsParameters {
@@ -72,4 +69,52 @@ export function acceptGiftCard(template: CardTemplate): CardTemplate {
   const card = makeUniqueId(template);
   gs.player.collection.push(card);
   return card;
+}
+
+export interface GiftCardToCharacterParameters {
+  characterKey: string;
+  cardKey: string;
+}
+
+/** Moves a card from the player's collection to a character's collection. */
+export function giftCardToCharacter(parameters: GiftCardToCharacterParameters): string {
+  const { characterKey, cardKey } = parameters;
+  const character = gs.characters[characterKey];
+  if (!character) {
+    return `Invalid character key: ${characterKey}.`;
+  }
+  if (typeof cardKey !== 'string' || !cardKey.trim()) {
+    return `Invalid card key: ${cardKey}.`;
+  }
+
+  const index = gs.player.collection.findIndex(
+    (card) => card.id === cardKey || card.id.startsWith(`${cardKey}-`)
+  );
+  if (index === -1) {
+    return `You do not have ${cardKey} to give.`;
+  }
+
+  const [card] = gs.player.collection.splice(index, 1);
+  for (const deck of gs.player.decks) {
+    deck.cards = deck.cards.filter((id) => id !== card.id);
+    deck.lands = deck.lands.filter((id) => id !== card.id);
+  }
+  character.collection.push(card);
+
+  if (!isLandCard(card)) {
+    const neededColors = new Set(card.colors.map((entry) => entry.color));
+    for (const deck of character.decks) {
+      const landColors = new Set(
+        deck.lands
+          .map((id) => character.collection.find((owned) => owned.id === id))
+          .filter((land): land is CardTemplate => !!land)
+          .flatMap((land) => land.colors.map((entry) => entry.color))
+      );
+      if ([...neededColors].every((color) => landColors.has(color))) {
+        addCardToDeck(deck, card);
+      }
+    }
+  }
+
+  return `You give ${card.name} to ${character.name}.`;
 }

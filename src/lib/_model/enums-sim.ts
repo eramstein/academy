@@ -13,10 +13,12 @@ export enum EventEffectType {
   GetJob = 'get_job',
   FollowUpEvent = 'follow_up_event',
   OfferCardGifts = 'offer_card_gifts',
+  GiftCardToCharacter = 'gift_card_to_character',
   TeachColor = 'teach_color',
   TeachAbility = 'teach_ability',
   Narrate = 'narrate',
   LevelAttribute = 'level_attribute',
+  LevelUpCharacter = 'level_up_character',
   ChangeRelation = 'change_relation',
   UpdateRelationArc = 'update_relation_arc',
   AddRelationTag = 'add_relation_tag',
@@ -54,6 +56,7 @@ export enum NarrationType {
   MatchResult = 'match_result',
   Transaction = 'transaction',
   JobResult = 'job_result',
+  RelationUpdate = 'relation_update',
 }
 
 export enum ActivityType {
@@ -165,5 +168,5 @@ export enum RelationTag {
   Lover = 'lover',
   SignificantOther = 'significant_other',
   // NPC specific tags
-  EmmaSmitten = 'Legs like that should be forbidden by law',
+  EmmaSmitten = 'Legs like that should be forbidden by law!',
 }

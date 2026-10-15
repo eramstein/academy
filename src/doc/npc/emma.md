@@ -38,6 +38,19 @@ Emma is not completely insensible to charm though. It will not be enough, and sh
 
 If you do well in tournaments and classes, but are not friendly to her, Emma might see you as a rival rather than a partner. Expect to be made fun of, and lots of sarcasm. But it might also be an indirect way to get into a romantic relation with her, as if you prove yourself an opponent both formidable and charming, she might have a weak moment and let herself go.
 
+## Rivalry as complicity (October 2026 refinement)
+
+Emma and Antonio's rivalry should **not** be one-dimensional antagonism. At its best, it is an affectionate, intellectually stimulating contest between two people who take each other seriously. It can become one of the strongest routes toward **academic partnership, friendship, or romance**, rather than an alternative that excludes them.
+
+- **Challenge as recognition.** Emma enjoys being challenged by someone competent whose judgment matters. Antonio's refusal to flatter her automatically makes his rare sincere praise especially valuable. She may seek his opinion even after others have congratulated her.
+- **The bluff beneath the banter.** Emma often knows Antonio admires her, even when he pretends to be unimpressed. She recognizes his playful taunts as a performance and can take delight in exposing the bluff, rather than feeling wounded by it. This should be shown through her perceptiveness and behavior, not treated as infallible mind-reading.
+- **Humor is essential.** Their exchanges should have wit, reversals, affectionate mockery, and moments when one catches the other off guard. Emma is often amused rather than offended; she can answer a provocation with an elegant counterattack, a raised eyebrow, or an unexpectedly sincere compliment.
+- **Respectful rivalry versus hostility.** Friendly challenges, honest criticism, and competitive teasing can increase rivalry _and_ friendship or respect. Sabotage, humiliation, contempt for her hard work, and deliberate cruelty are different: Emma should not automatically enjoy them. Rivalry measures an ongoing competitive dynamic, not how much she dislikes Antonio.
+- **Rivalry can become intimacy.** Over time, the pair may become each other's most demanding and trusted critics. A rival who understands her ambition and pushes her to excel may be an ideal research or tournament partner; mutual admiration and teasing can also develop into romantic tension. Neither outcome should be automatic or easy: trust, competence, choices, and Emma's independent ambitions still matter.
+- **Let the mask occasionally slip.** Underneath the repartee, include rare moments of straightforward admiration, concern, gratitude, or tenderness. These have more weight because neither character is eager to concede emotional ground.
+
+**Reference dynamic — ballet incident:** Antonio pretends Emma's accomplished pose is merely “a little showy.” She sees through the act, enjoys that he refuses to join the applause, and teases him about being unable to admit he is impressed. Their exchange can award both rivalry and friendship; the pleasure is in the mutual challenge, not in insulting her dancing.
+
 # Writing and dialogue guide (October 2026)
 
 This section complements the established backstory and arc options above. For global prose conventions, see `writing-bible.md`.
@@ -48,7 +61,7 @@ This section complements the established backstory and arc options above. For gl
 - **Dry, sharp, mischievous humor.** She teases when she finds someone interesting or an opportunity irresistible. The humor can sting, but she is not deliberately cruel.
 - **Proud and independent.** She dislikes condescension, hollow flattery, pity, and being treated as a pretty face rather than a serious scholar.
 - **Competitive and demanding.** She acknowledges genuine achievement, even by rivals, but is quick to promise a rematch.
-- **Guarded rather than emotionless.** Emma is capable of attraction and of developing genuine romantic feelings, even early on. What distinguishes her is her determination to resist acting on those feelings: her ambitions, financial security, and future matter too much to risk distraction. A `love` increase may reflect private affection or attraction without visible romantic commitment. Trust and tenderness emerge gradually in her behavior; a rare loss of verbal composure is especially meaningful.
+- **Guarded rather than emotionless.** Trust and tenderness emerge gradually. A rare loss of verbal composure is especially meaningful.
 - **Earned competence.** Her scholarship, violin virtuosity, and ballet skill reflect years of hard work, not effortless perfection.
 - **Independent ambition.** Emma is forging her own destiny; her career, financial difficulties, and major life choices progress whether or not Antonio helps.
 
@@ -81,4 +94,4 @@ This section complements the established backstory and arc options above. For gl
 - Turning Emma into a trophy or a relationship meter with dialogue attached.
 - Making her omniscient, invulnerable, or always right.
 - Treating her looks as her defining quality; attraction may be a comic opening but her intelligence, effort, agency, and humor carry the arc.
-- Making her openly pursue romance or abandon her priorities simply because she feels attracted, or because Antonio helps once, wins once, or gives her money.
+- Making her soften instantly because Antonio helps once, wins once, or gives her money.

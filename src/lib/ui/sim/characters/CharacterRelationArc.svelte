@@ -18,8 +18,12 @@
 
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
   const dataBgPath = getAssetPath('images/ui/backgrounds/data-background.png');
+  /** Matches `.beat-image-btn` so collapsed copy lines up with the thumbnail. */
+  const BEAT_IMAGE_SIZE_PX = 296;
   const beats = $derived(character.relationArc ?? []);
   let expandedIndex = $state<number | null>(null);
+  let expandedTextIndexes = $state(new Set<number>());
+  let overflowingTextIndexes = $state(new Set<number>());
 
   function iconUrl(name: string) {
     return getUiIconPath(name);
@@ -44,6 +48,38 @@
 
   function toggleImage(index: number) {
     expandedIndex = expandedIndex === index ? null : index;
+  }
+
+  function toggleText(index: number) {
+    if (!overflowingTextIndexes.has(index)) return;
+    const next = new Set(expandedTextIndexes);
+    if (next.has(index)) next.delete(index);
+    else next.add(index);
+    expandedTextIndexes = next;
+  }
+
+  /** Detect copy that exceeds the collapsed height (same as the beat image). */
+  function measureTextOverflow(node: HTMLElement, index: number) {
+    const update = () => {
+      const overflows = node.scrollHeight > BEAT_IMAGE_SIZE_PX + 1;
+      if (overflowingTextIndexes.has(index) === overflows) return;
+      const next = new Set(overflowingTextIndexes);
+      if (overflows) next.add(index);
+      else next.delete(index);
+      overflowingTextIndexes = next;
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(node);
+    return {
+      update(newIndex: number) {
+        index = newIndex;
+        update();
+      },
+      destroy() {
+        ro.disconnect();
+      },
+    };
   }
 </script>
 
@@ -78,6 +114,8 @@
       <ul class="beat-list">
         {#each beats as beat, i (i)}
           {@const expanded = expandedIndex === i}
+          {@const textExpanded = expandedTextIndexes.has(i)}
+          {@const textOverflows = overflowingTextIndexes.has(i)}
           <li class="beat-card" class:has-image={!!beat.image} class:expanded>
             {#if beat.image}
               <button
@@ -96,7 +134,28 @@
                 />
               </button>
             {/if}
-            <div class="beat-copy">
+            <div
+              class="beat-copy"
+              class:clamped={!textExpanded}
+              class:faded={!textExpanded && textOverflows}
+              class:expandable={textOverflows}
+              role={textOverflows ? 'button' : undefined}
+              tabindex={textOverflows ? 0 : undefined}
+              aria-expanded={textOverflows ? textExpanded : undefined}
+              aria-label={textOverflows
+                ? textExpanded
+                  ? 'Collapse story text'
+                  : 'Expand story text'
+                : undefined}
+              use:measureTextOverflow={i}
+              onclick={() => toggleText(i)}
+              onkeydown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  toggleText(i);
+                }
+              }}
+            >
               {#if beat.title}
                 <h3 class="beat-title">{beat.title}</h3>
               {/if}
@@ -276,10 +335,26 @@
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
+    box-sizing: border-box;
   }
 
   .beat-card.has-image .beat-copy {
     padding: 0.75rem 0.85rem;
+  }
+
+  /* Border-box so padding counts inside 296px and matches `.beat-image-btn`. */
+  .beat-copy.clamped {
+    max-height: 296px;
+    overflow: hidden;
+  }
+
+  .beat-copy.faded {
+    mask-image: linear-gradient(to bottom, #000 72%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent);
+  }
+
+  .beat-copy.expandable {
+    cursor: pointer;
   }
 
   .beat-title {

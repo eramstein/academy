@@ -27,6 +27,7 @@
 
   let visibleLength = $state(0);
   let hoveredMention = $state<number | null>(null);
+  let root: HTMLDivElement | undefined = $state();
 
   const segments = $derived(segmentNarration(text, mentions));
   const shown = $derived(visibleSegments(segments, visibleLength));
@@ -48,7 +49,6 @@
     const id = window.setInterval(() => {
       i += 1;
       visibleLength = i;
-      untrack(() => onProgress?.());
       if (i >= full.length) {
         window.clearInterval(id);
         untrack(() => onDone?.());
@@ -57,10 +57,27 @@
 
     return () => window.clearInterval(id);
   });
+
+  // Tell the page when a line is added. Per-glyph progress snaps the scroll
+  // on every wrap, which yanks the lines already on the page.
+  $effect(() => {
+    const el = root;
+    const notify = onProgress;
+    if (!el || !notify) return;
+    let height = el.offsetHeight;
+    const ro = new ResizeObserver(() => {
+      const next = el.offsetHeight;
+      if (next === height) return;
+      height = next;
+      untrack(() => notify());
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  });
 </script>
 
 <!-- prettier-ignore -->
-<div class={className}>{#each shown as segment, i (i)}{#if segment.type === 'text'}{segment.text}{:else if segment.type === 'keyword'}<Tooltip content={getKeywordTooltip(segment.id)} show={hoveredMention === i}><span class="mention" onmouseenter={() => (hoveredMention = i)} onmouseleave={() => (hoveredMention = null)}>{segment.text}</span></Tooltip>{:else if segment.type === 'action'}<Tooltip content={getActionTooltip(segment.id)} show={hoveredMention === i}><span class="mention" onmouseenter={() => (hoveredMention = i)} onmouseleave={() => (hoveredMention = null)}>{segment.text}</span></Tooltip>{:else}<button type="button" class="mention mention-character" onclick={() => selectSimCharacter(segment.id)}>{segment.text}</button>{/if}{/each}{#if animate}<span class="caret" class:done={visibleLength >= text.length} aria-hidden="true"></span>{/if}</div>
+<div class={className} bind:this={root}>{#each shown as segment, i (i)}{#if segment.type === 'text'}{segment.text}{:else if segment.type === 'keyword'}<Tooltip content={getKeywordTooltip(segment.id)} show={hoveredMention === i}><span class="mention" onmouseenter={() => (hoveredMention = i)} onmouseleave={() => (hoveredMention = null)}>{segment.text}</span></Tooltip>{:else if segment.type === 'action'}<Tooltip content={getActionTooltip(segment.id)} show={hoveredMention === i}><span class="mention" onmouseenter={() => (hoveredMention = i)} onmouseleave={() => (hoveredMention = null)}>{segment.text}</span></Tooltip>{:else}<button type="button" class="mention mention-character" onclick={() => selectSimCharacter(segment.id)}>{segment.text}</button>{/if}{/each}{#if animate}<span class="caret" class:done={visibleLength >= text.length} aria-hidden="true"></span>{/if}</div>
 
 <style>
   .mention {
@@ -98,16 +115,25 @@
 
   .caret {
     display: inline-block;
-    width: 0.55ch;
+    width: 0;
     height: 1.05em;
-    margin-left: 1px;
     vertical-align: text-bottom;
+    position: relative;
+  }
+
+  .caret::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 2px;
+    height: 100%;
     background: currentColor;
     opacity: 0.55;
     animation: blink 0.85s step-end infinite;
   }
 
-  .caret.done {
+  .caret.done::after {
     opacity: 0;
     animation: none;
   }
@@ -119,7 +145,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .caret {
+    .caret,
+    .caret::after {
       display: none;
     }
   }

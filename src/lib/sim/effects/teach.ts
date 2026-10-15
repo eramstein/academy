@@ -1,8 +1,9 @@
-import { CardColor, type UnitKeywords } from '@/lib/_model';
+import { CardColor, type Character, type UnitKeywords } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getRandomFromArray } from '@/lib/_utils/random';
 import { ACTION_TEMPLATE_KEYS, getActionTemplateMeta } from '../cards/action-templates';
 import { formatKeywordLabel, KEYWORD_KEYS } from '../cards/keywords';
+import { getActingCharacter } from '../characters';
 import { narrateText } from '../narration';
 import { getDeck } from './decks';
 
@@ -21,43 +22,39 @@ export interface TeachColorParameters {
 export function teachColor(parameters: TeachColorParameters): string {
   const { color: requestedColor, characterKey } = parameters;
 
-  let color: CardColor;
-  let teacherName: string | undefined;
+  // Explicit color: teach that color to the learner (characterKey, default player).
+  if (requestedColor && Object.values(CardColor).includes(requestedColor)) {
+    return bumpColor(requestedColor, characterKey ?? 'player');
+  }
+
+  // No color + characterKey: study from that character (teacher) onto the player.
   if (characterKey) {
     const resolved = pickColorFromCharacter(characterKey);
     if (typeof resolved === 'string') {
       return resolved;
     }
-    color = resolved.color;
-    teacherName = resolved.characterName;
-  } else if (requestedColor && Object.values(CardColor).includes(requestedColor)) {
-    color = requestedColor;
-  } else {
-    return `Invalid color: ${requestedColor}.`;
-  }
+    const { color, characterName: teacherName } = resolved;
+    bumpColor(color, 'player');
 
-  const teachText = bumpColor(color);
-
-  let gaveDeck = false;
-  if (characterKey && !playerOwnsColorCard(color)) {
-    const deckKey = BASE_DECK_KEY_BY_COLOR[color];
-    if (deckKey) {
-      // getDeck sets the color to 1; keep the level we just taught.
-      const level = gs.player.craftingKnowledge.colors![color]!;
-      getDeck({ deckKey });
-      gs.player.craftingKnowledge.colors![color] = level;
-      gaveDeck = true;
+    let gaveDeck = false;
+    if (!playerOwnsColorCard(color)) {
+      const deckKey = BASE_DECK_KEY_BY_COLOR[color];
+      if (deckKey) {
+        // getDeck sets the color to 1; keep the level we just taught.
+        const level = gs.player.craftingKnowledge.colors![color]!;
+        getDeck({ deckKey });
+        gs.player.craftingKnowledge.colors![color] = level;
+        gaveDeck = true;
+      }
     }
-  }
 
-  if (characterKey && teacherName) {
     const label = formatKeywordLabel(color);
     const cardsClause = gaveDeck ? ' and gave you some spare cards to get you started' : '';
     narrateText(`${teacherName} taught you ${label}${cardsClause}.`);
     return '';
   }
 
-  return teachText;
+  return `Invalid color: ${requestedColor}.`;
 }
 
 function pickColorFromCharacter(
@@ -81,18 +78,18 @@ function pickColorFromCharacter(
   };
 }
 
-function bumpColor(color: CardColor): string {
-  if (!gs.player.craftingKnowledge.colors) {
-    gs.player.craftingKnowledge.colors = {};
+function bumpColor(color: CardColor, characterKey = 'player'): string {
+  const learner = resolveLearner(characterKey);
+  if (typeof learner === 'string') {
+    return learner;
   }
-  const previous = gs.player.craftingKnowledge.colors[color] ?? 0;
+  if (!learner.character.craftingKnowledge.colors) {
+    learner.character.craftingKnowledge.colors = {};
+  }
+  const previous = learner.character.craftingKnowledge.colors[color] ?? 0;
   const level = previous + 1;
-  gs.player.craftingKnowledge.colors[color] = level;
-  const label = formatKeywordLabel(color);
-  if (previous < 1) {
-    return `You learn ${label}.`;
-  }
-  return `You raise your ${label} knowledge to ${level}.`;
+  learner.character.craftingKnowledge.colors[color] = level;
+  return formatKnowledgeMessage(learner, formatKeywordLabel(color), previous, level);
 }
 
 function playerOwnsColorCard(color: CardColor): boolean {
@@ -110,23 +107,29 @@ export function teachAbility(parameters: TeachAbilityParameters = {}): string {
   const { ability: requested, characterKey } = parameters;
 
   let ability: string;
+  let learnerKey = 'player';
+
   if (requested?.trim()) {
+    // Explicit ability: teach it to the learner (characterKey, default player).
     ability = requested.trim();
+    learnerKey = characterKey ?? 'player';
   } else if (characterKey) {
+    // No ability + characterKey: study from that character (teacher) onto the player.
     const pool = knownAbilitiesForCharacter(characterKey);
     if (typeof pool === 'string') {
       return pool;
     }
     ability = getRandomFromArray(pool);
+    learnerKey = 'player';
   } else {
     ability = getRandomFromArray(ABILITY_POOL);
   }
 
   if (KEYWORD_KEYS.includes(ability as keyof UnitKeywords)) {
-    return bumpKeyword(ability as keyof UnitKeywords);
+    return bumpKeyword(ability as keyof UnitKeywords, learnerKey);
   }
   if (ACTION_TEMPLATE_KEYS.includes(ability)) {
-    return bumpAction(ability);
+    return bumpAction(ability, learnerKey);
   }
   return `Invalid ability: ${ability}.`;
 }
@@ -149,30 +152,60 @@ function knownAbilitiesForCharacter(characterKey: string): string[] | string {
   return pool;
 }
 
-function bumpKeyword(keyword: keyof UnitKeywords): string {
-  if (!gs.player.craftingKnowledge.keywords) {
-    gs.player.craftingKnowledge.keywords = {};
+function bumpKeyword(keyword: keyof UnitKeywords, characterKey = 'player'): string {
+  const learner = resolveLearner(characterKey);
+  if (typeof learner === 'string') {
+    return learner;
   }
-  const previous = gs.player.craftingKnowledge.keywords[keyword] ?? 0;
+  if (!learner.character.craftingKnowledge.keywords) {
+    learner.character.craftingKnowledge.keywords = {};
+  }
+  const previous = learner.character.craftingKnowledge.keywords[keyword] ?? 0;
   const level = previous + 1;
-  gs.player.craftingKnowledge.keywords[keyword] = level;
-  const label = formatKeywordLabel(keyword);
-  if (previous < 1) {
-    return `You learn ${label}.`;
-  }
-  return `You raise your ${label} knowledge to ${level}.`;
+  learner.character.craftingKnowledge.keywords[keyword] = level;
+  return formatKnowledgeMessage(learner, formatKeywordLabel(keyword), previous, level);
 }
 
-function bumpAction(actionName: string): string {
-  if (!gs.player.craftingKnowledge.actions) {
-    gs.player.craftingKnowledge.actions = {};
+function bumpAction(actionName: string, characterKey = 'player'): string {
+  const learner = resolveLearner(characterKey);
+  if (typeof learner === 'string') {
+    return learner;
   }
-  const previous = gs.player.craftingKnowledge.actions[actionName] ?? 0;
+  if (!learner.character.craftingKnowledge.actions) {
+    learner.character.craftingKnowledge.actions = {};
+  }
+  const previous = learner.character.craftingKnowledge.actions[actionName] ?? 0;
   const level = previous + 1;
-  gs.player.craftingKnowledge.actions[actionName] = level;
+  learner.character.craftingKnowledge.actions[actionName] = level;
   const label = getActionTemplateMeta(actionName)?.label ?? formatKeywordLabel(actionName);
-  if (previous < 1) {
-    return `You learn ${label}.`;
+  return formatKnowledgeMessage(learner, label, previous, level);
+}
+
+type Learner = { character: Character; isPlayer: boolean; name: string };
+
+function resolveLearner(characterKey = 'player'): Learner | string {
+  if (characterKey !== 'player' && characterKey !== gs.player.key && !gs.characters[characterKey]) {
+    return `Invalid character key: ${characterKey}.`;
   }
-  return `You raise your ${label} knowledge to ${level}.`;
+  const character = getActingCharacter(characterKey);
+  const isPlayer = character.key === gs.player.key;
+  const name = isPlayer
+    ? 'You'
+    : character.name?.trim() ||
+      characterKey.charAt(0).toUpperCase() + characterKey.slice(1);
+  return { character, isPlayer, name };
+}
+
+function formatKnowledgeMessage(
+  learner: Learner,
+  label: string,
+  previous: number,
+  level: number
+): string {
+  if (previous < 1) {
+    return learner.isPlayer ? `You learn ${label}.` : `${learner.name} learns ${label}.`;
+  }
+  return learner.isPlayer
+    ? `You raise your ${label} knowledge to ${level}.`
+    : `${learner.name} raises their ${label} knowledge to ${level}.`;
 }

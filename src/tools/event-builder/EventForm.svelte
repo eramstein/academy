@@ -12,6 +12,11 @@
   import { SceneActionTemplates } from '@/lib/sim/actions/_templates';
   import { skillCheckDifficultyKeys, skillCheckDifficultyLabels } from '@/lib/sim/attribute-checks';
   import EffectsTemplatesEditor from './EffectsTemplatesEditor.svelte';
+  import PassagesEditor, {
+    passageDraftsFrom,
+    passagesFromDrafts,
+    type PassageDraft,
+  } from './PassagesEditor.svelte';
   import TriggersEditor from './TriggersEditor.svelte';
   import { saveEventTemplate } from './save-event';
 
@@ -41,6 +46,7 @@
   let triggers = $state<EventTrigger[]>([]);
   let options = $state<EventOptionTemplate[]>([]);
   let effects = $state<EventEffect[]>([]);
+  let passageDrafts = $state<PassageDraft[]>([]);
   let error = $state('');
   let saving = $state(false);
 
@@ -62,6 +68,7 @@
       triggers = [];
       options = [];
       effects = [];
+      passageDrafts = [];
       return;
     }
 
@@ -77,6 +84,16 @@
     triggers = cloned.triggers ?? [];
     options = cloned.optionTemplates ?? [];
     effects = cloned.effects ?? [];
+    passageDrafts = passageDraftsFrom(cloned.passages);
+  }
+
+  function insertPassageToken(passageKey: string) {
+    const trimmed = passageKey.trim();
+    if (!trimmed) return;
+    const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (new RegExp(`\\{\\{\\s*${escaped}\\s*\\}\\}`).test(text)) return;
+    const token = `{{ ${trimmed} }}`;
+    text = text.trim() ? `${text.replace(/\s*$/, '')}\n\n${token}` : token;
   }
 
   function defaultImageFromKey() {
@@ -289,6 +306,11 @@
       built.manualTrigger = triggerLabel;
     }
 
+    const builtPassages = passagesFromDrafts(passageDrafts);
+    if (builtPassages) {
+      built.passages = builtPassages;
+    }
+
     return built;
   }
 
@@ -432,9 +454,21 @@
 
       <label class="field text-field">
         <span class="label">Text</span>
-        <textarea class="input textarea" bind:value={text} rows="3" placeholder="Event narration…"
+        <textarea
+          class="input textarea"
+          bind:value={text}
+          rows="3"
+          placeholder={'Event narration… Use {{ passageKey }} for a conditional passage.'}
         ></textarea>
       </label>
+    </section>
+
+    <section class="panel">
+      <PassagesEditor
+        drafts={passageDrafts}
+        onChange={(next) => (passageDrafts = next)}
+        onInsert={insertPassageToken}
+      />
     </section>
 
     <div class="mid-row">

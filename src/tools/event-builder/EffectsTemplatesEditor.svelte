@@ -118,6 +118,8 @@
         return { eventKey: '' };
       case EventEffectType.OfferCardGifts:
         return { count: 2, poolKeys: [] };
+      case EventEffectType.GiftCardToCharacter:
+        return { characterKey: '', cardKey: '' };
       case EventEffectType.TeachColor:
         return { color: CardColor.Red };
       case EventEffectType.TeachAbility:
@@ -126,6 +128,8 @@
         return { text: '' };
       case EventEffectType.LevelAttribute:
         return { attribute: 'intelligence', amount: 1, characterKey: 'player' };
+      case EventEffectType.LevelUpCharacter:
+        return { characterKey: '' };
       case EventEffectType.ChangeRelation:
         return { characterKey: '', relationParameter: 'friendship', amount: 1 };
       case EventEffectType.UpdateRelationArc:
@@ -458,6 +462,23 @@
                       .filter(Boolean)
                   )}
               />
+            {:else if effect.type === EventEffectType.GiftCardToCharacter}
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? ''}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.cardKey ?? ''}
+                placeholder="card key"
+                aria-label="Card key"
+                oninput={(e) =>
+                  setParameter(i, 'cardKey', (e.currentTarget as HTMLInputElement).value)}
+              />
             {:else if effect.type === EventEffectType.TeachColor}
               <select
                 class="input arg"
@@ -506,14 +527,15 @@
                 }}
               />
             {:else if effect.type === EventEffectType.Narrate}
-              <input
-                class="input arg"
+              <textarea
+                class="input narrate-text"
                 value={effect.parameters.text ?? ''}
                 placeholder="narration text"
                 aria-label="Narration text"
+                rows="4"
                 oninput={(e) =>
-                  setParameter(i, 'text', (e.currentTarget as HTMLInputElement).value)}
-              />
+                  setParameter(i, 'text', (e.currentTarget as HTMLTextAreaElement).value)}
+              ></textarea>
             {:else if effect.type === EventEffectType.LevelAttribute}
               <select
                 class="input arg"
@@ -537,6 +559,15 @@
               <input
                 class="input arg"
                 value={effect.parameters.characterKey ?? 'player'}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+            {:else if effect.type === EventEffectType.LevelUpCharacter}
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? ''}
                 placeholder="character key"
                 aria-label="Character key"
                 oninput={(e) =>
@@ -1010,6 +1041,14 @@
   .arg {
     width: 9rem;
     min-width: 0;
+  }
+
+  .narrate-text {
+    flex: 1 1 100%;
+    width: 100%;
+    min-height: 4.5rem;
+    resize: vertical;
+    line-height: 1.4;
   }
 
   .narrow {

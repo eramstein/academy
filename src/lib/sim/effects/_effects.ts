@@ -2,10 +2,16 @@ import type { EventEffect } from '@/lib/_model';
 import { EventEffectType } from '@/lib/_model/enums-sim';
 import { narrateText } from '../narration';
 import { levelAttribute, type LevelAttributeParameters } from './attributes';
+import { levelUpCharacter, type LevelUpCharacterParameters } from './characters';
 import { getDeck, type GetDeckParameters } from './decks';
 import { followUpEvent, type FollowUpEventParameters } from './events';
 import { useFocus, type UseFocusParameters } from './focus';
-import { offerCardGifts, type OfferCardGiftsParameters } from './gifts';
+import {
+  giftCardToCharacter,
+  offerCardGifts,
+  type GiftCardToCharacterParameters,
+  type OfferCardGiftsParameters,
+} from './gifts';
 import { addGold, type AddGoldParameters } from './gold';
 import { getJob, type GetJobParameters } from './jobs';
 import { narrate, type NarrateParameters } from './narrate';
@@ -50,12 +56,16 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     followUpEvent(parameters as FollowUpEventParameters),
   [EventEffectType.OfferCardGifts]: (parameters) =>
     offerCardGifts(parameters as OfferCardGiftsParameters),
+  [EventEffectType.GiftCardToCharacter]: (parameters) =>
+    giftCardToCharacter(parameters as GiftCardToCharacterParameters),
   [EventEffectType.TeachColor]: (parameters) => teachColor(parameters as TeachColorParameters),
   [EventEffectType.TeachAbility]: (parameters) =>
     teachAbility(parameters as TeachAbilityParameters),
   [EventEffectType.Narrate]: (parameters) => narrate(parameters as NarrateParameters),
   [EventEffectType.LevelAttribute]: (parameters) =>
     levelAttribute(parameters as LevelAttributeParameters),
+  [EventEffectType.LevelUpCharacter]: (parameters) =>
+    levelUpCharacter(parameters as LevelUpCharacterParameters),
   [EventEffectType.ChangeRelation]: (parameters) =>
     changeRelation(parameters as ChangeRelationParameters),
   [EventEffectType.UpdateRelationArc]: (parameters) =>

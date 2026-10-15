@@ -3,6 +3,7 @@ import { ActivityType, DayPeriod, EventTriggerType, RelationTag } from '../_mode
 import type {
   EventOption,
   EventOptionTemplate,
+  EventPassage,
   EventTemplate,
   Npc,
   SceneEvent,
@@ -18,7 +19,7 @@ import type { SocializeParameters } from './actions/socialize';
 import { getActivityIllustrationRefs, probeFirstExistingImage } from './activity-image';
 import { getLoadedModEvents, loadMods } from '../mods';
 import { getCharactersAtScene } from './characters';
-import { updateRelationArc } from './effects/relations';
+import { resolveRelationTag, updateRelationArc } from './effects/relations';
 import { getCurrentScheduledActivity } from './schedule';
 import { getWeekDay } from './time';
 
@@ -232,19 +233,20 @@ export function consumeEventTemplate(template: StoredEventTemplate) {
 }
 
 /** Record that an event fired (save-backed). Does not mutate catalog templates. */
-export function recordEventOccured(template: StoredEventTemplate) {
+export function recordEventOccured(template: StoredEventTemplate, resolvedText?: string) {
   ensureStoryTags();
   const key = template.key;
+  const text = resolvedText ?? resolveEventText(template);
   gs.storyTags[key] = (gs.storyTags[key] ?? 0) + 1;
   if (template.characterArc) {
     updateRelationArc({
       characterKey: template.characterArc,
-      text: template.text,
+      text,
       title: template.title,
       image: template.image,
     });
     if (!template.image) {
-      attachActivityImageToArc(template.characterArc, template.text);
+      attachActivityImageToArc(template.characterArc, text);
     }
   }
 }
@@ -402,17 +404,44 @@ function checkRelationTag(
   const { characterKey, relationTag, value } = trigger.parameters;
   const character = gs.characters[characterKey];
   if (!character) return false;
-  const hasTag = (character.relationTags ?? []).includes(relationTag);
+  const resolved = resolveRelationTag(String(relationTag)) ?? relationTag;
+  const hasTag = (character.relationTags ?? []).includes(resolved);
   if (value === -1) {
     return !hasTag;
   }
   return hasTag;
 }
 
+const PASSAGE_TOKEN = /\{\{\s*([\w-]+)\s*\}\}/g;
+
+/** First variant whose triggers all match, otherwise the passage fallback. */
+function resolvePassage(passage: EventPassage, eventKey: string): string {
+  for (const variant of passage.variants ?? []) {
+    const triggers = variant.triggers ?? [];
+    if (triggers.every((trigger) => doesTriggerMatch(trigger, eventKey))) {
+      return variant.text ?? '';
+    }
+  }
+  return passage.fallback ?? '';
+}
+
+/** Replace `{{ passageKey }}` tokens using current game state. Template text stays authored. */
+export function resolveEventText(
+  template: Pick<EventTemplate, 'key' | 'text' | 'passages'>
+): string {
+  const passages = template.passages;
+  if (!passages) return template.text;
+  return template.text.replace(PASSAGE_TOKEN, (_match, passageKey: string) => {
+    const passage = passages[passageKey];
+    if (!passage) return '';
+    return resolvePassage(passage, template.key);
+  });
+}
+
 function sceneEventFromTemplate(template: StoredEventTemplate): SceneEvent {
   return {
     key: template.key,
-    text: template.text,
+    text: resolveEventText(template),
     options: buildOptions(template),
   };
 }

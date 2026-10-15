@@ -60,17 +60,29 @@ Text:
 
 Oh, this is too good. The Academy's brightest star, defeated by Antonio Fibonacci himself! Surely a little celebration is in order.
 
-"Bluff? Me?" You give an extravagant shrug. "No need to bluff when there's a whole league between us."
+"Bluff? Me?" You give an extravagant shrug. "My dear Delamain, I was merely trying to give you a sporting chance."
 
-Emma goes perfectly still.
+Emma's eyes narrow. For a moment, you wonder whether you've pushed your luck.
 
-She regards you across the table, her expression growing so cold that you briefly wonder whether the temperature in the room has actually dropped. For a moment, it looks as though she is preparing a reply sharp enough to draw blood.
+"A sporting chance?" she repeats, very slowly.
 
-Instead, she slowly collects her cards, rises, and walks away without a word.
+"Well, I wouldn't want you to lose confidence. You have such a promising future."
 
-Well. That went splendidly.
+Emma stares at you. Then, despite herself, a reluctant smile breaks through.
 
-You have the distinct impression that Emma Delamain will remember this conversation for a very long time.
+"How extraordinarily generous of you, Fibonacci. I shall treasure your encouragement."
+
+She begins gathering her cards, then pauses.
+
+"Although I do hope you're prepared for our next match."
+
+"Naturally."
+
+"Good. Because I intend to make you regret every single word of this conversation."
+
+She flashes you a dazzling smile.
+
+"And I shall be insufferably gracious about it."
 
 Outcomes:
 

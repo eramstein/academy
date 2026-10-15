@@ -1,5 +1,33 @@
 [
   {
+    "id": "happy_little_accident",
+    "name": "Happy Little Accident",
+    "imageFileName": "happy_little_accident",
+    "type": "spell",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "applyUnitStatus",
+          "args": {
+            "statusType": "mezz",
+            "duration": 1,
+            "range": {
+              "ennemies": true
+            }
+          }
+        }
+      }
+    ],
+    "poolKeys": ["emma", "special"]
+  },
+  {
     "id": "subjugating_knight",
     "name": "Subjugating Knight",
     "imageFileName": "subjugating_knight",

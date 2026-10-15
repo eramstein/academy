@@ -303,7 +303,7 @@ export function narrateText(
   const imageFile = options?.image
     ? resolveEventImageFileName(options.eventKey ?? '', options.image)
     : undefined;
-  let imageUrl = options?.imageUrl ?? (imageFile ? getEventImagePath(imageFile) : undefined);
+  const imageUrl = options?.imageUrl ?? (imageFile ? getEventImagePath(imageFile) : undefined);
   const imageSize = imageUrl ? (options?.imageSize ?? 'small') : undefined;
   if (imageUrl && imageSize === 'large') {
     gs.scene.image = imageUrl;
@@ -402,5 +402,17 @@ export function narrateJobResult(job: Job, outcome: boolean, gold: number) {
     text: outcome ? `You succeeded at ${job.name}.` : `You failed at ${job.name}.`,
     type: NarrationType.JobResult,
     gold,
+  });
+}
+
+export function narrateRelationUpdate(characterKey: string, tagText: string) {
+  const character = gs.characters[characterKey];
+  const firstName = (character?.name ?? characterKey).split(/\s+/)[0] ?? characterKey;
+  narrate({
+    id: crypto.randomUUID(),
+    text: tagText,
+    type: NarrationType.RelationUpdate,
+    characters: [characterKey],
+    title: `${firstName} · relation update`,
   });
 }

@@ -57,7 +57,19 @@ Use this structure for polished event drafts (the IDE workflow handles JSON conv
 
 ## Text
 
-[Shared opening narrative, second person present]
+[Shared opening narrative, second person present. Insert `{{passageName}}` where conditional prose belongs.]
+
+## Conditional passages
+
+### passageName
+
+**When:** [Existing event-trigger conditions, described in prose]
+
+[Text to insert when the conditions match.]
+
+**Otherwise:**
+
+[Fallback text if the conditions do not match.]
 
 ## Effects
 
@@ -77,6 +89,37 @@ Use this structure for polished event drafts (the IDE workflow handles JSON conv
 
 ### Option B: [Title]
 ...
+```
+
+**Conditional event passages:** For variations in the event's main narrative, put `{{passageName}}` placeholders directly in `## Text` and define each named passage under `## Conditional passages`. Each passage can have one or more ordered **When:** variants, using the game's existing trigger logic, followed by an **Otherwise:** fallback. The first matching variant wins; the fallback applies if none match. Keep the prose of each variant compact and consistent with the surrounding paragraph. Use passages for prior-event callbacks, first-time introductions, relationship tags, or other relevant game-state differences. Omit `## Conditional passages` when the event has none. **This feature currently applies only to the event's main `text`, not option text**; keep option outcomes as ordinary static prose. Do not invent inline `if` expressions or a separate condition language.
+
+**Illustrative example:**
+
+```markdown
+# Event: A Formidable Opponent
+
+**Event ID:** `emma_first_match`
+**Trigger:** First TCG match against Emma
+
+## Text
+
+Emma takes her seat across from you, carefully arranging her cards.
+
+{{intro}}
+
+"I do hope you've come prepared."
+
+## Conditional passages
+
+### intro
+
+**When:** `emma_first_encounter` has occurred
+
+"Antonio. We meet again," she says, with a familiar raised eyebrow. "I trust you've recovered your powers of speech."
+
+**Otherwise:**
+
+"Emma Delamain," she introduces herself, offering her hand. "And you must be Antonio Fibonacci. A pleasure."
 ```
 
 **Event activation convention:** Events without `manualTrigger` are automatic once eligible and selected by the event scheduler. When `manualTrigger` is provided, its string is displayed as an available action in the book UI, and the event starts only if the player chooses it. Existing trigger conditions still govern availability. Use manual activation when Antonio deliberately initiates a conversation, offer, or activity; use automatic activation for encounters, consequences, and NPC-initiated developments. The manual action label is distinct from the event title and from its internal choice labels.

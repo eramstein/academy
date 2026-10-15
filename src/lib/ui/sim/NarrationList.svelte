@@ -267,10 +267,9 @@
 
 <div class="narration-list">
   {#each narration as entry (entry.id)}
-    {#if completedSet.has(entry.id)}
-      {@render narrationEntry(entry, false)}
-    {:else if activeEntry?.id === entry.id}
-      {@render narrationEntry(entry, true)}
+    {#if completedSet.has(entry.id) || activeEntry?.id === entry.id}
+      <!-- One branch so finishing the line does not remount the paragraph and collapse it. -->
+      {@render narrationEntry(entry, activeEntry?.id === entry.id)}
     {/if}
   {/each}
 </div>
@@ -282,6 +281,8 @@
     {@render matchResult(entry, animate)}
   {:else if entry.type === NarrationType.Transaction}
     {@render transaction(entry, animate)}
+  {:else if entry.type === NarrationType.RelationUpdate}
+    {@render relationUpdate(entry, animate)}
   {:else}
     {@const cards = cardsForEntry(entry)}
     {@const inDeck = cardsInFirstDeck(entry)}
@@ -475,6 +476,22 @@
   </div>
 {/snippet}
 
+{#snippet relationUpdate(entry: Narration, animate: boolean)}
+  <aside class="relation-update" aria-label={entry.title ?? 'Relation update'}>
+    {#if entry.title}
+      <span class="relation-update-label">{entry.title}</span>
+    {/if}
+    <NarrationText
+      class="relation-update-text"
+      text={entry.text}
+      mentions={entry.mentions}
+      {animate}
+      onProgress={() => onProgress?.('auto')}
+      onDone={() => onTextDone(entry)}
+    />
+  </aside>
+{/snippet}
+
 {#snippet goldEarned(gold: number)}
   {@const coinPath = uiIconPath('coin')}
   <div class="gold-earned" aria-label={`Earned ${gold} gold`}>
@@ -546,7 +563,9 @@
 
   .event-with-portrait {
     margin: 0 0 1.25em;
-    overflow: auto;
+    /* flow-root clears the float without overflow:auto, which flashed a
+       horizontal scrollbar when the typing caret peeked past the line edge. */
+    display: flow-root;
   }
 
   .event-with-portrait .narration-body {
@@ -698,10 +717,20 @@
 
   .narration-pending .caret {
     display: inline-block;
-    width: 0.55ch;
+    width: 0;
     height: 1.05em;
     margin-left: 0.2ch;
     vertical-align: text-bottom;
+    position: relative;
+  }
+
+  .narration-pending .caret::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 2px;
+    height: 100%;
     background: currentColor;
     opacity: 0.55;
     animation: blink 0.85s step-end infinite;
@@ -714,7 +743,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .narration-pending .caret {
+    .narration-pending .caret,
+    .narration-pending .caret::after {
       display: none;
     }
   }
@@ -755,6 +785,37 @@
     color: var(--color-ink);
     text-transform: capitalize;
     white-space: nowrap;
+  }
+
+  .relation-update {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0.25em 0 1.35em;
+    padding: 0.55em 0.85em;
+    border: 1px solid color-mix(in srgb, var(--color-brown-border) 75%, transparent);
+    border-radius: 4px;
+    background: rgba(90, 75, 60, 0.06);
+    box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.35);
+  }
+
+  .relation-update-label {
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .relation-update :global(.relation-update-text) {
+    margin: 0;
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--color-ink);
+    font-style: italic;
+    white-space: pre-line;
   }
 
   .match-result {

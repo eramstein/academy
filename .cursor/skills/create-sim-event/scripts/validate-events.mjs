@@ -121,6 +121,51 @@ eventKeys.forEach((key, index) => {
   }
 });
 
+function checkPassages(where, passages) {
+  const keys = new Set();
+  if (passages === undefined) return keys;
+  if (!passages || typeof passages !== 'object' || Array.isArray(passages)) {
+    errors.push(`${where}: passages must be an object`);
+    return keys;
+  }
+  for (const [passageKey, passage] of Object.entries(passages)) {
+    const passageWhere = `${where} passages.${passageKey}`;
+    if (!/^[\w-]+$/.test(passageKey)) {
+      errors.push(`${passageWhere}: key must be letters, digits, "_" or "-"`);
+    }
+    keys.add(passageKey);
+    if (!passage || typeof passage !== 'object' || Array.isArray(passage)) {
+      errors.push(`${passageWhere}: must be an object`);
+      continue;
+    }
+    if (passage.fallback !== undefined && typeof passage.fallback !== 'string') {
+      errors.push(`${passageWhere}: fallback must be a string`);
+    }
+    if (!Array.isArray(passage.variants)) {
+      errors.push(`${passageWhere}: variants must be an array`);
+      continue;
+    }
+    passage.variants.forEach((variant, i) => {
+      const variantWhere = `${passageWhere} variants[${i}]`;
+      if (!variant || typeof variant !== 'object') {
+        errors.push(`${variantWhere}: must be an object`);
+        return;
+      }
+      if (typeof variant.text !== 'string') {
+        errors.push(`${variantWhere}: text must be a string`);
+      }
+      if (!Array.isArray(variant.triggers) || variant.triggers.length === 0) {
+        errors.push(`${variantWhere}: triggers must be a non-empty array`);
+      } else {
+        variant.triggers.forEach((trigger, j) =>
+          checkTrigger(`${variantWhere} trigger[${j}]`, trigger)
+        );
+      }
+    });
+  }
+  return keys;
+}
+
 function checkOneOf(where, label, value, allowed) {
   if (!allowed.includes(value)) {
     errors.push(`${where}: unknown ${label} "${value}" (expected one of: ${allowed.join(', ')})`);
@@ -337,16 +382,46 @@ function checkEffect(where, effect) {
     case 'follow_up_event':
       checkOneOf(where, 'eventKey', parameters.eventKey, eventKeys);
       break;
-    case 'offer_card_gifts':
+    case 'offer_card_gifts': {
       if (typeof parameters.count !== 'number') {
         errors.push(`${where}: count must be a number`);
       } else if (parameters.count < 1) {
         errors.push(`${where}: count must be at least 1`);
       }
-      if (!Array.isArray(parameters.poolKeys) || parameters.poolKeys.length === 0) {
-        errors.push(`${where}: poolKeys must be a non-empty array`);
-      } else if (!parameters.poolKeys.every((key) => typeof key === 'string' && key.trim())) {
+      const hasPool =
+        Array.isArray(parameters.poolKeys) &&
+        parameters.poolKeys.length > 0 &&
+        parameters.poolKeys.every((key) => typeof key === 'string' && key.trim());
+      const hasSpecific =
+        Array.isArray(parameters.specificCardKeys) &&
+        parameters.specificCardKeys.length > 0 &&
+        parameters.specificCardKeys.every((key) => typeof key === 'string' && key.trim());
+      if (parameters.poolKeys !== undefined && !Array.isArray(parameters.poolKeys)) {
+        errors.push(`${where}: poolKeys must be an array`);
+      } else if (Array.isArray(parameters.poolKeys) && parameters.poolKeys.length > 0 && !hasPool) {
         errors.push(`${where}: poolKeys must be an array of non-empty strings`);
+      }
+      if (
+        parameters.specificCardKeys !== undefined &&
+        !Array.isArray(parameters.specificCardKeys)
+      ) {
+        errors.push(`${where}: specificCardKeys must be an array`);
+      } else if (
+        Array.isArray(parameters.specificCardKeys) &&
+        parameters.specificCardKeys.length > 0 &&
+        !hasSpecific
+      ) {
+        errors.push(`${where}: specificCardKeys must be an array of non-empty strings`);
+      }
+      if (!hasPool && !hasSpecific) {
+        errors.push(`${where}: provide non-empty poolKeys and/or specificCardKeys`);
+      }
+      break;
+    }
+    case 'gift_card_to_character':
+      checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
+      if (typeof parameters.cardKey !== 'string' || !parameters.cardKey.trim()) {
+        errors.push(`${where}: cardKey must be a non-empty string`);
       }
       break;
     case 'teach_color': {
@@ -386,6 +461,9 @@ function checkEffect(where, effect) {
       if (typeof parameters.characterKey === 'string' && parameters.characterKey) {
         checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
       }
+      break;
+    case 'level_up_character':
+      checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
       break;
     case 'change_relation':
       checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
@@ -455,6 +533,7 @@ const allowedEventProps = new Set([
   'image',
   'imageSize',
   'manualTrigger',
+  'passages',
 ]);
 
 events.forEach((event, index) => {
@@ -466,6 +545,20 @@ events.forEach((event, index) => {
   }
   if (typeof event?.text !== 'string' || !event.text.trim()) {
     errors.push(`${where}: text is required`);
+  }
+  const passageKeys = checkPassages(where, event?.passages);
+  if (typeof event?.text === 'string') {
+    const referenced = [...event.text.matchAll(/\{\{\s*([\w-]+)\s*\}\}/g)].map((match) => match[1]);
+    for (const passageKey of referenced) {
+      if (!passageKeys.has(passageKey)) {
+        errors.push(`${where}: text references unknown passage "${passageKey}"`);
+      }
+    }
+    for (const passageKey of passageKeys) {
+      if (!referenced.includes(passageKey)) {
+        errors.push(`${where}: passage "${passageKey}" is not used in text`);
+      }
+    }
   }
   if (event?.title !== undefined) {
     if (typeof event.title !== 'string' || !event.title.trim()) {

@@ -1227,7 +1227,7 @@
             "type": "add_relation_tag",
             "parameters": {
               "characterKey": "emma",
-              "relationTag": "Legs like that should be forbidden by law"
+              "relationTag": "Legs like that should be forbidden by law!"
             }
           }
         ]
@@ -1247,11 +1247,12 @@
           "description": "A striking young woman with sharp green eyes, an impressive collection of books, and an equally impressive talent for making you feel foolish. Apparently a fellow first-year student."
         }
       }
-    ]
+    ],
+    "manualTrigger": "There is a pretty girl over there!"
   },
   {
     "key": "emma_first_match_victory",
-    "text": "This is a risky move. Perhaps a little too aggressive? Well, fortune favors the bold. According to Henry, Emma Delamain is probably the strongest player at the Academy. After you, naturally.\n\nYou commit to the attack.\n\nShe doesn't see it coming. Victory!\n\nAcross the table, Emma realizes her mistake immediately—but a quarter of a second too late. A flash of anger crosses her delicate, heart-shaped face. Her shoulders sink, and for a brief moment she looks almost wounded. Then she straightens, gathers her composure, and meets your eyes.\n\n\"Well played, Fibonacci.\"\n\nShe glances at the board once more, her brow furrowing. For a moment, she seems to be debating something with herself.\n\n\"Tell me. Was that a bluff, or had you calculated it from the beginning?\"",
+    "text": "This is a risky move. Perhaps a little too aggressive? Well, fortune favors the bold. According to Henry, Emma Delamain is probably the strongest player at the Academy. After you, naturally.\n\nYou commit to the attack.\n\nShe doesn't see it coming. Victory!\n\nAcross the table, Emma realizes her mistake immediately—but a quarter of a second too late. A flash of anger crosses her delicate, heart-shaped face. Her shoulders sink, and for a brief moment she looks almost wounded. Then she straightens, gathers her composure, and meets your eyes.\n\n\"{{greeting}}Well played, Fibonacci.\"\n\nShe glances at the board once more, her brow furrowing. For a moment, she seems to be debating something with herself.\n\n\"Tell me. Was that a bluff, or had you calculated it from the beginning?\"",
     "triggers": [
       {
         "triggerType": "matches_won",
@@ -1293,7 +1294,7 @@
           {
             "type": "narrate",
             "parameters": {
-              "text": "Oh, this is too good. The Academy's brightest star, defeated by Antonio Fibonacci himself! Surely a little celebration is in order.\n\n\"Bluff? Me?\" You give an extravagant shrug. \"No need to bluff when there's a whole league between us.\"\n\nEmma goes perfectly still.\n\nShe regards you across the table, her expression growing so cold that you briefly wonder whether the temperature in the room has actually dropped. For a moment, it looks as though she is preparing a reply sharp enough to draw blood.\n\nInstead, she slowly collects her cards, rises, and walks away without a word.\n\nWell. That went splendidly.\n\nYou have the distinct impression that Emma Delamain will remember this conversation for a very long time."
+              "text": "Oh, this is too good. The Academy's brightest star, defeated by Antonio Fibonacci himself! Surely a little celebration is in order.\n\n\"Bluff? Me?\" You give an extravagant shrug. \"My dear Delamain, I was merely trying to give you a sporting chance.\"\n\nEmma's eyes narrow. For a moment, you wonder whether you've pushed your luck.\n\n\"A sporting chance?\" she repeats, very slowly.\n\n\"Well, I wouldn't want you to lose confidence. You have such a promising future.\"\n\nEmma stares at you. Then, despite herself, a reluctant smile breaks through.\n\n\"How extraordinarily generous of you, Fibonacci. I shall treasure your encouragement.\"\n\nShe begins gathering her cards, then pauses.\n\n\"Although I do hope you're prepared for our next match.\"\n\n\"Naturally.\"\n\n\"Good. Because I intend to make you regret every single word of this conversation.\"\n\nShe flashes you a dazzling smile.\n\n\"And I shall be insufferably gracious about it.\""
             }
           },
           {
@@ -1313,7 +1314,7 @@
             "triggerType": "relation_tag",
             "parameters": {
               "characterKey": "emma",
-              "relationTag": "Legs like that should be forbidden by law"
+              "relationTag": "Legs like that should be forbidden by law!"
             }
           }
         ],
@@ -1355,6 +1356,371 @@
           "characterKey": "emma",
           "title": "Competitive nature",
           "description": "Emma takes competition very seriously. She hates losing, but recognizes genuine skill in an opponent and is determined to learn from her mistakes."
+        }
+      }
+    ],
+    "passages": {
+      "greeting": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "Legs like that should be forbidden by law!"
+                }
+              }
+            ],
+            "text": "We met the first day right? Anyways. "
+          }
+        ]
+      }
+    }
+  },
+  {
+    "key": "emma_handmade_card",
+    "text": "You find Emma studying a collection of cards, meticulously arranged across a table. She looks up as you approach.\n\n\"Antonio. To what do I owe the pleasure?\"\n\nYou produce your latest creation, the _Happy Little Accident_, and place it before her.\n\n\"Another masterpiece, Fibonacci?\" she asks, with a faint smile. \"How fortunate that modesty isn't one of your weaknesses.\"\n\nShe picks up the card, apparently intending to give it a cursory inspection. Then she turns it toward the light. Her smile fades into concentration.\n\n\"Hmm.\"\n\nShe studies the card more closely, examining the intricate blue enchantments. For a moment, she seems to forget you're there.\n\n\"Interesting. Very interesting, actually.\"\n\nShe catches herself, sets the card down, and folds her hands.\n\n\"Well. It's certainly not terrible. How did you manage this?\"\n\nAn excellent question. One you would very much like to know the answer to yourself.",
+    "triggers": [
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "happy_little_accident",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "\"I'd like you to have it.\"",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Emma looks from the card to you.\n\n\"You're giving it to me?\"\n\nFor once, she seems genuinely surprised. She glances down at the card again.\n\n\"Antonio, this is an exceptional piece of work. You could win matches with it. Quite a few matches, in fact.\"\n\nYou assure her that you know perfectly well what you're offering.\n\nShe considers you for a moment, then carefully places the card among her own.\n\n\"Very well. I accept. But don't imagine this means I'll go easy on you in our next match.\"\n\nA small smile appears.\n\n\"Especially now that you've been kind enough to improve my deck.\""
+            }
+          },
+          {
+            "type": "gift_card_to_character",
+            "parameters": {
+              "characterKey": "emma",
+              "cardKey": "happy_little_accident"
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 2
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_handmade_gift"
+            }
+          }
+        ]
+      },
+      {
+        "text": "\"Would you like to know how I made it?\"",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Emma's eyes return immediately to the card.\n\n\"I think I can work out the essentials myself, thank you.\"\n\nShe pauses.\n\n\"Although... that third enchantment is rather unconventional.\"\n\nYou explain the technique as best you can, carefully omitting certain details involving your elbow and a rather unfortunate jar of pigment. Emma listens intently, occasionally asking a question so precise that you find yourself reconsidering your own explanation.\n\nEventually, she leans back.\n\n\"That's clever. I wouldn't have approached it that way.\"\n\nShe takes a sheet of paper and begins sketching a variation.\n\n\"Of course, there's a way to improve it.\"\n\nNaturally. You would have been disappointed otherwise."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "respect",
+              "amount": 2
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "teach_ability",
+            "parameters": {
+              "ability": "mezz",
+              "characterKey": "emma"
+            }
+          },
+          {
+            "type": "level_up_character",
+            "parameters": {
+              "characterKey": "emma"
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_shared_technique"
+            }
+          }
+        ]
+      },
+      {
+        "text": "\"Not bad, is it? Think you can do better?\"",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Emma looks at you over the edge of the card.\n\n\"Oh, so that's why you're here.\"\n\nShe examines it once more, then returns it with exaggerated care.\n\n\"I admit, Antonio, you've set a rather interesting standard.\"\n\nShe gathers her books, a mischievous glint in her eyes.\n\n\"I was planning a quiet afternoon of study, but apparently I have something more important to do.\"\n\n\"What's that?\"\n\nShe gives you a sweet smile.\n\n\"Improve upon your work, obviously.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 2
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_crafting_challenge"
+            }
+          }
+        ]
+      }
+    ],
+    "title": "Handmade Card",
+    "characterArc": "emma",
+    "emotion": "surprised",
+    "image": "emma_handmade_card.jpg",
+    "imageSize": "medium",
+    "effects": [
+      {
+        "type": "change_relation",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "respect",
+          "amount": 1
+        }
+      },
+      {
+        "type": "add_known_trait",
+        "parameters": {
+          "characterKey": "emma",
+          "title": "Unusual crafting techniques",
+          "description": "Emma is fascinated by unusual crafting techniques and has a particular interest in blue magic."
+        }
+      }
+    ],
+    "manualTrigger": "Show Emma your remarkable card"
+  },
+  {
+    "key": "emma_ballet_incident",
+    "title": "The Ballet Incident",
+    "text": "You're enjoying a peaceful break in the cafeteria with Molly, Henry and Ousmane when Elsa bursts in, barely containing her laughter.\n\n\"You simply _must_ come and see this! It's hilarious! She thinks she's some sort of fairy!\"\n\nThe four of you exchange puzzled looks.\n\n\"Emma, that insufferable little princess! Oh, just come along!\"\n\nCuriosity gets the better of you, and you follow Elsa through the Academy corridors to a small exercise hall.\n\nInside, Emma is practicing ballet alone. Dressed in a simple dance outfit, she stands beside a wooden barre, one hand resting lightly upon it. Her other hand holds her raised foot high above her head, at the end of a perfectly straight, almost impossibly vertical leg. Her balance is flawless, her expression one of absolute concentration. She hasn't noticed you.\n\nElsa turns toward the group, positively glowing with anticipation of the sarcastic remarks to come.\n\nInstead, she finds Molly applauding very softly, her face alight with admiration, and three young men standing perfectly still, mouths hanging open, apparently hypnotized.\n\n{{emmaSmittenReaction}}\n\nElsa's triumphant smile collapses.\n\n\"Oh, for heaven's sake! You're all _hopeless!_\"\n\nShe storms off, her indignant footsteps echoing so loudly through the hall that Emma finally notices her audience.\n\nHenry and Ousmane, caught red-handed, turn scarlet and beat a hasty retreat. Molly gives Emma a delighted smile and an enthusiastic thumbs-up before following them.\n\nAnd suddenly, there's only you.\n\nEmma calmly lowers her leg, turns toward you, and raises one eyebrow. A mischievous little smile plays at the corner of her mouth, as though she's daring you to say something.",
+    "passages": {
+      "emmaSmittenReaction": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "Legs like that should be forbidden by law!"
+                }
+              }
+            ],
+            "text": "Honestly, this girl ought to be illegal. How on earth are you supposed to get any sleep tonight?"
+          }
+        ],
+        "fallback": "You have to admit, it's quite a sight. You'd known Emma was talented, but apparently her determination to excel extends well beyond the card table."
+      }
+    },
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 8
+        }
+      }
+    ],
+    "effects": [
+      {
+        "type": "move",
+        "parameters": {
+          "placeKey": "academy-hall",
+          "characterKeys": [
+            "player",
+            "emma",
+            "elsa",
+            "henry",
+            "ousmane",
+            "molly"
+          ]
+        }
+      },
+      {
+        "type": "add_known_trait",
+        "parameters": {
+          "characterKey": "emma",
+          "title": "Ballet",
+          "description": "Emma is an accomplished ballet dancer, possessing remarkable grace, strength and flexibility."
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "A respectful nod",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You incline your head appreciatively.\n\n\"I went to see the National Ballet back home last year. I must say, you wouldn't have looked out of place on that stage. Holding a pose like that with such grace isn't something one sees every day.\"\n\nEmma's raised eyebrow slowly settles.\n\n\"Well, Fibonacci. I had no idea you were a patron of the fine arts.\"\n\nA mischievous smile touches her lips.\n\n\"You really ought to invite our dear Baroness sometime. A little culture might do her a world of good.\"\n\nShe gives you a graceful little wave as she heads toward the changing rooms."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "A little camaraderie",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Well, that wasn't quite the reaction Elsa was hoping for,\" you remark with a wink.\n\nEmma relaxes at once, a broad, infectious smile spreading across her face.\n\n\"No, I believe she rolled a critical failure on that particular spell.\"\n\nShe glances toward the corridor, still smiling.\n\n\"All that effort to assemble an audience, too. Poor Elsa. One almost feels sorry for her.\"\n\n\"Almost?\"\n\n\"Let's not get carried away, Antonio.\"\n\nShe gives you a conspiratorial wink before collecting her things."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "An unfortunate compliment",
+        "triggers": [
+          {
+            "triggerType": "relation_tag",
+            "parameters": {
+              "characterKey": "emma",
+              "relationTag": "Legs like that should be forbidden by law!"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Emma, er... hello. I... very nice, yes. Very straight, and everything...\"\n\nEmma approaches with the delighted expression of a cat that has just discovered a particularly entertaining mouse.\n\n\"Ah, Antonio! My most devoted admirer! I see you're quite the ballet enthusiast. The tutus, the flexibility, the _physique_, above all. Am I right?\"\n\nOh, dear.\n\n\"Er, yes. The physique. Exceptional, yes...\"\n\nEmma's smile grows positively wicked.\n\n\"Antonio, if we're going to be seeing each other in class all year, you'll really have to learn to resist certain enchantments.\"\n\nShe pauses, looking you straight in the eye.\n\n\"Otherwise, I'm afraid your grades are going to suffer terribly.\"\n\nShe walks away with a perfectly innocent expression, leaving you to contemplate the urgent need for remedial lessons in magical resistance."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "love",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_ballet_flirt"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Play it cool",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You shrug, doing your best to look unimpressed.\n\n\"Not bad, Delamain. A little showy, perhaps.\"\n\nEmma's eyebrow climbs a little higher.\n\n\"Showy?\"\n\n\"Well, you certainly know how to make an entrance. Or rather, how to keep an audience.\"\n\nEmma studies you for a moment. Then a slow smile spreads across her face.\n\n\"Oh, I see. Everyone else is applauding, so naturally you must be difficult.\"\n\nShe takes a step closer, her eyes sparkling with amusement.\n\n\"Tell me, Antonio. Is it that you're genuinely unimpressed, or that you simply can't bear to admit I might be good at something?\"\n\nYou return her smile.\n\n\"Wouldn't want you getting complacent.\"\n\nEmma laughs.\n\n\"How very considerate of you. I'll be sure to return the favor.\"\n\nShe gives you a mockingly gracious little bow before heading toward the changing rooms."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "emma",
+    "image": "emma_ballet_incident.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "happy_little_accident",
+    "text": "Your third artificery lesson is progressing remarkably well. You've arranged your ingredients, prepared your pigments, and even managed to follow most of the professor's instructions. At this rate, you might produce something almost respectable.\n\nThen your elbow catches a jar.\n\nA cascade of shimmering blue powder spills across the workbench, mixing with your carefully prepared ingredients. You grab for a cloth, knock over a second jar, and watch in horror as the entire mixture begins to glow.\n\nThere is a sharp pop, a flash of blue light, and the unmistakable smell of burnt cinnamon.\n\nWhen the smoke clears, a perfectly formed card lies in the middle of the table.\n\nYou pick it up cautiously. The enchantments woven into its surface are unlike anything you've seen before: intricate, powerful, and somehow perfectly balanced.\n\nThe professor approaches, examines your creation, and falls silent.\n\n\"Fibonacci. How exactly did you achieve this?\"\n\nAn excellent question. One you would very much like to know the answer to yourself.\n\n\"Remarkable,\" the professor murmurs. \"Quite remarkable. You must document your procedure.\"\n\nYes. Of course. Your procedure.\n\nYou glance at the empty jars, the stained workbench, and the smoking remains of your notes.\n\nThis could be difficult.",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "day": 4
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "morning"
+        }
+      }
+    ],
+    "optionTemplates": [],
+    "title": "Happy Little Accident",
+    "effects": [
+      {
+        "type": "offer_card_gifts",
+        "parameters": {
+          "count": 1,
+          "specificCardKeys": [
+            "happy_little_accident"
+          ]
         }
       }
     ]

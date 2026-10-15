@@ -117,7 +117,6 @@ export interface EventOptionAttributeCheck {
 // An event template defines when a scene event triggers and how to generate its options
 export interface EventTemplate {
   key: string;
-  /** Short heading shown above event narration / relation-arc beats. */
   title?: string;
   text: string;
   optionTemplates: EventOptionTemplate[];
@@ -128,6 +127,15 @@ export interface EventTemplate {
   image?: string;
   imageSize?: EventImageSize;
   manualTrigger?: string;
+  passages?: Record<string, EventPassage>;
+}
+
+export interface EventPassage {
+  variants: {
+    triggers: EventTrigger[];
+    text: string;
+  }[];
+  fallback?: string;
 }
 
 export interface EventOptionTemplate {

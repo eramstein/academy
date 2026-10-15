@@ -52,21 +52,34 @@ names). Canonical shape:
 ```markdown
 # Event: <Title>
 
-**NPC:** <npc key>.          # omit or use `main` / none for main-story
-**Event ID:** `<key>`        # permanent JSON key; required
+**NPC:** <npc key>. # omit or use `main` / none for main-story
+**Event ID:** `<key>` # permanent JSON key; required
 **Trigger:** <plain-language conditions>
-**Image:** <filename.jpg and/or small|medium|large>.   # optional
-**Emotion:** <Emotion enum value>.                     # optional
-**Manual trigger:** <button label>.                    # optional; withhold auto-play
+**Image:** <filename.jpg and/or small|medium|large>. # optional
+**Emotion:** <Emotion enum value>. # optional
+**Manual trigger:** <button label>. # optional; withhold auto-play
 
 ## Text
 
 <verbatim event body; blank lines = paragraph breaks>
+<optional {{ passageKey }} tokens; see Conditional passages>
+
+## Conditional passages
+
+<passageKey>
+
+When: <condition>
+
+<verbatim prose used when that condition matches>
+
+Otherwise:
+
+<verbatim fallback prose>
 
 ## Effects
 
 - <always-on outcomes when the event fires, before choices>
-  - **<trait title>:** <description>     # for known traits
+  - **<trait title>:** <description> # for known traits
 
 ## Options
 
@@ -81,6 +94,7 @@ names). Canonical shape:
 - <effects for this choice, or "No additional game-state effects.">
 
 ### Option B: <option label>
+
 …
 ```
 
@@ -91,6 +105,8 @@ Optional sections:
 - Attribute checks: `**Check:** charisma medium` plus `**On success:**` /
   `**On failure:**` instead of flat outcomes (maps to `attributeCheck`).
 - Empty `## Options` (or omit options) → `optionTemplates: []` (narration-only).
+- `## Conditional passages` — named snippets swapped into `{{ passageKey }}` tokens in
+  `## Text` (see Passages). Omit the section when the event text is fully static.
 
 Folder name and `**NPC:**` should agree; `characterArc` is the NPC key for arc
 events. Main-story events omit `characterArc`.
@@ -104,8 +120,11 @@ events. Main-story events omit `characterArc`.
 3. Build the `EventTemplate`:
    - `key` ← `**Event ID:**` (keep exactly; do not rename to “fit” house style).
    - `title` ← `# Event: …` heading text (strip the `Event:` prefix).
-   - `text` ← `## Text` body, verbatim, paragraphs joined with `\n\n`.
-   - `emotion` / `image` / `imageSize` ← front matter when present.
+   - `text` ← `## Text` body, verbatim, paragraphs joined with `\n\n`. Keep
+     `{{ passageKey }}` tokens exactly as written.
+   - `passages` ← `## Conditional passages` when present (see Passages). Omit when absent.
+   - `emotion` / `image` / `imageSize` ← front matter when present. If
+     `**Image:**` is only a size, still set `image` to `"<key>.jpg"`.
    - `characterArc` ← `**NPC:**` when it is an NPC key.
    - `triggers` ← map `**Trigger:**` (see Triggers).
    - `manualTrigger` ← `**Manual trigger:**` label when present (omit when absent).
@@ -137,7 +156,8 @@ type strings (unknown types crash when the event fires).
 
 ## Prose rules (non-negotiable)
 
-- Copy `## Text` and option `**Text:**` **exactly** (wording, punctuation, quotes).
+- Copy `## Text`, passage prose, and option `**Text:**` **exactly** (wording, punctuation, quotes).
+- Keep `{{ passageKey }}` tokens in `text`. Do not expand them while compiling.
 - Preserve paragraph breaks as `\n\n`; trim only a single trailing newline on the
   whole string if needed for tidy JSON.
 - Do not collapse multi-paragraph beats into one paragraph.
@@ -150,9 +170,26 @@ type strings (unknown types crash when the event fires).
 {
   "key": "emma_first_encounter",
   "title": "A Rather Unfortunate First Impression",
-  "text": "Paragraph one…\n\nParagraph two…",
-  "triggers": [ /* ALL must match */ ],
-  "effects": [ /* optional; on fire, before options */ ],
+  "text": "Paragraph one…\n\n{{ intro }}\n\nParagraph two…",
+  "passages": {
+    "intro": {
+      "variants": [
+        {
+          "triggers": [
+            { "triggerType": "story_tag", "parameters": { "tag": "emma_met", "value": 1 } },
+          ],
+          "text": "\"Antonio. We meet again,\" she says.",
+        },
+      ],
+      "fallback": "\"Emma Delamain,\" she introduces herself.",
+    },
+  },
+  "triggers": [
+    /* ALL must match */
+  ],
+  "effects": [
+    /* optional; on fire, before options */
+  ],
   "optionTemplates": [
     /* [] = narration only.
        Optional per-option `triggers`: ALL must match or the choice is hidden. */
@@ -160,15 +197,15 @@ type strings (unknown types crash when the event fires).
   "characterArc": "emma",
   "emotion": "neutral",
   "image": "emma_first_encounter.jpg",
-  "imageSize": "large"
+  "imageSize": "large",
   // optional "manualTrigger": "Speak with Emma" — scene-action label; omit to auto-play
 }
 ```
 
 Every event fires at most once: firing stamps `gs.storyTags[event.key]`. Empty
 `triggers` means follow-up / debug only (`follow_up_event` or `/e`) — never
-auto-fires. Property order: `key`, `title`, `text`, `triggers`, `effects`,
-`optionTemplates`, `characterArc`, `emotion`, `image`, `imageSize`, then
+auto-fires. Property order: `key`, `title`, `text`, optional `passages`, `triggers`,
+`effects`, `optionTemplates`, `characterArc`, `emotion`, `image`, `imageSize`, then
 optional `manualTrigger`. Options:
 `text`, optional `triggers`, then `effects` or `attributeCheck`, then optional
 `actionTemplate`.
@@ -177,9 +214,11 @@ optional `manualTrigger`. Options:
 
 From `**Image:**`:
 
-- A bare size (`small` / `medium` / `large`) → set `imageSize` only.
+- A bare size (`small` / `medium` / `large`) → set `imageSize` **and**
+  `image: "<event_key>.jpg"` (assume the asset exists; do not omit `image`).
 - A `.jpg` filename → set `image` (never author `.png` in event JSON).
-- Both → set both. Asset path: `public/assets/images/events/{image}` (or the mod’s
+- Both → set both (filename wins over the default key name).
+- Asset path: `public/assets/images/events/{image}` (or the mod’s
   `images/events/`).
 
 ## Triggers
@@ -191,44 +230,103 @@ that label is a scene action, and choosing it plays the event. Empty or whitespa
 `manualTrigger` is omitted (auto-play stays the default). Socialize-gated events
 still resolve from the socialize action.
 
-| `triggerType`        | `parameters`                                                       | Notes                                                                                                                                                                                         |
-| -------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `socialize`          | `{ characterKey, socializeType }`                                  | `befriend`, `taunt`, `impress`, `flirt`.                                                                                                                                                      |
-| `relation_parameter` | `{ characterKey, relationParameter, value }`                       | Cumulative `relationProgress`. Positive `value` = at least; negative = at most.                                                                                                               |
-| `character_present`  | `{ characterKey }`                                                 | NPC in the player's current place.                                                                                                                                                            |
-| `day`                | `{ day?: 3, minDay?: 4 }`                                          | Exact day and/or `day >= minDay`. Day 1 = Monday.                                                                                                                                             |
-| `period`             | `{ period: "morning" }` or `{ periods: ["morning", "afternoon"] }` | `morning`, `afternoon`, `evening`.                                                                                                                                                            |
-| `day_of_week`        | `{ daysOfWeek: [6, 7] }`                                           | 1 = Monday … 7 = Sunday.                                                                                                                                                                      |
-| `place`              | `{ placeKey }`                                                     | Player's current place.                                                                                                                                                                       |
-| `activity_type`      | `{ activityType }`                                                 | Matches the current scheduled activity.                                                                                                                                                       |
-| `activity_history`   | `{ characterKey, activityType, value }`                            | Shared that activity at least `value` times.                                                                                                                                                  |
-| `matches_won`        | `{ characterKey, count }`                                          | Wins vs that NPC ≥ `count`.                                                                                                                                                                   |
-| `matches_lost`       | `{ characterKey, count }`                                          | Losses vs that NPC ≥ `count`.                                                                                                                                                                 |
-| `leagues_won`        | `{ characterKey, count }`                                          | Appearances in `league.pastWinners` ≥ `count`; `characterKey` may be `"player"`.                                                                                                              |
-| `story_tag`          | `{ tag: "molly-f1", value: 1 }`                                    | `gs.storyTags[tag]` ≥ `value`. `value: -1` = tag absent. Event keys auto-stamp on fire.                                                                                                       |
-| `relation_tag`       | `{ characterKey, relationTag }`                                    | NPC has that `RelationTag` on `relationTags`. Optional `value: -1` = tag absent.                                                                                                              |
-| `scheduled_activity` | `{}`                                                               | Current activity `eventId` equals this event's `key`.                                                                                                                                         |
+| `triggerType`        | `parameters`                                                       | Notes                                                                                   |
+| -------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `socialize`          | `{ characterKey, socializeType }`                                  | `befriend`, `taunt`, `impress`, `flirt`.                                                |
+| `relation_parameter` | `{ characterKey, relationParameter, value }`                       | Cumulative `relationProgress`. Positive `value` = at least; negative = at most.         |
+| `character_present`  | `{ characterKey }`                                                 | NPC in the player's current place.                                                      |
+| `day`                | `{ day?: 3, minDay?: 4 }`                                          | Exact day and/or `day >= minDay`. Day 1 = Monday.                                       |
+| `period`             | `{ period: "morning" }` or `{ periods: ["morning", "afternoon"] }` | `morning`, `afternoon`, `evening`.                                                      |
+| `day_of_week`        | `{ daysOfWeek: [6, 7] }`                                           | 1 = Monday … 7 = Sunday.                                                                |
+| `place`              | `{ placeKey }`                                                     | Player's current place.                                                                 |
+| `activity_type`      | `{ activityType }`                                                 | Matches the current scheduled activity.                                                 |
+| `activity_history`   | `{ characterKey, activityType, value }`                            | Shared that activity at least `value` times.                                            |
+| `matches_won`        | `{ characterKey, count }`                                          | Wins vs that NPC ≥ `count`.                                                             |
+| `matches_lost`       | `{ characterKey, count }`                                          | Losses vs that NPC ≥ `count`.                                                           |
+| `leagues_won`        | `{ characterKey, count }`                                          | Appearances in `league.pastWinners` ≥ `count`; `characterKey` may be `"player"`.        |
+| `story_tag`          | `{ tag: "molly-f1", value: 1 }`                                    | `gs.storyTags[tag]` ≥ `value`. `value: -1` = tag absent. Event keys auto-stamp on fire. |
+| `relation_tag`       | `{ characterKey, relationTag }`                                    | NPC has that `RelationTag` on `relationTags`. Optional `value: -1` = tag absent.        |
+| `scheduled_activity` | `{}`                                                               | Current activity `eventId` equals this event's `key`.                                   |
 
 ### Mapping plain-language `**Trigger:**`
 
-| Markdown phrasing (examples)                         | JSON                                                                 |
-| ---------------------------------------------------- | -------------------------------------------------------------------- |
-| First time / when \<NPC\> is present                 | `character_present` (once-only is automatic via story tag on fire)   |
-| When the player befriends / flirts / … \<NPC\>       | `socialize` + usually `character_present`                            |
-| After event \<key\> / once \<key\> happened          | `story_tag` `{ tag: "<key>", value: 1 }`                             |
-| Friendship / respect / … at least N                  | `relation_parameter` with positive `value`                           |
-| At the library / academy-hall / …                    | `place`                                                              |
-| During class / work / …                              | `activity_type`                                                      |
-| Morning / afternoon / evening                        | `period`                                                             |
-| Day N / on or after day N                            | `day` with `day` and/or `minDay`                                     |
-| Weekend                                              | `day_of_week` `[6, 7]`                                               |
-| Follow-up only / queued by another option            | `triggers: []`                                                       |
-| Has / lacks relation tag (e.g. EmmaSmitten)          | `relation_tag` `{ characterKey, relationTag }` (+ optional `value: -1`) |
+| Markdown phrasing (examples)                                       | JSON                                                                    |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| First time / when \<NPC\> is present                               | `character_present` (once-only is automatic via story tag on fire)      |
+| When the player befriends / flirts / … \<NPC\>                     | `socialize` + usually `character_present`                               |
+| After event \<key\> / once \<key\> happened / \<tag\> has occurred | `story_tag` `{ tag: "<key>", value: 1 }`                                |
+| \<tag\> has not occurred                                           | `story_tag` `{ tag: "<tag>", value: -1 }`                               |
+| Friendship / respect / … at least N                                | `relation_parameter` with positive `value`                              |
+| At the library / academy-hall / …                                  | `place`                                                                 |
+| During class / work / …                                            | `activity_type`                                                         |
+| Morning / afternoon / evening                                      | `period`                                                                |
+| Day N / on or after day N                                          | `day` with `day` and/or `minDay`                                        |
+| Weekend                                                            | `day_of_week` `[6, 7]`                                                  |
+| Follow-up only / queued by another option                          | `triggers: []`                                                          |
+| Has / lacks relation tag (e.g. EmmaSmitten)                        | `relation_tag` `{ characterKey, relationTag }` (+ optional `value: -1`) |
 
 Prefer `socialize` for befriend/flirt/impress/taunt beats — socialize does **not**
 change `relationProgress`. Prefer `relation_parameter` for lasting thresholds.
 Scene-entry offers (no socialize) still need `character_present` so they cannot
 fire while the NPC is elsewhere.
+
+## Passages
+
+`text` stays the authored string. It may include `{{ passageKey }}` tokens (optional
+spaces inside the braces). At display time the engine replaces each token with the
+first passage variant whose triggers all match, or with `fallback` when none match.
+That resolved string is what the player reads and what is stored on `relationArc`.
+Missing tokens become empty. A variant with no triggers always matches, so give
+every variant at least one trigger and put the unconditional prose in `fallback`.
+
+Compile `## Conditional passages` into `passages`. Do not inline the chosen prose
+into `text`.
+
+```markdown
+## Conditional passages
+
+intro
+
+When: emma_met has occurred
+
+"Antonio. We meet again," she says, with a familiar raised eyebrow. "I trust you've recovered your powers of speech."
+
+Otherwise:
+
+"Emma Delamain," she introduces herself, offering her hand. "And you must be Antonio Fibonacci. A pleasure."
+```
+
+Maps to:
+
+```json
+"passages": {
+  "intro": {
+    "variants": [
+      {
+        "triggers": [{ "triggerType": "story_tag", "parameters": { "tag": "emma_met", "value": 1 } }],
+        "text": "\"Antonio. We meet again,\" she says, with a familiar raised eyebrow. \"I trust you've recovered your powers of speech.\""
+      }
+    ],
+    "fallback": "\"Emma Delamain,\" she introduces herself, offering her hand. \"And you must be Antonio Fibonacci. A pleasure.\""
+  }
+}
+```
+
+Rules:
+
+- Each passage starts with a lone key line (`intro`, `passageAlreadyMet`). The same
+  key must appear in `## Text` as `{{ intro }}`.
+- `When:` uses the same phrasing as `**Trigger:**`. Consecutive `When:` lines before
+  the prose are AND (one trigger each). The following prose, verbatim, is that
+  variant's `text` (paragraphs → `\n\n`).
+- A later `When:` after prose starts the next variant. First listed variant that
+  matches wins.
+- `Otherwise:` is optional `fallback`. One per passage, after its variants. Omit
+  `fallback` in JSON when there is no Otherwise.
+- Quote marks in the sample are dialogue, part of the prose — copy them.
+- Several passages: repeat key / When / Otherwise blocks in the same section.
+- Passage triggers are evaluated when the event is shown, before this event's
+  effects run and before its own story tag is stamped.
 
 ## Option triggers
 
@@ -241,26 +339,28 @@ least one ungated option when the player must always respond.
 `EventEffect` objects (`type` + `parameters`). Types live in `EventEffectType`
 (`src/lib/_model/enums-sim.ts`):
 
-| `type`                | `parameters`                                                                                                                                                       |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `add_resource`        | `{ resourceType: "magic_dust" \| "mithril" \| "moxes" \| …, amount }`                                                                                              |
-| `add_gold`            | `{ amount }`                                                                                                                                                       |
-| `get_deck`            | `{ deckKey }`                                                                                                                                                      |
-| `schedule_activity`   | `{ activity: { type, participants, placeKey, classType?, eventId? }, schedule: { date?: { day, period }, nextFree?: true, recurrence?: { … } } }`                 |
-| `get_job`             | `{ job: { jobType, name, description, payPerActivity, employerKey, placeKey, schedule } }`                                                                         |
-| `follow_up_event`     | `{ eventKey }`                                                                                                                                                     |
-| `offer_card_gifts`    | `{ count, poolKeys }`                                                                                                                                              |
-| `teach_color`         | `{ color?, characterKey? }`                                                                                                                                        |
-| `teach_ability`       | `{ ability?, characterKey? }`                                                                                                                                      |
-| `narrate`             | `{ text }` — use for option `**Text:**` bodies                                                                                                                     |
-| `level_attribute`     | `{ attribute, amount?, characterKey? }`                                                                                                                            |
-| `change_relation`     | `{ characterKey, relationParameter, amount }`                                                                                                                      |
-| `update_relation_arc` | `{ characterKey, text, image? }`                                                                                                                                   |
-| `add_relation_tag`    | `{ characterKey, relationTag }` — value must be the **enum string** from `RelationTag` in `enums-sim.ts` (markdown may use the member name; resolve it)          |
-| `add_story_tag`       | `{ tag, amount? }`                                                                                                                                                 |
-| `add_known_trait`     | `{ characterKey, title, description }` — map “Add to X's known traits: **Title:** desc”                                                                            |
-| `move`                | `{ placeKey, characterKeys }`                                                                                                                                      |
-| `use_focus`           | `{ amount }`                                                                                                                                                       |
+| `type`                   | `parameters`                                                                                                                                            |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `add_resource`           | `{ resourceType: "magic_dust" \| "mithril" \| "moxes" \| …, amount }`                                                                                   |
+| `add_gold`               | `{ amount }`                                                                                                                                            |
+| `get_deck`               | `{ deckKey }`                                                                                                                                           |
+| `schedule_activity`      | `{ activity: { type, participants, placeKey, classType?, eventId? }, schedule: { date?: { day, period }, nextFree?: true, recurrence?: { … } } }`       |
+| `get_job`                | `{ job: { jobType, name, description, payPerActivity, employerKey, placeKey, schedule } }`                                                              |
+| `follow_up_event`        | `{ eventKey }`                                                                                                                                          |
+| `offer_card_gifts`       | `{ count, poolKeys }`                                                                                                                                   |
+| `gift_card_to_character` | `{ characterKey, cardKey }` — moves a matching card from the player's collection to the NPC's                                                           |
+| `teach_color`            | `{ color?, characterKey? }`                                                                                                                             |
+| `teach_ability`          | `{ ability?, characterKey? }`                                                                                                                           |
+| `narrate`                | `{ text }` — use for option `**Text:**` bodies                                                                                                          |
+| `level_attribute`        | `{ attribute, amount?, characterKey? }`                                                                                                                 |
+| `level_up_character`     | `{ characterKey }` — increments that NPC's `tcgSkill` by 1                                                                                              |
+| `change_relation`        | `{ characterKey, relationParameter, amount }`                                                                                                           |
+| `update_relation_arc`    | `{ characterKey, text, image? }`                                                                                                                        |
+| `add_relation_tag`       | `{ characterKey, relationTag }` — value must be the **enum string** from `RelationTag` in `enums-sim.ts` (markdown may use the member name; resolve it) |
+| `add_story_tag`          | `{ tag, amount? }`                                                                                                                                      |
+| `add_known_trait`        | `{ characterKey, title, description }` — map “Add to X's known traits: **Title:** desc”                                                                 |
+| `move`                   | `{ placeKey, characterKeys }`                                                                                                                           |
+| `use_focus`              | `{ amount }`                                                                                                                                            |
 
 Event-level `effects` run on fire; option `effects` run only if chosen.
 
@@ -285,15 +385,17 @@ Difficulties: `trivial` / `veryeasy` / `easy` / `medium` / `hard` / `extreme` /
 `schedule_activity`: `schedule.date.day` is an **offset from today** (`0` = today).
 `follow_up_event` queues by key and bypasses that event's triggers — target should
 use `triggers: []`.
+`gift_card_to_character` takes a template `cardKey` (e.g. `happy_little_accident`);
+it finds a matching instance in the player's collection (exact id or `cardKey-<uuid>`).
 
 ## Keys to verify
 
-| Kind                                       | Source                                      |
-| ------------------------------------------ | ------------------------------------------- |
-| Character keys, display names, gender      | `src/data/npcs.ts` (plus `"player"`)        |
-| Place keys                                 | `PLACES` in `src/data/sim/places.ts`        |
-| Deck keys                                  | `getDeck` in `src/lib/sim/effects/decks.ts` |
-| Resource, period, activity, class, emotion, relation tags | `src/lib/_model/enums-sim.ts`   |
+| Kind                                                      | Source                                      |
+| --------------------------------------------------------- | ------------------------------------------- |
+| Character keys, display names, gender                     | `src/data/npcs.ts` (plus `"player"`)        |
+| Place keys                                                | `PLACES` in `src/data/sim/places.ts`        |
+| Deck keys                                                 | `getDeck` in `src/lib/sim/effects/decks.ts` |
+| Resource, period, activity, class, emotion, relation tags | `src/lib/_model/enums-sim.ts`               |
 
 The validator lists allowed values in errors — re-run it when unsure.
 
@@ -320,9 +422,10 @@ Source: `src/data/sim/events/emma/first_impression.md` (abbreviated mapping):
 - `**NPC:** emma` → `characterArc: "emma"`
 - `**Trigger:** First time Emma is present…` →
   `[{ "triggerType": "character_present", "parameters": { "characterKey": "emma" } }]`
-- `**Image:** large` → `imageSize: "large"` (no filename → omit `image`)
+- `**Image:** large` → `imageSize: "large"`, `image: "<key>.jpg"`
+  (e.g. `emma_first_encounter.jpg`)
 - `**Emotion:** neutral` → `emotion: "neutral"`
 - `## Text` → `text` with `\n\n` between paragraphs
 - Known trait under `## Effects` → event `effects`: `add_known_trait`
-- Option labels → `optionTemplates[].text`; option bodies → `narrate`; 
+- Option labels → `optionTemplates[].text`; option bodies → `narrate`;
   `EmmaSmitten` → `add_relation_tag` with the `RelationTag.EmmaSmitten` string value

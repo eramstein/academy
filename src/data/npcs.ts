@@ -273,7 +273,7 @@ export const npcs: Record<string, Npc> = {
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Blue],
     bio: `Emma Delamain was born poor and raised as if poverty were a problem to be solved by books. Her family had little money and a great deal of culture, and they spent what they had on an education of the highest order. She repaid them by becoming brilliant. At twenty-seven she is already a force at the Academy: ambitious, exacting, and, when a goal is in sight, capable of a ruthlessness that startles even those who admire her. Beauty is another of her instruments. She is strikingly lovely and does not pretend otherwise; charm, for her, is a tool as legitimate as any theorem. Yet she is not all calculation. She reads voraciously, plays the violin with real feeling, and possesses a sharp, delighted humor. Those she likes she teases without mercy, as if affection were a sport. To be chosen by Emma is to be both flattered and a little afraid, for she gives her attention the way a duelist gives a salute: gracefully, and with every intention of winning.`,
-    age: 27,
+    age: 24,
     favoritePlaces: {
       'old-monk-inn': 1,
     },

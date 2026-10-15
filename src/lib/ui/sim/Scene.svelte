@@ -33,6 +33,9 @@
   let narrationDone = $state(false);
   /** Last measured actions bar height — kept while narration hides the bar. */
   let reservedActionsHeight = 0;
+  /** Reader is at the ink. Cleared when they scroll up into earlier pages. */
+  let pinnedToTail = true;
+  let followFrame = 0;
 
   const reduceMotion =
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -69,28 +72,16 @@
 
       if (current === undefined) {
         bookHeight = next;
-        return;
-      }
-
-      if (next === current) return;
-
-      const delta = Math.abs(next - current);
-      // Small changes (line wraps while typing) follow instantly; larger jumps ease.
-      if (reduceMotion || delta < 48) {
-        const wasTransitioning = untrack(() => heightTransition);
-        if (wasTransitioning) heightTransition = false;
-        bookHeight = next;
-        if (wasTransitioning && !reduceMotion) {
-          requestAnimationFrame(() => {
-            heightTransition = true;
-          });
-        }
-      } else {
-        if (!untrack(() => heightTransition) && !reduceMotion) {
+      } else if (Math.abs(next - current) >= 2) {
+        // Ease every real growth, including a single new line. Instant line
+        // steps read as jumps; sub-pixel observer noise is ignored above.
+        if (!reduceMotion && !untrack(() => heightTransition)) {
           heightTransition = true;
         }
         bookHeight = next;
       }
+
+      if (nowScrollable) queueMicrotask(() => followTail());
     };
 
     const ro = new ResizeObserver(syncHeight);
@@ -98,7 +89,32 @@
     if (bookEl.parentElement) ro.observe(bookEl.parentElement);
     syncHeight();
 
-    return () => ro.disconnect();
+    const onKeyScroll = (event: KeyboardEvent) => {
+      if (!pageEl || !untrack(() => scrollable)) return;
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')
+      ) {
+        return;
+      }
+      if (event.key === 'ArrowUp' || event.key === 'PageUp' || event.key === 'Home') {
+        pinnedToTail = false;
+      } else if (
+        (event.key === 'ArrowDown' || event.key === 'PageDown' || event.key === 'End') &&
+        tailGap(pageEl) <= 80
+      ) {
+        pinnedToTail = true;
+      }
+    };
+    window.addEventListener('keydown', onKeyScroll);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('keydown', onKeyScroll);
+      if (followFrame) cancelAnimationFrame(followFrame);
+      followFrame = 0;
+    };
   });
 
   // After first layout, jump to the latest entries (e.g. remounting the scene view).
@@ -129,7 +145,11 @@
     return Math.max(0, scene.clientHeight - padY - effectiveBottom - (effectiveBottom > 0 ? gap : 0));
   }
 
-  function revealScrollbar() {
+  function tailGap(el: HTMLElement): number {
+    return Math.max(0, el.scrollHeight - el.clientHeight - el.scrollTop);
+  }
+
+  function onPageScroll() {
     if (!untrack(() => scrollable)) return;
     scrolling = true;
     clearTimeout(hideScrollbarTimer);
@@ -138,11 +158,93 @@
     }, 800);
   }
 
+  function onUserWheel(event: WheelEvent) {
+    if (!pageEl || !untrack(() => scrollable)) return;
+    if (event.deltaY < -4) pinnedToTail = false;
+    else if (event.deltaY > 4 && tailGap(pageEl) <= 48) pinnedToTail = true;
+  }
+
+  function onScrollbarPointerDown(event: PointerEvent) {
+    if (!pageEl) return;
+    const rect = pageEl.getBoundingClientRect();
+    if (event.clientX < rect.right - 14) return;
+    const finish = () => {
+      window.removeEventListener('pointerup', finish);
+      if (!pageEl) return;
+      pinnedToTail = tailGap(pageEl) <= 32;
+    };
+    window.addEventListener('pointerup', finish);
+  }
+
+  /** Blank parchment under the ink, from `.page-content` padding. */
+  function writingMargin(): number {
+    if (!contentEl) return 72;
+    const pad = parseFloat(getComputedStyle(contentEl).paddingBottom);
+    return Number.isFinite(pad) ? pad : 72;
+  }
+
+  function bookIsCapped(): boolean {
+    if (!bookEl || bookHeight === undefined) return false;
+    if (!untrack(() => scrollable)) return false;
+    return bookEl.getBoundingClientRect().height >= bookHeight - 1.5;
+  }
+
+  function setScrollTop(top: number) {
+    if (!pageEl) return;
+    pageEl.scrollTop = top;
+  }
+
+  /**
+   * Keep the latest ink on the page without chasing every line.
+   * New lines land in the blank margin and the written lines stay put.
+   * Once that margin is nearly used, the page eases up and restores it.
+   */
+  function followTail() {
+    const el = pageEl;
+    if (!el || !untrack(() => pinnedToTail) || !bookIsCapped()) return;
+    const margin = writingMargin();
+    const gap = tailGap(el);
+    // Start only once most of the blank page has been written into.
+    const limit = Math.max(12, margin * 0.72);
+    if (gap <= limit) return;
+    if (reduceMotion) {
+      if (followFrame) cancelAnimationFrame(followFrame);
+      followFrame = 0;
+      setScrollTop(Math.max(0, el.scrollHeight - el.clientHeight));
+      return;
+    }
+    if (followFrame) return;
+    // Stop with the margin restored. Chasing every new line keeps the page moving.
+    const settle = Math.max(6, margin * 0.18);
+    const step = () => {
+      const node = pageEl;
+      if (!node || !untrack(() => pinnedToTail)) {
+        followFrame = 0;
+        return;
+      }
+      const gapNow = tailGap(node);
+      if (gapNow <= settle) {
+        followFrame = 0;
+        return;
+      }
+      const distance = Math.min(12, Math.max(1, (gapNow - settle) * 0.18));
+      setScrollTop(node.scrollTop + distance);
+      followFrame = requestAnimationFrame(step);
+    };
+    followFrame = requestAnimationFrame(step);
+  }
+
+  function onBookHeightEnd(event: TransitionEvent) {
+    if (event.propertyName !== 'height' || event.target !== bookEl) return;
+    followTail();
+  }
+
   function scrollPageToBottom(behavior: 'auto' | 'smooth' = 'smooth') {
     if (!untrack(() => scrollable)) return;
-    queueMicrotask(() => {
-      pageEl?.scrollTo({ top: pageEl.scrollHeight, behavior });
-    });
+    // Typing used to pass 'auto' and snap to the bottom on every glyph.
+    // Both beats now share the margin follow; instant snaps are the jumps.
+    void behavior;
+    queueMicrotask(() => followTail());
   }
 </script>
 
@@ -152,6 +254,7 @@
     class:height-transition={heightTransition && !reduceMotion}
     bind:this={bookEl}
     style:height={bookHeight !== undefined ? `${bookHeight}px` : undefined}
+    ontransitionend={onBookHeightEnd}
   >
     <div class="page">
       <div
@@ -159,7 +262,9 @@
         class:scrollable
         class:scrolling
         bind:this={pageEl}
-        onscroll={revealScrollbar}
+        onscroll={onPageScroll}
+        onwheel={onUserWheel}
+        onpointerdown={onScrollbarPointerDown}
       >
         <div class="page-content" bind:this={contentEl}>
           <NarrationList bind:done={narrationDone} onProgress={scrollPageToBottom} />
@@ -303,7 +408,7 @@
   }
 
   .book.height-transition {
-    transition: height 0.3s ease-out;
+    transition: height 0.4s ease-out;
   }
 
   .page {
@@ -339,6 +444,7 @@
     height: 100%;
     min-height: 0;
     overflow: hidden;
+    overflow-anchor: none;
   }
 
   .page-scroll.scrollable {
@@ -348,6 +454,10 @@
 
   .page-content {
     min-height: min-content;
+    overflow-x: clip;
+    /* Unwritten page. New lines fill this before the book advances, so the
+       lines already inked stay still instead of stepping up on every wrap. */
+    padding-bottom: 5.1em;
   }
 
   /* Chrome 121+ prefers scrollbar-* over ::-webkit-*, which brings OS arrows back */

@@ -176,7 +176,7 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
   if (template.effects) {
     template.effects.forEach((effect) => applyEffect(effect));
   }
-  recordEventOccured(template);
+  recordEventOccured(template, event.text);
   // Follow-up may have claimed the scene; drop optionless leftovers so callers restore actions.
   if (!sceneWaitingOnEventChoice()) {
     gs.scene.event = undefined;
