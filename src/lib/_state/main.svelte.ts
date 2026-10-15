@@ -1,6 +1,6 @@
 import { type BattleState, type GameState, type UiState } from '../_model';
 import { defaultBattleState } from '../battle';
-import { rebuildWorkingEventTemplates } from '../sim/events';
+import { getManualSceneTriggers, rebuildWorkingEventTemplates } from '../sim/events';
 import { defaultGameState, initSim } from '../sim/init';
 import { getGame, getLatestGame, saveGame, type SaveGame } from './save-games';
 import { uiState } from './state-ui.svelte';
@@ -55,6 +55,11 @@ export const loadGameStateFromLocalStorage = async (id: string) => {
         gs.player.maxFocus = defaultGameState.player.maxFocus;
       }
       rebuildWorkingEventTemplates();
+      if ((gs.scene.event?.options?.length ?? 0) > 0) {
+        gs.scene.manualTriggers = [];
+      } else {
+        gs.scene.manualTriggers = getManualSceneTriggers();
+      }
     } else {
       await initSim();
     }

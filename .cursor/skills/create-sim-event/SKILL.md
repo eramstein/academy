@@ -57,6 +57,7 @@ names). Canonical shape:
 **Trigger:** <plain-language conditions>
 **Image:** <filename.jpg and/or small|medium|large>.   # optional
 **Emotion:** <Emotion enum value>.                     # optional
+**Manual trigger:** <button label>.                    # optional; withhold auto-play
 
 ## Text
 
@@ -107,6 +108,7 @@ events. Main-story events omit `characterArc`.
    - `emotion` / `image` / `imageSize` ← front matter when present.
    - `characterArc` ← `**NPC:**` when it is an NPC key.
    - `triggers` ← map `**Trigger:**` (see Triggers).
+   - `manualTrigger` ← `**Manual trigger:**` label when present (omit when absent).
    - `effects` ← map `## Effects` (see Effects).
    - `optionTemplates` ← each `### Option …`:
      - `text` ← the option **label** (heading after `Option A:`).
@@ -159,13 +161,15 @@ type strings (unknown types crash when the event fires).
   "emotion": "neutral",
   "image": "emma_first_encounter.jpg",
   "imageSize": "large"
+  // optional "manualTrigger": "Speak with Emma" — scene-action label; omit to auto-play
 }
 ```
 
 Every event fires at most once: firing stamps `gs.storyTags[event.key]`. Empty
 `triggers` means follow-up / debug only (`follow_up_event` or `/e`) — never
 auto-fires. Property order: `key`, `title`, `text`, `triggers`, `effects`,
-`optionTemplates`, `characterArc`, `emotion`, `image`, `imageSize`. Options:
+`optionTemplates`, `characterArc`, `emotion`, `image`, `imageSize`, then
+optional `manualTrigger`. Options:
 `text`, optional `triggers`, then `effects` or `attributeCheck`, then optional
 `actionTemplate`.
 
@@ -180,8 +184,12 @@ From `**Image:**`:
 
 ## Triggers
 
-Every entry in `triggers` must match (AND). The engine picks the first event in
-file order whose triggers all match.
+Every entry in `triggers` must match (AND). The engine auto-plays the first event
+in file order whose triggers all match and that has no `manualTrigger`. An event
+with `manualTrigger` set to a button label is withheld: when its triggers match,
+that label is a scene action, and choosing it plays the event. Empty or whitespace
+`manualTrigger` is omitted (auto-play stays the default). Socialize-gated events
+still resolve from the socialize action.
 
 | `triggerType`        | `parameters`                                                       | Notes                                                                                                                                                                                         |
 | -------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

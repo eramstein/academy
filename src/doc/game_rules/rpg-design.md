@@ -76,3 +76,39 @@ This events system aims at the following:
 To that end, events are organized as small stand alone narrative nodes (e.g. Emma asks you to help her gather resources in a dangerous place), and the glue between them is the hard game state. All sorts of trigger criteria can be used (relation levels, past occured events, available resources, time/place, present characters...) to define if an event happens at each period.
 
 Most events have a direct effect mutating the game state, and also several options the player can chose from which affect the game state further, and unlock potential future events.
+
+
+### Event implementation and resolution (current design)
+
+Events are authored at design time in JSON files and loaded into a database when the application starts. As events occur, they are removed from the pool of potential events, so an event is normally encountered only once per playthrough.
+
+Each event defines a set of trigger conditions. These can refer to previous events having occurred, specific player choices in previous events, numeric game-state thresholds, time and location, characters currently present, and other game-state conditions. Together, these conditions allow small groups of related events (mini-arcs) to depend on earlier outcomes without requiring a single fixed story path.
+
+Each game period, the game queries events whose trigger conditions are satisfied. Events have an optional **`manualTrigger`** string attribute that controls how an eligible event starts:
+
+- **Absent `manualTrigger` (default):** the event plays automatically when eligible and selected by the event scheduling logic.
+- **Present `manualTrigger`:** the string is the player-facing label of an action added to the existing action list at the bottom of the illustrated book, alongside contextual actions such as **Craft card**. The event becomes available when its usual trigger conditions are met, but only plays when the player selects that action.
+
+The same rich trigger conditions determine **eligibility** in both cases; `manualTrigger` changes only **activation**. A manual event does not execute merely because it becomes eligible. This lets authored events be proactively initiated by the player without requiring the player to guess which of the four generic socialization actions might conceal an event. It also avoids adding a separate event-specific interaction menu.
+
+**How to prioritize or schedule multiple eligible automatic events remains an open design question**; the aim is to preserve variety while allowing ongoing stories to develop coherently. Presentation of multiple simultaneously available manual actions can be refined through playtesting.
+
+When an event occurs:
+
+1. Its authored narrative is presented in the illustrated book interface, optionally accompanied by a dedicated scene illustration or an NPC portrait with a specific emotion.
+2. The event may apply an unconditional effect to the game state, regardless of the player's subsequent choice.
+3. The player is presented with a set of authored options.
+4. The selected option resolves either through a deterministic game-state effect or through gameplay logic such as a skill check, which determines the outcome and resulting state changes.
+5. The event's occurrence, the player's choice, and relevant results can subsequently be referenced by other events' trigger conditions.
+
+Currently, each event's available options are hard-coded. **Potential extension:** allow individual options to have trigger conditions, so choices can appear only when justified by the player's skills, relationships, history, or current circumstances.
+
+### Relationship narrative design direction (to prototype)
+
+The intended approach is a hybrid between fixed, on-rails character arcs and disconnected standalone anecdotes:
+
+- **Numeric relationship values** (friendship, respect, love, rivalry) provide flexible prerequisites, with many ways to reach a threshold.
+- **Mini-arcs** connect small groups of events through prior occurrences, choices, and outcomes, giving local narrative continuity.
+- **Milestones and relationship tags** represent qualitative changes (for example, becoming significant others) and can gate later events. Major goals, such as a possible marriage, should require meaningful developments and choices rather than repeated numerical grinding.
+
+The aim is to let different playthroughs produce different yet coherent illustrated stories with each NPC. Emma's relationship arc will be used as an initial design prototype. The precise milestone structure and event-selection rules are not yet finalized.

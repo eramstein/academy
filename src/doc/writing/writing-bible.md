@@ -51,15 +51,13 @@ Use this structure for polished event drafts (the IDE workflow handles JSON conv
 ```markdown
 # Event: [Title]
 
-**NPC:** `character_id`
 **Event ID:** `character_event_id`
 **Trigger:** [Conditions in prose]
+**Manual trigger:** [Optional player-facing action label; omit for automatic events]
 
 ## Text
 
 [Shared opening narrative, second person present]
-
-**Emotion:** `neutral` (optional; use a value from the game Emotion enum to select the NPC portrait expression)
 
 ## Effects
 
@@ -73,18 +71,15 @@ Use this structure for polished event drafts (the IDE workflow handles JSON conv
 
 [Consequences narrated after selection]
 
-**Emotion:** `amused` (optional; expression for this option’s resulting scene)
-
 **Outcomes:**
 
 - [State changes, relationship points, tags, cards, NPC bio additions]
 
 ### Option B: [Title]
-
 ...
 ```
 
-Use only these emotion values when specifying an emotion: `neutral`, `happy`, `laughing`, `sad`, `angry`, `surprised`, `flirtatious`, `taunting`, `dreaming`, `proud`, `embarrassed`, `scared`, `amused`, `disappointed`, `excited`, `disgusted`. Omit an emotion tag when no specific expression is needed. Record character-sheet discoveries as `knownTraits` updates.
+**Event activation convention:** Events without `manualTrigger` are automatic once eligible and selected by the event scheduler. When `manualTrigger` is provided, its string is displayed as an available action in the book UI, and the event starts only if the player chooses it. Existing trigger conditions still govern availability. Use manual activation when Antonio deliberately initiates a conversation, offer, or activity; use automatic activation for encounters, consequences, and NPC-initiated developments. The manual action label is distinct from the event title and from its internal choice labels.
 
 Keep the **choice label** distinct from the **post-choice narration**; avoid spoiling outcomes in the label. Event IDs and tags should be stable and consistent across files. This is an editorial format, not a JSON schema.
 

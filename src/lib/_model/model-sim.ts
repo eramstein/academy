@@ -53,10 +53,18 @@ export interface League {
   pastWinners: string[];
 }
 
+/** A trigger-matching event offered as a scene-action button instead of firing on its own. */
+export interface ManualSceneTrigger {
+  eventKey: string;
+  label: string;
+}
+
 export interface Scene {
   narration: Narration[];
   event: SceneEvent | undefined; // current event the player has to react to
   actions: Action[]; // list of proactive actions the player can do currently
+  /** Events withheld from auto-play; each label is a scene-action button. */
+  manualTriggers?: ManualSceneTrigger[];
   selectingNextPlace?: boolean; // whether the player is selecting a next place
   image?: string;
   /** Active socialize attempt; Socialize triggers only match while this is set. */
@@ -119,6 +127,7 @@ export interface EventTemplate {
   emotion?: Emotion;
   image?: string;
   imageSize?: EventImageSize;
+  manualTrigger?: string;
 }
 
 export interface EventOptionTemplate {

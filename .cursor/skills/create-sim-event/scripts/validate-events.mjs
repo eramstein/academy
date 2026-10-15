@@ -454,6 +454,7 @@ const allowedEventProps = new Set([
   'emotion',
   'image',
   'imageSize',
+  'manualTrigger',
 ]);
 
 events.forEach((event, index) => {
@@ -483,6 +484,11 @@ events.forEach((event, index) => {
   if (event?.image !== undefined) {
     if (typeof event.image !== 'string' || !event.image.trim()) {
       errors.push(`${where}: image must be a non-empty string when set`);
+    }
+  }
+  if (event?.manualTrigger !== undefined) {
+    if (typeof event.manualTrigger !== 'string' || !event.manualTrigger.trim()) {
+      errors.push(`${where}: manualTrigger must be a non-empty string when set`);
     }
   }
 

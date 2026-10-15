@@ -1235,7 +1235,7 @@
     ],
     "title": "A Rather Unfortunate First Impression",
     "characterArc": "emma",
-    "emotion": "neutral",
+    "emotion": "taunting",
     "image": "emma_first_encounter.jpg",
     "imageSize": "large",
     "effects": [
@@ -1337,6 +1337,7 @@
     ],
     "title": "A Worthy Opponent",
     "characterArc": "emma",
+    "emotion": "sad",
     "image": "emma_first_match_victory.jpg",
     "imageSize": "medium",
     "effects": [

@@ -144,24 +144,72 @@ export async function syncEventTemplates(templates: EventTemplate[]) {
   rebuildWorkingEventTemplates();
 }
 
-export function getTriggeredSceneEvent():
-  | { event: SceneEvent; template: StoredEventTemplate }
-  | undefined {
-  // Empty triggers = follow-up / debug only (getSceneEventByKey); never auto-fire.
-  const template = eventTemplates.find((eventTemplate) => {
-    const triggers = eventTemplate.triggers ?? [];
-    return (
-      triggers.length > 0 &&
-      triggers.every((trigger) => doesTriggerMatch(trigger, eventTemplate.key))
-    );
-  });
-  if (!template) {
-    return undefined;
-  }
+function manualTriggerLabel(template: StoredEventTemplate): string | undefined {
+  const label = template.manualTrigger?.trim();
+  return label ? label : undefined;
+}
+
+/** Empty triggers = follow-up / debug only; never a scene match. */
+function triggersMatch(template: StoredEventTemplate): boolean {
+  const triggers = template.triggers ?? [];
+  return (
+    triggers.length > 0 && triggers.every((trigger) => doesTriggerMatch(trigger, template.key))
+  );
+}
+
+function triggeredFromTemplate(template: StoredEventTemplate | undefined) {
+  if (!template) return undefined;
   return {
     template,
     event: sceneEventFromTemplate(template),
   };
+}
+
+export function getTriggeredSceneEvent(options?: {
+  /**
+   * Socialize: also take a manualTrigger event that matches only while
+   * `socializeContext` is set. Scene-entry offers stay buttons.
+   */
+  includeManual?: boolean;
+}): { event: SceneEvent; template: StoredEventTemplate } | undefined {
+  const template = eventTemplates.find((eventTemplate) => {
+    if (!triggersMatch(eventTemplate)) return false;
+    if (!manualTriggerLabel(eventTemplate)) return true;
+    if (!options?.includeManual) return false;
+    return matchesOnlyBecauseOfSocialize(eventTemplate);
+  });
+  return triggeredFromTemplate(template);
+}
+
+/** True when clearing socializeContext makes this event's triggers fail. */
+function matchesOnlyBecauseOfSocialize(template: StoredEventTemplate): boolean {
+  const saved = gs.scene.socializeContext;
+  gs.scene.socializeContext = undefined;
+  const matchesWithout = triggersMatch(template);
+  gs.scene.socializeContext = saved;
+  return !matchesWithout;
+}
+
+/** Matching events that wait for a scene-action button (`manualTrigger` label). */
+export function getManualSceneTriggers(): { eventKey: string; label: string }[] {
+  const offers: { eventKey: string; label: string }[] = [];
+  for (const template of eventTemplates) {
+    const label = manualTriggerLabel(template);
+    if (!label || !triggersMatch(template)) continue;
+    offers.push({ eventKey: template.key, label });
+  }
+  return offers;
+}
+
+/** Working-set event whose manualTrigger button may be pressed right now. */
+export function getPlayableManualTrigger(
+  eventKey: string
+): { event: SceneEvent; template: StoredEventTemplate } | undefined {
+  const template = eventTemplates.find((eventTemplate) => eventTemplate.key === eventKey);
+  if (!template || !manualTriggerLabel(template) || !triggersMatch(template)) {
+    return undefined;
+  }
+  return triggeredFromTemplate(template);
 }
 
 export function getSceneEventByKey(

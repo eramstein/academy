@@ -49,7 +49,7 @@ export async function socialize(parameters: SocializeParameters): Promise<string
     characterKey: parameters.characterKey,
     socializeType: parameters.socializeType,
   };
-  const triggered = getTriggeredSceneEvent();
+  const triggered = getTriggeredSceneEvent({ includeManual: true });
   gs.scene.socializeContext = undefined;
 
   if (triggered) {

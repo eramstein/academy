@@ -13,6 +13,8 @@ import { gs } from '../_state';
 import { attributeCheck, skillCheckDifficulty } from './attribute-checks';
 import {
   consumeEventTemplate,
+  getManualSceneTriggers,
+  getPlayableManualTrigger,
   getSceneEventByKey,
   getTriggeredSceneEvent,
   recordEventOccured,
@@ -47,9 +49,14 @@ export function sceneWaitingOnEventChoice(event = gs.scene.event): boolean {
 /* 
 The scene first loops events until it runs out. Player has to react to each event by chosing an option.
 Once the events are done (no new events are set), the player can get proactive and choose actions.
+Events with manualTrigger are skipped here and offered as scene-action buttons instead.
 A long action advances the period and ends the scene; the next scene is set based either on the next scheduled activity or the player's choice of next place.
 Optionless events resolve immediately (narrate + effects) and do not hold the scene.
 */
+
+export function syncManualSceneTriggers() {
+  gs.scene.manualTriggers = getManualSceneTriggers();
+}
 
 export function setSceneEvents() {
   gs.scene.event = undefined;
@@ -67,6 +74,8 @@ export function setSceneEvents() {
     console.log('no event choices, setting possible actions');
     gs.scene.event = undefined;
     setPossibleActions();
+  } else {
+    gs.scene.manualTriggers = [];
   }
 }
 
@@ -174,6 +183,22 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
   }
 }
 
+/** Play a manualTrigger event from its scene-action button. */
+export function playManualTriggerEvent(eventKey: string) {
+  const resolved = getPlayableManualTrigger(eventKey);
+  if (!resolved) {
+    syncManualSceneTriggers();
+    return;
+  }
+  setEvent(resolved.event, resolved.template);
+  if (sceneWaitingOnEventChoice()) {
+    gs.scene.actions = [];
+    gs.scene.manualTriggers = [];
+  } else {
+    setSceneEvents();
+  }
+}
+
 /** Debug/console: fire an event by key. Optionless events resolve and restore actions. */
 export function simulateEvent(templateKey: string) {
   const resolved = getSceneEventByKey(templateKey);
@@ -183,6 +208,7 @@ export function simulateEvent(templateKey: string) {
   setEvent(resolved.event, resolved.template);
   if (sceneWaitingOnEventChoice()) {
     gs.scene.actions = [];
+    gs.scene.manualTriggers = [];
   } else {
     setSceneEvents();
   }

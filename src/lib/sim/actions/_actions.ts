@@ -10,7 +10,12 @@ import {
 import { getJobActions, performJob } from '../jobs';
 import { getLessonActions, getStudyActions } from '../lesson';
 import { narrateText } from '../narration';
-import { nextScene, sceneWaitingOnEventChoice, setSceneEvents } from '../scene';
+import {
+  nextScene,
+  sceneWaitingOnEventChoice,
+  setSceneEvents,
+  syncManualSceneTriggers,
+} from '../scene';
 import { formatActivityShortLabel, getNextPeriodScheduledActivity } from '../schedule';
 import { getNextPeriod } from '../time';
 import { ActionsLimitByPeriod } from './_action-types';
@@ -123,10 +128,12 @@ export async function performAction(action: Action) {
 }
 
 export function setPossibleActions() {
+  syncManualSceneTriggers();
   gs.scene.actions = getPossibleActions();
-  console.log('setPossibleActions', gs.scene.actions);
+  console.log('setPossibleActions', gs.scene.actions, gs.scene.manualTriggers);
   // if no actions are available, end the scene
-  if (gs.scene.actions.length === 0) {
+  const manualCount = gs.scene.manualTriggers?.length ?? 0;
+  if (gs.scene.actions.length === 0 && manualCount === 0) {
     console.log('no actions available, ending scene');
     nextScene();
   }

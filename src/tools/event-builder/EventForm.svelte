@@ -37,6 +37,7 @@
   let emotion = $state('');
   let image = $state('');
   let imageSize = $state<'small' | 'medium' | 'large'>('small');
+  let manualTrigger = $state('');
   let triggers = $state<EventTrigger[]>([]);
   let options = $state<EventOptionTemplate[]>([]);
   let effects = $state<EventEffect[]>([]);
@@ -57,6 +58,7 @@
       emotion = '';
       image = '';
       imageSize = 'small';
+      manualTrigger = '';
       triggers = [];
       options = [];
       effects = [];
@@ -71,6 +73,7 @@
     emotion = cloned.emotion ?? '';
     image = cloned.image ?? '';
     imageSize = cloned.imageSize ?? 'small';
+    manualTrigger = cloned.manualTrigger ?? '';
     triggers = cloned.triggers ?? [];
     options = cloned.optionTemplates ?? [];
     effects = cloned.effects ?? [];
@@ -281,6 +284,11 @@
       }));
     }
 
+    const triggerLabel = manualTrigger.trim();
+    if (triggerLabel) {
+      built.manualTrigger = triggerLabel;
+    }
+
     return built;
   }
 
@@ -409,6 +417,17 @@
             </label>
           {/if}
         </div>
+
+        <label class="field manual-trigger-field">
+          <span class="label">Manual trigger</span>
+          <input
+            class="input"
+            bind:value={manualTrigger}
+            placeholder="Button label (optional)"
+            autocomplete="off"
+            title="When set, the event waits for this scene action instead of firing on its own"
+          />
+        </label>
       </div>
 
       <label class="field text-field">
@@ -707,6 +726,11 @@
   }
 
   .image-field {
+    width: 16rem;
+    flex-shrink: 0;
+  }
+
+  .manual-trigger-field {
     width: 16rem;
     flex-shrink: 0;
   }

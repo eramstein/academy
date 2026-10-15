@@ -1,6 +1,6 @@
 <script lang="ts">
   import { ActionType, type Action, type ResourceType } from '@/lib/_model';
-  import { selectOption } from '@/lib/sim/scene';
+  import { playManualTriggerEvent, selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state';
   import {
     getConjurationOtions,
@@ -22,6 +22,7 @@
 
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
+  const manualTriggers = $derived(gs.scene.manualTriggers ?? []);
 
   const actionIcons: Partial<Record<ActionType, string>> = {
     [ActionType.Socialize]: 'people',
@@ -382,6 +383,11 @@
           <button type="button" class="cancel-btn" onclick={cancelParameterPick}>Cancel</button>
         {/key}
       {:else}
+        {#each manualTriggers as offer (offer.eventKey)}
+          <OrnateButton icon="book" onclick={() => playManualTriggerEvent(offer.eventKey)}>
+            {offer.label}
+          </OrnateButton>
+        {/each}
         {#each actions as action (action.actionType + action.label)}
           <OrnateButton
             icon={romanceActionIcon(action) ?? actionIcons[action.actionType]}

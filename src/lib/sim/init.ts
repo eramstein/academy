@@ -66,6 +66,7 @@ export const defaultGameState: GameState = {
     narration: [],
     event: undefined,
     actions: [],
+    manualTriggers: [],
   },
   scheduledActivities: [],
   league: {
