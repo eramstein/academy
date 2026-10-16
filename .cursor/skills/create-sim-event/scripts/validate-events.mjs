@@ -276,8 +276,12 @@ function checkTrigger(where, trigger) {
       if (typeof params.tag !== 'string' || !params.tag.trim()) {
         errors.push(`${where}: tag must be a non-empty string`);
       }
-      if (typeof params.value !== 'number' || !Number.isInteger(params.value) || params.value < 1) {
-        errors.push(`${where}: value must be an integer ≥ 1`);
+      if (
+        typeof params.value !== 'number' ||
+        !Number.isInteger(params.value) ||
+        (params.value !== -1 && params.value < 1)
+      ) {
+        errors.push(`${where}: value must be an integer ≥ 1, or -1 for tag absent`);
       }
       break;
     case 'relation_tag':
@@ -291,6 +295,9 @@ function checkTrigger(where, trigger) {
       ) {
         errors.push(`${where}: value must be an integer ≥ 1, or -1 for tag absent`);
       }
+      break;
+    case 'last_match_won':
+    case 'last_match_lost':
       break;
     case 'known_traits':
       checkOneOf(where, 'characterKey', params.characterKey, npcKeys);
@@ -307,14 +314,21 @@ function checkTrigger(where, trigger) {
 function checkSchedule(where, schedule) {
   const date = schedule?.date;
   const nextFree = schedule?.nextFree === true;
+  const dayOfWeek = date?.dayOfWeek;
   if (schedule?.nextFree != null && typeof schedule.nextFree !== 'boolean') {
     errors.push(`${where}: schedule.nextFree must be a boolean`);
   }
+  if (dayOfWeek != null) {
+    if (!Number.isInteger(dayOfWeek) || dayOfWeek < 1 || dayOfWeek > 7) {
+      errors.push(`${where}: schedule.date.dayOfWeek must be 1-7 (Monday-Sunday), got ${dayOfWeek}`);
+    }
+  }
   if (date) {
-    if (!nextFree && !Number.isInteger(date.day)) {
+    const hasDayOfWeek = dayOfWeek != null;
+    if (!nextFree && !hasDayOfWeek && !Number.isInteger(date.day)) {
       errors.push(`${where}: schedule.date.day must be an integer offset`);
     }
-    if (nextFree && date.day != null && !Number.isInteger(date.day)) {
+    if ((nextFree || hasDayOfWeek) && date.day != null && !Number.isInteger(date.day)) {
       errors.push(`${where}: schedule.date.day must be an integer offset when set`);
     }
     if (date.period) checkOneOf(where, 'schedule period', date.period, periods);
@@ -430,6 +444,9 @@ function checkEffect(where, effect) {
       if (typeof parameters.cardKey !== 'string' || !parameters.cardKey.trim()) {
         errors.push(`${where}: cardKey must be a non-empty string`);
       }
+      if (parameters.fromPlayer !== undefined && typeof parameters.fromPlayer !== 'boolean') {
+        errors.push(`${where}: fromPlayer must be a boolean`);
+      }
       break;
     case 'teach_color': {
       const hasCharacter = typeof parameters.characterKey === 'string' && parameters.characterKey;
@@ -525,6 +542,21 @@ function checkEffect(where, effect) {
     case 'use_focus':
       if (typeof parameters.amount !== 'number') errors.push(`${where}: amount must be a number`);
       break;
+    case 'start_match':
+      checkOneOf(where, 'opponentKey', parameters.opponentKey, npcKeys);
+      if (
+        parameters.playerDeckKey !== undefined &&
+        typeof parameters.playerDeckKey !== 'string'
+      ) {
+        errors.push(`${where}: playerDeckKey must be a string`);
+      }
+      if (
+        parameters.isLeagueMatch !== undefined &&
+        typeof parameters.isLeagueMatch !== 'boolean'
+      ) {
+        errors.push(`${where}: isLeagueMatch must be a boolean`);
+      }
+      break;
   }
 }
 
@@ -565,6 +597,36 @@ function checkImageSize(where, imageSize) {
 
 function effectsIncludeFollowUp(effects) {
   return (effects ?? []).some((effect) => effect?.type === 'follow_up_event');
+}
+
+function templateEffectsIncludeFollowUp(entries) {
+  return (entries ?? []).some((entry) => entry?.effect?.type === 'follow_up_event');
+}
+
+const allowedTemplateEffectProps = new Set(['effect', 'triggers']);
+
+function checkTemplateEffectEntry(where, entry) {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+    errors.push(`${where}: must be an object { effect, triggers? }`);
+    return;
+  }
+  for (const prop of Object.keys(entry)) {
+    if (!allowedTemplateEffectProps.has(prop)) {
+      errors.push(`${where}: unknown property "${prop}" (expected effect / triggers)`);
+    }
+  }
+  if (!entry.effect) {
+    errors.push(`${where}: effect is required`);
+  } else {
+    checkEffect(`${where}.effect`, entry.effect);
+  }
+  if (entry.triggers !== undefined) {
+    if (!Array.isArray(entry.triggers)) {
+      errors.push(`${where}: triggers must be an array when set`);
+    } else {
+      entry.triggers.forEach((trigger, j) => checkTrigger(`${where} trigger[${j}]`, trigger));
+    }
+  }
 }
 
 function checkNodeRef(where, label, value, nodeKeys) {
@@ -710,13 +772,13 @@ function checkNodes(where, nodes) {
         node.triggers.forEach((trigger, i) => checkTrigger(`${nodeWhere} trigger[${i}]`, trigger));
       }
     }
-    for (const [i, effect] of (node.effects ?? []).entries()) {
-      checkEffect(`${nodeWhere} effects[${i}]`, effect);
+    for (const [i, entry] of (node.effects ?? []).entries()) {
+      checkTemplateEffectEntry(`${nodeWhere} effects[${i}]`, entry);
     }
     if (
       Array.isArray(node.optionTemplates) &&
       node.optionTemplates.length > 0 &&
-      effectsIncludeFollowUp(node.effects)
+      templateEffectsIncludeFollowUp(node.effects)
     ) {
       errors.push(
         `${nodeWhere}: follow_up_event on enter replaces this beat; give it no options, or put the follow-up on an option that does not continue`
@@ -774,8 +836,8 @@ events.forEach((event, index) => {
     event.triggers.forEach((trigger, i) => checkTrigger(`${where} trigger[${i}]`, trigger));
   }
 
-  for (const [i, effect] of (event?.effects ?? []).entries()) {
-    checkEffect(`${where} effects[${i}]`, effect);
+  for (const [i, entry] of (event?.effects ?? []).entries()) {
+    checkTemplateEffectEntry(`${where} effects[${i}]`, entry);
   }
 
   const nodeKeys = checkNodes(where, event?.nodes);

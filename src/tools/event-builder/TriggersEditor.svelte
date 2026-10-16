@@ -66,6 +66,8 @@
         relationTag: RelationTag.EmmaSmitten,
       },
       [EventTriggerType.KnownTraits]: { characterKey: '', count: 1 },
+      [EventTriggerType.LastMatchWon]: {},
+      [EventTriggerType.LastMatchLost]: {},
     };
     return defaults[triggerType];
   }
@@ -366,6 +368,10 @@
               aria-label="Relation tag value"
               title="Omit or ≥1 = has tag; -1 = tag absent"
             />
+          {:else if trigger.triggerType === EventTriggerType.LastMatchWon}
+            <span class="param-hint">Player won the most recent match</span>
+          {:else if trigger.triggerType === EventTriggerType.LastMatchLost}
+            <span class="param-hint">Player lost the most recent match</span>
           {:else if trigger.triggerType === EventTriggerType.KnownTraits}
             <input
               class="input param-input"

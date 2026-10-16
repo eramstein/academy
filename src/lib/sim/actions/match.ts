@@ -24,7 +24,7 @@ export function playerDeckOptions(): [string, string][] {
   return gs.player.decks.map((deck, index) => [String(index), deck.name]);
 }
 
-function resolvePlayerDeck(playerDeckKey: string) {
+export function resolvePlayerDeck(playerDeckKey: string) {
   const index = Number(playerDeckKey);
   if (Number.isInteger(index) && index >= 0 && index < gs.player.decks.length) {
     return gs.player.decks[index];

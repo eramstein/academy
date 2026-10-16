@@ -19,19 +19,40 @@
 
   let displayed = $state('');
   let root: HTMLParagraphElement | undefined = $state();
+  let cancelTyping: (() => void) | null = null;
+  let finished = false;
+
+  const typing = $derived(displayed.length < text.length);
+
+  function skipTyping(event?: MouseEvent) {
+    if (!typing) return;
+    event?.preventDefault();
+    window.getSelection()?.removeAllRanges();
+    cancelTyping?.();
+    displayed = text;
+    if (!finished) {
+      finished = true;
+      onDone?.();
+    }
+  }
 
   $effect(() => {
     const full = text;
     const stepMs = Math.min(28, Math.max(10, msPerChar));
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    finished = false;
 
     if (reduceMotion || full.length === 0) {
       displayed = full;
+      finished = true;
       untrack(() => onDone?.());
       return;
     }
 
     let cancelled = false;
+    cancelTyping = () => {
+      cancelled = true;
+    };
     void (async () => {
       await revealInk({
         text: full,
@@ -44,16 +65,25 @@
         element: () => root,
         onBeat: (beat) => untrack(() => onBeat)?.(beat),
       });
-      if (!cancelled) untrack(() => onDone?.());
+      if (!cancelled) {
+        finished = true;
+        untrack(() => onDone?.());
+      }
     })();
 
     return () => {
       cancelled = true;
+      cancelTyping = null;
     };
   });
 </script>
 
-<p class={className} bind:this={root}>
+<p
+  class={className}
+  bind:this={root}
+  title={typing ? 'Double-click to skip' : undefined}
+  ondblclick={skipTyping}
+>
   {displayed}<span class="caret" class:done={displayed.length >= text.length} aria-hidden="true"
   ></span>
 </p>

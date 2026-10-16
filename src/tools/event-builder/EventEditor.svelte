@@ -3,12 +3,14 @@
   import eventsData from '@/data/sim/events.json';
   import { EventTriggerType, type EventTemplate } from '@/lib/_model';
   import { getLoadedModEvents } from '@/lib/mods';
-  import { syncEventTemplates } from '@/lib/sim/events';
+  import { normalizeEventTemplate, syncEventTemplates } from '@/lib/sim/events';
   import EventForm from './EventForm.svelte';
   import EventList from './EventList.svelte';
 
   // Bundled fallback is events.json; /api/events merges mods/<id>/events.json in dev.
-  let events = $state<EventTemplate[]>([...(eventsData as EventTemplate[])]);
+  let events = $state<EventTemplate[]>(
+    (eventsData as EventTemplate[]).map(normalizeEventTemplate)
+  );
   let editingEvent = $state<EventTemplate | null>(null);
   let showForm = $state(false);
   let loading = $state(true);
@@ -16,16 +18,20 @@
 
   const existingKeys = $derived(events.map((event) => event.key));
 
+  function loadCatalog(list: EventTemplate[]) {
+    events = list.map(normalizeEventTemplate);
+  }
+
   onMount(async () => {
     try {
       const response = await fetch('/api/events', { cache: 'no-store' });
       if (response.ok) {
-        events = (await response.json()) as EventTemplate[];
+        loadCatalog((await response.json()) as EventTemplate[]);
       } else {
-        events = [...(eventsData as EventTemplate[]), ...getLoadedModEvents<EventTemplate>()];
+        loadCatalog([...(eventsData as EventTemplate[]), ...getLoadedModEvents<EventTemplate>()]);
       }
     } catch {
-      events = [...(eventsData as EventTemplate[]), ...getLoadedModEvents<EventTemplate>()];
+      loadCatalog([...(eventsData as EventTemplate[]), ...getLoadedModEvents<EventTemplate>()]);
     } finally {
       loading = false;
     }
@@ -58,7 +64,7 @@
   }
 
   function openEdit(event: EventTemplate) {
-    editingEvent = JSON.parse(JSON.stringify(event));
+    editingEvent = normalizeEventTemplate(JSON.parse(JSON.stringify(event)));
     showForm = true;
   }
 

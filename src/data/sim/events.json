@@ -118,10 +118,12 @@
     ],
     "effects": [
       {
-        "type": "add_resource",
-        "parameters": {
-          "resourceType": "magic_dust",
-          "amount": 10
+        "effect": {
+          "type": "add_resource",
+          "parameters": {
+            "resourceType": "magic_dust",
+            "amount": 10
+          }
         }
       }
     ]
@@ -273,13 +275,15 @@
     "emotion": "embarrassed",
     "effects": [
       {
-        "type": "offer_card_gifts",
-        "parameters": {
-          "count": 3,
-          "poolKeys": [
-            "molly",
-            "base"
-          ]
+        "effect": {
+          "type": "offer_card_gifts",
+          "parameters": {
+            "count": 3,
+            "poolKeys": [
+              "molly",
+              "base"
+            ]
+          }
         }
       }
     ]
@@ -417,13 +421,15 @@
     "imageSize": "large",
     "effects": [
       {
-        "type": "move",
-        "parameters": {
-          "placeKey": "gray_mountains",
-          "characterKeys": [
-            "player",
-            "molly"
-          ]
+        "effect": {
+          "type": "move",
+          "parameters": {
+            "placeKey": "gray_mountains",
+            "characterKeys": [
+              "player",
+              "molly"
+            ]
+          }
         }
       }
     ]
@@ -1095,19 +1101,23 @@
     ],
     "effects": [
       {
-        "type": "change_relation",
-        "parameters": {
-          "characterKey": "molly",
-          "relationParameter": "friendship",
-          "amount": 1
+        "effect": {
+          "type": "change_relation",
+          "parameters": {
+            "characterKey": "molly",
+            "relationParameter": "friendship",
+            "amount": 1
+          }
         }
       },
       {
-        "type": "add_known_trait",
-        "parameters": {
-          "characterKey": "molly",
-          "title": "Fellow student",
-          "description": "Molly is a friendly, modest fellow student who seems uncertain of her academic abilities."
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "molly",
+            "title": "Fellow student",
+            "description": "Molly is a friendly, modest fellow student who seems uncertain of her academic abilities."
+          }
         }
       }
     ],
@@ -1242,28 +1252,34 @@
     "imageSize": "large",
     "effects": [
       {
-        "type": "move",
-        "parameters": {
-          "placeKey": "library",
-          "characterKeys": [
-            "player",
-            "molly"
-          ]
+        "effect": {
+          "type": "move",
+          "parameters": {
+            "placeKey": "library",
+            "characterKeys": [
+              "player",
+              "molly"
+            ]
+          }
         }
       },
       {
-        "type": "add_known_trait",
-        "parameters": {
-          "characterKey": "molly",
-          "title": "Village tutor",
-          "description": "Molly volunteers to tutor children from poor families in the nearby village. She is kind, patient, and increasingly overwhelmed by the work."
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "molly",
+            "title": "Village tutor",
+            "description": "Molly volunteers to tutor children from poor families in the nearby village. She is kind, patient, and increasingly overwhelmed by the work."
+          }
         }
       },
       {
-        "type": "add_story_tag",
-        "parameters": {
-          "tag": "molly_tutoring",
-          "amount": 1
+        "effect": {
+          "type": "add_story_tag",
+          "parameters": {
+            "tag": "molly_tutoring",
+            "amount": 1
+          }
         }
       }
     ]
@@ -1433,11 +1449,13 @@
     "imageSize": "large",
     "effects": [
       {
-        "type": "add_known_trait",
-        "parameters": {
-          "characterKey": "emma",
-          "title": "First impressions",
-          "description": "A striking young woman with sharp green eyes, an impressive collection of books, and an equally impressive talent for making you feel foolish. Apparently a fellow first-year student."
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "emma",
+            "title": "First impressions",
+            "description": "A striking young woman with sharp green eyes, an impressive collection of books, and an equally impressive talent for making you feel foolish. Apparently a fellow first-year student."
+          }
         }
       }
     ],
@@ -1536,19 +1554,23 @@
     "imageSize": "medium",
     "effects": [
       {
-        "type": "change_relation",
-        "parameters": {
-          "characterKey": "emma",
-          "relationParameter": "respect",
-          "amount": 1
+        "effect": {
+          "type": "change_relation",
+          "parameters": {
+            "characterKey": "emma",
+            "relationParameter": "respect",
+            "amount": 1
+          }
         }
       },
       {
-        "type": "add_known_trait",
-        "parameters": {
-          "characterKey": "emma",
-          "title": "Competitive nature",
-          "description": "Emma takes competition very seriously. She hates losing, but recognizes genuine skill in an opponent and is determined to learn from her mistakes."
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "emma",
+            "title": "Competitive nature",
+            "description": "Emma takes competition very seriously. She hates losing, but recognizes genuine skill in an opponent and is determined to learn from her mistakes."
+          }
         }
       }
     ],
@@ -1717,19 +1739,23 @@
     "imageSize": "medium",
     "effects": [
       {
-        "type": "change_relation",
-        "parameters": {
-          "characterKey": "emma",
-          "relationParameter": "respect",
-          "amount": 1
+        "effect": {
+          "type": "change_relation",
+          "parameters": {
+            "characterKey": "emma",
+            "relationParameter": "respect",
+            "amount": 1
+          }
         }
       },
       {
-        "type": "add_known_trait",
-        "parameters": {
-          "characterKey": "emma",
-          "title": "Unusual crafting techniques",
-          "description": "Emma is fascinated by unusual crafting techniques and has a particular interest in blue magic."
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "emma",
+            "title": "Unusual crafting techniques",
+            "description": "Emma is fascinated by unusual crafting techniques and has a particular interest in blue magic."
+          }
         }
       }
     ],
@@ -1768,25 +1794,29 @@
     ],
     "effects": [
       {
-        "type": "move",
-        "parameters": {
-          "placeKey": "academy-hall",
-          "characterKeys": [
-            "player",
-            "emma",
-            "elsa",
-            "henry",
-            "ousmane",
-            "molly"
-          ]
+        "effect": {
+          "type": "move",
+          "parameters": {
+            "placeKey": "academy-hall",
+            "characterKeys": [
+              "player",
+              "emma",
+              "elsa",
+              "henry",
+              "ousmane",
+              "molly"
+            ]
+          }
         }
       },
       {
-        "type": "add_known_trait",
-        "parameters": {
-          "characterKey": "emma",
-          "title": "Ballet",
-          "description": "Emma is an accomplished ballet dancer, possessing remarkable grace, strength and flexibility."
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "emma",
+            "title": "Ballet",
+            "description": "Emma is an accomplished ballet dancer, possessing remarkable grace, strength and flexibility."
+          }
         }
       }
     ],
@@ -1908,11 +1938,13 @@
     ],
     "effects": [
       {
-        "type": "change_relation",
-        "parameters": {
-          "characterKey": "emma",
-          "relationParameter": "respect",
-          "amount": 3
+        "effect": {
+          "type": "change_relation",
+          "parameters": {
+            "characterKey": "emma",
+            "relationParameter": "respect",
+            "amount": 3
+          }
         }
       }
     ],
@@ -2000,11 +2032,13 @@
     ],
     "effects": [
       {
-        "type": "add_known_trait",
-        "parameters": {
-          "characterKey": "emma",
-          "title": "Academy education financed through a loan",
-          "description": "Emma's Academy education is financed through a loan. Her family's circumstances have made her education difficult to afford, and remaining at the Academy is extremely important to her."
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "emma",
+            "title": "Academy education financed through a loan",
+            "description": "Emma's Academy education is financed through a loan. Her family's circumstances have made her education difficult to afford, and remaining at the Academy is extremely important to her."
+          }
         }
       }
     ],
@@ -2180,43 +2214,51 @@
     "imageSize": "large",
     "effects": [
       {
-        "type": "change_relation",
-        "parameters": {
-          "characterKey": "emma",
-          "relationParameter": "respect",
-          "amount": 1
+        "effect": {
+          "type": "change_relation",
+          "parameters": {
+            "characterKey": "emma",
+            "relationParameter": "respect",
+            "amount": 1
+          }
         }
       },
       {
-        "type": "change_relation",
-        "parameters": {
-          "characterKey": "emma",
-          "relationParameter": "friendship",
-          "amount": 1
+        "effect": {
+          "type": "change_relation",
+          "parameters": {
+            "characterKey": "emma",
+            "relationParameter": "friendship",
+            "amount": 1
+          }
         }
       },
       {
-        "type": "add_story_tag",
-        "parameters": {
-          "tag": "emma_tourney_partner_selected"
+        "effect": {
+          "type": "add_story_tag",
+          "parameters": {
+            "tag": "emma_tourney_partner_selected"
+          }
         }
       },
       {
-        "type": "schedule_activity",
-        "parameters": {
-          "activity": {
-            "type": "event",
-            "participants": [
-              "player",
-              "emma"
-            ],
-            "placeKey": "emma-room",
-            "eventId": "emma_tourney_training"
-          },
-          "schedule": {
-            "date": {
-              "day": 1,
-              "period": "evening"
+        "effect": {
+          "type": "schedule_activity",
+          "parameters": {
+            "activity": {
+              "type": "event",
+              "participants": [
+                "player",
+                "emma"
+              ],
+              "placeKey": "emma-room",
+              "eventId": "emma_tourney_training"
+            },
+            "schedule": {
+              "date": {
+                "day": 1,
+                "period": "evening"
+              }
             }
           }
         }
@@ -2443,7 +2485,7 @@
         ],
         "title": "Know Your Enemy",
         "emotion": "amused",
-        "image": "investigate_opposition",
+        "image": "investigate_opposition.jpg",
         "imageSize": "large"
       },
       "practice_session": {
@@ -2521,21 +2563,25 @@
         ],
         "effects": [
           {
-            "type": "add_story_tag",
-            "parameters": {
-              "tag": "emma_tourney_practiced"
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_tourney_practiced"
+              }
             }
           },
           {
-            "type": "add_story_tag",
-            "parameters": {
-              "tag": "emma_tourney_emma_prepared"
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_tourney_emma_prepared"
+              }
             }
           }
         ],
         "title": "Practice Makes Perfect",
         "emotion": "happy",
-        "image": "practice_session",
+        "image": "practice_session.jpg",
         "imageSize": "large"
       },
       "training_conclusion": {
@@ -2547,7 +2593,7 @@
               {
                 "type": "narrate",
                 "parameters": {
-                  "text": "\"I'll take it. Whatever happens in the first two matches, I want to be the one who settles the score.\"\n\nEmma studies you for a moment, then smiles.\n\n\"Very well. I hope you appreciate the magnitude of the responsibility you've just volunteered to assume.\"\n\n\"I thought you wanted someone ambitious.\"\n\n\"I do. But ambition without competence is merely a particularly entertaining form of self-destruction.\"\n\nShe extends her hand.\n\n\"Don't disappoint me, Fibonacci.\"\n\nYou shake it.\n\n\"Wouldn't dream of it.\""
+                  "text": "\"I'll take it. Whatever happens in the first two matches, I want to be the one who settles the score.\"\n\nEmma studies you for a moment, then smiles.\n\n\"Very well. I hope you appreciate the magnitude of the responsibility you've just volunteered to assume.\"\n\n\"I thought you wanted someone ambitious.\"\n\n\"I do. But ambition without competence is merely a particularly entertaining form of self-destruction.\"\n\nShe extends her hand.\n\n\"Don't disappoint me, Fibonacci.\"\n\nYou shake it.\n\n\"Wouldn't dream of it. See you in a couple of days to craft an amazing card!\""
                 }
               },
               {
@@ -2563,6 +2609,27 @@
                   "relationParameter": "respect",
                   "amount": 1
                 }
+              },
+              {
+                "type": "schedule_activity",
+                "parameters": {
+                  "activity": {
+                    "type": "event",
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
+                    "placeKey": "artificery-room",
+                    "eventId": "emma_tourney_crafting"
+                  },
+                  "schedule": {
+                    "nextFree": true,
+                    "date": {
+                      "day": 2,
+                      "period": "evening"
+                    }
+                  }
+                }
               }
             ]
           },
@@ -2572,7 +2639,7 @@
               {
                 "type": "narrate",
                 "parameters": {
-                  "text": "\"You're the captain. And I trust you to handle the final if it comes to that.\"\n\nEmma regards you thoughtfully.\n\n\"How remarkably sensible of you.\"\n\n\"Try not to sound so surprised.\"\n\n\"I'm doing my best.\"\n\nShe smiles, but there's genuine appreciation behind the teasing.\n\n\"Very well. I'll take the deciding match. You concentrate on beating their second, and leave the other one to me.\"\n\nShe offers her hand across the table.\n\n\"Agreed?\"\n\n\"Agreed.\""
+                  "text": "\"You're the captain. And I trust you to handle the final if it comes to that.\"\n\nEmma regards you thoughtfully.\n\n\"How remarkably sensible of you.\"\n\n\"Try not to sound so surprised.\"\n\n\"I'm doing my best.\"\n\nShe smiles, but there's genuine appreciation behind the teasing.\n\n\"Very well. I'll take the deciding match. You concentrate on beating their second, and leave the other one to me.\"\n\nShe offers her hand across the table.\n\n\"Agreed?\"\n\n\"Agreed. . See you in a couple of days to craft an amazing card!\""
                 }
               },
               {
@@ -2587,6 +2654,27 @@
                   "characterKey": "emma",
                   "relationParameter": "friendship",
                   "amount": 1
+                }
+              },
+              {
+                "type": "schedule_activity",
+                "parameters": {
+                  "activity": {
+                    "type": "event",
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
+                    "placeKey": "artificery-room",
+                    "eventId": "emma_tourney_crafting"
+                  },
+                  "schedule": {
+                    "nextFree": true,
+                    "date": {
+                      "day": 2,
+                      "period": "evening"
+                    }
+                  }
                 }
               }
             ]
@@ -2658,6 +2746,692 @@
     }
   },
   {
+    "key": "emma_tourney_crafting",
+    "text": "The Academy's artificery room is deserted at this hour, its great wooden tables and elaborate magical instruments illuminated by the last rays of evening sunlight. Emma has already prepared a workspace when you arrive, complete with ingredients, drafting tools, and two cups of something hot.\n\n\"Excellent timing, Antonio. I've managed to borrow the room for the evening, and I intend to make the most of it.\"\n\n{{ crafting_plan }}\n\nThe work begins with the usual disagreements. Emma favors precision, careful calculations, and meticulous preparation. You suggest a few rather less orthodox solutions, which she initially regards with suspicion before reluctantly admitting that some of them have merit. Soon, however, the arguments give way to an easy rhythm. You begin anticipating each other's ideas, correcting mistakes before they happen, and occasionally arriving at the same conclusion simultaneously.\n\n\"Remarkable,\" Emma observes after one such coincidence. \"We're beginning to think alike. I do hope this isn't permanent.\"\n\nAt last, everything is ready. The two of you stand opposite each other across the crafting table, hands extended toward the unfinished card. As your magical auras flow into the ritual, the familiar patterns of energy begin to form, then unexpectedly intertwine, circling one another in a luminous spiral.\n\nFor a moment, the entire room seems to hold its breath.\n\nA brilliant flash illuminates the table, and the ritual ends.\n\nWhere there should have been a single creation, two identical cards now rest side by side.\n\nEmma picks one up, examines its magical properties, and breaks into a delighted smile.\n\n\"It worked! Antonio, look at this. The balance is excellent, the enchantment is stable, and the duplication is absolutely flawless!\"\n\nShe turns the card over.\n\nHer smile freezes.\n\n\"That's... unusual.\"\n\nYou examine the second card. The illustration depicts the two of you together, surrounded by the magical forces you've just summoned. Emma stands close beside you, one hand resting naturally on your shoulder, while the two figures exchange a look of complete and effortless trust.\n\nThe resemblance is unmistakable. The intimacy, rather less expected.\n\n\"Is that supposed to be us?\"\n\n\"Apparently.\" Emma examines the image with scholarly concentration. \"How curious. Conjured illustrations aren't supposed to depict living people, much less their creators.\"\n\nShe tilts the card toward the light.\n\n\"The likeness is remarkably good, though.\"\n\n{{ antonio_reaction }}\n\n{{ emma_reaction }}\n\nEmma places the two cards side by side, apparently determined to return to safer intellectual territory.\n\n\"Well, whatever caused this anomaly, the result is excellent. And there are two of them, so naturally we shall keep one each.\"\n\n\"Which one's mine?\"\n\nShe studies the cards for a moment.\n\n\"An excellent question.\"\n\n\"You don't know?\"\n\n\"Of course I know. I'm simply deciding whether you deserve the better one.\"\n\nShe hands you a card, keeping the other for herself. They are, as far as either of you can determine, perfectly identical.\n\nFor a moment, you both regard your newly acquired creations with considerable satisfaction.",
+    "triggers": [
+      {
+        "triggerType": "scheduled_activity",
+        "parameters": {}
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Claim credit for the masterpiece",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I must say, the card has captured my heroic qualities rather well. Your presence is a nice addition, of course.\"\n\nEmma looks at you with an expression of exquisite disbelief.\n\n\"Your heroic qualities?\"\n\n\"Quite unmistakable.\"\n\n\"Antonio, I'm fairly certain I'm the one performing the difficult magic in that picture. You appear to be providing moral support.\"\n\n\"An indispensable contribution.\"\n\n\"Naturally. I'll be sure to mention it when they erect your statue.\"\n\nShe turns the card over again, a mischievous smile spreading across her face.\n\n\"Though I must admit, the artist has been rather generous with your jawline.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Appreciate what you've created together",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"You know, Emma, I rather like it. Not just the card. The two of us working together.\"\n\nEmma looks at you, then at the illustration.\n\n\"Yes,\" she says after a moment. \"I think I do too.\"\n\nShe turns the card slowly between her fingers.\n\n\"I've always preferred working alone. It's generally more efficient, and one has fewer people to disappoint.\" She gives you a brief, amused glance. \"But I must concede that having someone capable beside me has its advantages.\"\n\n\"High praise.\"\n\n\"Don't let it go to your head.\"\n\nHer smile softens.\n\n\"Seriously, Antonio. We do make a good team.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Compliment the artist's romantic imagination",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I must say, the artist has excellent taste in couples.\"\n\nEmma raises an eyebrow.\n\n\"Couples? How very forward of you, Fibonacci. I wasn't aware we'd progressed beyond an academic partnership.\"\n\n\"I'm merely appreciating the artistic interpretation.\"\n\n\"Naturally.\" She studies the illustration again. \"And here I thought we were crafting a tournament card, not commissioning a romantic portrait.\"\n\n\"Perhaps the magic knows something we don't.\"\n\n\"An alarming possibility. Though I should warn you, Antonio, magical phenomena are notoriously unreliable when it comes to matters of the heart.\"\n\nShe gives you a wicked little smile.\n\n\"Still, I suppose there are worse people to be immortalized alongside.\"\n\nYou decide to accept the compliment before she has time to reconsider it."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "love",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "title": "Two of a Kind",
+    "characterArc": "emma",
+    "emotion": "happy",
+    "image": "emma_tourney_crafting.jpg",
+    "imageSize": "large",
+    "effects": [
+      {
+        "effect": {
+          "type": "add_story_tag",
+          "parameters": {
+            "tag": "emma_joint_creation"
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "emma",
+            "title": "Joint creation",
+            "description": "Emma and Antonio successfully combined their magical auras to create two identical cards, whose illustrations unexpectedly depict the two of them together."
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "offer_card_gifts",
+          "parameters": {
+            "count": 1,
+            "specificCardKeys": [
+              "emma_tourney_spell"
+            ]
+          }
+        },
+        "triggers": [
+          {
+            "triggerType": "story_tag",
+            "parameters": {
+              "tag": "emma_tourney_opponent_intel",
+              "value": 1
+            }
+          }
+        ]
+      },
+      {
+        "effect": {
+          "type": "gift_card_to_character",
+          "parameters": {
+            "characterKey": "emma",
+            "cardKey": "emma_tourney_spell",
+            "fromPlayer": false
+          }
+        },
+        "triggers": [
+          {
+            "triggerType": "story_tag",
+            "parameters": {
+              "tag": "emma_tourney_opponent_intel",
+              "value": 1
+            }
+          }
+        ]
+      },
+      {
+        "effect": {
+          "type": "offer_card_gifts",
+          "parameters": {
+            "count": 1,
+            "specificCardKeys": [
+              "emma_tourney_unit"
+            ]
+          }
+        },
+        "triggers": [
+          {
+            "triggerType": "story_tag",
+            "parameters": {
+              "tag": "emma_tourney_opponent_intel",
+              "value": -1
+            }
+          }
+        ]
+      },
+      {
+        "effect": {
+          "type": "gift_card_to_character",
+          "parameters": {
+            "characterKey": "emma",
+            "cardKey": "emma_tourney_unit",
+            "fromPlayer": false
+          }
+        },
+        "triggers": [
+          {
+            "triggerType": "story_tag",
+            "parameters": {
+              "tag": "emma_tourney_opponent_intel",
+              "value": -1
+            }
+          }
+        ]
+      },
+      {
+        "effect": {
+          "type": "schedule_activity",
+          "parameters": {
+            "activity": {
+              "type": "event",
+              "participants": [
+                "player",
+                "emma"
+              ],
+              "placeKey": "falkenheim_school",
+              "eventId": "emma_falkenheim_tournament"
+            },
+            "schedule": {
+              "date": {
+                "day": 0,
+                "period": "evening",
+                "dayOfWeek": 6
+              },
+              "nextFree": true
+            }
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "schedule_activity",
+          "parameters": {
+            "activity": {
+              "type": "event",
+              "participants": [
+                "player",
+                "emma"
+              ],
+              "placeKey": "gray_mountains",
+              "eventId": "emma_tourney_travel"
+            },
+            "schedule": {
+              "nextFree": true,
+              "date": {
+                "dayOfWeek": 7,
+                "period": "evening"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "passages": {
+      "crafting_plan": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_opponent_intel",
+                  "value": 1
+                }
+              }
+            ],
+            "text": "She spreads Elsa's precious decklist across the table.\n\n\"I've been thinking about that weakness we discovered. Falkenheim's captain relies on overwhelming his opponents with cheap, aggressive units, but almost all of them are terribly fragile.\"\n\nShe points to a diagram covered in calculations.\n\n\"A low-cost spell that strikes several enemies simultaneously should dismantle his entire strategy. I've worked out the foundations, but I suspect your particular talent for unconventional solutions will be useful.\"\n\nShe gives you a challenging smile.\n\n\"Shall we make something he'll remember?\""
+          }
+        ],
+        "fallback": "She lays out the plans for an ambitious new unit, one designed to combine offensive strength with enough versatility to remain useful against a variety of opponents.\n\n\"We don't know precisely what Falkenheim will throw at us, so I've decided we should prepare something adaptable. A formidable unit, but not one that relies on a single strategy.\"\n\nShe points to several unfinished diagrams.\n\n\"I've worked out most of the design, but there are still a few rather troublesome details. And I suspect your particular talent for unconventional solutions will be useful.\"\n\nShe gives you a challenging smile.\n\n\"Shall we make something they'll remember?\""
+      },
+      "antonio_reaction": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "You are under Emma's spell"
+                }
+              }
+            ],
+            "text": "You study the illustration again. Apparently, whatever mysterious intelligence governs the conjuration ritual has decided that you and Emma make a particularly handsome couple.\n\nYou make a heroic effort not to look pleased.\n\nEmma notices immediately.\n\n\"Do try to contain your enthusiasm, Fibonacci. It's a card, not a marriage certificate.\""
+          }
+        ],
+        "fallback": "You look from the illustration to Emma, then back again. The figures seem remarkably comfortable in each other's company. Perhaps the magic has an unusually generous imagination.\n\nEmma catches your expression.\n\n\"Don't ask me why we're standing so close together. I assure you it wasn't in the specifications.\""
+      },
+      "emma_reaction": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_parameter",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "love",
+                  "value": 3
+                }
+              }
+            ],
+            "text": "Emma sets her copy carefully beside her notes. A moment later, when she thinks your attention is elsewhere, she picks it up again.\n\nHer eyes linger on the illustration, and a small, private smile touches her lips.\n\nBy the time you look toward her, she's examining the card's magical properties with impeccable scholarly concentration."
+          }
+        ],
+        "fallback": "Emma turns her card over once more, frowning thoughtfully.\n\n\"I should investigate what happened to our auras. Such an unusual interaction may have interesting implications for future crafting.\"\n\nShe pauses.\n\n\"Though perhaps we needn't mention the illustration to Professor Glützenbaum just yet.\""
+      }
+    }
+  },
+  {
+    "key": "emma_falkenheim_tournament",
+    "text": "Falkenheim School greets you with polished marble, towering statues, and the sort of silence that makes you reluctant to breathe too loudly. Apparently, wealth can buy almost everything except a welcoming atmosphere.\n\nThe school's director offers a stiff greeting to your delegation. Beside him stands Franz Falkenstein, Elsa's older brother and Falkenheim's team captain: handsome, impeccably dressed, and evidently aware of both facts. His second, Olga Saratovskaya, is a tall, pale young woman with almost white-blond hair and icy blue eyes. She surveys you with the faint, cruel interest of someone inspecting a particularly disappointing specimen.\n\nEmma draws Franz for the opening round. You draw Olga.\n\n\"Try not to look so frightened, Antonio,\" Emma murmurs. \"I'm sure she doesn't actually eat her opponents. And do stop glaring at Franz. He's not _that_ handsome.\"",
+    "triggers": [
+      {
+        "triggerType": "scheduled_activity",
+        "parameters": {}
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Face Olga",
+        "nextNode": "after-match-1",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Olga takes her seat without a greeting, arranges her cards with surgical precision, and fixes you with a chilly stare. You shuffle your deck and try to look like someone who has never been intimidated in his life."
+            }
+          },
+          {
+            "type": "start_match",
+            "parameters": {
+              "opponentKey": "olga"
+            }
+          }
+        ]
+      }
+    ],
+    "title": "The Falkenheim Tournament",
+    "characterArc": "emma",
+    "emotion": "neutral",
+    "image": "emma_falkenheim_tournament.jpg",
+    "imageSize": "large",
+    "effects": [
+      {
+        "effect": {
+          "type": "move",
+          "parameters": {
+            "placeKey": "falkenheim_school",
+            "characterKeys": [
+              "player"
+            ]
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "move",
+          "parameters": {
+            "placeKey": "falkenheim_school",
+            "characterKeys": [
+              "emma"
+            ]
+          }
+        }
+      }
+    ],
+    "nodes": {
+      "after-match-1": {
+        "text": "{{ antonioResult }}\n\n{{ emmaResult }}\n\n{{ teamResult }}\n\n{{ finalistResult }}\n\nThe officials collect the score sheets.",
+        "optionTemplates": [
+          {
+            "text": "Return to the Academy — Victory",
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_flawless_victory",
+                  "value": 1
+                }
+              }
+            ],
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "You leave Falkenheim with the trophy and a memory of its director's expression that should sustain you for weeks."
+                }
+              }
+            ]
+          },
+          {
+            "text": "Return to the Academy — Defeat",
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_devastating_loss",
+                  "value": 1
+                }
+              }
+            ],
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "You leave Falkenheim empty-handed. Emma walks beside you, unusually quiet, until she remarks, \"Next time, we should bring a trophy. Apparently they keep theirs here.\""
+                }
+              }
+            ]
+          },
+          {
+            "text": "Face Franz in the final",
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_tiebreaker",
+                  "value": 1
+                }
+              },
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_finalist_antonio",
+                  "value": 1
+                }
+              }
+            ],
+            "nextNode": "after-match-2",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "Franz sits opposite you, smiling with rather too many teeth. \"I trust you'll provide a better challenge than expected.\" You straighten your cards. You'd hate to disappoint him."
+                }
+              },
+              {
+                "type": "start_match",
+                "parameters": {
+                  "opponentKey": "franz"
+                }
+              }
+            ]
+          },
+          {
+            "text": "Watch Emma's final",
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_tiebreaker",
+                  "value": 1
+                }
+              },
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_finalist_emma",
+                  "value": 1
+                }
+              }
+            ],
+            "nextNode": "emma-triumphant",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "Emma sits opposite Olga, perfectly composed. As she passes you, she whispers, \"If I win, you may applaud. Modestly.\""
+                }
+              }
+            ]
+          }
+        ],
+        "effects": [
+          {
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_tourney_flawless_victory"
+              }
+            },
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_emma_prepared",
+                  "value": 1
+                }
+              },
+              {
+                "triggerType": "last_match_won",
+                "parameters": {}
+              }
+            ]
+          },
+          {
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_tourney_tiebreaker"
+              }
+            },
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_emma_prepared",
+                  "value": 1
+                }
+              },
+              {
+                "triggerType": "last_match_lost",
+                "parameters": {}
+              }
+            ]
+          },
+          {
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_tourney_tiebreaker"
+              }
+            },
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_emma_prepared",
+                  "value": -1
+                }
+              },
+              {
+                "triggerType": "last_match_won",
+                "parameters": {}
+              }
+            ]
+          },
+          {
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_tourney_devastating_loss"
+              }
+            },
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_emma_prepared",
+                  "value": -1
+                }
+              },
+              {
+                "triggerType": "last_match_lost",
+                "parameters": {}
+              }
+            ]
+          }
+        ],
+        "title": "First round results",
+        "emotion": "neutral",
+        "passages": {
+          "antonioResult": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "last_match_won",
+                    "parameters": {}
+                  }
+                ],
+                "text": "Olga studies the final board in silence. \"Unexpected,\" she says at last, as though you've committed a minor breach of etiquette by winning."
+              }
+            ],
+            "fallback": "Olga claims the final point with barely a change of expression. \"Thank you,\" she says, in a tone suggesting you have just completed a useful laboratory experiment."
+          },
+          "emmaResult": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "emma_tourney_emma_prepared",
+                      "value": 1
+                    }
+                  }
+                ],
+                "text": "At the neighboring table, Emma defeats Franz. He demands another look at the final play; Emma obligingly points to the cards, one by one, with infuriating patience."
+              }
+            ],
+            "fallback": "At the neighboring table, Franz defeats Emma. His smile is insufferable. Emma congratulates him with impeccable courtesy, although the way she gathers her cards suggests she is already planning their next encounter."
+          },
+          "teamResult": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "emma_tourney_flawless_victory",
+                      "value": 1
+                    }
+                  }
+                ],
+                "text": "Two victories. Falkenheim's director looks as though someone has served vinegar in his finest crystal. Franz mutters something about luck.\n\n\"How reassuring,\" Emma says sweetly. \"After your director's letter, I was beginning to think our Academy had become hopelessly obsolete. Apparently not quite yet.\" You exchange a grin."
+              },
+              {
+                "triggers": [
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "emma_tourney_devastating_loss",
+                      "value": 1
+                    }
+                  }
+                ],
+                "text": "Falkenheim takes both matches. Franz accepts the applause as his natural due, while the director looks positively restored to health.\n\nEmma exhales. \"Well. I had hoped to disprove his charming letter today.\" She glances at you. \"We'll have to settle for making him nervous next time.\""
+              }
+            ],
+            "fallback": "One victory each. The director announces a deciding match, sounding faintly offended that the matter requires further discussion. Emma catches your eye; neither of you is ready to concede anything."
+          },
+          "finalistResult": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "emma_tourney_tiebreaker",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "emma_tourney_finalist_antonio",
+                      "value": 1
+                    }
+                  }
+                ],
+                "text": "Franz will be your opponent. Emma leans closer. \"Do try to spoil his afternoon, Antonio. I suspect it would do wonders for his character.\""
+              },
+              {
+                "triggers": [
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "emma_tourney_tiebreaker",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "emma_tourney_finalist_emma",
+                      "value": 1
+                    }
+                  }
+                ],
+                "text": "Emma will face Olga. She gives you a quick, confident smile. \"My turn. Try not to look more nervous than I am.\""
+              }
+            ],
+            "fallback": "The final scores are recorded, and the hall begins to empty."
+          }
+        }
+      },
+      "after-match-2": {
+        "text": "{{ finalResult }}",
+        "optionTemplates": [
+          {
+            "text": "Return to the Academy",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "You leave Falkenheim behind and begin the journey home."
+                }
+              }
+            ]
+          }
+        ],
+        "title": "The final result",
+        "emotion": "neutral",
+        "passages": {
+          "finalResult": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "last_match_won",
+                    "parameters": {}
+                  }
+                ],
+                "text": "Your final play defeats Franz. He stares at the table, then begins explaining why the result proves nothing. The director's expression is even more rewarding.\n\nEmma steps beside you. \"Antonio, I believe we've just demonstrated that our supposedly antiquated Academy still has a few tricks left.\" She turns to Franz with a gracious smile. \"Thank you for hosting us. Most educational.\""
+              }
+            ],
+            "fallback": "Franz wins the deciding match and rises to accept the applause with the air of a man receiving his rightful inheritance. You can practically hear Elsa boasting about it already.\n\nEmma joins you. \"Never mind, Antonio. He was good.\" She pauses. \"I do wish he weren't quite so pleased about it.\""
+          }
+        }
+      },
+      "emma-triumphant": {
+        "text": "Emma wins the deciding match. Olga's pale eyes narrow; across the room, Franz looks personally insulted by the result. The director offers congratulations through clenched teeth.\n\n\"How kind,\" Emma replies brightly. \"We were so worried, after your letter, that our little Academy might no longer be competitive. What a relief!\"\n\nShe turns to you with a triumphant smile. \"Well, Antonio? Was my applause suitably modest?\"",
+        "optionTemplates": [
+          {
+            "text": "Return to the Academy",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "You and Emma begin the journey home, leaving Falkenheim to contemplate its hospitality and its defeat."
+                }
+              }
+            ]
+          }
+        ],
+        "title": "Emma's triumph",
+        "emotion": "proud"
+      }
+    }
+  },
+  {
     "key": "happy_little_accident",
     "text": "Your third artificery lesson is progressing remarkably well. You've arranged your ingredients, prepared your pigments, and even managed to follow most of the professor's instructions. At this rate, you might produce something almost respectable.\n\nThen your elbow catches a jar.\n\nA cascade of shimmering blue powder spills across the workbench, mixing with your carefully prepared ingredients. You grab for a cloth, knock over a second jar, and watch in horror as the entire mixture begins to glow.\n\nThere is a sharp pop, a flash of blue light, and the unmistakable smell of burnt cinnamon.\n\nWhen the smoke clears, a perfectly formed card lies in the middle of the table.\n\nYou pick it up cautiously. The enchantments woven into its surface are unlike anything you've seen before: intricate, powerful, and somehow perfectly balanced.\n\nThe professor approaches, examines your creation, and falls silent.\n\n\"Fibonacci. How exactly did you achieve this?\"\n\nAn excellent question. One you would very much like to know the answer to yourself.\n\n\"Remarkable,\" the professor murmurs. \"Quite remarkable. You must document your procedure.\"\n\nYes. Of course. Your procedure.\n\nYou glance at the empty jars, the stained workbench, and the smoking remains of your notes.\n\nThis could be difficult.",
     "triggers": [
@@ -2678,12 +3452,14 @@
     "title": "Happy Little Accident",
     "effects": [
       {
-        "type": "offer_card_gifts",
-        "parameters": {
-          "count": 1,
-          "specificCardKeys": [
-            "happy_little_accident"
-          ]
+        "effect": {
+          "type": "offer_card_gifts",
+          "parameters": {
+            "count": 1,
+            "specificCardKeys": [
+              "happy_little_accident"
+            ]
+          }
         }
       }
     ]

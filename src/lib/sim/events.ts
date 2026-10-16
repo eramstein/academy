@@ -1,10 +1,18 @@
 import eventsData from '@/data/sim/events.json';
-import { ActivityType, DayPeriod, EventTriggerType, RelationTag } from '../_model/enums-sim';
+import {
+  ActivityType,
+  DayPeriod,
+  EventEffectType,
+  EventTriggerType,
+  RelationTag,
+} from '../_model/enums-sim';
 import type {
+  EventEffect,
   EventOption,
   EventOptionTemplate,
   EventPassage,
   EventTemplate,
+  EventTemplateEffect,
   Npc,
   SceneEvent,
 } from '../_model/model-sim';
@@ -68,6 +76,10 @@ export interface EventTriggerParameters {
   };
   /** NPC has at least `count` entries in `knownTraits`. */
   [EventTriggerType.KnownTraits]: { characterKey: string; count: number };
+  /** `gs.scene.lastMatchWon === true` after a finished match. */
+  [EventTriggerType.LastMatchWon]: Record<string, never>;
+  /** `gs.scene.lastMatchWon === false` after a finished match. */
+  [EventTriggerType.LastMatchLost]: Record<string, never>;
 }
 
 export type EventTrigger = {
@@ -93,18 +105,64 @@ function hasEventOccurred(key: string): boolean {
   return (gs.storyTags[key] ?? 0) > 0;
 }
 
+/**
+ * Root and node `effects` are `{ effect, triggers? }` couples. Older catalogs
+ * stored bare `EventEffect[]` — wrap them so runtime and the editor stay consistent.
+ */
+function normalizeEffectEntries(
+  entries: EventTemplateEffect[] | EventEffect[] | undefined
+): EventTemplateEffect[] | undefined {
+  if (!entries?.length) return entries as EventTemplateEffect[] | undefined;
+  const first = entries[0] as EventTemplateEffect | EventEffect;
+  if (first && typeof first === 'object' && 'effect' in first) {
+    return entries as EventTemplateEffect[];
+  }
+  return (entries as EventEffect[]).map((effect) => ({ effect }));
+}
+
+export function normalizeEventTemplate<T extends EventTemplate>(template: T): T {
+  const effects = normalizeEffectEntries(
+    template.effects as EventTemplateEffect[] | EventEffect[] | undefined
+  );
+  let nodes = template.nodes;
+  if (nodes) {
+    let nodesChanged = false;
+    const nextNodes: Record<string, (typeof nodes)[string]> = {};
+    for (const [nodeKey, node] of Object.entries(nodes)) {
+      const nodeEffects = normalizeEffectEntries(
+        node.effects as EventTemplateEffect[] | EventEffect[] | undefined
+      );
+      if (nodeEffects !== node.effects) {
+        nodesChanged = true;
+        nextNodes[nodeKey] = { ...node, effects: nodeEffects };
+      } else {
+        nextNodes[nodeKey] = node;
+      }
+    }
+    if (nodesChanged) nodes = nextNodes;
+  }
+  if (effects === template.effects && nodes === template.nodes) return template;
+  return {
+    ...template,
+    ...(effects !== template.effects ? { effects } : {}),
+    ...(nodes !== template.nodes ? { nodes } : {}),
+  };
+}
+
 async function readEventTemplatesSource(): Promise<EventTemplate[]> {
   try {
     // Dev and preview merge events.json with every mods/<id>/events.json.
     const response = await fetch('/api/events', { cache: 'no-store' });
     if (response.ok) {
-      return (await response.json()) as EventTemplate[];
+      return ((await response.json()) as EventTemplate[]).map(normalizeEventTemplate);
     }
   } catch {
     // Static builds have no API; use the bundled catalog plus mods/index.json.
   }
   await loadMods();
-  return [...(eventsData as EventTemplate[]), ...getLoadedModEvents<EventTemplate>()];
+  return [...(eventsData as EventTemplate[]), ...getLoadedModEvents<EventTemplate>()].map(
+    normalizeEventTemplate
+  );
 }
 
 export async function restoreEventTemplates() {
@@ -120,7 +178,7 @@ export function rebuildWorkingEventTemplates() {
 
 export async function loadEventTemplates() {
   // Repair catalogs pruned by older play sessions: source is the truth for content.
-  const fromDb = await getAllEventTemplates();
+  const fromDb = (await getAllEventTemplates()).map(normalizeEventTemplate);
   const fromSource = await readEventTemplatesSource();
   const dbKeys = new Set(fromDb.map((template) => template.key));
   const missingFromDb = fromSource.filter((template) => !dbKeys.has(template.key));
@@ -131,7 +189,7 @@ export async function loadEventTemplates() {
       .filter((template) => !sourceKeys.has(template.key))
       .map(({ id: _id, ...template }) => template);
     await replaceEventTemplates([...fromSource, ...dbOnly]);
-    allEventTemplates = await getAllEventTemplates();
+    allEventTemplates = (await getAllEventTemplates()).map(normalizeEventTemplate);
   } else {
     allEventTemplates = fromDb;
   }
@@ -141,9 +199,9 @@ export async function loadEventTemplates() {
 
 /** Replace IndexedDB + in-memory templates with the given list (e.g. after editor save). */
 export async function syncEventTemplates(templates: EventTemplate[]) {
-  await replaceEventTemplates(templates);
+  await replaceEventTemplates(templates.map(normalizeEventTemplate));
   // Do not re-merge from source — that would overwrite the editor's just-saved catalog.
-  allEventTemplates = await getAllEventTemplates();
+  allEventTemplates = (await getAllEventTemplates()).map(normalizeEventTemplate);
   rebuildWorkingEventTemplates();
 }
 
@@ -317,6 +375,10 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       return checkRelationTag(trigger);
     case EventTriggerType.KnownTraits:
       return checkKnownTraits(trigger);
+    case EventTriggerType.LastMatchWon:
+      return gs.scene.lastMatchWon === true;
+    case EventTriggerType.LastMatchLost:
+      return gs.scene.lastMatchWon === false;
     default:
       return false;
   }
@@ -464,11 +526,21 @@ function trimmedNodeKey(key: string | undefined): string | undefined {
   return trimmed ? trimmed : undefined;
 }
 
+function optionStartsMatch(optionTemplate: EventOptionTemplate): boolean {
+  return (
+    optionTemplate.effects?.some((effect) => effect.type === EventEffectType.StartMatch) ?? false
+  );
+}
+
 /** Where an option can go. A missing node on a branch means that branch ends the event. */
 function optionResolutions(optionTemplate: EventOptionTemplate): {
   endings: boolean;
   nodes: string[];
 } {
+  // Post-match node triggers are evaluated after the fight; don't hide the start option.
+  if (optionStartsMatch(optionTemplate)) {
+    return { endings: true, nodes: [] };
+  }
   if (!optionTemplate.attributeCheck) {
     const node = trimmedNodeKey(optionTemplate.nextNode);
     return node ? { endings: false, nodes: [node] } : { endings: true, nodes: [] };
@@ -491,6 +563,16 @@ export function nodeIsEnterable(template: EventTemplate, nodeKey: string): boole
   if (!node) return false;
   const triggers = node.triggers ?? [];
   return triggers.every((trigger) => doesTriggerMatch(trigger, template.key));
+}
+
+/**
+ * Root / node effect entries: omit or empty `triggers` always applies.
+ * Otherwise every trigger must match (AND). Root entries are evaluated before the
+ * event story tag stamps; node entries on enter, before that beat's passages and options.
+ */
+export function eventTemplateEffectApplies(entry: EventTemplateEffect, eventKey: string): boolean {
+  const triggers = entry.triggers ?? [];
+  return triggers.every((trigger) => doesTriggerMatch(trigger, eventKey));
 }
 
 /**
@@ -561,8 +643,14 @@ function buildOption(optionTemplate: EventOptionTemplate, template: EventTemplat
     if (failureNode) option.outcome.failureNode = failureNode;
   } else if (optionTemplate.effects) {
     option.outcome.effects = optionTemplate.effects;
-    const nextNode = resolveDestination(optionTemplate.nextNode, undefined, template);
-    if (nextNode) option.outcome.nextNode = nextNode;
+    if (optionStartsMatch(optionTemplate)) {
+      // Enterability of nextNode is re-checked after the match (last_match_* triggers).
+      const raw = trimmedNodeKey(optionTemplate.nextNode);
+      if (raw) option.outcome.nextNode = raw;
+    } else {
+      const nextNode = resolveDestination(optionTemplate.nextNode, undefined, template);
+      if (nextNode) option.outcome.nextNode = nextNode;
+    }
   } else {
     const nextNode = resolveDestination(optionTemplate.nextNode, undefined, template);
     if (nextNode) option.outcome.nextNode = nextNode;
@@ -571,7 +659,10 @@ function buildOption(optionTemplate: EventOptionTemplate, template: EventTemplat
 }
 
 /** Later beat of an event already in progress. Does not stamp or consume the template. */
-export function sceneEventForNode(template: EventTemplate, nodeKey: string): SceneEvent | undefined {
+export function sceneEventForNode(
+  template: EventTemplate,
+  nodeKey: string
+): SceneEvent | undefined {
   const node = template.nodes?.[nodeKey];
   if (!node) return undefined;
   return {

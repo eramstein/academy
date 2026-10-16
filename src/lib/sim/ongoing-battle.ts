@@ -30,9 +30,15 @@ export function recordBattleResult(won: boolean) {
   if (!gs.ongoingBattle) {
     return;
   }
+  gs.scene.lastMatchWon = won;
   if (gs.ongoingBattle.isLeagueMatch) {
     recordLeagueMatchResult(won);
   }
   narrateMatchResult(won, gs.ongoingBattle.opponentKey);
+  if (gs.ongoingBattle.resume) {
+    // Keep ongoingBattle until the victory modal dismisses so Main stays on Battle.
+    gs.scene.pendingEventResume = gs.ongoingBattle.resume;
+    return;
+  }
   setPossibleActions();
 }

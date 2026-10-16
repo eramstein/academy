@@ -1,15 +1,15 @@
 <script lang="ts">
   import {
     Emotion,
-    type EventEffect,
     type EventImageSize,
     type EventNode,
     type EventOptionTemplate,
     type EventTemplate,
+    type EventTemplateEffect,
     type EventTrigger,
   } from '@/lib/_model';
-  import EffectsTemplatesEditor from './EffectsTemplatesEditor.svelte';
   import EventOptionsEditor, { normalizeOptionTemplates } from './EventOptionsEditor.svelte';
+  import EventTemplateEffectsEditor from './EventTemplateEffectsEditor.svelte';
   import PassagesEditor, {
     passageDraftsFrom,
     passagesFromDrafts,
@@ -43,7 +43,7 @@
   let manualTrigger = $state('');
   let triggers = $state<EventTrigger[]>([]);
   let options = $state<EventOptionTemplate[]>([]);
-  let effects = $state<EventEffect[]>([]);
+  let effects = $state<EventTemplateEffect[]>([]);
   let passageDrafts = $state<PassageDraft[]>([]);
   let nodeDrafts = $state<NodeDraft[]>([]);
   let error = $state('');
@@ -63,7 +63,7 @@
     image: string;
     imageSize: EventImageSize;
     triggers: EventTrigger[];
-    effects: EventEffect[];
+    effects: EventTemplateEffect[];
     options: EventOptionTemplate[];
     passageDrafts: PassageDraft[];
   }
@@ -197,10 +197,21 @@
         })) as EventTrigger[];
       }
       if (draft.effects.length > 0) {
-        node.effects = draft.effects.map((effect) => ({
-          type: effect.type,
-          parameters: { ...effect.parameters },
-        }));
+        node.effects = draft.effects.map((entry) => {
+          const next: EventTemplateEffect = {
+            effect: {
+              type: entry.effect.type,
+              parameters: { ...entry.effect.parameters },
+            },
+          };
+          if (entry.triggers && entry.triggers.length > 0) {
+            next.triggers = entry.triggers.map((trigger) => ({
+              triggerType: trigger.triggerType,
+              parameters: { ...trigger.parameters },
+            })) as EventTrigger[];
+          }
+          return next;
+        });
       }
       const nodeTitle = draft.title.trim();
       if (nodeTitle) node.title = nodeTitle;
@@ -251,10 +262,21 @@
     }
 
     if (effects.length > 0) {
-      built.effects = effects.map((effect) => ({
-        type: effect.type,
-        parameters: { ...effect.parameters },
-      }));
+      built.effects = effects.map((entry) => {
+        const next: EventTemplateEffect = {
+          effect: {
+            type: entry.effect.type,
+            parameters: { ...entry.effect.parameters },
+          },
+        };
+        if (entry.triggers && entry.triggers.length > 0) {
+          next.triggers = entry.triggers.map((trigger) => ({
+            triggerType: trigger.triggerType,
+            parameters: { ...trigger.parameters },
+          })) as EventTrigger[];
+        }
+        return next;
+      });
     }
 
     const triggerLabel = manualTrigger.trim();
@@ -462,11 +484,11 @@
       </section>
 
       <section class="panel effects">
-        <EffectsTemplatesEditor
+        <EventTemplateEffectsEditor
           {effects}
           onChange={(next) => (effects = next)}
           title="Effects"
-          description="Applied when the event triggers, before options."
+          description="Applied when the event fires, before options. Optional per-effect triggers gate that effect only."
         />
       </section>
     </div>
@@ -554,12 +576,11 @@
                 emptyHint="Always enterable."
                 nested
               />
-              <EffectsTemplatesEditor
+              <EventTemplateEffectsEditor
                 effects={draft.effects}
                 onChange={(next) => patchNode(draft.id, { effects: next })}
                 title="On enter"
-                description="Applied when this node opens, before its options."
-                nested
+                description="Applied when this node opens, before its passages and options. Optional per-effect triggers gate that effect only."
               />
               <EventOptionsEditor
                 options={draft.options}

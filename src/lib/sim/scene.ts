@@ -13,10 +13,12 @@ import { gs } from '../_state';
 import { attributeCheck, skillCheckDifficulty } from './attribute-checks';
 import {
   consumeEventTemplate,
+  eventTemplateEffectApplies,
   getManualSceneTriggers,
   getPlayableManualTrigger,
   getSceneEventByKey,
   getTriggeredSceneEvent,
+  nodeIsEnterable,
   recordEventOccured,
   sceneEventForNode,
 } from './events';
@@ -55,6 +57,7 @@ A long action advances the period and ends the scene; the next scene is set base
 Optionless events resolve immediately (narrate + effects) and do not hold the scene.
 An option nextNode (or a skill-check successNode / failureNode) opens another beat of the same event
 instead of ending it. That beat does not stamp the event again.
+A start_match effect defers nextNode until the Battle view closes (see resumeEventAfterBattle).
 */
 
 export function syncManualSceneTriggers() {
@@ -93,11 +96,26 @@ function continuationNode(option: EventOption, success?: boolean): string | unde
 /**
  * Show a later beat of the event already in progress.
  * Does not consume the template or stamp its story tag again.
+ * On-enter effects run before passages and options are resolved, so a story tag
+ * set here can gate this beat's passages and choices.
  */
 function presentEventNode(template: EventTemplate, nodeKey: string) {
   const node = template.nodes?.[nodeKey];
+  if (!node) {
+    if (!sceneWaitingOnEventChoice()) setSceneEvents();
+    return;
+  }
+  if (node.effects) {
+    for (const entry of node.effects) {
+      if (eventTemplateEffectApplies(entry, template.key)) {
+        applyEffect(entry.effect);
+      }
+    }
+  }
+  // A follow-up event effect may have claimed the scene (and narrated already).
+  if (sceneWaitingOnEventChoice()) return;
   const event = sceneEventForNode(template, nodeKey);
-  if (!node || !event) {
+  if (!event) {
     if (!sceneWaitingOnEventChoice()) setSceneEvents();
     return;
   }
@@ -105,16 +123,11 @@ function presentEventNode(template: EventTemplate, nodeKey: string) {
     ...(node.title ? { title: node.title } : {}),
     characterKey: template.characterArc,
     ...(node.emotion ? { emotion: node.emotion } : {}),
-    ...(node.image
-      ? { image: node.image, imageSize: node.imageSize, eventKey: template.key }
-      : {}),
+    ...(node.image ? { image: node.image, imageSize: node.imageSize, eventKey: template.key } : {}),
   });
   if (template.characterArc && event.text.trim()) {
     appendRelationArcText(template.characterArc, event.text);
   }
-  node.effects?.forEach((effect) => applyEffect(effect));
-  // A follow-up event effect may have claimed the scene.
-  if (sceneWaitingOnEventChoice()) return;
   if (event.options.length > 0) {
     gs.scene.event = event;
     gs.scene.actions = [];
@@ -157,6 +170,14 @@ export async function selectOption(option: EventOption) {
     });
   }
   const nextNode = continuationNode(option, success);
+  // Battle takes over the view; park nextNode until the player dismisses the result modal.
+  if (gs.ongoingBattle) {
+    if (nextNode && template) {
+      gs.ongoingBattle.resume = { eventKey: template.key, nextNode };
+    }
+    gs.scene.actions = [];
+    return;
+  }
   if (nextNode && template) {
     presentEventNode(template, nextNode);
     return;
@@ -166,6 +187,25 @@ export async function selectOption(option: EventOption) {
   } else if (!sceneWaitingOnEventChoice()) {
     setSceneEvents();
   }
+}
+
+/**
+ * Call when leaving the Battle view. Clears `ongoingBattle` and, if a `start_match`
+ * option parked a `nextNode`, reopens that beat (node triggers see `lastMatchWon`).
+ */
+export function resumeEventAfterBattle() {
+  gs.ongoingBattle = null;
+  const resume = gs.scene.pendingEventResume;
+  gs.scene.pendingEventResume = undefined;
+  if (!resume) {
+    return;
+  }
+  const resolved = getSceneEventByKey(resume.eventKey);
+  if (!resolved || !nodeIsEnterable(resolved.template, resume.nextNode)) {
+    setSceneEvents();
+    return;
+  }
+  presentEventNode(resolved.template, resume.nextNode);
 }
 
 export function startScene() {
@@ -227,7 +267,11 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
   gs.scene.event = sceneWaitingOnEventChoice(event) ? event : undefined;
   consumeEventTemplate(template);
   if (template.effects) {
-    template.effects.forEach((effect) => applyEffect(effect));
+    for (const entry of template.effects) {
+      if (eventTemplateEffectApplies(entry, template.key)) {
+        applyEffect(entry.effect);
+      }
+    }
   }
   recordEventOccured(template, event.text);
   // Follow-up may have claimed the scene; drop optionless leftovers so callers restore actions.

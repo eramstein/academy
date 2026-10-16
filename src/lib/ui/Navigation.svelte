@@ -4,6 +4,7 @@
   import { gs, resetBattleState } from '../_state/main.svelte';
   import { endBattle } from '../battle/win';
   import { initSim } from '../sim/init';
+  import { resumeEventAfterBattle } from '../sim/scene';
 
   const navItems = [
     { view: UiView.Scene, label: 'Game', icon: '🎮' },
@@ -14,6 +15,7 @@
   const stopBattle = (concession: boolean) => {
     endBattle(concession);
     resetBattleState();
+    resumeEventAfterBattle();
     uiState.currentView = UiView.Scene;
     uiState.navigationVisible = false;
   };

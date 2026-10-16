@@ -24,12 +24,15 @@
     title = 'Effects',
     description = '',
     nested = false,
+    allowAdd = true,
   }: {
     effects: EventEffect[];
     onChange: (effects: EventEffect[]) => void;
     title?: string;
     description?: string;
     nested?: boolean;
+    /** When false, hide Add (e.g. single-effect slot inside a couple editor). */
+    allowAdd?: boolean;
   } = $props();
 
   // Authorable from events; Subscribe is action-only.
@@ -119,7 +122,7 @@
       case EventEffectType.OfferCardGifts:
         return { count: 2, poolKeys: [] };
       case EventEffectType.GiftCardToCharacter:
-        return { characterKey: '', cardKey: '' };
+        return { characterKey: '', cardKey: '', fromPlayer: true };
       case EventEffectType.TeachColor:
         return { color: CardColor.Red };
       case EventEffectType.TeachAbility:
@@ -144,6 +147,8 @@
         return { placeKey: placeKeys[0] ?? '', characterKeys: ['player'] };
       case EventEffectType.UseFocus:
         return { amount: 1 };
+      case EventEffectType.StartMatch:
+        return { opponentKey: '', playerDeckKey: '', isLeagueMatch: false };
       default:
         return {};
     }
@@ -205,10 +210,13 @@
     return normalizeScheduleArgs(effect.parameters);
   }
 
-  function withoutEmptyRecurrence(schedule: Schedule): Schedule {
+  function withoutEmptyScheduleFlags(schedule: Schedule): Schedule {
     const next: Schedule = { ...schedule };
     if (!next.recurrence) {
       delete next.recurrence;
+    }
+    if (!next.nextFree) {
+      delete next.nextFree;
     }
     return next;
   }
@@ -221,7 +229,7 @@
               ...effect,
               parameters: {
                 activity: next.activity,
-                schedule: withoutEmptyRecurrence(next.schedule),
+                schedule: withoutEmptyScheduleFlags(next.schedule),
               },
             }
           : effect
@@ -251,7 +259,7 @@
   }
 
   function writeJobArgs(index: number, next: JobArgs) {
-    const job = { ...next.job, schedule: withoutEmptyRecurrence(next.job.schedule) };
+    const job = { ...next.job, schedule: withoutEmptyScheduleFlags(next.job.schedule) };
     update(effects.map((effect, i) => (i === index ? { ...effect, parameters: { job } } : effect)));
   }
 
@@ -277,15 +285,17 @@
     }
   }
 
-  function setDateField(index: number, key: 'day' | 'period', value: unknown) {
+  function setDateField(index: number, key: 'day' | 'period' | 'dayOfWeek', value: unknown) {
     const schedule = currentSchedule(index);
-    setSchedule(index, {
-      ...schedule,
-      date: {
-        ...(schedule.date ?? { day: 0, period: DayPeriod.Evening }),
-        [key]: value,
-      },
-    });
+    const date: NonNullable<Schedule['date']> = {
+      ...(schedule.date ?? { day: 0, period: DayPeriod.Evening }),
+    };
+    if (key === 'dayOfWeek' && (value == null || value === '')) {
+      delete date.dayOfWeek;
+    } else {
+      date[key] = value as never;
+    }
+    setSchedule(index, { ...schedule, date });
   }
 
   function setActivityField(index: number, key: keyof ActivityArgs, value: unknown) {
@@ -317,6 +327,16 @@
       });
     } else {
       const { recurrence: _, ...rest } = schedule;
+      setSchedule(index, rest);
+    }
+  }
+
+  function setNextFree(index: number, enabled: boolean) {
+    const schedule = currentSchedule(index);
+    if (enabled) {
+      setSchedule(index, { ...schedule, nextFree: true });
+    } else {
+      const { nextFree: _, ...rest } = schedule;
       setSchedule(index, rest);
     }
   }
@@ -353,7 +373,9 @@
         <p class="desc">{description}</p>
       {/if}
     </div>
-    <button type="button" class="btn ghost" onclick={addEffect}>Add</button>
+    {#if allowAdd}
+      <button type="button" class="btn ghost" onclick={addEffect}>Add</button>
+    {/if}
   </div>
 
   {#if effects.length === 0}
@@ -418,6 +440,32 @@
                 oninput={(e) =>
                   setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
               />
+            {:else if effect.type === EventEffectType.StartMatch}
+              <input
+                class="input arg"
+                value={effect.parameters.opponentKey ?? ''}
+                placeholder="opponent key"
+                aria-label="Opponent key"
+                oninput={(e) =>
+                  setParameter(i, 'opponentKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.playerDeckKey ?? ''}
+                placeholder="player deck (optional)"
+                aria-label="Player deck key"
+                oninput={(e) =>
+                  setParameter(i, 'playerDeckKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <label class="check">
+                <input
+                  type="checkbox"
+                  checked={!!effect.parameters.isLeagueMatch}
+                  onchange={(e) =>
+                    setParameter(i, 'isLeagueMatch', (e.currentTarget as HTMLInputElement).checked)}
+                />
+                League match
+              </label>
             {:else if effect.type === EventEffectType.UseFocus}
               <input
                 class="input narrow"
@@ -479,6 +527,16 @@
                 oninput={(e) =>
                   setParameter(i, 'cardKey', (e.currentTarget as HTMLInputElement).value)}
               />
+              <label class="check">
+                <input
+                  type="checkbox"
+                  checked={effect.parameters.fromPlayer !== false}
+                  aria-label="Transfer from player"
+                  onchange={(e) =>
+                    setParameter(i, 'fromPlayer', (e.currentTarget as HTMLInputElement).checked)}
+                />
+                from player
+              </label>
             {:else if effect.type === EventEffectType.TeachColor}
               <select
                 class="input arg"
@@ -874,11 +932,32 @@
     type="number"
     min="0"
     value={schedule.date?.day ?? 0}
-    aria-label="Days from now"
-    title="Days from now"
+    aria-label={schedule.nextFree || schedule.date?.dayOfWeek != null
+      ? 'Earliest days from now'
+      : 'Days from now'}
+    title={schedule.date?.dayOfWeek != null
+      ? 'Minimum day offset before the target weekday'
+      : schedule.nextFree
+        ? 'Earliest day offset — first free slot at or after this many days from now'
+        : 'Days from now (0 = today)'}
     oninput={(e) => setDateField(i, 'day', Number((e.currentTarget as HTMLInputElement).value))}
   />
   {#if !schedule.recurrence}
+    <select
+      class="input"
+      value={schedule.date?.dayOfWeek ?? ''}
+      aria-label="Weekday"
+      title="Next occurrence of this weekday (1=Mon … 7=Sun). Leave as Any day for a plain day offset."
+      onchange={(e) => {
+        const raw = (e.currentTarget as HTMLSelectElement).value;
+        setDateField(i, 'dayOfWeek', raw === '' ? undefined : Number(raw));
+      }}
+    >
+      <option value="">Any day</option>
+      {#each weekDays as day (day.value)}
+        <option value={day.value}>{day.name}</option>
+      {/each}
+    </select>
     <select
       class="input"
       value={schedule.date?.period ?? DayPeriod.Evening}
@@ -890,6 +969,20 @@
       {/each}
     </select>
   {/if}
+
+  <label
+    class="check"
+    title={schedule.date?.dayOfWeek != null
+      ? 'If that weekday/period is busy, use the same weekday next week'
+      : 'Start at days-from-now; if that period is busy, use the next free day with the same period'}
+  >
+    <input
+      type="checkbox"
+      checked={!!schedule.nextFree}
+      onchange={(e) => setNextFree(i, (e.currentTarget as HTMLInputElement).checked)}
+    />
+    Next free
+  </label>
 
   <label class="check">
     <input

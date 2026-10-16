@@ -114,6 +114,13 @@ const PLACES: Record<string, Place> = {
       'The Gray Mountains are a range of beautiful high mountains, peaceful with views on lakes and forests.',
     regionKey: 'wilderness',
   },
+  ['falkenheim_school']: {
+    key: 'falkenheim_school',
+    name: 'Falkenheim School',
+    description:
+      'The Falkenheim School is a prestigious university with a lot of students and a lot of teachers.',
+    regionKey: 'falkenheim',
+  },
 } as const;
 
 const REGIONS: Record<string, Region> = {
@@ -131,6 +138,11 @@ const REGIONS: Record<string, Region> = {
     key: 'wilderness',
     name: 'The Wilderness',
     description: 'Natural sites around Gosend Town, most of them wild and untamed.',
+  },
+  ['falkenheim']: {
+    key: 'falkenheim',
+    name: 'Falkenheim',
+    description: 'Falkenheim is a large city with a lot of people and a prestigious university.',
   },
 } as const;
 

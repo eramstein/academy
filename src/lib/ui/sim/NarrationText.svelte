@@ -29,23 +29,43 @@
   let visibleLength = $state(0);
   let hoveredMention = $state<number | null>(null);
   let root: HTMLDivElement | undefined = $state();
+  let cancelTyping: (() => void) | null = null;
+  let finished = false;
 
   const segments = $derived(segmentNarration(text, mentions));
   const shown = $derived(visibleSegments(segments, visibleLength));
+  const typing = $derived(animate && visibleLength < text.length);
+
+  function skipTyping(event?: MouseEvent) {
+    if (!typing) return;
+    event?.preventDefault();
+    window.getSelection()?.removeAllRanges();
+    cancelTyping?.();
+    visibleLength = text.length;
+    if (!finished) {
+      finished = true;
+      onDone?.();
+    }
+  }
 
   $effect(() => {
     const full = text;
     const shouldAnimate = animate;
     const stepMs = Math.min(28, Math.max(10, msPerChar));
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    finished = false;
 
     if (!shouldAnimate || reduceMotion || full.length === 0) {
       visibleLength = full.length;
+      finished = true;
       untrack(() => onDone?.());
       return;
     }
 
     let cancelled = false;
+    cancelTyping = () => {
+      cancelled = true;
+    };
     void (async () => {
       await revealInk({
         text: full,
@@ -58,17 +78,26 @@
         element: () => root,
         onBeat: (beat) => untrack(() => onBeat)?.(beat),
       });
-      if (!cancelled) untrack(() => onDone?.());
+      if (!cancelled) {
+        finished = true;
+        untrack(() => onDone?.());
+      }
     })();
 
     return () => {
       cancelled = true;
+      cancelTyping = null;
     };
   });
 </script>
 
 <!-- prettier-ignore -->
-<div class={className} bind:this={root}>{#each shown as segment, i (i)}{#if segment.type === 'text'}{segment.text}{:else if segment.type === 'keyword'}<Tooltip content={getKeywordTooltip(segment.id)} show={hoveredMention === i}><span class="mention" onmouseenter={() => (hoveredMention = i)} onmouseleave={() => (hoveredMention = null)}>{segment.text}</span></Tooltip>{:else if segment.type === 'action'}<Tooltip content={getActionTooltip(segment.id)} show={hoveredMention === i}><span class="mention" onmouseenter={() => (hoveredMention = i)} onmouseleave={() => (hoveredMention = null)}>{segment.text}</span></Tooltip>{:else}<button type="button" class="mention mention-character" onclick={() => selectSimCharacter(segment.id)}>{segment.text}</button>{/if}{/each}{#if animate}<span class="caret" class:done={visibleLength >= text.length} aria-hidden="true"></span>{/if}</div>
+<div
+  class={className}
+  bind:this={root}
+  title={typing ? 'Double-click to skip' : undefined}
+  ondblclick={skipTyping}
+>{#each shown as segment, i (i)}{#if segment.type === 'text'}{segment.text}{:else if segment.type === 'keyword'}<Tooltip content={getKeywordTooltip(segment.id)} show={hoveredMention === i}><span class="mention" onmouseenter={() => (hoveredMention = i)} onmouseleave={() => (hoveredMention = null)}>{segment.text}</span></Tooltip>{:else if segment.type === 'action'}<Tooltip content={getActionTooltip(segment.id)} show={hoveredMention === i}><span class="mention" onmouseenter={() => (hoveredMention = i)} onmouseleave={() => (hoveredMention = null)}>{segment.text}</span></Tooltip>{:else}<button type="button" class="mention mention-character" onclick={() => selectSimCharacter(segment.id)}>{segment.text}</button>{/if}{/each}{#if animate}<span class="caret" class:done={visibleLength >= text.length} aria-hidden="true"></span>{/if}</div>
 
 <style>
   .mention {

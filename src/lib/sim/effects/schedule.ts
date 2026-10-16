@@ -10,14 +10,48 @@ export interface ScheduleActivitiesParameters {
 
 const PERIOD_ORDER = [DayPeriod.Morning, DayPeriod.Afternoon, DayPeriod.Evening];
 
-/** Absolute day of the soonest free slot for `period` (skips the current period if already underway). */
-export function findNextFreeDay(period: DayPeriod): number {
-  let day = gs.time.day;
-  if (PERIOD_ORDER.indexOf(gs.time.period) >= PERIOD_ORDER.indexOf(period)) {
-    day += 1;
+/** Earliest absolute day at or after `fromDay`, skipping today's period if already underway. */
+function earliestSchedulableDay(period: DayPeriod, fromDay: number): number {
+  let day = fromDay;
+  if (day <= gs.time.day) {
+    day = gs.time.day;
+    if (PERIOD_ORDER.indexOf(gs.time.period) >= PERIOD_ORDER.indexOf(period)) {
+      day += 1;
+    }
   }
+  return day;
+}
+
+/**
+ * Absolute day of the soonest free slot for `period` at or after `fromDay`.
+ * When `fromDay` is today (or earlier), skips the current period if already underway.
+ */
+export function findNextFreeDay(period: DayPeriod, fromDay: number = gs.time.day): number {
+  let day = earliestSchedulableDay(period, fromDay);
   while (gs.scheduledActivities.some((a) => a.day === day && a.period === period)) {
     day += 1;
+  }
+  return day;
+}
+
+/**
+ * Absolute day of the next `dayOfWeek` (1 = Monday … 7 = Sunday) at or after `fromDay`.
+ * When `nextFree` is true and that period is taken, advances by 7 days until free.
+ */
+export function findNextWeekdayDay(
+  dayOfWeek: number,
+  period: DayPeriod,
+  fromDay: number = gs.time.day,
+  nextFree: boolean = false
+): number {
+  let day = earliestSchedulableDay(period, fromDay);
+  while (getWeekDay(day) !== dayOfWeek) {
+    day += 1;
+  }
+  if (nextFree) {
+    while (gs.scheduledActivities.some((a) => a.day === day && a.period === period)) {
+      day += 7;
+    }
   }
   return day;
 }
@@ -26,9 +60,17 @@ export function scheduleActivities(parameters: ScheduleActivitiesParameters): st
   const { activity, schedule = {} } = parameters;
   const { date, recurrence, nextFree } = schedule;
   const activities: ScheduledActivity[] = [];
-  // nextFree defaults to evening; otherwise omit period to schedule into the current slot.
-  const datePeriod = date?.period ?? (nextFree ? DayPeriod.Evening : gs.time.period);
-  const startDay = nextFree ? findNextFreeDay(datePeriod) : gs.time.day + (date?.day ?? 0);
+  // nextFree / dayOfWeek default to evening; otherwise omit period to schedule into the current slot.
+  const datePeriod =
+    date?.period ?? (nextFree || date?.dayOfWeek != null ? DayPeriod.Evening : gs.time.period);
+  const dayOffset = date?.day ?? 0;
+  const fromDay = gs.time.day + dayOffset;
+  const startDay =
+    date?.dayOfWeek != null
+      ? findNextWeekdayDay(date.dayOfWeek, datePeriod, fromDay, !!nextFree)
+      : nextFree
+        ? findNextFreeDay(datePeriod, fromDay)
+        : fromDay;
 
   if (recurrence) {
     const maxCount = recurrence.maxCount ?? 24;

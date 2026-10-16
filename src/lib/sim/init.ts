@@ -4,7 +4,7 @@ import { DayPeriod, ResourceType, type GameState } from '../_model';
 import { gs } from '../_state';
 import { clearUsedFlavors } from './cards/flavor-generation-pipeline/used-flavors';
 import { loadCardTemplates, restoreCardTemplates } from './cards/npc-card-templates';
-import { initNpcDecks } from './deck';
+import { getBasicLands, initNpcDecks } from './deck';
 import { loadEventTemplates, restoreEventTemplates } from './events';
 import { newLeagueSeason } from './league';
 import { setSceneEvents } from './scene';
@@ -47,6 +47,12 @@ export const defaultGameState: GameState = {
       inn: 0,
     },
     craftingKnowledge: {
+      colors: {
+        red: 1,
+        green: 1,
+        blue: 1,
+        black: 1,
+      },
       keywords: {},
     },
     craftingSkills: {
@@ -91,6 +97,7 @@ export const initSim = async () => {
   await loadEventTemplates();
   await restoreCardTemplates();
   await loadCardTemplates();
+  getBasicLands();
   setSceneEvents();
   newLeagueSeason('');
   initNpcDecks();

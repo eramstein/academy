@@ -26,6 +26,8 @@ export enum EventEffectType {
   AddKnownTrait = 'add_known_trait',
   Move = 'move',
   UseFocus = 'use_focus',
+  /** Start a battle; pair with `nextNode` to resume the event after the match. */
+  StartMatch = 'start_match',
 }
 
 export enum ActionType {
@@ -94,6 +96,9 @@ export enum CharacterTrait {
   Confident = 'confident',
   Assertive = 'assertive',
   Abrasive = 'abrasive',
+  Arrogant = 'arrogant',
+  Antagonistic = 'antagonistic',
+  Cruel = 'cruel',
 }
 
 export enum CharacterGender {
@@ -104,7 +109,7 @@ export enum CharacterGender {
 
 export enum SchoolName {
   Academy = 'academy',
-  Kartekar = 'kartekar',
+  Falkenheim = 'falkenheim',
 }
 
 export enum EventTriggerType {
@@ -126,6 +131,10 @@ export enum EventTriggerType {
   RelationTag = 'relation_tag',
   /** NPC has at least `count` entries in `knownTraits`. */
   KnownTraits = 'known_traits',
+  /** Most recent finished match was a win (`gs.scene.lastMatchWon === true`). */
+  LastMatchWon = 'last_match_won',
+  /** Most recent finished match was a loss (`gs.scene.lastMatchWon === false`). */
+  LastMatchLost = 'last_match_lost',
 }
 
 export enum ResourceType {

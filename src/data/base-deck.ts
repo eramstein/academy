@@ -5,6 +5,7 @@ import {
   TargetType,
   TriggerType,
   UnitType,
+  type BaseCardTemplate,
   type DeckBlueprint,
   type UnitCardTemplate,
 } from '@/lib/_model';
@@ -1833,3 +1834,5 @@ export const BASE_DECK_BLUE: DeckBlueprint = {
     'forceMoveUnit',
   ],
 };
+
+export const BASIC_LANDS: BaseCardTemplate[] = [forest, plains, city, mountain];

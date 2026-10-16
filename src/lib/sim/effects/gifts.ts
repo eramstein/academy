@@ -1,4 +1,4 @@
-import { isLandCard, type CardTemplate } from '@/lib/_model';
+import { isLandCard, type CardTemplate, type Character } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getRandomFromArray } from '@/lib/_utils/random';
 import { getCardTemplatesByPoolKeys, getLoadedCardTemplate } from '../cards/npc-card-templates';
@@ -74,11 +74,13 @@ export function acceptGiftCard(template: CardTemplate): CardTemplate {
 export interface GiftCardToCharacterParameters {
   characterKey: string;
   cardKey: string;
+  /** When true (default), move a matching card from the player. When false, mint a new copy. */
+  fromPlayer?: boolean;
 }
 
-/** Moves a card from the player's collection to a character's collection. */
+/** Gives a card to a character — either transferred from the player or newly minted. */
 export function giftCardToCharacter(parameters: GiftCardToCharacterParameters): string {
-  const { characterKey, cardKey } = parameters;
+  const { characterKey, cardKey, fromPlayer = true } = parameters;
   const character = gs.characters[characterKey];
   if (!character) {
     return `Invalid character key: ${characterKey}.`;
@@ -87,34 +89,49 @@ export function giftCardToCharacter(parameters: GiftCardToCharacterParameters): 
     return `Invalid card key: ${cardKey}.`;
   }
 
-  const index = gs.player.collection.findIndex(
-    (card) => card.id === cardKey || card.id.startsWith(`${cardKey}-`)
-  );
-  if (index === -1) {
-    return `You do not have ${cardKey} to give.`;
+  let card: CardTemplate;
+  if (fromPlayer) {
+    const index = gs.player.collection.findIndex(
+      (owned) => owned.id === cardKey || owned.id.startsWith(`${cardKey}-`)
+    );
+    if (index === -1) {
+      return `You do not have ${cardKey} to give.`;
+    }
+
+    const [transferred] = gs.player.collection.splice(index, 1);
+    for (const deck of gs.player.decks) {
+      deck.cards = deck.cards.filter((id) => id !== transferred.id);
+      deck.lands = deck.lands.filter((id) => id !== transferred.id);
+    }
+    card = transferred;
+  } else {
+    const template = getLoadedCardTemplate(cardKey);
+    if (!template) {
+      return `Unknown gift card key: ${cardKey}.`;
+    }
+    card = makeUniqueId(template);
   }
 
-  const [card] = gs.player.collection.splice(index, 1);
-  for (const deck of gs.player.decks) {
-    deck.cards = deck.cards.filter((id) => id !== card.id);
-    deck.lands = deck.lands.filter((id) => id !== card.id);
-  }
   character.collection.push(card);
+  tryAddCardToCharacterDecks(character, card);
 
-  if (!isLandCard(card)) {
-    const neededColors = new Set(card.colors.map((entry) => entry.color));
-    for (const deck of character.decks) {
-      const landColors = new Set(
-        deck.lands
-          .map((id) => character.collection.find((owned) => owned.id === id))
-          .filter((land): land is CardTemplate => !!land)
-          .flatMap((land) => land.colors.map((entry) => entry.color))
-      );
-      if ([...neededColors].every((color) => landColors.has(color))) {
-        addCardToDeck(deck, card);
-      }
+  return fromPlayer
+    ? `You give ${card.name} to ${character.name}.`
+    : `${character.name} receives ${card.name}.`;
+}
+
+function tryAddCardToCharacterDecks(character: Character, card: CardTemplate) {
+  if (isLandCard(card)) return;
+  const neededColors = new Set(card.colors.map((entry) => entry.color));
+  for (const deck of character.decks) {
+    const landColors = new Set(
+      deck.lands
+        .map((id) => character.collection.find((owned) => owned.id === id))
+        .filter((land): land is CardTemplate => !!land)
+        .flatMap((land) => land.colors.map((entry) => entry.color))
+    );
+    if ([...neededColors].every((color) => landColors.has(color))) {
+      addCardToDeck(deck, card);
     }
   }
-
-  return `You give ${card.name} to ${character.name}.`;
 }

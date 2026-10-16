@@ -529,6 +529,7 @@ You shake it.
 
 - Add story tag `emma_tourney_finalist_antonio`.
 - Emma respect +1.
+- Schedule `emma_tourney_crafting` event for evening in 2 days (next free) at the artificery room.
 
 ### Option B: Let Emma take the deciding match
 
@@ -558,3 +559,4 @@ She offers her hand across the table.
 
 - Add story tag `emma_tourney_finalist_emma`.
 - Emma friendship +1.
+- Schedule `emma_tourney_crafting` event for evening in 2 days (next free) at the artificery room.

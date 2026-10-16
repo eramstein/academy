@@ -1,0 +1,458 @@
+{
+  "key": "franz_deck_1",
+  "name": "Franz Deck 1",
+  "cards": [
+    {
+      "id": "young_viking",
+      "name": "Young Viking",
+      "imageFileName": "young_viking",
+      "type": "unit",
+      "cost": 2,
+      "colors": [{ "color": "red", "count": 1 }],
+      "power": 2,
+      "maxHealth": 2,
+      "retaliate": 1,
+      "unitTypes": ["human"]
+    },
+    {
+      "id": "gargoyle",
+      "name": "Gargoyle",
+      "imageFileName": "gargoyle",
+      "type": "unit",
+      "cost": 4,
+      "colors": [{ "color": "red", "count": 1 }],
+      "power": 4,
+      "maxHealth": 2,
+      "retaliate": 2,
+      "unitTypes": ["elemental"]
+    },
+    {
+      "id": "viking_axeman",
+      "name": "Viking Axeman",
+      "imageFileName": "viking_axeman",
+      "type": "unit",
+      "cost": 4,
+      "colors": [{ "color": "red", "count": 1 }],
+      "power": 3,
+      "maxHealth": 3,
+      "retaliate": 0,
+      "unitTypes": ["human"]
+    },
+    {
+      "id": "mad_dwarf",
+      "name": "Mad Dwarf",
+      "imageFileName": "mad_dwarf",
+      "type": "unit",
+      "cost": 3,
+      "colors": [{ "color": "red", "count": 1 }],
+      "power": 5,
+      "maxHealth": 1,
+      "retaliate": 0,
+      "unitTypes": ["dwarf"],
+      "keywords": {
+        "zerk": true
+      }
+    },
+    {
+      "id": "jarl_bodyguard",
+      "name": "Jarl Bodyguard",
+      "imageFileName": "jarl_bodyguard",
+      "type": "unit",
+      "cost": 4,
+      "colors": [{ "color": "red", "count": 2 }],
+      "power": 4,
+      "maxHealth": 2,
+      "retaliate": 0,
+      "unitTypes": ["human"]
+    },
+    {
+      "id": "stone_colossus",
+      "name": "Stone Colossus",
+      "imageFileName": "stone_colossus",
+      "type": "unit",
+      "cost": 4,
+      "colors": [{ "color": "red", "count": 1 }],
+      "power": 5,
+      "maxHealth": 2,
+      "retaliate": 2,
+      "unitTypes": ["human"]
+    },
+    {
+      "id": "mountain_giant",
+      "name": "Mountain Giant",
+      "imageFileName": "mountain_giant",
+      "type": "unit",
+      "cost": 6,
+      "colors": [{ "color": "red", "count": 1 }],
+      "power": 6,
+      "maxHealth": 2,
+      "retaliate": 0,
+      "unitTypes": ["monster"]
+    },
+    {
+      "id": "lightning_bolt",
+      "name": "Lightning Bolt",
+      "imageFileName": "lightning_bolt",
+      "type": "spell",
+      "cost": 2,
+      "colors": [{ "color": "red", "count": 2 }],
+      "actions": [
+        {
+          "effect": {
+            "name": "damageUnit",
+            "args": {
+              "damage": 3
+            }
+          },
+          "targets": [
+            {
+              "type": "unit",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lightning_bolt_2",
+      "name": "Lightning Bolt",
+      "imageFileName": "lightning_bolt",
+      "type": "spell",
+      "cost": 2,
+      "colors": [{ "color": "red", "count": 2 }],
+      "actions": [
+        {
+          "effect": {
+            "name": "damageUnit",
+            "args": {
+              "damage": 3
+            }
+          },
+          "targets": [
+            {
+              "type": "unit",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sneaky_raid",
+      "name": "Sneaky Raid",
+      "imageFileName": "sneaky_raid",
+      "type": "spell",
+      "cost": 2,
+      "colors": [{ "color": "red", "count": 2 }],
+      "actions": [
+        {
+          "effect": {
+            "name": "damageLand",
+            "args": {
+              "damage": 2
+            }
+          },
+          "targets": [
+            {
+              "type": "land",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dwarf_sprinter",
+      "name": "Dwarf Sprinter",
+      "imageFileName": "dwarf_sprinter",
+      "type": "unit",
+      "cost": 3,
+      "colors": [{ "color": "red", "count": 2 }],
+      "power": 2,
+      "maxHealth": 2,
+      "retaliate": 1,
+      "unitTypes": ["beast"],
+      "keywords": {
+        "haste": true
+      }
+    },
+    {
+      "id": "angry_lizard",
+      "name": "Angry Lizard",
+      "imageFileName": "angry_lizard",
+      "type": "unit",
+      "cost": 1,
+      "colors": [{ "color": "red", "count": 2 }],
+      "power": 2,
+      "maxHealth": 2,
+      "retaliate": 0,
+      "unitTypes": ["beast"]
+    },
+    {
+      "id": "orc_warrior",
+      "name": "Orc Warrior",
+      "imageFileName": "orc_warrior",
+      "type": "unit",
+      "cost": 3,
+      "colors": [{ "color": "red", "count": 3 }],
+      "power": 4,
+      "maxHealth": 2,
+      "retaliate": 1,
+      "unitTypes": ["greenskin"]
+    },
+    {
+      "id": "hill_troll",
+      "name": "Hill Troll",
+      "imageFileName": "hill_troll",
+      "type": "unit",
+      "cost": 3,
+      "colors": [{ "color": "red", "count": 1 }],
+      "power": 3,
+      "maxHealth": 2,
+      "retaliate": 0,
+      "unitTypes": ["monster"]
+    },
+    {
+      "id": "enraged_goblin",
+      "name": "Enraged Goblin",
+      "imageFileName": "enraged_goblin",
+      "type": "unit",
+      "cost": 2,
+      "colors": [{ "color": "red", "count": 2 }],
+      "power": 3,
+      "maxHealth": 2,
+      "retaliate": 1,
+      "unitTypes": ["greenskin"]
+    },
+    {
+      "id": "dwarf_pikeman",
+      "name": "Dwarf Pikeman",
+      "imageFileName": "dwarf_pikeman",
+      "type": "unit",
+      "cost": 3,
+      "colors": [{ "color": "red", "count": 2 }],
+      "power": 3,
+      "maxHealth": 2,
+      "retaliate": 0,
+      "unitTypes": ["dwarf"],
+      "keywords": {
+        "lance": true
+      }
+    },
+    {
+      "id": "fireball",
+      "name": "Fireball",
+      "imageFileName": "fireball",
+      "type": "spell",
+      "cost": 5,
+      "colors": [{ "color": "red", "count": 3 }],
+      "actions": [
+        {
+          "effect": {
+            "name": "damageUnit",
+            "args": {
+              "damage": 4,
+              "range": {
+                "addSelf": true,
+                "adjacent": true
+              }
+            }
+          },
+          "targets": [
+            {
+              "type": "unit",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "manticore_pup",
+      "name": "Manticore Pup",
+      "imageFileName": "manticore_pup",
+      "type": "unit",
+      "cost": 1,
+      "colors": [{ "color": "red", "count": 3 }],
+      "power": 1,
+      "maxHealth": 1,
+      "retaliate": 0,
+      "unitTypes": ["monster"],
+      "abilities": [
+        {
+          "trigger": {
+            "type": "On Death",
+            "range": {
+              "self": true
+            }
+          },
+          "actions": [
+            {
+              "effect": {
+                "name": "damageUnit",
+                "args": {
+                  "damage": 2,
+                  "randomTargets": 1,
+                  "range": {
+                    "ennemies": true
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fire_golem",
+      "name": "Fire Golem",
+      "imageFileName": "fire_golem",
+      "type": "unit",
+      "cost": 2,
+      "colors": [{ "color": "red", "count": 1 }],
+      "power": 1,
+      "maxHealth": 2,
+      "retaliate": 0,
+      "unitTypes": ["elemental"],
+      "abilities": [
+        {
+          "trigger": {
+            "type": "After Moving",
+            "range": {
+              "self": true
+            }
+          },
+          "actions": [
+            {
+              "effect": {
+                "name": "staticStats",
+                "args": {
+                  "power": 1,
+                  "range": { "self": true }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "salamander",
+      "name": "Salamander",
+      "imageFileName": "salamander",
+      "type": "unit",
+      "cost": 2,
+      "colors": [{ "color": "red", "count": 2 }],
+      "power": 2,
+      "maxHealth": 1,
+      "retaliate": 0,
+      "unitTypes": ["beast"],
+      "abilities": [
+        {
+          "trigger": {
+            "type": "On Deploy",
+            "range": {
+              "self": true
+            }
+          },
+          "actions": [
+            {
+              "effect": {
+                "name": "damageUnit",
+                "args": {
+                  "damage": 1,
+                  "range": {
+                    "sameRow": true,
+                    "excludeSelf": true
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "lands": [
+    {
+      "id": "mountain",
+      "name": "Mountain",
+      "imageFileName": "mountain",
+      "type": "land",
+      "cost": 0,
+      "colors": [{ "color": "red", "count": 1 }],
+      "health": 10
+    },
+    {
+      "id": "plains",
+      "name": "Plains",
+      "imageFileName": "plains",
+      "type": "land",
+      "cost": 0,
+      "colors": [],
+      "health": 15
+    },
+    {
+      "id": "market",
+      "name": "Market",
+      "imageFileName": "market",
+      "type": "land",
+      "cost": 0,
+      "colors": [],
+      "health": 10,
+      "abilities": [
+        {
+          "trigger": {
+            "type": "Activated"
+          },
+          "actions": [
+            {
+              "effect": {
+                "name": "drawCard",
+                "args": {
+                  "count": 1
+                }
+              }
+            }
+          ],
+          "cost": 1,
+          "exhausts": true
+        }
+      ]
+    },
+    {
+      "id": "enchanter_lair",
+      "name": "Enchanter Lair",
+      "imageFileName": "enchanter_lair",
+      "type": "land",
+      "cost": 0,
+      "colors": [],
+      "health": 10,
+      "abilities": [
+        {
+          "trigger": {
+            "type": "Activated"
+          },
+          "actions": [
+            {
+              "effect": {
+                "name": "damageUnit",
+                "args": {
+                  "damage": 1
+                }
+              },
+              "targets": [
+                {
+                  "type": "unit",
+                  "count": 1
+                }
+              ]
+            }
+          ],
+          "cost": 6,
+          "exhausts": true
+        }
+      ]
+    }
+  ]
+}

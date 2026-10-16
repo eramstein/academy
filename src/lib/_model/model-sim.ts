@@ -39,11 +39,19 @@ export interface GameState {
   storyTags: Record<string, number>;
 }
 
+/** Where to continue an event after the Battle view closes. */
+export interface OngoingBattleResume {
+  eventKey: string;
+  nextNode: string;
+}
+
 export interface OngoingBattle {
   playerDeck: Deck;
   opponentDeck: Deck;
   opponentKey: string;
   isLeagueMatch: boolean;
+  /** Set when a `start_match` effect should reopen an event beat after the fight. */
+  resume?: OngoingBattleResume;
 }
 
 export interface League {
@@ -70,6 +78,13 @@ export interface Scene {
   image?: string;
   /** Active socialize attempt; Socialize triggers only match while this is set. */
   socializeContext?: SocializeParameters;
+  /**
+   * Result of the most recent finished match. Used by `last_match_won` /
+   * `last_match_lost` triggers (nodes, options, passages). Undefined until a match ends.
+   */
+  lastMatchWon?: boolean;
+  /** Parked while the Battle modal is up; applied when the player returns to Sim. */
+  pendingEventResume?: OngoingBattleResume;
 }
 
 export interface SceneEvent {
@@ -106,6 +121,16 @@ export interface EventEffect {
   parameters: Record<string, any>;
 }
 
+/**
+ * Effect with optional extra conditions. Omit or leave `triggers` empty to always
+ * apply (same as a bare effect before this shape). Used on `EventTemplate.effects`
+ * (on fire) and `EventNode.effects` (on enter). Options still use bare `EventEffect[]`.
+ */
+export interface EventTemplateEffect {
+  effect: EventEffect;
+  triggers?: EventTrigger[];
+}
+
 export type EventImageSize = 'small' | 'medium' | 'large';
 
 /** Authored skill check on an event option: roll attribute vs difficulty, then branch effects. */
@@ -127,7 +152,8 @@ export interface EventTemplate {
   text: string;
   optionTemplates: EventOptionTemplate[];
   triggers: EventTrigger[];
-  effects?: EventEffect[];
+  /** Applied on fire when each entry's triggers match (or have none). Before options. */
+  effects?: EventTemplateEffect[];
   characterArc?: string; // npc key
   emotion?: Emotion;
   image?: string;
@@ -148,8 +174,8 @@ export interface EventNode {
   optionTemplates: EventOptionTemplate[];
   /** Checked when the previous beat's options are built. Empty means always enterable. */
   triggers?: EventTrigger[];
-  /** Applied on enter, before this beat's options. */
-  effects?: EventEffect[];
+  /** Applied on enter when each entry's triggers match (or have none). Before this beat's passages and options. */
+  effects?: EventTemplateEffect[];
   title?: string;
   emotion?: Emotion;
   image?: string;
@@ -378,10 +404,17 @@ export interface CardCraftingSkills {
 
 export interface Schedule {
   date?: {
+    /** Offset from today in days (`0` = today). Minimum start when `dayOfWeek` is set. */
     day?: number;
     period?: DayPeriod;
+    /** 1 = Monday … 7 = Sunday. Target the next matching weekday at or after `day`. */
+    dayOfWeek?: number;
   };
-  /** When true, schedule on the soonest free slot for date.period (default evening). */
+  /**
+   * When true, schedule on the soonest free slot for date.period (default evening).
+   * Search starts at today + date.day (default 0); if that slot is taken, the next free
+   * day with the same period is used. With date.dayOfWeek, advances by full weeks instead.
+   */
   nextFree?: boolean;
   recurrence?: {
     maxCount?: number;

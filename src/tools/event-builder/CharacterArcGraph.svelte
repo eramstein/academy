@@ -4,6 +4,7 @@
     EventTriggerType,
     type EventEffect,
     type EventTemplate,
+    type EventTemplateEffect,
   } from '@/lib/_model';
 
   let {
@@ -59,6 +60,10 @@
     return [...followUpTargets(effects), ...scheduledEventTargets(effects)];
   }
 
+  function templateEffectTargets(entries: EventTemplateEffect[] | undefined): string[] {
+    return outgoingEventTargets(entries?.map((entry) => entry.effect));
+  }
+
   const layout = $derived.by(() => {
     const byKey = new Map(events.map((event) => [event.key, event]));
     const adjacency = new Map<string, string[]>();
@@ -91,21 +96,32 @@
         }
       }
 
-      for (const nextKey of outgoingEventTargets(event.effects)) {
+      for (const nextKey of templateEffectTargets(event.effects)) {
         addEdge(event.key, nextKey);
       }
-      for (const option of event.optionTemplates ?? []) {
-        for (const nextKey of outgoingEventTargets(option.effects)) {
+
+      const collectFromOptions = (options: EventTemplate['optionTemplates'] | undefined) => {
+        for (const option of options ?? []) {
+          for (const nextKey of outgoingEventTargets(option.effects)) {
+            addEdge(event.key, nextKey);
+          }
+          if (option.attributeCheck) {
+            for (const nextKey of outgoingEventTargets(option.attributeCheck.successEffects)) {
+              addEdge(event.key, nextKey);
+            }
+            for (const nextKey of outgoingEventTargets(option.attributeCheck.failureEffects)) {
+              addEdge(event.key, nextKey);
+            }
+          }
+        }
+      };
+
+      collectFromOptions(event.optionTemplates);
+      for (const node of Object.values(event.nodes ?? {})) {
+        for (const nextKey of templateEffectTargets(node.effects)) {
           addEdge(event.key, nextKey);
         }
-        if (option.attributeCheck) {
-          for (const nextKey of outgoingEventTargets(option.attributeCheck.successEffects)) {
-            addEdge(event.key, nextKey);
-          }
-          for (const nextKey of outgoingEventTargets(option.attributeCheck.failureEffects)) {
-            addEdge(event.key, nextKey);
-          }
-        }
+        collectFromOptions(node.optionTemplates);
       }
     }
 

@@ -9,7 +9,12 @@ Markers the skill maps:
 - Omit **Next:** to end the event on that choice.
 - **Only if:** gates that option. **Trigger:** on a node gates entering it.
   Both are judged when the choice is offered, before this beat's effects.
-  Do not gate a node on a tag this same option or this node's **On enter:** adds.
+  Do not gate a node's **Trigger:** on a tag this same option or this node's
+  **On enter:** adds (entry is decided earlier). Passages and options on the
+  opened node *can* see tags from that node's **On enter:** (effects run first).
+- Root ## Effects and node **On enter:** bullets with no When: always apply
+  (on fire / on enter). A When: line (same phrasing as **Trigger:**) gates the
+  following bullets until the next When:. Option **Outcomes:** stay bare.
 - **Passages:** on a node uses the same When / Otherwise shape as ## Conditional passages.
 - A node with no ### Option is narrated, then the event ends.
 - Emotion must be an Emotion enum value (neutral, happy, sad, proud, …). Not "concerned".
@@ -46,6 +51,10 @@ She looks up as if she has not decided whether you are a welcome interruption.
 ## Effects
 
 - Add to Emma's known traits: **The tuition loan:** Her place at the Academy is paid for with borrowed money, and the repayment has come due sooner than she planned.
+
+When: Emma friendship is at least 3
+
+- Change Emma respect +1
 
 ## Options
 
@@ -99,6 +108,10 @@ You tell her you only came in for a book, and you take one without looking at th
 **On enter:**
 
 - Add story tag example_heard_the_sum
+
+When: Emma friendship is at least 3
+
+- Change Emma respect +1
 
 **Passages:**
 

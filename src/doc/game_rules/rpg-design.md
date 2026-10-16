@@ -97,17 +97,17 @@ An event is one root beat plus an optional tree of later beats called nodes. The
 When an event occurs:
 
 1. Its root narrative is presented in the illustrated book interface, optionally accompanied by a dedicated scene illustration or an NPC portrait with a specific emotion.
-2. The event may apply an unconditional effect to the game state, regardless of the player's subsequent choice.
+2. The event may apply root effects to the game state, regardless of the player's subsequent choice. Each root effect is an effect/trigger couple: omit the trigger (the default) and it always applies; when triggers are set, every one must match or that effect is skipped. These checks run when the event fires, before options and before the event's once-only stamp. Option outcomes remain plain effect lists with no per-effect triggers.
 3. The player is presented with a set of authored options.
 4. The selected option resolves either through a deterministic game-state effect or through a skill check, which determines the outcome and resulting state changes.
-5. If that option names a next node — or the skill-check branch names one — that node is shown immediately, with its own text, image, and options. Entry triggers are judged when the previous beat's choices are built: a choice is hidden when every way forward leads to a locked node. A node with no available options ends the event. A branch that points at a locked node ends the event on that branch instead of opening it.
+5. If that option names a next node — or the skill-check branch names one — that node is shown immediately, with its own text, image, and options. Entry triggers are judged when the previous beat's choices are built: a choice is hidden when every way forward leads to a locked node. On enter, the node may apply entry effects with the same effect/trigger couple shape as root effects (omit triggers to always apply; otherwise every trigger must match). Those effects run when the beat opens, before its passages and options are resolved, so a story tag set on enter can gate this beat's prose and choices. A node with no available options ends the event. A branch that points at a locked node ends the event on that branch instead of opening it.
 6. Otherwise the event ends. Its occurrence, the player's choice, and relevant results can then be referenced by other events' trigger conditions. Remember a branch with a story tag on the option that leads there; the node path itself is not a separate event id.
 
 Conditional event options and text (current implementation)
 
 Individual event options may define trigger conditions using the existing game-state criteria. An option is displayed only when its conditions are satisfied. This allows choices to depend on previous encounters, relationships, skills, resources, or other state. The same conditions can gate a node, but they are read before the choice's effects, so a choice cannot unlock the node it opens.
 
-The root narrative and each node's narrative support conditional text passages, which are resolved according to game state when that beat is shown.
+The root narrative and each node's narrative support conditional text passages, which are resolved according to game state when that beat is shown. For nodes, that resolution happens after on-enter effects. Root-event and node entry effects can use the same trigger vocabulary for optional per-effect gates, as in steps 2 and 5 above.
 
 Current limitation: Conditional text passages within an individual option's post-choice narrative are not supported. Each option has a fixed outcome text. Variations that need a different following scene belong in another node, or in a follow-up event.
 

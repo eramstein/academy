@@ -1,4 +1,10 @@
-import { BASE_DECK_BLACK, BASE_DECK_BLUE, BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
+import {
+  BASE_DECK_BLACK,
+  BASE_DECK_BLUE,
+  BASE_DECK_GREEN,
+  BASE_DECK_RED,
+  BASIC_LANDS,
+} from '@/data/base-deck';
 import {
   CardColor,
   type CardTemplate,
@@ -16,6 +22,18 @@ const BASE_DECKS_BY_COLOR: Partial<Record<CardColor, DeckBlueprint>> = {
   [CardColor.Green]: BASE_DECK_GREEN,
   [CardColor.Blue]: BASE_DECK_BLUE,
 };
+
+const npcDeckModules = import.meta.glob('@/data/sim/npc_decks/*.json', {
+  eager: true,
+  import: 'default',
+}) as Record<string, DeckBlueprint>;
+
+function getNpcDeckByCharacterKey(characterKey: string): DeckBlueprint | undefined {
+  const path = Object.keys(npcDeckModules).find((modulePath) =>
+    modulePath.endsWith(`/${characterKey}.json`)
+  );
+  return path ? npcDeckModules[path] : undefined;
+}
 
 export function redeemBaseDeck(baseDeck: DeckBlueprint, character: Character) {
   const cardsWithIds = baseDeck.cards.map((template) => claimDeckCard(template, character));
@@ -41,10 +59,10 @@ function claimDeckCard(template: CardTemplate, character: Character): CardTempla
 
 export function initNpcDecks() {
   // give other students a deck matching their favorite color
-  const otherStudents = Object.values(gs.characters).filter(
+  const otherAcademyStudents = Object.values(gs.characters).filter(
     (character) => character.school === SchoolName.Academy && character.key !== gs.player.key
   );
-  otherStudents.forEach((student) => {
+  otherAcademyStudents.forEach((student) => {
     const deck = student.favoriteColors
       .map((color) => BASE_DECKS_BY_COLOR[color])
       .find((baseDeck) => baseDeck !== undefined);
@@ -55,6 +73,16 @@ export function initNpcDecks() {
         ...Object.fromEntries(student.favoriteColors.map((color) => [color, 1])),
       };
       learnFromDeck(deck, student.key);
+    }
+  });
+  const otherForeignStudents = Object.values(gs.characters).filter(
+    (character) =>
+      character.school && character.school !== SchoolName.Academy && character.key !== gs.player.key
+  );
+  otherForeignStudents.forEach((student) => {
+    const deck = getNpcDeckByCharacterKey(student.key);
+    if (deck) {
+      redeemBaseDeck(deck, student);
     }
   });
 }
@@ -77,4 +105,8 @@ export function resolveDeckCards(ids: string[], collection: CardTemplate[]): Car
 
 export function makeUniqueId(cardTemplate: CardTemplate): CardTemplate {
   return { ...cardTemplate, id: `${cardTemplate.id}-${crypto.randomUUID()}` };
+}
+
+export function getBasicLands() {
+  BASIC_LANDS.forEach((template) => claimDeckCard(template as CardTemplate, gs.player));
 }

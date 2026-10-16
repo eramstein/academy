@@ -454,4 +454,58 @@ export const npcs: Record<string, Npc> = {
     age: 65,
     tcgSkill: 10,
   },
+  franz: {
+    ...createDefaultNpc(),
+    key: 'franz',
+    name: 'Franz Falkenstein',
+    placeKey: 'falkenheim_school',
+    school: SchoolName.Falkenheim,
+    attributes: { dexterity: 8, intelligence: 15, vitality: 13, charisma: 16, aura: 20 },
+    personality: {
+      traits: { [CharacterTrait.Arrogant]: true, [CharacterTrait.Antagonistic]: true },
+      speech:
+        'Cold, precise, and slightly bored, as if the room were a step beneath her. She offers observations because she was never taught how to ask someone to stay.',
+      humor:
+        'Disdain worn as wit. A raised brow, a remark that puts distance in the air. She rarely laughs where anyone could use it.',
+      conflicts:
+        'Pride first. She will not yield where anyone can see it, and she withdraws a sentence before warmth can start. The frost thins only for someone who stays through it.',
+      habits: [
+        'Surveys a room before she fully enters it',
+        'Corrects a manner she was never asked about',
+        'Leaves just as a conversation turns warm',
+        'Holds her rank in her posture when she has nothing else to hold',
+      ],
+    },
+    gender: CharacterGender.Male,
+    bio: `Franz Falkenstein is the best student at the Falkenheim School. He is cold, precise, and slightly bored, as if the room were a step beneath her. He offers observations because he was never taught how to ask someone to stay. He is arrogant and antagonistic, and he will not yield where anyone can see it, and he withdraws a sentence before warmth can start. The frost thins only for someone who stays through it.`,
+    age: 25,
+    tcgSkill: 3,
+  },
+  olga: {
+    ...createDefaultNpc(),
+    key: 'olga',
+    name: 'Olga Saratovskaya',
+    placeKey: 'falkenheim_school',
+    school: SchoolName.Falkenheim,
+    attributes: { dexterity: 12, intelligence: 17, vitality: 14, charisma: 11, aura: 16 },
+    personality: {
+      traits: { [CharacterTrait.Cruel]: true, [CharacterTrait.Antagonistic]: true },
+      speech:
+        'Quiet, exact, and without warmth. She names a weakness the way a surgeon names a cut—calmly, and where it will hurt most.',
+      humor:
+        'Cruel on purpose. She smiles only when someone flinches. Wit is a blade she keeps sharp for an audience.',
+      conflicts:
+        'She does not bluster and she does not forgive. If pressed, she answers with something true enough to leave a mark, then waits to see if they come back for more.',
+      habits: [
+        'Watches a match the way a hawk watches field mice',
+        'Praises a rival only after they have already lost',
+        'Lets a silence stretch until the other person fills it badly',
+        'Never raises her voice; never softens a verdict',
+      ],
+    },
+    gender: CharacterGender.Female,
+    bio: `Olga Saratoska is Franz Falkenstein's chosen second at the Royal College, and the reason many first-years dread a practice table more than the tournament itself. Twenty-three, pale, and composed to the point of severity, she treats conversation as a contest and courtesy as optional. Where Franz wears arrogance like inherited silk, Olga prefers the cleaner cruelty of precision: a quiet observation, a correct diagnosis of someone's fear, a smile that arrives only when the point has landed. She is an excellent player and a worse opponent to sit across from. She does not shout, plead, or pretend friendship. She studies, she waits, and when she speaks, something in the room usually goes cold. Those who mistake her stillness for softness learn otherwise; those who match her without flinching earn, at best, a longer look—and never, quite, mercy.`,
+    age: 23,
+    tcgSkill: 2,
+  },
 };

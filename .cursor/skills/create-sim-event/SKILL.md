@@ -81,6 +81,10 @@ Otherwise:
 - <always-on outcomes when the event fires, before choices>
   - **<trait title>:** <description> # for known traits
 
+When: <optional condition; following bullets until the next When get these triggers>
+
+- <conditional outcome for that When group>
+
 ## Options
 
 ### Option A: <option label>
@@ -130,7 +134,7 @@ events. Main-story events omit `characterArc`.
    - `characterArc` ← `**NPC:**` when it is an NPC key.
    - `triggers` ← map `**Trigger:**` (see Triggers).
    - `manualTrigger` ← `**Manual trigger:**` label when present (omit when absent).
-   - `effects` ← map `## Effects` (see Effects).
+   - `effects` ← map `## Effects` to `{ effect, triggers? }` couples (see Effects).
    - `optionTemplates` ← each `### Option …` that belongs to the root (before any `## Node:`):
      - `text` ← the option **label** (heading after `Option A:`).
      - option body under `**Text:**` → a `narrate` effect with that prose
@@ -193,7 +197,8 @@ type strings (unknown types crash when the event fires).
     /* ALL must match */
   ],
   "effects": [
-    /* optional; on fire, before options */
+    /* optional; on fire, before options.
+       Each entry is { effect, triggers? }. Omit triggers to always apply. */
   ],
   "optionTemplates": [
     /* [] = narration only.
@@ -256,6 +261,8 @@ still resolve from the socialize action.
 | `relation_tag`       | `{ characterKey, relationTag }`                                    | NPC has that `RelationTag` on `relationTags`. Optional `value: -1` = tag absent.        |
 | `known_traits`       | `{ characterKey, count }`                                          | NPC `knownTraits.length` ≥ `count`.                                                     |
 | `scheduled_activity` | `{}`                                                               | Current activity `eventId` equals this event's `key`.                                   |
+| `last_match_won`     | `{}`                                                               | `gs.scene.lastMatchWon === true` after a finished battle.                               |
+| `last_match_lost`    | `{}`                                                               | `gs.scene.lastMatchWon === false` after a finished battle.                              |
 
 ### Mapping plain-language `**Trigger:**`
 
@@ -274,6 +281,8 @@ still resolve from the socialize action.
 | Follow-up only / queued by another option                          | `triggers: []`                                                          |
 | Has / lacks relation tag (e.g. EmmaSmitten)                        | `relation_tag` `{ characterKey, relationTag }` (+ optional `value: -1`) |
 | Knows at least N traits about \<NPC\>                              | `known_traits` `{ characterKey, count }`                                |
+| Last / previous match was won                                      | `last_match_won` `{}`                                                   |
+| Last / previous match was lost                                     | `last_match_lost` `{}`                                                  |
 
 Prefer `socialize` for befriend/flirt/impress/taunt beats — socialize does **not**
 change `relationProgress`. Prefer `relation_parameter` for lasting thresholds.
@@ -346,19 +355,28 @@ least one ungated option when the player must always respond.
 
 ## Effects
 
-`EventEffect` objects (`type` + `parameters`). Types live in `EventEffectType`
-(`src/lib/_model/enums-sim.ts`):
+Root-event and node `effects` are **couples** `{ effect, triggers? }` — not bare
+`EventEffect` objects. Omit `triggers` (or use `[]`) to always apply, same as
+before. When `triggers` is set, every trigger must match (AND) or that entry is
+skipped. Root evaluation happens on fire, before options and before this event's
+story tag is stamped. Node evaluation happens on enter, before that beat's
+passages and options.
+
+Option, skill-check, and success/failure effects stay bare `EventEffect[]`
+(`type` + `parameters` only).
+
+`EventEffect` types live in `EventEffectType` (`src/lib/_model/enums-sim.ts`):
 
 | `type`                   | `parameters`                                                                                                                                            |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `add_resource`           | `{ resourceType: "magic_dust" \| "mithril" \| "moxes" \| …, amount }`                                                                                   |
 | `add_gold`               | `{ amount }`                                                                                                                                            |
 | `get_deck`               | `{ deckKey }`                                                                                                                                           |
-| `schedule_activity`      | `{ activity: { type, participants, placeKey, classType?, eventId? }, schedule: { date?: { day, period }, nextFree?: true, recurrence?: { … } } }`       |
+| `schedule_activity`      | `{ activity: { type, participants, placeKey, classType?, eventId? }, schedule: { date?: { day, period, dayOfWeek? }, nextFree?: true, recurrence?: { … } } }` — `day` is days-from-now; `dayOfWeek` is 1–7 (Mon–Sun) for next matching weekday; with `nextFree`, bump to the next free slot (by day, or by week when `dayOfWeek` is set) |
 | `get_job`                | `{ job: { jobType, name, description, payPerActivity, employerKey, placeKey, schedule } }`                                                              |
 | `follow_up_event`        | `{ eventKey }`                                                                                                                                          |
 | `offer_card_gifts`       | `{ count, poolKeys }`                                                                                                                                   |
-| `gift_card_to_character` | `{ characterKey, cardKey }` — moves a matching card from the player's collection to the NPC's                                                           |
+| `gift_card_to_character` | `{ characterKey, cardKey, fromPlayer? }` — `fromPlayer` true (default): move from player; false: mint a new copy into the NPC's collection               |
 | `teach_color`            | `{ color?, characterKey? }`                                                                                                                             |
 | `teach_ability`          | `{ ability?, characterKey? }`                                                                                                                           |
 | `narrate`                | `{ text }` — use for option `**Text:**` bodies                                                                                                          |
@@ -371,13 +389,62 @@ least one ungated option when the player must always respond.
 | `add_known_trait`        | `{ characterKey, title, description }` — map “Add to X's known traits: **Title:** desc”                                                                 |
 | `move`                   | `{ placeKey, characterKeys }`                                                                                                                           |
 | `use_focus`              | `{ amount }`                                                                                                                                            |
+| `start_match`            | `{ opponentKey, playerDeckKey?, isLeagueMatch? }` — markdown e.g. `Start match vs franz`. Starts Battle; pair with option `**Next:**` to resume after the fight. See Multi-step exception below for `last_match_*` gating. |
 
-Event-level `effects` run on fire; option `effects` run only if chosen.
+### Mapping `## Effects` to couples
 
-An option uses **either** `effects` **or** `attributeCheck` (not both). It also uses
-**either** a next node **or** an action template (not both), and **either** a next node
-**or** `follow_up_event` (not both). `follow_up_event` starts a different event later;
-`nextNode` continues this event now.
+Bullets with no preceding `When:` → `{ "effect": { … } }` (always apply).
+
+A `When:` line (same phrasing as `**Trigger:**`) starts a group. Consecutive
+`When:` lines before the next bullet are AND. Every following effect bullet
+until the next `When:` (or end of `## Effects`) gets those `triggers`.
+
+```markdown
+## Effects
+
+- Add to Emma's known traits: **First impressions:** A striking young woman…
+
+When: emma_met has occurred
+
+- Change Emma friendship +1
+```
+
+```json
+"effects": [
+  {
+    "effect": {
+      "type": "add_known_trait",
+      "parameters": {
+        "characterKey": "emma",
+        "title": "First impressions",
+        "description": "A striking young woman…"
+      }
+    }
+  },
+  {
+    "effect": {
+      "type": "change_relation",
+      "parameters": { "characterKey": "emma", "relationParameter": "friendship", "amount": 1 }
+    },
+    "triggers": [
+      { "triggerType": "story_tag", "parameters": { "tag": "emma_met", "value": 1 } }
+    ]
+  }
+]
+```
+
+Do not put `When:` groups under option `**Outcomes:**` — those stay bare effect
+lists. Node `**On enter:**` uses the same `When:` grouping as root `## Effects`.
+
+Event-level `effects` run on fire and node `effects` on enter (each entry gated
+by its own triggers); option `effects` run only if chosen.
+
+An option uses **either** `effects` **or** `attributeCheck` (not both). Prefer
+`start_match` as an effect with `**Next:**` (battle, then resume) over an action
+template. An option still uses **either** a next node **or** a legacy action
+template (not both), and **either** a next node **or** `follow_up_event` (not both).
+`follow_up_event` starts a different event later; `nextNode` continues this event
+(immediately, or after battle when paired with `start_match`).
 
 ```json
 {
@@ -396,10 +463,23 @@ Difficulties: `trivial` / `veryeasy` / `easy` / `medium` / `hard` / `extreme` /
 `enrollmentPayment` (`args: {}`).
 
 `schedule_activity`: `schedule.date.day` is an **offset from today** (`0` = today).
+`schedule.date.dayOfWeek` is **1–7 (Monday–Sunday)** and targets the next matching
+weekday at or after that offset (period defaults to evening). With `nextFree: true`,
+if the target slot is booked, bump forward a day at a time — or by **full weeks** when
+`dayOfWeek` is set. Markdown examples:
+`Schedule \`emma_tourney_training\` event for the next day's evening at Emma's room.` →
+`date.day: 1` (no nextFree).
+`Schedule \`emma_tourney_crafting\` event for evening in 2 days (next free) at the artificery room.` →
+`date.day: 2`, `date.period: evening`, `nextFree: true`, `placeKey: artificery-room`,
+`activity.type: event`, `eventId` = the scheduled event key.
+`Schedule study for next Tuesday evening (next free) at the library.` →
+`date.dayOfWeek: 2`, `date.period: evening`, `nextFree: true`.
 `follow_up_event` queues by key and bypasses that event's triggers — target should
 use `triggers: []`.
-`gift_card_to_character` takes a template `cardKey` (e.g. `happy_little_accident`);
-it finds a matching instance in the player's collection (exact id or `cardKey-<uuid>`).
+`gift_card_to_character` takes a template `cardKey` (e.g. `happy_little_accident`).
+With `fromPlayer` true/omitted it finds a matching instance in the player's collection
+(exact id or `cardKey-<uuid>`). With `fromPlayer: false` it mints a new copy from the
+template into the NPC's collection (no transfer).
 
 ## Multi-step events
 
@@ -438,6 +518,10 @@ You ask what the ledger is for.
 
 - Add story tag emma_heard_tuition
 
+When: Emma friendship is at least 3
+
+- Change Emma respect +1
+
 **Passages:**
 
 greeting
@@ -474,8 +558,9 @@ Compile rules:
   the root image), `**Emotion:**`, `**Trigger:**`. `**Trigger:**` uses the same phrasing as
   the event trigger. Omit it to make the node always enterable. Several conditions in that
   line are AND, same as the root.
-- `**On enter:**` → node `effects` (same bullets as `## Effects`). Omit when there are none.
-  Do not put `follow_up_event` here if the node also has options.
+- `**On enter:**` → node `effects` as `{ effect, triggers? }` couples (same bullets and
+  `When:` grouping as `## Effects`). Omit when there are none. Do not put
+  `follow_up_event` here if the node also has options.
 - `**Passages:**` → node `passages`, same key / `When:` / `Otherwise:` shape as
   `## Conditional passages`. The node's prose keeps `{{ passageKey }}` tokens.
 - Prose after the meta (and after `**On enter:**` / `**Passages:**` when present) → node
@@ -489,11 +574,19 @@ Compile rules:
 - Skill check: a `**Next:**` directly under `**On success:**` → `successNode`. Directly under
   `**On failure:**` → `failureNode`. A `**Next:**` on the option itself still applies to a
   branch that has no node of its own. Do not invent a next node the markdown did not name.
-- Node triggers are evaluated when the previous beat's options are built, before that
-  beat's effects and before the chosen option's effects. A choice is hidden when every way
-  forward is a locked or missing node. Do not use those effects to unlock the node the
-  choice opens; that state is not visible yet. Gate on state that is already true, or use
-  `add_story_tag` for what *later events* should see.
+- Node **entry** triggers (`**Trigger:**`) are evaluated when the previous beat's options
+  are built, before that beat's effects and before the chosen option's effects. A choice is
+  hidden when every way forward is a locked or missing node. Do not use those prior effects
+  to unlock the node the choice opens; entry state is not visible yet. Once the node opens,
+  its `**On enter:**` effects run first, then passages and options resolve — so a story tag
+  set on enter *can* gate that same beat's passages and choices.
+- **Exception — `start_match`:** that effect starts Battle and defers `**Next:**` until the
+  player returns to Sim. `lastMatchWon` is set when the fight ends, then the parked node is
+  entered and *its* option / passage triggers are judged. Do **not** put `last_match_won` /
+  `last_match_lost` on the hub node named by `**Next:**` (it must stay enterable before the
+  match). Use an ungated hub, then gate child options, passages, or further `**Next:**`
+  targets with those triggers. `matches_won` / `matches_lost` are career totals vs an NPC —
+  not “this bout.”
 - Cycles are allowed. Every `nextNode` / `successNode` / `failureNode` must name a node in
   this event's `nodes`.
 
@@ -517,7 +610,11 @@ Compile rules:
     "triggers": [
       { "triggerType": "story_tag", "parameters": { "tag": "emma_met", "value": 1 } }
     ],
-    "effects": [{ "type": "add_story_tag", "parameters": { "tag": "emma_heard_tuition" } }],
+    "effects": [
+      {
+        "effect": { "type": "add_story_tag", "parameters": { "tag": "emma_heard_tuition" } }
+      }
+    ],
     "optionTemplates": [
       {
         "text": "Pay it",
@@ -532,6 +629,38 @@ Compile rules:
     "imageSize": "medium"
   }
 }
+```
+
+`**On enter:**` with a `When:` group (same as root `## Effects`):
+
+```markdown
+**On enter:**
+
+- Add story tag emma_heard_tuition
+
+When: Emma friendship is at least 3
+
+- Change Emma respect +1
+```
+
+```json
+"effects": [
+  {
+    "effect": { "type": "add_story_tag", "parameters": { "tag": "emma_heard_tuition" } }
+  },
+  {
+    "effect": {
+      "type": "change_relation",
+      "parameters": { "characterKey": "emma", "relationParameter": "respect", "amount": 1 }
+    },
+    "triggers": [
+      {
+        "triggerType": "relation_parameter",
+        "parameters": { "characterKey": "emma", "relationParameter": "friendship", "value": 3 }
+      }
+    ]
+  }
+]
 ```
 
 ## Keys to verify
@@ -574,6 +703,7 @@ Source: `src/data/sim/events/emma/first_impression.md` (abbreviated mapping):
   (e.g. `emma_first_encounter.jpg`)
 - `**Emotion:** neutral` → `emotion: "neutral"`
 - `## Text` → `text` with `\n\n` between paragraphs
-- Known trait under `## Effects` → event `effects`: `add_known_trait`
+- Known trait under `## Effects` → event `effects` couple:
+  `{ "effect": { "type": "add_known_trait", … } }` (no `triggers` unless a `When:` group)
 - Option labels → `optionTemplates[].text`; option bodies → `narrate`;
   `EmmaSmitten` → `add_relation_tag` with the `RelationTag.EmmaSmitten` string value

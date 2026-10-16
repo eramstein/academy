@@ -5,6 +5,7 @@
   import { resetBattleState } from '@lib/_state/main.svelte';
   import { getAssetPath, getCharacterImagePath } from '@lib/_utils/asset-paths';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
+  import { resumeEventAfterBattle } from '@/lib/sim/scene';
 
   let { winningPlayer }: { winningPlayer: Player } = $props();
 
@@ -16,6 +17,7 @@
 
   const closeModal = () => {
     resetBattleState();
+    resumeEventAfterBattle();
     uiState.currentView = UiView.Scene;
   };
 

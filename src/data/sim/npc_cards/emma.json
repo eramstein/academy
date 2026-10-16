@@ -1,5 +1,67 @@
 [
   {
+    "id": "emma_tourney_spell",
+    "name": "Two of a Kind",
+    "imageFileName": "emma_tourney_spell",
+    "type": "spell",
+    "cost": 2,
+    "colors": [{ "color": "red", "count": 2 }],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageUnit",
+          "args": {
+            "damage": 2,
+            "range": {
+              "all": true
+            }
+          }
+        }
+      }
+    ],
+    "poolKeys": ["emma", "special"]
+  },
+  {
+    "id": "emma_tourney_unit",
+    "name": "Two of a Kind",
+    "imageFileName": "emma_tourney_unit",
+    "type": "unit",
+    "cost": 2,
+    "colors": [
+      { "color": "green", "count": 1 },
+      { "color": "blue", "count": 1 }
+    ],
+    "power": 2,
+    "retaliate": 0,
+    "maxHealth": 2,
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1,
+                "range": {
+                  "self": true
+                }
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        }
+      }
+    ],
+    "poolKeys": ["emma", "special"]
+  },
+  {
     "id": "happy_little_accident",
     "name": "Happy Little Accident",
     "imageFileName": "happy_little_accident",
