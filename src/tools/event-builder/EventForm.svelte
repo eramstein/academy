@@ -1,17 +1,15 @@
 <script lang="ts">
   import {
     Emotion,
-    type ActionTemplate,
     type EventEffect,
-    type EventOptionAttributeCheck,
+    type EventImageSize,
+    type EventNode,
     type EventOptionTemplate,
     type EventTemplate,
     type EventTrigger,
-    type SkillCheckDifficultyName,
   } from '@/lib/_model';
-  import { SceneActionTemplates } from '@/lib/sim/actions/_templates';
-  import { skillCheckDifficultyKeys, skillCheckDifficultyLabels } from '@/lib/sim/attribute-checks';
   import EffectsTemplatesEditor from './EffectsTemplatesEditor.svelte';
+  import EventOptionsEditor, { normalizeOptionTemplates } from './EventOptionsEditor.svelte';
   import PassagesEditor, {
     passageDraftsFrom,
     passagesFromDrafts,
@@ -47,13 +45,64 @@
   let options = $state<EventOptionTemplate[]>([]);
   let effects = $state<EventEffect[]>([]);
   let passageDrafts = $state<PassageDraft[]>([]);
+  let nodeDrafts = $state<NodeDraft[]>([]);
   let error = $state('');
   let saving = $state(false);
 
   const emotions = Object.values(Emotion);
-  const actionNames = Object.keys(SceneActionTemplates);
-  const attributeKeys = ['dexterity', 'intelligence', 'vitality', 'charisma', 'aura'] as const;
-  const difficultyKeys = skillCheckDifficultyKeys;
+  const nodeKeys = $derived(
+    nodeDrafts.map((draft) => draft.key.trim()).filter((nodeKey) => nodeKey.length > 0)
+  );
+
+  interface NodeDraft {
+    id: number;
+    key: string;
+    title: string;
+    text: string;
+    emotion: string;
+    image: string;
+    imageSize: EventImageSize;
+    triggers: EventTrigger[];
+    effects: EventEffect[];
+    options: EventOptionTemplate[];
+    passageDrafts: PassageDraft[];
+  }
+
+  let nextNodeDraftId = 1;
+
+  function nodeDraftFrom(nodeKey: string, node: EventNode): NodeDraft {
+    nextNodeDraftId += 1;
+    return {
+      id: nextNodeDraftId,
+      key: nodeKey,
+      title: node.title ?? '',
+      text: node.text ?? '',
+      emotion: node.emotion ?? '',
+      image: node.image ?? '',
+      imageSize: node.imageSize ?? 'small',
+      triggers: node.triggers ?? [],
+      effects: node.effects ?? [],
+      options: node.optionTemplates ?? [],
+      passageDrafts: passageDraftsFrom(node.passages),
+    };
+  }
+
+  function blankNodeDraft(): NodeDraft {
+    nextNodeDraftId += 1;
+    return {
+      id: nextNodeDraftId,
+      key: '',
+      title: '',
+      text: '',
+      emotion: '',
+      image: '',
+      imageSize: 'small',
+      triggers: [],
+      effects: [],
+      options: [],
+      passageDrafts: [],
+    };
+  }
 
   function cloneEventFields(source: EventTemplate | null | undefined) {
     if (!source) {
@@ -69,6 +118,7 @@
       options = [];
       effects = [];
       passageDrafts = [];
+      nodeDrafts = [];
       return;
     }
 
@@ -85,6 +135,33 @@
     options = cloned.optionTemplates ?? [];
     effects = cloned.effects ?? [];
     passageDrafts = passageDraftsFrom(cloned.passages);
+    nodeDrafts = Object.entries(cloned.nodes ?? {}).map(([nodeKey, node]) =>
+      nodeDraftFrom(nodeKey, node)
+    );
+  }
+
+  function patchNode(id: number, patch: Partial<NodeDraft>) {
+    nodeDrafts = nodeDrafts.map((draft) => (draft.id === id ? { ...draft, ...patch } : draft));
+  }
+
+  function addNode() {
+    nodeDrafts = [...nodeDrafts, blankNodeDraft()];
+  }
+
+  function removeNode(id: number) {
+    nodeDrafts = nodeDrafts.filter((draft) => draft.id !== id);
+  }
+
+  function insertNodePassageToken(id: number, passageKey: string) {
+    const draft = nodeDrafts.find((item) => item.id === id);
+    if (!draft) return;
+    const trimmed = passageKey.trim();
+    if (!trimmed) return;
+    const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (new RegExp(`\\{\\{\\s*${escaped}\\s*\\}\\}`).test(draft.text)) return;
+    const token = `{{ ${trimmed} }}`;
+    const text = draft.text.trim() ? `${draft.text.replace(/\s*$/, '')}\n\n${token}` : token;
+    patchNode(id, { text });
   }
 
   function insertPassageToken(passageKey: string) {
@@ -104,127 +181,40 @@
 
   cloneEventFields(event);
 
-  function defaultActionTemplate(): ActionTemplate {
-    return {
-      actionTemplate: actionNames[0] ?? '',
-      args: {},
-    };
-  }
-
-  function addOption() {
-    options = [...options, { text: '', effects: [] }];
-  }
-
-  function removeOption(index: number) {
-    options = options.filter((_, i) => i !== index);
-  }
-
-  function setActionTemplateName(index: number, actionTemplate: string) {
-    const option = options[index];
-    options[index] = {
-      ...option,
-      actionTemplate: {
-        actionTemplate,
-        args: option.actionTemplate?.args ?? {},
-      },
-    };
-  }
-
-  function clearActionTemplate(index: number) {
-    const { actionTemplate: _removed, ...rest } = options[index];
-    options[index] = rest;
-  }
-
-  function enableActionTemplate(index: number) {
-    options[index] = {
-      ...options[index],
-      actionTemplate: defaultActionTemplate(),
-    };
-  }
-
-  function setOptionEffects(index: number, next: EventEffect[]) {
-    options[index] = {
-      ...options[index],
-      effects: next,
-    };
-  }
-
-  function setOptionTriggers(index: number, next: EventTrigger[]) {
-    options[index] = {
-      ...options[index],
-      triggers: next,
-    };
-  }
-
-  function cloneTriggers(optionTriggers: EventTrigger[] | undefined): EventTrigger[] | undefined {
-    if (!optionTriggers || optionTriggers.length === 0) return undefined;
-    return optionTriggers.map((trigger) => ({
-      triggerType: trigger.triggerType,
-      parameters: { ...trigger.parameters },
-    })) as EventTrigger[];
-  }
-
-  function defaultAttributeCheck(): EventOptionAttributeCheck {
-    return {
-      attribute: 'charisma',
-      difficulty: 'medium',
-      successEffects: [],
-      failureEffects: [],
-    };
-  }
-
-  function cloneEffects(effects: EventEffect[] | undefined): EventEffect[] | undefined {
-    if (!effects || effects.length === 0) return undefined;
-    return effects.map((effect) => ({
-      type: effect.type,
-      parameters: { ...effect.parameters },
-    }));
-  }
-
-  function enableAttributeCheck(index: number) {
-    const option = options[index];
-    const { effects: _removed, ...rest } = option;
-    options[index] = {
-      ...rest,
-      attributeCheck: option.attributeCheck ?? defaultAttributeCheck(),
-    };
-  }
-
-  function clearAttributeCheck(index: number) {
-    const { attributeCheck: _removed, ...rest } = options[index];
-    options[index] = { ...rest, effects: rest.effects ?? [] };
-  }
-
-  function setAttributeCheckField<K extends keyof EventOptionAttributeCheck>(
-    index: number,
-    field: K,
-    value: EventOptionAttributeCheck[K]
-  ) {
-    const option = options[index];
-    if (!option.attributeCheck) return;
-    options[index] = {
-      ...option,
-      attributeCheck: {
-        ...option.attributeCheck,
-        [field]: value,
-      },
-    };
-  }
-
-  function setAttributeCheckEffects(
-    index: number,
-    branch: 'successEffects' | 'failureEffects',
-    next: EventEffect[]
-  ) {
-    const option = options[index];
-    if (!option.attributeCheck) return;
-    options[index] = {
-      ...option,
-      attributeCheck: {
-        ...option.attributeCheck,
-        [branch]: next,
-      },
-    };
+  function buildNodes(): Record<string, EventNode> | undefined {
+    const record: Record<string, EventNode> = {};
+    for (const draft of nodeDrafts) {
+      const nodeKey = draft.key.trim();
+      if (!nodeKey || record[nodeKey]) continue;
+      const node: EventNode = {
+        text: draft.text.trim(),
+        optionTemplates: normalizeOptionTemplates(draft.options),
+      };
+      if (draft.triggers.length > 0) {
+        node.triggers = draft.triggers.map((trigger) => ({
+          triggerType: trigger.triggerType,
+          parameters: { ...trigger.parameters },
+        })) as EventTrigger[];
+      }
+      if (draft.effects.length > 0) {
+        node.effects = draft.effects.map((effect) => ({
+          type: effect.type,
+          parameters: { ...effect.parameters },
+        }));
+      }
+      const nodeTitle = draft.title.trim();
+      if (nodeTitle) node.title = nodeTitle;
+      if (draft.emotion) node.emotion = draft.emotion as Emotion;
+      const nodeImage = draft.image.trim();
+      if (nodeImage) {
+        node.image = nodeImage;
+        if (draft.imageSize !== 'small') node.imageSize = draft.imageSize;
+      }
+      const passages = passagesFromDrafts(draft.passageDrafts);
+      if (passages) node.passages = passages;
+      record[nodeKey] = node;
+    }
+    return Object.keys(record).length > 0 ? record : undefined;
   }
 
   function buildEvent(): EventTemplate {
@@ -235,41 +225,7 @@
         triggerType: trigger.triggerType,
         parameters: { ...trigger.parameters },
       })) as EventTrigger[],
-      optionTemplates: options
-        .map((option) => {
-          const next: EventOptionTemplate = {
-            text: option.text.trim(),
-          };
-
-          const optionTriggers = cloneTriggers(option.triggers);
-          if (optionTriggers) {
-            next.triggers = optionTriggers;
-          }
-
-          if (option.actionTemplate?.actionTemplate) {
-            next.actionTemplate = {
-              actionTemplate: option.actionTemplate.actionTemplate,
-              args: { ...(option.actionTemplate.args ?? {}) },
-            };
-          }
-
-          if (option.attributeCheck) {
-            const check: EventOptionAttributeCheck = {
-              attribute: option.attributeCheck.attribute,
-              difficulty: option.attributeCheck.difficulty,
-            };
-            const successEffects = cloneEffects(option.attributeCheck.successEffects);
-            const failureEffects = cloneEffects(option.attributeCheck.failureEffects);
-            if (successEffects) check.successEffects = successEffects;
-            if (failureEffects) check.failureEffects = failureEffects;
-            next.attributeCheck = check;
-          } else if (option.effects && option.effects.length > 0) {
-            next.effects = cloneEffects(option.effects);
-          }
-
-          return next;
-        })
-        .filter((option) => option.text.length > 0),
+      optionTemplates: normalizeOptionTemplates(options),
     };
 
     const trimmedTitle = title.trim();
@@ -311,6 +267,11 @@
       built.passages = builtPassages;
     }
 
+    const builtNodes = buildNodes();
+    if (builtNodes) {
+      built.nodes = builtNodes;
+    }
+
     return built;
   }
 
@@ -334,6 +295,24 @@
     if (!text.trim()) {
       error = 'Text is required.';
       return;
+    }
+
+    const seenNodeKeys = new Set<string>();
+    for (const draft of nodeDrafts) {
+      const nodeKey = draft.key.trim();
+      if (!nodeKey) {
+        error = 'Every node needs a key.';
+        return;
+      }
+      if (seenNodeKeys.has(nodeKey)) {
+        error = `Node key "${nodeKey}" is used more than once.`;
+        return;
+      }
+      seenNodeKeys.add(nodeKey);
+      if (!draft.text.trim()) {
+        error = `Node "${nodeKey}" needs text.`;
+        return;
+      }
     }
 
     saving = true;
@@ -493,155 +472,101 @@
     </div>
 
     <section class="panel options">
-      <div class="section-header">
-        <h2>Options</h2>
-        <button type="button" class="btn ghost" onclick={addOption}>Add option</button>
-      </div>
+      <EventOptionsEditor
+        {options}
+        {nodeKeys}
+        listId="root-node-keys"
+        onChange={(next) => (options = next)}
+      />
+    </section>
 
-      {#if options.length === 0}
-        <p class="hint">No player options.</p>
+    <section class="panel nodes">
+      <div class="section-header">
+        <h2>Nodes</h2>
+        <button type="button" class="btn ghost" onclick={addNode}>Add node</button>
+      </div>
+      <p class="hint">
+        Later beats in this event. An option's next node opens one instead of ending the event.
+      </p>
+
+      {#if nodeDrafts.length === 0}
+        <p class="hint">No nodes. Every option ends the event.</p>
       {:else}
-        <ul class="options-grid">
-          {#each options as option, i (i)}
-            <li class="option-card">
-              <div class="option-header">
-                <span class="option-index">Option {i + 1}</span>
+        <ul class="node-list">
+          {#each nodeDrafts as draft (draft.id)}
+            <li class="node-card">
+              <div class="section-header">
+                <h3>Node</h3>
                 <button
                   type="button"
                   class="btn icon danger"
-                  onclick={() => removeOption(i)}
-                  aria-label="Remove option">×</button
+                  onclick={() => removeNode(draft.id)}
+                  aria-label="Remove node">×</button
                 >
               </div>
-
-              <label class="field">
-                <span class="label">Choice text</span>
-                <input class="input" bind:value={option.text} placeholder="Choice label" />
-              </label>
-
-              <TriggersEditor
-                triggers={option.triggers ?? []}
-                onChange={(next) => setOptionTriggers(i, next)}
-                title="Triggers"
-                description="Hidden unless every trigger matches."
-                emptyHint="Always available."
-                nested
-              />
-
-              <div class="option-action">
-                <div class="section-header tight">
-                  <h3>Action</h3>
-                  {#if option.actionTemplate}
-                    <button
-                      type="button"
-                      class="btn ghost danger compact"
-                      onclick={() => clearActionTemplate(i)}>Clear</button
-                    >
-                  {:else}
-                    <button
-                      type="button"
-                      class="btn ghost compact"
-                      onclick={() => enableActionTemplate(i)}>Add</button
-                    >
-                  {/if}
-                </div>
-
-                {#if option.actionTemplate}
-                  <select
-                    class="input"
-                    value={option.actionTemplate.actionTemplate}
-                    aria-label="Action template"
-                    onchange={(e) =>
-                      setActionTemplateName(i, (e.currentTarget as HTMLSelectElement).value)}
-                  >
-                    {#each actionNames as name (name)}
-                      <option value={name}>{name}</option>
+              <div class="basics-meta">
+                <label class="field key-field">
+                  <span class="label">Key</span>
+                  <input class="input" bind:value={draft.key} placeholder="tuition_talk" />
+                </label>
+                <label class="field title-field">
+                  <span class="label">Title</span>
+                  <input class="input" bind:value={draft.title} placeholder="Optional heading" />
+                </label>
+                <label class="field emotion-field">
+                  <span class="label">Emotion</span>
+                  <select class="input" bind:value={draft.emotion}>
+                    <option value="">(none)</option>
+                    {#each emotions as value (value)}
+                      <option {value}>{value}</option>
                     {/each}
                   </select>
-                {:else}
-                  <p class="hint">No action</p>
-                {/if}
-              </div>
-
-              <div class="option-outcome">
-                <div class="section-header tight">
-                  <h3>Outcome</h3>
-                  <div class="outcome-mode">
-                    <button
-                      type="button"
-                      class="btn ghost compact"
-                      class:active={!option.attributeCheck}
-                      onclick={() => clearAttributeCheck(i)}>Direct effects</button
-                    >
-                    <button
-                      type="button"
-                      class="btn ghost compact"
-                      class:active={!!option.attributeCheck}
-                      onclick={() => enableAttributeCheck(i)}>Attribute check</button
-                    >
-                  </div>
+                </label>
+                <div class="field image-field">
+                  <span class="label">Image</span>
+                  <input class="input" bind:value={draft.image} placeholder="optional.jpg" />
+                  {#if draft.image.trim()}
+                    <label class="image-size">
+                      <span class="label">Image size</span>
+                      <select class="select" bind:value={draft.imageSize}>
+                        <option value="small">Small (portrait in book)</option>
+                        <option value="medium">Medium (expanded in book)</option>
+                        <option value="large">Large (replaces location art)</option>
+                      </select>
+                    </label>
+                  {/if}
                 </div>
-
-                {#if option.attributeCheck}
-                  <div class="check-fields">
-                    <label class="field">
-                      <span class="label">Attribute</span>
-                      <select
-                        class="input"
-                        value={option.attributeCheck.attribute}
-                        onchange={(e) =>
-                          setAttributeCheckField(
-                            i,
-                            'attribute',
-                            (e.currentTarget as HTMLSelectElement)
-                              .value as EventOptionAttributeCheck['attribute']
-                          )}
-                      >
-                        {#each attributeKeys as attr (attr)}
-                          <option value={attr}>{attr}</option>
-                        {/each}
-                      </select>
-                    </label>
-                    <label class="field">
-                      <span class="label">Difficulty</span>
-                      <select
-                        class="input"
-                        value={option.attributeCheck.difficulty}
-                        onchange={(e) =>
-                          setAttributeCheckField(
-                            i,
-                            'difficulty',
-                            (e.currentTarget as HTMLSelectElement).value as SkillCheckDifficultyName
-                          )}
-                      >
-                        {#each difficultyKeys as diff (diff)}
-                          <option value={diff}>{skillCheckDifficultyLabels[diff]}</option>
-                        {/each}
-                      </select>
-                    </label>
-                  </div>
-
-                  <EffectsTemplatesEditor
-                    effects={option.attributeCheck.successEffects ?? []}
-                    onChange={(next) => setAttributeCheckEffects(i, 'successEffects', next)}
-                    title="On success"
-                    nested
-                  />
-                  <EffectsTemplatesEditor
-                    effects={option.attributeCheck.failureEffects ?? []}
-                    onChange={(next) => setAttributeCheckEffects(i, 'failureEffects', next)}
-                    title="On failure"
-                    nested
-                  />
-                {:else}
-                  <EffectsTemplatesEditor
-                    effects={option.effects ?? []}
-                    onChange={(next) => setOptionEffects(i, next)}
-                    title="Option effects"
-                    nested
-                  />
-                {/if}
               </div>
+              <label class="field text-field">
+                <span class="label">Text</span>
+                <textarea class="input textarea" rows="3" bind:value={draft.text}></textarea>
+              </label>
+              <PassagesEditor
+                drafts={draft.passageDrafts}
+                onChange={(next) => patchNode(draft.id, { passageDrafts: next })}
+                onInsert={(passageKey) => insertNodePassageToken(draft.id, passageKey)}
+              />
+              <TriggersEditor
+                triggers={draft.triggers}
+                onChange={(next) => patchNode(draft.id, { triggers: next })}
+                title="Entry triggers"
+                description="Checked when the previous beat's options are built. Empty means always enterable."
+                emptyHint="Always enterable."
+                nested
+              />
+              <EffectsTemplatesEditor
+                effects={draft.effects}
+                onChange={(next) => patchNode(draft.id, { effects: next })}
+                title="On enter"
+                description="Applied when this node opens, before its options."
+                nested
+              />
+              <EventOptionsEditor
+                options={draft.options}
+                {nodeKeys}
+                listId={`node-keys-${draft.id}`}
+                onChange={(next) => patchNode(draft.id, { options: next })}
+              />
             </li>
           {/each}
         </ul>
@@ -838,65 +763,24 @@
     line-height: 1.4;
   }
 
-  .options-grid {
+  .node-list {
     margin: 0;
     padding: 0;
     list-style: none;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
-  }
-
-  .option-card {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.7rem 0.75rem;
-    background: rgba(10, 14, 20, 0.55);
+    gap: 0.85rem;
+  }
+
+  .node-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 0.75rem;
+    background: rgba(10, 14, 20, 0.45);
     border: 1px solid rgba(175, 142, 103, 0.35);
     border-left: 3px solid var(--color-brass);
     border-radius: 4px;
-    min-width: 0;
-  }
-
-  .option-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-
-  .option-index {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--color-brass);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .option-action,
-  .option-outcome {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-  }
-
-  .outcome-mode {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-  }
-
-  .outcome-mode .btn.active {
-    background: rgba(175, 142, 103, 0.22);
-    border-color: var(--color-brass);
-    color: var(--color-golden);
-  }
-
-  .check-fields {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem;
   }
 
   .hint {
@@ -978,8 +862,5 @@
       grid-template-columns: 1fr;
     }
 
-    .options-grid {
-      grid-template-columns: 1fr;
-    }
   }
 </style>

@@ -4,6 +4,7 @@
   import { selectNextScene } from '@/lib/sim/scene';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import { tick, untrack } from 'svelte';
+  import type { InkBeat } from './ink-beat';
   import NarrationList from './NarrationList.svelte';
   import SceneActions from './SceneActions.svelte';
 
@@ -35,7 +36,10 @@
   let reservedActionsHeight = 0;
   /** Reader is at the ink. Cleared when they scroll up into earlier pages. */
   let pinnedToTail = true;
-  let followFrame = 0;
+  /** Ink is still being written below a page the reader has scrolled away from. */
+  let inkBelow = $state(false);
+  let motionFrame = 0;
+  let motionToken = 0;
 
   const reduceMotion =
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -64,6 +68,7 @@
           ? Math.min(natural, maxHeight)
           : Math.min(Math.max(natural, current), maxHeight);
 
+      const becameScrollable = nowScrollable && !untrack(() => scrollable);
       scrollable = nowScrollable;
 
       if (!nowScrollable && pageEl.scrollTop !== 0) {
@@ -81,7 +86,10 @@
         bookHeight = next;
       }
 
-      if (nowScrollable) queueMicrotask(() => followTail());
+      refreshInkCue();
+      // The first time the page caps, bring the writing band into view once.
+      // Later lines stay put until a paragraph (or a tall paragraph's line) ends.
+      if (becameScrollable) queueMicrotask(() => void settleBand());
     };
 
     const ro = new ResizeObserver(syncHeight);
@@ -106,14 +114,16 @@
       ) {
         pinnedToTail = true;
       }
+      refreshInkCue();
     };
     window.addEventListener('keydown', onKeyScroll);
 
     return () => {
       ro.disconnect();
       window.removeEventListener('keydown', onKeyScroll);
-      if (followFrame) cancelAnimationFrame(followFrame);
-      followFrame = 0;
+      motionToken += 1;
+      if (motionFrame) cancelAnimationFrame(motionFrame);
+      motionFrame = 0;
     };
   });
 
@@ -156,12 +166,14 @@
     hideScrollbarTimer = setTimeout(() => {
       scrolling = false;
     }, 800);
+    refreshInkCue();
   }
 
   function onUserWheel(event: WheelEvent) {
     if (!pageEl || !untrack(() => scrollable)) return;
     if (event.deltaY < -4) pinnedToTail = false;
     else if (event.deltaY > 4 && tailGap(pageEl) <= 48) pinnedToTail = true;
+    refreshInkCue();
   }
 
   function onScrollbarPointerDown(event: PointerEvent) {
@@ -189,62 +201,146 @@
     return bookEl.getBoundingClientRect().height >= bookHeight - 1.5;
   }
 
+  function lineBox(): number {
+    if (!contentEl) return 28;
+    const parsed = parseFloat(getComputedStyle(contentEl).lineHeight);
+    if (Number.isFinite(parsed) && parsed > 0) return parsed;
+    return 28;
+  }
+
   function setScrollTop(top: number) {
     if (!pageEl) return;
     pageEl.scrollTop = top;
   }
 
-  /**
-   * Keep the latest ink on the page without chasing every line.
-   * New lines land in the blank margin and the written lines stay put.
-   * Once that margin is nearly used, the page eases up and restores it.
-   */
-  function followTail() {
+  function canFollow(): boolean {
+    return untrack(() => !!pageEl && pinnedToTail && scrollable && bookIsCapped());
+  }
+
+  function refreshInkCue() {
     const el = pageEl;
-    if (!el || !untrack(() => pinnedToTail) || !bookIsCapped()) return;
+    inkBelow = untrack(() => !!el && scrollable && !pinnedToTail && tailGap(el) > 24);
+  }
+
+  function delay(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+      window.setTimeout(resolve, ms);
+    });
+  }
+
+  /** One ease. Cancelled if the reader leaves the tail or a newer motion starts. */
+  function easeScrollBy(distance: number, duration: number, token: number): Promise<void> {
+    const el = pageEl;
+    if (!el || distance <= 0.5) return Promise.resolve();
+    const maxTop = el.scrollHeight - el.clientHeight;
+    const target = Math.min(maxTop, el.scrollTop + distance);
+    const start = el.scrollTop;
+    if (target - start <= 0.5) return Promise.resolve();
+    if (reduceMotion || duration <= 0) {
+      setScrollTop(target);
+      refreshInkCue();
+      return Promise.resolve();
+    }
+    const t0 = performance.now();
+    return new Promise((resolve) => {
+      const step = (now: number) => {
+        const node = pageEl;
+        if (token !== motionToken || !node || !untrack(() => pinnedToTail)) {
+          motionFrame = 0;
+          resolve();
+          return;
+        }
+        const t = Math.min(1, (now - t0) / duration);
+        const eased = 1 - (1 - t) * (1 - t);
+        setScrollTop(start + (target - start) * eased);
+        if (t < 1) {
+          motionFrame = requestAnimationFrame(step);
+        } else {
+          motionFrame = 0;
+          refreshInkCue();
+          resolve();
+        }
+      };
+      motionFrame = requestAnimationFrame(step);
+    });
+  }
+
+  async function pauseThenEase(distance: number, pauseMs: number, duration: number): Promise<void> {
+    const token = ++motionToken;
+    if (motionFrame) cancelAnimationFrame(motionFrame);
+    motionFrame = 0;
+    if (pauseMs > 0) await delay(pauseMs);
+    const el = pageEl;
+    if (token !== motionToken || !el || !untrack(() => pinnedToTail)) return;
+    const live = Math.min(distance, tailGap(el));
+    if (live <= 1) return;
+    await easeScrollBy(live, duration, token);
+  }
+
+  /**
+   * Images, cards, and other blocks that appear at once.
+   * Restores the blank band in a single motion when it has been used up.
+   */
+  async function settleBand(): Promise<void> {
+    const el = pageEl;
+    if (!el || !canFollow()) return;
     const margin = writingMargin();
     const gap = tailGap(el);
-    // Start only once most of the blank page has been written into.
-    const limit = Math.max(12, margin * 0.72);
-    if (gap <= limit) return;
-    if (reduceMotion) {
-      if (followFrame) cancelAnimationFrame(followFrame);
-      followFrame = 0;
-      setScrollTop(Math.max(0, el.scrollHeight - el.clientHeight));
-      return;
-    }
-    if (followFrame) return;
-    // Stop with the margin restored. Chasing every new line keeps the page moving.
-    const settle = Math.max(6, margin * 0.18);
-    const step = () => {
-      const node = pageEl;
-      if (!node || !untrack(() => pinnedToTail)) {
-        followFrame = 0;
-        return;
-      }
-      const gapNow = tailGap(node);
-      if (gapNow <= settle) {
-        followFrame = 0;
-        return;
-      }
-      const distance = Math.min(12, Math.max(1, (gapNow - settle) * 0.18));
-      setScrollTop(node.scrollTop + distance);
-      followFrame = requestAnimationFrame(step);
-    };
-    followFrame = requestAnimationFrame(step);
+    if (gap <= margin * 0.85) return;
+    const distance = gap - margin * 0.15;
+    if (distance <= 1) return;
+    await pauseThenEase(distance, 0, 320);
+  }
+
+  /** A finished line of a paragraph that cannot fit on the page. */
+  async function shiftLine(lineHeight: number): Promise<void> {
+    const el = pageEl;
+    if (!el || !canFollow()) return;
+    const margin = writingMargin();
+    const gap = tailGap(el);
+    if (gap < margin * 0.85) return;
+    const distance = Math.min(lineHeight, gap);
+    if (distance <= 1) return;
+    await pauseThenEase(distance, reduceMotion ? 0 : 180, 220);
+  }
+
+  /**
+   * A finished paragraph. The page stays still while it is read.
+   * If the next paragraph would leave the blank band, ease up by this paragraph's height.
+   */
+  async function shiftParagraph(beat: { height: number; lineSettled?: boolean }): Promise<void> {
+    if (beat.lineSettled) return;
+    const el = pageEl;
+    if (!el || !canFollow()) return;
+    const margin = writingMargin();
+    const gap = tailGap(el);
+    const remaining = margin - gap;
+    if (remaining >= lineBox()) return;
+    const distance =
+      beat.height > 1 ? Math.min(beat.height, gap) : Math.max(0, gap - Math.min(8, margin * 0.15));
+    if (distance <= 1) return;
+    await pauseThenEase(distance, reduceMotion ? 0 : 320, 280);
   }
 
   function onBookHeightEnd(event: TransitionEvent) {
     if (event.propertyName !== 'height' || event.target !== bookEl) return;
-    followTail();
+    void settleBand();
   }
 
-  function scrollPageToBottom(behavior: 'auto' | 'smooth' = 'smooth') {
-    if (!untrack(() => scrollable)) return;
-    // Typing used to pass 'auto' and snap to the bottom on every glyph.
-    // Both beats now share the margin follow; instant snaps are the jumps.
-    void behavior;
-    queueMicrotask(() => followTail());
+  function onInkBeat(beat: InkBeat = { kind: 'layout' }): Promise<void> {
+    refreshInkCue();
+    if (!untrack(() => scrollable)) return Promise.resolve();
+    if (beat.kind === 'line') return shiftLine(beat.height);
+    if (beat.kind === 'paragraph') return shiftParagraph(beat);
+    return settleBand();
+  }
+
+  function resumeTail() {
+    pinnedToTail = true;
+    inkBelow = false;
+    const el = pageEl;
+    if (!el) return;
+    void pauseThenEase(tailGap(el), 0, 280);
   }
 </script>
 
@@ -267,7 +363,7 @@
         onpointerdown={onScrollbarPointerDown}
       >
         <div class="page-content" bind:this={contentEl}>
-          <NarrationList bind:done={narrationDone} onProgress={scrollPageToBottom} />
+          <NarrationList bind:done={narrationDone} onProgress={onInkBeat} />
           {#if selectingNextPlace}
             <p class="prompt">Where do you go?</p>
           {:else if narrationDone}
@@ -276,6 +372,11 @@
         </div>
       </div>
     </div>
+    {#if inkBelow}
+      <button type="button" class="ink-below" aria-label="New text continues below" onclick={resumeTail}>
+        continues
+      </button>
+    {/if}
     <div class="page-chrome" aria-hidden="true">
       <span class="ink-frame"></span>
       <span class="ornament flourish tl"></span>
@@ -455,8 +556,8 @@
   .page-content {
     min-height: min-content;
     overflow-x: clip;
-    /* Unwritten page. New lines fill this before the book advances, so the
-       lines already inked stay still instead of stepping up on every wrap. */
+    /* Writing band. A paragraph fills this blank before the page advances,
+       so the lines already inked stay still. */
     padding-bottom: 5.1em;
   }
 
@@ -497,6 +598,33 @@
 
   .page-scroll.scrollable.scrolling::-webkit-scrollbar-thumb:hover {
     background: rgba(90, 75, 60, 0.65);
+  }
+
+  .ink-below {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    z-index: 3;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 2px 12px;
+    border: none;
+    background: transparent;
+    font-family: var(--font-narrative);
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--color-ink-muted);
+    cursor: pointer;
+  }
+
+  .ink-below:hover,
+  .ink-below:focus-visible {
+    color: var(--color-ink);
+  }
+
+  .ink-below:focus-visible {
+    outline: 1px solid var(--color-brown-border);
+    outline-offset: 2px;
   }
 
   .prompt {

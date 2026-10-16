@@ -124,6 +124,8 @@ export enum EventTriggerType {
   StoryTag = 'story_tag',
   /** NPC has (or lacks) a `RelationTag` on `relationTags`. */
   RelationTag = 'relation_tag',
+  /** NPC has at least `count` entries in `knownTraits`. */
+  KnownTraits = 'known_traits',
 }
 
 export enum ResourceType {
@@ -168,5 +170,5 @@ export enum RelationTag {
   Lover = 'lover',
   SignificantOther = 'significant_other',
   // NPC specific tags
-  EmmaSmitten = 'Legs like that should be forbidden by law!',
+  EmmaSmitten = "You are under Emma's spell",
 }

@@ -39,3 +39,35 @@ Event Narrative purpose Mechanics tested
 5. Ballet incident Show Emma outside academia Ensemble scene, humor, optional trait callbacks
 6. League victory Recognize major player achievements Global gameplay triggers, respect
 7. Partnership offer Culminate the first stage Milestone, relationship tag, new activities
+
+Act 2
+
+On the romance side, this is still very much not a consideration for her, but she might start to respond to Antonio's awkwards flirting or teasing banter. It is still more a fun game to her, though if she sees Antonio is actually in love with her she'll tread carefully not to hurt him.
+
+On the frienship side, she starts to see Antonio as someone who will have her back, and she intends to reciprocate. She might look for opportunities to study together or go on adentures outside the academy.
+
+On the rivalry side, she sees him as a motivation to improve herself, and a fun challenge as they both enjoy very much the banter. It could be cool if the introduction of a third party (like a competition with another school) could actually turn them into an unstoppable team. Their rivalry could also sprinkle a little bit of erotic tension between them, as Emma knows how attractive she is and can use it to tease Antonio and embarass him (but not in a harmful way).
+
+Event 1: the threat announcement - starting point
+The head teacher gathers the class and annouce them that there is a multi school event, a crafting competition for first year students. The academy is to send their two best to a trip to another city, and a tournament will decide who crafted the best deck. The teacher reads aloud the polite but mocking letter which seems not to fancy the academy's chance. He's clearly vexed and nominates Emma as the school's capatin, being the best student. She can pick her second, which of course ends up being Antonio. Emma immediately schedules working sessions at her place between the two of them so that they can practice as a team. No decision to make, it's the kickstart event.
+
+Event 2: the preparation
+This is the practice session that happen's at Emma's. It can have different tones depending on their current relation. It can be split in 2 sessions or events, one for training at the card game, one for crafting together a new card.
+Here we need to find some interesting decisions to make, TBD. For example, the training could be a match who decide which of them will play the finals in the tournament. The crafting could an actual unique interesting card than one of them can keep in the end.
+
+Event 3: the competition
+This is the capstone, will happen in a new location. We might also have mini events for the travels.
+It would invlove a TCG match (either the finals or semi finals depending on event 2), the decision of who keeps the new card and the trophy (if won), and a deep bonding opportunity. After that, win or lose, Emma will see Antonio as someone she not only has an interest to spend time with, but also someone she wants to spend time with.
+
+Proposed mini-arc: The Academy's Honor
+
+1. The Challenge — Automatic announcement
+   The Academy receives a condescending invitation to an inter-school crafting competition. Emma is appointed captain and chooses Antonio.
+2. A Question of Strategy — Training session
+   Emma invites Antonio to practice at her place. A TCG match determines who takes the more difficult tournament match.
+3. Two Minds, One Card — Collaborative crafting
+   They design a unique card together, using different talents and competing ideas. Choices affect the resulting card and their relationship.
+4. The Journey — Optional travel encounter
+   A lighter, more personal scene outside the Academy, providing an opportunity for humor and character development.
+5. The Tournament — Competitive climax
+   Actual TCG gameplay, possible victory or defeat, decisions about rewards, and an emotionally significant conclusion to the partnership.

@@ -66,6 +66,8 @@ export interface EventTriggerParameters {
     relationTag: RelationTag;
     value?: number;
   };
+  /** NPC has at least `count` entries in `knownTraits`. */
+  [EventTriggerType.KnownTraits]: { characterKey: string; count: number };
 }
 
 export type EventTrigger = {
@@ -313,6 +315,8 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       return checkStoryTag(trigger);
     case EventTriggerType.RelationTag:
       return checkRelationTag(trigger);
+    case EventTriggerType.KnownTraits:
+      return checkKnownTraits(trigger);
     default:
       return false;
   }
@@ -412,6 +416,15 @@ function checkRelationTag(
   return hasTag;
 }
 
+function checkKnownTraits(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.KnownTraits }>
+): boolean {
+  const { characterKey, count } = trigger.parameters;
+  const character = gs.characters[characterKey];
+  if (!character) return false;
+  return (character.knownTraits?.length ?? 0) >= count;
+}
+
 const PASSAGE_TOKEN = /\{\{\s*([\w-]+)\s*\}\}/g;
 
 /** First variant whose triggers all match, otherwise the passage fallback. */
@@ -442,23 +455,88 @@ function sceneEventFromTemplate(template: StoredEventTemplate): SceneEvent {
   return {
     key: template.key,
     text: resolveEventText(template),
-    options: buildOptions(template),
+    options: buildOptions(template, template.optionTemplates),
   };
 }
 
-/** Omit triggers (or leave them empty) to always offer the option. Otherwise every trigger must match. */
-function optionIsAvailable(optionTemplate: EventOptionTemplate, eventKey: string): boolean {
+function trimmedNodeKey(key: string | undefined): string | undefined {
+  const trimmed = key?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+/** Where an option can go. A missing node on a branch means that branch ends the event. */
+function optionResolutions(optionTemplate: EventOptionTemplate): {
+  endings: boolean;
+  nodes: string[];
+} {
+  if (!optionTemplate.attributeCheck) {
+    const node = trimmedNodeKey(optionTemplate.nextNode);
+    return node ? { endings: false, nodes: [node] } : { endings: true, nodes: [] };
+  }
+  const success = trimmedNodeKey(
+    optionTemplate.attributeCheck.successNode ?? optionTemplate.nextNode
+  );
+  const failure = trimmedNodeKey(
+    optionTemplate.attributeCheck.failureNode ?? optionTemplate.nextNode
+  );
+  return {
+    endings: !success || !failure,
+    nodes: [success, failure].filter((node): node is string => !!node),
+  };
+}
+
+/** Empty node triggers always match. A missing node is not enterable. */
+export function nodeIsEnterable(template: EventTemplate, nodeKey: string): boolean {
+  const node = template.nodes?.[nodeKey];
+  if (!node) return false;
+  const triggers = node.triggers ?? [];
+  return triggers.every((trigger) => doesTriggerMatch(trigger, template.key));
+}
+
+/**
+ * Omit triggers (or leave them empty) to always offer the option. Otherwise every trigger must match.
+ * An option that can only open locked or missing nodes is hidden. A branch that ends the event
+ * keeps the option available even when another branch's node is locked.
+ */
+function optionIsAvailable(optionTemplate: EventOptionTemplate, template: EventTemplate): boolean {
   const triggers = optionTemplate.triggers ?? [];
-  return triggers.length === 0 || triggers.every((trigger) => doesTriggerMatch(trigger, eventKey));
+  if (
+    triggers.length > 0 &&
+    !triggers.every((trigger) => doesTriggerMatch(trigger, template.key))
+  ) {
+    return false;
+  }
+  const { endings, nodes } = optionResolutions(optionTemplate);
+  if (endings || nodes.length === 0) return true;
+  return nodes.some((nodeKey) => nodeIsEnterable(template, nodeKey));
 }
 
-function buildOptions(template: StoredEventTemplate): EventOption[] {
-  return (template.optionTemplates ?? [])
-    .filter((optionTemplate) => optionIsAvailable(optionTemplate, template.key))
-    .map(buildOption);
+function buildOptions(
+  template: EventTemplate,
+  optionTemplates: EventOptionTemplate[] | undefined
+): EventOption[] {
+  return (optionTemplates ?? [])
+    .filter((optionTemplate) => optionIsAvailable(optionTemplate, template))
+    .map((optionTemplate) => buildOption(optionTemplate, template));
 }
 
-function buildOption(optionTemplate: EventOptionTemplate): EventOption {
+/**
+ * An explicit node that is locked ends that branch. It does not fall through to `nextNode`.
+ * An omitted branch uses `nextNode` when that node is enterable.
+ */
+function resolveDestination(
+  explicit: string | undefined,
+  fallback: string | undefined,
+  template: EventTemplate
+): string | undefined {
+  const named = trimmedNodeKey(explicit);
+  if (named) return nodeIsEnterable(template, named) ? named : undefined;
+  const fallbackKey = trimmedNodeKey(fallback);
+  if (!fallbackKey) return undefined;
+  return nodeIsEnterable(template, fallbackKey) ? fallbackKey : undefined;
+}
+
+function buildOption(optionTemplate: EventOptionTemplate, template: EventTemplate): EventOption {
   const option: EventOption = {
     text: optionTemplate.text,
     outcome: {},
@@ -469,8 +547,37 @@ function buildOption(optionTemplate: EventOptionTemplate): EventOption {
   }
   if (optionTemplate.attributeCheck) {
     option.outcome.attributeCheck = optionTemplate.attributeCheck;
+    const successNode = resolveDestination(
+      optionTemplate.attributeCheck.successNode,
+      optionTemplate.nextNode,
+      template
+    );
+    const failureNode = resolveDestination(
+      optionTemplate.attributeCheck.failureNode,
+      optionTemplate.nextNode,
+      template
+    );
+    if (successNode) option.outcome.successNode = successNode;
+    if (failureNode) option.outcome.failureNode = failureNode;
   } else if (optionTemplate.effects) {
     option.outcome.effects = optionTemplate.effects;
+    const nextNode = resolveDestination(optionTemplate.nextNode, undefined, template);
+    if (nextNode) option.outcome.nextNode = nextNode;
+  } else {
+    const nextNode = resolveDestination(optionTemplate.nextNode, undefined, template);
+    if (nextNode) option.outcome.nextNode = nextNode;
   }
   return option;
+}
+
+/** Later beat of an event already in progress. Does not stamp or consume the template. */
+export function sceneEventForNode(template: EventTemplate, nodeKey: string): SceneEvent | undefined {
+  const node = template.nodes?.[nodeKey];
+  if (!node) return undefined;
+  return {
+    key: template.key,
+    nodeKey,
+    text: resolveEventText({ key: template.key, text: node.text, passages: node.passages }),
+    options: buildOptions(template, node.optionTemplates),
+  };
 }

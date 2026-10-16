@@ -10,6 +10,7 @@
   import { untrack } from 'svelte';
   import AttributeCheckEntry from './AttributeCheckEntry.svelte';
   import CharacterPortrait from './characters/CharacterPortrait.svelte';
+  import type { InkBeat } from './ink-beat';
   import NarrationText from './NarrationText.svelte';
 
   let {
@@ -17,7 +18,7 @@
     onProgress,
   }: {
     done?: boolean;
-    onProgress?: (behavior?: 'auto' | 'smooth') => void;
+    onProgress?: (beat?: InkBeat) => void | Promise<void>;
   } = $props();
 
   const periodIcon: Record<DayPeriod, string> = {
@@ -97,14 +98,14 @@
   // Empty text means an LLM fill is in flight — keep the page scrolled to the caret.
   $effect(() => {
     if (activeEntry && !activeEntry.text && !activeEntry.skipCheckText) {
-      onProgress?.('smooth');
+      onProgress?.({ kind: 'layout' });
     }
   });
 
   function completeEntry(id: string) {
     if (completedSet.has(id)) return;
     completedIds = [...completedIds, id];
-    onProgress?.('smooth');
+    onProgress?.({ kind: 'layout' });
   }
 
   function cardsForEntry(entry: Narration): CardTemplate[] {
@@ -261,7 +262,7 @@
     } else {
       expandedImageId = expandedImageId === entry.id ? null : entry.id;
     }
-    onProgress?.('smooth');
+    onProgress?.({ kind: 'layout' });
   }
 </script>
 
@@ -295,7 +296,7 @@
         check={entry.attributeCheck}
         narrationId={entry.id}
         {animate}
-        onProgress={() => onProgress?.('auto')}
+        onProgress={(beat) => onProgress?.(beat)}
         onDone={() => onCheckDone(entry)}
       />
     {/if}
@@ -336,7 +337,7 @@
               text={entry.text}
               mentions={entry.mentions}
               {animate}
-              onProgress={() => onProgress?.('auto')}
+              onBeat={(beat) => onProgress?.(beat)}
               onDone={() => onTextDone(entry)}
             />
           </div>
@@ -351,7 +352,7 @@
             text={entry.text}
             mentions={entry.mentions}
             {animate}
-            onProgress={() => onProgress?.('auto')}
+            onBeat={(beat) => onProgress?.(beat)}
             onDone={() => onTextDone(entry)}
           />
         </div>
@@ -424,7 +425,7 @@
           alt=""
           title={entry.imagePrompt}
           class:cacheable={canCache}
-          onload={() => onProgress?.('smooth')}
+          onload={() => onProgress?.({ kind: 'layout' })}
           onclick={() => askCacheScene(entry)}
         />
         {#if cacheAskId === entry.id}
@@ -470,7 +471,7 @@
       text={entry.text}
       mentions={entry.mentions}
       {animate}
-      onProgress={() => onProgress?.('auto')}
+      onBeat={(beat) => onProgress?.(beat)}
       onDone={() => onTextDone(entry)}
     />
   </div>
@@ -486,7 +487,7 @@
       text={entry.text}
       mentions={entry.mentions}
       {animate}
-      onProgress={() => onProgress?.('auto')}
+      onBeat={(beat) => onProgress?.(beat)}
       onDone={() => onTextDone(entry)}
     />
   </aside>
@@ -512,7 +513,7 @@
       text={entry.text}
       mentions={entry.mentions}
       {animate}
-      onProgress={() => onProgress?.('auto')}
+      onBeat={(beat) => onProgress?.(beat)}
       onDone={() => onTextDone(entry)}
     />
     <div class="transaction-summary" aria-hidden="true">

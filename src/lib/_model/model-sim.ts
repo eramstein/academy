@@ -1,4 +1,5 @@
 import type { SocializeParameters, TransactionParameters } from '../sim/actions';
+import type { SkillCheckDifficultyName } from '../sim/attribute-checks';
 import type { EventTrigger } from '../sim/events';
 import type { CardColor } from './enums-battle';
 import type {
@@ -73,6 +74,8 @@ export interface Scene {
 
 export interface SceneEvent {
   key: string;
+  /** Set while a later beat of this event is showing. Absent on the root beat. */
+  nodeKey?: string;
   text: string;
   options: EventOption[];
 }
@@ -87,6 +90,15 @@ export interface EventOutcome {
   effects?: EventEffect[];
   /** When set, roll on select; apply successEffects or failureEffects instead of effects. */
   attributeCheck?: EventOptionAttributeCheck;
+  /**
+   * Open this node after a direct option instead of ending the event.
+   * Resolved when the choice is offered; a locked node is omitted.
+   */
+  nextNode?: string;
+  /** Skill-check success beat, already resolved against node triggers. Omit to end. */
+  successNode?: string;
+  /** Skill-check failure beat, already resolved against node triggers. Omit to end. */
+  failureNode?: string;
 }
 
 export interface EventEffect {
@@ -96,22 +108,16 @@ export interface EventEffect {
 
 export type EventImageSize = 'small' | 'medium' | 'large';
 
-/** Named difficulties for event option skill checks (see skillCheckDifficulty). */
-export type SkillCheckDifficultyName =
-  | 'trivial'
-  | 'veryeasy'
-  | 'easy'
-  | 'medium'
-  | 'hard'
-  | 'extreme'
-  | 'impossible';
-
 /** Authored skill check on an event option: roll attribute vs difficulty, then branch effects. */
 export interface EventOptionAttributeCheck {
   attribute: keyof Attributes;
   difficulty: SkillCheckDifficultyName;
   successEffects?: EventEffect[];
   failureEffects?: EventEffect[];
+  /** Node to open when the check succeeds. Falls back to the option `nextNode`. */
+  successNode?: string;
+  /** Node to open when the check fails. Falls back to the option `nextNode`. */
+  failureNode?: string;
 }
 
 // An event template defines when a scene event triggers and how to generate its options
@@ -127,6 +133,27 @@ export interface EventTemplate {
   image?: string;
   imageSize?: EventImageSize;
   manualTrigger?: string;
+  passages?: Record<string, EventPassage>;
+  /**
+   * Later beats in this same event. The template itself is the root beat.
+   * An option `nextNode` opens one of these instead of ending the event.
+   * Entering a node does not stamp the event again.
+   */
+  nodes?: Record<string, EventNode>;
+}
+
+/** A beat inside an event. Reached only through an option `nextNode` (or a skill-check branch node). */
+export interface EventNode {
+  text: string;
+  optionTemplates: EventOptionTemplate[];
+  /** Checked when the previous beat's options are built. Empty means always enterable. */
+  triggers?: EventTrigger[];
+  /** Applied on enter, before this beat's options. */
+  effects?: EventEffect[];
+  title?: string;
+  emotion?: Emotion;
+  image?: string;
+  imageSize?: EventImageSize;
   passages?: Record<string, EventPassage>;
 }
 
@@ -146,6 +173,8 @@ export interface EventOptionTemplate {
   /** Alternative to effects: roll, then apply success or failure effects. */
   attributeCheck?: EventOptionAttributeCheck;
   triggers?: EventTrigger[];
+  /** Open this node instead of ending the event. Omit to end, as before. */
+  nextNode?: string;
 }
 
 export interface ActionTemplate {

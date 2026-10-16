@@ -1,18 +1,19 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
+  import { tick, untrack } from 'svelte';
+  import { revealInk, type InkBeat } from './ink-beat';
 
   let {
     text,
     class: className = '',
     // msPerChar = 18,
     msPerChar = 0,
-    onProgress,
+    onBeat,
     onDone,
   }: {
     text: string;
     class?: string;
     msPerChar?: number;
-    onProgress?: () => void;
+    onBeat?: (beat: Exclude<InkBeat, { kind: 'layout' }>) => void | Promise<void>;
     onDone?: () => void;
   } = $props();
 
@@ -30,34 +31,25 @@
       return;
     }
 
-    displayed = '';
-    let i = 0;
-    const id = window.setInterval(() => {
-      i += 1;
-      displayed = full.slice(0, i);
-      if (i >= full.length) {
-        window.clearInterval(id);
-        untrack(() => onDone?.());
-      }
-    }, stepMs);
+    let cancelled = false;
+    void (async () => {
+      await revealInk({
+        text: full,
+        stepMs,
+        isCancelled: () => cancelled,
+        reveal: (length) => {
+          displayed = full.slice(0, length);
+        },
+        layout: () => tick(),
+        element: () => root,
+        onBeat: (beat) => untrack(() => onBeat)?.(beat),
+      });
+      if (!cancelled) untrack(() => onDone?.());
+    })();
 
-    return () => window.clearInterval(id);
-  });
-
-  // Line growth only. A callback per glyph makes the page snap on every wrap.
-  $effect(() => {
-    const el = root;
-    const notify = onProgress;
-    if (!el || !notify) return;
-    let height = el.offsetHeight;
-    const ro = new ResizeObserver(() => {
-      const next = el.offsetHeight;
-      if (next === height) return;
-      height = next;
-      untrack(() => notify());
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
+    return () => {
+      cancelled = true;
+    };
   });
 </script>
 

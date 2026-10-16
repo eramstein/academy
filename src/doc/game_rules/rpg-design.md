@@ -77,7 +77,6 @@ To that end, events are organized as small stand alone narrative nodes (e.g. Emm
 
 Most events have a direct effect mutating the game state, and also several options the player can chose from which affect the game state further, and unlock potential future events.
 
-
 ### Event implementation and resolution (current design)
 
 Events are authored at design time in JSON files and loaded into a database when the application starts. As events occur, they are removed from the pool of potential events, so an event is normally encountered only once per playthrough.
@@ -93,15 +92,24 @@ The same rich trigger conditions determine **eligibility** in both cases; `manua
 
 **How to prioritize or schedule multiple eligible automatic events remains an open design question**; the aim is to preserve variety while allowing ongoing stories to develop coherently. Presentation of multiple simultaneously available manual actions can be refined through playtesting.
 
+An event is one root beat plus an optional tree of later beats called nodes. The root is what the scheduler starts. Each node has its own text, optional entry triggers, illustration, emotion, entry effects, conditional passages, and options. Showing the root stamps the event once; moving through nodes does not stamp it again and does not advance time. A node is how a conversation continues right now. A follow-up event is still a separate event: its own key, its own once-only stamp, and it may wait for another day or place.
+
 When an event occurs:
 
-1. Its authored narrative is presented in the illustrated book interface, optionally accompanied by a dedicated scene illustration or an NPC portrait with a specific emotion.
+1. Its root narrative is presented in the illustrated book interface, optionally accompanied by a dedicated scene illustration or an NPC portrait with a specific emotion.
 2. The event may apply an unconditional effect to the game state, regardless of the player's subsequent choice.
 3. The player is presented with a set of authored options.
-4. The selected option resolves either through a deterministic game-state effect or through gameplay logic such as a skill check, which determines the outcome and resulting state changes.
-5. The event's occurrence, the player's choice, and relevant results can subsequently be referenced by other events' trigger conditions.
+4. The selected option resolves either through a deterministic game-state effect or through a skill check, which determines the outcome and resulting state changes.
+5. If that option names a next node — or the skill-check branch names one — that node is shown immediately, with its own text, image, and options. Entry triggers are judged when the previous beat's choices are built: a choice is hidden when every way forward leads to a locked node. A node with no available options ends the event. A branch that points at a locked node ends the event on that branch instead of opening it.
+6. Otherwise the event ends. Its occurrence, the player's choice, and relevant results can then be referenced by other events' trigger conditions. Remember a branch with a story tag on the option that leads there; the node path itself is not a separate event id.
 
-Currently, each event's available options are hard-coded. **Potential extension:** allow individual options to have trigger conditions, so choices can appear only when justified by the player's skills, relationships, history, or current circumstances.
+Conditional event options and text (current implementation)
+
+Individual event options may define trigger conditions using the existing game-state criteria. An option is displayed only when its conditions are satisfied. This allows choices to depend on previous encounters, relationships, skills, resources, or other state. The same conditions can gate a node, but they are read before the choice's effects, so a choice cannot unlock the node it opens.
+
+The root narrative and each node's narrative support conditional text passages, which are resolved according to game state when that beat is shown.
+
+Current limitation: Conditional text passages within an individual option's post-choice narrative are not supported. Each option has a fixed outcome text. Variations that need a different following scene belong in another node, or in a follow-up event.
 
 ### Relationship narrative design direction (to prototype)
 

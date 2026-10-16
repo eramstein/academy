@@ -107,6 +107,8 @@ Optional sections:
 - Empty `## Options` (or omit options) → `optionTemplates: []` (narration-only).
 - `## Conditional passages` — named snippets swapped into `{{ passageKey }}` tokens in
   `## Text` (see Passages). Omit the section when the event text is fully static.
+- `**Next:** <node key>` on an option, and `## Node: <key>` sections — a later beat in
+  the same event (see Multi-step events). Omit both when the event is a single beat.
 
 Folder name and `**NPC:**` should agree; `characterArc` is the NPC key for arc
 events. Main-story events omit `characterArc`.
@@ -129,12 +131,15 @@ events. Main-story events omit `characterArc`.
    - `triggers` ← map `**Trigger:**` (see Triggers).
    - `manualTrigger` ← `**Manual trigger:**` label when present (omit when absent).
    - `effects` ← map `## Effects` (see Effects).
-   - `optionTemplates` ← each `### Option …`:
+   - `optionTemplates` ← each `### Option …` that belongs to the root (before any `## Node:`):
      - `text` ← the option **label** (heading after `Option A:`).
      - option body under `**Text:**` → a `narrate` effect with that prose
        verbatim (unless the markdown says the choice has no narration).
      - `**Outcomes:**` → further effects (skip “no additional…”).
      - Optional option-only triggers → `triggers` on that option.
+     - Optional `**Next:**` → `nextNode`. On a skill check, `**Next:**` under
+       `**On success:**` / `**On failure:**` → `successNode` / `failureNode`.
+   - `nodes` ← each `## Node:` section (see Multi-step events). Omit when there are none.
 4. If a key already exists, **replace** that object in place; otherwise insert after
    the last event of the same `characterArc` (or append for main story) in the
    **target** JSON file.
@@ -199,16 +204,19 @@ type strings (unknown types crash when the event fires).
   "image": "emma_first_encounter.jpg",
   "imageSize": "large",
   // optional "manualTrigger": "Speak with Emma" — scene-action label; omit to auto-play
+  // optional "nodes": { "tuition_talk": { "text": "…", "optionTemplates": [] } }
 }
 ```
 
-Every event fires at most once: firing stamps `gs.storyTags[event.key]`. Empty
-`triggers` means follow-up / debug only (`follow_up_event` or `/e`) — never
-auto-fires. Property order: `key`, `title`, `text`, optional `passages`, `triggers`,
-`effects`, `optionTemplates`, `characterArc`, `emotion`, `image`, `imageSize`, then
-optional `manualTrigger`. Options:
+Every event fires at most once: showing the root beat stamps `gs.storyTags[event.key]`.
+Later nodes in the same event do not stamp it again. Empty `triggers` means follow-up /
+debug only (`follow_up_event` or `/e`) — never auto-fires. Property order: `key`, `title`,
+`text`, optional `passages`, `triggers`, `effects`, `optionTemplates`, optional `nodes`,
+`characterArc`, `emotion`, `image`, `imageSize`, then optional `manualTrigger`. Options:
 `text`, optional `triggers`, then `effects` or `attributeCheck`, then optional
-`actionTemplate`.
+`actionTemplate`, then optional `nextNode`. Node object order: `text`, optional `passages`,
+optional `triggers`, optional `effects`, `optionTemplates`, then optional `title`, `emotion`,
+`image`, `imageSize`.
 
 ## Images
 
@@ -246,6 +254,7 @@ still resolve from the socialize action.
 | `leagues_won`        | `{ characterKey, count }`                                          | Appearances in `league.pastWinners` ≥ `count`; `characterKey` may be `"player"`.        |
 | `story_tag`          | `{ tag: "molly-f1", value: 1 }`                                    | `gs.storyTags[tag]` ≥ `value`. `value: -1` = tag absent. Event keys auto-stamp on fire. |
 | `relation_tag`       | `{ characterKey, relationTag }`                                    | NPC has that `RelationTag` on `relationTags`. Optional `value: -1` = tag absent.        |
+| `known_traits`       | `{ characterKey, count }`                                          | NPC `knownTraits.length` ≥ `count`.                                                     |
 | `scheduled_activity` | `{}`                                                               | Current activity `eventId` equals this event's `key`.                                   |
 
 ### Mapping plain-language `**Trigger:**`
@@ -264,6 +273,7 @@ still resolve from the socialize action.
 | Weekend                                                            | `day_of_week` `[6, 7]`                                                  |
 | Follow-up only / queued by another option                          | `triggers: []`                                                          |
 | Has / lacks relation tag (e.g. EmmaSmitten)                        | `relation_tag` `{ characterKey, relationTag }` (+ optional `value: -1`) |
+| Knows at least N traits about \<NPC\>                              | `known_traits` `{ characterKey, count }`                                |
 
 Prefer `socialize` for befriend/flirt/impress/taunt beats — socialize does **not**
 change `relationProgress`. Prefer `relation_parameter` for lasting thresholds.
@@ -364,7 +374,10 @@ least one ungated option when the player must always respond.
 
 Event-level `effects` run on fire; option `effects` run only if chosen.
 
-An option uses **either** `effects` **or** `attributeCheck` (not both):
+An option uses **either** `effects` **or** `attributeCheck` (not both). It also uses
+**either** a next node **or** an action template (not both), and **either** a next node
+**or** `follow_up_event` (not both). `follow_up_event` starts a different event later;
+`nextNode` continues this event now.
 
 ```json
 {
@@ -387,6 +400,139 @@ Difficulties: `trivial` / `veryeasy` / `easy` / `medium` / `hard` / `extreme` /
 use `triggers: []`.
 `gift_card_to_character` takes a template `cardKey` (e.g. `happy_little_accident`);
 it finds a matching instance in the player's collection (exact id or `cardKey-<uuid>`).
+
+## Multi-step events
+
+Skip this section when the markdown has no `## Node:` and no `**Next:**`. A single-beat
+event is compiled exactly as the rest of this skill describes.
+
+The template is the root beat (`## Text`, `## Effects`, `## Options`, root `**Trigger:**`).
+Each `## Node: <key>` is a later beat shown in the same scene, with no time advance and
+no second story-tag stamp. `follow_up_event` is still how a choice starts a *different*
+event (its own key, its own once-only stamp, any later day or place).
+
+Full shape to copy: `.cursor/skills/create-sim-event/multi-step.example.md`. Do not compile
+that file into `events.json`. The snippet below is only an excerpt.
+
+```markdown
+### Option A: Ask about the tuition
+
+**Next:** tuition_talk
+
+**Text:**
+
+You ask what the ledger is for.
+
+**Outcomes:**
+
+- No additional game-state effects.
+
+## Node: tuition_talk
+
+**Title:** The ledger
+**Image:** emma_tuition.jpg medium
+**Emotion:** concerned
+**Trigger:** emma_met has occurred
+
+**On enter:**
+
+- Add story tag emma_heard_tuition
+
+**Passages:**
+
+greeting
+
+When: emma_met has occurred
+
+"You already know what this costs."
+
+Otherwise:
+
+She has not said the number aloud before.
+
+She sets the ledger between you. {{ greeting }}
+
+### Option A: Pay it
+
+**Outcomes:**
+
+- Lose 5 gold
+
+### Option B: Refuse
+
+**Next:** refused
+```
+
+Compile rules:
+
+- Node key ← the `## Node: <key>` text. Letters, digits, `_`, `-`. It is not an event key
+  and must not collide with the requirement that `nextNode` names a node in this event.
+- Everything after a `## Node:` belongs to that node until the next `## Node:` or end of file.
+  Root `## Text`, `## Effects`, `## Options`, and `## Conditional passages` stay above the
+  first `## Node:`.
+- Optional meta, in any order, before the prose: `**Title:**`, `**Image:**` (same rules as
+  the root image), `**Emotion:**`, `**Trigger:**`. `**Trigger:**` uses the same phrasing as
+  the event trigger. Omit it to make the node always enterable. Several conditions in that
+  line are AND, same as the root.
+- `**On enter:**` → node `effects` (same bullets as `## Effects`). Omit when there are none.
+  Do not put `follow_up_event` here if the node also has options.
+- `**Passages:**` → node `passages`, same key / `When:` / `Otherwise:` shape as
+  `## Conditional passages`. The node's prose keeps `{{ passageKey }}` tokens.
+- Prose after the meta (and after `**On enter:**` / `**Passages:**` when present) → node
+  `text`, verbatim, paragraphs joined with `\n\n`. It runs until the first `### Option` or
+  the next `## Node:`.
+- `### Option` blocks inside the node → that node's `optionTemplates`, with the same label /
+  `**Text:**` / `**Outcomes:**` / `**Only if:**` / `**Check:**` rules as root options.
+  A node with no options → `optionTemplates: []` (the beat is narrated, then the event ends).
+- `**Next:** <key>` on an option → `nextNode`. Place it with the option meta (next to
+  `**Text:**`), not inside the prose. Omit it to end the event on that choice.
+- Skill check: a `**Next:**` directly under `**On success:**` → `successNode`. Directly under
+  `**On failure:**` → `failureNode`. A `**Next:**` on the option itself still applies to a
+  branch that has no node of its own. Do not invent a next node the markdown did not name.
+- Node triggers are evaluated when the previous beat's options are built, before that
+  beat's effects and before the chosen option's effects. A choice is hidden when every way
+  forward is a locked or missing node. Do not use those effects to unlock the node the
+  choice opens; that state is not visible yet. Gate on state that is already true, or use
+  `add_story_tag` for what *later events* should see.
+- Cycles are allowed. Every `nextNode` / `successNode` / `failureNode` must name a node in
+  this event's `nodes`.
+
+```json
+"nodes": {
+  "tuition_talk": {
+    "text": "She sets the ledger between you. {{ greeting }}",
+    "passages": {
+      "greeting": {
+        "variants": [
+          {
+            "triggers": [
+              { "triggerType": "story_tag", "parameters": { "tag": "emma_met", "value": 1 } }
+            ],
+            "text": "\"You already know what this costs.\""
+          }
+        ],
+        "fallback": "She has not said the number aloud before."
+      }
+    },
+    "triggers": [
+      { "triggerType": "story_tag", "parameters": { "tag": "emma_met", "value": 1 } }
+    ],
+    "effects": [{ "type": "add_story_tag", "parameters": { "tag": "emma_heard_tuition" } }],
+    "optionTemplates": [
+      {
+        "text": "Pay it",
+        "effects": [
+          { "type": "add_gold", "parameters": { "amount": -5 } }
+        ]
+      }
+    ],
+    "title": "The ledger",
+    "emotion": "concerned",
+    "image": "emma_tuition.jpg",
+    "imageSize": "medium"
+  }
+}
+```
 
 ## Keys to verify
 
@@ -411,7 +557,9 @@ If the user renames a key in markdown, update every `story_tag` / `follow_up_eve
 / `eventId` that referenced the old key.
 
 When re-compiling, refresh JSON fields from the markdown; do not leave stale prose
-in JSON after the markdown changed.
+in JSON after the markdown changed. Drop `nodes` (and option `nextNode` /
+`successNode` / `failureNode`) when the markdown no longer has those beats. Keep node
+keys stable when the prose is edited, the same way event keys stay stable.
 
 ## Example
 

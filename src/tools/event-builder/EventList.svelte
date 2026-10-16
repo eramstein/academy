@@ -59,6 +59,10 @@
       const op = value === -1 ? 'absent' : 'has';
       return `${trigger.triggerType}: ${characterKey} ${op} ${relationTag}`;
     }
+    if (trigger.triggerType === EventTriggerType.KnownTraits) {
+      const { characterKey, count } = trigger.parameters;
+      return `${trigger.triggerType}: ${characterKey} ≥${count}`;
+    }
     if (trigger.triggerType === EventTriggerType.DayOfWeek) {
       return `${trigger.triggerType}: ${trigger.parameters.daysOfWeek.join(',')}`;
     }

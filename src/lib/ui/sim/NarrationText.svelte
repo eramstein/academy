@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
+  import { tick, untrack } from 'svelte';
   import type { Mentions } from '@/lib/_model';
   import { selectSimCharacter } from '@/lib/_state/state-ui.svelte';
   import { getActionTooltip } from '@/lib/sim/cards/action-templates';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
+  import { revealInk, type InkBeat } from './ink-beat';
   import { segmentNarration, visibleSegments } from './narration-mentions';
 
   let {
@@ -13,7 +14,7 @@
     animate = false,
     class: className = '',
     msPerChar = 0,
-    onProgress,
+    onBeat,
     onDone,
   }: {
     text: string;
@@ -21,7 +22,7 @@
     animate?: boolean;
     class?: string;
     msPerChar?: number;
-    onProgress?: () => void;
+    onBeat?: (beat: Exclude<InkBeat, { kind: 'layout' }>) => void | Promise<void>;
     onDone?: () => void;
   } = $props();
 
@@ -44,35 +45,25 @@
       return;
     }
 
-    visibleLength = 0;
-    let i = 0;
-    const id = window.setInterval(() => {
-      i += 1;
-      visibleLength = i;
-      if (i >= full.length) {
-        window.clearInterval(id);
-        untrack(() => onDone?.());
-      }
-    }, stepMs);
+    let cancelled = false;
+    void (async () => {
+      await revealInk({
+        text: full,
+        stepMs,
+        isCancelled: () => cancelled,
+        reveal: (length) => {
+          visibleLength = length;
+        },
+        layout: () => tick(),
+        element: () => root,
+        onBeat: (beat) => untrack(() => onBeat)?.(beat),
+      });
+      if (!cancelled) untrack(() => onDone?.());
+    })();
 
-    return () => window.clearInterval(id);
-  });
-
-  // Tell the page when a line is added. Per-glyph progress snaps the scroll
-  // on every wrap, which yanks the lines already on the page.
-  $effect(() => {
-    const el = root;
-    const notify = onProgress;
-    if (!el || !notify) return;
-    let height = el.offsetHeight;
-    const ro = new ResizeObserver(() => {
-      const next = el.offsetHeight;
-      if (next === height) return;
-      height = next;
-      untrack(() => notify());
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
+    return () => {
+      cancelled = true;
+    };
   });
 </script>
 

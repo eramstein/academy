@@ -65,6 +65,7 @@
         characterKey: '',
         relationTag: RelationTag.EmmaSmitten,
       },
+      [EventTriggerType.KnownTraits]: { characterKey: '', count: 1 },
     };
     return defaults[triggerType];
   }
@@ -364,6 +365,21 @@
               placeholder="1"
               aria-label="Relation tag value"
               title="Omit or ≥1 = has tag; -1 = tag absent"
+            />
+          {:else if trigger.triggerType === EventTriggerType.KnownTraits}
+            <input
+              class="input param-input"
+              bind:value={trigger.parameters.characterKey}
+              placeholder="character key"
+              aria-label="Character key"
+            />
+            <input
+              class="input narrow"
+              type="number"
+              min="1"
+              bind:value={trigger.parameters.count}
+              aria-label="Known traits count"
+              title="Requires knownTraits.length ≥ count for this character"
             />
           {/if}
 

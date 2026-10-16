@@ -18,6 +18,7 @@ import {
   getSceneEventByKey,
   getTriggeredSceneEvent,
   recordEventOccured,
+  sceneEventForNode,
 } from './events';
 import { narrateText } from './narration';
 import { updateNpcLocations } from './npc';
@@ -52,6 +53,8 @@ Once the events are done (no new events are set), the player can get proactive a
 Events with manualTrigger are skipped here and offered as scene-action buttons instead.
 A long action advances the period and ends the scene; the next scene is set based either on the next scheduled activity or the player's choice of next place.
 Optionless events resolve immediately (narrate + effects) and do not hold the scene.
+An option nextNode (or a skill-check successNode / failureNode) opens another beat of the same event
+instead of ending it. That beat does not stamp the event again.
 */
 
 export function syncManualSceneTriggers() {
@@ -79,17 +82,61 @@ export function setSceneEvents() {
   }
 }
 
+/** Destination chosen when this option was offered. Effects do not retarget it. */
+function continuationNode(option: EventOption, success?: boolean): string | undefined {
+  if (success === undefined || !option.outcome.attributeCheck) {
+    return option.outcome.nextNode;
+  }
+  return success ? option.outcome.successNode : option.outcome.failureNode;
+}
+
+/**
+ * Show a later beat of the event already in progress.
+ * Does not consume the template or stamp its story tag again.
+ */
+function presentEventNode(template: EventTemplate, nodeKey: string) {
+  const node = template.nodes?.[nodeKey];
+  const event = sceneEventForNode(template, nodeKey);
+  if (!node || !event) {
+    if (!sceneWaitingOnEventChoice()) setSceneEvents();
+    return;
+  }
+  narrateText(event.text, {
+    ...(node.title ? { title: node.title } : {}),
+    characterKey: template.characterArc,
+    ...(node.emotion ? { emotion: node.emotion } : {}),
+    ...(node.image
+      ? { image: node.image, imageSize: node.imageSize, eventKey: template.key }
+      : {}),
+  });
+  if (template.characterArc && event.text.trim()) {
+    appendRelationArcText(template.characterArc, event.text);
+  }
+  node.effects?.forEach((effect) => applyEffect(effect));
+  // A follow-up event effect may have claimed the scene.
+  if (sceneWaitingOnEventChoice()) return;
+  if (event.options.length > 0) {
+    gs.scene.event = event;
+    gs.scene.actions = [];
+    gs.scene.manualTriggers = [];
+    return;
+  }
+  setSceneEvents();
+}
+
 export async function selectOption(option: EventOption) {
   console.log('selectOption', option, gs.scene.event);
-  const characterArc = gs.scene.event?.key
-    ? getSceneEventByKey(gs.scene.event.key)?.template.characterArc
+  const template = gs.scene.event?.key
+    ? getSceneEventByKey(gs.scene.event.key)?.template
     : undefined;
+  const characterArc = template?.characterArc;
   // Clear so a follow_up_event effect can claim the scene; otherwise setSceneEvents would wipe it.
   // Keep gs.scene.image until place change or a later event sets a new one.
   gs.scene.event = undefined;
+  let success: boolean | undefined;
   if (option.outcome.attributeCheck) {
     const check = option.outcome.attributeCheck;
-    const { success } = await attributeCheck(
+    const result = await attributeCheck(
       gs.player.attributes[check.attribute],
       skillCheckDifficulty[check.difficulty],
       check.attribute,
@@ -97,16 +144,22 @@ export async function selectOption(option: EventOption) {
       undefined,
       {
         // Authored narrate effects already describe the outcome — don't LLM on top.
-        skipLlmNarration: (result) =>
-          effectsIncludeNarrate(result.success ? check.successEffects : check.failureEffects),
+        skipLlmNarration: (rolled) =>
+          effectsIncludeNarrate(rolled.success ? check.successEffects : check.failureEffects),
       }
     );
+    success = result.success;
     const branched = success ? check.successEffects : check.failureEffects;
     branched?.forEach((effect) => applyOptionEffect(effect, characterArc));
   } else if (option.outcome.effects) {
     option.outcome.effects.forEach((effect) => {
       applyOptionEffect(effect, characterArc);
     });
+  }
+  const nextNode = continuationNode(option, success);
+  if (nextNode && template) {
+    presentEventNode(template, nextNode);
+    return;
   }
   if (option.outcome.action) {
     await performAction(option.outcome.action);

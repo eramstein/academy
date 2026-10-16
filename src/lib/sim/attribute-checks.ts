@@ -15,6 +15,9 @@ export const skillCheckDifficulty = {
 
 export type SkillCheckDifficultyKey = keyof typeof skillCheckDifficulty;
 
+/** Named difficulties for event option skill checks (see skillCheckDifficulty). */
+export type SkillCheckDifficultyName = SkillCheckDifficultyKey;
+
 export const skillCheckDifficultyKeys = Object.keys(
   skillCheckDifficulty
 ) as SkillCheckDifficultyKey[];

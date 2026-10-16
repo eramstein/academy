@@ -3,6 +3,7 @@
   import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import { commitAttributeCheck } from '@/lib/sim/attribute-checks';
   import { playAddResourceSound, playSimSound } from '@/lib/sim/sound';
+  import type { InkBeat } from './ink-beat';
   import TypedText from './TypedText.svelte';
 
   let {
@@ -15,7 +16,7 @@
     check: AttributeCheck;
     narrationId: string;
     animate?: boolean;
-    onProgress?: () => void;
+    onProgress?: (beat?: InkBeat) => void | Promise<void>;
     onDone?: () => void;
   } = $props();
 
@@ -154,7 +155,7 @@
   class:pending={!!check.pending}
 >
   {#if phase === 'label'}
-    <TypedText class="check-label" text={labelText} {onProgress} onDone={advanceFromLabel} />
+    <TypedText class="check-label" text={labelText} onBeat={(beat) => onProgress?.(beat)} onDone={advanceFromLabel} />
   {:else}
     <p class="check-label">{labelText}</p>
   {/if}
@@ -226,7 +227,7 @@
   {/if}
 
   {#if phase === 'outcome'}
-    <TypedText class="check-outcome" text={outcomeText} {onProgress} onDone={finish} />
+    <TypedText class="check-outcome" text={outcomeText} onBeat={(beat) => onProgress?.(beat)} onDone={finish} />
   {:else if phase === 'done' && !check.pending}
     <p class="check-outcome">{outcomeText}</p>
   {/if}

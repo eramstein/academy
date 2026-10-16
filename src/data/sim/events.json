@@ -1076,6 +1076,199 @@
     "imageSize": "medium"
   },
   {
+    "key": "molly_first_encounter",
+    "title": "A Friendly Face",
+    "text": "Your first artificery lesson is about to begin, and the classroom is filling with students, books, and the quiet anxiety of people who have just realized they are expected to know things. You find an empty seat beside a young woman who is carefully arranging her notes into a very neat pile. She looks up and offers you a shy but welcoming smile.\n\n\"Hello! I'm Molly. Molly Moreno. Are you new too?\" She seems relieved when you nod. \"Oh, good. Not that being new is good, exactly. It's just nice not to be the only one who has no idea what we're doing.\"\n\nShe glances at the complicated magical diagrams covering the blackboard, then at her notes. \"I'm sure it'll make sense eventually. Everyone says the first year is difficult.\" A pause. \"Though I suspect they mean it gets worse.\"\n\nThe professor enters, and Molly hurriedly pushes a spare sheet of parchment toward you. \"Here, you can use this. And if you need to borrow anything, just ask.\"\n\nShe smiles again, more confidently this time. At least one person in the Academy seems pleased to have you here.",
+    "triggers": [
+      {
+        "triggerType": "activity_type",
+        "parameters": {
+          "activityType": "class"
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "afternoon"
+        }
+      }
+    ],
+    "effects": [
+      {
+        "type": "change_relation",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "amount": 1
+        }
+      },
+      {
+        "type": "add_known_trait",
+        "parameters": {
+          "characterKey": "molly",
+          "title": "Fellow student",
+          "description": "Molly is a friendly, modest fellow student who seems uncertain of her academic abilities."
+        }
+      }
+    ],
+    "optionTemplates": [],
+    "characterArc": "molly",
+    "image": "molly_first_encounter.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "the_little_scholars",
+    "text": "As you go back to your room, you pass through the library. It is settling into its evening silence, except for one table that seems determined to resist the process. Three children are gathered around a young woman with kind eyes and a rather tired smile. One is struggling with a page of arithmetic, another is constructing a tower out of books, and the third is earnestly explaining why his homework was eaten by a goat.\n\n\"Well, that is unfortunate,\" the young woman says, apparently taking the goat's involvement quite seriously. She looks up as you approach. \"Oh, hello Anotnio! I'm Molly, you remember? Are we being too loud? We can move somewhere else.\"\n\nYou assure her that you aren't here to complain. Relieved, she explains that the children come from families in the nearby village, and that she helps them with their lessons in the evenings. \"Some of them can't afford proper schooling. It's only a little thing, really.\" She glances at the growing tower of books. \"Though it's becoming rather more than a little thing. I have my own studies to keep up with, and there are more children coming every week.\"\n\nThe tower collapses with a magnificent thud. Molly closes her eyes for a moment, then patiently begins gathering the books.\n\n\"I've been thinking I should find someone to help. A fellow student, perhaps. I'd pay them, of course. It wouldn't be fair otherwise.\" She smiles at you. \"You wouldn't happen to know anyone who might be interested?\"",
+    "triggers": [
+      {
+        "triggerType": "known_traits",
+        "parameters": {
+          "characterKey": "molly",
+          "count": 1
+        }
+      },
+      {
+        "triggerType": "known_traits",
+        "parameters": {
+          "characterKey": "emma",
+          "count": 1
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "evening"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Offer your services",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Well, I could help,\" you suggest.\n\nMolly brightens immediately. \"Really? Oh, that would be wonderful! Are you good with children?\"\n\nBefore you can answer, the smallest boy looks you up and down. \"Do you know your multiplication tables?\"\n\nAn interview. Already.\n\nMolly gives you an apologetic smile. \"They're very thorough.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "get_job",
+            "parameters": {
+              "job": {
+                "jobType": "mentoring",
+                "name": "Library Mentoring",
+                "description": "Help younger students at the library under Molly's guidance.",
+                "payPerActivity": 10,
+                "employerKey": "molly",
+                "placeKey": "library",
+                "schedule": {
+                  "recurrence": {
+                    "maxCount": 12,
+                    "daysOfWeek": [
+                      2
+                    ],
+                    "period": "evening"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_tutor_partner"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Suggest Emma Delamain",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Actually, I know someone who might be perfect. Emma Delamain. She's brilliant, very serious about her studies, and I think she'd make an excellent teacher. Just, err... Don't tell her I said that.\"\n\n\"Emma Delamain?\" Molly repeats thoughtfully. \"I don't think we've met. Do you think she'd be interested?\"\n\nYou admit that you haven't asked her.\n\n\"Well, perhaps I could speak to her sometime.\" Molly smiles. \"Thank you, Antonio. That's very kind of you.\"\n\nFrom beneath the table, a small voice announces that the goat has eaten another assignment."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_emma_suggested",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Wish her luck",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"It sounds like a wonderful thing you're doing. I hope you find someone to help.\"\n\n\"Thank you.\" Molly's smile is warm, if a little weary. \"They're good children, really. Even when they aren't being especially good.\"\n\nOne of the children proudly presents her with a drawing of a dragon. It has six legs, three heads, and what appears to be a very large moustache.\n\n\"Oh, that's lovely!\" she says, with complete sincerity."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "title": "The Little Scholars",
+    "characterArc": "molly",
+    "emotion": "happy",
+    "image": "the_little_scholars.jpg",
+    "imageSize": "large",
+    "effects": [
+      {
+        "type": "move",
+        "parameters": {
+          "placeKey": "library",
+          "characterKeys": [
+            "player",
+            "molly"
+          ]
+        }
+      },
+      {
+        "type": "add_known_trait",
+        "parameters": {
+          "characterKey": "molly",
+          "title": "Village tutor",
+          "description": "Molly volunteers to tutor children from poor families in the nearby village. She is kind, patient, and increasingly overwhelmed by the work."
+        }
+      },
+      {
+        "type": "add_story_tag",
+        "parameters": {
+          "tag": "molly_tutoring",
+          "amount": 1
+        }
+      }
+    ]
+  },
+  {
     "key": "conjuration-1",
     "text": "This is an artificery class. Here, we'll learn how to create new cards. Conjuration consists in creating a new card from scratch. Try it!",
     "triggers": [
@@ -1227,7 +1420,7 @@
             "type": "add_relation_tag",
             "parameters": {
               "characterKey": "emma",
-              "relationTag": "Legs like that should be forbidden by law!"
+              "relationTag": "You are under Emma's spell"
             }
           }
         ]
@@ -1314,7 +1507,7 @@
             "triggerType": "relation_tag",
             "parameters": {
               "characterKey": "emma",
-              "relationTag": "Legs like that should be forbidden by law!"
+              "relationTag": "You are under Emma's spell"
             }
           }
         ],
@@ -1368,7 +1561,7 @@
                 "triggerType": "relation_tag",
                 "parameters": {
                   "characterKey": "emma",
-                  "relationTag": "Legs like that should be forbidden by law!"
+                  "relationTag": "You are under Emma's spell"
                 }
               }
             ],
@@ -1555,7 +1748,7 @@
                 "triggerType": "relation_tag",
                 "parameters": {
                   "characterKey": "emma",
-                  "relationTag": "Legs like that should be forbidden by law!"
+                  "relationTag": "You are under Emma's spell"
                 }
               }
             ],
@@ -1643,7 +1836,7 @@
             "triggerType": "relation_tag",
             "parameters": {
               "characterKey": "emma",
-              "relationTag": "Legs like that should be forbidden by law!"
+              "relationTag": "You are under Emma's spell"
             }
           }
         ],
@@ -1693,6 +1886,776 @@
     "characterArc": "emma",
     "image": "emma_ballet_incident.jpg",
     "imageSize": "large"
+  },
+  {
+    "key": "emma_league_victory",
+    "title": "League Champion",
+    "text": "The applause has barely died down when Emma approaches you, a glass of sparkling wine in hand.\n\n\"Well, well. Antonio Fibonacci, league champion. I suppose I'll have to start taking you seriously.\"\n\nHer teasing smile gives way to something more sincere.\n\n\"Congratulations, Antonio. Truly. You've earned this. Winning a match is one thing, but maintaining that level of play throughout an entire season? That's quite an achievement.\"\n\nShe raises her glass in your honor.",
+    "triggers": [
+      {
+        "triggerType": "leagues_won",
+        "parameters": {
+          "characterKey": "player",
+          "count": 1
+        }
+      },
+      {
+        "triggerType": "activity_type",
+        "parameters": {
+          "activityType": "league_ceremony"
+        }
+      }
+    ],
+    "effects": [
+      {
+        "type": "change_relation",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "respect",
+          "amount": 3
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept graciously",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Thank you, Emma. That means a lot, coming from you.\"\n\nHer expression softens into a warm smile.\n\n\"Don't get too sentimental, Fibonacci. I'm still planning to take that title from you next season.\"\n\nShe touches her glass to yours.\n\n\"But tonight, it's yours. Enjoy it.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "A little friendly provocation",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Thank you, Emma. And don't worry, I'll try to leave a few victories for the rest of you next season.\"\n\nEmma raises an eyebrow.\n\n\"How magnanimous. Shall I inform the Academy that its new champion has generously agreed to let us participate?\"\n\n\"Only seems fair.\"\n\nShe laughs, shaking her head.\n\n\"Enjoy your reign, Fibonacci. I'll be the first to celebrate when it ends.\"\n\n\"Celebrate?\"\n\n\"Extravagantly. I may even commission a commemorative plaque.\"\n\nShe raises her glass again, her eyes sparkling with amusement."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "emma"
+  },
+  {
+    "key": "emma_tuition_problem",
+    "title": "An Unexpected Debt",
+    "text": "You encounter Emma in a quiet corridor of the Academy, standing by a window with a letter in her hands. She seems unusually still, her eyes fixed on the page. As you approach, she hastily folds the letter and slips it into her pocket. By the time she turns toward you, her familiar composure has almost returned.\n\n\"Antonio. What a pleasant surprise.\" Her smile is perfectly polite, and almost perfectly convincing.\n\nYou ask whether something is wrong.\n\n\"Nothing worth troubling you with.\" She looks away, then lets out a quiet sigh. \"Oh, very well. It seems my bank has developed an exciting new interpretation of our agreement. One in which I owe them rather a lot of money, rather sooner than expected.\"\n\nShe attempts a dismissive smile, but it doesn't quite work. \"I borrowed the money to pay my tuition. I've been working towards a place here for years, and I thought I had everything arranged.\" She pauses, looking through the window at the Academy grounds. \"If I cannot meet their demand, I may have to leave.\"\n\nFor a moment, she seems very far away. Then she straightens her shoulders.\n\n\"Well. I've faced worse difficulties.\" Her voice regains some of its customary firmness. \"I'll find a solution. I always do.\"",
+    "triggers": [
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "molly_tutoring",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "known_traits",
+        "parameters": {
+          "characterKey": "emma",
+          "count": 2
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "evening"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "effects": [
+      {
+        "type": "add_known_trait",
+        "parameters": {
+          "characterKey": "emma",
+          "title": "Academy education financed through a loan",
+          "description": "Emma's Academy education is financed through a loan. Her family's circumstances have made her education difficult to afford, and remaining at the Academy is extremely important to her."
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Offer to lend her the money",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I have some savings,\" you say. \"Not much, but perhaps enough to help you through this.\"\n\nEmma looks at you, genuinely startled.\n\n\"Antonio, no. Absolutely not.\"\n\nYou insist that you're serious.\n\n\"I can see that.\" Her expression softens. \"And I can also see that you're hardly in a position to throw money around. You worked for your place here too, didn't you?\"\n\nShe hesitates, evidently searching for the right words.\n\n\"That's an extraordinarily generous offer. And an extraordinarily foolish one.\" A faint smile appears. \"Please don't make me choose between accepting your kindness and calling you an idiot.\"\n\nShe reaches out and briefly squeezes your arm.\n\n\"Thank you. Truly. But this is my problem to solve.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 2
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_offered_loan"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Suggest Molly's tutoring work",
+        "triggers": [
+          {
+            "triggerType": "story_tag",
+            "parameters": {
+              "tag": "molly_emma_suggested",
+              "value": 1
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Actually, I might have a solution. Molly is looking for someone to tutor children from the village. It's paid work, and you'd be perfect for it.\"\n\nEmma considers this. \"Molly? Yes, I know about her little project. But why me?\"\n\n\"Why you? Emma, you're probably the brightest student in the Academy. You understand things in an afternoon that take the rest of us weeks. You're disciplined, articulate, extraordinarily well-read, and you have this remarkable ability to—\"\n\nYou stop.\n\nEmma is looking at you with an expression of delighted fascination. One eyebrow rises slowly.\n\n\"Please, don't stop on my account. I was particularly enjoying the part about my extraordinary abilities.\"\n\n\"Yes, well. I meant that you're qualified for the position.\"\n\n\"Naturally.\" Her smile grows. \"Please continue. I believe you were about to mention my devastating intellect.\"\n\nYou decide that the less you say, the better.\n\nFortunately, Emma's attention returns to the opportunity itself. \"Actually, it's a wonderful idea. I could arrange the hours around my studies, and Molly would certainly be reasonable about the pay. Why didn't I think of this before?\"\n\nShe's already halfway down the corridor when she suddenly stops, turns around, and hurries back.\n\n\"Antonio.\"\n\nShe takes your hand in both of hers and looks you directly in the eyes. The teasing expression has vanished, replaced by something unusually earnest.\n\n\"Thank you. Truly.\"\n\nFor a brief moment, neither of you speaks. Then she releases your hand, gives you a brilliant smile, and rushes off in search of Molly.\n\nYou suspect the subject of your little speech has not been forgotten. Not remotely."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "love",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_tutoring_referral"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Offer to examine the loan agreement",
+        "attributeCheck": {
+          "attribute": "intelligence",
+          "difficulty": "hard",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "\"Wait. You said the bank is demanding payment earlier than agreed. Can they actually do that?\"\n\nEmma raises an eyebrow. \"I had assumed they could. Banks tend to be rather confident about these things.\"\n\n\"Let me see the agreement.\"\n\nShe hesitates, then produces the folded letter and a much thicker bundle of documents from her bag. Of course she has kept everything, meticulously organized.\n\n\"Very well. But if you're about to explain financial contracts to me, Fibonacci, you'd better be certain of your facts.\"\n\nYou find an empty study room and spread the papers across a table. What begins as a quick examination becomes an increasingly elaborate investigation. Emma proves to be a formidable partner, dissecting obscure clauses and cross-referencing regulations with merciless precision. You contribute your own observations, and the occasional suggestion that bankers ought to be forbidden from writing sentences longer than the average sermon.\n\nHours pass. Candles burn low. At some point, the two of you become so absorbed in arguing over the interpretation of a particularly troublesome paragraph that neither notices the library closing.\n\nBy the time the first pale light of dawn reaches the windows, you've exhausted a considerable supply of ink, several volumes of commercial law, and most of your ability to form coherent sentences.\n\nAnd then, finally, you see it.\n\n\"Emma. Look at this.\"\n\nThe bank has invoked a clause permitting early repayment, but Emma's original agreement requires formal notice well in advance. The letter she's received doesn't come close to satisfying that requirement.\n\nEmma leans over your shoulder to examine the passage. She reads it once, then again, very slowly.\n\n\"Oh, that's beautiful.\"\n\nShe takes the document from your hands, checks the relevant references, and suddenly laughs.\n\n\"They can't do it! Not yet, at least. They have to honor the original schedule!\" She looks at you with unconcealed delight. \"Antonio, you magnificent creature!\"\n\nYou lean back in your chair, feeling rather pleased with yourself.\n\n\"I must say, Emma, I never imagined you'd invent such elaborate excuses to spend an entire night with me. I only hope next time we can find something more romantic than financial law.\"\n\nShe looks at you over the documents, one eyebrow raised.\n\n\"Careful, Fibonacci. I might take that as an invitation.\"\n\n\"Would that be so terrible?\"\n\n\"Not at all. Next time, I'll bring the municipal tax code.\"\n\nShe smiles sweetly, then returns to her papers, leaving you to contemplate the dangers of flirting with a woman who always insists on having the last word."
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "respect",
+                "amount": 2
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "rivalry",
+                "amount": 1
+              }
+            },
+            {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_contract_saved"
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "\"Wait. You said the bank is demanding payment earlier than agreed. Can they actually do that?\"\n\nEmma raises an eyebrow. \"I had assumed they could. Banks tend to be rather confident about these things.\"\n\n\"Let me see the agreement.\"\n\nShe hesitates, then produces the folded letter and a much thicker bundle of documents from her bag. Of course she has kept everything, meticulously organized.\n\n\"Very well. But if you're about to explain financial contracts to me, Fibonacci, you'd better be certain of your facts.\"\n\nYou find an empty study room and spread the papers across a table. What begins as a quick examination becomes an increasingly elaborate investigation. Emma proves to be a formidable partner, dissecting obscure clauses and cross-referencing regulations with merciless precision. You contribute your own observations, and the occasional suggestion that bankers ought to be forbidden from writing sentences longer than the average sermon.\n\nHours pass. Candles burn low. At some point, the two of you become so absorbed in arguing over the interpretation of a particularly troublesome paragraph that neither notices the library closing.\n\nBy the time the first pale light of dawn reaches the windows, you've exhausted a considerable supply of ink, several volumes of commercial law, and most of your ability to form coherent sentences.\n\nDespite your best efforts, the relevant clauses prove stubbornly unhelpful. Emma finds several promising passages, but each is defeated by another, invariably written in language that seems designed to discourage the human race from reading.\n\nBy dawn, the table is buried under documents, your eyes are aching, and the bank remains legally triumphant.\n\nEmma closes the last book with a weary sigh.\n\n\"Well. I suppose we have established that the bank employs exceptionally competent lawyers.\"\n\n\"Perhaps we should have studied law instead of magic.\"\n\n\"Don't be ridiculous. Magic is considerably more honest.\"\n\nShe smiles, then looks at the mountain of papers between you.\n\n\"Thank you, Antonio. You didn't have to spend your entire night on this.\"\n\n\"Well, next time you invite me to spend the night with you, I hope you'll have something more entertaining planned.\"\n\nEmma gives you a tired but genuine laugh.\n\n\"I'll see what I can arrange. Perhaps a detailed examination of property taxation.\"\n\nAt least her sense of humor has survived the ordeal."
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            },
+            {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_contract_attempted"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "characterArc": "emma",
+    "image": "emma_tuition_problem.jpg",
+    "imageSize": "medium"
+  },
+  {
+    "key": "emma_tourney_kickstart",
+    "text": "Professor Glützenbaum enters the classroom with a letter in his hand and an expression suggesting that someone has committed a grave offense against civilization. He marches to his lectern, waits for silence, and adjusts his spectacles.\n\n\"Students. I have received an invitation from the Royal College of Artificery of Falkenstein. They are organizing a competition for first-year students, in which each participating Academy will send two representatives to demonstrate their talents in card crafting and tournament play.\"\n\nA murmur of excitement runs through the room. Glützenbaum raises his hand.\n\n\"Allow me to read their invitation.\"\n\nHe clears his throat. \"'It would give us the greatest pleasure to welcome representatives of your venerable institution, whose dedication to preserving the traditional methods of artificery is widely appreciated.'\"\n\nHe pauses. His left eyebrow twitches.\n\n\"'While we recognize that certain provincial academies may lack access to the most recent advances in our discipline, we firmly believe that exposure to the standards of our leading institutions can only benefit their promising young scholars.'\"\n\nThe room goes very quiet.\n\n\"'We therefore warmly encourage your participation, regardless of the eventual results, in the spirit of academic fellowship and mutual enrichment.'\"\n\nGlützenbaum lowers the letter.\n\n\"**Regardless of the eventual results.**\"\n\nHe lets the words hang in the air.\n\n\"These pompous, silk-robed, overfunded—\" He stops, straightens his spectacles, and takes a breath. \"These esteemed colleagues appear to have forgotten that some of the finest artificers in the history of the discipline received their education within these very walls!\"\n\nThe classroom erupts. Molly, usually so reserved, is on her feet, punching the air with both fists and cheering enthusiastically. Ousmane leans back in his chair, slowly twirling his magnificent moustache with the expression of a general contemplating a particularly satisfying campaign. Farid has produced a small knife and is flipping it expertly between his fingers, apparently considering the matter settled in favor of hostilities.\n\nSomeone at the back of the room shouts, \"We'll show them!\" Several others take up the cry. Glützenbaum makes a token attempt to restore order, but his heart is plainly not in it.\n\n\"Quite right!\" he thunders, then remembers himself. \"That is to say, we shall respond with the utmost dignity, professionalism, and devastating academic superiority!\"\n\nHe strikes the lectern with his palm. A small cloud of chalk dust rises dramatically.\n\n\"Now! Each institution must appoint a captain, who will select a second student. I have given this matter considerable thought, and our captain shall be Miss Emma Delamain.\"\n\nThere is an enthusiastic round of applause. Emma rises gracefully from her seat, accepting the nomination with a composed smile that nevertheless betrays a certain fierce satisfaction.\n\n\"Thank you, Professor. I shall endeavor to make the Academy proud.\"\n\n\"I have every confidence that you will, Miss Delamain. And whom would you choose as your partner?\"\n\n\"Antonio Fibonacci.\"\n\nShe answers without a moment's hesitation. You look up. A few heads turn in your direction.\n\nGlützenbaum nods thoughtfully. \"An interesting choice. Are you quite certain?\"\n\n\"Entirely.\"\n\nShe turns toward you, her expression now wearing that familiar mixture of amusement and challenge.\n\n\"Unless, of course, Antonio has suddenly developed an objection to winning.\"\n\nYou have scarcely begun to formulate a response when Glützenbaum claps his hands.\n\n\"Excellent! Delamain and Fibonacci shall represent us. You have one week to prepare. I expect discipline, ingenuity, and above all, a performance that will make our distinguished colleagues regret having learned to write letters!\"\n\nThe room bursts into applause once more. Ousmane rises to shake your hand with great solemnity. Molly beams at you from across the classroom. Farid gives you an approving nod and, mercifully, puts away his knife.\n\nAs the students begin to disperse, Emma approaches you with the purposeful stride of someone whose campaign has already begun.\n\n\"Tomorrow evening. My room. Bring your best deck, your crafting notes, and any ideas you consider worth defending. We have a great deal of work ahead of us.\"\n\n\"Do I get any say in this?\"\n\n\"Certainly. You may choose whether to arrive at seven or disappoint me.\"\n\nShe gives you a wicked little smile.\n\n\"And Antonio? Do try to get some rest tonight. I intend to be extremely demanding.\"\n\nWith that, she sweeps out of the classroom, leaving you to contemplate the peculiar honor of having been recruited into Emma Delamain's personal war against the Royal College of Falkenstein.",
+    "triggers": [
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "respect",
+          "value": 5
+        }
+      },
+      {
+        "triggerType": "activity_type",
+        "parameters": {
+          "activityType": "class"
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "morning"
+        }
+      }
+    ],
+    "optionTemplates": [],
+    "title": "The Challenge",
+    "characterArc": "emma",
+    "image": "emma_tourney_kickstart.jpg",
+    "imageSize": "large",
+    "effects": [
+      {
+        "type": "change_relation",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "respect",
+          "amount": 1
+        }
+      },
+      {
+        "type": "change_relation",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "friendship",
+          "amount": 1
+        }
+      },
+      {
+        "type": "add_story_tag",
+        "parameters": {
+          "tag": "emma_tourney_partner_selected"
+        }
+      },
+      {
+        "type": "schedule_activity",
+        "parameters": {
+          "activity": {
+            "type": "event",
+            "participants": [
+              "player",
+              "emma"
+            ],
+            "placeKey": "emma-room",
+            "eventId": "emma_tourney_training"
+          },
+          "schedule": {
+            "date": {
+              "day": 1,
+              "period": "evening"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "key": "emma_tourney_training",
+    "text": "Emma's lodgings occupy a modest room on the upper floor of a rustic village inn. A narrow bed stands against one wall, a battered armchair occupies the other, and nearly every remaining surface has been conquered by books. A small kettle steams beside two cups on the desk. Apparently, your arrival has been anticipated with military precision.\n\n\"Seven o'clock. Excellent.\" Emma opens the door wider. \"I was beginning to wonder whether I'd need to send a search party.\"\n\n{{ greeting }}\n\nShe leads you to the desk, where two decks lie beside a rather alarming collection of tournament regulations, strategic diagrams, and handwritten notes. Evidently, Emma has not spent the afternoon idle.\n\n\"We have a few evenings before Falkenheim, and a great deal to accomplish. Unfortunately, time is a resource even I haven't yet learned to manufacture.\" She points to two piles of documents. \"So we must choose our priorities.\"\n\n\"We could study our opponents, learn how they play, and prepare something unpleasant for them. Or we could concentrate on our own performance and spend tonight practicing against each other.\"\n\nShe smiles, with the dangerous enthusiasm of someone who considers both possibilities excellent entertainment.\n\n\"Well, partner? How shall we spend our evening?\"",
+    "triggers": [
+      {
+        "triggerType": "scheduled_activity",
+        "parameters": {}
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Study the opposition",
+        "nextNode": "investigate_opposition",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"If we know how they play, we can prepare a counter-strategy. Why fight them on their terms?\"\n\n\"An excellent principle.\" Emma considers the tournament invitation again. \"And I believe I know where we might begin.\"\n\nHer expression brightens with a rather mischievous idea.\n\n\"Elsa Falkenstein.\""
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_tourney_studied_opposition"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Practice against each other",
+        "nextNode": "practice_session",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"We know our own decks better than theirs. Let's put that advantage to work. A few practice games should reveal where we need improvement.\"\n\n\"Splendid.\" Emma pushes the documents aside and begins arranging her cards.\n\n\"Although I must warn you, Antonio, I have no intention of going easy on you merely because we're on the same team.\"\n\nYou wouldn't dream of asking."
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_tourney_chose_practice"
+            }
+          }
+        ]
+      }
+    ],
+    "title": "A Question of Strategy",
+    "characterArc": "emma",
+    "emotion": "happy",
+    "image": "emma_tourney_training.jpg",
+    "imageSize": "large",
+    "passages": {
+      "greeting": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "You are under Emma's spell"
+                }
+              }
+            ],
+            "text": "She catches you glancing around the room and raises an eyebrow. \"Yes, Fibonacci, you've been invited into my bedroom. Do try not to faint. It's principally a place of study.\""
+          }
+        ],
+        "fallback": "\"Make yourself comfortable. Within reason, of course. I'm afraid I haven't acquired a second armchair, so you'll have to settle for the bed or that remarkably uncomfortable stool.\""
+      }
+    },
+    "nodes": {
+      "investigate_opposition": {
+        "text": "Emma explains that Elsa Falkenstein comes from Falkenheim itself, and that her older brother is widely regarded as the Royal College's most promising first-year student.\n\n\"He's almost certainly their captain. And Elsa knows him rather well, as siblings unfortunately tend to.\"\n\n\"Then we should ask her.\"\n\n\"Yes.\" Emma purses her lips. \"There's just one small complication.\"\n\nShe reminds you of that unfortunate incident at the ballet, when Elsa attempted to make a spectacle of her and ended up providing the entertainment herself.\n\n\"I doubt she's forgiven me. Which is rather unfair, since I wasn't the one who arranged the whole thing.\"\n\nA short walk brings you to Elsa's lodgings, in an inn whose polished marble entrance and liveried servants suggest an establishment considerably more prosperous than Emma's. Elsa receives you in a beautifully furnished sitting room, where she listens to your explanation with growing amusement.\n\n\"So. The illustrious Emma Delamain has come to ask for _my_ assistance.\"\n\n\"Information, Elsa. Not divine intervention.\"\n\n\"How disappointing. I was rather looking forward to the latter.\"\n\nElsa settles into her upholstered chair, crossing one leg elegantly over the other.\n\n\"My brother is an exceptional player. I know his preferred cards, his strategies, even his latest decklist.\" She smiles. \"But why, exactly, should I share any of that with you?\"",
+        "optionTemplates": [
+          {
+            "text": "Appeal to Elsa's school pride",
+            "attributeCheck": {
+              "attribute": "charisma",
+              "difficulty": "extreme",
+              "successEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "\"Elsa, surely you'd rather see your own Academy win than have Falkenheim boast about humiliating it. Imagine having to listen to your brother recount his triumph every time you visit home.\"\n\nElsa's expression changes.\n\n\"You clearly haven't met my brother. He'd mention it at breakfast, lunch, dinner, and probably in his sleep.\"\n\nShe considers the matter for another moment, then opens a drawer and produces a carefully folded sheet.\n\n\"Very well. Purely in the interest of preserving my future domestic tranquility. This is the decklist he sent me last week.\"\n\nEmma accepts it with evident satisfaction.\n\n\"How very generous of you, Elsa.\"\n\n\"Don't make me regret it.\""
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "emma_tourney_opponent_intel"
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "elsa",
+                    "relationParameter": "friendship",
+                    "amount": 1
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "emma",
+                    "relationParameter": "friendship",
+                    "amount": 1
+                  }
+                }
+              ],
+              "failureEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "\"Elsa, surely you'd rather see your own Academy win than have Falkenheim boast about humiliating it.\"\n\n\"Of course I would.\" Elsa smiles pleasantly. \"And I shall be cheering for you with tremendous enthusiasm.\"\n\n\"And the information?\"\n\n\"Oh, I couldn't possibly betray my dear brother's confidence. Family loyalty, you understand.\"\n\nEmma's jaw tightens. For a moment, you think she's about to deliver a reply that will end the conversation rather spectacularly.\n\nInstead, she takes a breath.\n\n\"Very well, Elsa. What would you want in exchange?\"\n\nElsa sits up, suddenly interested.\n\n\"Oh?\"\n\n\"A favor. From both of us. Something reasonable, to be agreed upon when you need it.\"\n\nElsa studies the two of you in delighted silence. Her gaze travels from Emma to you and back again, as though assessing a pair of newly acquired servants.\n\n\"How _interesting_.\" She taps a finger against her lips. \"The brilliant Emma Delamain and her promising young associate, both at my disposal. I must say, the possibilities are rather intoxicating.\"\n\n\"Within reason,\" Emma repeats firmly.\n\n\"Naturally, darling. I would never dream of asking anything unreasonable.\"\n\nSomething about the way she says this makes you profoundly uneasy.\n\nElsa retrieves a folded decklist from her desk and hands it to Emma.\n\n\"There you are. Now, I shall have to think very carefully about what to ask of you.\"\n\nAs you leave the inn, you turn to Emma.\n\n\"Are you sure this was a good idea? What do you think she's going to want?\"\n\n\"I haven't the faintest idea.\"\n\n\"That doesn't worry you?\"\n\n\"Not particularly. We've obtained what we came for.\"\n\nShe unfolds the decklist and begins studying it as she walks.\n\n\"Honestly, Antonio, do try to concentrate on the important things.\""
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "emma_tourney_opponent_intel"
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "elsa_favor_owed"
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "emma",
+                    "relationParameter": "friendship",
+                    "amount": 1
+                  }
+                }
+              ],
+              "successNode": "training_conclusion",
+              "failureNode": "training_conclusion"
+            }
+          },
+          {
+            "text": "Try to outwit Elsa",
+            "attributeCheck": {
+              "attribute": "intelligence",
+              "difficulty": "extreme",
+              "successEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "\"Your brother must be an excellent strategist,\" you remark. \"I imagine he's already prepared something to counter our Academy's usual defensive decks.\"\n\nElsa gives a dismissive little laugh.\n\n\"Defensive decks? Please. He'd overwhelm those before they could establish themselves. His sacrificial combinations are quite impossible to—\"\n\nShe stops.\n\nYou smile.\n\nEmma's expression becomes one of profound appreciation.\n\n\"Elsa,\" she says gently, \"I believe Antonio was asking a question.\"\n\nElsa stares at you both.\n\n\"I despise clever people.\"\n\n\"An unfortunate prejudice,\" Emma replies, \"particularly at an Academy.\"\n\nYou continue the conversation, carefully encouraging Elsa to correct your increasingly inaccurate guesses about her brother's strategy. Eventually, exasperated by your apparent ignorance, she snatches a sheet of paper from her desk.\n\n\"Oh, for heaven's sake. Here! This is his decklist. Perhaps you'll understand what I'm talking about when you see it.\"\n\nEmma accepts the document with a gracious smile.\n\n\"How very instructive. Thank you, Elsa.\"\n\nIt is only as you rise to leave that Elsa seems to reconsider the entire conversation.\n\n\"Wait a moment...\""
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "emma_tourney_opponent_intel"
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "emma",
+                    "relationParameter": "respect",
+                    "amount": 1
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "emma",
+                    "relationParameter": "rivalry",
+                    "amount": 1
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "elsa",
+                    "relationParameter": "rivalry",
+                    "amount": 1
+                  }
+                }
+              ],
+              "failureEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "You begin probing Elsa's knowledge with what you consider a series of subtle questions.\n\nUnfortunately, Elsa proves rather less susceptible to subtlety than you'd hoped.\n\n\"Antonio, darling, if you want to know my brother's strategy, you could simply ask.\" She smiles. \"I would still refuse, naturally, but we'd save ourselves so much time.\"\n\nEmma hides a smile behind her hand.\n\n\"An admirable attempt, Fibonacci. Perhaps we should try a less elaborate approach.\"\n\nShe turns to Elsa, her expression becoming unusually serious.\n\n\"All right. What would it take for you to give us that decklist?\"\n\nElsa arches an eyebrow.\n\n\"Are you offering to beg?\"\n\n\"Don't be absurd. I'm offering you a favor. From both of us, whenever you might need it.\"\n\nYou turn toward Emma, rather alarmed by the sudden generosity of this proposal.\n\nElsa, meanwhile, looks as though someone has just presented her with a particularly magnificent birthday gift.\n\n\"Both of you?\" She studies you in turn, her smile widening. \"My dear Emma, I had no idea you could be so accommodating.\"\n\n\"Do you accept or not?\"\n\n\"Oh, absolutely.\"\n\nShe opens a drawer, retrieves a folded sheet, and hands it to Emma with considerable ceremony.\n\n\"One complete decklist, as requested. And two exceptionally talented Academy students owing me a favor. What a delightful afternoon.\"\n\nOn the way back, you finally manage to interrupt Emma's enthusiastic examination of the document.\n\n\"Emma. About that favor...\"\n\n\"Yes?\"\n\n\"We have absolutely no idea what Elsa is going to ask us to do.\"\n\n\"No.\"\n\n\"And you don't find that concerning?\"\n\nEmma looks up at you, apparently surprised.\n\n\"Antonio, we have the decklist. We can worry about everything else after we've won.\"\n\nYou are beginning to suspect that Emma Delamain's attitude toward risk depends rather heavily on whether she considers the objective sufficiently glorious."
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "emma_tourney_opponent_intel"
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "elsa_favor_owed"
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "emma",
+                    "relationParameter": "rivalry",
+                    "amount": 1
+                  }
+                }
+              ],
+              "successNode": "training_conclusion",
+              "failureNode": "training_conclusion"
+            }
+          }
+        ],
+        "title": "Know Your Enemy",
+        "emotion": "amused",
+        "image": "investigate_opposition",
+        "imageSize": "large"
+      },
+      "practice_session": {
+        "text": "The first game begins innocently enough.\n\nWithin minutes, Emma is leaning over the table, studying your cards with the concentration of a chess master contemplating the invasion of a small country. She makes no secret of her pleasure whenever she finds a weakness in your defenses, and considerably less of her displeasure when you exploit one of hers.\n\nOne game becomes three. Then five. You experiment with unfamiliar openings, exchange decks to understand each other's strengths, and argue over the merits of various strategies with increasing enthusiasm.\n\nAt some point, Emma forgets to pour the tea. At another, she forgets to drink it.\n\nBy the time the innkeeper knocks to ask whether you intend to order supper, both of you have become quite determined to win the next game.",
+        "optionTemplates": [
+          {
+            "text": "Play one final, decisive game",
+            "attributeCheck": {
+              "attribute": "intelligence",
+              "difficulty": "hard",
+              "successEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "The final game is a masterpiece of accumulated cunning. Emma anticipates your opening, you anticipate her response, and the two of you spend several turns laying traps for someone who is doing precisely the same thing.\n\nThen you spot an opportunity.\n\nEmma studies the board, narrows her eyes, and slowly looks up at you.\n\n\"Oh, that is _vile_.\"\n\nYou make your move.\n\nShe stares at the cards for another moment, then throws back her head and laughs.\n\n\"Well played, Antonio. Infuriatingly well played.\"\n\n\"I believe that's what they call a compliment.\"\n\n\"Don't become accustomed to it. I intend to rectify the situation at the earliest opportunity.\""
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "emma_tourney_practice_antonio_won"
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "emma",
+                    "relationParameter": "respect",
+                    "amount": 1
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "emma",
+                    "relationParameter": "rivalry",
+                    "amount": 1
+                  }
+                }
+              ],
+              "failureEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "For a glorious moment, you believe you have her cornered.\n\nThen Emma plays a card you had entirely forgotten was in her deck.\n\nYou examine the board. You examine your hand. You examine the board again, in the faint hope that one of its features might have changed out of courtesy.\n\n\"Checkmate,\" Emma announces.\n\n\"Wrong game.\"\n\n\"An insignificant technicality.\" She leans back with a triumphant smile. \"Would you like me to explain where you went wrong?\"\n\n\"Would you enjoy that?\"\n\n\"Immensely.\"\n\nShe does, however, spend the next several minutes explaining her winning combination, and together you identify several adjustments that could strengthen your tournament decks."
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "emma_tourney_practice_emma_won"
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "emma",
+                    "relationParameter": "friendship",
+                    "amount": 1
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "emma",
+                    "relationParameter": "rivalry",
+                    "amount": 1
+                  }
+                }
+              ],
+              "successNode": "training_conclusion",
+              "failureNode": "training_conclusion"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_tourney_practiced"
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_tourney_emma_prepared"
+            }
+          }
+        ],
+        "title": "Practice Makes Perfect",
+        "emotion": "happy",
+        "image": "practice_session",
+        "imageSize": "large"
+      },
+      "training_conclusion": {
+        "text": "{{ preparation_recap }}\n\nIt is now quite late. The village has grown quiet outside the windows, and the innkeeper has extinguished most of the lights downstairs. Emma tidies the table with practiced efficiency, gathering the scattered notes and cards into neat piles.\n\n\"Well. I think we've made excellent progress.\"\n\nShe pours the last of the tea, discovers that it is cold, and drinks it anyway.\n\n\"There's one final question we should settle.\"\n\nShe retrieves the tournament regulations.\n\n\"Two matches. I'll face Falkenheim's captain, and you'll face their second. If we win one each, there will be a deciding match. We must nominate which of us will play it.\"\n\n{{ finalist_preference }}\n\nShe sets down the regulations and looks at you.\n\n\"What do you think, Antonio? Which of us should have the honor?\"",
+        "optionTemplates": [
+          {
+            "text": "Volunteer for the deciding match",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"I'll take it. Whatever happens in the first two matches, I want to be the one who settles the score.\"\n\nEmma studies you for a moment, then smiles.\n\n\"Very well. I hope you appreciate the magnitude of the responsibility you've just volunteered to assume.\"\n\n\"I thought you wanted someone ambitious.\"\n\n\"I do. But ambition without competence is merely a particularly entertaining form of self-destruction.\"\n\nShe extends her hand.\n\n\"Don't disappoint me, Fibonacci.\"\n\nYou shake it.\n\n\"Wouldn't dream of it.\""
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_finalist_antonio"
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "respect",
+                  "amount": 1
+                }
+              }
+            ]
+          },
+          {
+            "text": "Let Emma take the deciding match",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"You're the captain. And I trust you to handle the final if it comes to that.\"\n\nEmma regards you thoughtfully.\n\n\"How remarkably sensible of you.\"\n\n\"Try not to sound so surprised.\"\n\n\"I'm doing my best.\"\n\nShe smiles, but there's genuine appreciation behind the teasing.\n\n\"Very well. I'll take the deciding match. You concentrate on beating their second, and leave the other one to me.\"\n\nShe offers her hand across the table.\n\n\"Agreed?\"\n\n\"Agreed.\""
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_tourney_finalist_emma"
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              }
+            ]
+          }
+        ],
+        "title": "The Deciding Match",
+        "emotion": "happy",
+        "passages": {
+          "preparation_recap": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "emma_tourney_opponent_intel",
+                      "value": 1
+                    }
+                  }
+                ],
+                "text": "Back in Emma's room, you spread Elsa's precious decklist across the table. It is an intimidating collection of aggressive creatures, sacrificial combinations, and devastating offensive abilities.\n\nEmma studies it in silence, occasionally making a small annotation.\n\n\"Interesting. Very interesting. He clearly favors overwhelming his opponents before they can establish themselves.\"\n\nShe begins arranging cards into groups.\n\n\"Look at these units. Fast, cheap, dangerous... but almost none of them can survive a proper hit.\"\n\nShe sits back, her eyes brightening.\n\n\"Antonio, I think I've found something.\"\n\nShe points to the fragile creatures that form the backbone of the opposing deck.\n\n\"A single powerful defender wouldn't help us. He could simply overwhelm it. But a spell that strikes _every_ enemy unit at once, even for a modest amount of damage...\"\n\nYou look again at the decklist.\n\n\"Would wipe out most of his forces.\"\n\n\"Precisely!\"\n\nEmma smiles with the fierce satisfaction of someone who has just discovered a particularly elegant solution to an unpleasant problem.\n\n\"We need a cheap spell that damages several units simultaneously. Something we can deploy before his offensive gets out of hand.\"\n\nShe takes a fresh sheet of parchment and begins sketching possibilities.\n\n\"I think, Antonio, that we have just discovered what we'll be crafting together.\""
+              },
+              {
+                "triggers": [
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "emma_tourney_practice_antonio_won",
+                      "value": 1
+                    }
+                  }
+                ],
+                "text": "You finish reviewing the evening's games, including your particularly satisfying final victory. Emma is still disputing one of your moves, although her argument has gradually shifted from claiming it was unsound to complaining that she hadn't thought of it first.\n\n\"Some of your combinations were genuinely clever,\" she admits. \"I've been making notes. If I can incorporate a few of those ideas into my own play, Falkenheim may find me a rather unpleasant opponent.\""
+              },
+              {
+                "triggers": [
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "emma_tourney_practice_emma_won",
+                      "value": 1
+                    }
+                  }
+                ],
+                "text": "You finish reviewing the evening's games. Emma has won the final encounter, a fact she has mentioned only three times in the last quarter of an hour.\n\n\"Your defense improved considerably toward the end,\" she observes. \"And you forced me to reconsider several combinations I thought I knew perfectly well.\"\n\nShe smiles.\n\n\"I believe the evening has been most educational. For both of us.\""
+              }
+            ],
+            "fallback": "You finish reviewing your preparation notes together. There is still much to do before the tournament, but at least you now have a clearer idea of what lies ahead."
+          },
+          "finalist_preference": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "leagues_won",
+                    "parameters": {
+                      "characterKey": "player",
+                      "count": 1
+                    }
+                  }
+                ],
+                "text": "\"I've considered it carefully,\" Emma says. \"Given your performance in the last league, I think you ought to take the deciding match.\"\n\nShe delivers this judgment with perfect composure, though you suspect conceding the point has cost her something.\n\n\"Don't look so astonished, Fibonacci. I can recognize superior results when they are placed directly under my nose.\"\n\nShe smiles.\n\n\"Besides, I intend to win my own match. With any luck, you won't be needed.\""
+              }
+            ],
+            "fallback": "\"I propose that I take the deciding match,\" Emma says. \"I've been preparing for this competition rather obsessively, and I believe I'm our strongest choice.\"\n\nShe pauses, then adds more thoughtfully:\n\n\"But you're my partner, not my subordinate. If you see it differently, I'm willing to hear your argument.\""
+          }
+        }
+      }
+    }
   },
   {
     "key": "happy_little_accident",

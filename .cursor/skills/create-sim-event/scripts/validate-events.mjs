@@ -38,7 +38,8 @@ function readModCatalogs() {
 
 function enumValues(source, enumName) {
   const body = source.match(new RegExp(`export enum ${enumName} \\{([^}]*)\\}`))?.[1] ?? '';
-  return [...body.matchAll(/'([^']+)'/g)].map((m) => m[1]);
+  // Single- or double-quoted members (e.g. RelationTag.EmmaSmitten uses ").
+  return [...body.matchAll(/(['"])(.*?)\1/g)].map((m) => m[2]);
 }
 
 function recordKeys(source, recordName) {
@@ -291,6 +292,12 @@ function checkTrigger(where, trigger) {
         errors.push(`${where}: value must be an integer ≥ 1, or -1 for tag absent`);
       }
       break;
+    case 'known_traits':
+      checkOneOf(where, 'characterKey', params.characterKey, npcKeys);
+      if (typeof params.count !== 'number' || !Number.isInteger(params.count) || params.count < 1) {
+        errors.push(`${where}: count must be an integer ≥ 1`);
+      }
+      break;
     case 'scheduled_activity':
       // No parameters: matches when current activity.eventId === this event's key.
       break;
@@ -534,76 +541,52 @@ const allowedEventProps = new Set([
   'imageSize',
   'manualTrigger',
   'passages',
+  'nodes',
 ]);
 
-events.forEach((event, index) => {
-  const where = at(event, index);
-  if (typeof event?.key !== 'string' || !event.key.trim()) {
-    errors.push(`${where}: key is required`);
-  } else if (eventKeys.indexOf(event.key) !== index) {
-    errors.push(`${where}: duplicate key`);
-  }
-  if (typeof event?.text !== 'string' || !event.text.trim()) {
-    errors.push(`${where}: text is required`);
-  }
-  const passageKeys = checkPassages(where, event?.passages);
-  if (typeof event?.text === 'string') {
-    const referenced = [...event.text.matchAll(/\{\{\s*([\w-]+)\s*\}\}/g)].map((match) => match[1]);
-    for (const passageKey of referenced) {
-      if (!passageKeys.has(passageKey)) {
-        errors.push(`${where}: text references unknown passage "${passageKey}"`);
-      }
-    }
-    for (const passageKey of passageKeys) {
-      if (!referenced.includes(passageKey)) {
-        errors.push(`${where}: passage "${passageKey}" is not used in text`);
-      }
-    }
-  }
-  if (event?.title !== undefined) {
-    if (typeof event.title !== 'string' || !event.title.trim()) {
-      errors.push(`${where}: title must be a non-empty string when set`);
-    }
-  }
-  for (const prop of Object.keys(event ?? {})) {
-    if (!allowedEventProps.has(prop)) errors.push(`${where}: unknown property "${prop}"`);
-  }
-  if (event?.characterArc !== undefined) {
-    checkOneOf(where, 'characterArc', event.characterArc, npcKeys);
-  }
-  if (event?.emotion !== undefined) {
-    checkOneOf(where, 'emotion', event.emotion, emotions);
-  }
-  if (event?.image !== undefined) {
-    if (typeof event.image !== 'string' || !event.image.trim()) {
-      errors.push(`${where}: image must be a non-empty string when set`);
-    }
-  }
-  if (event?.manualTrigger !== undefined) {
-    if (typeof event.manualTrigger !== 'string' || !event.manualTrigger.trim()) {
-      errors.push(`${where}: manualTrigger must be a non-empty string when set`);
-    }
-  }
+const allowedNodeProps = new Set([
+  'text',
+  'optionTemplates',
+  'triggers',
+  'effects',
+  'title',
+  'emotion',
+  'image',
+  'imageSize',
+  'passages',
+]);
 
-  if (event?.triggers === undefined) {
-    errors.push(`${where}: triggers is required (use [] for follow-up-only events)`);
-  } else if (!Array.isArray(event.triggers)) {
-    errors.push(`${where}: triggers must be an array`);
-  } else {
-    event.triggers.forEach((trigger, i) => checkTrigger(`${where} trigger[${i}]`, trigger));
-  }
+const imageSizes = ['small', 'medium', 'large'];
 
-  for (const [i, effect] of (event?.effects ?? []).entries()) {
-    checkEffect(`${where} effects[${i}]`, effect);
-  }
+function checkImageSize(where, imageSize) {
+  if (imageSize === undefined) return;
+  checkOneOf(where, 'imageSize', imageSize, imageSizes);
+}
 
-  if (event?.optionTemplates !== undefined && !Array.isArray(event.optionTemplates)) {
+function effectsIncludeFollowUp(effects) {
+  return (effects ?? []).some((effect) => effect?.type === 'follow_up_event');
+}
+
+function checkNodeRef(where, label, value, nodeKeys) {
+  if (value === undefined) return;
+  if (typeof value !== 'string' || !value.trim()) {
+    errors.push(`${where}: ${label} must be a non-empty string when set`);
+    return;
+  }
+  if (!nodeKeys.has(value)) {
+    errors.push(`${where}: ${label} "${value}" does not match a node`);
+  }
+}
+
+function checkBeatOptions(where, options, nodeKeys) {
+  if (options === undefined) return;
+  if (!Array.isArray(options)) {
     errors.push(`${where}: optionTemplates must be an array`);
+    return;
   }
   const attributeKeys = ['dexterity', 'intelligence', 'vitality', 'charisma', 'aura'];
   const difficultyKeys = ['trivial', 'veryeasy', 'easy', 'medium', 'hard', 'extreme', 'impossible'];
-
-  (event?.optionTemplates ?? []).forEach((option, i) => {
+  options.forEach((option, i) => {
     const optionWhere = `${where} option[${i}]`;
     if (typeof option?.text !== 'string' || !option.text.trim()) {
       errors.push(`${optionWhere}: text is required`);
@@ -631,6 +614,7 @@ events.forEach((event, index) => {
     (option?.effects ?? []).forEach((effect, j) =>
       checkEffect(`${optionWhere} effects[${j}]`, effect)
     );
+    checkNodeRef(optionWhere, 'nextNode', option?.nextNode, nodeKeys);
     if (option?.attributeCheck) {
       const check = option.attributeCheck;
       const checkWhere = `${optionWhere} attributeCheck`;
@@ -645,9 +629,164 @@ events.forEach((event, index) => {
         (check.failureEffects ?? []).forEach((effect, j) =>
           checkEffect(`${checkWhere} failureEffects[${j}]`, effect)
         );
+        checkNodeRef(checkWhere, 'successNode', check.successNode, nodeKeys);
+        checkNodeRef(checkWhere, 'failureNode', check.failureNode, nodeKeys);
       }
     }
+    const namedNodes = [
+      option?.nextNode,
+      option?.attributeCheck?.successNode,
+      option?.attributeCheck?.failureNode,
+    ].filter((key) => typeof key === 'string' && key.trim());
+    if (namedNodes.length > 0 && option?.actionTemplate) {
+      errors.push(`${optionWhere}: use either an action template or a next node, not both`);
+    }
+    const followUp =
+      effectsIncludeFollowUp(option?.effects) ||
+      effectsIncludeFollowUp(option?.attributeCheck?.successEffects) ||
+      effectsIncludeFollowUp(option?.attributeCheck?.failureEffects);
+    if (namedNodes.length > 0 && followUp) {
+      errors.push(
+        `${optionWhere}: follow_up_event starts another event; do not also set a next node`
+      );
+    }
   });
+}
+
+function checkTextPassages(where, text, passageKeys) {
+  if (typeof text !== 'string') return;
+  const referenced = [...text.matchAll(/\{\{\s*([\w-]+)\s*\}\}/g)].map((match) => match[1]);
+  for (const passageKey of referenced) {
+    if (!passageKeys.has(passageKey)) {
+      errors.push(`${where}: text references unknown passage "${passageKey}"`);
+    }
+  }
+  for (const passageKey of passageKeys) {
+    if (!referenced.includes(passageKey)) {
+      errors.push(`${where}: passage "${passageKey}" is not used in text`);
+    }
+  }
+}
+
+/** Validate `nodes` and return the set of node keys (empty when absent or invalid). */
+function checkNodes(where, nodes) {
+  const keys = new Set();
+  if (nodes === undefined) return keys;
+  if (!nodes || typeof nodes !== 'object' || Array.isArray(nodes)) {
+    errors.push(`${where}: nodes must be an object`);
+    return keys;
+  }
+  for (const [nodeKey, node] of Object.entries(nodes)) {
+    const nodeWhere = `${where} node "${nodeKey}"`;
+    if (!/^[\w-]+$/.test(nodeKey)) {
+      errors.push(`${nodeWhere}: key must be letters, digits, "_" or "-"`);
+    }
+    keys.add(nodeKey);
+    if (!node || typeof node !== 'object' || Array.isArray(node)) {
+      errors.push(`${nodeWhere}: must be an object`);
+      continue;
+    }
+    for (const prop of Object.keys(node)) {
+      if (!allowedNodeProps.has(prop)) errors.push(`${nodeWhere}: unknown property "${prop}"`);
+    }
+    if (typeof node.text !== 'string' || !node.text.trim()) {
+      errors.push(`${nodeWhere}: text is required`);
+    }
+    if (!Array.isArray(node.optionTemplates)) {
+      errors.push(`${nodeWhere}: optionTemplates must be an array`);
+    }
+    if (node.title !== undefined && (typeof node.title !== 'string' || !node.title.trim())) {
+      errors.push(`${nodeWhere}: title must be a non-empty string when set`);
+    }
+    if (node.emotion !== undefined) checkOneOf(nodeWhere, 'emotion', node.emotion, emotions);
+    if (node.image !== undefined && (typeof node.image !== 'string' || !node.image.trim())) {
+      errors.push(`${nodeWhere}: image must be a non-empty string when set`);
+    }
+    checkImageSize(nodeWhere, node.imageSize);
+    if (node.triggers !== undefined) {
+      if (!Array.isArray(node.triggers)) {
+        errors.push(`${nodeWhere}: triggers must be an array`);
+      } else {
+        node.triggers.forEach((trigger, i) => checkTrigger(`${nodeWhere} trigger[${i}]`, trigger));
+      }
+    }
+    for (const [i, effect] of (node.effects ?? []).entries()) {
+      checkEffect(`${nodeWhere} effects[${i}]`, effect);
+    }
+    if (
+      Array.isArray(node.optionTemplates) &&
+      node.optionTemplates.length > 0 &&
+      effectsIncludeFollowUp(node.effects)
+    ) {
+      errors.push(
+        `${nodeWhere}: follow_up_event on enter replaces this beat; give it no options, or put the follow-up on an option that does not continue`
+      );
+    }
+    const passageKeys = checkPassages(nodeWhere, node.passages);
+    checkTextPassages(nodeWhere, node.text, passageKeys);
+  }
+  return keys;
+}
+
+events.forEach((event, index) => {
+  const where = at(event, index);
+  if (typeof event?.key !== 'string' || !event.key.trim()) {
+    errors.push(`${where}: key is required`);
+  } else if (eventKeys.indexOf(event.key) !== index) {
+    errors.push(`${where}: duplicate key`);
+  }
+  if (typeof event?.text !== 'string' || !event.text.trim()) {
+    errors.push(`${where}: text is required`);
+  }
+  const passageKeys = checkPassages(where, event?.passages);
+  checkTextPassages(where, event?.text, passageKeys);
+  if (event?.title !== undefined) {
+    if (typeof event.title !== 'string' || !event.title.trim()) {
+      errors.push(`${where}: title must be a non-empty string when set`);
+    }
+  }
+  for (const prop of Object.keys(event ?? {})) {
+    if (!allowedEventProps.has(prop)) errors.push(`${where}: unknown property "${prop}"`);
+  }
+  if (event?.characterArc !== undefined) {
+    checkOneOf(where, 'characterArc', event.characterArc, npcKeys);
+  }
+  if (event?.emotion !== undefined) {
+    checkOneOf(where, 'emotion', event.emotion, emotions);
+  }
+  if (event?.image !== undefined) {
+    if (typeof event.image !== 'string' || !event.image.trim()) {
+      errors.push(`${where}: image must be a non-empty string when set`);
+    }
+  }
+  checkImageSize(where, event?.imageSize);
+  if (event?.manualTrigger !== undefined) {
+    if (typeof event.manualTrigger !== 'string' || !event.manualTrigger.trim()) {
+      errors.push(`${where}: manualTrigger must be a non-empty string when set`);
+    }
+  }
+
+  if (event?.triggers === undefined) {
+    errors.push(`${where}: triggers is required (use [] for follow-up-only events)`);
+  } else if (!Array.isArray(event.triggers)) {
+    errors.push(`${where}: triggers must be an array`);
+  } else {
+    event.triggers.forEach((trigger, i) => checkTrigger(`${where} trigger[${i}]`, trigger));
+  }
+
+  for (const [i, effect] of (event?.effects ?? []).entries()) {
+    checkEffect(`${where} effects[${i}]`, effect);
+  }
+
+  const nodeKeys = checkNodes(where, event?.nodes);
+  checkBeatOptions(`${where}`, event?.optionTemplates, nodeKeys);
+  if (event?.nodes && typeof event.nodes === 'object' && !Array.isArray(event.nodes)) {
+    for (const [nodeKey, node] of Object.entries(event.nodes)) {
+      if (!node || typeof node !== 'object' || Array.isArray(node)) continue;
+      if (!Array.isArray(node.optionTemplates)) continue;
+      checkBeatOptions(`${where} node "${nodeKey}"`, node.optionTemplates, nodeKeys);
+    }
+  }
 });
 
 if (errors.length > 0) {
