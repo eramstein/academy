@@ -154,7 +154,6 @@ She pauses.
   - gift `emma_tourney_unit` to Antonio
   - gift `emma_tourney_unit` to Emma
 - Schedule `emma_falkenheim_tournament` event for next Saturday evening (next free) at the Academy Hall.
-- Schedule `emma_tourney_travel` event for next Sunday evening (next free) at the Gray Mountains.
 
 ## Options
 

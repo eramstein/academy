@@ -3001,29 +3001,6 @@
             }
           }
         }
-      },
-      {
-        "effect": {
-          "type": "schedule_activity",
-          "parameters": {
-            "activity": {
-              "type": "event",
-              "participants": [
-                "player",
-                "emma"
-              ],
-              "placeKey": "gray_mountains",
-              "eventId": "emma_tourney_travel"
-            },
-            "schedule": {
-              "nextFree": true,
-              "date": {
-                "dayOfWeek": 7,
-                "period": "evening"
-              }
-            }
-          }
-        }
       }
     ],
     "passages": {
@@ -3160,6 +3137,12 @@
                 "parameters": {
                   "text": "You leave Falkenheim with the trophy and a memory of its director's expression that should sustain you for weeks."
                 }
+              },
+              {
+                "type": "follow_up_event",
+                "parameters": {
+                  "eventKey": "emma_return_win"
+                }
               }
             ]
           },
@@ -3179,6 +3162,12 @@
                 "type": "narrate",
                 "parameters": {
                   "text": "You leave Falkenheim empty-handed. Emma walks beside you, unusually quiet, until she remarks, \"Next time, we should bring a trophy. Apparently they keep theirs here.\""
+                }
+              },
+              {
+                "type": "follow_up_event",
+                "parameters": {
+                  "eventKey": "emma_return_lost"
                 }
               }
             ]
@@ -3444,12 +3433,47 @@
         "text": "{{ finalResult }}",
         "optionTemplates": [
           {
-            "text": "Return to the Academy",
+            "text": "Return to the Academy — Victory",
+            "triggers": [
+              {
+                "triggerType": "last_match_won",
+                "parameters": {}
+              }
+            ],
             "effects": [
               {
                 "type": "narrate",
                 "parameters": {
                   "text": "You leave Falkenheim behind and begin the journey home."
+                }
+              },
+              {
+                "type": "follow_up_event",
+                "parameters": {
+                  "eventKey": "emma_return_win"
+                }
+              }
+            ]
+          },
+          {
+            "text": "Return to the Academy — Defeat",
+            "triggers": [
+              {
+                "triggerType": "last_match_lost",
+                "parameters": {}
+              }
+            ],
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "You leave Falkenheim behind and begin the journey home."
+                }
+              },
+              {
+                "type": "follow_up_event",
+                "parameters": {
+                  "eventKey": "emma_return_lost"
                 }
               }
             ]
@@ -3485,6 +3509,12 @@
                 "parameters": {
                   "text": "You and Emma begin the journey home, leaving Falkenheim to contemplate its hospitality and its defeat."
                 }
+              },
+              {
+                "type": "follow_up_event",
+                "parameters": {
+                  "eventKey": "emma_return_win"
+                }
               }
             ]
           }
@@ -3493,6 +3523,564 @@
         "emotion": "proud"
       }
     }
+  },
+  {
+    "key": "emma_return_win",
+    "text": "\"Can you believe them? All airs and graces until someone gives them a proper thrashing, and then their true colors come out! Miserable scoundrels! Blackguards! Unspeakable little weasels!\"\n\nWell. You've never seen Emma quite like this. Your impeccably mannered, perpetually composed Emma, apparently equipped with an entire vocabulary of insults you've never heard her use before. You make a mental note never to get on her bad side.\n\n{{flushedCheeks}}\n\n\"Don't worry, Emma. We'll figure something out,\" you assure her, cradling a trophy so enormous that the sight of you carrying it is becoming faintly ridiculous.\n\n\"Of course we'll figure something out. But without any money, we'll need to be a little inventive. Perhaps—\"\n\nEmma stops. Her gaze settles on a farmer's cart, piled high with vegetables, trundling toward the city gates in the direction of the Academy.\n\n\"Ah, yes,\" she mutters. \"The triumphant return of the conquering heroes.\"\n\nShe motions for you to stay put and strides toward the driver.\n\nHalf a minute later, she beckons you over. The farmer has apparently agreed to take her along for free. Judging by the look of wonder on his face, this has required remarkably little persuasion.\n\nThe wonder fades into resignation when he sees you approaching, trophy and all.\n\n\"Right, you two. I'll take you to that school of whatever-it-is, but I've got two conditions. First, no funny business in my cart! I know what you young lovebirds are like.\"\n\nEmma draws herself up, visibly outraged. Unfortunately for her, you recover first.\n\n\"Not to worry, sir. My wife is perfectly capable of controlling her passions. Most of the time.\"\n\nEmma turns very slowly toward you.\n\nYou'll pay for that later. Absolutely worth it.\n\n\"And second,\" the farmer continues, pointing his thumb at a mountainous stack of crates, \"you help me load up.\"",
+    "triggers": [],
+    "optionTemplates": [
+      {
+        "text": "Offer to handle the crates",
+        "nextNode": "the_champions_return",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I'll handle the crates. Emma, could you look into how we collect our prize money?\"\n\nEmma's expression darkens at the first sentence.\n\n\"You don't think I'm capable of lifting a few boxes?\"\n\n\"Of course you are. But I suspect the tournament regulations are considerably more complicated than a pile of vegetables, and I'd rather leave the difficult part to you.\"\n\nShe considers this, then gives an approving nod.\n\n\"A sensible division of labor, Fibonacci. You may yet have a future in management.\"\n\nShe retrieves the tournament documents while you set about discovering precisely how many vegetables one farmer can own."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Enlist your darling wife",
+        "nextNode": "the_champions_return",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Of course! Come along, darling. A little honest work will do us both good.\"\n\n\"Keep calling me that, Fibonacci, and I'll give you some honest work to remember.\"\n\nNevertheless, she rolls up her sleeves and joins you. Between the two of you, the crates disappear into the cart at a respectable pace, accompanied by increasingly inventive threats concerning your immediate future.\n\nThe farmer watches the exchange with a knowing smile.\n\n\"Young love,\" he remarks.\n\nEmma nearly drops a cabbage."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Appeal to the farmer's sense of history",
+        "nextNode": "the_champions_return",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Certainly, sir. But first, might I introduce you to the heroes of Falkenheim?\"\n\nYou gesture grandly toward the trophy.\n\nThe farmer examines it, scratches his beard, and asks whether it's made of real gold.\n\n\"Not entirely,\" Emma admits.\n\n\"Shame. Could've paid for a proper carriage, then.\"\n\nEmma closes her eyes. You decide this is an excellent moment to start lifting crates.\n\nA little later, as you wrestle with a particularly stubborn sack of potatoes, Emma murmurs, \"The heroes of Falkenheim. Defeated by root vegetables.\"\n\n\"History will remember our sacrifice.\"\n\n\"History will be very selective.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "title": "The Road Home",
+    "characterArc": "emma",
+    "emotion": "angry",
+    "image": "emma_return_win.jpg",
+    "imageSize": "large",
+    "passages": {
+      "flushedCheeks": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "You are under Emma's spell"
+                }
+              }
+            ],
+            "text": "Although, you have to admit, the flushed cheeks rather suit her."
+          }
+        ],
+        "fallback": "A fascinating discovery. Apparently, Emma Delamain is capable of losing her composure after all."
+      }
+    },
+    "nodes": {
+      "the_champions_return": {
+        "text": "\"Ah.\"\n\nYou and Emma stare into the back of the cart.\n\nIt is packed to the brim with vegetables. There is barely room for two people, let alone two people and a trophy the size of a small child. Emma, who has been gazing at the latter with undisguised affection ever since the award ceremony, suddenly seems rather less enamored of it.\n\n\"Would you prefer to sit on the carrots or the potatoes, darling?\"\n\n\"Oh, give it a rest. He can't hear you anymore.\"\n\n\"I know, my love.\"\n\nEmma rolls her eyes and climbs aboard.\n\nTo your surprise, she reveals a remarkable talent for logistics. Within moments, a few crates have been shifted, several sacks rearranged, and a small, reasonably comfortable nest has emerged between a wall of cabbages and a heap of apples.\n\nShe settles into it, draws her knees up, and pats the floor beside her.\n\nThe smile on her face suggests that revenge is imminent.\n\n\"Don't be shy, sweetheart.\"\n\nOh, no.\n\nForty centimeters. At most.\n\nYou swallow and sit down as far from her as physically possible, which turns out to mean pressed firmly against her side, with the enormous trophy balanced across your knees.\n\n\"Not going to faint on me, are you, Fibonacci?\"\n\nYou brace yourself for several hours of merciless teasing.\n\nBut, unexpectedly, Emma merely gives you a peaceful little smile. The cart lurches forward, and she turns to watch the countryside roll past.\n\nNo sarcastic remarks. No clever observations at your expense.\n\nWell.\n\nHere you are, then.\n\nLovely weather, isn't it?\n\nAnd, er...\n\nOh, for heaven's sake, _say something._\n\nYou risk a glance at Emma. She's watching the distant hills, looking almost dreamy. Several minutes pass. She doesn't appear troubled by the silence in the slightest.\n\nThen she turns toward you.\n\nQuick. Think of something.\n\nBut she only smiles, very slightly, before looking away again.\n\nEventually, she takes a book from her bag and begins reading. Every now and then, she comes across a passage she particularly enjoys and reads it aloud to you, supplying a scholarly commentary that is considerably longer than the passage itself.\n\nNaturally, this also presents opportunities to remind you that a little more reading would do you a world of good.\n\nThe hours slip by. The afternoon light softens. The sun sinks toward the horizon.\n\nAfter the madness of the past week, exhaustion begins to catch up with you.\n\nYou really ought to stay awake. It would be terribly embarrassing to—\n\nWhen you open your eyes again, it is dark.\n\nSomeone has tucked a blanket around you.\n\nThat's... rather nice, actually.\n\nWait.\n\nSomething isn't quite right.\n\nYour head.\n\nOh.\n\n{{shoulderRealization}}\n\nVery slowly, you lift it. Straighten your back. Fix your eyes on the darkness ahead.\n\nWhatever you do, don't look at her.\n\nThe cart rattles to a stop.\n\n\"Sleep well?\"\n\nEmma is pressing her lips together, plainly struggling not to laugh.\n\nMercifully, she says nothing more.\n\n\"Come on. We're here.\"",
+        "optionTemplates": [
+          {
+            "text": "Continue to the Academy",
+            "nextNode": "a_practical_arrangement",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "You climb down from the cart, grateful for the darkness concealing your expression. Emma follows, stretches her stiff legs, and thanks the farmer with considerably more warmth than she showed the Falkenheim organizers.\n\nThen she looks at you, at the trophy, and at the Academy's distant lights.\n\n\"Well, Fibonacci. One last heroic effort.\"\n\nYou pick up the trophy.\n\nOf course."
+                }
+              }
+            ]
+          }
+        ],
+        "title": "The Champions' Triumphant Return",
+        "emotion": "amused",
+        "image": "emma_falkenheim_cart.jpg",
+        "imageSize": "large",
+        "passages": {
+          "shoulderRealization": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "relation_tag",
+                    "parameters": {
+                      "characterKey": "emma",
+                      "relationTag": "You are under Emma's spell"
+                    }
+                  }
+                ],
+                "text": "Oh, no.\n\nWith a peculiar mixture of overwhelming happiness and mortal terror, you realize you've been sleeping with your head resting on Emma's shoulder."
+              }
+            ],
+            "fallback": "You've been sleeping with your head resting on Emma's shoulder.\n\nFor how long? Did you snore? Worse, did you _drool_? You can already imagine how much entertainment Emma will extract from this once she decides to mention it."
+          }
+        }
+      },
+      "a_practical_arrangement": {
+        "text": "By the time you've carried the trophy into the Academy's entrance hall, the night is well advanced. You set it down beneath the chandeliers, where it looks almost respectable again.\n\n\"Well, Fibonacci,\" Emma says, surveying it with satisfaction. \"That's one thing successfully accomplished.\"\n\n\"Yes. I think we've earned ourselves a little rest.\"\n\nEmma gives you a questioning look, as though the word _rest_ belongs to some obscure foreign language.\n\nBut then her expression changes.\n\n\"Listen, Antonio. I wanted to...\"\n\nShe pauses, her gaze drifting toward the trophy, where both your names are engraved.\n\n\"I wanted to thank you. I don't know if I could have won without you.\"\n\nThere's an unfamiliar softness in her eyes. For an instant, you wonder if they might even be a little damp.\n\nNo. Not Emma. Must be the candlelight.\n\n\"You would have found a way,\" you tell her. \"You always do.\"\n\n\"Perhaps.\" She smiles faintly. \"But I'm rather glad I didn't have to.\"\n\nShe looks back at the engraved names.\n\n\"My parents gave everything they could to help me enter that tournament,\" she says quietly. \"So I rather had to win.\"\n\nFor a moment, she says nothing more. You can almost see the familiar calculations turning behind her eyes: expenses, expectations, obligations, all the things she never quite manages to put aside.\n\nThen she takes a breath, and something of her usual energy returns.\n\n\"You know what, Antonio? We make far too good a team to leave it at that. How about a regular study evening? My place, every Tuesday?\"\n\nShe tilts her head, already adopting the air of someone presenting an entirely sensible academic proposal.\n\n\"It would be mutually beneficial, obviously. We could review our crafting techniques, compare strategies, perhaps work on a few new cards. There's no reason to let such a productive partnership go to waste.\"\n\nHer eyes are smiling.\n\nBut there's a trace of nervousness there, too.",
+        "optionTemplates": [
+          {
+            "text": "Accept warmly",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"I'd like that, Emma.\"\n\nFor an instant, her face lights up with unmistakable delight.\n\nThen she straightens, all business again.\n\n\"Excellent. It's a deal, Fibonacci. Tuesdays, seven o'clock. Bring your books. You already know where I live.\"\n\nShe turns to leave, then looks back over her shoulder.\n\n\"And Antonio?\"\n\n\"Yes?\"\n\n\"Don't be late.\"\n\nYou watch her disappear up the stairs, looking rather pleased with herself.\n\nFor once, you suspect it has nothing to do with the trophy."
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_weekly_studies_accepted"
+                }
+              },
+              {
+                "type": "schedule_activity",
+                "parameters": {
+                  "activity": {
+                    "type": "study",
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
+                    "placeKey": "emma-room"
+                  },
+                  "schedule": {
+                    "date": {
+                      "dayOfWeek": 2,
+                      "period": "evening"
+                    },
+                    "recurrence": {
+                      "daysOfWeek": [
+                        2
+                      ],
+                      "period": "evening"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "text": "Accept with a little teasing",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"Every Tuesday? Are you sure you can tolerate me that often?\"\n\n\"I've endured an entire week of you, Fibonacci. I believe I have a reasonable understanding of the risks.\"\n\n\"And yet you're proposing to make it a regular occurrence.\"\n\n\"A calculated risk.\"\n\n\"Naturally.\"\n\nShe smiles, but doesn't look away.\n\n\"Well? Is that a yes?\"\n\n\"Of course it is.\"\n\n\"Good.\"\n\nThe word comes out a little too quickly. She clears her throat.\n\n\"Excellent, then. Tuesdays, seven o'clock. Bring your books, and do try to arrive with something useful between your ears.\"\n\nShe starts toward the stairs, then pauses.\n\n\"And Antonio? I did enjoy working with you.\"\n\nBefore you can answer, she adds, \"Despite the considerable disadvantages.\"\n\nThere she is."
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "rivalry",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_weekly_studies_accepted"
+                }
+              },
+              {
+                "type": "schedule_activity",
+                "parameters": {
+                  "activity": {
+                    "type": "study",
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
+                    "placeKey": "emma-room"
+                  },
+                  "schedule": {
+                    "date": {
+                      "dayOfWeek": 2,
+                      "period": "evening"
+                    },
+                    "recurrence": {
+                      "daysOfWeek": [
+                        2
+                      ],
+                      "period": "evening"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "text": "Decline the regular arrangement, for now",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"Thank you, Emma. I'd like to, but I don't think I can promise every Tuesday.\"\n\n\"Oh.\"\n\nThe disappointment crosses her face before she can conceal it.\n\n\"Of course. I understand. We both have rather a lot on our plates.\"\n\nShe adjusts the strap of her bag, suddenly very interested in making sure it sits properly on her shoulder.\n\n\"Well. The offer stands, should your schedule become less troublesome.\"\n\n\"Thanks, Emma.\"\n\nShe looks at you again, her expression softening.\n\n\"And Antonio? I meant what I said. About the tournament.\"\n\nShe glances toward the trophy.\n\n\"I couldn't have asked for a better partner.\"\n\nWith a final smile, she heads toward the stairs."
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_weekly_studies_offered"
+                }
+              }
+            ]
+          }
+        ],
+        "effects": [
+          {
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_trusted_companion"
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "add_known_trait",
+              "parameters": {
+                "characterKey": "emma",
+                "title": "A companion beyond competition",
+                "description": "Emma enjoys Antonio's company even when there is no match to win or work to finish. Beneath her ambitious, demanding manner, she has begun to make room for companionship in her life."
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "move",
+              "parameters": {
+                "placeKey": "academy-hall",
+                "characterKeys": [
+                  "player"
+                ]
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "move",
+              "parameters": {
+                "placeKey": "academy-hall",
+                "characterKeys": [
+                  "emma"
+                ]
+              }
+            }
+          }
+        ],
+        "title": "A Perfectly Practical Arrangement",
+        "emotion": "happy",
+        "image": "emma_falkenheim_farewell.jpg",
+        "imageSize": "large"
+      }
+    }
+  },
+  {
+    "key": "emma_return_lost",
+    "title": "The Road Home — Defeat Route",
+    "text": "The carriage rolls out of Falkenheim beneath a grey afternoon sky.\n\nAt least the organizers have had the decency to provide transportation home. You and Emma sit opposite each other on comfortable upholstered benches, surrounded by a silence considerably less comfortable than the seats.\n\nEmma has been staring out of the window for the better part of twenty minutes.\n\n\"Well,\" she says at last. \"That was humiliating.\"\n\nYou consider pointing out that you made it remarkably far in a tournament filled with some of the Academy's finest players. Unfortunately, Emma has already begun a detailed reconstruction of your defeat.\n\n\"If I'd played the third turn differently... No, that wouldn't have worked either. Unless we'd changed the opening sequence. Or perhaps—\"\n\n\"Emma.\"\n\n\"—if we'd anticipated their counterspell, we could have—\"\n\n\"Emma.\"\n\nShe turns toward you.\n\n\"What?\"\n\n\"The tournament's over.\"\n\nShe gives you a look that suggests this is an exceptionally unhelpful observation.\n\n\"Yes, Fibonacci. I had noticed.\"\n\n\"And we lost.\"\n\n\"Thank you. Do go on. Your analysis is fascinating.\"\n\n\"And we're still here.\"\n\nEmma opens her mouth, then closes it.\n\nYou gesture vaguely between the two of you.\n\n\"We're both alive. We learned a few things. We even made some rather good cards. All things considered, I think we could have done worse.\"\n\nShe looks at you for a moment.\n\n\"That is a remarkably generous interpretation of events.\"\n\n\"One of my many talents.\"\n\n\"Alongside losing tournaments?\"\n\n\"Especially that one.\"\n\nDespite herself, she lets out a short laugh.\n\nIt's not much, but it's the first time she's smiled since the final match.",
+    "triggers": [],
+    "optionTemplates": [
+      {
+        "text": "Remind her how far you've come",
+        "nextNode": "the_carriage_ride",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"We weren't even sure we'd qualify when we started. Look how far we got.\"\n\nEmma considers that.\n\n\"True. Our preparation was rather effective, all things considered.\"\n\n\"Rather effective?\"\n\n\"Don't fish for compliments, Fibonacci. It's undignified.\"\n\nBut she smiles again, and this time it lasts."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Promise to do better next time",
+        "nextNode": "the_carriage_ride",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Well, there's only one thing to do now.\"\n\nEmma raises an eyebrow.\n\n\"Which is?\"\n\n\"Come back next year and make them regret ever learning to play.\"\n\nHer eyes brighten.\n\n\"Now _that_ is a sensible proposal.\"\n\nShe settles back against her seat, already looking considerably more like herself.\n\n\"And this time, Fibonacci, we're going to prepare properly.\"\n\nYou stare at her.\n\n\"What exactly would you call the last few weeks?\"\n\n\"An encouraging preliminary effort.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Suggest that she deserves a break",
+        "nextNode": "the_carriage_ride",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"You know, Emma, I think you've earned the right to be disappointed. But you might also have earned an afternoon without thinking about cards.\"\n\nShe looks genuinely perplexed.\n\n\"What would I think about instead?\"\n\n\"The scenery? The weather? The extraordinary luxury of not having to defeat anyone for several hours?\"\n\nShe glances out the window.\n\n\"Hm. I suppose the countryside is rather pretty.\"\n\nA pause.\n\n\"And I suppose the company could be worse.\"\n\n\"High praise indeed.\"\n\n\"Don't let it go to your head.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "nodes": {
+      "the_carriage_ride": {
+        "text": "The carriage follows the winding road through fields and wooded hills. Little by little, the disappointment of the tournament begins to loosen its grip.\n\nEmma eventually puts away her notes. This alone feels like a significant achievement.\n\nFor a while, you talk about the matches, the opponents, and the rather extraordinary things people are willing to do in pursuit of a trophy. Then the conversation wanders elsewhere, and finally fades into a comfortable silence.\n\nEmma takes a book from her bag and begins reading.\n\nEvery now and then, she shares a passage she finds interesting, followed by an explanation that assumes you possess approximately twice your actual knowledge of the subject.\n\n\"You really ought to read more, Antonio.\"\n\n\"You really ought to recommend shorter books.\"\n\n\"Philistine.\"\n\nBut she is smiling.\n\nAs the afternoon fades, exhaustion catches up with you. You close your eyes for what you intend to be a moment.\n\nWhen you wake, the carriage is dark except for the lantern swaying above the driver's seat.\n\nA blanket has been draped over you.\n\nEmma is still reading, though her book rests lower in her lap now. She notices you're awake and closes it.\n\n\"Feeling better?\"\n\n\"A little. How long was I asleep?\"\n\n\"Long enough for me to enjoy several hours of uninterrupted intellectual peace.\"\n\n\"You're welcome.\"\n\nShe gives you a small smile.\n\n\"Actually, it was rather nice.\"\n\nYou aren't entirely sure whether she means the peace or the company.\n\nPerhaps both.\n\nThe carriage slows as the Academy's lights appear ahead.\n\n\"Well,\" Emma says, gathering her things. \"Home again.\"",
+        "optionTemplates": [
+          {
+            "text": "Continue to the Academy",
+            "nextNode": "a_practical_arrangement",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "You climb down from the carriage and help Emma with her bag. She thanks the driver, then looks up at the illuminated windows of the Academy.\n\n\"Come along, Fibonacci. I believe we have some unfinished business.\"\n\n\"For tonight?\"\n\n\"No, you idiot.\" She smiles. \"In general.\""
+                }
+              }
+            ]
+          }
+        ],
+        "title": "A Quiet Journey",
+        "emotion": "neutral",
+        "image": "emma_falkenheim_carriage_evening.jpg",
+        "imageSize": "large"
+      },
+      "a_practical_arrangement": {
+        "text": "The Academy's entrance hall is almost deserted at this hour. Your footsteps echo across the marble floor as you and Emma make your way toward the stairs.\n\n\"Well, Fibonacci,\" she says. \"Not quite the glorious return we'd imagined.\"\n\n\"No. But at least we didn't have to walk.\"\n\n\"A modest consolation.\"\n\nShe pauses at the foot of the stairs.\n\n\"Listen, Antonio. I wanted to say something.\"\n\nHer sudden seriousness catches you off guard.\n\n\"I know how much work you put into this tournament. And I know I wasn't always the easiest person to work with.\"\n\n\"Really? I hadn't noticed.\"\n\n\"Don't push your luck.\"\n\nShe smiles, then looks down for a moment.\n\n\"My parents made considerable sacrifices so I could enter. I wanted so badly to make it worthwhile.\"\n\nFor once, she doesn't try to hide the disappointment in her voice.\n\n\"I'm sorry we couldn't win,\" you say.\n\n\"So am I.\"\n\nShe takes a breath.\n\n\"But you know what? I don't regret going. Not even a little.\"\n\nShe looks up at you.\n\n\"We made a rather good team, didn't we?\"\n\n\"I thought so.\"\n\n\"And it would be a terrible waste to stop now.\"\n\nHer expression brightens as an idea takes shape.\n\n\"How about a regular study evening? My place, every Tuesday?\"\n\nShe adopts her most businesslike tone.\n\n\"We could refine our crafting techniques, work on new cards, review our mistakes. An entirely sensible arrangement. Mutually beneficial, obviously.\"\n\nShe smiles.\n\nBut beneath that confident little speech, you notice a trace of nervousness.",
+        "effects": [
+          {
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_trusted_companion"
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "add_known_trait",
+              "parameters": {
+                "characterKey": "emma",
+                "title": "A companion beyond competition",
+                "description": "Emma enjoys Antonio's company even when there is no match to win or work to finish. She has begun to value their partnership independently of its results."
+              }
+            }
+          }
+        ],
+        "optionTemplates": [
+          {
+            "text": "Accept warmly",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"I'd like that, Emma.\"\n\nFor an instant, her face lights up with unmistakable delight.\n\nThen she straightens, all business again.\n\n\"Excellent. It's a deal, Fibonacci. Tuesdays, seven o'clock. Bring your books. You already know where I live.\"\n\nShe turns to leave, then looks back over her shoulder.\n\n\"And Antonio?\"\n\n\"Yes?\"\n\n\"Next time, we're winning.\"\n\nYou grin.\n\n\"Naturally.\""
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_weekly_studies_accepted"
+                }
+              },
+              {
+                "type": "schedule_activity",
+                "parameters": {
+                  "activity": {
+                    "type": "study",
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
+                    "placeKey": "emma-room"
+                  },
+                  "schedule": {
+                    "date": {
+                      "dayOfWeek": 2,
+                      "period": "evening"
+                    },
+                    "recurrence": {
+                      "daysOfWeek": [
+                        2
+                      ],
+                      "period": "evening"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "text": "Accept with a little teasing",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"Every Tuesday? Are you sure you can tolerate me that often?\"\n\n\"I've endured an entire tournament with you, Fibonacci. I believe I have a reasonable understanding of the risks.\"\n\n\"And yet you're proposing to make it a regular occurrence.\"\n\n\"A calculated risk.\"\n\n\"Naturally.\"\n\nShe smiles, but doesn't look away.\n\n\"Well? Is that a yes?\"\n\n\"Of course it is.\"\n\n\"Good.\"\n\nThe word comes out a little too quickly. She clears her throat.\n\n\"Excellent, then. Tuesdays, seven o'clock. Bring your books, and do try to arrive with something useful between your ears.\"\n\nShe starts toward the stairs, then pauses.\n\n\"And Antonio? I did enjoy working with you.\"\n\nBefore you can answer, she adds, \"Despite the considerable disadvantages.\"\n\nThere she is."
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "rivalry",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_weekly_studies_accepted"
+                }
+              },
+              {
+                "type": "schedule_activity",
+                "parameters": {
+                  "activity": {
+                    "type": "study",
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
+                    "placeKey": "emma-room"
+                  },
+                  "schedule": {
+                    "date": {
+                      "dayOfWeek": 2,
+                      "period": "evening"
+                    },
+                    "recurrence": {
+                      "daysOfWeek": [
+                        2
+                      ],
+                      "period": "evening"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "text": "Decline the regular arrangement, for now",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"Thank you, Emma. I'd like to, but I don't think I can promise every Tuesday.\"\n\n\"Oh.\"\n\nThe disappointment crosses her face before she can conceal it.\n\n\"Of course. I understand. We both have rather a lot on our plates.\"\n\nShe adjusts the strap of her bag, suddenly very interested in making sure it sits properly on her shoulder.\n\n\"Well. The offer stands, should your schedule become less troublesome.\"\n\n\"Thanks, Emma.\"\n\nShe looks at you again, her expression softening.\n\n\"And Antonio? I meant what I said. About the tournament.\"\n\nShe pauses.\n\n\"I couldn't have asked for a better partner.\"\n\nWith a final smile, she heads toward the stairs."
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_weekly_studies_offered"
+                }
+              }
+            ]
+          }
+        ],
+        "title": "A Perfectly Practical Arrangement",
+        "emotion": "happy",
+        "image": "emma_falkenheim_farewell.jpg",
+        "imageSize": "large"
+      }
+    },
+    "characterArc": "emma",
+    "emotion": "disappointed",
+    "image": "emma_return_lost.jpg",
+    "imageSize": "large"
   },
   {
     "key": "happy_little_accident",

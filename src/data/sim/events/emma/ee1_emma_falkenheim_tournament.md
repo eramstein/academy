@@ -128,7 +128,7 @@ You leave Falkenheim with the trophy and a memory of its director's expression t
 
 **Outcomes:**
 
-- No additional game-state effects.
+- Follow up event `emma_return_win`.
 
 ### Option B: Return to the Academy — Defeat
 
@@ -140,7 +140,7 @@ You leave Falkenheim empty-handed. Emma walks beside you, unusually quiet, until
 
 **Outcomes:**
 
-- No additional game-state effects.
+- Follow up event `emma_return_lost`.
 
 ### Option C: Face Franz in the final
 
@@ -195,7 +195,9 @@ Emma joins you. "Never mind, Antonio. He was good." She pauses. "I do wish he we
 
 {{ finalResult }}
 
-### Option A: Return to the Academy
+### Option A: Return to the Academy — Victory
+
+**Only if:** last match was won
 
 **Text:**
 
@@ -203,7 +205,19 @@ You leave Falkenheim behind and begin the journey home.
 
 **Outcomes:**
 
-- No additional game-state effects.
+- Follow up event `emma_return_win`.
+
+### Option B: Return to the Academy — Defeat
+
+**Only if:** last match was lost
+
+**Text:**
+
+You leave Falkenheim behind and begin the journey home.
+
+**Outcomes:**
+
+- Follow up event `emma_return_lost`.
 
 ## Node: emma-triumphant
 
@@ -224,4 +238,4 @@ You and Emma begin the journey home, leaving Falkenheim to contemplate its hospi
 
 **Outcomes:**
 
-- No additional game-state effects.
+- Follow up event `emma_return_win`.
