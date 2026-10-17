@@ -36,6 +36,7 @@ import {
 } from './teach';
 import { addKnownTrait, type AddKnownTraitParameters } from './traits';
 import { startMatch, type StartMatchParameters } from './match';
+import { newLeagueSeason, type NewLeagueSeasonParameters } from './league';
 
 export function applyEffect(effect: EventEffect) {
   const result = effectFunctions[effect.type](effect.parameters);
@@ -79,4 +80,6 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.Move]: (parameters) => move(parameters as MoveParameters),
   [EventEffectType.UseFocus]: (parameters) => useFocus(parameters as UseFocusParameters),
   [EventEffectType.StartMatch]: (parameters) => startMatch(parameters as StartMatchParameters),
+  [EventEffectType.NewLeagueSeason]: (parameters) =>
+    newLeagueSeason(parameters as NewLeagueSeasonParameters),
 };

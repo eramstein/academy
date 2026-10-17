@@ -320,7 +320,9 @@ function checkSchedule(where, schedule) {
   }
   if (dayOfWeek != null) {
     if (!Number.isInteger(dayOfWeek) || dayOfWeek < 1 || dayOfWeek > 7) {
-      errors.push(`${where}: schedule.date.dayOfWeek must be 1-7 (Monday-Sunday), got ${dayOfWeek}`);
+      errors.push(
+        `${where}: schedule.date.dayOfWeek must be 1-7 (Monday-Sunday), got ${dayOfWeek}`
+      );
     }
   }
   if (date) {
@@ -544,17 +546,16 @@ function checkEffect(where, effect) {
       break;
     case 'start_match':
       checkOneOf(where, 'opponentKey', parameters.opponentKey, npcKeys);
-      if (
-        parameters.playerDeckKey !== undefined &&
-        typeof parameters.playerDeckKey !== 'string'
-      ) {
+      if (parameters.playerDeckKey !== undefined && typeof parameters.playerDeckKey !== 'string') {
         errors.push(`${where}: playerDeckKey must be a string`);
       }
-      if (
-        parameters.isLeagueMatch !== undefined &&
-        typeof parameters.isLeagueMatch !== 'boolean'
-      ) {
+      if (parameters.isLeagueMatch !== undefined && typeof parameters.isLeagueMatch !== 'boolean') {
         errors.push(`${where}: isLeagueMatch must be a boolean`);
+      }
+      break;
+    case 'new_league_season':
+      if (parameters.winnerKey != null && parameters.winnerKey !== '') {
+        checkOneOf(where, 'winnerKey', parameters.winnerKey, characterKeys);
       }
       break;
   }

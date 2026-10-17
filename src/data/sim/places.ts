@@ -8,6 +8,7 @@ const PLACES: Record<string, Place> = {
     description:
       'The Administration Office is the central hub of the Academy. It is here that the students and staff gather to discuss the latest news and events.',
     regionKey: 'academy',
+    locked: true,
   },
   ['barracks']: {
     key: 'barracks',
@@ -38,12 +39,14 @@ const PLACES: Record<string, Place> = {
     name: 'Artificery Class Room',
     description: 'The artificery room is a place where the students can create and modify items.',
     regionKey: 'academy',
+    locked: true,
   },
   ['enchanting-room']: {
     key: 'enchanting-room',
     name: 'Enchanting Class Room',
     description: 'The enchanting room is a place where the students can enchant items.',
     regionKey: 'academy',
+    locked: true,
   },
 
   ['old-monk-inn']: {
@@ -106,6 +109,7 @@ const PLACES: Record<string, Place> = {
     description:
       'The Forest of Schlupak is a dense forest, dark, mysterious and full of dangers, but also bountiful of magical ingredients.',
     regionKey: 'wilderness',
+    locked: true,
   },
   ['gray_mountains']: {
     key: 'gray_mountains',
@@ -113,6 +117,7 @@ const PLACES: Record<string, Place> = {
     description:
       'The Gray Mountains are a range of beautiful high mountains, peaceful with views on lakes and forests.',
     regionKey: 'wilderness',
+    locked: true,
   },
   ['falkenheim_school']: {
     key: 'falkenheim_school',
@@ -120,6 +125,7 @@ const PLACES: Record<string, Place> = {
     description:
       'The Falkenheim School is a prestigious university with a lot of students and a lot of teachers.',
     regionKey: 'falkenheim',
+    locked: true,
   },
 } as const;
 

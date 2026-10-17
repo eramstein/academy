@@ -1,8 +1,8 @@
-import { ActionType, DayPeriod, type Action } from '@/lib/_model';
+import { ActionType, type Action } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getPossibleLeagueOpponents } from '../league';
-import { isWeekDay } from '../time';
 import { initOngoingBattle, pickNpcDeck } from '../ongoing-battle';
+import { isWeekDay } from '../time';
 
 export interface StartMatchParameters {
   playerDeckKey: string;
@@ -33,11 +33,7 @@ export function resolvePlayerDeck(playerDeckKey: string) {
 }
 
 export function getLeagueMatchActions(): Action[] {
-  if (gs.league.playedToday) {
-    return [];
-  }
-  // matches after class
-  if (!(gs.time.period === DayPeriod.Afternoon) || !isWeekDay(gs.time.day)) {
+  if (gs.league.playedToday || !gs.league.season || !isWeekDay(gs.time.day)) {
     return [];
   }
   const opponents = getPossibleLeagueOpponents();

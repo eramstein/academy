@@ -52,6 +52,8 @@ export interface OngoingBattle {
   isLeagueMatch: boolean;
   /** Set when a `start_match` effect should reopen an event beat after the fight. */
   resume?: OngoingBattleResume;
+  /** `follow_up_event` keys deferred until the Battle view closes. */
+  resumeFollowUps?: string[];
 }
 
 export interface League {
@@ -85,6 +87,8 @@ export interface Scene {
   lastMatchWon?: boolean;
   /** Parked while the Battle modal is up; applied when the player returns to Sim. */
   pendingEventResume?: OngoingBattleResume;
+  /** Parked `follow_up_event` keys while the Battle modal is up. */
+  pendingFollowUpEvents?: string[];
 }
 
 export interface SceneEvent {

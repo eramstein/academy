@@ -35,9 +35,14 @@ export function recordBattleResult(won: boolean) {
     recordLeagueMatchResult(won);
   }
   narrateMatchResult(won, gs.ongoingBattle.opponentKey);
+  // Keep ongoingBattle until the victory modal dismisses so Main stays on Battle.
   if (gs.ongoingBattle.resume) {
-    // Keep ongoingBattle until the victory modal dismisses so Main stays on Battle.
     gs.scene.pendingEventResume = gs.ongoingBattle.resume;
+  }
+  if (gs.ongoingBattle.resumeFollowUps?.length) {
+    gs.scene.pendingFollowUpEvents = gs.ongoingBattle.resumeFollowUps;
+  }
+  if (gs.ongoingBattle.resume || gs.ongoingBattle.resumeFollowUps?.length) {
     return;
   }
   setPossibleActions();

@@ -57,7 +57,8 @@ A long action advances the period and ends the scene; the next scene is set base
 Optionless events resolve immediately (narrate + effects) and do not hold the scene.
 An option nextNode (or a skill-check successNode / failureNode) opens another beat of the same event
 instead of ending it. That beat does not stamp the event again.
-A start_match effect defers nextNode until the Battle view closes (see resumeEventAfterBattle).
+A start_match effect defers nextNode and follow_up_event until the Battle view closes
+(see resumeEventAfterBattle).
 */
 
 export function syncManualSceneTriggers() {
@@ -105,15 +106,24 @@ function presentEventNode(template: EventTemplate, nodeKey: string) {
     if (!sceneWaitingOnEventChoice()) setSceneEvents();
     return;
   }
+  let openedFollowUp = false;
   if (node.effects) {
     for (const entry of node.effects) {
       if (eventTemplateEffectApplies(entry, template.key)) {
+        if (entry.effect.type === EventEffectType.FollowUpEvent) {
+          openedFollowUp = true;
+        }
         applyEffect(entry.effect);
       }
     }
   }
   // A follow-up event effect may have claimed the scene (and narrated already).
   if (sceneWaitingOnEventChoice()) return;
+  // Optionless follow-ups narrate and clear the scene; don't re-narrate this bridge node.
+  if (openedFollowUp) {
+    setSceneEvents();
+    return;
+  }
   const event = sceneEventForNode(template, nodeKey);
   if (!event) {
     if (!sceneWaitingOnEventChoice()) setSceneEvents();
@@ -147,6 +157,17 @@ export async function selectOption(option: EventOption) {
   // Keep gs.scene.image until place change or a later event sets a new one.
   gs.scene.event = undefined;
   let success: boolean | undefined;
+  const deferredFollowUps: EventEffect[] = [];
+  const applyOptionEffects = (effects?: EventEffect[]) => {
+    effects?.forEach((effect) => {
+      // With start_match, follow-ups must wait until the Battle view closes.
+      if (effect.type === EventEffectType.FollowUpEvent) {
+        deferredFollowUps.push(effect);
+        return;
+      }
+      applyOptionEffect(effect, characterArc);
+    });
+  };
   if (option.outcome.attributeCheck) {
     const check = option.outcome.attributeCheck;
     const result = await attributeCheck(
@@ -162,22 +183,25 @@ export async function selectOption(option: EventOption) {
       }
     );
     success = result.success;
-    const branched = success ? check.successEffects : check.failureEffects;
-    branched?.forEach((effect) => applyOptionEffect(effect, characterArc));
+    applyOptionEffects(success ? check.successEffects : check.failureEffects);
   } else if (option.outcome.effects) {
-    option.outcome.effects.forEach((effect) => {
-      applyOptionEffect(effect, characterArc);
-    });
+    applyOptionEffects(option.outcome.effects);
   }
   const nextNode = continuationNode(option, success);
-  // Battle takes over the view; park nextNode until the player dismisses the result modal.
+  // Battle takes over the view; park nextNode / follow-ups until the result modal closes.
   if (gs.ongoingBattle) {
     if (nextNode && template) {
       gs.ongoingBattle.resume = { eventKey: template.key, nextNode };
     }
+    if (deferredFollowUps.length) {
+      gs.ongoingBattle.resumeFollowUps = deferredFollowUps
+        .map((effect) => effect.parameters?.eventKey)
+        .filter((key): key is string => typeof key === 'string' && key.length > 0);
+    }
     gs.scene.actions = [];
     return;
   }
+  deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
   if (nextNode && template) {
     presentEventNode(template, nextNode);
     return;
@@ -191,21 +215,34 @@ export async function selectOption(option: EventOption) {
 
 /**
  * Call when leaving the Battle view. Clears `ongoingBattle` and, if a `start_match`
- * option parked a `nextNode`, reopens that beat (node triggers see `lastMatchWon`).
+ * option parked a `nextNode` and/or `follow_up_event`s, applies them (node triggers
+ * see `lastMatchWon`).
  */
 export function resumeEventAfterBattle() {
   gs.ongoingBattle = null;
   const resume = gs.scene.pendingEventResume;
+  const followUps = gs.scene.pendingFollowUpEvents;
   gs.scene.pendingEventResume = undefined;
-  if (!resume) {
+  gs.scene.pendingFollowUpEvents = undefined;
+  if (resume) {
+    const resolved = getSceneEventByKey(resume.eventKey);
+    if (resolved && nodeIsEnterable(resolved.template, resume.nextNode)) {
+      presentEventNode(resolved.template, resume.nextNode);
+    }
+  }
+  if (followUps?.length) {
+    for (const eventKey of followUps) {
+      applyEffect({
+        type: EventEffectType.FollowUpEvent,
+        parameters: { eventKey },
+      });
+      if (sceneWaitingOnEventChoice()) return;
+    }
+  }
+  if (resume || followUps?.length) {
+    if (!sceneWaitingOnEventChoice()) setSceneEvents();
     return;
   }
-  const resolved = getSceneEventByKey(resume.eventKey);
-  if (!resolved || !nodeIsEnterable(resolved.template, resume.nextNode)) {
-    setSceneEvents();
-    return;
-  }
-  presentEventNode(resolved.template, resume.nextNode);
 }
 
 export function startScene() {

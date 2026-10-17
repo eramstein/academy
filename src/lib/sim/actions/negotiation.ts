@@ -9,22 +9,37 @@ export interface NegotiateParameters {
   subscriptionType?: SubscriptionType;
   duration?: number;
   partner: string; // NPC key
+  /** Authored outcome prose; when set, skips LLM check narration. */
+  successText?: string;
+  failureText?: string;
 }
 
 export async function negotiate(parameters: NegotiateParameters): Promise<string> {
-  narrateText(`You negotiate with ${parameters.partner}.`);
-  const { success, critical } = await confrontNpc('charisma', parameters.partner, {
-    label: 'Negotiate',
-    actionType: ActionType.Negotiate,
-    actionParameters: {
-      cost: parameters.cost,
-      transactionType: parameters.transactionType,
-      subscriptionType: parameters.subscriptionType,
-      duration: parameters.duration,
-      partner: parameters.partner,
+  const hasAuthoredOutcome = !!(parameters.successText || parameters.failureText);
+  if (!hasAuthoredOutcome) {
+    narrateText(`You negotiate with ${parameters.partner}.`);
+  }
+  const { success, critical } = await confrontNpc(
+    'charisma',
+    parameters.partner,
+    {
+      label: 'Negotiate',
+      actionType: ActionType.Negotiate,
+      actionParameters: {
+        cost: parameters.cost,
+        transactionType: parameters.transactionType,
+        subscriptionType: parameters.subscriptionType,
+        duration: parameters.duration,
+        partner: parameters.partner,
+      },
+      isLongAction: false,
     },
-    isLongAction: false,
-  });
+    hasAuthoredOutcome ? { skipLlmNarration: true } : undefined
+  );
+  const outcomeText = success ? parameters.successText : parameters.failureText;
+  if (outcomeText) {
+    narrateText(outcomeText);
+  }
   const multiplier = critical ? 2 : 1;
   const sign = success ? -1 : 1;
   parameters.cost += 0.1 * parameters.cost * multiplier * sign;

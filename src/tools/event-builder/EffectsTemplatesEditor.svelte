@@ -149,6 +149,8 @@
         return { amount: 1 };
       case EventEffectType.StartMatch:
         return { opponentKey: '', playerDeckKey: '', isLeagueMatch: false };
+      case EventEffectType.NewLeagueSeason:
+        return { winnerKey: null };
       default:
         return {};
     }
@@ -466,6 +468,17 @@
                 />
                 League match
               </label>
+            {:else if effect.type === EventEffectType.NewLeagueSeason}
+              <input
+                class="input arg"
+                value={effect.parameters.winnerKey ?? ''}
+                placeholder="winner key (optional)"
+                aria-label="Winner key"
+                oninput={(e) => {
+                  const value = (e.currentTarget as HTMLInputElement).value.trim();
+                  setParameter(i, 'winnerKey', value || null);
+                }}
+              />
             {:else if effect.type === EventEffectType.UseFocus}
               <input
                 class="input narrow"

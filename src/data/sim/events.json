@@ -1,7 +1,7 @@
 [
   {
     "key": "enrollment",
-    "text": "After a long journey, you finally arrive at the academy. A clerk directs you to the administration office. The administrator asks you for tuition fees.",
+    "text": "You've imagined this moment often enough during the past three years. Its ancient towers rising above the Black Forest, its workshops and libraries, its illustrious professors, and the promise of learning a craft that could change your life.\nAn artificer. A proper one. Someone who can breathe intelligence into ink and parchment, and perhaps one day create something worth more than everything you've earned so far.\nBut first, a less inspiring form of magic.\nThe administrator slides a document across his desk.\n\"First-term tuition, Mr. Fibonacci. Payable in advance.\"\nYou glance at the sum.\nThree years of savings. A remarkable amount of effort, about to disappear with a single signature.\nApparently, the first lesson at the Academy is that miracles are expensive.",
     "triggers": [
       {
         "triggerType": "day",
@@ -21,7 +21,10 @@
         "text": "Negotiate",
         "actionTemplate": {
           "actionTemplate": "enrollmentTransaction",
-          "args": {}
+          "args": {
+            "successText": "Somehow you talk him into a modest concession. He adjusts the figure with visible regret, and you leave the desk feeling only mostly robbed.",
+            "failureText": "He hears you out, nods once, and leaves the total exactly where it was. You pay. Miracles remain expensive."
+          }
         }
       },
       {
@@ -29,15 +32,24 @@
         "actionTemplate": {
           "actionTemplate": "enrollmentPayment",
           "args": {}
-        }
+        },
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You pay the full sum without protest. The stamp falls; three years of savings become a neat entry in a ledger."
+            }
+          }
+        ]
       }
     ],
+    "characterArc": "player",
     "image": "enrollment.jpg",
     "imageSize": "large"
   },
   {
-    "key": "event-2",
-    "text": "We'll learn magic crafting by making cards. Today you'll start by familiarizing yourself with the different card types.\n\nGreen is the color of nature, growth, health and savagery.\n\nBlack is the color of industry, machines, organization and decay.\n\nRed is the color of chaos, aggression, freedom and speed.\n\nBlue is the color of subterfuge, control, magic and knowledge.\n\nGet a deck, noob!",
+    "key": "first-lesson",
+    "text": "Professor Glützenbaum is a small, elderly gentleman with a magnificent white moustache and spectacles that seem perpetually on the verge of sliding off his nose. He surveys the classroom with unconcealed satisfaction.\n\n\"Welcome, ladies and gentlemen! Today, you begin your journey toward becoming artificers. A noble profession, requiring intelligence, precision, patience, and a truly unreasonable tolerance for failure.\"\n\nHe produces a playing card from his pocket and places it on the lectern. The card promptly scuttles across the wood, stops at the edge, turns around, and comes back.\n\n\"Observe! A piece of cardboard that obeys instructions. Remarkable, isn't it? And this is merely a child's toy compared to the enchantments you may one day create.\"\n\nHe catches the card before it escapes again.\n\n\"But first, the foundations. All artificery draws upon four fundamental magical essences.\"\n\nHe gestures toward four colored sets of cards arranged on his desk.\n\n\"Green: life, growth, restoration, and the stubborn refusal of nature to stay properly organized.\"\n\n\"Blue: knowledge, perception, illusion, and the subtle art of knowing more than one ought.\"\n\n\"Red: energy, speed, chaos, and everything my colleagues wish I would stop demonstrating indoors.\"\n\n\"Black: structure, industry, preservation, and decay. The art of building things to last—or persuading them that they've lasted quite long enough.\"\n\nHe beams at the class.\n\n\"Each essence has its own properties, and every artificer develops particular affinities. You'll discover yours in time. For now, the Academy has kindly provided a selection of elementary decks.\"\n\nHe indicates the four sets.\n\n\"Choose whichever appeals to you. And don't fret over the decision! You'll study all four essences eventually.\"",
     "triggers": [
       {
         "triggerType": "day",
@@ -55,6 +67,7 @@
     "optionTemplates": [
       {
         "text": "Red",
+        "nextNode": "neighbor_match",
         "effects": [
           {
             "type": "get_deck",
@@ -66,6 +79,7 @@
       },
       {
         "text": "Black",
+        "nextNode": "neighbor_match",
         "effects": [
           {
             "type": "get_deck",
@@ -77,6 +91,7 @@
       },
       {
         "text": "Green",
+        "nextNode": "neighbor_match",
         "effects": [
           {
             "type": "get_deck",
@@ -88,6 +103,7 @@
       },
       {
         "text": "Blue",
+        "nextNode": "neighbor_match",
         "effects": [
           {
             "type": "get_deck",
@@ -97,11 +113,38 @@
           }
         ]
       }
-    ]
+    ],
+    "characterArc": "glutzenbaum",
+    "image": "first-lesson.jpg",
+    "imageSize": "large",
+    "nodes": {
+      "neighbor_match": {
+        "text": "Professor Glützenbaum claps his hands.\n\n\"Splendid! Now, the clever thing about these cards is that they already know how to play. They'll remember their own abilities, follow your instructions, and obey the rules without requiring a judge to inspect every move. Most of the time, anyway.\"\n\nA few students laugh.\n\n\"Of course, designing such enchantments is considerably harder than using them. But we'll get to that soon enough.\"\n\nHe gestures toward the tables.\n\n\"For now, turn to your neighbor and have a friendly match. Experiment! Make mistakes! Discover what your cards can do!\"\n\nThe young woman seated beside you turns with a warm, slightly shy smile.\n\n\"Hello! I'm Molly. Shall we give it a try?\"",
+        "optionTemplates": [
+          {
+            "text": "Give it a try",
+            "effects": [
+              {
+                "type": "start_match",
+                "parameters": {
+                  "opponentKey": "molly"
+                }
+              },
+              {
+                "type": "follow_up_event",
+                "parameters": {
+                  "eventKey": "molly_first_encounter"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
-    "key": "event-3",
-    "text": "This is an enchanting class. Here, you'll learn how to modify existing cards. For now, let's start with Augmentation: it makes a card more powerful in exchange for higher mana requirements. Here is some magic dust, it's an essential component for any magic crafting.",
+    "key": "academy-first-artificery",
+    "text": "The morning finds you in one of the Academy's artificery workshops, a curious mixture of classroom and laboratory. Rows of heavy wooden workbenches are cluttered with pigments, delicate instruments, glass vessels and mysterious brass contraptions. At the front stands Miss Lombard, a stern-looking woman in her forties, whose immaculate appearance suggests that even the dust in this room knows better than to misbehave.\n\n\"Good morning. I am Professor Lombard, and I shall be teaching you artificery. Yesterday, you learned to play with enchanted cards. Today, you shall begin learning to make them.\"\n\nShe pauses to let the distinction sink in.\n\n\"An artificer must be able to bind magical essences into a precise, stable creation. We shall begin with Conjuration: shaping a card from raw materials through intuition and experimentation. The result may surprise you. Indeed, you may discover enchantments you do not yet understand, which you will eventually learn to reproduce deliberately.\"\n\nShe picks up a blank card and places it on her desk.\n\n\"Remember: the purpose of these exercises is not merely to produce better playing cards. Every technique you master here is a step toward creating the sophisticated magical artifacts upon which our profession is built.\"\n\nA young man sitting beside you leans over with a friendly smile. He has an easy confidence about him, and an accent you cannot quite place.\n\n\"She's quite right, you know. My family has been crafting enchanted objects for generations. Back home, a reliable magical advisor can fetch more than a merchant's entire cargo. And here we are, learning to make pieces of cardboard chase one another across a table.\"\n\nHe gives a delighted chuckle.\n\n\"Ousmane, by the way. Ousmane Tempeli. I came all this way to discover what these northern Academies know that we don't. With any luck, something worth bringing home.\"\n\nBefore you can reply, Miss Lombard clears her throat.\n\n\"Mr. Tempeli. I trust your conversation is contributing to the education of the entire class?\"\n\n\"Not yet, Professor. But I have every confidence it will.\"\n\nA few students laugh. Miss Lombard does not.\n\n\"How reassuring. Then perhaps you and Mr. Fibonacci would care to begin your work.\"\n\nOusmane gives you a cheerful wink as he turns toward his materials.\n\n\"Well, Antonio. Shall we see what wonders we can produce?\"",
     "triggers": [
       {
         "triggerType": "day",
@@ -112,10 +155,16 @@
       {
         "triggerType": "period",
         "parameters": {
-          "period": "afternoon"
+          "periods": [
+            "morning"
+          ]
         }
       }
     ],
+    "optionTemplates": [],
+    "characterArc": "lombard",
+    "image": "academy-first-artificery.jpg",
+    "imageSize": "large",
     "effects": [
       {
         "effect": {
@@ -123,6 +172,16 @@
           "parameters": {
             "resourceType": "magic_dust",
             "amount": 10
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "ousmane",
+            "title": "Family and ambitions",
+            "description": "Ousmane Tempeli is a warm, confident young man from a distinguished family of artificers in a distant southern country. He came to the Academy to discover unfamiliar techniques and bring valuable knowledge home. He has practical familiarity with the commercial world of magical artifacts."
           }
         }
       }
@@ -1083,22 +1142,13 @@
   },
   {
     "key": "molly_first_encounter",
+    "text": "\"That was fun! You're quite good at this, aren't you?\"\nShe gathers her cards, carefully stacking them into a neat pile.\n\"It's funny, isn't it? All those little enchantments, just to make some cardboard follow the rules of a game. And apparently this is the easy part!\"\nShe laughs.\n\"My father once met an artificer whose cards could actually give advice. Proper conversations, I mean. Imagine being clever enough to make something like that!\"",
+    "triggers": [],
+    "optionTemplates": [],
     "title": "A Friendly Face",
-    "text": "Your first artificery lesson is about to begin, and the classroom is filling with students, books, and the quiet anxiety of people who have just realized they are expected to know things. You find an empty seat beside a young woman who is carefully arranging her notes into a very neat pile. She looks up and offers you a shy but welcoming smile.\n\n\"Hello! I'm Molly. Molly Moreno. Are you new too?\" She seems relieved when you nod. \"Oh, good. Not that being new is good, exactly. It's just nice not to be the only one who has no idea what we're doing.\"\n\nShe glances at the complicated magical diagrams covering the blackboard, then at her notes. \"I'm sure it'll make sense eventually. Everyone says the first year is difficult.\" A pause. \"Though I suspect they mean it gets worse.\"\n\nThe professor enters, and Molly hurriedly pushes a spare sheet of parchment toward you. \"Here, you can use this. And if you need to borrow anything, just ask.\"\n\nShe smiles again, more confidently this time. At least one person in the Academy seems pleased to have you here.",
-    "triggers": [
-      {
-        "triggerType": "activity_type",
-        "parameters": {
-          "activityType": "class"
-        }
-      },
-      {
-        "triggerType": "period",
-        "parameters": {
-          "period": "afternoon"
-        }
-      }
-    ],
+    "characterArc": "molly",
+    "image": "molly_first_encounter.jpg",
+    "imageSize": "large",
     "effects": [
       {
         "effect": {
@@ -1120,11 +1170,7 @@
           }
         }
       }
-    ],
-    "optionTemplates": [],
-    "characterArc": "molly",
-    "image": "molly_first_encounter.jpg",
-    "imageSize": "large"
+    ]
   },
   {
     "key": "the_little_scholars",
@@ -1141,7 +1187,7 @@
         "triggerType": "known_traits",
         "parameters": {
           "characterKey": "emma",
-          "count": 1
+          "count": 2
         }
       },
       {
@@ -1285,8 +1331,8 @@
     ]
   },
   {
-    "key": "conjuration-1",
-    "text": "This is an artificery class. Here, we'll learn how to create new cards. Conjuration consists in creating a new card from scratch. Try it!",
+    "key": "academy-first-enchantment",
+    "text": "Professor Glützenbaum greets the class with his usual enthusiasm, standing behind a desk laden with enchanted cards, pigments, and an alarming assortment of delicate brass instruments.\n\n\"Good afternoon, my promising young artificers! This morning, you learned to create. This afternoon, you shall learn to improve! Or, occasionally, to make things worse in a carefully calculated and academically respectable manner.\"\n\nHe holds up a card depicting an armored knight.\n\n\"Augmentation! We strengthen an existing enchantment, making our creation more powerful, more resilient, or more capable. Naturally, greater power demands greater magical energy. A stronger card will generally cost more mana to play.\"\n\nHe sets it down and picks up another.\n\n\"Distillation! The opposite principle. We remove something from an enchantment, reducing its power but also its cost. A modest creation, efficiently designed, may prove far more useful than an extravagant masterpiece.\"\n\n\"Rather like certain students,\" someone murmurs from the back.\n\n\"Who said that?\"\n\nThe sharp voice comes from a young man a few seats away. Dark-eyed, handsome, and visibly indignant, he has turned toward his neighbor, who looks utterly bewildered.\n\n\"You were looking at me.\"\n\n\"I was looking at the professor!\"\n\n\"With that expression?\"\n\n\"What expression?\"\n\n\"That one!\"\n\nProfessor Glützenbaum clears his throat.\n\n\"Mr. Farid, I presume? An excellent demonstration of excessive energy expenditure. Perhaps we should attempt a little distillation.\"\n\nThe classroom erupts in laughter. Farid's expression darkens, but he eventually folds his arms and settles back into his seat, muttering something about disrespectful northerners.\n\nGlützenbaum returns to his cards, entirely untroubled.\n\n\"Now then! You have cards, you have tools, and you have two splendid ways to improve your decks—or ruin them beyond recognition. I suggest you begin with the former.\"",
     "triggers": [
       {
         "triggerType": "day",
@@ -1297,11 +1343,28 @@
       {
         "triggerType": "period",
         "parameters": {
-          "period": "morning"
+          "periods": [
+            "afternoon"
+          ]
         }
       }
     ],
-    "optionTemplates": []
+    "optionTemplates": [],
+    "characterArc": "glutzenbaum",
+    "image": "academy-first-enchantment.jpg",
+    "imageSize": "large",
+    "effects": [
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "farid",
+            "title": "Proud and quarrelsome",
+            "description": "Farid is a young student from an Arabic realm, quick to take offense and fiercely protective of his dignity. He has a fiery temperament and appears entirely willing to argue over the smallest perceived slight."
+          }
+        }
+      }
+    ]
   },
   {
     "key": "running-class",
@@ -3459,6 +3522,38 @@
             "specificCardKeys": [
               "happy_little_accident"
             ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "key": "first-league-start",
+    "text": "Professor Lombard is about to start her class when the classroom door opens. The Academy's administrator enters, carrying a large ledger and looking as though he has come to collect money. You instinctively check your purse.\n\n\"Ah, excellent timing!\" Lombard exclaims. \"Ladies and gentlemen, a little announcement before we start.\"\n\nThe administrator adjusts his spectacles.\n\n\"The Academy's first league season of the academic year begins today. As is tradition, each student shall face every other student exactly once in an official match. Victories will earn points toward the league standings, and the student finishing first shall receive a prize in recognition of their achievement.\"\n\nThat gets everyone's attention.\n\n\"The league is an important part of your education,\" Glützenbaum adds enthusiastically. \"A chance to test your creations, exercise your strategic abilities, and demonstrate your progress. And remember, you will be competing with the very cards you craft and enchant during your studies!\"\n\nAround the room, the reactions are decidedly mixed. Emma sits a little straighter, her green eyes bright with unmistakable determination. Beside her, Vaiana yawns extravagantly, apparently finding the prospect of an entire season of competition rather exhausting. Ousmane slowly twirls his magnificent moustache, contemplating the announcement with the serene confidence of a general surveying a battlefield.\n\nMolly, meanwhile, looks rather less enthusiastic. She glances around at her classmates, then down at her modest deck, visibly calculating just how many defeats she might be expected to endure.\n\n\"Your first official matches may begin this afternoon,\" the administrator concludes. \"Choose your opponents, prepare your decks, and may the best artificer win.\"\n\n\"Splendid!\" Lombard claps his hands. \"Nothing like a little healthy competition to encourage academic excellence! Do try to remain on speaking terms with one another.\"\n\nYou survey your fellow students. Several are already exchanging challenging looks.\n\nApparently, your education is about to become considerably more interesting.",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "day": 3
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "periods": [
+            "morning"
+          ]
+        }
+      }
+    ],
+    "optionTemplates": [],
+    "title": "The Ligue Starts",
+    "effects": [
+      {
+        "effect": {
+          "type": "new_league_season",
+          "parameters": {
+            "winnerKey": null
           }
         }
       }

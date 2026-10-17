@@ -6,7 +6,6 @@ import { clearUsedFlavors } from './cards/flavor-generation-pipeline/used-flavor
 import { loadCardTemplates, restoreCardTemplates } from './cards/npc-card-templates';
 import { getBasicLands, initNpcDecks } from './deck';
 import { loadEventTemplates, restoreEventTemplates } from './events';
-import { newLeagueSeason } from './league';
 import { setSceneEvents } from './scene';
 
 export const defaultGameState: GameState = {
@@ -99,6 +98,5 @@ export const initSim = async () => {
   await loadCardTemplates();
   getBasicLands();
   setSceneEvents();
-  newLeagueSeason('');
   initNpcDecks();
 };

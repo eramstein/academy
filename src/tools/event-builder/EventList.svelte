@@ -17,6 +17,8 @@
     onEdit: (event: EventTemplate) => void;
   } = $props();
 
+  let search = $state('');
+
   const arcCharacters = $derived.by(() => {
     const keys = new Set<string>();
     for (const event of events) {
@@ -25,12 +27,33 @@
     return [...keys].sort((a, b) => displayName(a).localeCompare(displayName(b)));
   });
 
-  const arcEvents = $derived(
-    selectedArc ? events.filter((event) => event.characterArc === selectedArc) : []
+  const scopedEvents = $derived(
+    selectedArc ? events.filter((event) => event.characterArc === selectedArc) : events
   );
+
+  const filteredEvents = $derived.by(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return scopedEvents;
+    return scopedEvents.filter((event) => matchesSearch(event, q));
+  });
+
+  const arcEvents = $derived(selectedArc ? filteredEvents : []);
 
   function displayName(key: string): string {
     return npcs[key]?.name ?? key;
+  }
+
+  function matchesSearch(event: EventTemplate, q: string): boolean {
+    const haystack = [
+      event.key,
+      event.text,
+      event.characterArc ?? '',
+      event.characterArc ? displayName(event.characterArc) : '',
+      triggerSummary(event),
+    ]
+      .join(' ')
+      .toLowerCase();
+    return haystack.includes(q);
   }
 
   function formatTrigger(trigger: EventTrigger): string {
@@ -103,16 +126,28 @@
       <h1>Event templates</h1>
       <p class="subtitle">
         {#if selectedArc}
-          {arcEvents.length} arc event{arcEvents.length === 1 ? '' : 's'} · {displayName(
+          {filteredEvents.length} arc event{filteredEvents.length === 1 ? '' : 's'} · {displayName(
             selectedArc
           )}
         {:else}
-          {events.length} event{events.length === 1 ? '' : 's'}
+          {filteredEvents.length} event{filteredEvents.length === 1 ? '' : 's'}
+        {/if}
+        {#if search.trim()}
+          <span class="search-hint"> · filtered</span>
         {/if}
       </p>
     </div>
     <button type="button" class="create-btn" onclick={onCreate}>New event</button>
   </header>
+
+  <label class="search">
+    <span class="sr">Search events</span>
+    <input
+      type="search"
+      placeholder="Search key, text, arc, or triggers…"
+      bind:value={search}
+    />
+  </label>
 
   {#if arcCharacters.length > 0}
     <div class="arc-filters" role="toolbar" aria-label="Character arcs">
@@ -139,12 +174,16 @@
   {/if}
 
   {#if selectedArc}
-    <CharacterArcGraph events={arcEvents} {onEdit} {onCreateFollowUp} />
-  {:else if events.length === 0}
-    <p class="empty">No events.</p>
+    {#if filteredEvents.length === 0}
+      <p class="empty">{search.trim() ? 'No events match your search.' : 'No events.'}</p>
+    {:else}
+      <CharacterArcGraph events={arcEvents} {onEdit} {onCreateFollowUp} />
+    {/if}
+  {:else if filteredEvents.length === 0}
+    <p class="empty">{search.trim() ? 'No events match your search.' : 'No events.'}</p>
   {:else}
     <ul class="list">
-      {#each events as event (event.key)}
+      {#each filteredEvents as event (event.key)}
         <li>
           <button type="button" class="item" onclick={() => onEdit(event)}>
             <div class="item-top">
@@ -220,6 +259,47 @@
 
   .create-btn:hover {
     filter: brightness(1.08);
+  }
+
+  .search {
+    display: block;
+  }
+
+  .search .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .search input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 0.95rem;
+    color: var(--color-cream);
+    background: var(--color-data);
+    border: 1px solid rgba(175, 142, 103, 0.35);
+  }
+
+  .search input::placeholder {
+    color: var(--color-muted-label);
+  }
+
+  .search input:focus {
+    outline: none;
+    border-color: var(--color-brass);
+  }
+
+  .search-hint {
+    color: var(--color-brass);
   }
 
   .arc-filters {

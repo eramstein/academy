@@ -45,11 +45,7 @@ export function getLessonActions(): Action[] {
     });
   }
 
-  if (
-    currentActivity.classType === ClassType.Artificery &&
-    gs.player.craftingKnowledge.keywords &&
-    Object.keys(gs.player.craftingKnowledge.keywords).length > 0
-  ) {
+  if (currentActivity.classType === ClassType.Artificery && gs.time.day > 6) {
     lessons.push({
       label: 'Invoke',
       actionType: ActionType.Invoke,

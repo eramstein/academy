@@ -59,6 +59,7 @@ export function getPossibleActions(): Action[] {
   actions.push(...getShopActions());
   actions.push(...getJobActions());
   actions.push(...getRelationalActions());
+  actions.push(...getLeagueMatchActions());
 
   // check if the number of actions is limited by period
   let filteredActions = actions.filter(
@@ -72,24 +73,19 @@ export function getPossibleActions(): Action[] {
     filteredActions = filteredActions.filter((action) => !action.isLongAction);
   }
 
-  // league matches are mandatory, can't skip scene if there is one
-  const leagueActions = getLeagueMatchActions();
-  if (leagueActions.length > 0) {
-    filteredActions.push(...leagueActions);
-  } else {
-    const nextPeriod = capitalizePeriod(getNextPeriod());
-    const nextActivity = getNextPeriodScheduledActivity();
-    const label = nextActivity
-      ? `${nextPeriod}: ${formatActivityShortLabel(nextActivity)}`
-      : nextPeriod;
-    filteredActions.push({
-      label,
-      actionType: ActionType.Wait,
-      isLongAction: true,
-      actionParameters: {},
-      missingParameters: {},
-    });
-  }
+  // prepare next activity
+  const nextPeriod = capitalizePeriod(getNextPeriod());
+  const nextActivity = getNextPeriodScheduledActivity();
+  const label = nextActivity
+    ? `${nextPeriod}: ${formatActivityShortLabel(nextActivity)}`
+    : nextPeriod;
+  filteredActions.push({
+    label,
+    actionType: ActionType.Wait,
+    isLongAction: true,
+    actionParameters: {},
+    missingParameters: {},
+  });
 
   return filteredActions;
 }

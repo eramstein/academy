@@ -674,10 +674,6 @@
     gap: 0.5rem;
   }
 
-  .section-header.tight {
-    margin-bottom: 0.25rem;
-  }
-
   .basics-meta {
     display: flex;
     align-items: flex-end;
@@ -882,6 +878,5 @@
     .mid-row {
       grid-template-columns: 1fr;
     }
-
   }
 </style>

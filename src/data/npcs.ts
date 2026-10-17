@@ -52,7 +52,7 @@ export const npcs: Record<string, Npc> = {
   administrator: {
     ...createDefaultNpc(),
     key: 'administrator',
-    name: 'Moustapha El-Khouri, Administrator',
+    name: 'Wolfgang Helmert, Administrator',
     placeKey: 'admin-office',
     attributes: { dexterity: 4, intelligence: 19, vitality: 5, charisma: 8, aura: 15 },
     personality: {
@@ -72,7 +72,7 @@ export const npcs: Record<string, Npc> = {
     },
     gender: CharacterGender.Male,
     age: 54,
-    bio: `Moustapha El-Khouri administers the Academy as other men keep a fortress: with ledgers instead of swords, and a patience worn thin by years of excuses. At fifty-four he has the look of someone who has heard every plea twice and believed none of them the second time. Students know him as the grim presence behind the office door, whose word can open a future or close it without raising his voice. He is fiercely intelligent, little given to charm, and possessed of a residual aura that reminds the careless he was never merely a clerk. Decades of petitions, missing funds, and half-mended disasters have left him short-tempered, though not without a private sense of duty. He loves the institution more than he loves the people in it, and he would deny even that. Those who waste his time find him unyielding; those who come prepared find him, if not kind, at least exact. He keeps the school standing, and he expects the school, in return, to stand up straight.`,
+    bio: `Wolfgang Helmert administers the Academy as other men keep a fortress: with ledgers instead of swords, and a patience worn thin by years of excuses. At fifty-four he has the look of someone who has heard every plea twice and believed none of them the second time. Students know him as the grim presence behind the office door, whose word can open a future or close it without raising his voice. He is fiercely intelligent, little given to charm, and possessed of a residual aura that reminds the careless he was never merely a clerk. Decades of petitions, missing funds, and half-mended disasters have left him short-tempered, though not without a private sense of duty. He loves the institution more than he loves the people in it, and he would deny even that. Those who waste his time find him unyielding; those who come prepared find him, if not kind, at least exact. He keeps the school standing, and he expects the school, in return, to stand up straight.`,
   },
   rustic_innkeeper: {
     ...createDefaultNpc(),
@@ -154,7 +154,7 @@ export const npcs: Record<string, Npc> = {
     ...createDefaultNpc(),
     key: 'molly',
     name: 'Molly Moreno',
-    placeKey: 'admin-office',
+    placeKey: 'old-monk-inn',
     attributes: { dexterity: 11, intelligence: 8, vitality: 14, charisma: 18, aura: 9 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true, [CharacterTrait.Shy]: true },
@@ -185,7 +185,7 @@ export const npcs: Record<string, Npc> = {
     ...createDefaultNpc(),
     key: 'elsa',
     name: 'Elsa Falkenstein',
-    placeKey: 'admin-office',
+    placeKey: 'old-monk-inn',
     attributes: { dexterity: 11, intelligence: 8, vitality: 14, charisma: 18, aura: 9 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
@@ -216,7 +216,7 @@ export const npcs: Record<string, Npc> = {
     ...createDefaultNpc(),
     key: 'ousmane',
     name: 'Ousmane Tempeli',
-    placeKey: 'admin-office',
+    placeKey: 'old-monk-inn',
     attributes: { dexterity: 18, intelligence: 18, vitality: 14, charisma: 8, aura: 9 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
@@ -283,7 +283,7 @@ export const npcs: Record<string, Npc> = {
     ...createDefaultNpc(),
     key: 'vai',
     name: 'Vaiana Chen',
-    placeKey: 'admin-office',
+    placeKey: 'old-monk-inn',
     attributes: { dexterity: 15, intelligence: 13, vitality: 8, charisma: 14, aura: 18 },
     personality: {
       traits: { [CharacterTrait.Grumpy]: true },
@@ -313,7 +313,7 @@ export const npcs: Record<string, Npc> = {
     ...createDefaultNpc(),
     key: 'henry',
     name: 'Henry Lombard',
-    placeKey: 'admin-office',
+    placeKey: 'old-monk-inn',
     attributes: { dexterity: 8, intelligence: 15, vitality: 11, charisma: 15, aura: 8 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
@@ -344,7 +344,7 @@ export const npcs: Record<string, Npc> = {
     ...createDefaultNpc(),
     key: 'farid',
     name: 'Farid El-Khouri',
-    placeKey: 'admin-office',
+    placeKey: 'old-monk-inn',
     attributes: { dexterity: 18, intelligence: 15, vitality: 8, charisma: 15, aura: 8 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
@@ -375,7 +375,7 @@ export const npcs: Record<string, Npc> = {
     ...createDefaultNpc(),
     key: 'the-dude',
     name: 'The Dude',
-    placeKey: 'admin-office',
+    placeKey: 'old-monk-inn',
     attributes: { dexterity: 5, intelligence: 7, vitality: 12, charisma: 18, aura: 19 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },

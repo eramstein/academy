@@ -9,7 +9,7 @@ import { scheduleActivity } from './schedule';
 const PLAYER_KEY = 'player';
 const BYE_KEY = '__bye__';
 
-export function newLeagueSeason(winnerKey: string) {
+export function newLeagueSeason(winnerKey: string | null = null) {
   gs.league.season++;
   gs.league.rankings = [{ characterKey: PLAYER_KEY, points: 0 }];
   gs.league.records = {};

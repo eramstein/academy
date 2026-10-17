@@ -75,13 +75,21 @@ export function getDifficultyFromAttributeDelta(attributeDelta: number): number 
 export function confrontNpc(
   attribute: keyof Attributes,
   npcKey: string,
-  attemptedAction?: Action
+  attemptedAction?: Action,
+  options?: AttributeCheckOptions
 ): Promise<AttributeCheckResult> {
   const npcAttributeValue = gs.characters[npcKey].attributes[attribute];
   const playerAttributeValue = gs.player.attributes[attribute];
   const attributeDelta = npcAttributeValue - playerAttributeValue;
   const difficulty = getDifficultyFromAttributeDelta(attributeDelta);
-  return attributeCheck(playerAttributeValue, difficulty, attribute, attemptedAction);
+  return attributeCheck(
+    playerAttributeValue,
+    difficulty,
+    attribute,
+    attemptedAction,
+    undefined,
+    options
+  );
 }
 
 function difficultyLabel(difficulty: number): string {

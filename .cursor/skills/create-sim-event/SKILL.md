@@ -367,29 +367,30 @@ Option, skill-check, and success/failure effects stay bare `EventEffect[]`
 
 `EventEffect` types live in `EventEffectType` (`src/lib/_model/enums-sim.ts`):
 
-| `type`                   | `parameters`                                                                                                                                            |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `add_resource`           | `{ resourceType: "magic_dust" \| "mithril" \| "moxes" \| …, amount }`                                                                                   |
-| `add_gold`               | `{ amount }`                                                                                                                                            |
-| `get_deck`               | `{ deckKey }`                                                                                                                                           |
+| `type`                   | `parameters`                                                                                                                                                                                                                                                                                                                             |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `add_resource`           | `{ resourceType: "magic_dust" \| "mithril" \| "moxes" \| …, amount }`                                                                                                                                                                                                                                                                    |
+| `add_gold`               | `{ amount }`                                                                                                                                                                                                                                                                                                                             |
+| `get_deck`               | `{ deckKey }`                                                                                                                                                                                                                                                                                                                            |
 | `schedule_activity`      | `{ activity: { type, participants, placeKey, classType?, eventId? }, schedule: { date?: { day, period, dayOfWeek? }, nextFree?: true, recurrence?: { … } } }` — `day` is days-from-now; `dayOfWeek` is 1–7 (Mon–Sun) for next matching weekday; with `nextFree`, bump to the next free slot (by day, or by week when `dayOfWeek` is set) |
-| `get_job`                | `{ job: { jobType, name, description, payPerActivity, employerKey, placeKey, schedule } }`                                                              |
-| `follow_up_event`        | `{ eventKey }`                                                                                                                                          |
-| `offer_card_gifts`       | `{ count, poolKeys }`                                                                                                                                   |
-| `gift_card_to_character` | `{ characterKey, cardKey, fromPlayer? }` — `fromPlayer` true (default): move from player; false: mint a new copy into the NPC's collection               |
-| `teach_color`            | `{ color?, characterKey? }`                                                                                                                             |
-| `teach_ability`          | `{ ability?, characterKey? }`                                                                                                                           |
-| `narrate`                | `{ text }` — use for option `**Text:**` bodies                                                                                                          |
-| `level_attribute`        | `{ attribute, amount?, characterKey? }`                                                                                                                 |
-| `level_up_character`     | `{ characterKey }` — increments that NPC's `tcgSkill` by 1                                                                                              |
-| `change_relation`        | `{ characterKey, relationParameter, amount }`                                                                                                           |
-| `update_relation_arc`    | `{ characterKey, text, image? }`                                                                                                                        |
-| `add_relation_tag`       | `{ characterKey, relationTag }` — value must be the **enum string** from `RelationTag` in `enums-sim.ts` (markdown may use the member name; resolve it) |
-| `add_story_tag`          | `{ tag, amount? }`                                                                                                                                      |
-| `add_known_trait`        | `{ characterKey, title, description }` — map “Add to X's known traits: **Title:** desc”                                                                 |
-| `move`                   | `{ placeKey, characterKeys }`                                                                                                                           |
-| `use_focus`              | `{ amount }`                                                                                                                                            |
-| `start_match`            | `{ opponentKey, playerDeckKey?, isLeagueMatch? }` — markdown e.g. `Start match vs franz`. Starts Battle; pair with option `**Next:**` to resume after the fight. See Multi-step exception below for `last_match_*` gating. |
+| `get_job`                | `{ job: { jobType, name, description, payPerActivity, employerKey, placeKey, schedule } }`                                                                                                                                                                                                                                               |
+| `follow_up_event`        | `{ eventKey }`                                                                                                                                                                                                                                                                                                                           |
+| `offer_card_gifts`       | `{ count, poolKeys }`                                                                                                                                                                                                                                                                                                                    |
+| `gift_card_to_character` | `{ characterKey, cardKey, fromPlayer? }` — `fromPlayer` true (default): move from player; false: mint a new copy into the NPC's collection                                                                                                                                                                                               |
+| `teach_color`            | `{ color?, characterKey? }`                                                                                                                                                                                                                                                                                                              |
+| `teach_ability`          | `{ ability?, characterKey? }`                                                                                                                                                                                                                                                                                                            |
+| `narrate`                | `{ text }` — use for option `**Text:**` bodies                                                                                                                                                                                                                                                                                           |
+| `level_attribute`        | `{ attribute, amount?, characterKey? }`                                                                                                                                                                                                                                                                                                  |
+| `level_up_character`     | `{ characterKey }` — increments that NPC's `tcgSkill` by 1                                                                                                                                                                                                                                                                               |
+| `change_relation`        | `{ characterKey, relationParameter, amount }`                                                                                                                                                                                                                                                                                            |
+| `update_relation_arc`    | `{ characterKey, text, image? }`                                                                                                                                                                                                                                                                                                         |
+| `add_relation_tag`       | `{ characterKey, relationTag }` — value must be the **enum string** from `RelationTag` in `enums-sim.ts` (markdown may use the member name; resolve it)                                                                                                                                                                                  |
+| `add_story_tag`          | `{ tag, amount? }`                                                                                                                                                                                                                                                                                                                       |
+| `add_known_trait`        | `{ characterKey, title, description }` — map “Add to X's known traits: **Title:** desc”                                                                                                                                                                                                                                                  |
+| `move`                   | `{ placeKey, characterKeys }`                                                                                                                                                                                                                                                                                                            |
+| `use_focus`              | `{ amount }`                                                                                                                                                                                                                                                                                                                             |
+| `start_match`            | `{ opponentKey, playerDeckKey?, isLeagueMatch? }` — markdown e.g. `Start match vs franz`. Starts Battle; pair with option `**Next:**` to resume after the fight. See Multi-step exception below for `last_match_*` gating.                                                                                                               |
+| `new_league_season`      | `{ winnerKey? }` — starts a fresh league season. Omit `winnerKey` (or pass `null`) for no ceremony; set to `"player"` or an NPC key to record the winner and schedule the ceremony.                                                                                                                                                      |
 
 ### Mapping `## Effects` to couples
 
@@ -467,18 +468,13 @@ Difficulties: `trivial` / `veryeasy` / `easy` / `medium` / `hard` / `extreme` /
 weekday at or after that offset (period defaults to evening). With `nextFree: true`,
 if the target slot is booked, bump forward a day at a time — or by **full weeks** when
 `dayOfWeek` is set. Markdown examples:
-`Schedule \`emma_tourney_training\` event for the next day's evening at Emma's room.` →
-`date.day: 1` (no nextFree).
-`Schedule \`emma_tourney_crafting\` event for evening in 2 days (next free) at the artificery room.` →
-`date.day: 2`, `date.period: evening`, `nextFree: true`, `placeKey: artificery-room`,
-`activity.type: event`, `eventId` = the scheduled event key.
-`Schedule study for next Tuesday evening (next free) at the library.` →
-`date.dayOfWeek: 2`, `date.period: evening`, `nextFree: true`.
-`follow_up_event` queues by key and bypasses that event's triggers — target should
-use `triggers: []`.
-`gift_card_to_character` takes a template `cardKey` (e.g. `happy_little_accident`).
-With `fromPlayer` true/omitted it finds a matching instance in the player's collection
-(exact id or `cardKey-<uuid>`). With `fromPlayer: false` it mints a new copy from the
+`Schedule \`emma_tourney_training\` event for the next day's evening at Emma's room.`→`date.day: 1`(no nextFree).`Schedule \`emma_tourney_crafting\` event for evening in 2 days (next free) at the artificery room.`→`date.day: 2`, `date.period: evening`, `nextFree: true`, `placeKey: artificery-room`,
+`activity.type: event`, `eventId`= the scheduled event key.`Schedule study for next Tuesday evening (next free) at the library.`→`date.dayOfWeek: 2`, `date.period: evening`, `nextFree: true`.
+`follow_up_event`queues by key and bypasses that event's triggers — target should
+use`triggers: []`.
+`gift_card_to_character`takes a template`cardKey`(e.g.`happy_little_accident`).
+With `fromPlayer`true/omitted it finds a matching instance in the player's collection
+(exact id or`cardKey-<uuid>`). With `fromPlayer: false` it mints a new copy from the
 template into the NPC's collection (no transfer).
 
 ## Multi-step events
@@ -488,7 +484,7 @@ event is compiled exactly as the rest of this skill describes.
 
 The template is the root beat (`## Text`, `## Effects`, `## Options`, root `**Trigger:**`).
 Each `## Node: <key>` is a later beat shown in the same scene, with no time advance and
-no second story-tag stamp. `follow_up_event` is still how a choice starts a *different*
+no second story-tag stamp. `follow_up_event` is still how a choice starts a _different_
 event (its own key, its own once-only stamp, any later day or place).
 
 Full shape to copy: `.cursor/skills/create-sim-event/multi-step.example.md`. Do not compile
@@ -579,10 +575,10 @@ Compile rules:
   hidden when every way forward is a locked or missing node. Do not use those prior effects
   to unlock the node the choice opens; entry state is not visible yet. Once the node opens,
   its `**On enter:**` effects run first, then passages and options resolve — so a story tag
-  set on enter *can* gate that same beat's passages and choices.
+  set on enter _can_ gate that same beat's passages and choices.
 - **Exception — `start_match`:** that effect starts Battle and defers `**Next:**` until the
   player returns to Sim. `lastMatchWon` is set when the fight ends, then the parked node is
-  entered and *its* option / passage triggers are judged. Do **not** put `last_match_won` /
+  entered and _its_ option / passage triggers are judged. Do **not** put `last_match_won` /
   `last_match_lost` on the hub node named by `**Next:**` (it must stay enterable before the
   match). Use an ungated hub, then gate child options, passages, or further `**Next:**`
   targets with those triggers. `matches_won` / `matches_lost` are career totals vs an NPC —

@@ -28,6 +28,7 @@ export enum EventEffectType {
   UseFocus = 'use_focus',
   /** Start a battle; pair with `nextNode` to resume the event after the match. */
   StartMatch = 'start_match',
+  NewLeagueSeason = 'new_league_season',
 }
 
 export enum ActionType {

@@ -4,14 +4,20 @@ import { getEnrollmentTransactionParameters } from '../academy';
 import type { InviteParameters } from './invitation';
 
 export const SceneActionTemplates: Record<string, (args: Record<string, any>) => Action> = {
-  enrollmentTransaction: () => ({
+  enrollmentTransaction: (args = {}) => ({
     actionType: ActionType.Negotiate,
-    actionParameters: getEnrollmentTransactionParameters() as Record<string, any>,
+    actionParameters: {
+      ...getEnrollmentTransactionParameters(),
+      ...args,
+    } as Record<string, any>,
     isLongAction: false,
   }),
-  enrollmentPayment: () => ({
+  enrollmentPayment: (args = {}) => ({
     actionType: ActionType.Transaction,
-    actionParameters: getEnrollmentTransactionParameters() as Record<string, any>,
+    actionParameters: {
+      ...getEnrollmentTransactionParameters(),
+      ...args,
+    } as Record<string, any>,
     isLongAction: false,
   }),
   invite: (args) => ({
