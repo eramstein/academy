@@ -1,0 +1,2 @@
+- card crafting as a team (levelling up NPCs pay off)
+- recycling

@@ -1,3 +1,5 @@
 - consumable cards (charges). disintegrates.
   could be feel bad to use (potions in Witcher), 
   might be only for big permanent effects (RPG buff, card buff)
+
+- tagged cards: if a card does something in a match (e.g. winning blow in a tournement), add it a narrative tag
