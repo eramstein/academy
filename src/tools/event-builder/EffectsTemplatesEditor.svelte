@@ -7,13 +7,16 @@
     DayPeriod,
     EventEffectType,
     JobType,
+    PossessionType,
     RelationTag,
     ResourceType,
+    SubscriptionType,
     type EventEffect,
     type Job,
     type Schedule,
     type ScheduledActivity,
   } from '@/lib/_model';
+  import { TransactionType } from '@/lib/sim/actions/transaction';
   import { ACTION_TEMPLATE_KEYS } from '@/lib/sim/cards/action-templates';
   import { KEYWORD_KEYS } from '@/lib/sim/cards/keywords';
   import { WEEK_DAYS } from '@/lib/sim/time';
@@ -35,11 +38,9 @@
     allowAdd?: boolean;
   } = $props();
 
-  // Authorable from events; Subscribe is action-only.
-  const effectTypes = Object.values(EventEffectType).filter(
-    (type) => type !== EventEffectType.Subscribe
-  );
+  const effectTypes = Object.values(EventEffectType);
   const resourceTypes = Object.values(ResourceType);
+  const subscriptionTypes = Object.values(SubscriptionType);
   const cardColors = Object.values(CardColor);
   const abilityKeys = [...KEYWORD_KEYS, ...ACTION_TEMPLATE_KEYS];
   const activityTypes = Object.values(ActivityType);
@@ -51,6 +52,7 @@
   const attributeKeys = ['dexterity', 'intelligence', 'vitality', 'charisma', 'aura'] as const;
   const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
   const relationTags = Object.values(RelationTag);
+  const possessionTypes = Object.values(PossessionType);
 
   type ActivityArgs = Omit<ScheduledActivity, 'day' | 'period'> & { classType?: ClassType };
 
@@ -112,7 +114,14 @@
       case EventEffectType.AddResource:
         return { resourceType: ResourceType.MagicDust, amount: 1 };
       case EventEffectType.AddGold:
-        return { amount: 10 };
+        return { amount: 10, characterKey: 'player' };
+      case EventEffectType.Subscribe:
+        return {
+          subscriptionType: SubscriptionType.MaterialShop,
+          duration: 365,
+          cost: 0,
+          transactionType: TransactionType.Subscription,
+        };
       case EventEffectType.ScheduleActivity:
         return defaultScheduleArgs();
       case EventEffectType.GetJob:
@@ -151,6 +160,13 @@
         return { opponentKey: '', playerDeckKey: '', isLeagueMatch: false };
       case EventEffectType.NewLeagueSeason:
         return { winnerKey: null };
+      case EventEffectType.AddPossession:
+        return {
+          type: PossessionType.Clothing,
+          name: '',
+          description: '',
+          characterKey: 'player',
+        };
       default:
         return {};
     }
@@ -436,11 +452,48 @@
               <input
                 class="input narrow"
                 type="number"
-                min="0"
                 value={effect.parameters.amount ?? 0}
                 aria-label="Gold amount"
                 oninput={(e) =>
                   setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? 'player'}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+            {:else if effect.type === EventEffectType.Subscribe}
+              <select
+                class="input arg"
+                value={effect.parameters.subscriptionType ?? SubscriptionType.MaterialShop}
+                aria-label="Subscription type"
+                onchange={(e) =>
+                  setParameter(i, 'subscriptionType', (e.currentTarget as HTMLSelectElement).value)}
+              >
+                {#each subscriptionTypes as type (type)}
+                  <option value={type}>{type}</option>
+                {/each}
+              </select>
+              <input
+                class="input narrow"
+                type="number"
+                min="1"
+                value={effect.parameters.duration ?? 365}
+                aria-label="Duration days"
+                oninput={(e) =>
+                  setParameter(i, 'duration', Number((e.currentTarget as HTMLInputElement).value))}
+              />
+              <input
+                class="input narrow"
+                type="number"
+                min="0"
+                value={effect.parameters.cost ?? 0}
+                aria-label="Cost"
+                oninput={(e) =>
+                  setParameter(i, 'cost', Number((e.currentTarget as HTMLInputElement).value))}
               />
             {:else if effect.type === EventEffectType.StartMatch}
               <input
@@ -761,6 +814,54 @@
                 aria-label="Known trait description"
                 oninput={(e) =>
                   setParameter(i, 'description', (e.currentTarget as HTMLInputElement).value)}
+              />
+            {:else if effect.type === EventEffectType.AddPossession}
+              <select
+                class="input arg"
+                value={effect.parameters.type ?? PossessionType.Clothing}
+                aria-label="Possession type"
+                onchange={(e) =>
+                  setParameter(i, 'type', (e.currentTarget as HTMLSelectElement).value)}
+              >
+                {#each possessionTypes as type (type)}
+                  <option value={type}>{type}</option>
+                {/each}
+              </select>
+              <input
+                class="input arg"
+                value={effect.parameters.name ?? ''}
+                placeholder="name"
+                aria-label="Possession name"
+                oninput={(e) =>
+                  setParameter(i, 'name', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.description ?? ''}
+                placeholder="description"
+                aria-label="Possession description"
+                oninput={(e) =>
+                  setParameter(i, 'description', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input narrow"
+                type="number"
+                min="1"
+                value={effect.parameters.count ?? ''}
+                placeholder="count"
+                aria-label="Possession count"
+                oninput={(e) => {
+                  const raw = (e.currentTarget as HTMLInputElement).value;
+                  setParameter(i, 'count', raw === '' ? undefined : Number(raw));
+                }}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? 'player'}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
               />
             {:else if effect.type === EventEffectType.Move}
               <select

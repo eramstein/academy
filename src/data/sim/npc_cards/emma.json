@@ -1,5 +1,46 @@
 [
   {
+    "id": "fleeting_illusion",
+    "name": "Fleeting Illusion",
+    "imageFileName": "fleeting_illusion",
+    "type": "creature",
+    "cost": 2,
+    "colors": [{ "color": "blue", "count": 2 }],
+    "power": 2,
+    "retaliate": 0,
+    "maxHealth": 2,
+    "unitTypes": ["spirit"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "forceMoveUnit",
+              "args": {}
+            },
+            "targets": [
+              {
+                "type": "unit_ennemies",
+                "count": 1
+              },
+              {
+                "type": "cell_enemy",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "poolKeys": ["emma", "base"]
+  },
+  {
     "id": "emma_tourney_spell",
     "name": "Two of a Kind",
     "imageFileName": "emma_tourney_spell",

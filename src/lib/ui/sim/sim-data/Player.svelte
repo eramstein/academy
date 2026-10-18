@@ -13,6 +13,7 @@
     [SubscriptionType.Academy]: 'sun',
     [SubscriptionType.Library]: 'book',
     [SubscriptionType.Inn]: 'mug',
+    [SubscriptionType.MaterialShop]: 'gem',
   };
   const RESOURCE_ICONS: Record<ResourceType, string> = {
     [ResourceType.MagicDust]: 'magic_dust',

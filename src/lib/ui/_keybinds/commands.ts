@@ -10,7 +10,13 @@ import { redeemBaseDeck } from '../../sim/deck';
 import { addResource } from '../../sim/effects/resources';
 import { newLeagueSeason } from '../../sim/league';
 import { initOngoingBattle } from '../../sim/ongoing-battle';
+import {
+  applyEventDebugSetup,
+  buildEventDebugPlan,
+  formatSimulatedMessage,
+} from '../../sim/event-debug';
 import { simulateEvent } from '../../sim/scene';
+import { openEventDebug } from '../event-debug-session.svelte';
 import { goToPeriod } from '../../sim/time';
 
 const PERIODS = [DayPeriod.Morning, DayPeriod.Afternoon, DayPeriod.Evening];
@@ -24,6 +30,8 @@ function resolveResource(token: string): ResourceType | undefined {
 export interface CommandResult {
   ok: boolean;
   message: string;
+  /** Keep the console open so the caller can show a follow-up UI. */
+  keepOpen?: boolean;
 }
 
 export async function executeCommand(input: string): Promise<CommandResult> {
@@ -79,16 +87,33 @@ export async function executeCommand(input: string): Promise<CommandResult> {
     }
 
     case 'e': {
-      // /e <event-key>
+      // /e <event-key> [now]
+      // now skips setup. Otherwise prerequisite tags and the scene are applied,
+      // and events with alternate branches open a checklist first.
       const eventKey = parts[1];
+      const immediate = parts[2] === 'now';
       if (!eventKey) {
-        return { ok: false, message: 'Usage: /e <event-key>' };
+        return { ok: false, message: 'Usage: /e <event-key> [now]' };
       }
-      const event = simulateEvent(eventKey);
-      if (!event) {
-        return { ok: false, message: `Event not found: ${eventKey}` };
+      if (immediate) {
+        const event = simulateEvent(eventKey);
+        if (!event) return { ok: false, message: `Event not found: ${eventKey}` };
+        return { ok: true, message: `Simulated event ${eventKey}` };
       }
-      return { ok: true, message: `Simulated event ${eventKey}` };
+      const plan = buildEventDebugPlan(eventKey);
+      if (!plan) return { ok: false, message: `Event not found: ${eventKey}` };
+      const hasBranches = plan.toggles.some((toggle) => toggle.group === 'branch');
+      if (!hasBranches) {
+        const notes = applyEventDebugSetup(
+          plan,
+          plan.toggles.map((toggle) => toggle.id)
+        );
+        const event = simulateEvent(eventKey);
+        if (!event) return { ok: false, message: `Event not found: ${eventKey}` };
+        return { ok: true, message: formatSimulatedMessage(eventKey, notes, plan.notices) };
+      }
+      openEventDebug(plan);
+      return { ok: true, message: '', keepOpen: true };
     }
 
     case 'res': {

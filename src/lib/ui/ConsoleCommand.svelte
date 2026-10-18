@@ -1,23 +1,43 @@
 <script lang="ts">
   import { uiState } from '../_state';
   import { executeCommand } from './_keybinds/commands';
+  import EventDebugSetup from './EventDebugSetup.svelte';
+  import {
+    closeEventDebug,
+    confirmEventDebug,
+    eventDebugSession,
+  } from './event-debug-session.svelte';
 
   let inputValue = $state('');
   let resultMessage = $state('');
   let resultOk = $state(true);
   let inputEl = $state<HTMLInputElement>();
+  let consoleWasOpen = false;
 
   $effect(() => {
-    if (uiState.consoleCommand.visible) {
+    const open = uiState.consoleCommand.visible;
+    if (open && !consoleWasOpen) {
       inputValue = '/';
       resultMessage = '';
       // Focus after the DOM updates
       setTimeout(() => inputEl?.focus(), 0);
+    } else if (!open) {
+      closeEventDebug();
     }
+    consoleWasOpen = open;
   });
 
   function close() {
+    closeEventDebug();
     uiState.consoleCommand.visible = false;
+  }
+
+  function showResult(result: { ok: boolean; message: string }, keepOpen = false) {
+    resultOk = result.ok;
+    resultMessage = result.message;
+    if (result.ok && !keepOpen) {
+      setTimeout(close, 1200);
+    }
   }
 
   async function submit(keepOpen = false) {
@@ -26,12 +46,14 @@
       close();
       return;
     }
-    const result = await executeCommand(inputValue);
-    resultOk = result.ok;
-    resultMessage = result.message;
-    if (result.ok && !keepOpen) {
-      setTimeout(close, 800);
+    const pending = eventDebugSession.plan;
+    if (pending && trimmed === `/e ${pending.eventKey}`) {
+      showResult(confirmEventDebug(true));
+      return;
     }
+    if (pending) closeEventDebug();
+    const result = await executeCommand(inputValue);
+    showResult(result, keepOpen || result.keepOpen);
   }
 
   function handleKeydown(e: KeyboardEvent) {
@@ -48,7 +70,11 @@
   <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
   <div class="console-backdrop" onclick={close}>
     <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-    <div class="console-panel" onclick={(e) => e.stopPropagation()}>
+    <div
+      class="console-panel"
+      class:debug-open={!!eventDebugSession.plan}
+      onclick={(e) => e.stopPropagation()}
+    >
       <input
         bind:this={inputEl}
         bind:value={inputValue}
@@ -64,6 +90,7 @@
           {resultMessage}
         </div>
       {/if}
+      <EventDebugSetup onresult={(result) => showResult(result)} oncancel={close} />
     </div>
   </div>
 {/if}
@@ -86,6 +113,10 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+  }
+
+  .console-panel.debug-open {
+    width: 560px;
   }
 
   .console-input {

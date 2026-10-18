@@ -13,6 +13,7 @@ import type {
   EventEffectType,
   JobType,
   NarrationType,
+  PossessionType,
   RelationTag,
   ResourceType,
   SchoolName,
@@ -298,6 +299,14 @@ export interface Character {
   craftingKnowledge: CardKnowledge;
   craftingSkills: CardCraftingSkills;
   jobs: Job[];
+  possessions: Possession[];
+}
+
+export interface Possession {
+  type: PossessionType;
+  name: string;
+  description: string;
+  count?: number;
 }
 
 export interface Job {

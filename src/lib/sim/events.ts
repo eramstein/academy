@@ -333,6 +333,16 @@ function attachActivityImageToArc(characterKey: string, text: string) {
   });
 }
 
+/** Catalog currently loaded in memory (main game plus mods). */
+export function getLoadedEventTemplates(): readonly StoredEventTemplate[] {
+  return allEventTemplates;
+}
+
+/** Whether this trigger matches the live game. */
+export function eventTriggerMatches(trigger: EventTrigger, eventKey: string): boolean {
+  return doesTriggerMatch(trigger, eventKey);
+}
+
 function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
   // Keep trigger intact so switch narrows parameters per triggerType
   switch (trigger.triggerType) {

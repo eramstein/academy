@@ -21,6 +21,7 @@
     [SubscriptionType.Academy]: 'sun',
     [SubscriptionType.Library]: 'book',
     [SubscriptionType.Inn]: 'mug',
+    [SubscriptionType.MaterialShop]: 'gem',
   };
 
   const RELATION_ORDER = ['friendship', 'respect', 'love', 'rivalry'] as const;

@@ -33,6 +33,7 @@ export const defaultGameState: GameState = {
       charisma: 8,
       aura: 7,
     },
+    possessions: [],
     resources: {
       [ResourceType.MagicDust]: 2,
       [ResourceType.Mithril]: 2,

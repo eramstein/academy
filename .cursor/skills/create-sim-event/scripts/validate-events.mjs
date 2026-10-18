@@ -45,7 +45,9 @@ function enumValues(source, enumName) {
 function recordKeys(source, recordName) {
   const start = source.indexOf(recordName);
   const body = start === -1 ? '' : source.slice(start);
-  return [...body.matchAll(/^ {2}(?:\[?'?([\w-]+)'?\]?):\s*\((?:args)?\)\s*=>/gm)].map((m) => m[1]);
+  return [
+    ...body.matchAll(/^ {2}(?:\[?'?([\w-]+)'?\]?):\s*\((?:args(?:\s*=\s*\{\})?)?\)\s*=>/gm),
+  ].map((m) => m[1]);
 }
 
 const enums = read('src/lib/_model/enums-sim.ts');
@@ -58,6 +60,8 @@ const classTypes = enumValues(enums, 'ClassType');
 const jobTypes = enumValues(enums, 'JobType');
 const emotions = enumValues(enums, 'Emotion');
 const relationTags = enumValues(enums, 'RelationTag');
+const subscriptionTypes = enumValues(enums, 'SubscriptionType');
+const possessionTypes = enumValues(enums, 'PossessionType');
 const cardColors = enumValues(battleEnums, 'CardColor');
 
 const effectTypes = enumValues(enums, 'EventEffectType');
@@ -348,6 +352,57 @@ function checkSchedule(where, schedule) {
   }
 }
 
+function checkPurchaseItems(where, items) {
+  if (items === undefined) return;
+  if (!items || typeof items !== 'object' || Array.isArray(items)) {
+    errors.push(`${where}: items must be an object`);
+    return;
+  }
+  if (items.resources !== undefined) {
+    if (!items.resources || typeof items.resources !== 'object' || Array.isArray(items.resources)) {
+      errors.push(`${where}: items.resources must be an object`);
+    } else {
+      for (const [type, amount] of Object.entries(items.resources)) {
+        checkOneOf(where, 'resourceType', type, resourceTypes);
+        if (typeof amount !== 'number' || amount < 1) {
+          errors.push(`${where}: items.resources.${type} must be a positive number`);
+        }
+      }
+    }
+  }
+  if (items.possessions !== undefined) {
+    if (
+      !items.possessions ||
+      typeof items.possessions !== 'object' ||
+      Array.isArray(items.possessions)
+    ) {
+      errors.push(`${where}: items.possessions must be an object`);
+    } else {
+      for (const [type, name] of Object.entries(items.possessions)) {
+        checkOneOf(where, 'possessionType', type, possessionTypes);
+        if (typeof name !== 'string' || !name.trim()) {
+          errors.push(`${where}: items.possessions.${type} must be a non-empty string name`);
+        }
+      }
+    }
+  }
+}
+
+function checkActionTemplateArgs(where, actionTemplate) {
+  const name = actionTemplate?.actionTemplate;
+  const args = actionTemplate?.args ?? {};
+  if (name !== 'purchase') return;
+  if (typeof args.cost !== 'number' || args.cost < 0) {
+    errors.push(`${where}: purchase args.cost must be a non-negative number`);
+  }
+  checkPurchaseItems(`${where} purchase args`, args.items);
+  const hasResources = args.items?.resources && Object.keys(args.items.resources).length > 0;
+  const hasPossessions = args.items?.possessions && Object.keys(args.items.possessions).length > 0;
+  if (!hasResources && !hasPossessions) {
+    errors.push(`${where}: purchase args.items must include resources and/or possessions`);
+  }
+}
+
 function checkEffect(where, effect) {
   const parameters = effect?.parameters ?? {};
   checkOneOf(where, 'type', effect?.type, effectTypes);
@@ -361,6 +416,33 @@ function checkEffect(where, effect) {
       break;
     case 'add_gold':
       if (typeof parameters.amount !== 'number') errors.push(`${where}: amount must be a number`);
+      if (parameters.characterKey !== undefined) {
+        checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
+      }
+      break;
+    case 'add_possession':
+      checkOneOf(where, 'type', parameters.type, possessionTypes);
+      if (typeof parameters.name !== 'string' || !parameters.name.trim()) {
+        errors.push(`${where}: name must be a non-empty string`);
+      }
+      if (typeof parameters.description !== 'string' || !parameters.description.trim()) {
+        errors.push(`${where}: description must be a non-empty string`);
+      }
+      if (parameters.count !== undefined && typeof parameters.count !== 'number') {
+        errors.push(`${where}: count must be a number`);
+      }
+      if (parameters.characterKey !== undefined) {
+        checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
+      }
+      break;
+    case 'subscribe':
+      checkOneOf(where, 'subscriptionType', parameters.subscriptionType, subscriptionTypes);
+      if (typeof parameters.duration !== 'number') {
+        errors.push(`${where}: duration must be a number`);
+      }
+      if (parameters.cost !== undefined && typeof parameters.cost !== 'number') {
+        errors.push(`${where}: cost must be a number`);
+      }
       break;
     case 'schedule_activity': {
       const activity = parameters.activity;
@@ -670,6 +752,7 @@ function checkBeatOptions(where, options, nodeKeys) {
         option.actionTemplate.actionTemplate,
         actionTemplates
       );
+      checkActionTemplateArgs(optionWhere, option.actionTemplate);
     }
     if (option?.attributeCheck && option?.effects) {
       errors.push(`${optionWhere}: use either effects or attributeCheck, not both`);

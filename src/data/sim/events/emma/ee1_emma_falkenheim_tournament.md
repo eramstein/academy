@@ -206,6 +206,7 @@ You leave Falkenheim behind and begin the journey home.
 **Outcomes:**
 
 - Follow up event `emma_return_win`.
+- Story tag `emma_tournament_win`.
 
 ### Option B: Return to the Academy — Defeat
 
@@ -239,3 +240,4 @@ You and Emma begin the journey home, leaving Falkenheim to contemplate its hospi
 **Outcomes:**
 
 - Follow up event `emma_return_win`.
+- Story tag `emma_tournament_win`.

@@ -370,7 +370,8 @@ Option, skill-check, and success/failure effects stay bare `EventEffect[]`
 | `type`                   | `parameters`                                                                                                                                                                                                                                                                                                                             |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `add_resource`           | `{ resourceType: "magic_dust" \| "mithril" \| "moxes" \| …, amount }`                                                                                                                                                                                                                                                                    |
-| `add_gold`               | `{ amount }`                                                                                                                                                                                                                                                                                                                             |
+| `add_gold`               | `{ amount, characterKey? }` — defaults to the player; pass an NPC key to credit that character                                                                                                                                                                                                                                           |
+| `subscribe`              | `{ subscriptionType, duration, cost?, transactionType? }` — days added to `player.subscriptions`; use `material_shop` for the materials-shop discount; `cost`/`transactionType` default to `0` / `subscription` when omitted from events                                                                                                 |
 | `get_deck`               | `{ deckKey }`                                                                                                                                                                                                                                                                                                                            |
 | `schedule_activity`      | `{ activity: { type, participants, placeKey, classType?, eventId? }, schedule: { date?: { day, period, dayOfWeek? }, nextFree?: true, recurrence?: { … } } }` — `day` is days-from-now; `dayOfWeek` is 1–7 (Mon–Sun) for next matching weekday; with `nextFree`, bump to the next free slot (by day, or by week when `dayOfWeek` is set) |
 | `get_job`                | `{ job: { jobType, name, description, payPerActivity, employerKey, placeKey, schedule } }`                                                                                                                                                                                                                                               |
@@ -391,6 +392,7 @@ Option, skill-check, and success/failure effects stay bare `EventEffect[]`
 | `use_focus`              | `{ amount }`                                                                                                                                                                                                                                                                                                                             |
 | `start_match`            | `{ opponentKey, playerDeckKey?, isLeagueMatch? }` — markdown e.g. `Start match vs franz`. Starts Battle; pair with option `**Next:**` to resume after the fight. See Multi-step exception below for `last_match_*` gating.                                                                                                               |
 | `new_league_season`      | `{ winnerKey? }` — starts a fresh league season. Omit `winnerKey` (or pass `null`) for no ceremony; set to `"player"` or an NPC key to record the winner and schedule the ceremony.                                                                                                                                                      |
+| `add_possession`         | `{ type: "clothing" \| …, name, description, count?, characterKey? }` — appends a possession to that character; defaults to the player                                                                                                                                                                                                   |
 
 ### Mapping `## Effects` to couples
 
@@ -460,8 +462,39 @@ template (not both), and **either** a next node **or** `follow_up_event` (not bo
 ```
 
 Difficulties: `trivial` / `veryeasy` / `easy` / `medium` / `hard` / `extreme` /
-`impossible`. Action templates on options: only `enrollmentTransaction` and
-`enrollmentPayment` (`args: {}`).
+`impossible`. Action templates on options:
+
+| Template                | `args`                                           | Notes                                                                                         |
+| ----------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `enrollmentTransaction` | `{}` (or overrides)                              | Negotiate academy enrollment                                                                  |
+| `enrollmentPayment`     | `{}` (or overrides)                              | Pay academy enrollment without negotiate                                                      |
+| `purchase`              | `{ cost, items?: { resources?, possessions? } }` | Fixed-cost purchase. `possessions` is `Partial<Record<PossessionType, string>>` (type → name) |
+| `invite`                | invite parameters                                | Scene invite action                                                                           |
+
+Markdown example for a clothing purchase:
+
+```markdown
+**Outcomes:**
+
+- No additional game-state effects.
+
+**Action:** purchase — spend 80 gold for clothing "Evening suit"
+```
+
+```json
+"actionTemplate": {
+  "actionTemplate": "purchase",
+  "args": {
+    "cost": 80,
+    "items": {
+      "possessions": { "clothing": "Evening suit" }
+    }
+  }
+}
+```
+
+`purchase` charges `cost` gold and grants each listed possession (name used as description).
+Prefer `purchase` when the player must pay; use free `add_possession` when there is no cost.
 
 `schedule_activity`: `schedule.date.day` is an **offset from today** (`0` = today).
 `schedule.date.dayOfWeek` is **1–7 (Monday–Sunday)** and targets the next matching

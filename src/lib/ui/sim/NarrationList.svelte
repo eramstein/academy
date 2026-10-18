@@ -237,6 +237,14 @@
       }));
   }
 
+  function purchasedPossessions(entry: Narration): string[] {
+    const possessions = entry.transaction?.items?.possessions;
+    if (!possessions) return [];
+    return Object.values(possessions).filter(
+      (name): name is string => typeof name === 'string' && name.trim().length > 0
+    );
+  }
+
   /**
    * Static event art for the book portrait slot.
    * `large` replaces the Location panel instead and is omitted here.
@@ -506,6 +514,7 @@
 {#snippet transaction(entry: Narration, animate: boolean)}
   {@const cost = entry.transaction?.cost ?? 0}
   {@const items = purchasedResources(entry)}
+  {@const possessionNames = purchasedPossessions(entry)}
   {@const coinPath = uiIconPath('coin')}
   <div class="transaction">
     <NarrationText
@@ -521,7 +530,7 @@
         <span class="tx-icon" style="--icon: url('{coinPath}')"></span>
         <span class="tx-label">−{cost}</span>
       </span>
-      {#if items.length > 0}
+      {#if items.length > 0 || possessionNames.length > 0}
         <span class="tx-arrow">→</span>
         {#each items as item (item.type)}
           {@const iconPath = uiIconPath(resourceIcon[item.type])}
@@ -532,6 +541,11 @@
               style="--icon: url('{iconPath}')"
             ></span>
             <span class="tx-label">{item.count} {item.label}</span>
+          </span>
+        {/each}
+        {#each possessionNames as name (name)}
+          <span class="tx-chip tx-item">
+            <span class="tx-label">{name}</span>
           </span>
         {/each}
       {/if}

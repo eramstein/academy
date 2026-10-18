@@ -45,6 +45,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     relationTags: [],
     knownTraits: [],
     tcgSkill: 0,
+    possessions: [],
   };
 }
 

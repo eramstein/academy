@@ -1,0 +1,41 @@
+[
+  {
+    "id": "the_academy",
+    "name": "The Academy",
+    "imageFileName": "the_academy",
+    "type": "land",
+    "colors": [],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "summon",
+              "args": {
+                "summonedUnit": {
+                  "id": "new_student",
+                  "name": "New Student",
+                  "imageFileName": "new_student",
+                  "rarity": "common",
+                  "type": "unit",
+                  "cost": 1,
+                  "power": 1,
+                  "maxHealth": 1,
+                  "retaliate": 0,
+                  "colors": [],
+                  "unitTypes": ["human"]
+                },
+                "isRespawn": true
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "Activated"
+        },
+        "cost": 5
+      }
+    ],
+    "poolKeys": ["academy", "special"]
+  }
+]

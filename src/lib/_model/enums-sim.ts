@@ -29,6 +29,7 @@ export enum EventEffectType {
   /** Start a battle; pair with `nextNode` to resume the event after the match. */
   StartMatch = 'start_match',
   NewLeagueSeason = 'new_league_season',
+  AddPossession = 'add_possession',
 }
 
 export enum ActionType {
@@ -86,6 +87,7 @@ export enum SubscriptionType {
   Academy = 'academy',
   Library = 'library',
   Inn = 'inn',
+  MaterialShop = 'material_shop',
 }
 
 export enum CharacterTrait {
@@ -181,4 +183,8 @@ export enum RelationTag {
   SignificantOther = 'significant_other',
   // NPC specific tags
   EmmaSmitten = "You are under Emma's spell",
+}
+
+export enum PossessionType {
+  Clothing = 'clothing',
 }

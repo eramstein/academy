@@ -384,13 +384,16 @@ export function narrateCardEncanted(oldCard: CardTemplate, newCard: CardTemplate
 }
 
 export function narrateTransaction(transaction: TransactionParameters) {
+  const resourceParts = Object.entries(transaction.items?.resources ?? {})
+    .filter(([, count]) => (count ?? 0) > 0)
+    .map(([type, count]) => `${count} ${type.replace(/_/g, ' ').toLowerCase()}`);
+  const possessionParts = Object.entries(transaction.items?.possessions ?? {})
+    .filter(([, name]) => typeof name === 'string' && name.trim())
+    .map(([, name]) => (name as string).trim());
+  const itemText = [...resourceParts, ...possessionParts].join(', ') || 'nothing';
   narrate({
     id: crypto.randomUUID(),
-    text: `You spent ${transaction.cost} gold to purchase ${Object.entries(
-      transaction.items?.resources ?? {}
-    )
-      .map(([type, count]) => `${count} ${type.replace(/_/g, ' ').toLowerCase()}`)
-      .join(', ')}.`,
+    text: `You spent ${transaction.cost} gold to purchase ${itemText}.`,
     type: NarrationType.Transaction,
     transaction: transaction,
   });

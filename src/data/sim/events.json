@@ -1265,7 +1265,7 @@
           {
             "type": "add_story_tag",
             "parameters": {
-              "tag": "molly_emma_suggested",
+              "tag": "emma_tutoring_referral",
               "amount": 1
             }
           }
@@ -3452,6 +3452,13 @@
                 "parameters": {
                   "eventKey": "emma_return_win"
                 }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_tournament_win",
+                  "amount": 1
+                }
               }
             ]
           },
@@ -3514,6 +3521,13 @@
                 "type": "follow_up_event",
                 "parameters": {
                   "eventKey": "emma_return_win"
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_tournament_win",
+                  "amount": 1
                 }
               }
             ]
@@ -4081,6 +4095,1195 @@
     "emotion": "disappointed",
     "image": "emma_return_lost.jpg",
     "imageSize": "large"
+  },
+  {
+    "key": "emma_falkenheim_prize",
+    "text": "Being summoned to the administrator's office first thing in the morning is rarely a cause for celebration. You and Emma arrive with matching expressions of suspicion, although Emma has at least made an effort to look respectable.\n\nThe administrator, however, seems positively delighted.\n\n\"Ah! Our champions! Come in, come in!\" He gestures toward the chairs opposite his desk. \"I have some excellent news. The Academy's reputation has benefited enormously from your little expedition to Falkenheim. The Board of Governors is most pleased.\"\n\nEmma exchanges a glance with you. You've never heard the words _Board of Governors_ and _pleased_ in the same sentence before.\n\n\"Ordinarily, your tournament prize would take several weeks to process. However, in recognition of the prestige you've brought us, the Academy has decided to advance the reward from its own treasury.\"\n\nHe produces two official-looking documents.\n\n\"Each of you may choose between a payment of one thousand coins, or a twenty-percent discount on all purchases at the Academy's materials shop for a year.\"\n\n\"One thousand coins?\" Emma repeats.\n\n\"Indeed.\"\n\n\"In actual money?\"\n\nThe administrator looks mildly offended. \"We do occasionally conduct our affairs in actual money, Miss Delamain.\"\n\n\"Cash,\" she says immediately.\n\n\"Perhaps you'd like to consider—\"\n\n\"Cash.\"\n\n\"Very well, then.\"\n\nHe makes a note, carefully avoiding your eyes.\n\n\"And there is one more thing.\"\n\nFrom a drawer, he produces two cards and places them on the desk.\n\nYou recognize the imposing towers, elegant courtyards, and familiar spires of your own Academy. Beautifully rendered, the illustration seems almost alive with magical energy.\n\n\"A commemorative Academy land card, for each of you. Commissioned especially for our victorious representatives.\"\n\nEmma picks hers up with almost reverent care.\n\n\"A land card?\" She examines it from several angles. \"But these are advanced enchantments! We won't even begin studying their construction until our later years.\"\n\n\"Quite so. Consider it an investment in the Academy's future champions.\"\n\nEmma is too busy admiring her card to notice the administrator looking rather pleased with that last remark.\n\n\"And you, Mr. Fibonacci? Which reward would you prefer?\"",
+    "triggers": [
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "morning"
+        }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_tournament_win",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "place",
+        "parameters": {
+          "placeKey": "admin-office"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Take the 1,000 coins",
+        "nextNode": "afterPrize",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I'll take the money, thank you.\"\n\n\"A sound decision,\" Emma says with obvious approval.\n\nThe administrator counts out your reward and presents you with a receipt requiring only three signatures.\n\nYou sign the first.\n\nThen the second.\n\nBy the third, you begin to understand why the Academy employs so many administrators."
+            }
+          },
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": 1000
+            }
+          }
+        ]
+      },
+      {
+        "text": "Take the materials discount",
+        "nextNode": "afterPrize",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I'll take the discount at the materials shop.\"\n\nEmma raises an eyebrow.\n\n\"An interesting choice, Fibonacci.\"\n\n\"Think how much we spend on crafting materials.\"\n\n\"Oh, I've thought about it. Extensively.\" She glances at her own reward. \"But I rather suspect my banker would be less enthusiastic about accepting discounted gemstones in lieu of payment.\"\n\nThe administrator hands you a stamped certificate.\n\n\"Twenty percent off, valid for one year. Non-transferable, non-refundable, and subject to the usual conditions.\"\n\n\"How many conditions?\"\n\n\"Only forty-seven.\"\n\nEmma looks at you with profound sympathy."
+            }
+          },
+          {
+            "type": "subscribe",
+            "parameters": {
+              "subscriptionType": "material_shop",
+              "duration": 365,
+              "cost": 0,
+              "transactionType": "subscription"
+            }
+          }
+        ]
+      }
+    ],
+    "title": "The Spoils of Victory",
+    "characterArc": "emma",
+    "emotion": "happy",
+    "image": "emma_falkenheim_prize.jpg",
+    "imageSize": "large",
+    "effects": [
+      {
+        "effect": {
+          "type": "offer_card_gifts",
+          "parameters": {
+            "count": 1,
+            "specificCardKeys": [
+              "the_academy"
+            ]
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "gift_card_to_character",
+          "parameters": {
+            "characterKey": "emma",
+            "cardKey": "the_academy",
+            "fromPlayer": false
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_gold",
+          "parameters": {
+            "amount": 1000,
+            "characterKey": "emma"
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_story_tag",
+          "parameters": {
+            "tag": "emma_loan_repaid"
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "emma",
+            "title": "Financial independence",
+            "description": "Her tournament prize has allowed her to repay her tuition loan, removing the immediate threat to her education."
+          }
+        }
+      }
+    ],
+    "nodes": {
+      "afterPrize": {
+        "text": "Outside the office, Emma stops in the corridor and looks down at the purse in her hand.\n\nThen she laughs.\n\nNot her usual little sarcastic laugh, either. A genuine, delighted laugh that makes a passing student turn to stare.\n\n\"Antonio. I'm going to pay it off.\"\n\n\"Your loan?\"\n\n\"Every last coin. The bank, the interest, those dreadful letters...\" She gives the purse a little shake. \"All of it. Gone!\"\n\nShe looks almost dizzy with relief.\n\n\"I've spent months calculating how much I owe, how much I can earn, how long I can possibly stay here. And now...\"\n\nFor a moment, she seems unable to finish the sentence.\n\nThen she looks up at you, grinning.\n\n\"I can actually afford to be a student!\"\n\n\"An alarming prospect. You might have time to enjoy yourself.\"\n\n\"Don't be ridiculous, Fibonacci. I have far too much work to—\"\n\nShe stops.\n\nA thoughtful expression crosses her face.\n\n\"Well. Perhaps a _little_ time.\"\n\n{{tutoringThanks}}",
+        "optionTemplates": [],
+        "effects": [
+          {
+            "effect": {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_falkenheim_prize_received"
+              }
+            }
+          }
+        ],
+        "passages": {
+          "tutoringThanks": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "emma_tutoring_referral",
+                      "value": 1
+                    }
+                  }
+                ],
+                "text": "\"And you know, with the money I'm earning from Molly's tutoring project, I might even be able to afford a few luxuries now and then.\"\n\nShe says the word _luxuries_ with the cautious fascination of someone discussing a rare and potentially dangerous magical substance.\n\nThen her expression softens.\n\n\"Speaking of which, Antonio...\"\n\nShe reaches over and gives your arm a brief, affectionate squeeze.\n\n\"Thank you. For suggesting me to Molly, I mean. I don't think I ever properly thanked you for that.\"\n\n\"You did, actually.\"\n\n\"Well, I'm doing it again. Try to endure the experience.\"\n\nHer smile widens.\n\n\"Come on. I'm buying you a coffee at the cafeteria.\"\n\n\"You're buying?\"\n\n\"Yes, Fibonacci. With my own money. A truly historic occasion.\"\n\nShe starts down the corridor, then looks back.\n\n\"And don't get carried away. One coffee. I'm not made of money.\""
+              }
+            ],
+            "fallback": "She slips the purse safely into her bag, still smiling to herself.\n\n\"Well, I ought to visit the bank before my next class.\"\n\n\"Already?\"\n\n\"Antonio, I've been dreaming of that moment for months. I'm not waiting another day.\"\n\nShe takes a few steps, then turns back.\n\n\"And we should celebrate properly sometime. Preferably somewhere that doesn't charge extra for a clean table.\"\n\nShe gives you a bright smile.\n\n\"See you later, Fibonacci!\""
+          }
+        }
+      }
+    }
+  },
+  {
+    "key": "emma_ball_invitation",
+    "text": "You arrive at the artificery classroom a little early and find Emma already at her desk, reading a letter. She looks unusually pleased with herself.\n\n\"Antonio! Excellent. I was hoping to catch you before class.\"\n\nShe folds the letter and sets it aside.\n\n\"Have you heard about the Academy's annual ball next Saturday? Apparently, it's quite the occasion. Music, dancing, extravagant dresses, and enough distinguished guests to populate a royal court.\"\n\nYou have heard something about it.\n\n\"Well, I have a particular interest in one of those guests. Lord de Varenne. An elderly gentleman, enormously respected, and one of the greatest patrons of artificery in the kingdom. He's helped launch the careers of several remarkable scholars.\"\n\nHer green eyes brighten with unmistakable ambition.\n\n\"An introduction could open some very interesting doors. And I intend to make a good impression.\"\n\nShe pauses, then gives you a mischievous smile.\n\n\"Naturally, a young lady cannot attend such an occasion without a suitable escort. And I believe I know just the gentleman.\"\n\nYou look around the classroom, wondering whom she has in mind.\n\n\"Don't be obtuse, Fibonacci. I'm inviting _you_.\"\n\n{{ ballet_recollection }}\n\n\"So, Antonio. Would you do me the honor of accompanying me to the ball? I promise excellent company, a respectable amount of dancing, and only a modest risk of social humiliation.\"\n\nShe considers that last promise.\n\n\"Well. I promise to do my best.\"",
+    "triggers": [
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_trusted_companion",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_ballet_incident",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "day_of_week",
+        "parameters": {
+          "daysOfWeek": [
+            4
+          ]
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "morning"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept the invitation",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"An evening of excellent food, dancing, and the most promising artificer of our generation? How could I refuse?\"\n\nEmma beams.\n\n\"Splendid! I knew you'd recognize a good opportunity when one presented itself.\"\n\nShe retrieves a small notebook and makes a mark beside something she's already written.\n\n\"You've put me on a list?\"\n\n\"Naturally. One must plan ahead.\"\n\nShe studies you for a moment, her expression growing thoughtful.\n\n\"Although there is one small matter we'll need to address.\"\n\n\"What matter?\"\n\n\"Your wardrobe.\"\n\nYou glance down at your clothes.\n\n\"What's wrong with my wardrobe?\"\n\n\"Nothing at all. For attending lectures, visiting the library, or digging potatoes.\"\n\nShe gives you a reassuring pat on the arm.\n\n\"Don't worry, Antonio. I'll take care of everything. Meet me in town tomorrow afternoon. We'll find you something suitable.\"\n\nThe professor enters, and Emma turns toward the front of the classroom with a perfectly innocent expression.\n\nYou have the distinct impression that you've just volunteered for considerably more than an evening of dancing."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_ball_accepted"
+            }
+          },
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "event",
+                "participants": [
+                  "player",
+                  "emma"
+                ],
+                "placeKey": "town-square",
+                "eventId": "emma_ball_shopping"
+              },
+              "schedule": {
+                "date": {
+                  "day": 1,
+                  "period": "evening"
+                }
+              }
+            }
+          },
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "event",
+                "participants": [
+                  "player",
+                  "emma"
+                ],
+                "placeKey": "academy-hall",
+                "eventId": "emma_academy_ball"
+              },
+              "schedule": {
+                "date": {
+                  "day": 0,
+                  "period": "evening",
+                  "dayOfWeek": 6
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "text": "Politely decline",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I'm flattered, Emma. Truly. But I think I'll have to decline.\"\n\nFor a moment, she looks surprised. Then she gives a small, accepting nod.\n\n\"Of course. A pity, but I understand.\"\n\nShe picks up her letter again, tapping it thoughtfully against the desk.\n\n\"Well, I'll simply have to make other arrangements. It would be absurd to miss such an opportunity for want of a dancing partner.\"\n\nHer familiar smile returns.\n\n\"And frankly, I was being rather generous in overlooking your questionable qualifications.\"\n\n\"Questionable?\"\n\n\"Entirely unproven on the dance floor, Fibonacci. A considerable risk.\"\n\nYou laugh, and she gives you a friendly little wave as the professor enters.\n\n\"Enjoy your Saturday evening, Antonio. I shall endeavor to become rich and famous in your absence.\""
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_ball_declined"
+            }
+          }
+        ]
+      }
+    ],
+    "title": "An Invitation of Sorts",
+    "characterArc": "emma",
+    "emotion": "amused",
+    "effects": [
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "emma",
+            "title": "Professional ambition",
+            "description": "Emma hopes to meet Lord de Varenne at the Academy ball. He is a distinguished patron of artificery whose support could greatly advance her career."
+          }
+        }
+      }
+    ],
+    "passages": {
+      "ballet_recollection": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_ballet_flirt",
+                  "value": 1
+                }
+              }
+            ],
+            "text": "She rests her chin on one hand, looking thoroughly entertained.\n\n\"After all, I remember how deeply you appreciated my ballet performance. Such an extraordinary connoisseur of the fine arts.\"\n\nShe pauses delicately.\n\n\"Particularly the _physique_, if memory serves. And I assure you, Antonio, I intend to look absolutely spectacular.\"\n\nHer smile becomes positively wicked.\n\n\"Though you will be expected to remain capable of speech this time. We shall be in distinguished company.\""
+          },
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "You are under Emma's spell"
+                }
+              }
+            ],
+            "text": "\"Besides, I happen to know that you're a great admirer of dancing. I remember that expression on your face when Elsa so kindly arranged our little demonstration.\"\n\nShe looks at you with innocent curiosity.\n\n\"Was it my technique that impressed you, I wonder? My balance? My artistic interpretation?\"\n\nHer lips twitch.\n\n\"Or were you simply overwhelmed by the beauty of classical ballet?\""
+          },
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_parameter",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "rivalry",
+                  "value": 3
+                }
+              }
+            ],
+            "text": "\"And since you were so gracious about my dancing last time, I thought you might appreciate another opportunity to judge my performance.\"\n\nShe raises an eyebrow.\n\n\"I believe your exact words were _a little showy_. Well, Fibonacci, I intend to be positively magnificent. Try not to look too impressed.\""
+          }
+        ],
+        "fallback": "\"And you've already seen me dance, of course. Under rather unusual circumstances, admittedly.\"\n\nShe smiles at the memory.\n\n\"Poor Elsa. All that trouble to arrange an audience, only to discover that everyone rather enjoyed the performance.\"\n\nShe gives a little shrug.\n\n\"I thought this time we might attend somewhere we're actually invited.\""
+      }
+    }
+  },
+  {
+    "key": "emma_ball_shopping",
+    "title": "A Question of Elegance",
+    "text": "The shop Emma has chosen stands on one of the more fashionable streets of the town, its windows displaying embroidered waistcoats, elegant coats, and garments whose prices appear to have been calculated by someone with a personal grudge against students.\n\nEmma is waiting outside, looking entirely at ease.\n\n\"Antonio! Right on time. Come along, we have work to do.\"\n\nInside, a dignified tailor greets you with a polite bow. His enthusiasm increases noticeably when Emma begins examining his finest merchandise.\n\n\"Something suitable for the Academy ball,\" she explains. \"Elegant, distinguished, but not excessively ostentatious. We want to make a good impression, not declare war on the aristocracy.\"\n\nThe tailor nods gravely and disappears among the shelves.\n\nWhat follows is a rather exhausting series of fittings.\n\nThe first coat makes you look, according to Emma, \"like a provincial tax collector attending his own funeral.\" The second is apparently designed for a man of considerably greater girth. A third features so much embroidery that Emma takes one look at you and bursts into laughter.\n\n\"Oh, Antonio. You look like a prince!\"\n\n\"Excellent.\"\n\n\"A prince who has misplaced both his kingdom and his judgment. Take it off.\"\n\nEventually, after considerable discussion, the tailor produces three outfits that meet Emma's exacting standards.\n\nThe first is a handsome, understated ensemble in dark wool, well cut and entirely respectable. The second is considerably finer, with rich fabrics, careful embroidery, and the unmistakable appearance of a gentleman accustomed to good company. The third is a particularly striking creation of deep blue velvet and silver detailing, elegant enough to attract attention without quite becoming ridiculous.\n\nEmma studies all three with the concentration of someone evaluating competing designs for an exceptionally important enchantment.\n\n\"Well, Fibonacci. They all have their merits. The first is perfectly respectable, the second is rather distinguished, and the third...\"\n\nShe considers the elaborate blue coat.\n\n\"The third would certainly make an impression.\"\n\nThen she turns toward you with a mischievous smile.\n\n\"So. How much of your fortune are you prepared to sacrifice upon the altar of elegance?\"",
+    "triggers": [
+      {
+        "triggerType": "scheduled_activity",
+        "parameters": {}
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "A respectable gentleman — 50",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You settle on the modest dark wool ensemble. The tailor makes a few adjustments, and you examine yourself in the mirror with considerable satisfaction.\n\n\"Perfectly respectable,\" Emma declares, walking slowly around you. \"A sensible choice. Understated, practical, and quite flattering.\"\n\n\"High praise indeed.\"\n\n\"Don't become accustomed to it.\"\n\nShe straightens your collar and steps back.\n\n\"There. You look like a young gentleman with excellent prospects and the good sense not to spend them all on clothing.\"\n\n\"Almost as though I belong among the aristocracy.\"\n\n\"Oh, let's not be ambitious, Antonio. We can manage _well-dressed_. Aristocratic manners may take a little longer.\"\n\nShe smiles, clearly pleased with the result."
+            }
+          },
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": -50
+            }
+          },
+          {
+            "type": "add_possession",
+            "parameters": {
+              "type": "clothing",
+              "name": "Respectable Evening Attire",
+              "description": "A well-tailored ensemble of dark wool, with a crisp linen shirt and a modest embroidered waistcoat. Understated, practical, and entirely suitable for respectable company."
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_ball_outfit_respectable"
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ],
+        "nextNode": "a_finishing_touch"
+      },
+      {
+        "text": "Dress to impress — 100",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You choose the distinguished ensemble. The tailor helps you into the fine coat, adjusts its embroidered cuffs, and presents you before the mirror.\n\nEmma studies you with evident approval.\n\n\"Now _that_ is considerably better.\"\n\nShe approaches, brushes an imaginary speck of dust from your shoulder, and adjusts the fold of your cravat.\n\n\"Stand straight, Antonio.\"\n\nYou oblige.\n\n\"Chin up. Shoulders back.\"\n\n\"Anything else, Your Majesty?\"\n\n\"Yes. Try not to speak until I've finished admiring my work.\"\n\nShe takes a step back, tilts her head, and smiles.\n\n\"Actually... yes. That suits you rather well.\"\n\nFor a moment, she seems genuinely impressed. Then her familiar composure returns.\n\n\"Remarkable what proper tailoring can accomplish.\"\n\nYou decide to accept the compliment before she has time to qualify it further."
+            }
+          },
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": -100
+            }
+          },
+          {
+            "type": "add_possession",
+            "parameters": {
+              "type": "clothing",
+              "name": "Distinguished Evening Suit",
+              "description": "An elegant formal ensemble of fine charcoal wool, with tasteful embroidery, polished buttons, and a beautifully tailored waistcoat. The attire of a confident young gentleman who knows how to present himself in distinguished company."
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_ball_outfit_distinguished"
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          }
+        ],
+        "nextNode": "a_finishing_touch"
+      },
+      {
+        "text": "Spare no expense — 200",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You point toward the elaborate blue velvet ensemble.\n\n\"That one.\"\n\nEmma's eyebrows rise.\n\n\"Antonio. Are you quite certain?\"\n\n\"Absolutely. You said we ought to make an impression.\"\n\n\"I did. I wasn't necessarily suggesting we attempt to outshine the entire nobility.\"\n\nNevertheless, she looks delighted as the tailor helps you into the magnificent coat.\n\nThe fabric is extraordinarily fine, the silver embroidery delicate and intricate. When the tailor finishes, Emma falls silent.\n\nShe looks you up and down, her expression unusually difficult to read.\n\n\"Well?\" you ask.\n\n\"One moment.\"\n\nShe circles you slowly, examining the cut of the shoulders, the fall of the fabric, the silver clasp at your throat.\n\nThen she smiles.\n\n\"Oh, Antonio. That is _splendid_.\"\n\n\"Really?\"\n\n\"Quite. In fact, I'm beginning to worry that I've created a rival for the attention of every lady at the ball.\"\n\n\"Should I be concerned?\"\n\n\"Not at all. I shall simply inform them that you're terribly dull and have no prospects whatsoever.\"\n\nShe gives you a brilliant smile.\n\n\"Come along, Your Highness. Before I change my mind and insist on something less magnificent.\""
+            }
+          },
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": -200
+            }
+          },
+          {
+            "type": "add_possession",
+            "parameters": {
+              "type": "clothing",
+              "name": "Magnificent Blue Velvet Attire",
+              "description": "A sumptuous formal ensemble of deep blue velvet, richly decorated with exquisite silver embroidery and a matching waistcoat. Striking, elegant, and unmistakably expensive. A garment designed to draw admiring glances in the grandest of ballrooms."
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_ball_outfit_magnificent"
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ],
+        "nextNode": "a_finishing_touch"
+      }
+    ],
+    "nodes": {
+      "a_finishing_touch": {
+        "text": "With your new clothes carefully wrapped, you prepare to leave the shop. Emma, however, suddenly remembers something.\n\n\"Oh! One moment, Antonio. I nearly forgot.\"\n\nShe turns back toward the tailor and exchanges a few quiet words with him. You wait near the door while he retrieves a small box from behind the counter.\n\nA little later, Emma emerges looking suspiciously pleased with herself.\n\n\"Here.\"\n\nShe presses the box into your hands.\n\nInside is a beautifully crafted silver cravat pin, its head decorated with a small, deep blue gemstone.\n\n\"Emma, what's this?\"\n\n\"A finishing touch, obviously. You can hardly attend the Academy ball with an improperly secured cravat.\"\n\n\"You bought this for me?\"\n\n\"Well, I certainly didn't buy it for myself. I have no intention of wearing a cravat.\"\n\nYou examine the little pin. It's an elegant piece, and judging by the craftsmanship, not an inexpensive one.\n\n\"Emma, you really didn't have to.\"\n\n\"I know.\"\n\nHer answer is unusually simple. She watches you for a moment, then gives a small smile.\n\n\"Consider it a thank-you for agreeing to accompany me. And for putting up with an entire afternoon of my excellent advice.\"\n\nShe pauses.\n\n\"Besides, I thought the blue would suit you.\"\n\nFor a moment, the usual teasing is absent from her expression.\n\nThen she recovers.\n\n\"Now, do put it away before you lose it. I'd hate to discover that my investment in your appearance was entirely wasted.\"",
+        "optionTemplates": [
+          {
+            "text": "Thank her",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"Thank you, Emma. It's a beautiful gift.\"\n\nHer expression softens.\n\n\"You're very welcome, Antonio.\"\n\nShe takes your arm as you leave the shop, looking rather pleased with the afternoon's accomplishments.\n\n\"Well. One problem solved. Now all we need is for you to remember which foot goes where on the dance floor.\"\n\n\"You're not worried?\"\n\n\"Not particularly. I happen to be an excellent dancer.\"\n\nYou suspect Saturday evening is going to be quite an experience."
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_possession",
+                "parameters": {
+                  "type": "clothing",
+                  "name": "Emma's Silver Cravat Pin",
+                  "description": "An elegant silver cravat pin set with a small deep blue gemstone, given to Antonio by Emma during their preparations for the Academy ball. A thoughtful gift from a friend with impeccable taste."
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_ball_gift"
+                }
+              }
+            ]
+          },
+          {
+            "text": "Tease her about the gift",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"A present, Delamain? Why, I'm touched. One might almost think you're fond of me.\"\n\nEmma gives you a patient look.\n\n\"Don't be absurd, Fibonacci. I simply refuse to be seen in public with a gentleman whose accessories offend my sense of aesthetics.\"\n\n\"So it's purely a matter of professional necessity?\"\n\n\"Entirely.\"\n\nYou turn the little pin over in your hand.\n\n\"A very generous professional necessity.\"\n\nShe raises an eyebrow.\n\n\"Would you prefer I take it back?\"\n\n\"Absolutely not.\"\n\n\"Then I suggest you stop interrogating your benefactor.\"\n\nShe slips her arm through yours and leads you toward the door.\n\n\"Come along. We have a ball to attend, and I have a reputation to maintain.\""
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "rivalry",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_possession",
+                "parameters": {
+                  "type": "clothing",
+                  "name": "Emma's Silver Cravat Pin",
+                  "description": "An elegant silver cravat pin set with a small deep blue gemstone, given to Antonio by Emma during their preparations for the Academy ball. A thoughtful gift from a friend with impeccable taste."
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_ball_gift"
+                }
+              }
+            ]
+          }
+        ],
+        "title": "A Finishing Touch",
+        "emotion": "happy"
+      }
+    },
+    "characterArc": "emma",
+    "image": "emma_ball_shopping.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "emma_academy_ball",
+    "title": "The Best-Laid Plans",
+    "text": "The Academy's grand ballroom is a magnificent sight. Hundreds of candles illuminate the vaulted ceiling, their light reflected in towering mirrors and polished marble. Musicians perform from an elevated gallery, while elegantly dressed guests mingle beneath chandeliers that probably cost more than your entire education.\n\nYou adjust your collar, check that Emma's silver cravat pin is properly secured, and survey the gathering.\n\n{{ outfit_reaction }}\n\nYou've barely finished admiring the surroundings when a familiar voice calls from behind you.\n\n\"Antonio!\"\n\nYou turn.\n\nAnd for a moment, you forget what you were going to say.\n\nEmma stands at the entrance to the ballroom, wearing a breathtaking gown of deep emerald silk. The elegant cut accentuates her tall, graceful figure, while delicate silver embroidery catches the candlelight whenever she moves. Her long, wavy hair falls loosely over one shoulder, and a pair of familiar green gemstones glitters at her ears.\n\nShe looks absolutely stunning.\n\n{{ emma_entrance }}\n\nEmma approaches, clearly delighted by the effect of her entrance.\n\n\"Well, Fibonacci? Shall we?\"\n\nShe offers you her hand.\n\n\"After all, we didn't spend an entire afternoon turning you into a gentleman merely to have you stand about admiring the architecture.\"",
+    "passages": {
+      "outfit_reaction": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_ball_outfit_magnificent",
+                  "value": 1
+                }
+              }
+            ],
+            "text": "Your magnificent blue velvet attire has already attracted several admiring glances. One elderly lady even mistakes you for the son of a visiting count, a misunderstanding you are in no particular hurry to correct."
+          },
+          {
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_ball_outfit_distinguished",
+                  "value": 1
+                }
+              }
+            ],
+            "text": "Your finely tailored evening suit has proved an excellent investment. You look every inch a respectable young gentleman, and for once, nobody seems inclined to question your presence among such distinguished company."
+          }
+        ],
+        "fallback": "Your new clothes fit comfortably and look perfectly respectable. Some of the guests are considerably more extravagantly dressed, but you suspect a few of them have spent the equivalent of a small house on their appearance."
+      },
+      "emma_entrance": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "You are under Emma's spell"
+                }
+              }
+            ],
+            "text": "\"Oh, Emma. You look... I mean, that dress is... Good heavens.\"\n\nA splendid speech. Truly worthy of the occasion.\n\nEmma's smile widens. She steps closer, apparently taking considerable pleasure in your predicament.\n\n\"Antonio, darling, do try to remember how to breathe.\"\n\nShe turns gracefully, letting the silk of her gown flow around her.\n\n\"Well? I take it you approve?\"\n\n\"Emma, you're magnificent.\"\n\nThis time, the words emerge without hesitation. She looks at you, and her teasing expression softens into something unexpectedly warm.\n\n\"Thank you, Antonio. That's very sweet.\"\n\nFor a moment, she seems almost shy. Then she gives you a mischievous smile.\n\n\"And here I was, beginning to worry that you'd developed an immunity to my charms. How reassuring to discover that your appreciation of _physique_ remains undiminished.\""
+          }
+        ],
+        "fallback": "\"Emma! You look wonderful.\"\n\nShe smiles, visibly pleased.\n\n\"Thank you, Antonio. You look rather splendid yourself.\"\n\nShe gives your outfit an approving glance.\n\n\"I must say, my efforts at the tailor's have been amply rewarded.\"\n\n\"You mean _my_ efforts. I was the one who had to endure the fittings.\"\n\n\"An indispensable contribution, certainly. Standing still is an art, and you've made remarkable progress.\""
+      }
+    },
+    "triggers": [
+      {
+        "triggerType": "scheduled_activity",
+        "parameters": {}
+      }
+    ],
+    "effects": [
+      {
+        "effect": {
+          "type": "move",
+          "parameters": {
+            "placeKey": "academy-hall",
+            "characterKeys": [
+              "player",
+              "emma"
+            ]
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "emma",
+            "title": "A taste for elegance",
+            "description": "Emma enjoys dancing, beautiful clothes, and sophisticated company, although she usually considers such pleasures secondary to her professional ambitions."
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "change_relation",
+          "parameters": {
+            "characterKey": "emma",
+            "relationParameter": "love",
+            "amount": 2
+          }
+        },
+        "triggers": [
+          {
+            "triggerType": "relation_tag",
+            "parameters": {
+              "characterKey": "emma",
+              "relationTag": "You are under Emma's spell"
+            }
+          }
+        ]
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Join Emma on the dance floor",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You take her hand and lead her toward the dancers.\n\nEmma smiles.\n\n\"Excellent. And do remember, Antonio, the object is to move _with_ your partner, not to defeat her.\"\n\n\"That wasn't my intention.\"\n\n\"Good. I find competitive dancing terribly exhausting.\""
+            }
+          }
+        ],
+        "nextNode": "the_dance"
+      }
+    ],
+    "nodes": {
+      "the_dance": {
+        "text": "The orchestra begins a graceful waltz, and Emma moves effortlessly into your arms.\n\nDancing with her is a rather different experience from watching her practice ballet. She moves with such natural elegance that the steps seem almost to arrange themselves around her. When you hesitate, a subtle pressure from her hand or a barely perceptible shift of her weight guides you back into rhythm.\n\n\"Very good, Antonio,\" she murmurs. \"You're doing splendidly.\"\n\n\"Surprised?\"\n\n\"A little. I had prepared several encouraging remarks about perseverance and the dignity of failure.\"\n\n\"How disappointing for you.\"\n\n\"Devastating.\"\n\nShe laughs, and the two of you continue dancing.\n\nOne waltz becomes another. Between dances, you sample the excellent refreshments, exchange observations about the more extravagant guests, and occasionally find yourselves struggling to conceal your amusement at the elaborate rituals of polite society.\n\nAt one point, a particularly pompous gentleman delivers a lengthy speech about the declining standards of modern artificery, apparently unaware that Emma has published work contradicting nearly everything he says.\n\nShe listens with perfect courtesy.\n\n\"How fascinating,\" she tells him afterward. \"I had no idea the field had advanced so little since your retirement.\"\n\nYou are forced to hide your laughter behind a glass of sparkling wine.\n\nBy the time the musicians pause for an interval, you've spent a remarkably enjoyable evening together.\n\nEmma looks positively radiant.\n\nThen, quite suddenly, she remembers something.\n\n\"Oh! Good heavens, Antonio. Lord de Varenne!\"\n\nShe searches the room with renewed purpose.\n\n\"I've been having such a wonderful time that I'd almost forgotten why I came!\"\n\nShe catches sight of a familiar heraldic emblem near the far end of the ballroom.\n\n\"There! Come along. I believe that's his family crest.\"",
+        "optionTemplates": [
+          {
+            "text": "Accompany Emma",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "You offer Emma your arm, and together you make your way through the crowded ballroom.\n\n\"Ready to conquer another corner of the civilized world, Delamain?\"\n\n\"Naturally.\"\n\nShe gives you a determined smile.\n\n\"Although I do hope this conquest involves fewer casualties than our last tournament.\""
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              }
+            ],
+            "nextNode": "the_patron"
+          }
+        ],
+        "title": "An Excellent Evening",
+        "emotion": "happy",
+        "image": "emma_academy_ball.jpg",
+        "imageSize": "large"
+      },
+      "the_patron": {
+        "text": "The gentleman standing beneath the de Varenne family crest is not remotely as old as Emma expected.\n\nIn fact, he appears scarcely older than thirty.\n\nTall, impeccably dressed, and possessed of the easy confidence of someone who has never had to worry about the cost of an evening's entertainment, he is speaking with a small group of Academy professors.\n\nEmma hesitates.\n\n\"That's... not Lord de Varenne.\"\n\nThe gentleman notices your approach and offers a courteous smile.\n\n\"Good evening. May I help you?\"\n\nEmma recovers immediately.\n\n\"Forgive the interruption. I am Emma Delamain, a first-year student of artificery. I had hoped to meet Lord de Varenne this evening.\"\n\n\"Ah! My father, I presume?\"\n\nHe smiles.\n\n\"I'm afraid he has decided that Academy balls are better suited to people whose knees still function properly. He sent me in his place.\"\n\nHe offers a slight bow.\n\n\"Lucien de Varenne. A pleasure, Mademoiselle Delamain.\"\n\nEmma introduces you as well, and Lucien greets you with equal courtesy.\n\n\"Delamain...\" he repeats thoughtfully. \"Now, where have I heard that name?\"\n\nHis expression brightens.\n\n\"Of course! The Falkenheim tournament. You represented the Academy, didn't you?\"\n\nEmma smiles.\n\n\"Indeed I did.\"\n\n\"Excellent! I've heard rather interesting things about your work. My father still takes a great interest in promising young artificers, and I've recently begun assisting him with some of his research initiatives.\"\n\nHe proceeds to ask Emma several surprisingly perceptive questions about her studies, her preferred branches of magic, and her ambitions after graduation.\n\nWithin minutes, they are discussing advanced enchantment techniques with such enthusiasm that you begin to wonder whether either remembers the orchestra is playing.\n\nLucien is clearly impressed.\n\nAnd not, you notice, entirely by her scholarship.\n\nHis compliments are impeccably polite, but he seems particularly attentive to Emma's smile, and he finds a remarkable number of excuses to address her directly.\n\n{{ patron_reaction }}\n\nThen Lucien's expression grows more serious.\n\n\"Mademoiselle Delamain, I wonder whether you might be interested in a rather unusual opportunity.\"",
+        "passages": {
+          "patron_reaction": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "relation_tag",
+                    "parameters": {
+                      "characterKey": "emma",
+                      "relationTag": "You are under Emma's spell"
+                    }
+                  }
+                ],
+                "text": "You watch Lucien smile at Emma, and Emma smile politely in return.\n\nWell. This is unfortunate.\n\nHe is handsome, wealthy, charming, impeccably connected, and apparently capable of discussing advanced artificery without sounding like an idiot.\n\nYou begin to suspect the universe has developed a personal interest in making your life difficult."
+              }
+            ],
+            "fallback": "Lucien certainly seems to have taken an interest in Emma, and not exclusively in her scholarly accomplishments. You wonder whether she has noticed.\n\nKnowing Emma, she probably has.\n\nThe more interesting question is what she intends to do about it."
+          }
+        },
+        "optionTemplates": [
+          {
+            "text": "Hear the proposal",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "Emma leans forward slightly, her eyes bright with curiosity.\n\n\"An opportunity, Monsieur de Varenne? I'm listening.\"\n\nLucien smiles.\n\n\"I rather hoped you would be.\""
+                }
+              }
+            ],
+            "nextNode": "the_offer"
+          }
+        ],
+        "title": "A Distinguished Gentleman",
+        "emotion": "neutral",
+        "image": "emma_academy_ball.jpg",
+        "imageSize": "medium"
+      },
+      "the_offer": {
+        "text": "\"My family sponsors a number of research initiatives,\" Lucien explains. \"One of them involves a small group of senior artificers working on advanced magical synthesis. Exceptional scholars, every one of them. They're currently looking for a promising younger collaborator.\"\n\nEmma's expression changes at once.\n\n\"Which artificers?\"\n\nLucien names three renowned masters of the discipline.\n\nEmma stares at him.\n\n\"Professor Armand? _The_ Professor Armand?\"\n\n\"The very same.\"\n\nFor a moment, she looks as though someone has just offered her the keys to the Royal Library.\n\nThen she regains her composure.\n\n\"That's an extraordinary opportunity. But surely such a project would require a considerable commitment?\"\n\n\"Indeed. It would involve regular correspondence, occasional travel, and a substantial amount of independent research. The compensation is modest, I'm afraid, but the experience would be invaluable. And my father has always been generous with recommendations for those who distinguish themselves.\"\n\nEmma considers this carefully.\n\nLucien continues.\n\n\"Naturally, I would be delighted to discuss the arrangements in greater detail. Perhaps you might visit our residence sometime? I could show you the family's collection, and we might continue our conversation over dinner.\"\n\nHe smiles warmly.\n\n\"I confess, Mademoiselle Delamain, that I would find your company most agreeable.\"\n\nEmma returns his smile with perfect courtesy, although you notice that she doesn't immediately accept the invitation.\n\n\"That is very kind of you, Monsieur de Varenne. Might I have a moment to consider?\"\n\n\"Of course. Take all the time you need.\"\n\nShe draws you aside, just beyond earshot.\n\n\"Well, Antonio. This is rather unexpected.\"\n\nHer excitement is unmistakable.\n\n\"Working with Armand and his colleagues! Can you imagine? I could learn more in a few months than most students manage in years.\"\n\nThen her expression grows thoughtful.\n\n\"Although it would consume an enormous amount of time. And the compensation is hardly enough to justify neglecting my studies.\"\n\nShe glances back toward Lucien.\n\n\"He's certainly charming, isn't he?\"\n\nYou make a noncommittal sound.\n\nEmma gives you a sidelong look, but mercifully refrains from commenting.\n\n\"Anyway. You're the one person here whose judgment I trust. What do you think? Should I accept, or try to negotiate something else?\"",
+        "optionTemplates": [
+          {
+            "text": "Encourage the long-term opportunity",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"Emma, this is exactly the sort of opportunity you've been working toward. Learning directly from people like Armand? You'd be mad to pass it up.\"\n\nShe considers your words, then slowly smiles.\n\n\"Yes. You're right.\"\n\n\"Of course I am.\"\n\n\"Do try not to ruin the moment, Antonio.\"\n\nShe laughs, then turns back toward Lucien.\n\n\"Monsieur de Varenne, I've considered your proposal. I would be delighted to participate.\"\n\n\"Wonderful!\"\n\nLucien looks genuinely pleased.\n\n\"I shall arrange the introductions immediately. I believe you'll find the work fascinating.\"\n\nEmma thanks him warmly. When he excuses himself to speak with another guest, she turns toward you, her eyes shining.\n\n\"Antonio. Professor Armand! I can hardly believe it.\"\n\n\"I noticed.\"\n\nShe catches your arm and gives it an excited squeeze.\n\n\"Oh, this could be extraordinary. Just think of everything I might learn!\"\n\nFor once, her usual composure has given way entirely to enthusiasm.\n\nYou can't help smiling."
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_ball_senior_research"
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "respect",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              }
+            ],
+            "nextNode": "the_last_dance"
+          },
+          {
+            "text": "Negotiate a shorter commission",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"It's an extraordinary offer, Emma. But you're already doing remarkably well at the Academy. Wouldn't it be better to concentrate on your studies for now?\"\n\nShe frowns thoughtfully.\n\n\"Perhaps. Although the opportunity to work with Armand...\"\n\n\"Could come again. Especially if you continue distinguishing yourself here.\"\n\nEmma considers this for a moment.\n\nThen her eyes brighten.\n\n\"Actually... I may have an idea.\"\n\nShe turns toward Lucien.\n\n\"Monsieur de Varenne, your proposal is extremely generous. Unfortunately, my academic commitments would make a long-term collaboration rather difficult at present.\"\n\nLucien looks disappointed.\n\n\"A pity. I had hoped—\"\n\n\"However,\" Emma continues smoothly, \"I wonder whether your family might be interested in commissioning a smaller piece of work?\"\n\nShe explains that she has been experimenting with several promising enchantment techniques, but that certain rare ingredients remain prohibitively expensive. With the appropriate materials, she believes she could produce something quite exceptional.\n\nLucien listens with growing interest.\n\n\"A commissioned card, then?\"\n\n\"Precisely. I could complete the work during the coming weeks, without neglecting my studies. You would receive the finished creation, and I would gain the opportunity to demonstrate my abilities.\"\n\nLucien considers the proposal.\n\n\"An interesting arrangement. I believe we could accommodate that.\"\n\nHe names a generous allowance for materials.\n\nEmma's eyes widen almost imperceptibly.\n\n\"That would be entirely satisfactory.\"\n\nThey shake hands.\n\nAs you walk away, she turns toward you with an expression of barely suppressed triumph.\n\n\"Antonio. Do you have any idea what I can make with those ingredients?\"\n\n\"Something impressive, I imagine.\"\n\n\"Something _magnificent_.\"\n\nShe pauses.\n\n\"And the best part is that I can continue my studies without interruption.\"\n\nShe gives you a delighted smile.\n\n\"I must admit, your advice was rather good.\""
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_ball_commission_resources"
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "respect",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              }
+            ],
+            "nextNode": "the_last_dance"
+          },
+          {
+            "text": "Suggest a joint research project",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"Emma, why not propose something we could work on together? We've already demonstrated that our combined talents can produce rather unusual results.\"\n\nEmma looks at you thoughtfully.\n\n\"That is true.\"\n\n\"And between the two of us, we might be able to undertake something more ambitious without sacrificing quite so much time.\"\n\nA mischievous smile spreads across her face.\n\n\"Fibonacci, are you suggesting that I share the glory?\"\n\n\"Consider it a generous opportunity to benefit from my brilliance.\"\n\n\"How very charitable of you.\"\n\nShe laughs, then turns toward Lucien.\n\n\"Monsieur de Varenne, I wonder whether you might consider a slightly different arrangement.\"\n\nShe explains that the two of you have been experimenting with collaborative artificery, combining complementary techniques to produce unusual magical effects.\n\nLucien listens attentively.\n\n\"A joint project?\"\n\n\"Precisely. Antonio is an exceptionally capable artificer, and we've discovered that our methods work rather well together.\"\n\nShe glances at you.\n\n\"When we manage not to argue over the details.\"\n\n\"An ongoing challenge,\" you agree.\n\nLucien smiles.\n\n\"Well, I certainly wouldn't object to meeting another promising scholar. Perhaps we could arrange a preliminary demonstration?\"\n\nEmma accepts enthusiastically.\n\nWhen the conversation ends, she turns toward you with a satisfied smile.\n\n\"Well, partner. It seems we've acquired ourselves another project.\"\n\n\"You're welcome.\"\n\n\"Oh, don't look so smug. I haven't yet decided whether inviting you to share my research was an act of genius or a catastrophic lapse of judgment.\"\n\nShe slips her arm through yours.\n\n\"But I suppose we'll find out together.\""
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_ball_joint_research"
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 2
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "rivalry",
+                  "amount": 1
+                }
+              }
+            ],
+            "nextNode": "the_last_dance"
+          }
+        ],
+        "title": "An Unexpected Opportunity",
+        "emotion": "surprised",
+        "image": "emma_academy_ball.jpg",
+        "imageSize": "medium"
+      },
+      "the_last_dance": {
+        "text": "The conversation with Lucien concluded, you and Emma return to the main ballroom.\n\nThe orchestra has begun playing again, and the floor is filling with couples.\n\nEmma seems unusually thoughtful as you walk together. Her evening has certainly turned out rather differently from what she expected.\n\nThen she looks up at you and smiles.\n\n\"Well, Antonio. I believe our little expedition has been quite a success.\"\n\n\"You did make an impression.\"\n\n\"Naturally.\"\n\nShe pauses, then laughs softly.\n\n\"Although I must confess, I had almost forgotten about Lord de Varenne altogether. I was having rather too good a time.\"\n\nYou glance toward the dancers.\n\n\"Well, Delamain. The evening isn't over yet.\"\n\nShe follows your gaze.\n\n\"Another dance?\"\n\n\"Unless you've had enough.\"\n\nEmma looks at you for a moment, her expression warm and unusually unguarded.\n\n\"Not remotely.\"\n\nShe takes your hand.\n\n\"Come along, Antonio. I think I've done quite enough professional networking for one evening.\"\n\nAs you lead her back onto the dance floor, she adds with a mischievous smile:\n\n\"And besides, I haven't finished showing you off.\"\n\nThe orchestra swells, and the two of you disappear into the graceful whirl of dancers, leaving professional ambitions, influential patrons, and complicated futures to wait until morning.\n\nFor now, there is music.\n\nAnd rather excellent company.",
+        "effects": [
+          {
+            "effect": {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_ball_shared_evening"
+              }
+            }
+          }
+        ],
+        "optionTemplates": [],
+        "title": "One More Dance",
+        "emotion": "happy",
+        "image": "emma_academy_ball.jpg",
+        "imageSize": "large"
+      }
+    },
+    "characterArc": "emma",
+    "emotion": "happy",
+    "image": "emma_academy_ball.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "emma_unfair_advantage",
+    "text": "Tuesday evening. Your regular study session with Emma, an arrangement that has become something of a tradition. Tonight, however, there's an additional incentive.\n\nEarlier that afternoon, Emma challenged you to solve a particularly difficult enchantment problem before she does. If you succeed, she'll give you one of her latest creations: an exceptionally fine blue card you've had your eye on for some time.\n\n\"And what happens if I win?\" you asked.\n\n\"Well, Antonio, I thought it would be rather unkind to demand a prize from someone who has just suffered such a humiliating defeat.\"\n\nThe nerve of that woman.\n\nYou're still contemplating the many ways in which you intend to prove her wrong when you knock on her door.\n\nEmma opens with her usual friendly smile. As usual, she's wearing a comfortable shirt. And, as usual, she's... oh.\n\nNot quite as usual.\n\nShe's wearing shorts. Perfectly ordinary, comfortable indoor shorts. Admittedly, they appear to have been designed with rather extreme summer temperatures in mind.\n\n{{smitten_reaction}}\n\n\"Antonio! Come in. I've prepared everything.\" She steps aside with an innocent smile. \"I do hope you've brought your best ideas. You'll need them.\"\n\nA quarter of an hour later, things are not going well.\n\nEmma has made considerably more progress than you. She's settled sideways into her armchair, one foot resting on an armrest, her long legs crossed comfortably in front of her. Occasionally she stretches, shifts position, or leans over to consult a reference book, apparently without a care in the world.\n\nYou, meanwhile, have been staring at the same enchantment diagram for several minutes.\n\nThere is a perfectly respectable mathematical explanation for why the third resonance coefficient refuses to balance.\n\nYou would very much like to remember what it is.\n\nAcross the room, Emma makes another annotation. Then she glances at you over the top of her book.\n\n\"Everything all right, Fibonacci? You've been awfully quiet.\"\n\nThere's something suspiciously satisfied about that smile.",
+    "triggers": [
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_trusted_companion",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "activity_type",
+        "parameters": {
+          "activityType": "study"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Express concern for her health",
+        "nextNode": "doubling_down",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"You know, Emma, you really ought to be careful. Aren't you afraid you'll catch cold dressed like that?\"\n\nEmma slowly lowers her book.\n\nFor a moment, she simply looks at you. Then a smile of pure, undisguised triumph spreads across her face.\n\n\"Oh? Is there something wrong with my clothes, Antonio?\"\n\n\"Merely concerned for your well-being.\"\n\n\"How touching.\"\n\nShe rises from her chair with exaggerated dignity.\n\n\"Well, I must say, Fibonacci, I hadn't expected you to appoint yourself guardian of my wardrobe. This is my room, and I shall dress however I please.\"\n\nShe pauses, regarding you with a wicked little smile.\n\n\"Nevertheless, since your poor masculine constitution seems so terribly susceptible to distraction, I suppose I ought to make some allowances.\"\n\nShe gestures toward the door.\n\n\"Out you go. I'll change into something more suitable for your delicate sensibilities.\"\n\nYou have the distinct impression that this is not a concession."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Concentrate on the enchantment",
+        "attributeCheck": {
+          "attribute": "intelligence",
+          "difficulty": "hard",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You return your attention to the diagram.\n\nThe resonance coefficient. The secondary binding. The asymmetrical distribution of magical energy.\n\nSlowly, the pieces fall into place.\n\nOf course.\n\nYou make one final calculation, check it twice, and rise from your chair with your completed notes in hand.\n\nEmma looks up, still wearing that infuriatingly satisfied little smile.\n\nYou approach her armchair and kneel before her.\n\n\"Emma, there's something I need to tell you.\"\n\nHer smile vanishes.\n\n\"Oh.\"\n\nFor the first time this evening, she looks genuinely uncertain. She straightens in her chair, her eyes widening ever so slightly.\n\n\"Antonio, I...\"\n\nYou take her hand.\n\n\"Something I've been trying to find the right words for all evening.\"\n\n\"Antonio!\"\n\nThere's real alarm in her voice now. Her cheeks are turning pink.\n\nYou raise your sheet of calculations.\n\n\"I've solved it.\"\n\nSilence.\n\nEmma stares at the paper.\n\nThen at you.\n\nThen back at the paper.\n\n\"You...\"\n\nShe snatches the sheet from your hand and examines the solution. Her expression passes through disbelief, intense concentration, reluctant admiration, and finally absolute outrage.\n\n\"You absolute scoundrel!\"\n\nYou rise, looking enormously pleased with yourself.\n\n\"An elegant solution, wouldn't you say?\"\n\nEmma looks up at you, her cheeks still faintly pink.\n\n\"An appalling abuse of dramatic presentation, is what I'd call it.\"\n\n\"But mathematically sound?\"\n\nShe studies the final equation one more time.\n\n\"Unfortunately.\"\n\nThen she bursts out laughing.\n\n\"Oh, very well! You've earned your prize, you insufferable man.\"\n\nShe retrieves the promised blue card from her desk and presents it with an elaborate little bow.\n\n\"Congratulations, Fibonacci. A victory of questionable moral character, but a victory nonetheless.\""
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "rivalry",
+                "amount": 2
+              }
+            },
+            {
+              "type": "offer_card_gifts",
+              "parameters": {
+                "count": 1,
+                "poolKeys": [
+                  "emma",
+                  "base"
+                ]
+              }
+            },
+            {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_unfair_advantage_victory"
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You fix your attention firmly upon the enchantment problem.\n\nFor several minutes, you make respectable progress. You identify an error in the secondary binding and correct it, only to discover that the resulting resonance calculation produces an even more troublesome contradiction.\n\nAcross the room, Emma turns a page.\n\nYou glance up.\n\nA mistake.\n\nShe catches your eye and smiles.\n\n\"Something interesting, Antonio?\"\n\n\"Yes. Your third coefficient is wrong.\"\n\nShe examines her notes.\n\n\"Oh, you're quite right. Thank you.\"\n\nWith infuriating ease, she corrects the error and continues.\n\nA moment later, she sets down her pen.\n\n\"There. I believe I've solved it.\"\n\nYou examine her work. The mathematics is impeccable.\n\nEmma leans back with the air of a queen accepting tribute.\n\n\"Well, Fibonacci. It appears your powers of concentration require further development.\"\n\nShe glances down at her clothes, then back at you, a mischievous glint in her eyes.\n\n\"Perhaps I should remove any possible distractions before our next attempt.\""
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "rivalry",
+                "amount": 1
+              }
+            }
+          ],
+          "successNode": "the_confession",
+          "failureNode": "doubling_down"
+        }
+      }
+    ],
+    "title": "An Unfair Advantage",
+    "characterArc": "emma",
+    "emotion": "amused",
+    "image": "emma_unfair_advantage.jpg",
+    "imageSize": "large",
+    "passages": {
+      "smitten_reaction": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "You are under Emma's spell"
+                }
+              }
+            ],
+            "text": "Good heavens.\n\nYou'd thought yourself reasonably well acquainted with Emma's legs after that unfortunate episode at the ballet. Apparently, there are still considerable gaps in your education."
+          }
+        ],
+        "fallback": "You have always considered yourself quite capable of appreciating Emma's beauty without making a complete fool of yourself.\n\nA sound principle. One which tonight appears to be undergoing a rather rigorous examination."
+      }
+    },
+    "nodes": {
+      "doubling_down": {
+        "text": "Emma points toward the corridor.\n\n\"Honestly, Antonio, a little privacy. I'll call you when I'm ready.\"\n\nYou step outside, and the door closes behind you.\n\nA few minutes pass. You hear some movement, a drawer opening, and what sounds suspiciously like a muffled laugh.\n\nThen Emma calls out.\n\n\"You may come back in!\"\n\nYou open the door.\n\nEmma is once again comfortably installed in her armchair, her notes spread across her lap.\n\nShe has indeed changed. The shorts are gone, replaced by a pair of extraordinarily loose, comfortable trousers that cover her legs completely.\n\nAn admirable concession to modesty.\n\nThe shirt, however, is another matter.\n\nIt's a light, delicate linen garment, the sort one might wear on the hottest summer afternoon. The fabric is just translucent enough to make you suspect that Emma has interpreted your concerns with extraordinary selectivity.\n\nShe looks up, her cheeks faintly flushed, evidently struggling to keep a straight face.\n\n\"There. Is that better?\"\n\nShe smooths the fabric over one knee with an air of complete innocence.\n\n\"I wouldn't want your academic performance to suffer on my account.\"\n\nYou look at her.\n\nShe looks at you.\n\nThis woman is enjoying herself far too much.",
+        "optionTemplates": [
+          {
+            "text": "The gambit",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"You know what, Emma? You're right.\"\n\nShe raises an eyebrow.\n\n\"Am I?\"\n\n\"It's terribly warm in here.\"\n\nYou reach for the top button of your shirt.\n\nEmma's smile falters.\n\n\"Antonio...\"\n\nYou undo the button.\n\n\"I really ought to make myself more comfortable.\"\n\nA second button.\n\n\"After all, as you so wisely pointed out, we're among friends.\"\n\nEmma sits up abruptly.\n\n\"Fibonacci!\"\n\nYou reach for a third.\n\nShe snatches a folded blanket from the arm of her chair and pulls it up in front of herself like a defensive rampart.\n\n\"All right! All right! That's quite enough!\"\n\nYou stop, looking at her with exaggerated innocence.\n\n\"Something wrong with my clothes, Emma?\"\n\nFor a moment, she glares at you over the blanket.\n\nThen the absurdity of the entire situation catches up with her.\n\nShe starts laughing.\n\nYou follow almost immediately.\n\nWithin seconds, neither of you can maintain the slightest pretense of dignity. Emma collapses back into her chair, laughing so hard she has to wipe her eyes.\n\n\"Oh, Antonio! You wretched man!\"\n\n\"Merely adapting to the climate.\"\n\n\"Of course you are!\"\n\nEventually, she manages to recover enough to throw the blanket aside and retrieve her notes.\n\n\"Right. A truce. We have an enchantment to finish.\"\n\n\"And the competition?\"\n\n\"Oh, forget the competition. At this rate, neither of us will graduate.\"\n\nYou settle beside her, still exchanging occasional smiles, and return to the problem. Without the ridiculous contest of distractions, the solution comes surprisingly quickly. Together, you work out an elegant way to stabilize the enchantment.\n\nAs you gather your notes, Emma gives you a warm, lingering smile.\n\n\"That was a rather enjoyable evening, Antonio.\"\n\n\"Despite my deplorable academic performance?\"\n\n\"Entirely because of it, I suspect.\"\n\nShe pauses.\n\n\"And for the record, you looked perfectly respectable before you started undressing.\""
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "love",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "rivalry",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_unfair_advantage_gambit"
+                }
+              }
+            ]
+          },
+          {
+            "text": "A strictly academic approach",
+            "attributeCheck": {
+              "attribute": "intelligence",
+              "difficulty": "hard",
+              "successEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "You take a slow breath and return to your calculations.\n\nWhatever Emma has planned, you're determined not to give her the satisfaction.\n\nThe problem itself is fascinating. A complex interaction between two incompatible enchantments, requiring an unconventional redistribution of magical energy.\n\nYou begin to see the answer.\n\nA few minutes later, you set down your pen.\n\nEmma looks up.\n\n\"Giving up already?\"\n\n\"Not quite.\"\n\nYou rise, carrying your completed calculations."
+                  }
+                }
+              ],
+              "failureEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "You make a determined attempt to concentrate.\n\nUnfortunately, the mathematics is not cooperating, and neither is your opponent.\n\nAfter another quarter of an hour, Emma finally sets down her pen.\n\n\"Finished.\"\n\nYou examine her work.\n\nShe's right.\n\nPerfectly, infuriatingly right.\n\nEmma regards you with a look of exquisite satisfaction.\n\n\"Well, Fibonacci, I believe that settles the matter.\"\n\n\"Your strategy was rather unconventional.\"\n\n\"My strategy was impeccable.\"\n\n\"I was referring to the enchantment.\"\n\n\"Naturally.\"\n\nShe smiles sweetly.\n\n\"Perhaps next Tuesday we'll try something simpler. I wouldn't want to strain you.\"\n\nYou collect your notes, already contemplating revenge.\n\nEmma accompanies you to the door, looking altogether too pleased with herself.\n\n\"Good night, Antonio. And do get some rest. You seem unusually susceptible to fatigue lately.\""
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "emma",
+                    "relationParameter": "rivalry",
+                    "amount": 1
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "emma_unfair_advantage_emma_won"
+                  }
+                }
+              ],
+              "successNode": "the_confession"
+            }
+          }
+        ],
+        "title": "Doubling Down",
+        "emotion": "flirtatious",
+        "image": "emma_unfair_advantage_doubling_down.jpg",
+        "imageSize": "large"
+      },
+      "the_confession": {
+        "text": "You approach Emma's armchair, your completed calculations carefully concealed beneath one hand.\n\nShe watches you with an expression of mild curiosity.\n\nThen you kneel before her.\n\n\"Emma, there's something I need to tell you.\"\n\nHer expression changes instantly.\n\n\"Oh.\"\n\nShe sits straighter.\n\n\"Antonio, what are you doing?\"\n\n\"Something I've been meaning to do all evening.\"\n\nHer cheeks begin to color.\n\n\"Antonio, I really don't think this is—\"\n\nYou present your calculations with a flourish.\n\n\"I've solved it.\"\n\nEmma blinks.\n\nOnce.\n\nTwice.\n\nThen she snatches the paper from your hand.\n\nShe studies the equations in silence, her expression growing steadily more incredulous.\n\nFinally, she looks down at you.\n\n\"You absolute scoundrel.\"\n\nYou rise with a triumphant smile.\n\n\"An elegant solution, wouldn't you say?\"\n\n\"An outrageously theatrical solution.\"\n\n\"But correct?\"\n\nShe checks the final calculation.\n\nA long sigh.\n\n\"Correct.\"\n\nShe rises, retrieves the promised blue card, and places it in your hand.\n\n\"There. Your prize. I hope you're satisfied.\"\n\n\"Immensely.\"\n\nEmma folds her arms.\n\n\"Well, enjoy it while you can. Next Tuesday, I intend to be considerably less charitable.\"\n\nShe pauses, then smiles.\n\n\"And Antonio?\"\n\n\"Yes?\"\n\n\"If you ever kneel before me like that again, I expect an actual proposal.\"\n\nYou stare at her.\n\nHer smile turns positively wicked.\n\n\"Of mathematical significance, naturally.\"",
+        "optionTemplates": [],
+        "effects": [
+          {
+            "effect": {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "rivalry",
+                "amount": 2
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "offer_card_gifts",
+              "parameters": {
+                "count": 1,
+                "poolKeys": [
+                  "emma",
+                  "base"
+                ]
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_unfair_advantage_victory"
+              }
+            }
+          }
+        ],
+        "title": "A Startling Confession",
+        "emotion": "surprised"
+      }
+    }
   },
   {
     "key": "happy_little_accident",

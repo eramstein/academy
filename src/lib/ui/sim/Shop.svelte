@@ -3,6 +3,7 @@
   import { gs } from '@/lib/_state';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import {
+    getShopPrices,
     performAction,
     TransactionType,
     type TransactionParameters,
@@ -20,8 +21,7 @@
   const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
-  const place = $derived(gs.places[gs.player.placeKey]);
-  const stock = $derived(place?.itemsOnSale?.resources ?? {});
+  const stock = $derived(getShopPrices());
 
   let selected = $state<Partial<Record<ResourceType, number>>>({});
 

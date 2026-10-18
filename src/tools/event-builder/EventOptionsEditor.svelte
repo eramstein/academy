@@ -39,9 +39,33 @@
         if (optionTriggers) next.triggers = optionTriggers;
 
         if (option.actionTemplate?.actionTemplate) {
+          const args = { ...(option.actionTemplate.args ?? {}) };
+          if (option.actionTemplate.actionTemplate === 'purchase') {
+            const items = { ...((args.items as Record<string, unknown> | undefined) ?? {}) };
+            const rawPossessions =
+              (items.possessions as Partial<Record<string, string>> | undefined) ?? {};
+            const possessions: Record<string, string> = {};
+            for (const [type, name] of Object.entries(rawPossessions)) {
+              if (typeof name === 'string' && name.trim()) {
+                possessions[type] = name.trim();
+              }
+            }
+            args.items = {
+              ...items,
+              ...(Object.keys(possessions).length > 0 ? { possessions } : {}),
+            };
+            if (
+              args.items &&
+              typeof args.items === 'object' &&
+              !('possessions' in (args.items as object)) &&
+              !('resources' in (args.items as object))
+            ) {
+              delete args.items;
+            }
+          }
           next.actionTemplate = {
             actionTemplate: option.actionTemplate.actionTemplate,
-            args: { ...(option.actionTemplate.args ?? {}) },
+            args,
           };
         }
 
@@ -73,7 +97,7 @@
 </script>
 
 <script lang="ts">
-  import { type ActionTemplate } from '@/lib/_model';
+  import { PossessionType, type ActionTemplate } from '@/lib/_model';
   import { SceneActionTemplates } from '@/lib/sim/actions/_templates';
   import {
     skillCheckDifficultyKeys,
@@ -96,6 +120,7 @@
   } = $props();
 
   const actionNames = Object.keys(SceneActionTemplates);
+  const possessionTypes = Object.values(PossessionType);
   const attributeKeys = ['dexterity', 'intelligence', 'vitality', 'charisma', 'aura'] as const;
   const difficultyKeys = skillCheckDifficultyKeys;
 
@@ -132,10 +157,25 @@
     patch(index, { ...option, attributeCheck: check });
   }
 
-  function defaultActionTemplate(): ActionTemplate {
+  function defaultPurchaseArgs(): Record<string, unknown> {
     return {
-      actionTemplate: actionNames[0] ?? '',
-      args: {},
+      cost: 0,
+      items: {
+        possessions: {},
+      },
+    };
+  }
+
+  function defaultArgsForAction(actionTemplate: string): Record<string, unknown> {
+    if (actionTemplate === 'purchase') return defaultPurchaseArgs();
+    return {};
+  }
+
+  function defaultActionTemplate(): ActionTemplate {
+    const actionTemplate = actionNames.includes('purchase') ? 'purchase' : (actionNames[0] ?? '');
+    return {
+      actionTemplate,
+      args: defaultArgsForAction(actionTemplate),
     };
   }
 
@@ -145,7 +185,7 @@
       ...option,
       actionTemplate: {
         actionTemplate,
-        args: option.actionTemplate?.args ?? {},
+        args: defaultArgsForAction(actionTemplate),
       },
     });
   }
@@ -159,6 +199,50 @@
     patch(index, {
       ...options[index],
       actionTemplate: defaultActionTemplate(),
+    });
+  }
+
+  function setActionArgs(index: number, args: Record<string, unknown>) {
+    const option = options[index];
+    if (!option.actionTemplate) return;
+    patch(index, {
+      ...option,
+      actionTemplate: {
+        ...option.actionTemplate,
+        args,
+      },
+    });
+  }
+
+  function setPurchaseCost(index: number, cost: number) {
+    const option = options[index];
+    if (!option.actionTemplate) return;
+    setActionArgs(index, {
+      ...option.actionTemplate.args,
+      cost,
+    });
+  }
+
+  function setPurchasePossession(index: number, type: PossessionType, name: string) {
+    const option = options[index];
+    if (!option.actionTemplate) return;
+    const items = {
+      ...((option.actionTemplate.args?.items as Record<string, unknown> | undefined) ?? {}),
+    };
+    const possessions = {
+      ...((items.possessions as Partial<Record<PossessionType, string>> | undefined) ?? {}),
+    };
+    if (name.trim()) {
+      possessions[type] = name;
+    } else {
+      delete possessions[type];
+    }
+    setActionArgs(index, {
+      ...option.actionTemplate.args,
+      items: {
+        ...items,
+        possessions,
+      },
     });
   }
 
@@ -268,7 +352,8 @@
               list={listId}
               value={option.nextNode ?? ''}
               placeholder="Blank ends the event"
-              oninput={(e) => setNodeKey(i, 'nextNode', (e.currentTarget as HTMLInputElement).value)}
+              oninput={(e) =>
+                setNodeKey(i, 'nextNode', (e.currentTarget as HTMLInputElement).value)}
             />
           </label>
 
@@ -291,8 +376,10 @@
                   onclick={() => clearActionTemplate(i)}>Clear</button
                 >
               {:else}
-                <button type="button" class="btn ghost compact" onclick={() => enableActionTemplate(i)}
-                  >Add</button
+                <button
+                  type="button"
+                  class="btn ghost compact"
+                  onclick={() => enableActionTemplate(i)}>Add</button
                 >
               {/if}
             </div>
@@ -309,6 +396,48 @@
                   <option value={name}>{name}</option>
                 {/each}
               </select>
+              {#if option.actionTemplate.actionTemplate === 'purchase'}
+                <div class="purchase-args">
+                  <label class="field">
+                    <span class="label">Cost (gold)</span>
+                    <input
+                      class="input"
+                      type="number"
+                      min="0"
+                      value={(option.actionTemplate.args?.cost as number | undefined) ?? 0}
+                      aria-label="Purchase cost"
+                      oninput={(e) =>
+                        setPurchaseCost(i, Number((e.currentTarget as HTMLInputElement).value))}
+                    />
+                  </label>
+                  <div class="possessions-fields">
+                    <span class="label">Possessions</span>
+                    {#each possessionTypes as type (type)}
+                      <label class="field tight">
+                        <span class="label muted">{type}</span>
+                        <input
+                          class="input"
+                          value={((
+                            option.actionTemplate.args?.items as
+                              | { possessions?: Partial<Record<PossessionType, string>> }
+                              | undefined
+                          )?.possessions?.[type] ?? '') as string}
+                          placeholder="name"
+                          aria-label={`Possession ${type} name`}
+                          oninput={(e) =>
+                            setPurchasePossession(
+                              i,
+                              type,
+                              (e.currentTarget as HTMLInputElement).value
+                            )}
+                        />
+                      </label>
+                    {/each}
+                  </div>
+                </div>
+              {:else}
+                <p class="hint">Args default to empty for this template.</p>
+              {/if}
             {:else}
               <p class="hint">No action. Leave empty when this choice opens a node.</p>
             {/if}
@@ -464,11 +593,35 @@
     min-width: 0;
   }
 
+  .field.tight {
+    gap: 0.15rem;
+  }
+
+  .purchase-args {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: 0.35rem;
+  }
+
+  .possessions-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
   .label {
     font-size: 0.72rem;
     color: var(--color-muted-label);
     letter-spacing: 0.04em;
     text-transform: uppercase;
+  }
+
+  .label.muted {
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--color-cream);
+    opacity: 0.75;
   }
 
   .input {

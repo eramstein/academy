@@ -90,6 +90,13 @@ const PLACES: Record<string, Place> = {
     regionKey: 'town',
     locked: true,
   },
+  ['town-square']: {
+    key: 'town-square',
+    name: 'Town Square',
+    description:
+      'The Town Square is the central hub of the town. It is here that the townspeople gather to discuss the latest news and events.',
+    regionKey: 'town',
+  },
   ['metarials-shop']: {
     key: 'metarials-shop',
     name: 'Metarials Shop',
