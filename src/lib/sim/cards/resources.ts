@@ -2,7 +2,9 @@ import {
   CardColor,
   isSpellCard,
   isUnitCard,
+  StatusType,
   UnitType,
+  type ActionDefinition,
   type CardTemplate,
 } from '@/lib/_model';
 import { ResourceType } from '@/lib/_model/enums-sim';
@@ -17,7 +19,16 @@ export const COMMON_RESOURCE_TYPES: ResourceType[] = [
 export const UNIQUE_RESOURCE_TYPES: ResourceType[] = [
   ResourceType.MollysBeads,
   ResourceType.SchlupakMushrooms,
+  ResourceType.SchlupakDreamspheres,
+  ResourceType.SchlupakSpores,
 ];
+
+const CONTROL_STATUS_TYPES = new Set<StatusType>([
+  StatusType.Mezz,
+  StatusType.Daze,
+  StatusType.Root,
+  StatusType.Stun,
+]);
 
 export function isUniqueResource(type: ResourceType): boolean {
   return UNIQUE_RESOURCE_TYPES.includes(type);
@@ -66,6 +77,10 @@ export function applyUniqueResourceEffects(cardTemplate: CardTemplate, resourceT
       return applyMollysBeadsEffects(cardTemplate);
     case ResourceType.SchlupakMushrooms:
       return applySchlupakMushroomsEffects(cardTemplate);
+    case ResourceType.SchlupakDreamspheres:
+      return applySchlupakDreamspheresEffects(cardTemplate);
+    case ResourceType.SchlupakSpores:
+      return applySchlupakSporesEffects(cardTemplate);
   }
 }
 
@@ -77,6 +92,18 @@ export function applyUniqueResourcesFromSelection(
   for (const resource of resources ?? []) {
     if (resource.count > 0 && isUniqueResource(resource.type)) {
       applyUniqueResourceEffects(cardTemplate, resource.type);
+    }
+  }
+}
+
+function forEachCardAction(cardTemplate: CardTemplate, fn: (action: ActionDefinition) => void) {
+  if (isSpellCard(cardTemplate)) {
+    for (const action of cardTemplate.actions) fn(action);
+    return;
+  }
+  if (isUnitCard(cardTemplate)) {
+    for (const ability of cardTemplate.abilities ?? []) {
+      for (const action of ability.actions) fn(action);
     }
   }
 }
@@ -114,4 +141,32 @@ function applySchlupakMushroomsEffects(cardTemplate: CardTemplate) {
       action.effect.args.damage = damage + 1;
     }
   }
+}
+
+// Schlupak dreamspheres: +1 duration on mezz / daze / root / stun
+// (spell effects or unit abilities)
+function applySchlupakDreamspheresEffects(cardTemplate: CardTemplate) {
+  forEachCardAction(cardTemplate, (action) => {
+    if (action.effect.name !== 'applyUnitStatus') return;
+    if (!CONTROL_STATUS_TYPES.has(action.effect.args.statusType)) return;
+    const duration = Number(action.effect.args.duration) || 0;
+    action.effect.args.duration = duration + 1;
+  });
+}
+
+// Schlupak spores: +1 count on bounceUnit / cycleCards / drawCards
+function applySchlupakSporesEffects(cardTemplate: CardTemplate) {
+  forEachCardAction(cardTemplate, (action) => {
+    const name = action.effect.name;
+    if (name === 'drawCard') {
+      const cardCount = Number(action.effect.args.cardCount) || 0;
+      action.effect.args.cardCount = cardCount + 1;
+      return;
+    }
+    if (name === 'bounceUnit' || name === 'cycleCards') {
+      for (const target of action.targets ?? []) {
+        target.count = (Number(target.count) || 1) + 1;
+      }
+    }
+  });
 }

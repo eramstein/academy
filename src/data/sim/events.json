@@ -155,9 +155,7 @@
       {
         "triggerType": "period",
         "parameters": {
-          "periods": [
-            "morning"
-          ]
+          "periods": ["morning"]
         }
       }
     ],
@@ -281,10 +279,7 @@
             "parameters": {
               "activity": {
                 "type": "study",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "library"
               },
               "schedule": {
@@ -338,10 +333,7 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 3,
-            "poolKeys": [
-              "molly",
-              "base"
-            ]
+            "poolKeys": ["molly", "base"]
           }
         }
       }
@@ -361,19 +353,13 @@
       {
         "triggerType": "day_of_week",
         "parameters": {
-          "daysOfWeek": [
-            6,
-            7
-          ]
+          "daysOfWeek": [6, 7]
         }
       },
       {
         "triggerType": "period",
         "parameters": {
-          "periods": [
-            "morning",
-            "afternoon"
-          ]
+          "periods": ["morning", "afternoon"]
         }
       },
       {
@@ -484,10 +470,7 @@
           "type": "move",
           "parameters": {
             "placeKey": "gray_mountains",
-            "characterKeys": [
-              "player",
-              "molly"
-            ]
+            "characterKeys": ["player", "molly"]
           }
         }
       }
@@ -528,9 +511,7 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [
-                      2
-                    ],
+                    "daysOfWeek": [2],
                     "period": "evening"
                   }
                 }
@@ -720,10 +701,7 @@
             "parameters": {
               "activity": {
                 "type": "date",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "royal-pigeon-inn"
               },
               "schedule": {
@@ -778,10 +756,7 @@
             "parameters": {
               "activity": {
                 "type": "romance",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "molly-room"
               },
               "schedule": {
@@ -883,10 +858,7 @@
             "parameters": {
               "activity": {
                 "type": "social",
-                "participants": [
-                  "player",
-                  "molly"
-                ],
+                "participants": ["player", "molly"],
                 "placeKey": "molly-room",
                 "eventId": "molly-reading"
               },
@@ -1228,9 +1200,7 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [
-                      2
-                    ],
+                    "daysOfWeek": [2],
                     "period": "evening"
                   }
                 }
@@ -1302,10 +1272,7 @@
           "type": "move",
           "parameters": {
             "placeKey": "library",
-            "characterKeys": [
-              "player",
-              "molly"
-            ]
+            "characterKeys": ["player", "molly"]
           }
         }
       },
@@ -1343,9 +1310,7 @@
       {
         "triggerType": "period",
         "parameters": {
-          "periods": [
-            "afternoon"
-          ]
+          "periods": ["afternoon"]
         }
       }
     ],
@@ -1861,14 +1826,7 @@
           "type": "move",
           "parameters": {
             "placeKey": "academy-hall",
-            "characterKeys": [
-              "player",
-              "emma",
-              "elsa",
-              "henry",
-              "ousmane",
-              "molly"
-            ]
+            "characterKeys": ["player", "emma", "elsa", "henry", "ousmane", "molly"]
           }
         }
       },
@@ -2310,10 +2268,7 @@
           "parameters": {
             "activity": {
               "type": "event",
-              "participants": [
-                "player",
-                "emma"
-              ],
+              "participants": ["player", "emma"],
               "placeKey": "emma-room",
               "eventId": "emma_tourney_training"
             },
@@ -2678,10 +2633,7 @@
                 "parameters": {
                   "activity": {
                     "type": "event",
-                    "participants": [
-                      "player",
-                      "emma"
-                    ],
+                    "participants": ["player", "emma"],
                     "placeKey": "artificery-room",
                     "eventId": "emma_tourney_crafting"
                   },
@@ -2724,10 +2676,7 @@
                 "parameters": {
                   "activity": {
                     "type": "event",
-                    "participants": [
-                      "player",
-                      "emma"
-                    ],
+                    "participants": ["player", "emma"],
                     "placeKey": "artificery-room",
                     "eventId": "emma_tourney_crafting"
                   },
@@ -2905,9 +2854,7 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": [
-              "emma_tourney_spell"
-            ]
+            "specificCardKeys": ["emma_tourney_spell"]
           }
         },
         "triggers": [
@@ -2944,9 +2891,7 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": [
-              "emma_tourney_unit"
-            ]
+            "specificCardKeys": ["emma_tourney_unit"]
           }
         },
         "triggers": [
@@ -2984,10 +2929,7 @@
           "parameters": {
             "activity": {
               "type": "event",
-              "participants": [
-                "player",
-                "emma"
-              ],
+              "participants": ["player", "emma"],
               "placeKey": "falkenheim_school",
               "eventId": "emma_falkenheim_tournament"
             },
@@ -3098,9 +3040,7 @@
           "type": "move",
           "parameters": {
             "placeKey": "falkenheim_school",
-            "characterKeys": [
-              "player"
-            ]
+            "characterKeys": ["player"]
           }
         }
       },
@@ -3109,9 +3049,7 @@
           "type": "move",
           "parameters": {
             "placeKey": "falkenheim_school",
-            "characterKeys": [
-              "emma"
-            ]
+            "characterKeys": ["emma"]
           }
         }
       }
@@ -3700,10 +3638,7 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": [
-                      "player",
-                      "emma"
-                    ],
+                    "participants": ["player", "emma"],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -3712,9 +3647,7 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [
-                        2
-                      ],
+                      "daysOfWeek": [2],
                       "period": "evening"
                     }
                   }
@@ -3758,10 +3691,7 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": [
-                      "player",
-                      "emma"
-                    ],
+                    "participants": ["player", "emma"],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -3770,9 +3700,7 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [
-                        2
-                      ],
+                      "daysOfWeek": [2],
                       "period": "evening"
                     }
                   }
@@ -3822,9 +3750,7 @@
               "type": "move",
               "parameters": {
                 "placeKey": "academy-hall",
-                "characterKeys": [
-                  "player"
-                ]
+                "characterKeys": ["player"]
               }
             }
           },
@@ -3833,9 +3759,7 @@
               "type": "move",
               "parameters": {
                 "placeKey": "academy-hall",
-                "characterKeys": [
-                  "emma"
-                ]
+                "characterKeys": ["emma"]
               }
             }
           }
@@ -3987,10 +3911,7 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": [
-                      "player",
-                      "emma"
-                    ],
+                    "participants": ["player", "emma"],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -3999,9 +3920,7 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [
-                        2
-                      ],
+                      "daysOfWeek": [2],
                       "period": "evening"
                     }
                   }
@@ -4045,10 +3964,7 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": [
-                      "player",
-                      "emma"
-                    ],
+                    "participants": ["player", "emma"],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -4057,9 +3973,7 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [
-                        2
-                      ],
+                      "daysOfWeek": [2],
                       "period": "evening"
                     }
                   }
@@ -4178,9 +4092,7 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": [
-              "the_academy"
-            ]
+            "specificCardKeys": ["the_academy"]
           }
         }
       },
@@ -4289,9 +4201,7 @@
       {
         "triggerType": "day_of_week",
         "parameters": {
-          "daysOfWeek": [
-            4
-          ]
+          "daysOfWeek": [4]
         }
       },
       {
@@ -4336,10 +4246,7 @@
             "parameters": {
               "activity": {
                 "type": "event",
-                "participants": [
-                  "player",
-                  "emma"
-                ],
+                "participants": ["player", "emma"],
                 "placeKey": "town-square",
                 "eventId": "emma_ball_shopping"
               },
@@ -4356,10 +4263,7 @@
             "parameters": {
               "activity": {
                 "type": "event",
-                "participants": [
-                  "player",
-                  "emma"
-                ],
+                "participants": ["player", "emma"],
                 "placeKey": "academy-hall",
                 "eventId": "emma_academy_ball"
               },
@@ -4751,10 +4655,7 @@
           "type": "move",
           "parameters": {
             "placeKey": "academy-hall",
-            "characterKeys": [
-              "player",
-              "emma"
-            ]
+            "characterKeys": ["player", "emma"]
           }
         }
       },
@@ -5088,10 +4989,7 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 1,
-                "poolKeys": [
-                  "emma",
-                  "base"
-                ]
+                "poolKeys": ["emma", "base"]
               }
             },
             {
@@ -5264,10 +5162,7 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 1,
-                "poolKeys": [
-                  "emma",
-                  "base"
-                ]
+                "poolKeys": ["emma", "base"]
               }
             }
           },
@@ -5284,6 +5179,591 @@
         "emotion": "surprised"
       }
     }
+  },
+  {
+    "key": "emma_home_cooking",
+    "text": "You're about to join the cafeteria queue when you hear a familiar voice behind you.\n\n\"Antonio! Surely you're not planning to eat _that_.\"\n\nEmma approaches, eyeing the evening's offering with obvious suspicion.\n\n\"I was just heading home. Why don't you join me for dinner? I have some provisions, and I rather fancy cooking something myself for a change.\"\n\nShe smiles. \"Unless you're particularly attached to boiled cabbage.\"",
+    "triggers": [
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "evening"
+        }
+      },
+      {
+        "triggerType": "place",
+        "parameters": {
+          "placeKey": "cafeteria"
+        }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_trusted_companion",
+          "value": 1
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept the invitation",
+        "nextNode": "dinner",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Well, when you put it like that...\"\n\n\"Excellent. Come along, then. I promise you something considerably more interesting.\""
+            }
+          }
+        ]
+      },
+      {
+        "text": "Decline politely",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Thanks, Emma, but I think I'll stay here tonight.\"\n\n\"As you wish.\" She glances toward the serving counter. \"I admire your courage, if not your judgment.\"\n\nShe gives you a cheerful wave and heads off toward the village."
+            }
+          }
+        ]
+      }
+    ],
+    "title": "A Matter of Taste",
+    "characterArc": "emma",
+    "emotion": "happy",
+    "nodes": {
+      "dinner": {
+        "text": "Emma's room is as you remember it: books everywhere, papers arranged in precarious towers, and just enough space on the little table for two plates. Tonight, however, the usual scholarly apparatus has been pushed aside to make room for a chopping board, a collection of vegetables, and a frying pan.\n\nEmma rolls up her sleeves with the confidence of a woman about to perform a particularly elegant experiment.\n\n\"Now, let's see. This shouldn't be difficult.\"\n\nTwenty minutes later, you are beginning to suspect otherwise.\n\nThe vegetables have been cut into wildly different sizes. Something at the bottom of the pan is turning an alarming shade of black, while the rest remains stubbornly raw. Emma studies the situation with increasing irritation, as though the ingredients are deliberately refusing to cooperate.\n\n\"How curious. I followed the recipe precisely.\"\n\nYou glance at the open cookbook. She has, in fact, skipped two steps and confused a teaspoon with a tablespoon.\n\n\"Emma, would you mind if I took over?\"\n\nShe looks at you, genuinely affronted.\n\n\"Antonio, I am perfectly capable of preparing a simple meal.\"\n\nA small cloud of smoke rises from the pan.\n\nYou both watch it.\n\n\"...Although I suppose a second opinion wouldn't hurt.\"\n\nShe reluctantly hands you the spoon.\n\nYou rescue what can be saved, clean the pan, and start again. Before long, the vegetables are sizzling pleasantly, the sauce has thickened, and the room is filled with a considerably more encouraging aroma.\n\nEmma watches with undisguised fascination.\n\n\"Well. You seem remarkably practiced at this.\"\n\n\"I used to cook for my family. My parents were often ill, so somebody had to make dinner.\"\n\nHer expression softens.\n\n\"I see. That must have been difficult.\"\n\nYou shrug. \"You learn quickly when the alternative is going hungry.\"\n\nEmma smiles faintly. \"My parents always insisted I concentrate on my studies. They took care of practically everything else, even when they could scarcely afford the time. I suppose they rather spoiled me in that respect.\"\n\nShe considers the pan thoughtfully.\n\n\"Which explains why I can calculate the precise proportions of an alchemical compound, yet apparently cannot be trusted with an onion.\"\n\nYou offer her a taste of the sauce.\n\nShe takes it, pauses, and closes her eyes appreciatively.\n\n\"Oh, that's _good_.\"\n\nThen she looks at you with a mixture of admiration and wounded professional pride.\n\n\"How thoroughly irritating.\"\n\nDinner turns out splendidly. You eat together at the little table, talking about classes, books, and the peculiar injustices of Academy life. Emma gradually abandons her injured dignity, and by the time the plates are nearly empty, she's laughing freely.\n\n{{last_bite}}",
+        "optionTemplates": [
+          {
+            "text": "Prepare to leave",
+            "nextNode": "card_gift"
+          }
+        ],
+        "effects": [
+          {
+            "effect": {
+              "type": "add_known_trait",
+              "parameters": {
+                "characterKey": "emma",
+                "title": "Emma's upbringing",
+                "description": "Emma's parents made considerable sacrifices to support her education, taking care of household responsibilities so she could devote herself to her studies. As a result, she's a surprisingly inexperienced cook."
+              }
+            }
+          }
+        ],
+        "title": "A Matter of Taste",
+        "emotion": "embarrassed",
+        "image": "emma_home_cooking.jpg",
+        "imageSize": "large",
+        "passages": {
+          "last_bite": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "relation_parameter",
+                    "parameters": {
+                      "characterKey": "emma",
+                      "relationParameter": "love",
+                      "value": 3
+                    }
+                  }
+                ],
+                "text": "Only one delicious morsel remains on the serving plate.\n\nYou both notice it at precisely the same moment.\n\nEmma reaches for it. So do you. Your forks meet with a delicate metallic _clink_.\n\n\"Antonio.\"\n\n\"Emma.\"\n\n\"I believe,\" she says gravely, \"that as your hostess, I ought to have the final piece.\"\n\n\"And as your cook, I believe I've earned it.\"\n\nShe considers this argument. \"A regrettably strong position.\"\n\nYou seize the opportunity, pick up the morsel with your fingers, and smile triumphantly.\n\n\"Victory.\"\n\nEmma gives you a long, thoughtful look. Then a mischievous smile appears.\n\n\"Not quite.\"\n\nShe catches your wrist before you can withdraw your hand, gently draws it toward her, and, without breaking eye contact, takes the morsel delicately from between your fingers with her lips.\n\nFor a brief moment, you're too astonished to move.\n\nEmma releases your hand, chews with exquisite composure, and smiles.\n\n\"Delicious. You really are an excellent cook, Antonio.\"\n\nShe looks entirely too pleased with herself."
+              }
+            ],
+            "fallback": "There's barely a crumb left by the time you finish. Emma leans back in her chair, looking thoroughly satisfied.\n\n\"Well, Fibonacci. I have to concede that you've surpassed me in at least one field.\"\n\n\"Only one?\"\n\n\"Don't get ambitious. I've already ordered a better cookbook.\"\n\nShe smiles over her empty plate.\n\n\"Although I may have to invite you back for further practical instruction.\""
+          }
+        }
+      },
+      "card_gift": {
+        "text": "As you prepare to leave, Emma retrieves a small card case from her desk.\n\n\"Before you go, there's something I'd like you to have.\"\n\nShe opens it, revealing several beautifully crafted cards.\n\n\"Choose one. Consider it a modest expression of gratitude for saving my dinner.\"\n\nHer eyes narrow playfully.\n\n\"And not a word about this to Molly. I have a reputation to maintain.\"",
+        "optionTemplates": [],
+        "effects": [
+          {
+            "effect": {
+              "type": "offer_card_gifts",
+              "parameters": {
+                "count": 3,
+                "poolKeys": ["emma", "base"]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "key": "emma_molly_matchmaker",
+    "title": "A Rather Promising Match",
+    "text": "It's a pleasant evening at the inn. You and Emma have settled into a quiet corner for dinner, enjoying the rare luxury of having absolutely nothing important to discuss.\n\nMolly has just left after spending a cheerful half-hour with you both. Emma watches her disappear through the door, a thoughtful smile on her lips.\n\n\"You know, Antonio, I've been meaning to ask you something.\"\n\nShe sets down her glass.\n\n\"Have you ever considered courting Molly?\"\n\nWell. That came out of nowhere.\n\n\"Don't look so astonished. She's a wonderful girl. Kind, funny, pretty, and considerably more sensible than either of us.\"\n\nEmma pauses, then adds with a mischievous smile:\n\n\"Although I suspect she'd be quite happy with something less formal than a courtship, if that's more to your taste.\"\n\nYou raise an eyebrow.\n\n\"Emma Delamain. Are you trying to arrange my love life?\"\n\n\"Someone ought to. You seem to be making remarkably little progress on your own.\"\n\nShe laughs, then grows a little more serious.\n\n\"Honestly, Antonio, I think she rather likes you. I can't promise anything, of course, but I doubt she'd turn you away if you asked.\"\n\nShe takes another sip of her drink, watching you with genuine curiosity.\n\n\"Well? What do you think?\"",
+    "triggers": [
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "evening"
+        }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_trusted_companion",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "friendship",
+          "value": 3
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Consider Molly's charms",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Well, I can't deny that Molly is lovely. And we do get along rather well.\"\n\nEmma's face brightens.\n\n\"Precisely! I knew you weren't entirely hopeless.\"\n\n\"You're enjoying this far too much.\"\n\n\"Of course I am. Two of my favorite people, potentially making each other very happy? It's an excellent prospect.\"\n\nShe raises her glass with the satisfied air of a woman whose arrangements are progressing splendidly.\n\n\"Now, I shall leave you to work out the details. I refuse to conduct the entire courtship on your behalf.\"\n\nYou suspect she would rather enjoy doing exactly that."
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "antonio_molly_interested"
+            }
+          }
+        ]
+      },
+      {
+        "text": "An impossible quest",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You've been cutting the same piece of meat for an unusually long time.\n\nAcross the table, Emma's smile begins to fade. Perhaps she's wondering whether she's said something wrong.\n\nWell. No point putting it off any longer.\n\n\"Emma... I'm afraid I have a rather unfortunate habit of pursuing hopeless, epic quests.\"\n\nShe raises an eyebrow.\n\n\"Oh?\"\n\n\"You know the sort. A unique and wonderful treasure, guarded by a dragon far too powerful for me.\"\n\nEmma looks puzzled.\n\n\"Antonio, what on earth are you—\"\n\nShe stops.\n\nFor a moment, she simply studies you. Then something changes in her expression.\n\nYour heart is beating so loudly you're half convinced she can hear it.\n\nShe understands.\n\n\"Antonio...\" Her voice is quieter now. \"You know, quests of that sort can take a very long time. And sometimes they lead nowhere at all.\"\n\n\"I know.\"\n\nA faint blush colors her cheeks. Her eyes remain on yours, unusually serious.\n\nThen, very slowly, the corner of her mouth curves upward.\n\n\"On the bright side,\" she says, \"if the dragon eventually decides to eat you, I suspect you might rather enjoy it.\"\n\nYou nearly choke on your wine.\n\nEmma laughs, and just like that, the unbearable tension dissolves.\n\n\"Really, Fibonacci. You ought to be more careful about the dangers you go looking for.\"\n\nShe returns to her meal, apparently quite composed.\n\nAlthough, when you look up a moment later, you catch her watching you with a small, thoughtful smile."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "love",
+              "amount": 3
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_knows_antonio_feelings"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Remain a free adventurer",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Thank you for your concern, Emma, but I think I'll manage my romantic affairs without professional assistance.\"\n\n\"Professional?\" Emma looks delighted. \"How flattering. I hadn't realized my advice carried such authority.\"\n\n\"Well, you do seem remarkably confident in your matchmaking abilities.\"\n\n\"Naturally. I have an excellent understanding of human nature.\"\n\n\"Then you'll understand that I prefer to make my own mistakes.\"\n\nShe laughs.\n\n\"Very well, Antonio. I shall respect your independence.\"\n\nShe takes another sip of wine, considering you over the rim of her glass.\n\n\"Although I reserve the right to say _I told you so_ when you make a spectacular mess of things.\"\n\n\"How generous.\"\n\n\"I thought so.\"\n\nAnd with that, the subject is settled. At least until Emma discovers another opportunity to improve your life against your will."
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "emma",
+    "image": "emma_molly_matchmaker.jpg",
+    "imageSize": "medium"
+  },
+  {
+    "key": "emma_diversion_kiss",
+    "title": "A Tactical Diversion",
+    "text": "The market square is busy with its usual collection of merchants, shoppers, and people who appear to have nothing better to do than obstruct the passage of everyone else.\n\nYou're passing a bookstall when you spot Emma emerging from the crowd. Two young gentlemen in expensive, rather ostentatious clothes are following close behind her.\n\n\"Come now, my dear, surely you can spare us an afternoon!\"\n\n\"I assure you, gentlemen, I cannot.\"\n\n\"Just one drink! You needn't be so difficult!\"\n\nEmma turns toward them, her smile becoming distinctly less friendly.\n\n\"For the third time, no. Good day.\"\n\nShe walks away. They follow.\n\nThen she spots you.\n\nHer expression changes instantly.\n\n\"Antonio!\"\n\nBefore you can reply, she's striding toward you with a brilliant smile.\n\n\"Perfect timing,\" she whispers. \"Play along.\"\n\nShe takes your hands, draws you close, and kisses you.\n\nFor a moment, you forget entirely about the market, the bookstall, and the existence of the human race.\n\nYou become vaguely aware of two disappointed voices nearby.\n\n\"Oh. Well, she might have mentioned...\"\n\n\"Come on, let's go.\"\n\nTheir footsteps retreat.\n\nEmma doesn't seem to notice.\n\nThen, at last, she draws back.\n\nShe looks into your eyes for a brief moment before releasing your hands and turning to check that her admirers have disappeared.\n\n\"Excellent,\" she announces, recovering her usual composure. \"That worked rather well.\"\n\nYou stare at her.\n\n\"Oh, don't look so scandalized, Antonio. It was a tactical diversion. Simple, elegant, and remarkably effective.\"\n\nA small, mischievous smile appears.\n\n\"Besides, I knew I could count on your cooperation.\"",
+    "triggers": [
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "evening"
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "love",
+          "value": 6
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "At your service, my lady",
+        "nextNode": "a_lucky_day",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You give her an extravagant bow.\n\n\"My lady, it is my sacred duty as your humble knight to defend you from unwanted suitors. Should you ever require such assistance again, you have only to call.\"\n\nEmma laughs.\n\n\"How very gallant of you, Sir Antonio.\"\n\n\"And I must compliment you on your performance. Such dedication to your role!\"\n\nEmma blushes.\n\n\"You know me. I always do my best.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Question her strategy",
+        "nextNode": "a_lucky_day",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Delamain, I entirely understand the strategic necessity of the kiss. A brilliant diversion, really.\"\n\nEmma smiles with evident satisfaction.\n\n\"Naturally.\"\n\n\"Although there's one detail I find rather difficult to explain.\"\n\n\"Oh?\"\n\n\"Wasn't the tongue a little excessive?\"\n\nEmma blushes, visibly amused, and suddenly finds something very interesting to look at on the other side of the square."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "nodes": {
+      "a_lucky_day": {
+        "text": "Emma suddenly remembers something.\n\n\"Oh! Before I forget.\"\n\nShe opens her satchel and retrieves a small leather card case.\n\n\"I collected these from the artificery workshop this morning. Some experimental designs I've been working on. I was planning to show you later.\"\n\nShe opens the case, revealing three beautifully crafted cards.\n\n\"Here. Choose one. I'd like you to have it.\"\n\nThen a thoroughly wicked smile spreads across her face.\n\n\"Antonio, I do hope you appreciate just how extraordinarily fortunate you are today.\"\n\nShe holds up one finger.\n\n\"First, the prettiest girl in town gives you a kiss.\"\n\nA second finger.\n\n\"And then she presents you with a magnificent gift.\"\n\nShe sighs theatrically.\n\n\"Really, Fibonacci. I fear the rest of your life will be something of a disappointment by comparison.\"",
+        "effects": [
+          {
+            "effect": {
+              "type": "offer_card_gifts",
+              "parameters": {
+                "count": 3,
+                "poolKeys": ["emma", "base"]
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_first_kiss"
+              }
+            }
+          }
+        ],
+        "optionTemplates": [],
+        "title": "Fortune Favors the Bold",
+        "emotion": "amused"
+      }
+    },
+    "characterArc": "emma",
+    "emotion": "flirtatious",
+    "image": "emma_diversion_kiss.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "emma_schlupak_mushrooms",
+    "title": "The Devil's Garden",
+    "text": "Emma approaches you carrying a thick botanical encyclopedia, several folded maps, and the unmistakable expression of someone who has had a very interesting idea.\n\n\"Antonio. How would you feel about a little field research?\"\n\nBefore you can answer, she unfolds a map of the Forest of Schlupak.\n\n\"I've been studying a rather remarkable species of mushroom. Schlupak's Thorncap. The flesh contains an extraordinarily potent defensive toxin. Properly distilled, it can be used to strengthen retaliatory enchantments, poisons, even direct damage spells.\"\n\nShe turns a page, revealing an illustration of a rather unpleasant-looking fungus.\n\n\"Unfortunately, it grows almost exclusively in the Forest of Schlupak. Which, as you may know, has a somewhat regrettable reputation.\"\n\nA few days later, after a long walk beneath increasingly ancient trees, you find yourselves overlooking a sunken clearing. Thick clusters of dark crimson mushrooms grow among enormous tangled roots.\n\nEmma kneels to examine the nearest specimens.\n\n\"Perfect. Exactly what we need.\"\n\nShe gestures toward a handful of mushrooms growing near the path, then toward a much larger cluster farther down the slope.\n\n\"Those near us are easily accessible. The others...\" She studies the loose earth and the steep descent. \"Well, we'd have to climb down. The ground doesn't look terribly stable.\"\n\nShe closes her notebook.\n\n\"Two specimens, safely gathered. Or four, if you're feeling ambitious. Your choice, Antonio.\"",
+    "triggers": [
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_trusted_companion",
+          "value": 1
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Collect the accessible mushrooms",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You gather the two nearest mushrooms while Emma prepares the protective containers. Their dark red caps release a faint, acrid smell as you carefully separate them from the roots.\n\n\"An excellent harvest,\" Emma declares, inspecting the specimens. \"Not spectacular, admittedly, but perfectly respectable.\"\n\nShe glances down toward the larger cluster.\n\n\"Although I confess, there's something rather irritating about leaving perfectly good ingredients behind.\""
+            }
+          },
+          {
+            "type": "add_resource",
+            "parameters": {
+              "resourceType": "schlupak_mushrooms",
+              "amount": 2
+            }
+          }
+        ]
+      },
+      {
+        "text": "Climb down for the larger harvest",
+        "attributeCheck": {
+          "attribute": "dexterity",
+          "difficulty": "hard",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You carefully descend the slope, testing each foothold before committing your weight. Several stones tumble away beneath your boots, but you reach the lower roots safely.\n\nEmma calls down instructions while you collect the mushrooms.\n\n\"Mind the red ones! No, not the mushrooms, the roots! The mushrooms are supposed to be red!\"\n\nEventually, you scramble back up with four magnificent specimens.\n\nEmma examines the contents of your bag, plainly delighted.\n\n\"Splendid work, Antonio. Four perfect specimens, and all your limbs still attached. A remarkably successful expedition.\""
+              }
+            },
+            {
+              "type": "add_resource",
+              "parameters": {
+                "resourceType": "schlupak_mushrooms",
+                "amount": 4
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "The first few steps go well. Then a loose root gives way under your boot.\n\nYou slide down the slope in a spectacular shower of dirt, leaves, and small stones, coming to rest directly in the middle of the mushroom colony.\n\nThere is a distinctly unpleasant squelching sound.\n\nBy the time Emma helps you back onto solid ground, the mushrooms are thoroughly crushed and your clothing has acquired a remarkable collection of stains.\n\nShe surveys the devastation with scholarly dismay.\n\n\"Well. On the positive side, we've confirmed that the mushrooms release their toxins when subjected to physical trauma.\"\n\nShe looks at your ruined trousers.\n\n\"Rather enthusiastically, in fact.\""
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "characterArc": "emma",
+    "image": "emma-forest-expedition.jpg",
+    "imageSize": "large",
+    "manualTrigger": "Emma has a proposal — Forest of Schlupak"
+  },
+  {
+    "key": "emma_schlupak_hollow",
+    "title": "The Dreaming Hollow",
+    "text": "\"Antonio, do you remember our little expedition to the Forest of Schlupak?\"\n\nEmma produces a new map before you can reply.\n\n\"I've discovered something rather intriguing. There's an ancient hollow deep in the forest where two exceptionally rare magical substances can be found. I propose we investigate.\"\n\nShe looks at you with a smile.\n\n\"And this time, I've brought considerably better equipment.\"\n\nYour second expedition takes you deeper into Schlupak than before. Eventually, the trees give way to an enormous hollow oak, its interior illuminated by an eerie blue-green light.\n\nInside, enormous translucent spheres hang suspended among the branches, slowly pulsing with pale violet light. Beneath them, clusters of delicate mushrooms release clouds of iridescent spores.\n\nEmma stops dead.\n\n\"Oh, that's magnificent.\"\n\nShe approaches a floating sphere, examining it with obvious fascination.\n\n\"Schlupak Dreamspheres. Concentrated oneiric energy! Their magical properties are extraordinary. They're particularly useful for enchantments that manipulate the behavior of other spells and creatures.\"\n\nThen she notices the mushrooms.\n\n\"And below them... Schlupak Spores. Equally valuable, but with very different properties. They enhance magical circulation and displacement. Excellent for drawing cards and returning summoned creatures to their owner's hand.\"\n\nShe begins unpacking her equipment.\n\n\"There's a complication, naturally.\"\n\nShe points toward the spheres.\n\n\"Disturbing a Dreamsphere causes the surrounding spores to disperse. But harvesting the spores destabilizes the spheres, making them dissolve.\"\n\nEmma considers the problem for a moment, then shrugs.\n\n\"We can safely collect two specimens of either substance. Not both.\"\n\nShe looks at you.\n\n\"Well, Antonio? Which would be more useful for your next masterpiece?\"",
+    "triggers": [
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_trusted_companion",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_schlupak_mushrooms",
+          "value": 1
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Collect the Dreamspheres",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You choose the floating spheres.\n\nEmma nods approvingly and produces a curious glass instrument resembling a butterfly net designed by an astronomer.\n\n\"Excellent. Carefully, now. They're extremely sensitive to sudden movements.\"\n\nUnder her guidance, you capture two of the shimmering spheres. Their surfaces ripple gently as you lower them into protective containers.\n\nThe remaining spheres begin to fade, releasing a soft burst of light that scatters the spores throughout the hollow.\n\nEmma holds up one of your acquisitions.\n\n\"Beautiful. Just think of the possibilities! Mesmerizing enemies, manipulating their actions, disrupting entire formations...\"\n\nHer expression grows thoughtful.\n\n\"Do remind me never to play against you without a suitable counterspell.\""
+            }
+          },
+          {
+            "type": "add_resource",
+            "parameters": {
+              "resourceType": "schlupak_dreamspheres",
+              "amount": 2
+            }
+          }
+        ]
+      },
+      {
+        "text": "Collect the Spores",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You indicate the clusters of mushrooms beneath the branches.\n\n\"The spores? Interesting.\"\n\nEmma produces a small bellows and two sealed glass vessels.\n\n\"Very well. We shall have to be delicate. These things are extraordinarily sensitive to air currents.\"\n\nShe demonstrates a careful technique for gathering the spores without scattering them, then hands you the instrument.\n\nAfter several minutes of painstaking work, both vessels are filled with shimmering powder.\n\nAbove you, the Dreamspheres begin to tremble, then dissolve into a gentle shower of violet sparks.\n\nEmma examines your harvest with satisfaction.\n\n\"Excellent. With this much material, you could develop some truly remarkable circulation enchantments. Faster card recovery, magical displacement, perhaps even some interesting combinations.\"\n\nShe seals the vessels.\n\n\"And unlike certain other specimens we've encountered in this forest, these have made no attempt whatsoever to poison us.\""
+            }
+          },
+          {
+            "type": "add_resource",
+            "parameters": {
+              "resourceType": "schlupak_spores",
+              "amount": 2
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "emma",
+    "image": "emma-forest-expedition.jpg",
+    "imageSize": "large",
+    "manualTrigger": "Emma has another proposal — Forest of Schlupak"
+  },
+  {
+    "key": "emma_elsa_birthday",
+    "title": "The Price of High Society",
+    "text": "You and Emma are leaving the Academy when a familiar voice calls after you.\n\n\"Emma! Antonio! Just the two people I was hoping to find.\"\n\nElsa Falkenstein approaches, looking particularly pleased with herself. She carries an elegant envelope, sealed with crimson wax.\n\n\"I'm hosting my birthday celebration at the Royal Pigeon Inn next Saturday. A proper reception, naturally. Music, dancing, an excellent dinner, and a rather distinguished guest list.\"\n\nShe hands Emma the envelope.\n\n\"I would very much like you to attend, Emma. Your little successes at the Academy have attracted quite a bit of attention lately. I think you'll find the company interesting, and I'm sure my guests will be delighted to meet you.\"\n\nEmma studies the invitation, mildly surprised.\n\n\"How very gracious of you, Elsa.\"\n\n\"Naturally. And Antonio, I have a rather different role in mind for you.\"\n\nElsa's smile widens.\n\n\"I'm going to need an additional waiter.\"\n\nThere is a short silence.\n\n\"A waiter?\" you repeat.\n\n\"Yes, darling. You do have experience in hospitality, don't you? And I've already arranged a proper uniform for you. White gloves, a splendid black coat, the works. You'll look positively magnificent.\"\n\nEmma presses her lips together. You recognize the expression. She is making a considerable effort not to smile.\n\n{{ invitation_terms }}",
+    "passages": {
+      "invitation_terms": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "elsa_favor_owed",
+                  "value": 1
+                }
+              }
+            ],
+            "text": "\"Now, before you object,\" Elsa continues, \"I believe we had an agreement. A certain little favor, in exchange for some rather valuable information about my brother.\"\n\nAh.\n\nYou remember that agreement. You remember expressing certain reservations about it, too.\n\nEmma inclines her head.\n\n\"Quite right, Elsa. A promise is a promise.\"\n\n\"How refreshing! I knew I could count on you both.\"\n\nElsa looks positively radiant.\n\n\"And don't worry, Antonio. I assure you the uniform is of the very finest quality.\""
+          }
+        ],
+        "fallback": "\"Of course, I wouldn't dream of imposing on you without compensation,\" Elsa adds pleasantly. \"Two hundred crowns each. For one evening. I think you'll agree that's a generous offer.\"\n\nEmma raises an eyebrow.\n\n\"Two hundred each? That's rather extravagant for a birthday party.\"\n\n\"My dear Emma, I intend this to be an occasion people remember. Good company is worth paying for.\"\n\nShe turns toward you.\n\n\"Well, Antonio? What do you say?\""
+      }
+    },
+    "triggers": [
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "evening"
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_trusted_companion",
+          "value": 1
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Honor the agreement",
+        "triggers": [
+          {
+            "triggerType": "story_tag",
+            "parameters": {
+              "tag": "elsa_favor_owed",
+              "value": 1
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Well, a deal is a deal,\" you concede.\n\n\"Precisely!\" Elsa claps her hands, delighted.\n\nYou turn toward Emma.\n\n\"Remind me, whose brilliant idea was it to owe Elsa a favor?\"\n\nEmma regards you with complete composure.\n\n\"I believe we agreed it was an excellent strategic decision at the time.\"\n\n\"Did we?\"\n\n\"We obtained the information, didn't we?\"\n\nElsa watches the exchange with evident satisfaction.\n\n\"Oh, this is going to be such a lovely evening.\""
+            }
+          }
+        ],
+        "nextNode": "birthday_party"
+      },
+      {
+        "text": "Accept the offer",
+        "triggers": [
+          {
+            "triggerType": "story_tag",
+            "parameters": {
+              "tag": "elsa_favor_owed",
+              "value": -1
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Two hundred crowns for an evening's work? Very well. You have yourself a waiter.\"\n\n\"Splendid!\" Elsa beams. \"I knew you'd be reasonable.\"\n\nEmma looks at you with amused disbelief.\n\n\"Antonio Fibonacci, bought for two hundred crowns. I shall remember this.\"\n\n\"Coming from someone who just accepted two hundred crowns for attending a party, that's rather rich.\"\n\n\"Ah, but I'm attending as a guest. You're serving drinks.\"\n\nElsa looks from one to the other, clearly enjoying herself.\n\n\"Wonderful. Now, about your measurements...\""
+            }
+          },
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": 200
+            }
+          }
+        ],
+        "nextNode": "birthday_party"
+      },
+      {
+        "text": "Politely decline",
+        "triggers": [
+          {
+            "triggerType": "story_tag",
+            "parameters": {
+              "tag": "elsa_favor_owed",
+              "value": -1
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Thank you, Elsa, but I think I'll decline. Two hundred crowns is tempting, but I didn't come to the Academy to spend my evenings serving drinks.\"\n\nElsa looks briefly disappointed.\n\n\"Oh, what a pity. I was so looking forward to seeing you in the uniform.\"\n\n\"I'm sure you were.\"\n\nEmma gives you an approving glance.\n\n\"A perfectly reasonable decision, Antonio. Though I confess, I'm a little disappointed myself.\"\n\n\"About the money?\"\n\n\"About the uniform, naturally.\"\n\nElsa sighs.\n\n\"Well, I'll simply have to find someone else. Emma, darling, I do hope you'll still come.\"\n\nEmma considers the invitation.\n\n\"Why not? It sounds like an interesting evening.\"\n\nElsa brightens at once, and the two young women begin discussing the guest list, leaving you with the uncomfortable realization that your refusal has deprived you of precisely one thing: an opportunity for Emma to laugh at your expense."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "nodes": {
+      "birthday_party": {
+        "text": "The Royal Pigeon Inn has been transformed for the occasion. Chandeliers glitter above elegantly dressed guests, a small orchestra plays near the windows, and liveried servants glide between the tables bearing silver trays of delicacies.\n\nElsa has spared no expense. To her credit, the result is magnificent.\n\nYou, meanwhile, are standing in a servants' room, contemplating your reflection in a mirror.\n\nThe uniform is magnificent too, in its own way. A stiff black tailcoat, a brilliant white waistcoat, an enormous bow tie, immaculate white gloves, and a collar so high that turning your head has become a complicated operation.\n\nYou look like a penguin that has inherited a title.\n\nThe head waiter inspects you, adjusts your bow tie by a fraction of an inch, and hands you a silver tray.\n\n\"Sparkling wine. The ladies at the table by the window.\"\n\nYou take the tray and make your way through the reception.\n\nThere, seated together in elegant evening dresses, are Emma and Molly. The two friends are enjoying themselves enormously, laughing over some private conversation.\n\nEmma notices you first.\n\nHer expression freezes.\n\nHer eyes travel slowly from your polished shoes to the tails of your coat, then upward to the magnificent bow tie.\n\nShe presses a hand to her mouth.\n\nMolly turns to see what has caught her attention.\n\n\"Oh! Antonio! You look so...\"\n\nMolly stops, searching desperately for a suitable adjective.\n\n\"...professional!\"\n\nThat does it.\n\nEmma lets out a small, strangled sound. She attempts to disguise it as a cough, then as a sip from her glass, but the effort is hopeless. Her shoulders begin to shake.\n\n\"Emma,\" you say with as much dignity as your collar permits, \"may I offer you some sparkling wine?\"\n\nShe tries to answer. She truly does.\n\n\"Thank you, Antonio, that's very...\"\n\nHer eyes meet yours.\n\n\"...very...\"\n\nAnd then she loses the battle entirely.\n\nShe bursts into helpless laughter, bending forward with one hand over her face. Molly, caught between sympathy for you and the contagious absurdity of the situation, begins giggling too.\n\nFor perhaps half a minute, Emma is quite incapable of speech.\n\nAt last, she manages to recover enough composure to accept a glass.\n\n\"Oh, Antonio!\" She wipes a tear from the corner of her eye. \"Forgive me. It's just... that bow tie! And the way you're standing!\"\n\n\"Madam,\" you reply stiffly, \"I am merely endeavoring to provide the highest standard of service.\"\n\nThis proves to be a serious mistake.\n\nEmma collapses into laughter again.\n\nMolly reaches across the table to pat your hand sympathetically.\n\n\"I think you look very handsome, Antonio. Really!\"\n\n\"Thank you, Molly.\"\n\nEmma raises her glass, still struggling to contain herself.\n\n\"To Antonio Fibonacci,\" she declares, \"the most distinguished gentleman ever to carry a tray!\"\n\nYou give an elaborate bow, to the evident delight of both ladies, and retreat with what remains of your dignity.\n\nAcross the room, Elsa watches the scene with a satisfied little smile. Her party is going splendidly.\n\nAnd judging by the laughter still coming from the table by the window, it is certainly going to be remembered.",
+        "effects": [
+          {
+            "effect": {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            }
+          }
+        ],
+        "optionTemplates": [],
+        "title": "A Most Distinguished Waiter",
+        "emotion": "laughing",
+        "image": "emma_elsa_birthday_party.jpg",
+        "imageSize": "large"
+      }
+    },
+    "characterArc": "emma",
+    "emotion": "neutral"
   },
   {
     "key": "happy_little_accident",
@@ -5310,9 +5790,7 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": [
-              "happy_little_accident"
-            ]
+            "specificCardKeys": ["happy_little_accident"]
           }
         }
       }
@@ -5331,9 +5809,7 @@
       {
         "triggerType": "period",
         "parameters": {
-          "periods": [
-            "morning"
-          ]
+          "periods": ["morning"]
         }
       }
     ],

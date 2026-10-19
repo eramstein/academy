@@ -33,6 +33,8 @@
     [ResourceType.Moxes]: 'gem',
     [ResourceType.MollysBeads]: 'leaf',
     [ResourceType.SchlupakMushrooms]: 'feather',
+    [ResourceType.SchlupakDreamspheres]: 'feather',
+    [ResourceType.SchlupakSpores]: 'feather',
   };
 
   const narration = $derived(gs.scene.narration);

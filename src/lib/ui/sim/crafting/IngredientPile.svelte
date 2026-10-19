@@ -31,6 +31,8 @@
     [ResourceType.Moxes]: 'gem',
     [ResourceType.MollysBeads]: 'leaf',
     [ResourceType.SchlupakMushrooms]: 'feather',
+    [ResourceType.SchlupakDreamspheres]: 'feather',
+    [ResourceType.SchlupakSpores]: 'feather',
   };
 
   const RESOURCE_ROLES: Record<ResourceType, string> = {
@@ -39,6 +41,8 @@
     [ResourceType.Moxes]: 'Erudition',
     [ResourceType.MollysBeads]: 'Unique',
     [ResourceType.SchlupakMushrooms]: 'Unique',
+    [ResourceType.SchlupakDreamspheres]: 'Unique',
+    [ResourceType.SchlupakSpores]: 'Unique',
   };
 
   const iconName = RESOURCE_ICONS[type];

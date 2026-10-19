@@ -21,6 +21,8 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
       [ResourceType.Moxes]: 0,
       [ResourceType.MollysBeads]: 0,
       [ResourceType.SchlupakMushrooms]: 0,
+      [ResourceType.SchlupakDreamspheres]: 0,
+      [ResourceType.SchlupakSpores]: 0,
     },
     relationProgress: {
       friendship: 0,

@@ -1,15 +1,77 @@
 [
   {
-    "id": "fleeting_illusion",
-    "name": "Fleeting Illusion",
-    "imageFileName": "fleeting_illusion",
+    "id": "subtle_confusion",
+    "name": "Subtle Confusion",
+    "imageFileName": "subtle_confusion",
+    "type": "spell",
+    "cost": 3,
+    "colors": [{ "color": "blue", "count": 3 }],
+    "actions": [
+      {
+        "effect": {
+          "name": "applyUnitStatus",
+          "args": {
+            "statusType": "daze",
+            "duration": 1,
+            "range": {
+              "adjacent": true
+            }
+          }
+        },
+        "targets": [
+          {
+            "type": "cell_empty",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "poolKeys": ["emma", "base"]
+  },
+  {
+    "id": "book_worm",
+    "name": "Book Worm",
+    "imageFileName": "book_worm",
     "type": "creature",
-    "cost": 2,
+    "cost": 4,
+    "colors": [{ "color": "blue", "count": 3 }],
+    "power": 0,
+    "retaliate": 1,
+    "maxHealth": 4,
+    "unitTypes": ["elemental"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "drawCard",
+              "args": {
+                "cardCount": 1
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "poolKeys": ["emma", "base"]
+  },
+  {
+    "id": "ballet_choreagrapher",
+    "name": "Ballet Choreographer",
+    "imageFileName": "ballet_choreagrapher",
+    "type": "creature",
+    "cost": 3,
     "colors": [{ "color": "blue", "count": 2 }],
-    "power": 2,
+    "power": 1,
     "retaliate": 0,
-    "maxHealth": 2,
-    "unitTypes": ["spirit"],
+    "maxHealth": 1,
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {

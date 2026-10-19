@@ -148,6 +148,8 @@ export enum ResourceType {
   // Unique resources
   MollysBeads = 'mollys_beads',
   SchlupakMushrooms = 'schlupak_mushrooms',
+  SchlupakDreamspheres = 'schlupak_dreamspheres',
+  SchlupakSpores = 'schlupak_spores',
 }
 
 export enum JobType {
