@@ -9,12 +9,14 @@
     onCreate,
     onCreateFollowUp,
     onEdit,
+    onShowPacing,
   }: {
     events: EventTemplate[];
     selectedArc?: string | null;
     onCreate: () => void;
     onCreateFollowUp: (fromEvent: EventTemplate) => void;
     onEdit: (event: EventTemplate) => void;
+    onShowPacing: () => void;
   } = $props();
 
   let search = $state('');
@@ -137,7 +139,10 @@
         {/if}
       </p>
     </div>
-    <button type="button" class="create-btn" onclick={onCreate}>New event</button>
+    <div class="header-actions">
+      <button type="button" class="ghost-btn" onclick={onShowPacing}>Pacing</button>
+      <button type="button" class="create-btn" onclick={onCreate}>New event</button>
+    </div>
   </header>
 
   <label class="search">
@@ -177,7 +182,7 @@
     {#if filteredEvents.length === 0}
       <p class="empty">{search.trim() ? 'No events match your search.' : 'No events.'}</p>
     {:else}
-      <CharacterArcGraph events={arcEvents} {onEdit} {onCreateFollowUp} />
+      <CharacterArcGraph events={arcEvents} allEvents={events} {onEdit} {onCreateFollowUp} />
     {/if}
   {:else if filteredEvents.length === 0}
     <p class="empty">{search.trim() ? 'No events match your search.' : 'No events.'}</p>
@@ -244,6 +249,26 @@
     margin: 0;
     font-size: 0.9rem;
     color: var(--color-muted-label);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .ghost-btn {
+    padding: 0.5rem 0.9rem;
+    border-radius: 4px;
+    font: inherit;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid rgba(175, 142, 103, 0.45);
+    color: var(--color-cream);
+  }
+
+  .ghost-btn:hover {
+    background: var(--color-data-hover);
+    border-color: var(--color-brass);
   }
 
   .create-btn {

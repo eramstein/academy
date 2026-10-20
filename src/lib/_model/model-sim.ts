@@ -171,6 +171,7 @@ export interface EventTemplate {
    * Entering a node does not stamp the event again.
    */
   nodes?: Record<string, EventNode>;
+  priority?: number; // events with the highest priority number trigger first
 }
 
 /** A beat inside an event. Reached only through an option `nextNode` (or a skill-check branch node). */

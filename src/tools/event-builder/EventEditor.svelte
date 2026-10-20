@@ -6,6 +6,7 @@
   import { normalizeEventTemplate, syncEventTemplates } from '@/lib/sim/events';
   import EventForm from './EventForm.svelte';
   import EventList from './EventList.svelte';
+  import PacingCalendar from './PacingCalendar.svelte';
 
   // Bundled fallback is events.json; /api/events merges mods/<id>/events.json in dev.
   let events = $state<EventTemplate[]>(
@@ -15,6 +16,7 @@
   let showForm = $state(false);
   let loading = $state(true);
   let selectedArc = $state<string | null>(null);
+  let mode = $state<'catalog' | 'pacing'>('catalog');
 
   const existingKeys = $derived(events.map((event) => event.key));
 
@@ -91,13 +93,18 @@
       <EventForm event={editingEvent} {existingKeys} onSaved={handleSaved} onCancel={closeForm} />
     {/key}
   {:else}
-    <EventList
-      {events}
-      bind:selectedArc
-      onCreate={openCreate}
-      onCreateFollowUp={openCreateFollowUp}
-      onEdit={openEdit}
-    />
+    {#if mode === 'pacing'}
+      <PacingCalendar {events} onShowCatalog={() => (mode = 'catalog')} />
+    {:else}
+      <EventList
+        {events}
+        bind:selectedArc
+        onCreate={openCreate}
+        onCreateFollowUp={openCreateFollowUp}
+        onEdit={openEdit}
+        onShowPacing={() => (mode = 'pacing')}
+      />
+    {/if}
   {/if}
 </div>
 

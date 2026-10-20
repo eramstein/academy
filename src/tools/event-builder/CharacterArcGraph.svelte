@@ -3,19 +3,26 @@
     EventEffectType,
     EventTriggerType,
     type EventEffect,
+    type EventOptionTemplate,
     type EventTemplate,
     type EventTemplateEffect,
+    type EventTrigger,
   } from '@/lib/_model';
 
   let {
     events,
+    allEvents = events,
     onEdit,
     onCreateFollowUp,
   }: {
     events: EventTemplate[];
+    /** Full catalog — used for per-tag event counts across arcs. */
+    allEvents?: EventTemplate[];
     onEdit: (event: EventTemplate) => void;
     onCreateFollowUp: (fromEvent: EventTemplate) => void;
   } = $props();
+
+  let tagsExpanded = $state(true);
 
   const NODE_W = 180;
   const NODE_H = 72;
@@ -23,6 +30,130 @@
   const GAP_Y = 36;
   const PAD = 24;
   const ADD_R = 11;
+
+  function walkTriggers(
+    triggers: EventTrigger[] | undefined,
+    visit: (trigger: EventTrigger) => void
+  ) {
+    for (const trigger of triggers ?? []) visit(trigger);
+  }
+
+  function walkEffects(effects: EventEffect[] | undefined, visit: (effect: EventEffect) => void) {
+    for (const effect of effects ?? []) visit(effect);
+  }
+
+  function walkTemplateEffects(
+    entries: EventTemplateEffect[] | undefined,
+    visitTrigger: (trigger: EventTrigger) => void,
+    visitEffect: (effect: EventEffect) => void
+  ) {
+    for (const entry of entries ?? []) {
+      walkTriggers(entry.triggers, visitTrigger);
+      visitEffect(entry.effect);
+    }
+  }
+
+  function walkOptions(
+    options: EventOptionTemplate[] | undefined,
+    visitTrigger: (trigger: EventTrigger) => void,
+    visitEffect: (effect: EventEffect) => void
+  ) {
+    for (const option of options ?? []) {
+      walkTriggers(option.triggers, visitTrigger);
+      walkEffects(option.effects, visitEffect);
+      if (option.attributeCheck) {
+        walkEffects(option.attributeCheck.successEffects, visitEffect);
+        walkEffects(option.attributeCheck.failureEffects, visitEffect);
+      }
+    }
+  }
+
+  /**
+   * Story tags referenced by triggers (event, nodes, options, passages, gated effects).
+   * Does not include tags only produced by `add_story_tag`.
+   */
+  function storyTagsReferencedInEvent(event: EventTemplate): Set<string> {
+    const tags = new Set<string>();
+
+    const noteTrigger = (trigger: EventTrigger) => {
+      if (trigger.triggerType !== EventTriggerType.StoryTag) return;
+      const tag = trigger.parameters?.tag;
+      if (typeof tag === 'string' && tag.trim()) tags.add(tag.trim());
+    };
+
+    walkTriggers(event.triggers, noteTrigger);
+    walkTemplateEffects(event.effects, noteTrigger, () => {});
+    walkOptions(event.optionTemplates, noteTrigger, () => {});
+
+    for (const passage of Object.values(event.passages ?? {})) {
+      for (const variant of passage.variants ?? []) {
+        walkTriggers(variant.triggers, noteTrigger);
+      }
+    }
+
+    for (const node of Object.values(event.nodes ?? {})) {
+      walkTriggers(node.triggers, noteTrigger);
+      walkTemplateEffects(node.effects, noteTrigger, () => {});
+      walkOptions(node.optionTemplates, noteTrigger, () => {});
+      for (const passage of Object.values(node.passages ?? {})) {
+        for (const variant of passage.variants ?? []) {
+          walkTriggers(variant.triggers, noteTrigger);
+        }
+      }
+    }
+
+    return tags;
+  }
+
+  /** Story tags this event adds via `add_story_tag` effects. */
+  function storyTagsGeneratedByEvent(event: EventTemplate): string[] {
+    const tags = new Set<string>();
+
+    const noteEffect = (effect: EventEffect) => {
+      if (effect.type !== EventEffectType.AddStoryTag) return;
+      const tag = effect.parameters?.tag;
+      if (typeof tag === 'string' && tag.trim()) tags.add(tag.trim());
+    };
+
+    walkTemplateEffects(event.effects, () => {}, noteEffect);
+    walkOptions(event.optionTemplates, () => {}, noteEffect);
+
+    for (const node of Object.values(event.nodes ?? {})) {
+      walkTemplateEffects(node.effects, () => {}, noteEffect);
+      walkOptions(node.optionTemplates, () => {}, noteEffect);
+    }
+
+    return [...tags].sort((a, b) => a.localeCompare(b));
+  }
+
+  const tagUsage = $derived.by(() => {
+    const usedInArc = new Set<string>();
+    for (const event of events) {
+      for (const tag of storyTagsReferencedInEvent(event)) usedInArc.add(tag);
+    }
+
+    const counts = new Map<string, number>();
+    for (const tag of usedInArc) counts.set(tag, 0);
+
+    for (const event of allEvents) {
+      const tags = storyTagsReferencedInEvent(event);
+      for (const tag of usedInArc) {
+        if (tags.has(tag)) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+      }
+    }
+
+    return [...usedInArc]
+      .map((tag) => ({ tag, count: counts.get(tag) ?? 0 }))
+      .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+  });
+
+  const generatedByKey = $derived.by(() => {
+    const map = new Map<string, string[]>();
+    for (const event of events) {
+      map.set(event.key, storyTagsGeneratedByEvent(event));
+    }
+    return map;
+  });
 
   type LayoutNode = {
     event: EventTemplate;
@@ -208,21 +339,49 @@
     return { nodes, edges, width, height };
   });
 
-  function truncate(text: string, max = 56): string {
-    const cleaned = text.replace(/\s+/g, ' ').trim();
-    if (cleaned.length <= max) return cleaned;
-    return cleaned.slice(0, max - 1) + '…';
-  }
-
   function handleAdd(e: MouseEvent, event: EventTemplate) {
     e.stopPropagation();
     onCreateFollowUp(event);
+  }
+
+  function truncate(text: string, max = 28): string {
+    if (text.length <= max) return text;
+    return text.slice(0, max - 1) + '…';
+  }
+
+  function generatedLabel(event: EventTemplate): string {
+    const tags = generatedByKey.get(event.key) ?? [];
+    if (tags.length === 0) return '—';
+    return truncate(tags.join(', '));
   }
 </script>
 
 {#if events.length === 0}
   <p class="empty">No events for this character arc.</p>
 {:else}
+  {#if tagUsage.length > 0}
+    <section class="tag-list" aria-label="Story tags used in this arc">
+      <button
+        type="button"
+        class="tag-heading"
+        aria-expanded={tagsExpanded}
+        onclick={() => (tagsExpanded = !tagsExpanded)}
+      >
+        Story tags
+      </button>
+      {#if tagsExpanded}
+        <ul class="tags">
+          {#each tagUsage as entry (entry.tag)}
+            <li class="tag-item" title={entry.tag}>
+              <span class="tag-name">{entry.tag}</span>
+              <span class="tag-count">{entry.count}</span>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </section>
+  {/if}
+
   <div class="graph-wrap">
     <svg
       class="graph"
@@ -256,6 +415,7 @@
       {/each}
 
       {#each layout.nodes as node (node.event.key)}
+        {@const generated = generatedByKey.get(node.event.key) ?? []}
         <g class="node-group" transform="translate({node.x}, {node.y})">
           <g
             class="node"
@@ -269,11 +429,15 @@
               }
             }}
           >
-            <title>{node.event.key}: {node.event.text}</title>
+            <title
+              >{node.event.key}{generated.length
+                ? `: adds ${generated.join(', ')}`
+                : ''}</title
+            >
             <rect class="node-bg" width={NODE_W} height={NODE_H} rx="4" ry="4" />
             <text class="node-key" x="12" y="24">{node.event.key}</text>
             <text class="node-text" x="12" y="46">
-              {truncate(node.event.text, 28)}
+              {generatedLabel(node.event)}
             </text>
           </g>
           <g
@@ -304,6 +468,66 @@
   .empty {
     margin: 0;
     color: var(--color-muted-label);
+  }
+
+  .tag-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.65rem 0.85rem;
+    background: var(--color-data);
+    border: 1px solid rgba(175, 142, 103, 0.3);
+    border-radius: 4px;
+  }
+
+  .tag-heading {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-brass);
+    font-family: var(--font-narrative);
+    text-align: left;
+    cursor: pointer;
+    align-self: start;
+  }
+
+  .tag-heading:hover {
+    color: var(--color-cream);
+  }
+
+  .tags {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 0.35rem 0.75rem;
+  }
+
+  .tag-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-family: var(--font-narrative);
+    min-width: 0;
+  }
+
+  .tag-name {
+    color: var(--color-cream);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tag-count {
+    color: var(--color-muted-label);
+    font-size: 0.8rem;
+    flex-shrink: 0;
   }
 
   .graph-wrap {
