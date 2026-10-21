@@ -188,9 +188,6 @@ export function getJobImagePath(jobName: string): string {
   return getAssetPath(`images/jobs/${jobName}.jpg`);
 }
 
-/** Max N probed for `{character}-p-{N}.jpg` physical-romance art. */
-const PHYSICAL_ROMANCE_IMAGE_MAX = 12;
-
 /**
  * Activity illustration candidates, tried in order:
  * `{type}_{participants}_{placeKey}.jpg` then `{type}_{participants}.jpg`,
@@ -229,17 +226,6 @@ export function getActivityImagePath(
   placeKey?: string
 ): string[] {
   return getActivityImageRefs(activityType, characterKeys, placeKey).map((ref) => ref.url);
-}
-
-/** `{characterKey}-p-{n}.jpg` from loaded mods' activity images. */
-export function getPhysicalRomanceImageCandidates(characterKey: string): string[] {
-  const urls: string[] = [];
-  for (let n = 1; n <= PHYSICAL_ROMANCE_IMAGE_MAX; n++) {
-    for (const hit of findModImages('activities', `${characterKey}-p-${n}.jpg`)) {
-      urls.push(hit.url);
-    }
-  }
-  return urls;
 }
 
 /** Semantic UI icon names → painted PNG files in images/ui/icons. */

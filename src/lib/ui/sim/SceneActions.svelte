@@ -5,7 +5,6 @@
   import {
     getConjurationOtions,
     performAction,
-    RomanceType,
     SocializeType,
     TransactionType,
     type CardCreationResult,
@@ -27,7 +26,6 @@
 
   const actionIcons: Partial<Record<ActionType, string>> = {
     [ActionType.Socialize]: 'people',
-    [ActionType.Romance]: 'heart',
     [ActionType.Invite]: 'calendar',
     [ActionType.Conjure]: 'page-star',
     [ActionType.Invoke]: 'spiral',
@@ -48,22 +46,14 @@
   }
 
   const socializeIcons: Record<SocializeType, string> = {
-    [SocializeType.Befriend]: 'handshake',
-    [SocializeType.Taunt]: 'finger_pointing',
-    [SocializeType.Impress]: 'crown',
-    [SocializeType.Flirt]: 'heart',
-  };
-
-  const romanceIcons: Record<RomanceType, string> = {
-    [RomanceType.DeepenRelationship]: 'heart',
-    [RomanceType.Physical]: 'feather',
+    [SocializeType.Chat]: 'handshake',
   };
 
   let pendingAction = $state<Action | null>(null);
   let playerIntent = $state('');
   let enchantAction = $state<Action | null>(null);
 
-  const intentParameterKeys = new Set(['socializeType', 'romanceType']);
+  const intentParameterKeys = new Set(['socializeType']);
   let shopAction = $state<Action | null>(null);
   let cardCraftAction = $state<Action | null>(null);
   let cardCraftStep = $state<'invoke' | 'conjure'>('invoke');
@@ -74,7 +64,6 @@
     characterKey: 'Who?',
     placeKey: 'Where?',
     socializeType: 'How?',
-    romanceType: 'How?',
     playerDeckKey: 'Choose your deck',
     opponentKey: 'Against who?',
     cardId: 'Which card?',
@@ -123,21 +112,20 @@
 
   function optionLabel(option: string | [string, string]): string {
     if (Array.isArray(option)) return option[1];
-    if (currentParameterKey === 'romanceType') {
-      return option
-        .split('-')
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(' ');
-    }
     return option.charAt(0).toUpperCase() + option.slice(1);
   }
 
-  function attributeCheckHint(attribute: string, difficulty: keyof typeof skillCheckDifficultyLabels): string {
+  function attributeCheckHint(
+    attribute: string,
+    difficulty: keyof typeof skillCheckDifficultyLabels
+  ): string {
     const attr = attribute.charAt(0).toUpperCase() + attribute.slice(1);
     return `${attr} · ${skillCheckDifficultyLabels[difficulty]}`;
   }
 
-  function optionThumb(option: string | [string, string]): { path: string; portrait: boolean } | undefined {
+  function optionThumb(
+    option: string | [string, string]
+  ): { path: string; portrait: boolean } | undefined {
     const value = optionValue(option);
     // Only attach thumbs for parameters that are actually cards/characters —
     // deck keys must not fall through to character portraits.
@@ -157,16 +145,7 @@
     if (currentParameterKey === 'socializeType') {
       return socializeIcons[value as SocializeType];
     }
-    if (currentParameterKey === 'romanceType') {
-      return romanceIcons[value as RomanceType];
-    }
     return undefined;
-  }
-
-  function romanceActionIcon(action: Action): string | undefined {
-    if (action.actionType !== ActionType.Romance) return undefined;
-    const romanceType = action.actionParameters?.romanceType as RomanceType | undefined;
-    return romanceType ? romanceIcons[romanceType] : actionIcons[ActionType.Romance];
   }
 
   function applyParameter(action: Action, key: string, value: string): Action {
@@ -395,7 +374,7 @@
         {/each}
         {#each actions as action (action.actionType + action.label)}
           <OrnateButton
-            icon={romanceActionIcon(action) ?? actionIcons[action.actionType]}
+            icon={actionIcons[action.actionType]}
             mirrorIcon={action.actionType === ActionType.Wait}
             variant={actionVariant(action)}
             onclick={() => onActionClick(action)}

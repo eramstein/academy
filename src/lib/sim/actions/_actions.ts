@@ -38,9 +38,7 @@ import { negotiate, type NegotiateParameters } from './negotiation';
 import {
   getRelationalActions,
   getSocializeActions,
-  romance,
   socialize,
-  type RomanceParameters,
   type SocializeParameters,
 } from './socialize';
 import { getShopActions, transaction, type TransactionParameters } from './transaction';
@@ -155,5 +153,4 @@ const actionFunctions: Record<
   [ActionType.StudyColors]: (parameters) => teachColor(parameters as TeachColorParameters),
   [ActionType.StudyAbilities]: (parameters) => teachAbility(parameters as TeachAbilityParameters),
   [ActionType.Invite]: (parameters) => invite(parameters as InviteParameters),
-  [ActionType.Romance]: (parameters) => romance(parameters as RomanceParameters),
 };

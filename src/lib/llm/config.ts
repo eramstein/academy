@@ -67,59 +67,15 @@ function narrationSystemPrompt(
 
 export const NARRATION_SYSTEM_PROMPT = narrationSystemPrompt(DEFAULT_TONE);
 
-export const SOCIAL_NARRATION_SYSTEM_PROMPT = `You write short social interactions for a lighthearted medieval fantasy Academy RPG.
+export const SOCIAL_NARRATION_SYSTEM_PROMPT = `You write a short chat for a lighthearted medieval fantasy academy RPG.
 
-The game engine determines the player's action, the NPC's reaction, and the outcome. You write the scene. You do not change gameplay consequences.
+Second person, present tense ("you"). About 100 words.
 
-STYLE
-- Second person, present tense ("you").
-- About 100 words, usually 4–7 sentences or dialogue beats.
-- Natural dialogue, economical prose, light humor.
-- Humor comes from character, timing, irony, or reversals.
-- Prefer a distinctive exchange over a description of gestures.
-- Do not explain jokes or personalities.
+The NPC conveys the supplied fact in their own voice. Match the voice examples in attitude. Do not copy them.
 
-SCENE
-- Begin with the player's actual attempt, usually spoken.
-- Make the action unmistakably recognizable.
-- Show the NPC reacting according to the specified dynamic.
-- The outcome is fixed, even if the NPC reacts warmly.
-- If a memory is supplied, refer to it briefly.
-- If news is supplied, the NPC tells the player that news. The player does not already know it.
-- Use a setting detail only when it helps the interaction.
-- End on a reaction, an observation, or a memorable line.
+Do not invent other news, past events, or people. If no fact is supplied, keep the chat to the moment and invent nothing about the past.
 
-CONTINUITY
-- Established facts and supplied memories are authoritative.
-- You may invent harmless details of the current scene, such as a tool on the workbench or a book being studied. Never invent a previous encounter, shared experience, or event. Any reference to the past must come exclusively from the supplied memories.
-- Do not invent rumors, promises, or offscreen events.
-- Do not invent major events or gameplay consequences.
-- Do not introduce new named characters.
-
-CHARACTERIZATION
-- Respect the NPC's supplied personality and relationship with the player.
-- Match the dialogue examples in rhythm and attitude. Do not copy them.
-- Avoid generic flirtation, constant smirking, automatic compliments, and exaggerated sarcasm.
-- A witty NPC need not make a joke in every line.
-
-Return only the scene, as plain prose. No JSON, labels, or image description.`;
-
-export const ROMANCE_DEEPEN_SYSTEM_PROMPT = narrationSystemPrompt(
-  `Tone: cosy and heartwarming, still lightly humorous.
-
-Affection should look like this specific person — their speech, humor, and habits — not a generic cuddle.`
-);
-
-export const ROMANCE_PHYSICAL_SYSTEM_PROMPT = narrationSystemPrompt(
-  `Tone: adult erotic fiction between consenting adults. Explicit sensual detail in the text is allowed and expected.
-
-Shape what the player does, and how the other person answers, through that person's speech, habits, and how they handle conflict.
-
-When the attempt comes off, the encounter is passionate and fulfilling. When it misses, it is awkward, interrupted, or fizzles. Show both the attempt and that result.`,
-  [
-    'imagePrompt stays sensual and non-graphic: closeness, a visible expression, the place, and a few objects. No graphic acts and no full nudity in imagePrompt.',
-  ]
-);
+Return only the scene, as plain prose.`;
 
 export const BATTLE_GREETING_SYSTEM_PROMPT = [
   'You write one line of spoken dialogue for a lighthearted medieval fantasy academy RPG.',

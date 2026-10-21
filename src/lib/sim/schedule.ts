@@ -13,7 +13,6 @@ const ACTIVITY_NARRATION: Record<ActivityType, string> = {
   [ActivityType.Date]: 'on a date',
   [ActivityType.Training]: 'training',
   [ActivityType.Study]: 'studying',
-  [ActivityType.Romance]: 'romancing',
   [ActivityType.Tournament]: 'competing',
   [ActivityType.Exam]: 'taking an exam',
   [ActivityType.Event]: 'an event occured',

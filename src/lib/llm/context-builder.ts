@@ -47,7 +47,6 @@ const OCCASION: Record<string, string> = {
   [ActivityType.Date]: 'on a date',
   [ActivityType.Training]: 'training',
   [ActivityType.Study]: 'studying',
-  [ActivityType.Romance]: 'sharing a private romantic moment',
   [ActivityType.Tournament]: 'at a tournament',
   [ActivityType.Exam]: 'in an exam',
 };
@@ -81,217 +80,61 @@ export function buildLlmContext(params: LlmContextParams = {}): string {
     buildRecentContext(),
   ];
   if (params.attributeCheck) {
-    sections.push(
-      buildAttributeCheckContext(params.attributeCheck, focusKey, params.sceneDirection)
-    );
+    sections.push(buildAttributeCheckContext(params.attributeCheck, focusKey));
   } else if (params.attemptedAction) {
-    sections.push(
-      buildAttemptedActionContext(params.attemptedAction, focusKey, params.sceneDirection)
-    );
+    sections.push(buildAttemptedActionContext(params.attemptedAction, focusKey));
   }
   return sections.filter(Boolean).join('\n\n');
 }
 
-/** Short user prompt for a directed social scene. One fact only: a rumor or a memory. */
+/** Voice, personality, and the one fact to convey. */
 function buildDirectedSocialContext(params: LlmContextParams): string {
   const direction = params.sceneDirection;
   if (!direction) return '';
-  const action = params.attributeCheck?.attemptedAction ?? params.attemptedAction;
-  const focus = gs.characters[direction.characterKey];
-  const npcName = focus?.name ?? direction.characterKey;
-  const playerName = gs.player.name;
-  const others = othersHere(direction.characterKey);
-  const paramsType = action?.actionParameters?.socializeType;
-  const intent =
-    typeof action?.actionParameters?.intent === 'string'
-      ? action.actionParameters.intent
-      : undefined;
-  const success = params.attributeCheck?.success ?? true;
-  const memory =
-    direction.payload?.kind === 'rumor' || direction.payload?.kind === 'routine'
-      ? undefined
-      : oneSocialMemory(focus, direction.payload);
-
-  const lines = [
-    `PLAYER: ${playerName}`,
-    `NPC: ${npcName}`,
-    `LOCATION: ${placeAndWhen()}`,
-    activityLine(direction.characterKey, others.length, direction.situation),
-    focus ? voiceBlock(focus) : '',
-    focus ? dialogueExamples(focus) : '',
-    focus ? relationshipBrief(focus) : '',
-    memory ? `RECENT MEMORY:\n${memory}` : '',
-    direction.payload?.kind === 'rumor' ? rumorBlock(npcName, direction.payload.text) : '',
-    direction.payload?.kind === 'routine' ? `HABIT TO LET SLIP:\n${direction.payload.text}` : '',
-    `ACTION: ${actionTitle(paramsType)}`,
-    actionInstruction(paramsType, playerName, npcName, others.length > 0),
-    intent?.trim() ? `The player means to try: "${clip(intent.trim(), 200)}".` : '',
-    `OUTCOME: ${success ? 'Successful' : 'Unsuccessful'}${direction.critical ? '. Play the reaction at its fullest.' : ''}`,
-    `RESPONSE DYNAMIC:\n${direction.reaction}`,
-    scenePriorities(paramsType, playerName, npcName, direction, memory),
-    'Do not introduce unrelated news or past incidents.',
-  ];
-  return lines.filter(Boolean).join('\n\n');
+  const npc = gs.characters[direction.characterKey];
+  const name = npc?.name ?? direction.characterKey;
+  return [
+    `NPC: ${name}`,
+    npc ? personalityBlock(npc) : '',
+    direction.payload
+      ? conveyBlock(name, direction.payload)
+      : `Have a short chat with ${name}. Do not invent news or past events.`,
+  ]
+    .filter(Boolean)
+    .join('\n\n');
 }
 
-function placeAndWhen(): string {
-  const { day, period } = gs.time;
-  const weekday = WEEKDAYS[(day - 1) % WEEKDAYS.length] ?? 'A day';
-  const place = gs.places[gs.player.placeKey]?.name ?? 'somewhere';
-  return `${place}, ${weekday} ${period}`;
-}
-
-function othersHere(focusKey: string): Npc[] {
-  return Object.values(gs.characters).filter(
-    (character) => character.placeKey === gs.player.placeKey && character.key !== focusKey
-  );
-}
-
-function activityLine(characterKey: string, otherCount: number, situation?: string): string {
-  const { day, period } = gs.time;
-  const activity = gs.scheduledActivities.find(
-    (item) => item.day === day && item.period === period && item.participants.includes(characterKey)
-  );
-  const phrase = activity ? (OCCASION[activity.type] ?? activity.type) : '';
-  const company =
-    otherCount === 0
-      ? ''
-      : otherCount === 1
-        ? 'one other person present'
-        : `${otherCount} other people present`;
-  const bits = [phrase, company, situation].filter(Boolean);
-  if (bits.length === 0) return '';
-  return `ACTIVITY: ${bits.join('. ')}`;
-}
-
-function voiceBlock(npc: Npc): string {
+function personalityBlock(npc: Npc): string {
   const personality = npc.personality;
   if (!personality) return '';
-  const bits = [personality.humor, personality.conflicts, ...(personality.habits ?? [])]
-    .map((line) => line?.trim())
-    .filter((line): line is string => Boolean(line));
-  if (bits.length === 0) return '';
-  return `${firstName(npc).toUpperCase()}'S VOICE:\n${bits.join('\n')}`;
-}
-
-function dialogueExamples(npc: Npc): string {
-  const examples = (npc.personality?.speechExamples ?? [])
+  const traits = Object.entries(personality.traits ?? {})
+    .filter(([, active]) => active)
+    .map(([trait]) => trait);
+  const lines = ['PERSONALITY:'];
+  if (traits.length > 0) lines.push(`Traits: ${traits.join(', ')}.`);
+  if (personality.humor?.trim()) lines.push(personality.humor.trim());
+  if (personality.conflicts?.trim()) lines.push(personality.conflicts.trim());
+  const habits = (personality.habits ?? []).map((habit) => habit.trim()).filter(Boolean);
+  if (habits.length > 0) lines.push(habits.join('. ') + '.');
+  const examples = (personality.speechExamples ?? [])
     .map((example) => example.trim())
     .filter(Boolean);
-  if (examples.length === 0) return '';
-  return `DIALOGUE EXAMPLES:\n${examples.map((example) => `"${example}"`).join('\n\n')}`;
-}
-
-function relationshipBrief(npc: Npc): string {
-  const progress = npc.relationProgress;
-  const player = gs.player.name;
-  if (
-    !progress ||
-    ![progress.friendship, progress.respect, progress.love, progress.rivalry].some(
-      (value) => value > 0
-    )
-  ) {
-    return `RELATIONSHIP:\n${player} and ${npc.name} barely know each other. Romance has not been established. Do not write them as old friends.`;
+  if (examples.length > 0) {
+    lines.push('', 'VOICE:', ...examples.map((example) => `"${example}"`));
   }
-  return [
-    'RELATIONSHIP:',
-    `${player} and ${npc.name}.`,
-    `Friendship: ${bondLabel(progress.friendship, 'none', 'a first warmth', 'a growing friendship', 'close friends')}.`,
-    `Respect: ${bondLabel(progress.respect, 'none', 'a first spark of regard', 'growing respect', 'real respect')}.`,
-    `Love: ${bondLabel(progress.love, 'none — romance is not established', 'a first flicker of attraction', 'growing affection', 'in love')}.`,
-    `Rivalry: ${bondLabel(progress.rivalry, 'none', 'a first jab', 'an ongoing rivalry', 'a fierce rivalry')}.`,
-    'Do not write them as closer than this.',
-  ].join('\n');
+  return lines.length > 1 ? lines.join('\n') : '';
 }
 
-function rumorBlock(npcName: string, text: string): string {
-  return [
-    'NEWS THE PLAYER DOES NOT KNOW:',
-    `"${text}"`,
-    `The goal of the scene is for ${npcName} to tell the player this, in dialogue. Do not add any other news.`,
-  ].join('\n');
-}
-
-/** One memory, and only when the scene is not already carrying a rumor or a routine. */
-function oneSocialMemory(npc: Npc | undefined, payload?: ScenePayload): string | undefined {
-  if (!npc) return undefined;
-  if (payload?.kind === 'memory') return payload.text;
-  const day = gs.time.day;
-  const fresh = (npc.memories ?? [])
-    .filter((memory) => memory.day === day || memory.day === day - 1)
-    .sort(
-      (a, b) => b.day - a.day || (a.referenceCount ?? 0) - (b.referenceCount ?? 0)
-    );
-  const chosen = fresh[0];
-  if (!chosen) return undefined;
-  const title = chosen.title?.trim();
-  const description = chosen.description?.trim() ?? '';
-  return title ? `${title}. ${description}` : description;
-}
-
-function actionTitle(type: unknown): string {
-  if (typeof type !== 'string' || !type) return 'Socialize';
-  return type.charAt(0).toUpperCase() + type.slice(1);
-}
-
-function actionInstruction(
-  type: unknown,
-  playerName: string,
-  npcName: string,
-  othersPresent: boolean
-): string {
-  if (type === 'flirt') {
-    const words =
-      gs.player.gender === 'female' ? 'Her' : gs.player.gender === 'other' ? 'Their' : 'His';
-    const lines = [
-      `${playerName} makes a clearly personal, lightly romantic advance. ${words} words should express attraction to ${npcName}, not merely admiration or praise.`,
-    ];
-    if (othersPresent) {
-      lines.push('Keep it suitable for a place where other people are present.');
-    }
-    return lines.join(' ');
+function conveyBlock(npcName: string, payload: ScenePayload): string {
+  if (payload.kind === 'rumor') {
+    return `TELL THE PLAYER THIS. They do not know it yet:\n"${payload.text}"\n${npcName} says it in their own voice. Add no other news.`;
   }
-  if (type === 'befriend') {
-    return `${playerName} tries to befriend ${npcName}: a confidence, a small kindness, or a joke that makes room for them.`;
+  if (payload.kind === 'routine') {
+    return `LET THIS HABIT SLIP, as something the player can learn:\n"${payload.text}"`;
   }
-  if (type === 'taunt') {
-    return `${playerName} needles ${npcName}: a barb, a challenge, or a joke at their expense. Sharp, not cruel for its own sake.`;
-  }
-  if (type === 'impress') {
-    return `${playerName} tries to earn ${npcName}'s respect by showing skill or competence ${npcName} would notice.`;
-  }
-  return `${playerName} spends a social moment with ${npcName}.`;
+  return `REFER BRIEFLY TO THIS MEMORY. Do not retell it, and do not invent any other past event:\n"${payload.text}"`;
 }
 
-function scenePriorities(
-  type: unknown,
-  playerName: string,
-  npcName: string,
-  direction: SceneDirection,
-  memory?: string
-): string {
-  const priorities = [
-    `1. ${playerName}'s ${actionTitle(type).toLowerCase()} attempt is clear in what they say.`,
-  ];
-  if (direction.payload?.kind === 'rumor') {
-    priorities.push(`2. ${npcName} tells the player the news. That is the point of the scene.`);
-  } else if (direction.payload?.kind === 'routine') {
-    priorities.push(`2. ${npcName} lets the habit slip, as something the player can learn.`);
-  } else if (memory) {
-    priorities.push(`2. ${npcName} briefly references the recent memory. Do not retell it.`);
-  }
-  const step = priorities.length + 1;
-  priorities.push(
-    `${step}. ${npcName} reacts as the response dynamic describes. The outcome stays fixed.`
-  );
-  return ['SCENE PRIORITIES:', ...priorities].join('\n');
-}
-
-function firstName(npc: Npc): string {
-  return npc.name.split(' ')[0] || npc.name;
-}
-
-/** Context for a one-line duel greeting from a given NPC. */
 export function buildBattleGreetingContext(opponentKey: string): string {
   const opponent = gs.characters[opponentKey];
   const sections = [buildPlayerContext(), buildWhenContext(), buildPlaceContext()];
@@ -504,11 +347,7 @@ function describeRelationTags(npc: Npc): string {
   return `Labels on this bond: ${tags.join('; ')}.`;
 }
 
-function buildAttributeCheckContext(
-  check: AttributeCheck,
-  focusKey?: string,
-  direction?: SceneDirection
-): string {
+function buildAttributeCheckContext(check: AttributeCheck, focusKey?: string): string {
   const name = characterName(focusKey);
   return [
     'Engine result (already decided — narrate it, do not change it):',
@@ -516,56 +355,19 @@ function buildAttributeCheckContext(
     ATTRIBUTE_BEAT[check.attribute] ?? `You make the attempt through ${check.attribute}.`,
     DIFFICULTY_NOTE[check.difficulty] ??
       `The attempt is ${check.difficulty.toLowerCase()} for the player.`,
-    direction ? sceneDirectionBlock(direction) : outcomeBrief(check, name),
+    outcomeBrief(check, name),
     voiceReminder(name),
   ].join('\n');
 }
 
-function buildAttemptedActionContext(
-  action: Action,
-  focusKey?: string,
-  direction?: SceneDirection
-): string {
+function buildAttemptedActionContext(action: Action, focusKey?: string): string {
   return [
     'Engine result (already decided — narrate it, do not change it):',
     ...describeAttemptedAction(action, focusKey),
-    direction ? sceneDirectionBlock(direction) : undefined,
     voiceReminder(characterName(focusKey)),
   ]
     .filter((line): line is string => Boolean(line))
     .join('\n');
-}
-
-function sceneDirectionBlock(direction: SceneDirection): string {
-  const lines = [
-    'Scene direction (write this reaction; do not invent a different one):',
-    direction.reaction,
-  ];
-  if (direction.critical) {
-    lines.push('Play this reaction at its fullest.');
-  }
-  if (direction.payload?.kind === 'rumor') {
-    lines.push(
-      'The player does not know this. The goal of the scene is for the NPC to tell them:',
-      `"${direction.payload.text}"`,
-      "Put that fact in the NPC's dialogue. If it is about them, they say it as themselves. Do not add any other news."
-    );
-  } else if (direction.payload) {
-    lines.push(`Must convey, in the NPC's dialogue: "${direction.payload.text}"`);
-    lines.push(payloadVoice(direction.payload.kind));
-    lines.push('Do not add other news, secrets, or biography.');
-  }
-  if (direction.situation) {
-    lines.push(`Situation to include: ${direction.situation}`);
-  }
-  return lines.join('\n');
-}
-
-function payloadVoice(kind: ScenePayload['kind']): string {
-  if (kind === 'routine') {
-    return 'The NPC lets this slip as something the player can learn about their habits.';
-  }
-  return 'The NPC brings this memory up in their own voice.';
 }
 
 function outcomeBrief(check: AttributeCheck, name: string): string {
@@ -605,8 +407,6 @@ function describeAttemptedAction(action?: Action, focusKey?: string): string[] {
       return jobLines(params.job, choice);
     case ActionType.Invite:
       return inviteLines(params, choice);
-    case ActionType.Romance:
-      return romanceLines(params, choice);
     default:
       return [
         choice,
@@ -621,32 +421,8 @@ function choiceLine(action: Action): string | undefined {
   return `The player's approach: "${label}".`;
 }
 
-function socializeLines(type: unknown, name: string, intent?: string): string[] {
-  let lines: string[];
-  switch (type) {
-    case 'befriend':
-      lines = [
-        `Player action: you try to befriend ${name}. Put a confidence, a small kindness, or a joke that makes room for them into what you say or do.`,
-      ];
-      break;
-    case 'taunt':
-      lines = [
-        `Player action: you needle ${name}. Put a barb, a challenge, or a joke at their expense into what you say. Sharp, not cruel for its own sake.`,
-      ];
-      break;
-    case 'impress':
-      lines = [
-        `Player action: you try to earn ${name}'s respect. Show the skill, nerve, or competence they would actually notice.`,
-      ];
-      break;
-    case 'flirt':
-      lines = [
-        `Player action: you flirt with ${name}. Make a clearly personal, lightly romantic advance. The words should express attraction, not merely admiration or praise.`,
-      ];
-      break;
-    default:
-      lines = [`Player action: you spend a social moment with ${name}. Show what you say or do.`];
-  }
+function socializeLines(_type: unknown, name: string, intent?: string): string[] {
+  const lines = [`Player action: you chat with ${name}.`];
   const intentLine = playerIntentLine(intent);
   if (intentLine) lines.push(intentLine);
   return lines;
@@ -691,25 +467,6 @@ function inviteLines(params: Record<string, unknown>, choice?: string): string[]
     choice,
     `Player action: you ask ${who} to a ${activity}${place ? ` at ${place}` : ''}${when}.`,
     'The question happens in the current place. Show what you say, then their answer. Do not skip ahead to the outing.',
-  ].filter((line): line is string => Boolean(line));
-}
-
-function romanceLines(params: Record<string, unknown>, choice?: string): string[] {
-  const partner = characterName(
-    typeof params.characterKey === 'string' ? params.characterKey : undefined
-  );
-  const intent = typeof params.intent === 'string' ? playerIntentLine(params.intent) : undefined;
-  if (params.romanceType === 'physical') {
-    return [
-      choice,
-      `Player action: you begin a sexual encounter with ${partner}. Show what you do before showing how they respond.`,
-      intent,
-    ].filter((line): line is string => Boolean(line));
-  }
-  return [
-    choice,
-    `Player action: you offer ${partner} a stretch of closeness. Outcome: the relationship deepens. Show what you offer, then how they answer.`,
-    intent,
   ].filter((line): line is string => Boolean(line));
 }
 

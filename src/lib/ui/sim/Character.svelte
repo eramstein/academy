@@ -27,10 +27,7 @@
   const RELATION_ORDER = ['friendship', 'respect', 'love', 'rivalry'] as const;
 
   const SOCIALIZE_ICONS: Record<SocializeType, string> = {
-    [SocializeType.Befriend]: 'handshake',
-    [SocializeType.Taunt]: 'finger_pointing',
-    [SocializeType.Impress]: 'crown',
-    [SocializeType.Flirt]: 'heart',
+    [SocializeType.Chat]: 'handshake',
   };
 
   const traits = $derived(
@@ -105,9 +102,7 @@
     const decks = matchAction.missingParameters?.playerDeckKey;
     if (!Array.isArray(decks)) return [];
     return decks.map((deck) =>
-      Array.isArray(deck)
-        ? { key: deck[0], label: deck[1] }
-        : { key: deck, label: deck }
+      Array.isArray(deck) ? { key: deck[0], label: deck[1] } : { key: deck, label: deck }
     );
   });
 
@@ -197,37 +192,27 @@
 
 <div class="character">
   {#if viewingArc && npc}
-    <CharacterRelationArc
-      character={npc}
-      onClose={() => (viewingArc = false)}
-    />
+    <CharacterRelationArc character={npc} onClose={() => (viewingArc = false)} />
   {/if}
   {#if viewingNotes && npc}
-    <CharacterKnownTraits
-      character={npc}
-      onClose={() => (viewingNotes = false)}
-    />
+    <CharacterKnownTraits character={npc} onClose={() => (viewingNotes = false)} />
   {/if}
 
   <div class="sheet">
     <CharacterIdentity
       {character}
-      onStory={
-        npc
-          ? () => {
-              viewingNotes = false;
-              viewingArc = true;
-            }
-          : undefined
-      }
-      onNotes={
-        npc
-          ? () => {
-              viewingArc = false;
-              viewingNotes = true;
-            }
-          : undefined
-      }
+      onStory={npc
+        ? () => {
+            viewingNotes = false;
+            viewingArc = true;
+          }
+        : undefined}
+      onNotes={npc
+        ? () => {
+            viewingArc = false;
+            viewingNotes = true;
+          }
+        : undefined}
     />
 
     {#if showCharacterActions}

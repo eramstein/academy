@@ -1,11 +1,8 @@
-import { ActionType } from '@/lib/_model/enums-sim';
 import type { Action, AttributeCheck } from '@/lib/_model/model-sim';
 import { z } from 'zod';
 import {
   BATTLE_GREETING_SYSTEM_PROMPT,
   NARRATION_SYSTEM_PROMPT,
-  ROMANCE_DEEPEN_SYSTEM_PROMPT,
-  ROMANCE_PHYSICAL_SYSTEM_PROMPT,
   SOCIAL_NARRATION_SYSTEM_PROMPT,
 } from './config';
 import type { SceneDirection } from '@/lib/sim/scene-director';
@@ -91,31 +88,6 @@ function narrationRequest(extra?: string): string {
     .join('\n');
 }
 
-function romanceSystemPrompt(action?: Action): string {
-  return action?.actionParameters?.romanceType === 'physical'
-    ? ROMANCE_PHYSICAL_SYSTEM_PROMPT
-    : ROMANCE_DEEPEN_SYSTEM_PROMPT;
-}
-
-function romanceUserGuidance(action?: Action): string | undefined {
-  if (action?.actionParameters?.romanceType === 'physical') {
-    return 'This is a sexual encounter. Show what you do, then how they respond. Explicit detail is allowed.';
-  }
-  return 'This is emotional intimacy. Show what you offer, then how they answer, in their own voice.';
-}
-
-/** Romance scenes use dedicated system prompts (cosy deepen vs adult physical). */
-export async function generateRomanceNarration(
-  contextParams: LlmContextParams
-): Promise<SceneNarration> {
-  const action = contextParams.attributeCheck?.attemptedAction ?? contextParams.attemptedAction;
-  return generateSceneNarration(
-    contextParams,
-    romanceSystemPrompt(action),
-    romanceUserGuidance(action)
-  );
-}
-
 function systemPromptForDirection(direction?: SceneDirection): string {
   return direction ? SOCIAL_NARRATION_SYSTEM_PROMPT : NARRATION_SYSTEM_PROMPT;
 }
@@ -124,9 +96,6 @@ export async function generateAttributeCheckNarration(
   check: AttributeCheck,
   sceneDirection?: SceneDirection
 ): Promise<SceneNarration> {
-  if (check.attemptedAction?.actionType === ActionType.Romance) {
-    return generateRomanceNarration({ attributeCheck: check });
-  }
   return generateSceneNarration(
     { attributeCheck: check, sceneDirection },
     systemPromptForDirection(sceneDirection)
@@ -137,9 +106,6 @@ export async function generateAttemptedActionNarration(
   action: Action,
   sceneDirection?: SceneDirection
 ): Promise<SceneNarration> {
-  if (action.actionType === ActionType.Romance) {
-    return generateRomanceNarration({ attemptedAction: action });
-  }
   return generateSceneNarration(
     { attemptedAction: action, sceneDirection },
     systemPromptForDirection(sceneDirection)

@@ -715,7 +715,7 @@
             "type": "schedule_activity",
             "parameters": {
               "activity": {
-                "type": "romance",
+                "type": "date",
                 "participants": [
                   "player",
                   "molly"
