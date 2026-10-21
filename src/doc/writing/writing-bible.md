@@ -37,6 +37,7 @@ This document records agreed narrative conventions for Academy's hand-authored R
 - Qualitative relationship tags can enable callbacks and distinctive dialogue. Low-stakes opt-in tags may establish running jokes without implying romantic commitment.
 - TCG choices matter narratively; narrative choices may affect card ownership, crafting, and future TCG performance.
 - Characters' personal stories progress even without Antonio's participation. His choices may change their course, not determine whether those characters have agency.
+- Important events and choices should usually leave **NPC memories** so later small talk can refer to shared experiences; selectively create **rumors** so developments can reach Antonio through other characters. Keep these distinct from permanent character-sheet discoveries and story tags.
 
 ## Relationship book versus character sheet
 
@@ -73,7 +74,7 @@ Use this structure for polished event drafts (the IDE workflow handles JSON conv
 
 ## Effects
 
-- [Unconditional changes, including character-sheet discoveries; omit or say none if not applicable]
+- [Unconditional changes, including character-sheet discoveries, NPC memories, and rumors; omit or say none if not applicable]
 
 ## Options
 
@@ -85,11 +86,104 @@ Use this structure for polished event drafts (the IDE workflow handles JSON conv
 
 **Outcomes:**
 
-- [State changes, relationship points, tags, cards, NPC bio additions]
+- [State changes, relationship points, tags, cards, NPC bio additions, NPC memories, and rumors specific to this choice]
 
 ### Option B: [Title]
+
 ...
 ```
+
+## NPC memories and rumors for small talk
+
+Events should help future routine conversations feel grounded in the story. When authoring an event, consider what its participants **remember** and what other people might **hear about**. These are distinct optional effects, and neither replaces the event log, canonical game state, story tags, or character-sheet discoveries.
+
+### NPC memories
+
+A memory belongs to a **specific NPC** and summarizes a meaningful experience they can later mention or react to. Significant events and meaningful choices should **usually leave a memory trace** for the NPCs involved, especially when the scene changes trust, feelings, shared history, or their view of Antonio. Minor transitions and purely mechanical effects do not need one.
+
+Use the existing `NpcMemory` shape:
+
+```ts
+interface NpcMemory {
+  title: string;
+  description: string;
+  day: number;
+  emotion?: Emotion;
+  referenceCount: number;
+}
+```
+
+Writing conventions:
+
+- Explicitly name the **recipient NPC** in the Markdown effect (e.g. `NPC memory — Emma`); create separate memories for different NPCs if their knowledge or interpretation differs.
+- `title`: short, identifiable topic, ideally usable for memory retrieval (e.g. `The Falkenheim victory`).
+- `description`: compact, factual, self-contained summary of **what this NPC experienced or learned**, including the relevant outcome and Antonio's actual choice when it matters. Favor one or two concrete sentences over an event transcript. A small emotional interpretation is fine when supported by the scene; do not fabricate hidden intentions, confessions, or events.
+- `emotion` is optional; when supplied, use an existing `Emotion` enum value, not an invented mood label. It represents the memory's emotional coloring **for the receiving NPC**.
+- `day` is the in-game day the memory is created; in event Markdown, specify **current day** rather than inventing a fixed date.
+- `referenceCount` starts at **0** and is incremented by the runtime when the memory is used in later dialogue. Authors should not pre-increment it.
+- Prefer **branch-specific memories in option outcomes** when the player's decision or success/failure changes what happened. A shared memory under `## Effects` is suitable only if it remains accurate for every possible outcome.
+- Avoid duplicates: one meaningful memory for a beat is usually better than several near-identical entries. Do not store information the NPC could not plausibly know.
+
+Example effect notation (editorial Markdown, not a new JSON schema):
+
+```markdown
+## Effects
+
+- NPC memory — Emma:
+  - title: Chosen for Falkenheim
+  - description: Emma selected Antonio as her tournament teammate because she trusts his abilities, and he accepted the challenge.
+  - day: current day
+  - emotion: proud
+  - referenceCount: 0
+```
+
+### Rumors
+
+A rumor is a **small-talk lead or piece of circulating news**, not necessarily an established fact. Rumors can hint at someone's habits, signal an opportunity, or report an offscreen or missed event (especially after Antonio declines to participate). They let the world continue to feel active without requiring Antonio to attend every authored event.
+
+Use the existing `Rumor` shape:
+
+```ts
+interface Rumor {
+  aboutNpcKey?: string;
+  fromNpcKey?: string;
+  text: string;
+  fromDay?: number;
+  untilDay?: number;
+}
+```
+
+Writing conventions:
+
+- `text`: short, natural information that an NPC could plausibly convey in conversation. Be specific enough to encourage a follow-up or establish a new fact, but avoid dumping full event summaries or revealing private information without a credible route for it to spread.
+- `aboutNpcKey`: set when the information is meaningfully **about a particular NPC**, enabling character-related small talk; omit for general Academy or town news.
+- `fromNpcKey`: set **only when that NPC is the sole speaker permitted to share the rumor**; leave unset when multiple NPCs may relay it. It is a speaker restriction, not the identity of whoever originally witnessed an event.
+- `fromDay` and `untilDay`: **relative day offsets from the day the effect fires**, defining the rumor's availability period. They are not absolute calendar days. Omit an offset when no bound is needed; don't invent expiry dates for enduring conversational facts. Make time-limited opportunities expire sensibly.
+- Write rumors to match what characters can reasonably know. Rumors may be incomplete or explicitly uncertain, but should not accidentally assert false canon. If gossip is unreliable, signal this in the wording.
+- For **decline**, missed-opportunity, or offscreen-resolution options, consider a rumor that conveys what happened afterward without pretending Antonio was present. The rumor may have different wording depending on the resolved outcome.
+- Prefer a few distinctive, useful rumors to one for every trivial action. Do not use rumors as substitutes for tags or canonical effects required by future event triggers.
+
+Example effect notation:
+
+```markdown
+**Outcomes:**
+
+- Rumor:
+  - aboutNpcKey: emma
+  - text: Emma has been playing violin at the inn on Friday evenings. Apparently she's very good.
+  - fromDay: 1
+  - untilDay: 14
+```
+
+For an exclusive firsthand account, add `fromNpcKey: emma`. An unset `fromNpcKey` allows the rumor to be shared by other suitable NPCs.
+
+### Choosing where to place them
+
+- **Shared event facts** that happen regardless of the player's options: put memories or rumors under `## Effects`.
+- **Choice-dependent events, refusals, and skill-check results:** put the corresponding memories or rumors under the appropriate `**Outcomes:**` or success/failure outcome block. Never summarize a success in a memory that can also be awarded on failure.
+- **Offscreen NPC developments:** a rumor can inform Antonio of the result even if he was absent; only give an NPC memory to someone who genuinely participated or learned of it.
+- **Use both when appropriate:** memory records what an NPC remembers, while rumor lets others discuss a public-facing aspect of the same development. Their texts need not match because the audiences and purposes differ.
+- **Avoid spoilers and contradictions:** match the chosen option, relevant tags, prior discoveries, and the timeline. In particular, do not turn unspoken feelings or private romantic moments into public gossip by default.
 
 **Conditional event passages:** For variations in the event's main narrative, put `{{passageName}}` placeholders directly in `## Text` and define each named passage under `## Conditional passages`. Each passage can have one or more ordered **When:** variants, using the game's existing trigger logic, followed by an **Otherwise:** fallback. The first matching variant wins; the fallback applies if none match. Keep the prose of each variant compact and consistent with the surrounding paragraph. Use passages for prior-event callbacks, first-time introductions, relationship tags, or other relevant game-state differences. Omit `## Conditional passages` when the event has none. **This feature currently applies only to the event's main `text`, not option text**; keep option outcomes as ordinary static prose. Do not invent inline `if` expressions or a separate condition language.
 

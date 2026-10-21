@@ -1432,6 +1432,14 @@
               "characterKey": "emma",
               "relationTag": "You are under Emma's spell"
             }
+          },
+          {
+            "type": "add_memory",
+            "parameters": {
+              "characterKey": "emma",
+              "title": "antonio embarassaing first encounter",
+              "description": "Yesterday, Antonio attempted to introduce himself to Emma but was so struck by her beauty that he couldn't speak. Emma noticed and teased him."
+            }
           }
         ]
       }

@@ -16,6 +16,7 @@ import type {
   PossessionType,
   RelationTag,
   ResourceType,
+  RumorType,
   SchoolName,
   SubscriptionType,
 } from './enums-sim';
@@ -38,6 +39,16 @@ export interface GameState {
   league: League;
   ongoingBattle: OngoingBattle | null;
   storyTags: Record<string, number>;
+  rumors: Rumor[];
+}
+
+export interface Rumor {
+  aboutNpcKey?: string;
+  fromNpcKey?: string; // if set, only that NPC will talk about this rumor
+  text: string;
+  fromDay?: number;
+  untilDay?: number;
+  rumorType?: RumorType;
 }
 
 /** Where to continue an event after the Battle view closes. */
@@ -344,7 +355,27 @@ export interface Npc extends Character {
   matchesRecord: { won: number; lost: number };
   personality: Personality;
   knownTraits: KnownTrait[];
+  memories: NpcMemory[];
   tcgSkill: number;
+  routines: NpcRoutine[];
+}
+
+export interface NpcRoutine {
+  days: number[]; // week days, 1 to 7
+  periods: DayPeriod[]; // morning, afternoon, evening
+  activityType: ActivityType;
+  placeKey: string;
+  description: string;
+  isKnown?: boolean;
+}
+
+export interface NpcMemory {
+  title: string;
+  description: string;
+  day: number;
+  emotion?: Emotion;
+  referenceCount: number; // how many times this memory has been referenced
+  lastReferencedDay?: number; // the day this memory was last referenced
 }
 
 export interface KnownTrait {
@@ -354,10 +385,11 @@ export interface KnownTrait {
 
 export interface Personality {
   traits: Partial<Record<CharacterTrait, boolean>>;
-  speech: string; // way of talking, mannerisms, etc.
+  speechExamples: string[]; // way of talking, mannerisms, etc.
   humor: string; // sense of humor, favorite style of humor, etc.
   conflicts: string; // how they react to conflict and arguments, etc.
   habits: string[]; // typical patterns of behavior, etc.
+  preferredResponseDynamics: Record<string, number>; // weights by type of response
 }
 
 export interface RelationProgress {

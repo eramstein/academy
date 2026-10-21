@@ -10,9 +10,9 @@ The game engine determines actions and outcomes. Your task is to turn them into 
 
 const WRITING_STYLE_OPEN = `Write in second person, present tense, addressing the player as "you".
 
-Write 50–90 words, typically 3–5 sentences.
-
 Use natural dialogue whenever appropriate.`;
+
+const DEFAULT_LENGTH = `Write 50–90 words, typically 3–5 sentences.`;
 
 const DEFAULT_TONE = `Keep the tone warm, lively, and lightly humorous.
 
@@ -51,10 +51,14 @@ const OUTPUT_FORMAT = `Return valid JSON with:
 
 Return only the JSON object.`;
 
-function narrationSystemPrompt(tone: string, extras: string[] = []): string {
+function narrationSystemPrompt(
+  tone: string,
+  extras: string[] = [],
+  length: string = DEFAULT_LENGTH
+): string {
   return [
     NARRATION_ROLE,
-    ['Writing style', WRITING_STYLE_OPEN, tone, WRITING_STYLE_CLOSE].join('\n\n'),
+    ['Writing style', WRITING_STYLE_OPEN, length, tone, WRITING_STYLE_CLOSE].join('\n\n'),
     ['Scene requirements', SCENE_REQUIREMENTS, ...extras].filter(Boolean).join('\n\n'),
     ['Example', EXAMPLE].join('\n'),
     ['Output', OUTPUT_FORMAT].join('\n'),
@@ -62,6 +66,43 @@ function narrationSystemPrompt(tone: string, extras: string[] = []): string {
 }
 
 export const NARRATION_SYSTEM_PROMPT = narrationSystemPrompt(DEFAULT_TONE);
+
+export const SOCIAL_NARRATION_SYSTEM_PROMPT = `You write short social interactions for a lighthearted medieval fantasy Academy RPG.
+
+The game engine determines the player's action, the NPC's reaction, and the outcome. You write the scene. You do not change gameplay consequences.
+
+STYLE
+- Second person, present tense ("you").
+- About 100 words, usually 4–7 sentences or dialogue beats.
+- Natural dialogue, economical prose, light humor.
+- Humor comes from character, timing, irony, or reversals.
+- Prefer a distinctive exchange over a description of gestures.
+- Do not explain jokes or personalities.
+
+SCENE
+- Begin with the player's actual attempt, usually spoken.
+- Make the action unmistakably recognizable.
+- Show the NPC reacting according to the specified dynamic.
+- The outcome is fixed, even if the NPC reacts warmly.
+- If a memory is supplied, refer to it briefly.
+- If news is supplied, the NPC tells the player that news. The player does not already know it.
+- Use a setting detail only when it helps the interaction.
+- End on a reaction, an observation, or a memorable line.
+
+CONTINUITY
+- Established facts and supplied memories are authoritative.
+- You may invent harmless details of the current scene, such as a tool on the workbench or a book being studied. Never invent a previous encounter, shared experience, or event. Any reference to the past must come exclusively from the supplied memories.
+- Do not invent rumors, promises, or offscreen events.
+- Do not invent major events or gameplay consequences.
+- Do not introduce new named characters.
+
+CHARACTERIZATION
+- Respect the NPC's supplied personality and relationship with the player.
+- Match the dialogue examples in rhythm and attitude. Do not copy them.
+- Avoid generic flirtation, constant smirking, automatic compliments, and exaggerated sarcasm.
+- A witty NPC need not make a joke in every line.
+
+Return only the scene, as plain prose. No JSON, labels, or image description.`;
 
 export const ROMANCE_DEEPEN_SYSTEM_PROMPT = narrationSystemPrompt(
   `Tone: cosy and heartwarming, still lightly humorous.

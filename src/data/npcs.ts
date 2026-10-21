@@ -1,7 +1,9 @@
 import {
+  ActivityType,
   CardColor,
   CharacterGender,
   CharacterTrait,
+  DayPeriod,
   ResourceType,
   SchoolName,
   type Npc,
@@ -12,9 +14,17 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     gold: 0,
     placeKey: '',
     subscriptions: {},
-    personality: { traits: {}, speech: '', humor: '', conflicts: '', habits: [] },
+    personality: {
+      preferredResponseDynamics: {},
+      traits: {},
+      speechExamples: [],
+      humor: '',
+      conflicts: '',
+      habits: [],
+    },
     decks: [],
     collection: [],
+    routines: [],
     resources: {
       [ResourceType.MagicDust]: 0,
       [ResourceType.Mithril]: 0,
@@ -46,6 +56,7 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     matchesRecord: { won: 0, lost: 0 },
     relationTags: [],
     knownTraits: [],
+    memories: [],
     tcgSkill: 0,
     possessions: [],
   };
@@ -60,8 +71,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 4, intelligence: 19, vitality: 5, charisma: 8, aura: 15 },
     personality: {
       traits: { [CharacterTrait.Grumpy]: true },
-      speech:
-        'Low, clipped, and exact. He names the fact, then the consequence, and lets a silence do the scolding. He never raises his voice and never softens a sentence to be liked.',
+      speechExamples: [
+        'When a student offers excuses: "I heard you the first time. The ledger did not change."',
+        'When someone wastes his time: "The door works in both directions. Use the outward one."',
+        'When a petition is in order: "You came prepared. Good. Sit. Do not embellish."',
+      ],
       humor:
         'Private and bone-dry. One flat remark, delivered like a ruling. He does not joke with anyone who is wasting his time.',
       conflicts:
@@ -72,6 +86,7 @@ export const npcs: Record<string, Npc> = {
         'Straightens papers when someone starts making excuses',
         'Denies, if asked, that he cares about the school at all',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Male,
     age: 54,
@@ -85,8 +100,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 4, intelligence: 12, vitality: 18, charisma: 17, aura: 0 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
-      speech:
-        'Plain farmhand talk: short sentences, no polish, a laugh from the chest. He calls a stranger by what they look like until the name sticks.',
+      speechExamples: [
+        'When a stranger walks in hungry: "Sit down, lad. Food first, names later."',
+        'When someone frets about the bill: "Ah, we\'ll sort that when the world\'s less cold. Have another."',
+        'When the room goes quiet: "Come on, then—someone tell a tale before the fire gets lonely."',
+      ],
       humor:
         "Broad, warm, and never at a guest's expense. Tankard stories, a clap on the back, a joke that makes the room noisier.",
       conflicts:
@@ -97,6 +115,7 @@ export const npcs: Record<string, Npc> = {
         'Claps strangers on the back by way of hello',
         'Forgets what is owed and will not write it down',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Male,
     age: 58,
@@ -111,8 +130,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 8, intelligence: 17, vitality: 7, charisma: 12, aura: 0 },
     personality: {
       traits: { [CharacterTrait.Grumpy]: true },
-      speech:
-        'Chosen a little too carefully, with a court accent that slips when she is flustered. Courtesies come a beat too eager, and her boasts do not quite land.',
+      speechExamples: [
+        'When greeting a guest she hopes is important: "How gracious of you to favor the Royal Pigeon. We do keep rather distinguished company."',
+        'When someone fails to play along: "I see. Well. Some of us were raised to recognize quality."',
+        'When flustered mid-boast: "Of course in the capital one simply—ah—one simply expects better linen."',
+      ],
       humor:
         'She aims at drawing-room wit and lands on a boast. She laughs late if the company seems grand, and not at all if she is the joke.',
       conflicts:
@@ -123,6 +145,7 @@ export const npcs: Record<string, Npc> = {
         'Drops the accent mid-sentence when startled',
         'Tends the inn with more care than she will admit',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Female,
     age: 45,
@@ -136,8 +159,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 18, intelligence: 13, vitality: 12, charisma: 15, aura: 5 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
-      speech:
-        'Unhurried and easy. She talks about plants the way other people talk about friends, and folds practical advice into the affection.',
+      speechExamples: [
+        'When a student names the wrong reagent: "You want that for a binding? Take this instead—it grows better tempers than that one."',
+        'When someone rushes her: "Plants don\'t hurry, and neither do good sales. Hold out your palm."',
+        'When admiring a healthy specimen: "Look at her. She\'s been waiting all week for someone with sense."',
+      ],
       humor:
         'Earthy and gentle. She smiles at a grand theory and answers with what will actually grow.',
       conflicts:
@@ -148,6 +174,7 @@ export const npcs: Record<string, Npc> = {
         'Touches a leaf while she is talking',
         'Tends the window boxes before she tends the counter',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Female,
     age: 40,
@@ -161,8 +188,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 11, intelligence: 8, vitality: 14, charisma: 18, aura: 9 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true, [CharacterTrait.Shy]: true },
-      speech:
-        "Soft, modest, almost apologetic. She starts with the other person's comfort, and praise makes her stumble over the next word.",
+      speechExamples: [
+        'When someone looks left out: "Would you—sorry—would you mind if I sat with you? You looked a little alone."',
+        'When praised: "Oh—no, that wasn\'t—I mean, anyone could have done that. Really."',
+        'When a friend is hurt: "I don\'t care who started it. Are you all right? Come on. Sit with me."',
+      ],
       humor:
         'Small and kind. She laughs with people, never at them, and turns a joke into an offer of help.',
       conflicts:
@@ -173,6 +203,7 @@ export const npcs: Record<string, Npc> = {
         'Turns a compliment toward someone else',
         'Slips outside, to sport or to children, when study turns to doubt',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
@@ -192,8 +223,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 11, intelligence: 8, vitality: 14, charisma: 18, aura: 9 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
-      speech:
-        'Cool, precise, and slightly bored, as if the room were a step beneath her. She offers observations because she was never taught how to ask someone to stay.',
+      speechExamples: [
+        'When entering a common room: "I suppose this will have to do. Do try not to spill anything near me."',
+        'When almost softening: "You may stay, if you insist. I wasn\'t asking. I was merely... observing."',
+        'When pride is wounded: "I am not lonely. I am selective. There is a difference."',
+      ],
       humor:
         'Disdain worn as wit. A raised brow, a remark that puts distance in the air. She rarely laughs where anyone could use it.',
       conflicts:
@@ -204,6 +238,7 @@ export const npcs: Record<string, Npc> = {
         'Leaves just as a conversation turns warm',
         'Holds her rank in her posture when she has nothing else to hold',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
@@ -223,8 +258,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 18, intelligence: 18, vitality: 14, charisma: 8, aura: 9 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
-      speech:
-        "Easy, direct, and catching, a soldier's plainness warmed by cheer. He will not speak of home unless he must. When the old war returns, the sentences simply stop.",
+      speechExamples: [
+        'When offered a hard task: "Good. I was getting soft sitting still. Show me where it starts."',
+        'When someone asks about his past: "Another country. Another life. Pass me the tools."',
+        'When the melancholy lifts: "Right. Enough ghosts. Let\'s make something that lasts."',
+      ],
       humor:
         'Physical and infectious: a challenge turned into a grin. He does not make light of what he saw; he goes quiet instead.',
       conflicts:
@@ -235,6 +273,7 @@ export const npcs: Record<string, Npc> = {
         'Goes still and elsewhere without warning',
         'Refuses to name the empire he left',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
@@ -259,8 +298,11 @@ export const npcs: Record<string, Npc> = {
         [CharacterTrait.Confident]: true,
         [CharacterTrait.Beautiful]: true,
       },
-      speech:
-        'Cultured, exact, and delighted with its own edge. Charm is a tool she uses on purpose. People she likes are teased without mercy; everyone else gets polished courtesy.',
+      speechExamples: [
+        'When the player boasts: "How generous of you to let the rest of us attend your Academy."',
+        'When the player loses his words: "Take your time. It\'s not as though I\'m carrying half the Academy library."',
+        'When she means affection: "Don\'t look so pleased. I only tease people worth the effort."',
+      ],
       humor:
         'Sharp, competitive, and affectionate. Wit is a sport, and she expects you to keep up. She laughs when the line lands.',
       conflicts:
@@ -271,14 +313,79 @@ export const npcs: Record<string, Npc> = {
         'Reads, or plays the violin, when she is done performing',
         'Gives her attention like a salute: graceful, and meant to win',
       ],
+      preferredResponseDynamics: {
+        // Befriend — warm, but rarely sentimental
+        playful_banter: 3,
+        friendly_challenge: 3,
+        common_ground: 2,
+        personal_opening: 0.5,
+        shared_enthusiasm: 0.5,
+        unintended_offense: 0.5,
+        missed_humor: 0.5,
+
+        // Flirt — confident, witty, enjoys reversing the situation
+        playful_seduction: 3,
+        affectionate_teasing: 3,
+        elegant_counterattack: 3,
+        playful_deflection: 3,
+        daring_escalation: 2,
+        amused_disbelief: 2,
+        romantic_sincerity: 0.5,
+        coy_acceptance: -1,
+        flustered_delight: 0.5,
+        embarrassed_retreat: 0.5,
+        cool_dismissal: 0.5,
+
+        // Impress — demanding, curious, genuinely respects competence
+        curious_interest: 3,
+        competitive_excitement: 3,
+        reluctant_praise: 3,
+        professional_recognition: 2,
+        playful_skepticism: 2,
+        constructive_criticism: 3,
+        raised_expectations: 2,
+        enthusiastic_praise: 0.5,
+        unexpected_humility: 0.5,
+        accidental_comedy: 2,
+
+        // Taunt — intellectual sparring is one of her favorite pastimes
+        witty_counterattack: 3,
+        exposed_bluff: 3,
+        competitive_spark: 3,
+        playful_one_upmanship: 3,
+        mock_indignation: 2,
+        grudging_amusement: 2,
+        affectionate_retaliation: 2,
+        awkward_misfire: 0.5,
+        humorless_dismissal: 0.5,
+        wounded_pride: 2,
+        icy_rebuke: 0.5,
+      },
     },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
     favoriteColors: [CardColor.Blue],
     bio: `Emma Delamain was born poor and raised as if poverty were a problem to be solved by books. Her family had little money and a great deal of culture, and they spent what they had on an education of the highest order. She repaid them by becoming brilliant. At twenty-seven she is already a force at the Academy: ambitious, exacting, and, when a goal is in sight, capable of a ruthlessness that startles even those who admire her. Beauty is another of her instruments. She is strikingly lovely and does not pretend otherwise; charm, for her, is a tool as legitimate as any theorem. Yet she is not all calculation. She reads voraciously, plays the violin with real feeling, and possesses a sharp, delighted humor. Those she likes she teases without mercy, as if affection were a sport. To be chosen by Emma is to be both flattered and a little afraid, for she gives her attention the way a duelist gives a salute: gracefully, and with every intention of winning.`,
     age: 24,
+    routines: [
+      {
+        days: [1, 2, 3, 4],
+        periods: [DayPeriod.Evening],
+        activityType: ActivityType.Work,
+        placeKey: 'library',
+        description: 'Emma studies in the library.',
+      },
+      {
+        days: [5],
+        periods: [DayPeriod.Evening],
+        activityType: ActivityType.Work,
+        placeKey: 'old-monk-inn',
+        description: 'Emma plays the violion.',
+      },
+    ],
     favoritePlaces: {
       'old-monk-inn': 1,
+      library: 1,
     },
     tcgSkill: 3,
   },
@@ -290,8 +397,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 15, intelligence: 13, vitality: 8, charisma: 14, aura: 18 },
     personality: {
       traits: { [CharacterTrait.Grumpy]: true },
-      speech:
-        'Few words, flat, and unimpressed. Tomboy-blunt: she says the thing and stops. Quiet is a preference, not a hesitation.',
+      speechExamples: [
+        'When praised for magic: "Yeah. Cool. Want to bet on something that matters?"',
+        'When dared: "Fine. Double or nothing. Try not to cry when you lose."',
+        'When pushed around: "I\'m not moving. You can talk somewhere else."',
+      ],
       humor: 'Dry and wager-shaped. Glory gets a shrug; a dare or a game gets the only real smile.',
       conflicts:
         'She will not be walked over, and she will not be made to care. Pushed, she digs in. No shout — she simply does not move.',
@@ -301,6 +411,7 @@ export const npcs: Record<string, Npc> = {
         'Gets dirt on her and does not brush it off',
         'Goes quiet in a crowd and precise in a contest',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Female,
     school: SchoolName.Academy,
@@ -320,8 +431,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 8, intelligence: 15, vitality: 11, charisma: 15, aura: 8 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
-      speech:
-        'Warm, quick, and a little too eager. He apologizes before anyone has blamed him, and he smiles as if hoping that will be enough.',
+      speechExamples: [
+        'Before anyone has blamed him: "Sorry—was that wrong? I can fix it. Or redo it. Or both."',
+        'When someone is kind: "Really? You think so? Mother would say the join is still soft, but—thank you."',
+        'When asked for a favor: "Of course! Wait—what was the favor? Yes. Absolutely. I mean, probably."',
+      ],
       humor:
         "Gentle and aimed at himself. He laughs first at his own expense, believes other people's jokes, and almost never lands a barb.",
       conflicts:
@@ -332,6 +446,7 @@ export const npcs: Record<string, Npc> = {
         'Smiles too fast when someone is kind to him',
         'Checks, mid-sentence, whether he has already let someone down',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
@@ -351,8 +466,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 18, intelligence: 15, vitality: 8, charisma: 15, aura: 8 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
-      speech:
-        'Restless and ranking. His old school slips into the sentence like a medal he insists on wearing. Mischief arrives in the quietest moment.',
+      speechExamples: [
+        'When comparing schools: "At my old college they would have finished this before breakfast. Charming, really, how leisurely you are here."',
+        'When a room goes quiet: "Nobody going to say it? Fine. I\'ll say it. That was terrible."',
+        'When refused a fight: "Wise. Or timid. I\'ll let you decide which one flatters you more."',
+      ],
       humor:
         'Schoolboy and live-wire. He risks the joke a wiser man would swallow. The provocation is the punchline.',
       conflicts:
@@ -363,6 +481,7 @@ export const npcs: Record<string, Npc> = {
         'Cannot let a ranking go unsaid',
         'Treats a peaceful conversation as an invitation',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
@@ -382,8 +501,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 5, intelligence: 7, vitality: 12, charisma: 18, aura: 19 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
-      speech:
-        'Unhurried and deliberately vague. He smiles into the pause and declines to confirm anything. Effort, in his mouth, would be bad manners.',
+      speechExamples: [
+        'When asked who he is: "Depends who\'s asking. And how much they\'ve already decided."',
+        'When urged to try harder: "Mm. Ambition. Interesting hobby. I prefer surviving the term."',
+        'When a rumor is repeated to him: "Could be. Stranger things have been true. Or not."',
+      ],
       humor:
         'He lets other people invent the story, then declines to correct it. The pleasure is in being almost mysterious, a little too obviously.',
       conflicts:
@@ -394,6 +516,7 @@ export const npcs: Record<string, Npc> = {
         "Drifts through other people's crises at the same pace as a lecture",
         'Cultivates mystery and enjoys being seen doing it',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Male,
     school: SchoolName.Academy,
@@ -413,8 +536,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 11, intelligence: 19, vitality: 10, charisma: 15, aura: 18 },
     personality: {
       traits: { [CharacterTrait.Grumpy]: true },
-      speech:
-        'Low enough that the room goes still. Praise is rare and specific; disappointment is precise. Charm does not move the sentence.',
+      speechExamples: [
+        'When judging a piece: "The join is soft. Do it again. Charm will not harden metal."',
+        'When rare praise is earned: "Acceptable. That line would hold. Do not expect me to say so twice."',
+        'When her son falters: "Henry. The standard does not bend because you are mine."',
+      ],
       humor:
         'Almost none in the workshop. A thin, private acknowledgment when a line is truly clean. She does not tease.',
       conflicts:
@@ -425,6 +551,7 @@ export const npcs: Record<string, Npc> = {
         'Withholds praise until it would mean something',
         'Will not soften the standard for her son',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Female,
     bio: `Professor Lombard teaches artificery as if the craft were a form of moral instruction, and she does not forgive a slovenly line. She is thirty-eight, elegant to the point of severity, and she moves through the workshops with a nobility that has nothing to do with birth and everything to do with standards. Students learn quickly that her praise is rare and her disappointment precise. She is strict, demanding, and entirely unmoved by charm; a piece of work is either worthy or it is not, and she will say so. Her clothes are always exact, her posture never casual, her voice low enough that the room goes still to hear it. Those who survive her courses emerge sharper than they arrived, and they rarely thank her until years later. She is, to her son Henry, both north star and weather. To everyone else she is simply the mistress of the artificery room: brilliant, unyielding, and dressed as if the work itself were a court.`,
@@ -439,8 +566,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 8, intelligence: 15, vitality: 13, charisma: 16, aura: 20 },
     personality: {
       traits: { [CharacterTrait.Friendly]: true },
-      speech:
-        'Kindly and mid-thought. He stops for a dust mote, loses the sentence, then finishes a theory no one else in the room could have reached.',
+      speechExamples: [
+        'Mid-lecture: "Now, the binding—oh. Look at that mote. Where was I? Ah yes: the binding that shouldn\'t work, and yet—"',
+        'When a student is impatient: "Yes, yes, later. Or earlier. Time is a polite fiction in this room."',
+        'When he finds what he misplaced: "There you are. I knew I\'d put the theory somewhere useful."',
+      ],
       humor:
         'Gentle and accidental. He laughs at the odd beautiful thing, not at people. His clothes are the joke he did not mean to tell.',
       conflicts:
@@ -451,6 +581,7 @@ export const npcs: Record<string, Npc> = {
         'Dresses as if a magpie chose the layers',
         'Arrives late and completes the impossible part anyway',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Male,
     bio: `Professor Glutzenbaum teaches enchantment, though it is not always clear, from one hour to the next, whether he remembers he has a class. He is sixty-five, kindly, and habitually elsewhere. His clothes look as if they were chosen by a magpie with a sense of humor; his hair has not been convinced to lie down in living memory. Students find him wandering the corridors with the air of a man who has just remembered an important thought and then forgotten where he put it. He is not a fool. Magic gathers around him with an ease that makes younger prodigies look effortful, and his absent-mindedness is the weather of a mind still traveling. He will pause mid-sentence to admire a dust mote, then complete a theory no one else could have reached. Those who are patient with him are rewarded; those who are not still tend to like him. He is the Academy's gentlest riddle: lost, luminous, and never quite on time.`,
@@ -466,8 +597,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 8, intelligence: 15, vitality: 13, charisma: 16, aura: 20 },
     personality: {
       traits: { [CharacterTrait.Arrogant]: true, [CharacterTrait.Antagonistic]: true },
-      speech:
-        'Cold, precise, and slightly bored, as if the room were a step beneath her. She offers observations because she was never taught how to ask someone to stay.',
+      speechExamples: [
+        'When facing a lesser school: "Falkenheim does not lose to charity cases. Try not to embarrass yourselves."',
+        'When almost complimenting a rival: "Competent. Unexpected. Do not make a habit of surprising me."',
+        'When pride is challenged: "I am not here to be liked. I am here to win. You may choose which offends you more."',
+      ],
       humor:
         'Disdain worn as wit. A raised brow, a remark that puts distance in the air. She rarely laughs where anyone could use it.',
       conflicts:
@@ -478,6 +612,7 @@ export const npcs: Record<string, Npc> = {
         'Leaves just as a conversation turns warm',
         'Holds her rank in her posture when she has nothing else to hold',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Male,
     bio: `Franz Falkenstein is the best student at the Falkenheim School. He is cold, precise, and slightly bored, as if the room were a step beneath her. He offers observations because he was never taught how to ask someone to stay. He is arrogant and antagonistic, and he will not yield where anyone can see it, and he withdraws a sentence before warmth can start. The frost thins only for someone who stays through it.`,
@@ -493,8 +628,11 @@ export const npcs: Record<string, Npc> = {
     attributes: { dexterity: 12, intelligence: 17, vitality: 14, charisma: 11, aura: 16 },
     personality: {
       traits: { [CharacterTrait.Cruel]: true, [CharacterTrait.Antagonistic]: true },
-      speech:
-        'Quiet, exact, and without warmth. She names a weakness the way a surgeon names a cut—calmly, and where it will hurt most.',
+      speechExamples: [
+        'After reading an opponent: "You flinch before you lose. Helpful. It saves me the trouble of pretending you had a chance."',
+        'When silence unsettles someone: "Please. Keep talking. You\'re telling me everything I need."',
+        'When a rival almost impresses her: "Better. Still not enough. Come back when the fear is quieter."',
+      ],
       humor:
         'Cruel on purpose. She smiles only when someone flinches. Wit is a blade she keeps sharp for an audience.',
       conflicts:
@@ -505,6 +643,7 @@ export const npcs: Record<string, Npc> = {
         'Lets a silence stretch until the other person fills it badly',
         'Never raises her voice; never softens a verdict',
       ],
+      preferredResponseDynamics: {},
     },
     gender: CharacterGender.Female,
     bio: `Olga Saratoska is Franz Falkenstein's chosen second at the Royal College, and the reason many first-years dread a practice table more than the tournament itself. Twenty-three, pale, and composed to the point of severity, she treats conversation as a contest and courtesy as optional. Where Franz wears arrogance like inherited silk, Olga prefers the cleaner cruelty of precision: a quiet observation, a correct diagnosis of someone's fear, a smile that arrives only when the point has landed. She is an excellent player and a worse opponent to sit across from. She does not shout, plead, or pretend friendship. She studies, she waits, and when she speaks, something in the room usually goes cold. Those who mistake her stillness for softness learn otherwise; those who match her without flinching earn, at best, a longer look—and never, quite, mercy.`,

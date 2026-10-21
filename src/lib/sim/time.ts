@@ -1,5 +1,6 @@
 import { DayPeriod } from '../_model';
 import { gs } from '../_state';
+import { cleanExpiredRumors } from './effects/rumors';
 import { narrateNewPeriod } from './narration';
 import { startScene } from './scene';
 
@@ -30,6 +31,7 @@ export function nextPeriod() {
     gs.time.period = DayPeriod.Morning;
     gs.time.day += 1;
     gs.league.playedToday = false;
+    cleanExpiredRumors();
   } else {
     gs.time.period = PERIODS[index + 1];
   }

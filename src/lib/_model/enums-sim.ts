@@ -24,12 +24,14 @@ export enum EventEffectType {
   AddRelationTag = 'add_relation_tag',
   AddStoryTag = 'add_story_tag',
   AddKnownTrait = 'add_known_trait',
+  AddMemory = 'add_memory',
   Move = 'move',
   UseFocus = 'use_focus',
   /** Start a battle; pair with `nextNode` to resume the event after the match. */
   StartMatch = 'start_match',
   NewLeagueSeason = 'new_league_season',
   AddPossession = 'add_possession',
+  AddRumor = 'add_rumor',
 }
 
 export enum ActionType {
@@ -189,4 +191,9 @@ export enum RelationTag {
 
 export enum PossessionType {
   Clothing = 'clothing',
+}
+
+export enum RumorType {
+  Match = 'match',
+  Card = 'card',
 }

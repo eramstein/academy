@@ -9,6 +9,7 @@ import { offerCardGifts } from '../effects/gifts';
 import { changeRelation } from '../effects/relations';
 import { narrateAttemptedAction, narrateText } from '../narration';
 import { getCurrentScheduledActivity } from '../schedule';
+import { consumeScenePayload, directSocialScene } from '../scene-director';
 
 export enum SocializeType {
   Befriend = 'befriend',
@@ -63,12 +64,25 @@ export async function socialize(parameters: SocializeParameters): Promise<string
     undefined,
     { silent: true }
   );
-  narrateAttemptedAction(action, {
+  const direction = directSocialScene(
+    parameters.characterKey,
+    parameters.socializeType,
     success,
-    critical,
-    attribute,
-    difficulty: 'Medium',
-  });
+    critical
+  );
+  narrateAttemptedAction(
+    action,
+    {
+      success,
+      critical,
+      attribute,
+      difficulty: 'Medium',
+    },
+    {
+      direction,
+      onGenerated: () => consumeScenePayload(direction),
+    }
+  );
   return '';
 }
 

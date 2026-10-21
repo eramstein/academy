@@ -426,6 +426,23 @@ function checkEffect(where, effect) {
         checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
       }
       break;
+    case 'add_rumor':
+      if (typeof parameters.text !== 'string' || !parameters.text.trim()) {
+        errors.push(`${where}: text must be a non-empty string`);
+      }
+      if (parameters.aboutNpcKey !== undefined) {
+        checkOneOf(where, 'aboutNpcKey', parameters.aboutNpcKey, characterKeys);
+      }
+      if (parameters.fromNpcKey !== undefined) {
+        checkOneOf(where, 'fromNpcKey', parameters.fromNpcKey, characterKeys);
+      }
+      if (parameters.fromDay !== undefined && typeof parameters.fromDay !== 'number') {
+        errors.push(`${where}: fromDay must be a number`);
+      }
+      if (parameters.untilDay !== undefined && typeof parameters.untilDay !== 'number') {
+        errors.push(`${where}: untilDay must be a number`);
+      }
+      break;
     case 'subscribe':
       checkOneOf(where, 'subscriptionType', parameters.subscriptionType, subscriptionTypes);
       if (typeof parameters.duration !== 'number') {
@@ -602,6 +619,18 @@ function checkEffect(where, effect) {
       }
       if (typeof parameters.description !== 'string' || !parameters.description.trim()) {
         errors.push(`${where}: description must be a non-empty string`);
+      }
+      break;
+    case 'add_memory':
+      checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
+      if (typeof parameters.title !== 'string' || !parameters.title.trim()) {
+        errors.push(`${where}: title must be a non-empty string`);
+      }
+      if (typeof parameters.description !== 'string' || !parameters.description.trim()) {
+        errors.push(`${where}: description must be a non-empty string`);
+      }
+      if (parameters.emotion !== undefined) {
+        checkOneOf(where, 'emotion', parameters.emotion, emotions);
       }
       break;
     case 'move':

@@ -5,6 +5,7 @@ import { gs } from '../_state';
 import { clearUsedFlavors } from './cards/flavor-generation-pipeline/used-flavors';
 import { loadCardTemplates, restoreCardTemplates } from './cards/npc-card-templates';
 import { getBasicLands, initNpcDecks } from './deck';
+import { loadRumors } from './effects/rumors';
 import { loadEventTemplates, restoreEventTemplates } from './events';
 import { setSceneEvents } from './scene';
 
@@ -16,6 +17,7 @@ export const defaultGameState: GameState = {
     usedActions: {},
     longActionPerformed: false,
   },
+  rumors: [],
   characters: npcs,
   player: {
     key: 'player',
@@ -100,6 +102,7 @@ export const initSim = async () => {
   await loadEventTemplates();
   await restoreCardTemplates();
   await loadCardTemplates();
+  loadRumors();
   getBasicLands();
   setSceneEvents();
   initNpcDecks();

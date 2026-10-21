@@ -25,6 +25,7 @@ import { probeFirstExistingImage } from './activity-image';
 import { actionTemplates, getActionTemplateMeta } from './cards/action-templates';
 import { formatKeywordLabel, KEYWORD_KEYS } from './cards/keywords';
 import { getCachedSceneImageUrl, saveCachedSceneImage } from './scene-image-cache';
+import type { SceneDirection } from './scene-director';
 import { getWeekDay, WEEK_DAYS } from './time';
 
 export function narrate(narration: Narration) {
@@ -225,7 +226,17 @@ export type SilentCheckOutcome = {
   difficulty: string;
 };
 
-export function narrateAttemptedAction(action: Action, outcome?: SilentCheckOutcome) {
+export type AttemptedNarrationHints = {
+  direction?: SceneDirection;
+  /** Called after generated prose is saved. Skipped when the model call fails. */
+  onGenerated?: () => void;
+};
+
+export function narrateAttemptedAction(
+  action: Action,
+  outcome?: SilentCheckOutcome,
+  hints?: AttemptedNarrationHints
+) {
   const id = crypto.randomUUID();
   narrate({
     id,
@@ -233,30 +244,36 @@ export function narrateAttemptedAction(action: Action, outcome?: SilentCheckOutc
     type: NarrationType.Text,
     attemptedAction: action,
   });
-  void fillAttemptedActionNarration(id, action, outcome);
+  void fillAttemptedActionNarration(id, action, outcome, hints);
 }
 
 async function fillAttemptedActionNarration(
   id: string,
   action: Action,
-  outcome?: SilentCheckOutcome
+  outcome?: SilentCheckOutcome,
+  hints?: AttemptedNarrationHints
 ) {
   let text: string;
   let imagePrompt: string | undefined;
+  let generated = false;
   try {
     const result = outcome
-      ? await generateAttributeCheckNarration({
-          success: outcome.success,
-          critical: outcome.critical,
-          roll: 0,
-          attribute: outcome.attribute,
-          difficulty: outcome.difficulty,
-          target: 0,
-          attemptedAction: action,
-        })
-      : await generateAttemptedActionNarration(action);
+      ? await generateAttributeCheckNarration(
+          {
+            success: outcome.success,
+            critical: outcome.critical,
+            roll: 0,
+            attribute: outcome.attribute,
+            difficulty: outcome.difficulty,
+            target: 0,
+            attemptedAction: action,
+          },
+          hints?.direction
+        )
+      : await generateAttemptedActionNarration(action, hints?.direction);
     text = result.text;
     imagePrompt = result.imagePrompt;
+    generated = true;
   } catch (error) {
     console.error('Failed to generate action narration', error);
     text = fallbackAttemptedActionText(action);
@@ -268,6 +285,7 @@ async function fillAttemptedActionNarration(
   if (imagePrompt) {
     void fillNarrationImage(id, imagePrompt);
   }
+  if (generated) hints?.onGenerated?.();
 }
 
 function fallbackAttemptedActionText(action: Action): string {
