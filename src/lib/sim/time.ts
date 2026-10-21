@@ -35,6 +35,7 @@ export function nextPeriod() {
   }
   gs.time.usedActions = {};
   gs.time.longActionPerformed = false;
+  gs.scene.eventsThisPeriod = 0;
   narrateNewPeriod(gs.time.day, gs.time.period);
 }
 

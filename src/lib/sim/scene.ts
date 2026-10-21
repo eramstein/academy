@@ -57,6 +57,8 @@ export function sceneWaitingOnEventChoice(event = gs.scene.event): boolean {
 The scene first loops events until it runs out. Player has to react to each event by chosing an option.
 Once the events are done (no new events are set), the player can get proactive and choose actions.
 Events with manualTrigger are skipped here and offered as scene-action buttons instead.
+After one event has already fired this period, further matches are parked as pendingPeriodEvent
+(a single continue button) so narration does not chain automatically.
 A long action advances the period and ends the scene; the next scene is set based either on the next scheduled activity or the player's choice of next place.
 Optionless events resolve immediately (narrate + effects) and do not hold the scene.
 An option nextNode (or a skill-check successNode / failureNode) opens another beat of the same event
@@ -69,13 +71,27 @@ export function syncManualSceneTriggers() {
   gs.scene.manualTriggers = getManualSceneTriggers();
 }
 
+function parkPendingPeriodEvent(eventKey: string, label: string) {
+  gs.scene.pendingPeriodEvent = { eventKey, label };
+  gs.scene.event = undefined;
+  gs.scene.actions = [];
+  gs.scene.manualTriggers = [];
+}
+
 export function setSceneEvents() {
   gs.scene.event = undefined;
+  gs.scene.pendingPeriodEvent = undefined;
   // Keep resolving optionless events in one pass; stop when the player must choose.
+  // After one event this period, park the next match behind a continue button.
   const resolvedKeys = new Set<string>();
   while (true) {
     const triggeredEvent = getTriggeredSceneEvent();
     if (!triggeredEvent || resolvedKeys.has(triggeredEvent.event.key)) break;
+    if (gs.scene.eventsThisPeriod >= 1) {
+      const label = triggeredEvent.template.title?.trim() || 'Continue';
+      parkPendingPeriodEvent(triggeredEvent.event.key, label);
+      return;
+    }
     resolvedKeys.add(triggeredEvent.event.key);
     setEvent(triggeredEvent.event, triggeredEvent.template);
     if (sceneWaitingOnEventChoice()) break;
@@ -87,6 +103,26 @@ export function setSceneEvents() {
     setPossibleActions();
   } else {
     gs.scene.manualTriggers = [];
+  }
+}
+
+/** Player clicked the continue button for a second (or later) event this period. */
+export function playPendingPeriodEvent() {
+  const pending = gs.scene.pendingPeriodEvent;
+  if (!pending) return;
+  gs.scene.pendingPeriodEvent = undefined;
+  const triggered = getTriggeredSceneEvent();
+  if (!triggered || triggered.event.key !== pending.eventKey) {
+    // Triggers may have changed; re-scan instead of forcing a stale key.
+    setSceneEvents();
+    return;
+  }
+  setEvent(triggered.event, triggered.template);
+  if (sceneWaitingOnEventChoice()) {
+    gs.scene.actions = [];
+    gs.scene.manualTriggers = [];
+  } else {
+    setSceneEvents();
   }
 }
 

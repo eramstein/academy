@@ -240,12 +240,10 @@ Every entry in `triggers` must match (AND). The engine auto-plays the first even
 in file order whose triggers all match and that has no `manualTrigger`. An event
 with `manualTrigger` set to a button label is withheld: when its triggers match,
 that label is a scene action, and choosing it plays the event. Empty or whitespace
-`manualTrigger` is omitted (auto-play stays the default). Socialize-gated events
-still resolve from the socialize action.
+`manualTrigger` is omitted (auto-play stays the default).
 
 | `triggerType`        | `parameters`                                                       | Notes                                                                                   |
 | -------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| `socialize`          | `{ characterKey, socializeType }`                                  | `befriend`, `taunt`, `impress`, `flirt`.                                                |
 | `relation_parameter` | `{ characterKey, relationParameter, value }`                       | Cumulative `relationProgress`. Positive `value` = at least; negative = at most.         |
 | `character_present`  | `{ characterKey }`                                                 | NPC in the player's current place.                                                      |
 | `day`                | `{ day?: 3, minDay?: 4 }`                                          | Exact day and/or `day >= minDay`. Day 1 = Monday.                                       |
@@ -269,7 +267,6 @@ still resolve from the socialize action.
 | Markdown phrasing (examples)                                       | JSON                                                                    |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------- |
 | First time / when \<NPC\> is present                               | `character_present` (once-only is automatic via story tag on fire)      |
-| When the player befriends / flirts / … \<NPC\>                     | `socialize` + usually `character_present`                               |
 | After event \<key\> / once \<key\> happened / \<tag\> has occurred | `story_tag` `{ tag: "<key>", value: 1 }`                                |
 | \<tag\> has not occurred                                           | `story_tag` `{ tag: "<tag>", value: -1 }`                               |
 | Friendship / respect / … at least N                                | `relation_parameter` with positive `value`                              |
@@ -284,10 +281,9 @@ still resolve from the socialize action.
 | Last / previous match was won                                      | `last_match_won` `{}`                                                   |
 | Last / previous match was lost                                     | `last_match_lost` `{}`                                                  |
 
-Prefer `socialize` for befriend/flirt/impress/taunt beats — socialize does **not**
-change `relationProgress`. Prefer `relation_parameter` for lasting thresholds.
-Scene-entry offers (no socialize) still need `character_present` so they cannot
-fire while the NPC is elsewhere.
+Prefer `relation_parameter` for lasting friendship / respect / love / rivalry
+thresholds. Scene-entry offers still need `character_present` so they cannot fire
+while the NPC is elsewhere.
 
 ## Passages
 

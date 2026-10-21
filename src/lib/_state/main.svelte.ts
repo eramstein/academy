@@ -55,8 +55,11 @@ export const loadGameStateFromLocalStorage = async (id: string) => {
         gs.player.maxFocus = defaultGameState.player.maxFocus;
       }
       rebuildWorkingEventTemplates();
-      if ((gs.scene.event?.options?.length ?? 0) > 0) {
+      if ((gs.scene.event?.options?.length ?? 0) > 0 || gs.scene.pendingPeriodEvent) {
         gs.scene.manualTriggers = [];
+        if (gs.scene.pendingPeriodEvent) {
+          gs.scene.actions = [];
+        }
       } else {
         gs.scene.manualTriggers = getManualSceneTriggers();
       }

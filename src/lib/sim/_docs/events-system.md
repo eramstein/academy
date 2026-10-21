@@ -9,7 +9,6 @@ The goal design-wise is that each event offers interesting choices to make, and 
 Events are losely organized as graphs centered around NPCs ("character arcs").
 It is not structly graphs, event triggers are functions that check the game state for any sort of data, but a very common condition is presence of a NPC, relation status with that NPC, and occurence of a previous event.
 Relation statuses don't grow over time, these are "points" consumed by events. Actions used on socialization are investments for event rewards.
-Any socialize action should trigger an event, at least a generic one.
 
 # Event options
 

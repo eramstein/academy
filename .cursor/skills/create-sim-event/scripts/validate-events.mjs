@@ -242,15 +242,6 @@ function checkTrigger(where, trigger) {
       ]);
       if (typeof params.value !== 'number') errors.push(`${where}: value must be a number`);
       break;
-    case 'socialize':
-      checkOneOf(where, 'characterKey', params.characterKey, npcKeys);
-      checkOneOf(where, 'socializeType', params.socializeType, [
-        'befriend',
-        'taunt',
-        'impress',
-        'flirt',
-      ]);
-      break;
     case 'activity_history':
       checkOneOf(where, 'characterKey', params.characterKey, npcKeys);
       checkOneOf(where, 'activityType', params.activityType, activityTypes);

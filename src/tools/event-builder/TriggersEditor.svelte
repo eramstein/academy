@@ -7,7 +7,6 @@
     type EventTrigger,
     type EventTriggerParameters,
   } from '@/lib/_model';
-  import { SocializeType } from '@/lib/sim/actions/socialize';
   import { WEEK_DAYS } from '@/lib/sim/time';
 
   let {
@@ -31,7 +30,6 @@
   const activityTypes = Object.values(ActivityType);
   const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
   const relationTagValues = Object.values(RelationTag);
-  const socializeTypes = Object.values(SocializeType);
   const weekDays = WEEK_DAYS.map((name, index) => ({ name, value: index + 1 }));
 
   function defaultParams<T extends EventTriggerType>(triggerType: T): EventTriggerParameters[T] {
@@ -45,10 +43,6 @@
         characterKey: '',
         relationParameter: 'friendship',
         value: 0,
-      },
-      [EventTriggerType.Socialize]: {
-        characterKey: '',
-        socializeType: SocializeType.Befriend,
       },
       [EventTriggerType.ActivityHistory]: {
         characterKey: '',
@@ -239,22 +233,6 @@
               aria-label="Relation threshold"
               title="Negative: ≤ value; non-negative: ≥ value"
             />
-          {:else if trigger.triggerType === EventTriggerType.Socialize}
-            <input
-              class="input param-input"
-              bind:value={trigger.parameters.characterKey}
-              placeholder="character key"
-              aria-label="Character key"
-            />
-            <select
-              class="input param-select"
-              bind:value={trigger.parameters.socializeType}
-              aria-label="Socialize type"
-            >
-              {#each socializeTypes as socializeType (socializeType)}
-                <option value={socializeType}>{socializeType}</option>
-              {/each}
-            </select>
           {:else if trigger.triggerType === EventTriggerType.ActivityHistory}
             <input
               class="input param-input"

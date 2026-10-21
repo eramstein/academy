@@ -122,7 +122,6 @@ export enum EventTriggerType {
   Place = 'place',
   CharacterPresent = 'character_present',
   RelationParameter = 'relation_parameter',
-  Socialize = 'socialize',
   ActivityHistory = 'activity_history',
   DayOfWeek = 'day_of_week',
   ScheduledActivity = 'scheduled_activity',

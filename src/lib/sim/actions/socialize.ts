@@ -7,9 +7,7 @@ import { attributeCheck, skillCheckDifficulty } from '../attribute-checks';
 import { getCharactersAtScene } from '../characters';
 import { offerCardGifts } from '../effects/gifts';
 import { changeRelation } from '../effects/relations';
-import { getTriggeredSceneEvent } from '../events';
 import { narrateAttemptedAction, narrateText } from '../narration';
-import { setEvent } from '../scene';
 import { getCurrentScheduledActivity } from '../schedule';
 
 export enum SocializeType {
@@ -43,20 +41,8 @@ function socializeAttribute(type: SocializeType): 'charisma' | 'intelligence' {
   return 'intelligence';
 }
 
-/** Socialize: fire a matching event if one triggers, otherwise roll silently and narrate the outcome. */
+/** Socialize: roll silently and narrate the outcome. */
 export async function socialize(parameters: SocializeParameters): Promise<string> {
-  gs.scene.socializeContext = {
-    characterKey: parameters.characterKey,
-    socializeType: parameters.socializeType,
-  };
-  const triggered = getTriggeredSceneEvent({ includeManual: true });
-  gs.scene.socializeContext = undefined;
-
-  if (triggered) {
-    setEvent(triggered.event, triggered.template);
-    return '';
-  }
-
   const intent = parameters.intent?.trim();
   const action: Action = {
     label: 'Socialize',

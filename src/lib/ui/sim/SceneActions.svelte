@@ -1,6 +1,6 @@
 <script lang="ts">
   import { ActionType, type Action, type ResourceType } from '@/lib/_model';
-  import { playManualTriggerEvent, selectOption } from '@/lib/sim/scene';
+  import { playManualTriggerEvent, playPendingPeriodEvent, selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state';
   import {
     getConjurationOtions,
@@ -23,6 +23,7 @@
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
   const manualTriggers = $derived(gs.scene.manualTriggers ?? []);
+  const pendingPeriodEvent = $derived(gs.scene.pendingPeriodEvent);
 
   const actionIcons: Partial<Record<ActionType, string>> = {
     [ActionType.Socialize]: 'people',
@@ -354,6 +355,10 @@
             {/if}
           </OrnateButton>
         {/each}
+      {:else if pendingPeriodEvent}
+        <OrnateButton icon="book" onclick={() => playPendingPeriodEvent()}>
+          {pendingPeriodEvent.label}
+        </OrnateButton>
       {:else if pendingAction && currentParameterKey}
         {#key currentParameterKey}
           {#each currentOptions as option, i (`${currentParameterKey}-${optionValue(option)}-${i}`)}

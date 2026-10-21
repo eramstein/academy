@@ -1,4 +1,4 @@
-import type { SocializeParameters, TransactionParameters } from '../sim/actions';
+import type { TransactionParameters } from '../sim/actions';
 import type { SkillCheckDifficultyName } from '../sim/attribute-checks';
 import type { EventTrigger } from '../sim/events';
 import type { CardColor } from './enums-battle';
@@ -74,13 +74,17 @@ export interface ManualSceneTrigger {
 export interface Scene {
   narration: Narration[];
   event: SceneEvent | undefined; // current event the player has to react to
+  eventsThisPeriod: number; // number of events that have triggered this period
   actions: Action[]; // list of proactive actions the player can do currently
   /** Events withheld from auto-play; each label is a scene-action button. */
   manualTriggers?: ManualSceneTrigger[];
+  /**
+   * Next auto-matched event parked after one already fired this period.
+   * Shown as a single continue button so narration does not chain automatically.
+   */
+  pendingPeriodEvent?: ManualSceneTrigger;
   selectingNextPlace?: boolean; // whether the player is selecting a next place
   image?: string;
-  /** Active socialize attempt; Socialize triggers only match while this is set. */
-  socializeContext?: SocializeParameters;
   /**
    * Result of the most recent finished match. Used by `last_match_won` /
    * `last_match_lost` triggers (nodes, options, passages). Undefined until a match ends.

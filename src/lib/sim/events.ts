@@ -22,10 +22,9 @@ import {
   replaceEventTemplates,
   type StoredEventTemplate,
 } from '../_state/event-templates';
-import { SceneActionTemplates } from './actions';
-import type { SocializeParameters } from './actions/socialize';
-import { getActivityIllustrationRefs, probeFirstExistingImage } from './activity-image';
 import { getLoadedModEvents, loadMods } from '../mods';
+import { SceneActionTemplates } from './actions';
+import { getActivityIllustrationRefs, probeFirstExistingImage } from './activity-image';
 import { getCharactersAtScene } from './characters';
 import { resolveRelationTag, updateRelationArc } from './effects/relations';
 import { getCurrentScheduledActivity } from './schedule';
@@ -45,7 +44,6 @@ export interface EventTriggerParameters {
     relationParameter: keyof Npc['relationProgress'];
     value: number;
   };
-  [EventTriggerType.Socialize]: SocializeParameters;
   [EventTriggerType.ActivityHistory]: {
     characterKey: string;
     activityType: ActivityType;
@@ -220,29 +218,38 @@ function triggeredFromTemplate(template: StoredEventTemplate | undefined) {
   };
 }
 
-export function getTriggeredSceneEvent(options?: {
-  /**
-   * Socialize: also take a manualTrigger event that matches only while
-   * `socializeContext` is set. Scene-entry offers stay buttons.
-   */
-  includeManual?: boolean;
-}): { event: SceneEvent; template: StoredEventTemplate } | undefined {
-  const template = eventTemplates.find((eventTemplate) => {
-    if (!triggersMatch(eventTemplate)) return false;
-    if (!manualTriggerLabel(eventTemplate)) return true;
-    if (!options?.includeManual) return false;
-    return matchesOnlyBecauseOfSocialize(eventTemplate);
-  });
-  return triggeredFromTemplate(template);
+/**
+ * Events that must fire even when the period already has several events:
+ * scheduled activities, exact-day triggers (not minDay alone), or priority > 0.
+ */
+function isForcedPeriodEvent(template: StoredEventTemplate): boolean {
+  if ((template.priority ?? 0) > 0) return true;
+  for (const trigger of template.triggers ?? []) {
+    if (trigger.triggerType === EventTriggerType.ScheduledActivity) return true;
+    if (trigger.triggerType === EventTriggerType.Day && trigger.parameters.day != null) {
+      return true;
+    }
+  }
+  return false;
 }
 
-/** True when clearing socializeContext makes this event's triggers fail. */
-function matchesOnlyBecauseOfSocialize(template: StoredEventTemplate): boolean {
-  const saved = gs.scene.socializeContext;
-  gs.scene.socializeContext = undefined;
-  const matchesWithout = triggersMatch(template);
-  gs.scene.socializeContext = saved;
-  return !matchesWithout;
+export function getTriggeredSceneEvent():
+  | { event: SceneEvent; template: StoredEventTemplate }
+  | undefined {
+  const periodHasRoom = gs.scene.eventsThisPeriod <= 1;
+  const template = eventTemplates
+    .filter(
+      (eventTemplate) =>
+        triggersMatch(eventTemplate) &&
+        !manualTriggerLabel(eventTemplate) &&
+        (isForcedPeriodEvent(eventTemplate) || periodHasRoom)
+    )
+    .sort((a, b) => {
+      const forcedDiff = Number(isForcedPeriodEvent(b)) - Number(isForcedPeriodEvent(a));
+      if (forcedDiff !== 0) return forcedDiff;
+      return (b.priority ?? 0) - (a.priority ?? 0);
+    })[0];
+  return triggeredFromTemplate(template);
 }
 
 /** Matching events that wait for a scene-action button (`manualTrigger` label). */
@@ -289,6 +296,7 @@ export function consumeEventTemplate(template: StoredEventTemplate) {
 /** Record that an event fired (save-backed). Does not mutate catalog templates. */
 export function recordEventOccured(template: StoredEventTemplate, resolvedText?: string) {
   ensureStoryTags();
+  gs.scene.eventsThisPeriod += 1;
   const key = template.key;
   const text = resolvedText ?? resolveEventText(template);
   gs.storyTags[key] = (gs.storyTags[key] ?? 0) + 1;
@@ -355,8 +363,6 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       return gs.player.placeKey === trigger.parameters.placeKey;
     case EventTriggerType.RelationParameter:
       return checkRelationParameter(trigger);
-    case EventTriggerType.Socialize:
-      return checkSocialize(trigger);
     case EventTriggerType.CharacterPresent:
       return getCharactersAtScene().some(
         (character) => character.key === trigger.parameters.characterKey
@@ -408,19 +414,6 @@ function checkRelationParameter(
   } else {
     return character.relationProgress[relationParameter] >= value;
   }
-}
-
-function checkSocialize(
-  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.Socialize }>
-): boolean {
-  const context = gs.scene.socializeContext;
-  if (!context) {
-    return false;
-  }
-  return (
-    context.characterKey === trigger.parameters.characterKey &&
-    context.socializeType === trigger.parameters.socializeType
-  );
 }
 
 function checkActivityHistory(

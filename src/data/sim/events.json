@@ -155,7 +155,9 @@
       {
         "triggerType": "period",
         "parameters": {
-          "periods": ["morning"]
+          "periods": [
+            "morning"
+          ]
         }
       }
     ],
@@ -189,13 +191,6 @@
     "key": "molly-f1",
     "text": "Moly tells you she appreciated the way you made her feel welcome. She offers you a token of gratitude, pick your favorite!",
     "triggers": [
-      {
-        "triggerType": "socialize",
-        "parameters": {
-          "characterKey": "molly",
-          "socializeType": "befriend"
-        }
-      },
       {
         "triggerType": "character_present",
         "parameters": {
@@ -241,6 +236,7 @@
         ]
       }
     ],
+    "title": "Molly's gift",
     "characterArc": "molly",
     "emotion": "happy",
     "image": "molly-f1.jpg"
@@ -254,13 +250,6 @@
         "parameters": {
           "tag": "molly-f1",
           "value": 1
-        }
-      },
-      {
-        "triggerType": "socialize",
-        "parameters": {
-          "characterKey": "molly",
-          "socializeType": "befriend"
         }
       },
       {
@@ -279,7 +268,10 @@
             "parameters": {
               "activity": {
                 "type": "study",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "library"
               },
               "schedule": {
@@ -311,13 +303,6 @@
         }
       },
       {
-        "triggerType": "socialize",
-        "parameters": {
-          "characterKey": "molly",
-          "socializeType": "befriend"
-        }
-      },
-      {
         "triggerType": "character_present",
         "parameters": {
           "characterKey": "molly"
@@ -333,7 +318,10 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 3,
-            "poolKeys": ["molly", "base"]
+            "poolKeys": [
+              "molly",
+              "base"
+            ]
           }
         }
       }
@@ -353,13 +341,19 @@
       {
         "triggerType": "day_of_week",
         "parameters": {
-          "daysOfWeek": [6, 7]
+          "daysOfWeek": [
+            6,
+            7
+          ]
         }
       },
       {
         "triggerType": "period",
         "parameters": {
-          "periods": ["morning", "afternoon"]
+          "periods": [
+            "morning",
+            "afternoon"
+          ]
         }
       },
       {
@@ -470,7 +464,10 @@
           "type": "move",
           "parameters": {
             "placeKey": "gray_mountains",
-            "characterKeys": ["player", "molly"]
+            "characterKeys": [
+              "player",
+              "molly"
+            ]
           }
         }
       }
@@ -480,13 +477,6 @@
     "key": "molly-r1",
     "text": "Molly seeks you out with a thoughtful look. She says she has been watching how you carry yourself, and she respects the care you put into your work. She asks if you would take on a mentoring post with her at the library on Tuesday evenings, helping younger students find their footing.",
     "triggers": [
-      {
-        "triggerType": "socialize",
-        "parameters": {
-          "characterKey": "molly",
-          "socializeType": "impress"
-        }
-      },
       {
         "triggerType": "character_present",
         "parameters": {
@@ -511,7 +501,9 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [2],
+                    "daysOfWeek": [
+                      2
+                    ],
                     "period": "evening"
                   }
                 }
@@ -535,13 +527,6 @@
         "parameters": {
           "tag": "molly-r1",
           "value": 1
-        }
-      },
-      {
-        "triggerType": "socialize",
-        "parameters": {
-          "characterKey": "molly",
-          "socializeType": "impress"
         }
       },
       {
@@ -585,13 +570,6 @@
     "text": "Molly finds you with a tight smile that does not reach her eyes. Whatever has soured between you still sits heavy on her, and she makes no effort to hide it. She presses a small purse into your hands anyway, calling it charity for someone who clearly needs the help, and waits to see whether you will take the slight.",
     "triggers": [
       {
-        "triggerType": "socialize",
-        "parameters": {
-          "characterKey": "molly",
-          "socializeType": "taunt"
-        }
-      },
-      {
         "triggerType": "character_present",
         "parameters": {
           "characterKey": "molly"
@@ -621,13 +599,6 @@
     "key": "molly-l1",
     "text": "Molly draws you aside, cheeks flushed, and admits she has noticed the way you have been flirting with her. She does not sound angry so much as uncertain, and she asks you plainly what your intentions are—whether this is a game, or something you mean to pursue.",
     "triggers": [
-      {
-        "triggerType": "socialize",
-        "parameters": {
-          "characterKey": "molly",
-          "socializeType": "flirt"
-        }
-      },
       {
         "triggerType": "character_present",
         "parameters": {
@@ -676,13 +647,6 @@
         }
       },
       {
-        "triggerType": "socialize",
-        "parameters": {
-          "characterKey": "molly",
-          "socializeType": "flirt"
-        }
-      },
-      {
         "triggerType": "character_present",
         "parameters": {
           "characterKey": "molly"
@@ -701,7 +665,10 @@
             "parameters": {
               "activity": {
                 "type": "date",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "royal-pigeon-inn"
               },
               "schedule": {
@@ -731,13 +698,6 @@
         }
       },
       {
-        "triggerType": "socialize",
-        "parameters": {
-          "characterKey": "molly",
-          "socializeType": "flirt"
-        }
-      },
-      {
         "triggerType": "character_present",
         "parameters": {
           "characterKey": "molly"
@@ -756,7 +716,10 @@
             "parameters": {
               "activity": {
                 "type": "romance",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "molly-room"
               },
               "schedule": {
@@ -858,7 +821,10 @@
             "parameters": {
               "activity": {
                 "type": "social",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "molly-room",
                 "eventId": "molly-reading"
               },
@@ -1025,13 +991,6 @@
     "key": "molly-sport",
     "text": "As you greet Molly, she takes you by the hand and insists there is something you really need to do. Surprised, you follow her to a gym room lined with weights and mats. She nods toward a rack, encourages you to lift, and winks as if daring you to show her what you can do.",
     "triggers": [
-      {
-        "triggerType": "socialize",
-        "parameters": {
-          "characterKey": "molly",
-          "socializeType": "befriend"
-        }
-      },
       {
         "triggerType": "relation_parameter",
         "parameters": {
@@ -1200,7 +1159,9 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [2],
+                    "daysOfWeek": [
+                      2
+                    ],
                     "period": "evening"
                   }
                 }
@@ -1272,7 +1233,10 @@
           "type": "move",
           "parameters": {
             "placeKey": "library",
-            "characterKeys": ["player", "molly"]
+            "characterKeys": [
+              "player",
+              "molly"
+            ]
           }
         }
       },
@@ -1310,7 +1274,9 @@
       {
         "triggerType": "period",
         "parameters": {
-          "periods": ["afternoon"]
+          "periods": [
+            "afternoon"
+          ]
         }
       }
     ],
@@ -1826,7 +1792,14 @@
           "type": "move",
           "parameters": {
             "placeKey": "academy-hall",
-            "characterKeys": ["player", "emma", "elsa", "henry", "ousmane", "molly"]
+            "characterKeys": [
+              "player",
+              "emma",
+              "elsa",
+              "henry",
+              "ousmane",
+              "molly"
+            ]
           }
         }
       },
@@ -2268,7 +2241,10 @@
           "parameters": {
             "activity": {
               "type": "event",
-              "participants": ["player", "emma"],
+              "participants": [
+                "player",
+                "emma"
+              ],
               "placeKey": "emma-room",
               "eventId": "emma_tourney_training"
             },
@@ -2633,7 +2609,10 @@
                 "parameters": {
                   "activity": {
                     "type": "event",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "artificery-room",
                     "eventId": "emma_tourney_crafting"
                   },
@@ -2676,7 +2655,10 @@
                 "parameters": {
                   "activity": {
                     "type": "event",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "artificery-room",
                     "eventId": "emma_tourney_crafting"
                   },
@@ -2854,7 +2836,9 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": ["emma_tourney_spell"]
+            "specificCardKeys": [
+              "emma_tourney_spell"
+            ]
           }
         },
         "triggers": [
@@ -2891,7 +2875,9 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": ["emma_tourney_unit"]
+            "specificCardKeys": [
+              "emma_tourney_unit"
+            ]
           }
         },
         "triggers": [
@@ -2929,7 +2915,10 @@
           "parameters": {
             "activity": {
               "type": "event",
-              "participants": ["player", "emma"],
+              "participants": [
+                "player",
+                "emma"
+              ],
               "placeKey": "falkenheim_school",
               "eventId": "emma_falkenheim_tournament"
             },
@@ -3040,7 +3029,9 @@
           "type": "move",
           "parameters": {
             "placeKey": "falkenheim_school",
-            "characterKeys": ["player"]
+            "characterKeys": [
+              "player"
+            ]
           }
         }
       },
@@ -3049,7 +3040,9 @@
           "type": "move",
           "parameters": {
             "placeKey": "falkenheim_school",
-            "characterKeys": ["emma"]
+            "characterKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -3638,7 +3631,10 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -3647,7 +3643,9 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [2],
+                      "daysOfWeek": [
+                        2
+                      ],
                       "period": "evening"
                     }
                   }
@@ -3691,7 +3689,10 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -3700,7 +3701,9 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [2],
+                      "daysOfWeek": [
+                        2
+                      ],
                       "period": "evening"
                     }
                   }
@@ -3750,7 +3753,9 @@
               "type": "move",
               "parameters": {
                 "placeKey": "academy-hall",
-                "characterKeys": ["player"]
+                "characterKeys": [
+                  "player"
+                ]
               }
             }
           },
@@ -3759,7 +3764,9 @@
               "type": "move",
               "parameters": {
                 "placeKey": "academy-hall",
-                "characterKeys": ["emma"]
+                "characterKeys": [
+                  "emma"
+                ]
               }
             }
           }
@@ -3911,7 +3918,10 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -3920,7 +3930,9 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [2],
+                      "daysOfWeek": [
+                        2
+                      ],
                       "period": "evening"
                     }
                   }
@@ -3964,7 +3976,10 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -3973,7 +3988,9 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [2],
+                      "daysOfWeek": [
+                        2
+                      ],
                       "period": "evening"
                     }
                   }
@@ -4092,7 +4109,9 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": ["the_academy"]
+            "specificCardKeys": [
+              "the_academy"
+            ]
           }
         }
       },
@@ -4201,7 +4220,9 @@
       {
         "triggerType": "day_of_week",
         "parameters": {
-          "daysOfWeek": [4]
+          "daysOfWeek": [
+            4
+          ]
         }
       },
       {
@@ -4246,7 +4267,10 @@
             "parameters": {
               "activity": {
                 "type": "event",
-                "participants": ["player", "emma"],
+                "participants": [
+                  "player",
+                  "emma"
+                ],
                 "placeKey": "town-square",
                 "eventId": "emma_ball_shopping"
               },
@@ -4263,7 +4287,10 @@
             "parameters": {
               "activity": {
                 "type": "event",
-                "participants": ["player", "emma"],
+                "participants": [
+                  "player",
+                  "emma"
+                ],
                 "placeKey": "academy-hall",
                 "eventId": "emma_academy_ball"
               },
@@ -4655,7 +4682,10 @@
           "type": "move",
           "parameters": {
             "placeKey": "academy-hall",
-            "characterKeys": ["player", "emma"]
+            "characterKeys": [
+              "player",
+              "emma"
+            ]
           }
         }
       },
@@ -4989,7 +5019,10 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 1,
-                "poolKeys": ["emma", "base"]
+                "poolKeys": [
+                  "emma",
+                  "base"
+                ]
               }
             },
             {
@@ -5162,7 +5195,10 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 1,
-                "poolKeys": ["emma", "base"]
+                "poolKeys": [
+                  "emma",
+                  "base"
+                ]
               }
             }
           },
@@ -5287,7 +5323,10 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 3,
-                "poolKeys": ["emma", "base"]
+                "poolKeys": [
+                  "emma",
+                  "base"
+                ]
               }
             }
           }
@@ -5452,7 +5491,10 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 3,
-                "poolKeys": ["emma", "base"]
+                "poolKeys": [
+                  "emma",
+                  "base"
+                ]
               }
             }
           },
@@ -5888,7 +5930,10 @@
                 "type": "offer_card_gifts",
                 "parameters": {
                   "count": 1,
-                  "poolKeys": ["emma", "base"]
+                  "poolKeys": [
+                    "emma",
+                    "base"
+                  ]
                 }
               },
               {
@@ -5974,7 +6019,9 @@
                 "placeKey": "old-monk-inn",
                 "schedule": {
                   "recurrence": {
-                    "daysOfWeek": [5],
+                    "daysOfWeek": [
+                      5
+                    ],
                     "period": "evening"
                   }
                 }
@@ -6038,7 +6085,9 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": ["happy_little_accident"]
+            "specificCardKeys": [
+              "happy_little_accident"
+            ]
           }
         }
       }
@@ -6057,7 +6106,9 @@
       {
         "triggerType": "period",
         "parameters": {
-          "periods": ["morning"]
+          "periods": [
+            "morning"
+          ]
         }
       }
     ],

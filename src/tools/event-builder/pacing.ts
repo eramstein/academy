@@ -390,8 +390,6 @@ function triggerMatches(trigger: EventTrigger, world: PacingWorld, eventKey: str
       const current = npc.relationProgress[relationParameter] ?? 0;
       return value < 0 ? current <= value : current >= value;
     }
-    case EventTriggerType.Socialize:
-      return false;
     case EventTriggerType.ActivityHistory: {
       const { characterKey, activityType, value } = trigger.parameters;
       return activityCount(world, characterKey, activityType) >= value;

@@ -12,7 +12,6 @@ import type {
   RelationProgress,
 } from '../_model/model-sim';
 import { gs } from '../_state';
-import { SocializeType } from './actions/socialize';
 import { resolveRelationTag } from './effects/relations';
 import {
   eventTriggerMatches,
@@ -61,8 +60,7 @@ export type SceneChange =
       activityType: ActivityType;
       value: number;
       label: string;
-    }
-  | { kind: 'socialize'; characterKey: string; socializeType: SocializeType; label: string };
+    };
 
 export type EventDebugAction =
   | { kind: 'story_tag'; tag: string; value: number }
@@ -650,13 +648,6 @@ function triggerToChange(trigger: EventTrigger): SceneChange | null {
         value: trigger.parameters.value,
         label: `${who(trigger.parameters.characterKey)} ${trigger.parameters.activityType} × ${trigger.parameters.value}`,
       };
-    case EventTriggerType.Socialize:
-      return {
-        kind: 'socialize',
-        characterKey: trigger.parameters.characterKey,
-        socializeType: trigger.parameters.socializeType,
-        label: `Socialize ${trigger.parameters.socializeType} with ${who(trigger.parameters.characterKey)}`,
-      };
     default:
       return null;
   }
@@ -768,12 +759,6 @@ function applySceneChange(change: SceneChange): string | null {
       character.activityHistory[change.activityType] = change.value;
       return change.label;
     }
-    case 'socialize':
-      gs.scene.socializeContext = {
-        characterKey: change.characterKey,
-        socializeType: change.socializeType,
-      };
-      return change.label;
     default:
       return null;
   }
@@ -866,8 +851,6 @@ function triggerSignature(trigger: EventTrigger): string {
       return `activity:${trigger.parameters.activityType}`;
     case EventTriggerType.ScheduledActivity:
       return 'scheduled';
-    case EventTriggerType.Socialize:
-      return `social:${trigger.parameters.characterKey}:${trigger.parameters.socializeType}`;
     default:
       return 'unknown';
   }

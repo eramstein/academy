@@ -12,6 +12,7 @@
   const starPath = getAssetPath('images/ui/decorations/page-star.svg');
 
   const selectingNextPlace = $derived(gs.scene.selectingNextPlace);
+  const pendingPeriodEvent = $derived(gs.scene.pendingPeriodEvent);
   const regionsWithPlaces = $derived(
     Object.values(gs.regions)
       .map((region) => ({
@@ -366,6 +367,8 @@
           <NarrationList bind:done={narrationDone} onProgress={onInkBeat} />
           {#if selectingNextPlace}
             <p class="prompt">Where do you go?</p>
+          {:else if pendingPeriodEvent && narrationDone}
+            <p class="prompt">Something else unfolds…</p>
           {:else if narrationDone}
             <p class="prompt">What do you do?</p>
           {/if}
