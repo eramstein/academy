@@ -155,6 +155,7 @@ export enum ResourceType {
 export enum JobType {
   Mentoring = 'mentoring',
   Coaching = 'coaching',
+  Music = 'music',
 }
 
 export enum Emotion {

@@ -31,6 +31,10 @@ function effectsIncludeNarrate(effects?: EventEffect[]): boolean {
   return effects?.some((effect) => effect.type === EventEffectType.Narrate) ?? false;
 }
 
+function effectsIncludeStartMatch(effects?: EventEffect[]): boolean {
+  return effects?.some((effect) => effect.type === EventEffectType.StartMatch) ?? false;
+}
+
 /** Apply an option effect; for character-arc events, mix narrate prose into the same arc beat. */
 function applyOptionEffect(effect: EventEffect, characterArc?: string) {
   applyEffect(effect);
@@ -168,6 +172,7 @@ export async function selectOption(option: EventOption) {
       applyOptionEffect(effect, characterArc);
     });
   };
+  let appliedEffects: EventEffect[] | undefined;
   if (option.outcome.attributeCheck) {
     const check = option.outcome.attributeCheck;
     const result = await attributeCheck(
@@ -183,13 +188,16 @@ export async function selectOption(option: EventOption) {
       }
     );
     success = result.success;
-    applyOptionEffects(success ? check.successEffects : check.failureEffects);
+    appliedEffects = success ? check.successEffects : check.failureEffects;
+    applyOptionEffects(appliedEffects);
   } else if (option.outcome.effects) {
-    applyOptionEffects(option.outcome.effects);
+    appliedEffects = option.outcome.effects;
+    applyOptionEffects(appliedEffects);
   }
   const nextNode = continuationNode(option, success);
-  // Battle takes over the view; park nextNode / follow-ups until the result modal closes.
-  if (gs.ongoingBattle) {
+  // Only defer when THIS option started a match. A leftover ongoingBattle must not
+  // swallow nextNode (e.g. Join the performance → after_performance).
+  if (effectsIncludeStartMatch(appliedEffects) && gs.ongoingBattle) {
     if (nextNode && template) {
       gs.ongoingBattle.resume = { eventKey: template.key, nextNode };
     }

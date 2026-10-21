@@ -177,22 +177,16 @@ export function rebuildWorkingEventTemplates() {
 }
 
 export async function loadEventTemplates() {
-  // Repair catalogs pruned by older play sessions: source is the truth for content.
+  // Source is the truth for content (events.json + mods). Always refresh so edits to
+  // existing keys (e.g. added nodes / nextNode) are not stuck behind a stale IndexedDB copy.
   const fromDb = (await getAllEventTemplates()).map(normalizeEventTemplate);
   const fromSource = await readEventTemplatesSource();
-  const dbKeys = new Set(fromDb.map((template) => template.key));
-  const missingFromDb = fromSource.filter((template) => !dbKeys.has(template.key));
-
-  if (fromDb.length === 0 || missingFromDb.length > 0) {
-    const sourceKeys = new Set(fromSource.map((template) => template.key));
-    const dbOnly = fromDb
-      .filter((template) => !sourceKeys.has(template.key))
-      .map(({ id: _id, ...template }) => template);
-    await replaceEventTemplates([...fromSource, ...dbOnly]);
-    allEventTemplates = (await getAllEventTemplates()).map(normalizeEventTemplate);
-  } else {
-    allEventTemplates = fromDb;
-  }
+  const sourceKeys = new Set(fromSource.map((template) => template.key));
+  const dbOnly = fromDb
+    .filter((template) => !sourceKeys.has(template.key))
+    .map(({ id: _id, ...template }) => template);
+  await replaceEventTemplates([...fromSource, ...dbOnly]);
+  allEventTemplates = (await getAllEventTemplates()).map(normalizeEventTemplate);
 
   rebuildWorkingEventTemplates();
 }

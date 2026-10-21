@@ -5766,6 +5766,254 @@
     "emotion": "neutral"
   },
   {
+    "key": "emma_violin_evening",
+    "title": "An Evening's Entertainment",
+    "text": "The Old Monk Inn is unusually lively tonight. Its common room is crowded with merchants, travelers, and townsfolk enjoying their supper. Above the cheerful clatter of glasses and conversation, a violin is playing.\n\nAnd playing beautifully.\n\nYou follow the music toward the far end of the room, where a young woman stands beside the fireplace, her bow moving effortlessly across the strings. The melody is lively and intricate, drawing delighted smiles from the guests.\n\nEmma Delamain.\n\nOf course. Is there _anything_ this woman cannot do?\n\nShe finishes with a magnificent flourish, and the room bursts into applause. Several coins find their way into a little wooden bowl beside her chair.\n\nEmma accepts the appreciation with a graceful bow. Then she spots you.\n\n\"Antonio! What a pleasant surprise.\" Her eyes brighten with an idea. \"Tell me, do you have any plans for the evening?\"\n\nBefore you can answer, she gestures toward the crowded room.\n\n\"The innkeeper lets me perform here occasionally. The pay isn't magnificent, but the tips are respectable, and apparently the guests prefer my violin to his nephew's bagpipes.\"\n\nShe glances at the growing crowd.\n\n\"Unfortunately, I seem to have become rather popular tonight. Would you care to make yourself useful? I could do with someone to collect requests, carry drinks, and ensure my admirers remember where to leave their coins.\"\n\nShe offers you an innocent smile.\n\n\"Consider it an opportunity to participate in the arts.\"",
+    "triggers": [
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      },
+      {
+        "triggerType": "place",
+        "parameters": {
+          "placeKey": "old-monk-inn"
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "evening"
+        }
+      },
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 3
+        }
+      }
+    ],
+    "effects": [
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "emma",
+            "title": "Music and livelihood",
+            "description": "Emma is a virtuoso violinist, the result of years of dedicated practice. She occasionally performs at the Old Monk Inn to earn money for her living expenses. Unlike most Academy students, she cannot rely on family wealth and must work alongside her studies."
+          }
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Join the performance",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Very well. I've worked in an inn before. How difficult can it be?\"\n\n\"Splendid! I knew I could rely on your extensive professional qualifications.\"\n\nShe presses a serving tray into your hands.\n\n\"Now, the gentleman in the green coat has requested something cheerful, the merchant by the window insists on a traditional ballad, and the table near the stairs has ordered another round of wine.\"\n\nShe pauses.\n\n\"Oh, and Antonio? Do try not to accept any requests for bagpipes.\""
+            }
+          }
+        ],
+        "nextNode": "after_performance"
+      },
+      {
+        "text": "Enjoy the concert",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I think I'll leave the professional entertainment to you. Someone has to appreciate it from the audience.\"\n\n\"A wise decision. I should hate to discover that you have hidden musical talents as well. My professional reputation might never recover.\"\n\nYou find a seat and enjoy the performance over a mug of ale. Emma plays magnificently, moving from lively dances to tender ballads, occasionally catching your eye with a small, conspiratorial smile.\n\nWhen the applause finally dies away, she gives you a theatrical bow.\n\n\"Thank you for your patronage, Signor Fibonacci. Your contribution to the arts has been invaluable.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "nodes": {
+      "after_performance": {
+        "text": "The evening proves unexpectedly entertaining. You carry drinks, collect musical requests, and persuade a particularly enthusiastic merchant that standing directly in front of the violinist to declare his admiration is not strictly necessary.\n\nMeanwhile, Emma performs with astonishing skill. She moves effortlessly between solemn melodies and lively dances, captivating the entire room. Even the innkeeper abandons his accounts to listen.\n\nAt one point, a rather tipsy gentleman insists that he knows a traditional dance from his homeland. Emma obligingly begins playing, and you watch him demonstrate something resembling a goose attempting to escape a sack.\n\nEmma manages to finish the tune without laughing.\n\nBarely.\n\nBy the time the last guests depart, the wooden bowl is overflowing with coins. Emma sits beside you at an empty table and begins counting, arranging the money into neat little stacks.\n\n\"Well! That was considerably more profitable than expected.\"\n\nShe separates a generous portion of the earnings, then retrieves a card from the little case beside her violin.\n\n\"Now, Antonio, you've earned your share. One hundred gold, if you'd prefer something practical.\"\n\nShe places the card next to the coins.\n\n\"Or this. A spare creation of mine. Rather a clever little enchantment, if I say so myself.\"\n\nShe smiles.\n\n\"And I generally do.\"",
+        "optionTemplates": [
+          {
+            "text": "Take the gold",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"I'll take the money, thank you. I've acquired a rather expensive habit of attending the Academy.\"\n\n\"An appalling habit. I suffer from precisely the same affliction.\"\n\nEmma pushes the coins toward you.\n\n\"One hundred gold, as promised. You've earned every piece.\"\n\nShe gathers the remaining coins into her purse, looking thoroughly satisfied.\n\n\"An excellent evening's work, Fibonacci. Perhaps we should go into business together.\""
+                }
+              },
+              {
+                "type": "add_gold",
+                "parameters": {
+                  "amount": 100
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_violin_helped"
+                }
+              }
+            ]
+          },
+          {
+            "text": "Accept the card",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"I'll take the card. Money comes and goes, but a good enchantment is worth keeping.\"\n\nEmma looks pleased.\n\n\"An intelligent choice. Although I should point out that money has the considerable advantage of being accepted by bakers.\"\n\nShe hands you the card, watching with quiet satisfaction as you examine her work.\n\n\"I made that one last term. It served me rather well, but I've since improved upon the design.\"\n\n\"You're giving me your discarded experiments?\"\n\n\"My _surplus masterpieces_, Antonio. There's a difference.\"\n\nShe smiles.\n\n\"Do take good care of it.\""
+                }
+              },
+              {
+                "type": "offer_card_gifts",
+                "parameters": {
+                  "count": 1,
+                  "poolKeys": ["emma", "base"]
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "emma_violin_helped"
+                }
+              }
+            ]
+          }
+        ],
+        "title": "A Profitable Evening",
+        "emotion": "happy"
+      }
+    },
+    "characterArc": "emma",
+    "emotion": "amused",
+    "image": "emma_violin_evening.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "emma_music_job_offer",
+    "title": "A Standing Engagement",
+    "text": "\"Antonio! Just the man I was looking for.\"\n\nEmma approaches you with a particularly satisfied expression. Evidently, something has gone her way.\n\n\"Remember our little musical enterprise? Well, I've received an offer from the Old Monk Inn. They want me to perform every Friday evening. Regular pay, generous tips, and apparently an audience with excellent taste.\"\n\nShe pauses, smiling.\n\n\"Naturally, I accepted. But I'd much rather concentrate on the violin than spend half the evening chasing drunken merchants for their unpaid bills.\"\n\nShe regards you thoughtfully.\n\n\"So, what do you say to making our partnership official? Every Friday evening, a few hours of honest work, and we divide the earnings. I provide the artistic talent, you provide the indispensable logistical support.\"\n\nHer smile turns mischievous.\n\n\"An exceptionally fair arrangement, wouldn't you agree?\"",
+    "triggers": [
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_violin_evening",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "friendship",
+          "value": 3
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "respect",
+          "value": 2
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept the partnership",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Why not? We made a pretty good team last time.\"\n\n\"Excellent! I knew you were a man of sound judgment.\"\n\nEmma looks delighted.\n\n\"Friday evenings, then. The Old Monk Inn. I'll speak to the innkeeper and make the arrangements.\"\n\nShe begins to leave, then turns back.\n\n\"Oh, and Antonio? If anyone asks, you're my _manager_. It sounds so much more distinguished than 'the fellow who carries the drinks.'\""
+            }
+          },
+          {
+            "type": "get_job",
+            "parameters": {
+              "job": {
+                "jobType": "music",
+                "name": "Musical Evenings with Emma",
+                "description": "Every Friday evening at the Old Monk Inn: Emma provides the violin, you provide the logistical support.",
+                "payPerActivity": 100,
+                "employerKey": "emma",
+                "placeKey": "old-monk-inn",
+                "schedule": {
+                  "recurrence": {
+                    "daysOfWeek": [5],
+                    "period": "evening"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_music_partnership"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Decline politely",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I'm afraid I can't commit to every Friday evening. Academy life keeps me busy enough already.\"\n\n\"Of course. A demanding scholarly career must come first.\"\n\nEmma nods, entirely untroubled.\n\n\"I'll find someone else to help. Perhaps a young man with fewer ambitions and a greater appreciation for carrying trays.\"\n\nShe gives you a teasing smile.\n\n\"Still, you must come and listen sometime. I promise not to charge you admission.\""
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "emma",
+    "emotion": "happy",
+    "manualTrigger": "Emma has a proposition"
+  },
+  {
     "key": "happy_little_accident",
     "text": "Your third artificery lesson is progressing remarkably well. You've arranged your ingredients, prepared your pigments, and even managed to follow most of the professor's instructions. At this rate, you might produce something almost respectable.\n\nThen your elbow catches a jar.\n\nA cascade of shimmering blue powder spills across the workbench, mixing with your carefully prepared ingredients. You grab for a cloth, knock over a second jar, and watch in horror as the entire mixture begins to glow.\n\nThere is a sharp pop, a flash of blue light, and the unmistakable smell of burnt cinnamon.\n\nWhen the smoke clears, a perfectly formed card lies in the middle of the table.\n\nYou pick it up cautiously. The enchantments woven into its surface are unlike anything you've seen before: intricate, powerful, and somehow perfectly balanced.\n\nThe professor approaches, examines your creation, and falls silent.\n\n\"Fibonacci. How exactly did you achieve this?\"\n\nAn excellent question. One you would very much like to know the answer to yourself.\n\n\"Remarkable,\" the professor murmurs. \"Quite remarkable. You must document your procedure.\"\n\nYes. Of course. Your procedure.\n\nYou glance at the empty jars, the stained workbench, and the smoking remains of your notes.\n\nThis could be difficult.",
     "triggers": [

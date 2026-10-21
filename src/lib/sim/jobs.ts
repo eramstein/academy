@@ -15,6 +15,7 @@ import { getCurrentScheduledActivity } from './schedule';
 const attributePerJobType: Record<JobType, keyof Attributes & string> = {
   [JobType.Mentoring]: 'intelligence',
   [JobType.Coaching]: 'charisma',
+  [JobType.Music]: 'dexterity',
 };
 
 export function acceptJob(job: Omit<Job, 'id'>, schedule: Schedule) {
