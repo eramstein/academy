@@ -186,864 +186,6 @@
     ]
   },
   {
-    "key": "molly-f1",
-    "text": "Moly tells you she appreciated the way you made her feel welcome. She offers you a token of gratitude, pick your favorite!",
-    "triggers": [
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Get Moxes",
-        "effects": [
-          {
-            "type": "add_resource",
-            "parameters": {
-              "resourceType": "moxes",
-              "amount": 3
-            }
-          }
-        ]
-      },
-      {
-        "text": "Get some Magic Dust",
-        "effects": [
-          {
-            "type": "add_resource",
-            "parameters": {
-              "resourceType": "magic_dust",
-              "amount": 3
-            }
-          }
-        ]
-      },
-      {
-        "text": "Get some Mithril",
-        "effects": [
-          {
-            "type": "add_resource",
-            "parameters": {
-              "resourceType": "mithril",
-              "amount": 3
-            }
-          }
-        ]
-      }
-    ],
-    "title": "Molly's gift",
-    "characterArc": "molly",
-    "emotion": "happy",
-    "image": "molly-f1.jpg"
-  },
-  {
-    "key": "molly-f2",
-    "text": "Molly finds you with an armful of notes and a shy, hopeful smile. She says she has been wanting to study together, and that she would love to share a few tricks from the green magic she knows best—if you can spare an evening at the library soon.",
-    "triggers": [
-      {
-        "triggerType": "story_tag",
-        "parameters": {
-          "tag": "molly-f1",
-          "value": 1
-        }
-      },
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Accept",
-        "effects": [
-          {
-            "type": "schedule_activity",
-            "parameters": {
-              "activity": {
-                "type": "study",
-                "participants": ["player", "molly"],
-                "placeKey": "library"
-              },
-              "schedule": {
-                "nextFree": true,
-                "date": {
-                  "period": "evening"
-                }
-              }
-            }
-          }
-        ]
-      },
-      {
-        "text": "Decline"
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "dreaming"
-  },
-  {
-    "key": "molly-f3",
-    "text": "Molly finds you again with a shy brightness that was not there before. She says your friendship has come to mean more to her than she quite knows how to say, and she wants you to have something from her own collection—a card she has kept close. She lays a few favorites before you and asks you to choose the one that speaks to you.",
-    "triggers": [
-      {
-        "triggerType": "story_tag",
-        "parameters": {
-          "tag": "molly-f2",
-          "value": 1
-        }
-      },
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [],
-    "characterArc": "molly",
-    "emotion": "embarrassed",
-    "effects": [
-      {
-        "effect": {
-          "type": "offer_card_gifts",
-          "parameters": {
-            "count": 3,
-            "poolKeys": ["molly", "base"]
-          }
-        }
-      }
-    ]
-  },
-  {
-    "key": "molly-hiking",
-    "text": "Molly finds you with a hopeful bounce in her step and asks if you would like to go hiking in the Gray Mountains. She talks about the trail, the overlook, and the clear air on a bright weekend, and waits to see whether you will come along.",
-    "triggers": [
-      {
-        "triggerType": "story_tag",
-        "parameters": {
-          "tag": "molly-f1",
-          "value": 1
-        }
-      },
-      {
-        "triggerType": "day_of_week",
-        "parameters": {
-          "daysOfWeek": [6, 7]
-        }
-      },
-      {
-        "triggerType": "period",
-        "parameters": {
-          "periods": ["morning", "afternoon"]
-        }
-      },
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Accept",
-        "effects": [
-          {
-            "type": "follow_up_event",
-            "parameters": {
-              "eventKey": "molly-hiking-2"
-            }
-          }
-        ]
-      },
-      {
-        "text": "Refuse",
-        "effects": [
-          {
-            "type": "narrate",
-            "parameters": {
-              "text": "Molly's smile falters. She nods quickly, trying to hide her disappointment, and says maybe another time."
-            }
-          }
-        ]
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "happy"
-  },
-  {
-    "key": "molly-hiking-2",
-    "text": "Before long you are both on a bright weekend trail in the Gray Mountains, wind in the pines. Molly sets an easy, tireless pace while your lungs burn and your legs complain, but she never leaves you behind—slowing on the steep bits, offering a hand over the rocks, and laughing with you when you stop to catch your breath. By the overlook you are worn out and grinning, glad you said yes.",
-    "triggers": [],
-    "optionTemplates": [
-      {
-        "text": "Compliment her",
-        "effects": [
-          {
-            "type": "level_attribute",
-            "parameters": {
-              "attribute": "charisma",
-              "amount": 1,
-              "characterKey": "player"
-            }
-          },
-          {
-            "type": "level_attribute",
-            "parameters": {
-              "attribute": "vitality",
-              "amount": 1,
-              "characterKey": "molly"
-            }
-          },
-          {
-            "type": "change_relation",
-            "parameters": {
-              "characterKey": "molly",
-              "relationParameter": "love",
-              "amount": 1
-            }
-          }
-        ]
-      },
-      {
-        "text": "Joke about yourself",
-        "effects": [
-          {
-            "type": "level_attribute",
-            "parameters": {
-              "attribute": "intelligence",
-              "amount": 1,
-              "characterKey": "player"
-            }
-          },
-          {
-            "type": "level_attribute",
-            "parameters": {
-              "attribute": "vitality",
-              "amount": 1,
-              "characterKey": "molly"
-            }
-          },
-          {
-            "type": "change_relation",
-            "parameters": {
-              "characterKey": "molly",
-              "relationParameter": "friendship",
-              "amount": 1
-            }
-          }
-        ]
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "happy",
-    "image": "molly-hiking-2.jpg",
-    "imageSize": "large",
-    "effects": [
-      {
-        "effect": {
-          "type": "move",
-          "parameters": {
-            "placeKey": "gray_mountains",
-            "characterKeys": ["player", "molly"]
-          }
-        }
-      }
-    ]
-  },
-  {
-    "key": "molly-r1",
-    "text": "Molly seeks you out with a thoughtful look. She says she has been watching how you carry yourself, and she respects the care you put into your work. She asks if you would take on a mentoring post with her at the library on Tuesday evenings, helping younger students find their footing.",
-    "triggers": [
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Accept",
-        "effects": [
-          {
-            "type": "get_job",
-            "parameters": {
-              "job": {
-                "jobType": "mentoring",
-                "name": "Library Mentoring",
-                "description": "Help younger students at the library under Molly's guidance.",
-                "payPerActivity": 10,
-                "employerKey": "molly",
-                "placeKey": "library",
-                "schedule": {
-                  "recurrence": {
-                    "maxCount": 12,
-                    "daysOfWeek": [2],
-                    "period": "evening"
-                  }
-                }
-              }
-            }
-          }
-        ]
-      },
-      {
-        "text": "Decline"
-      }
-    ],
-    "characterArc": "molly"
-  },
-  {
-    "key": "molly-r2",
-    "text": "Molly seeks you out again, this time with a small pouch clutched in her hands. She says she has grown to respect how you work beside her, and she wants you to have something she makes herself—a strand of beads she has been stringing for you. She offers them freely, though she glances toward her dust pouch as if she would understand if you preferred something more ordinary.",
-    "triggers": [
-      {
-        "triggerType": "story_tag",
-        "parameters": {
-          "tag": "molly-r1",
-          "value": 1
-        }
-      },
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Accept the Beads",
-        "effects": [
-          {
-            "type": "add_resource",
-            "parameters": {
-              "resourceType": "mollys_beads",
-              "amount": 3
-            }
-          }
-        ]
-      },
-      {
-        "text": "Prefer Dust",
-        "effects": [
-          {
-            "type": "add_resource",
-            "parameters": {
-              "resourceType": "magic_dust",
-              "amount": 5
-            }
-          }
-        ]
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "proud"
-  },
-  {
-    "key": "molly-v1",
-    "text": "Molly finds you with a tight smile that does not reach her eyes. Whatever has soured between you still sits heavy on her, and she makes no effort to hide it. She presses a small purse into your hands anyway, calling it charity for someone who clearly needs the help, and waits to see whether you will take the slight.",
-    "triggers": [
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Accept",
-        "effects": [
-          {
-            "type": "add_gold",
-            "parameters": {
-              "amount": 10
-            }
-          }
-        ]
-      },
-      {
-        "text": "Refuse"
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "angry"
-  },
-  {
-    "key": "molly-l1",
-    "text": "Molly draws you aside, cheeks flushed, and admits she has noticed the way you have been flirting with her. She does not sound angry so much as uncertain, and she asks you plainly what your intentions are—whether this is a game, or something you mean to pursue.",
-    "triggers": [
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Deny",
-        "effects": [
-          {
-            "type": "narrate",
-            "parameters": {
-              "text": "Molly's face falls. She nods a little too quickly and looks away, clearly a bit upset, before murmuring that she must have misunderstood."
-            }
-          }
-        ]
-      },
-      {
-        "text": "Ask for a Date",
-        "actionTemplate": {
-          "actionTemplate": "invite",
-          "args": {
-            "type": "date",
-            "placeKey": "old-monk-inn",
-            "period": "evening",
-            "characterKey": "molly"
-          }
-        }
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "flirtatious"
-  },
-  {
-    "key": "molly-l2",
-    "text": "Molly finds you with a soft, eager smile and asks if you would go out with her again—this time to the Royal Pigeon Inn. She has already thought it through: she knows coin is tight for you, so she is inviting you as her guest, and she hopes you will say yes.",
-    "triggers": [
-      {
-        "triggerType": "activity_history",
-        "parameters": {
-          "characterKey": "molly",
-          "activityType": "date",
-          "value": 1
-        }
-      },
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Decline"
-      },
-      {
-        "text": "Accept",
-        "effects": [
-          {
-            "type": "schedule_activity",
-            "parameters": {
-              "activity": {
-                "type": "date",
-                "participants": ["player", "molly"],
-                "placeKey": "royal-pigeon-inn"
-              },
-              "schedule": {
-                "nextFree": true,
-                "date": {
-                  "period": "evening"
-                }
-              }
-            }
-          }
-        ]
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "happy"
-  },
-  {
-    "key": "molly-l3",
-    "text": "Molly leans in close, voice low, and asks if you would come with her to her room at the Royal Pigeon Inn. There is no mistaking the invitation—she wants you alone with her, and she is waiting on your answer.",
-    "triggers": [
-      {
-        "triggerType": "activity_history",
-        "parameters": {
-          "characterKey": "molly",
-          "activityType": "date",
-          "value": 2
-        }
-      },
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Decline"
-      },
-      {
-        "text": "Accept",
-        "effects": [
-          {
-            "type": "schedule_activity",
-            "parameters": {
-              "activity": {
-                "type": "date",
-                "participants": ["player", "molly"],
-                "placeKey": "molly-room"
-              },
-              "schedule": {
-                "date": {
-                  "day": 0,
-                  "period": "evening"
-                }
-              }
-            }
-          }
-        ]
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "flirtatious"
-  },
-  {
-    "key": "molly-cooking",
-    "text": "Molly catches your sleeve in the morning bustle and pulls you aside, a little breathless. She promised the kitchen staff she would lend a hand today, but the prep work has piled higher than she expected and she still has lessons waiting. She looks at you hopefully and asks if you would help her in the kitchens.",
-    "triggers": [
-      {
-        "triggerType": "period",
-        "parameters": {
-          "period": "morning"
-        }
-      },
-      {
-        "triggerType": "day",
-        "parameters": {
-          "minDay": 4
-        }
-      },
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Sure!",
-        "effects": [
-          {
-            "type": "use_focus",
-            "parameters": {
-              "amount": 1
-            }
-          },
-          {
-            "type": "change_relation",
-            "parameters": {
-              "characterKey": "molly",
-              "relationParameter": "friendship",
-              "amount": 1
-            }
-          },
-          {
-            "type": "narrate",
-            "parameters": {
-              "text": "You and Molly spend the morning in the kitchens, flour on your sleeves and laughter over simmering pots. The work goes faster with two, and by the time the trays are ready you are both grinning and a little sticky."
-            }
-          },
-          {
-            "type": "follow_up_event",
-            "parameters": {
-              "eventKey": "molly-cooking-2"
-            }
-          }
-        ]
-      },
-      {
-        "text": "No time",
-        "effects": [
-          {
-            "type": "narrate",
-            "parameters": {
-              "text": "Molly's face falls. She nods quickly, trying to hide her disappointment, and hurries off toward the kitchens alone."
-            }
-          }
-        ]
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "happy",
-    "image": "molly-cooking.jpg",
-    "imageSize": "medium"
-  },
-  {
-    "key": "molly-cooking-2",
-    "text": "Still warm from the kitchens, Molly tells you she really enjoyed cooking with you. With a shy, hopeful smile she proposes a pajamas night at her place—good books, hot chocolate, and nowhere else to be.",
-    "triggers": [],
-    "optionTemplates": [
-      {
-        "text": "Accept",
-        "effects": [
-          {
-            "type": "schedule_activity",
-            "parameters": {
-              "activity": {
-                "type": "social",
-                "participants": ["player", "molly"],
-                "placeKey": "molly-room",
-                "eventId": "molly-reading"
-              },
-              "schedule": {
-                "nextFree": true,
-                "date": {
-                  "period": "evening"
-                }
-              }
-            }
-          },
-          {
-            "type": "narrate",
-            "parameters": {
-              "text": "Molly's eyes light up. She already looks forward to pajamas, books, and hot chocolate with you."
-            }
-          }
-        ]
-      },
-      {
-        "text": "Decline",
-        "effects": [
-          {
-            "type": "narrate",
-            "parameters": {
-              "text": "Molly's smile falters. She nods quickly, trying to hide her disappointment, and says maybe another time."
-            }
-          }
-        ]
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "happy"
-  },
-  {
-    "key": "molly-reading",
-    "text": "Evening finds you at Molly's place in pajamas, a mug of hot chocolate warming your hands and a stack of good books between you. Hours slip by in soft talk and shared pages until the hour grows late. At the door, as you prepare to leave, Molly looks up at you, waiting to see how you will say good night.",
-    "triggers": [
-      {
-        "triggerType": "scheduled_activity",
-        "parameters": {}
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Kiss her",
-        "effects": [
-          {
-            "type": "change_relation",
-            "parameters": {
-              "characterKey": "molly",
-              "relationParameter": "love",
-              "amount": 1
-            }
-          },
-          {
-            "type": "narrate",
-            "parameters": {
-              "text": "You lean in and kiss Molly good evening. She softens into it, cheeks warm, and murmurs a shy good night as you step into the hall."
-            }
-          }
-        ]
-      },
-      {
-        "text": "Thank her",
-        "effects": [
-          {
-            "type": "change_relation",
-            "parameters": {
-              "characterKey": "molly",
-              "relationParameter": "friendship",
-              "amount": 1
-            }
-          },
-          {
-            "type": "narrate",
-            "parameters": {
-              "text": "You cheerfully thank Molly for the books, the chocolate, and the company. She beams, clearly pleased, and waves you off with a bright good night."
-            }
-          }
-        ]
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "happy",
-    "image": "molly-reading.jpg",
-    "imageSize": "large"
-  },
-  {
-    "key": "molly-elsa-bully",
-    "text": "You come upon Elsa angrily reprimanding Molly in the morning hall. Elsa insists it is not befitting Molly's rank to meddle with servants, her voice sharp with wounded pride. It seems Molly tried to help the serving staff with their work, and Elsa, a proud noble, took the gesture as an affront to the order she holds dear.",
-    "triggers": [
-      {
-        "triggerType": "period",
-        "parameters": {
-          "period": "morning"
-        }
-      },
-      {
-        "triggerType": "day",
-        "parameters": {
-          "minDay": 6
-        }
-      },
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      },
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "elsa"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Support Elsa",
-        "effects": [
-          {
-            "type": "change_relation",
-            "parameters": {
-              "characterKey": "elsa",
-              "relationParameter": "respect",
-              "amount": 1
-            }
-          },
-          {
-            "type": "narrate",
-            "parameters": {
-              "text": "Molly's eyes fill with tears as she shrinks back from Elsa's rebuke. Elsa softens once she sees you take her side, her anger ebbing into a stiff, satisfied calm."
-            }
-          }
-        ]
-      },
-      {
-        "text": "Support Molly",
-        "effects": [
-          {
-            "type": "change_relation",
-            "parameters": {
-              "characterKey": "molly",
-              "relationParameter": "love",
-              "amount": 1
-            }
-          },
-          {
-            "type": "narrate",
-            "parameters": {
-              "text": "Molly draws a shaky breath, then finds her courage and stands up to Elsa. Her voice is quiet but firm as she defends helping those who need it, and Elsa falls briefly silent."
-            }
-          }
-        ]
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "angry",
-    "image": "molly-elsa-bully.jpg",
-    "imageSize": "medium"
-  },
-  {
-    "key": "molly-sport",
-    "text": "As you greet Molly, she takes you by the hand and insists there is something you really need to do. Surprised, you follow her to a gym room lined with weights and mats. She nods toward a rack, encourages you to lift, and winks as if daring you to show her what you can do.",
-    "triggers": [
-      {
-        "triggerType": "relation_parameter",
-        "parameters": {
-          "characterKey": "molly",
-          "relationParameter": "friendship",
-          "value": 1
-        }
-      },
-      {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "molly"
-        }
-      }
-    ],
-    "optionTemplates": [
-      {
-        "text": "Give your best",
-        "attributeCheck": {
-          "attribute": "vitality",
-          "difficulty": "medium",
-          "successEffects": [
-            {
-              "type": "narrate",
-              "parameters": {
-                "text": "Molly stares as you hoist the weight with ease, clearly surprised by your strength."
-              }
-            },
-            {
-              "type": "change_relation",
-              "parameters": {
-                "characterKey": "molly",
-                "relationParameter": "respect",
-                "amount": 1
-              }
-            }
-          ],
-          "failureEffects": [
-            {
-              "type": "narrate",
-              "parameters": {
-                "text": "The bar barely budges, but Molly only grins and urges you on, cheering every shaky attempt."
-              }
-            },
-            {
-              "type": "change_relation",
-              "parameters": {
-                "characterKey": "molly",
-                "relationParameter": "friendship",
-                "amount": 1
-              }
-            }
-          ]
-        }
-      },
-      {
-        "text": "Compliment her form",
-        "effects": [
-          {
-            "type": "narrate",
-            "parameters": {
-              "text": "Molly flushes with pleasure at the compliment, clearly flattered, and demonstrates another clean lift with a shy smile."
-            }
-          },
-          {
-            "type": "change_relation",
-            "parameters": {
-              "characterKey": "molly",
-              "relationParameter": "love",
-              "amount": 1
-            }
-          }
-        ]
-      }
-    ],
-    "characterArc": "molly",
-    "emotion": "flirtatious",
-    "image": "molly-sport.jpg",
-    "imageSize": "medium"
-  },
-  {
     "key": "molly_first_encounter",
     "text": "\"That was fun! You're quite good at this, aren't you?\"\nShe gathers her cards, carefully stacking them into a neat pile.\n\"It's funny, isn't it? All those little enchantments, just to make some cardboard follow the rules of a game. And apparently this is the easy part!\"\nShe laughs.\n\"My father once met an artificer whose cards could actually give advice. Proper conversations, I mean. Imagine being clever enough to make something like that!\"",
     "triggers": [],
@@ -1227,6 +369,477 @@
         }
       }
     ]
+  },
+  {
+    "key": "molly_running_lesson",
+    "title": "The Running Lesson",
+    "text": "The Academy apparently believes that a sound mind requires sound legs. Today's afternoon lesson therefore takes place in the courtyard, where a physical-training instructor has ordered the students to run laps around the grounds. You join the procession, trying to decide whether this counts as education or an elaborate punishment.\n\nA few strides ahead, Molly is in magnificent spirits. She runs with an easy, springy gait, chatting to Emma as though the two of them were enjoying a leisurely walk through a garden.\n\n\"And then I told the stable boy that of course he could bring the foal indoors, just until the rain stopped—oh, Antonio! Hello! Isn't this lovely?\"\n\nShe waves enthusiastically and, without noticing, picks up the pace. Emma follows with considerably less enthusiasm. Her face is composed, but her breathing suggests that composing it is taking a heroic effort.\n\n\"Lovely,\" Emma manages. \"An inspired word for... running in circles.\"\n\nMolly laughs. \"Oh, you'll feel wonderful afterward! It's just a matter of finding your rhythm.\"\n\nEmma looks at you. It is a remarkable look: simultaneously a request for mercy and a warning not to enjoy this too much.",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 4
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "afternoon"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Challenge Molly to a race",
+        "attributeCheck": {
+          "attribute": "vitality",
+          "difficulty": "hard",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "\"Race you to the gate, Molly!\"\n\nHer eyes light up. \"Really? Oh, splendid!\"\n\nShe surges forward. You follow, somehow finding another reserve of speed, and the two of you thunder past the fountain almost shoulder to shoulder. At the gate you make one final, desperate effort and reach the stone post a fraction ahead of her.\n\nMolly stops, breathless and delighted. \"Antonio! That was wonderful! I didn't know you could run like that!\" She gives your shoulder an approving squeeze. \"We absolutely must train together. I run on Monday evenings, here in the courtyard. You should come!\"\n\nBehind you, Emma arrives at a more dignified pace. \"Congratulations,\" she says between breaths. \"You've both successfully reached a gate. Truly, a historic day for scholarship.\""
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "molly",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            },
+            {
+              "type": "schedule_activity",
+              "parameters": {
+                "activity": {
+                  "type": "sports",
+                  "participants": ["player", "molly"],
+                  "placeKey": "academy-courtyard"
+                },
+                "schedule": {
+                  "date": {
+                    "dayOfWeek": 1,
+                    "period": "evening"
+                  },
+                  "recurrence": {
+                    "daysOfWeek": [1],
+                    "period": "evening"
+                  }
+                }
+              }
+            },
+            {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "molly_sport_unlocked"
+              }
+            },
+            {
+              "type": "add_chat_topic",
+              "parameters": {
+                "key": "molly_memory_running_race",
+                "type": "memory",
+                "text": "Molly greets you with a grin. \"I still think about that race to the gate, Antonio. You were fast! Next time I'm not letting you sneak ahead in the last few steps.\" She looks rather pleased at the prospect of a rematch.",
+                "knownByNpcKeys": ["molly"]
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "\"Race you to the gate, Molly!\"\n\n\"Oh! All right!\" Molly brightens immediately, and then—rather alarmingly—accelerates.\n\nFor several glorious seconds you keep up. Then your lungs begin making objections that your legs can no longer ignore. By the time you reach the gate, Molly is already waiting, bouncing lightly on her heels.\n\n\"That was fun!\" she declares, entirely without condescension. \"You started so quickly! Perhaps we should work on keeping that pace. I run here on Monday evenings. Come train with me!\"\n\nEmma catches up, takes one look at you, and produces a small, exhausted smile. \"Well. At least one of us had the sense to stop competing with her.\""
+              }
+            },
+            {
+              "type": "schedule_activity",
+              "parameters": {
+                "activity": {
+                  "type": "sports",
+                  "participants": ["player", "molly"],
+                  "placeKey": "academy-courtyard"
+                },
+                "schedule": {
+                  "date": {
+                    "dayOfWeek": 1,
+                    "period": "evening"
+                  },
+                  "recurrence": {
+                    "daysOfWeek": [1],
+                    "period": "evening"
+                  }
+                }
+              }
+            },
+            {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "molly_sport_unlocked"
+              }
+            },
+            {
+              "type": "add_chat_topic",
+              "parameters": {
+                "key": "molly_memory_running_race",
+                "type": "memory",
+                "text": "Molly waves cheerfully. \"Have you recovered from our race? I hope I didn't go too fast. Come along on Monday—we'll get you into splendid shape.\" Her expression suggests that this is a promise, not a threat.",
+                "knownByNpcKeys": ["molly"]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "text": "Give Molly a gentle hint",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You fall into step beside Molly and lower your voice. \"I think Emma might appreciate a slightly more leisurely pace.\"\n\nMolly glances over her shoulder. Emma is several strides back, pursuing the conversation with the grim determination of someone pursuing an escaping carriage.\n\n\"Oh!\" Molly slows at once. \"Emma, I'm so sorry! I didn't even notice!\"\n\n\"No apology necessary,\" Emma says, drawing alongside you. \"I was merely considering whether the Academy offers correspondence courses in physical education.\"\n\nMolly giggles, then turns to you with an appreciative smile. \"Thank you for telling me, Antonio. I do get carried away. You know, I run here on Monday evenings. Would you like to join me sometime? We could go at whatever pace suits you.\"\n\nEmma gives you the faintest nod of gratitude. It's the sort of gesture that might be missed by anyone who hadn't just saved her from another lap at Molly's preferred speed."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "sports",
+                "participants": ["player", "molly"],
+                "placeKey": "academy-courtyard"
+              },
+              "schedule": {
+                "date": {
+                  "dayOfWeek": 1,
+                  "period": "evening"
+                },
+                "recurrence": {
+                  "daysOfWeek": [1],
+                  "period": "evening"
+                }
+              }
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_sport_unlocked"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_running_kindness",
+              "type": "memory",
+              "text": "\"I'm glad you told me to slow down for Emma that day,\" Molly says. \"Sometimes I get so excited that I forget other people aren't enjoying themselves quite as much as I am.\" She smiles. \"Although I do hope you enjoyed it a little!\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Encourage Emma, in your own way",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You drift back beside Emma. \"Come on, Delamain. I thought you excelled at everything. Don't tell me a few laps have finally uncovered your weakness.\"\n\nShe gives you a murderous sideways glance, somewhat spoiled by the fact that she is too short of breath to accompany it with a proper reply.\n\n\"I'm... conserving... my brilliance,\" she says at last. \"For pursuits... that matter.\"\n\n\"Then perhaps we should enter you in the Academy's slowest-moving carriage competition.\"\n\n\"Fibonacci, when I can breathe again, you are going to regret this.\"\n\nMolly drops back beside you, looking from one to the other. \"Oh, don't tease her! Emma's doing wonderfully!\" She pauses, then her face brightens. \"Actually, I have a marvelous idea. I run here on Monday evenings. Why don't you both come? It would be much more fun together!\"\n\nEmma stares at her. Then at you. \"Wonderful,\" she says flatly. \"A conspiracy.\"\n\nMolly beams. Apparently that settles it."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          },
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "sports",
+                "participants": ["player", "molly", "emma"],
+                "placeKey": "academy-courtyard"
+              },
+              "schedule": {
+                "date": {
+                  "dayOfWeek": 1,
+                  "period": "evening"
+                },
+                "recurrence": {
+                  "daysOfWeek": [1],
+                  "period": "evening"
+                }
+              }
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_sport_unlocked"
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_sport_with_emma"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_running_emma",
+              "type": "memory",
+              "text": "\"Are you coming running with us again?\" Molly asks brightly. \"Emma says she's only doing it to prove a point.\" A brief pause. \"I'm not quite sure what point, but I'm very proud of her.\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "emma_memory_running_tease",
+              "type": "memory",
+              "text": "Emma regards you with a cool smile. \"Ah, Fibonacci. Come to make another contribution to my athletic education? I assure you my stamina has improved. My tolerance for your commentary remains unchanged.\"",
+              "knownByNpcKeys": ["emma"]
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "molly",
+    "image": "molly_running_lesson.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "molly_gentle_art_wrestling",
+    "title": "The Gentle Art of Wrestling",
+    "text": "You encounter Molly in the Academy courtyard just as she's finishing an afternoon of exercise. Her hair has escaped its ribbon, her cheeks are pink, and she looks entirely too pleased with herself for someone who has apparently spent the last hour being thrown about on a patch of grass.\n\n\"Antonio!\" She hurries over and takes your hand in greeting. Her grip is firm. Very firm. For one alarming instant, you wonder whether the Academy has secretly installed a mechanical hand beneath her sleeve.\n\n\"Good heavens, Molly. Do you crack walnuts with that thing?\"\n\n\"Sometimes!\" She laughs. \"Well, not often. It's rather messy.\"\n\nShe notices you flexing your fingers and looks suddenly apologetic. \"Oh! Did I squeeze too hard? I'm sorry. I've been practicing wrestling since I was little. My father's guards taught me. They said I was too small to manage the larger boys, so naturally I had to prove them wrong.\"\n\nHer embarrassment gives way to a mischievous smile. \"Actually, I think I could take you.\"\n\nYou look at this cheerful young woman, considerably smaller than you, with her loose hair and innocent expression. One doesn't often receive such a generous invitation to make a fool of oneself.\n\n\"Would you like to try?\" she asks eagerly. \"Just a friendly bout! First to pin the other's shoulders, and no rough stuff.\"",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 10
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "value": 1
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept the challenge",
+        "attributeCheck": {
+          "attribute": "vitality",
+          "difficulty": "hard",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You agree, and Molly immediately shows you where to stand. She's surprisingly serious about the rules: no striking, no dangerous holds, and the moment either of you taps out, the match ends. Then she offers a bright smile. \"Ready?\"\n\nYou are barely ready before she comes at you. Her first move is so quick that you stumble, and only a desperate shift of balance keeps you upright. Molly laughs, delighted, and tries to take your leg. This time you anticipate her, turn with the movement, and manage to bring her down onto the grass.\n\nFor a moment you find yourselves in an absurd tangle of limbs. Molly attempts to escape with a strength that seems altogether unreasonable for her size, but you manage to pin both shoulders before she can roll free.\n\n\"Oh!\" She blinks up at you, then bursts out laughing. \"You got me! Properly got me!\"\n\nYou release her and help her up. She accepts your hand with a grin, brushes grass from her clothes, and shakes yours solemnly—as though the two of you have just concluded an important international treaty.\n\n\"I owe you a prize!\" She rummages through the small satchel beside the practice ground and produces a card. \"There. A victory deserves something. And don't think this means I won't ask for a rematch.\""
+              }
+            },
+            {
+              "type": "offer_card_gifts",
+              "parameters": {
+                "count": 1,
+                "poolKeys": ["molly", "base"]
+              }
+            },
+            {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "molly_wrestling_won"
+              }
+            },
+            {
+              "type": "add_chat_topic",
+              "parameters": {
+                "key": "molly_memory_wrestling_win",
+                "type": "memory",
+                "text": "Molly beams when she sees you. \"I've been practicing that move you used against me, Antonio. You won't catch me with it twice!\" She thinks for a moment. \"Well. Probably not twice.\"",
+                "knownByNpcKeys": ["molly"]
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You agree, and Molly carefully explains the rules: no striking, no dangerous holds, and an immediate stop if either person taps out. \"All right? Good! Ready?\"\n\nShe takes hold of your arm. The next few seconds are difficult to reconstruct. The sky rotates. Your feet appear in a place where your head had been a moment earlier. And then you are lying on the grass with Molly firmly but harmlessly pinning your shoulders.\n\n\"One, two, three!\" she announces triumphantly.\n\nShe realizes how close your faces are, and a blush rises to her cheeks. \"Oh. Hello!\"\n\n\"Hello,\" you reply. From this position, dignity is proving difficult to maintain.\n\nMolly scrambles up and offers you her hand. \"Sorry! I got a bit carried away. Are you all right?\" She helps you to your feet, still smiling. \"You nearly had me at the beginning, you know. If you learn to keep your balance when I turn, you'll be much harder to throw.\"\n\nYou're not entirely certain you were nearly anywhere except on the ground, but her encouragement is sincere."
+              }
+            },
+            {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "molly_wrestling_lost"
+              }
+            },
+            {
+              "type": "add_chat_topic",
+              "parameters": {
+                "key": "molly_memory_wrestling_loss",
+                "type": "memory",
+                "text": "Molly gives you an encouraging smile. \"You really must wrestle with me again sometime! I've thought of a few things we can practice so you don't go flying quite so quickly.\" She pauses. \"Sorry. That sounded worse than I meant it.\"",
+                "knownByNpcKeys": ["molly"]
+              }
+            }
+          ],
+          "successNode": "dinner_invitation",
+          "failureNode": "dinner_invitation"
+        }
+      }
+    ],
+    "nodes": {
+      "dinner_invitation": {
+        "text": "Molly retrieves her belongings and glances toward the Academy buildings. \"All this exercise has made me terribly hungry. Oh! Why don't you come to dinner with me? I live at the Royal Pigeon Inn. Their dining room is wonderful, and the cook makes the most marvelous roast potatoes.\"\n\nShe gives your arm an affectionate squeeze. \"The next evening we're both free. My treat! We can celebrate our match, and you can tell me how your studies are going.\"\n\nShe looks at you expectantly. The invitation seems entirely sincere, with none of Emma's carefully calculated ambiguity. Of course, whether it is only dinner is another question.",
+        "optionTemplates": [
+          {
+            "text": "Accept dinner with a friend",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"I'd love to. Especially if the roast potatoes are as good as you say.\"\n\n\"Oh, they are!\" Molly's face lights up. \"I'll ask them to save us a nice table. And you must try the chocolate pudding! Actually, perhaps we should start with that. No, that would be silly.\"\n\nShe considers the matter with great seriousness.\n\n\"We'll see how hungry we are.\"\n\nYou leave her happily planning a meal that threatens to require more endurance than the wrestling match."
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "molly",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "schedule_activity",
+                "parameters": {
+                  "activity": {
+                    "type": "social",
+                    "participants": ["player", "molly"],
+                    "placeKey": "royal-pigeon-inn"
+                  },
+                  "schedule": {
+                    "nextFree": true,
+                    "date": {
+                      "period": "evening"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "molly_wrestling_dinner_social"
+                }
+              }
+            ]
+          },
+          {
+            "text": "Make it a date",
+            "attributeCheck": {
+              "attribute": "charisma",
+              "difficulty": "hard",
+              "successEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "\"I'd be delighted,\" you say. \"Although I was rather hoping you might let me take you to dinner as a date. A proper one.\"\n\nMolly stops adjusting the strap of her satchel. \"A date? With me?\"\n\nFor once, she seems unable to decide what to do with her hands. Then she smiles, a little shyly but with unmistakable pleasure.\n\n\"Oh, Antonio. Yes, I'd like that very much.\" She glances at you, and a mischievous spark returns to her eyes. \"Although I should warn you, if you intend to impress me by wrestling again, I may insist on a rematch before dessert.\""
+                  }
+                },
+                {
+                  "type": "schedule_activity",
+                  "parameters": {
+                    "activity": {
+                      "type": "date",
+                      "participants": ["player", "molly"],
+                      "placeKey": "royal-pigeon-inn"
+                    },
+                    "schedule": {
+                      "nextFree": true,
+                      "date": {
+                        "period": "evening"
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "molly_wrestling_dinner_date"
+                  }
+                },
+                {
+                  "type": "add_chat_topic",
+                  "parameters": {
+                    "key": "molly_memory_wrestling_date",
+                    "type": "memory",
+                    "text": "Molly looks at you with a shy, delighted smile. \"You know, I thought we were just going to have dinner after our wrestling match. I didn't expect you to ask me on a proper date.\" She laughs softly. \"I'm very glad you did.\"",
+                    "knownByNpcKeys": ["molly"]
+                  }
+                }
+              ],
+              "failureEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "\"I'd be delighted. In fact, perhaps we could make it a date?\"\n\nMolly blinks. Her smile doesn't disappear, but she takes a moment before answering.\n\n\"Oh! That's sweet of you, Antonio.\" She blushes. \"I really would like to have dinner together. I'm just not quite ready to call it a date. We haven't known each other very long, have we?\"\n\nShe touches your arm reassuringly. \"But please do come! I'd hate for you to miss those roast potatoes on account of a misunderstanding.\"\n\nYou agree that roast potatoes deserve to be considered on their own merits."
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "molly",
+                    "relationParameter": "friendship",
+                    "amount": 1
+                  }
+                },
+                {
+                  "type": "schedule_activity",
+                  "parameters": {
+                    "activity": {
+                      "type": "social",
+                      "participants": ["player", "molly"],
+                      "placeKey": "royal-pigeon-inn"
+                    },
+                    "schedule": {
+                      "nextFree": true,
+                      "date": {
+                        "period": "evening"
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "molly_wrestling_dinner_social"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "title": "An Invitation",
+        "emotion": "happy"
+      }
+    },
+    "characterArc": "molly",
+    "emotion": "happy",
+    "image": "molly_gentle_art_wrestling.jpg",
+    "imageSize": "large"
   },
   {
     "key": "academy-first-enchantment",

@@ -1,0 +1,129 @@
+[
+  {
+    "topicKey": "molly_lore_friendly-face",
+    "text": "\"Molly Moreno?\" your companion says. \"If you look lost, she is usually the first person to notice. She has a talent for making newcomers feel as though they have been expected all along. I wish the Academy issued more people like her with the welcome packets.\""
+  },
+  {
+    "topicKey": "molly_lore_athletic-strength",
+    "text": "\"Molly looks so gentle that people forget how strong she is,\" your companion observes. \"Then they see her at physical training and reconsider their assumptions. Quite a useful lesson, really. One can be kind and still lift things the rest of us cannot budge.\""
+  },
+  {
+    "topicKey": "molly_lore_running",
+    "text": "\"Molly seems to enjoy running,\" your companion says with a look of mild disbelief. \"Not winning a race, mind you. The actual running. I have watched her finish a lap looking happier than when she started. I find that deeply suspicious.\""
+  },
+  {
+    "topicKey": "molly_lore_nature-lover",
+    "text": "\"If Molly could hold every Academy lesson outdoors, I suspect she would,\" your companion remarks. \"She speaks about the forests and mountains as if they were old friends. Admittedly, the trees are less likely than the professors to assign written examinations.\""
+  },
+  {
+    "topicKey": "molly_lore_animals",
+    "text": "\"Molly has a soft spot for animals,\" your companion tells you. \"A remarkable soft spot, considering how many of them have teeth, claws, or deplorable table manners. She seems convinced that most creatures improve once someone treats them kindly.\""
+  },
+  {
+    "topicKey": "molly_lore_animal-ban",
+    "text": "\"The Academy forbids students from keeping pets, which Molly considers a rather cruel rule,\" your companion says. \"I understand the administration's concerns. But if anyone could persuade a stray creature to behave in a lecture, it might be her. Persuading the creature to stop being adorable would be harder.\""
+  },
+  {
+    "topicKey": "molly_lore_green-magic",
+    "text": "\"Molly seems particularly at home with green magic,\" your companion says. \"Nature and restoration suit her. She talks about those cards with real enthusiasm, even when the rest of artificery leaves her looking as though the textbook has personally insulted her.\""
+  },
+  {
+    "topicKey": "molly_lore_academic-modesty",
+    "text": "\"Molly is forever saying she is not very clever,\" your companion remarks. \"I don't think that's fair. She may not solve every theoretical puzzle, but she notices things about people that half the brightest students walk straight past.\""
+  },
+  {
+    "topicKey": "molly_lore_practical-skills",
+    "text": "\"Put Molly in front of a complicated theorem and she hesitates,\" your companion says. \"Give her a practical problem and she gets moving. It is a rather underrated form of intelligence at a school where everyone is so fond of writing equations.\""
+  },
+  {
+    "topicKey": "molly_lore_helping-others",
+    "text": "\"Molly is always helping somebody,\" your companion observes. \"Sometimes I think she has mistaken the entire Academy for a collection of people who need looking after. It's admirable, although I do wonder when she finds time to look after herself.\""
+  },
+  {
+    "topicKey": "molly_lore_village-children",
+    "text": "\"Have you noticed Molly's interest in the village children?\" your companion asks. \"She worries about families who cannot afford proper lessons. Most students are trying to survive their own education; Molly is busy wondering how other people might get one.\""
+  },
+  {
+    "topicKey": "molly_lore_friendship-emma",
+    "text": "\"Molly and Emma make an unlikely pair,\" your companion says. \"Emma can make a simple question sound like an examination. Molly makes an examination sound as though everyone ought to have a good time. Somehow the two seem to understand each other.\""
+  },
+  {
+    "topicKey": "molly_lore_easy-laughter",
+    "text": "\"Molly has a laugh that is rather difficult not to join in,\" your companion remarks. \"The joke doesn't even have to be particularly good. In fact, I sometimes suspect she laughs hardest when she has misunderstood it entirely.\""
+  },
+  {
+    "topicKey": "molly_lore_sensitive",
+    "text": "\"People sometimes mistake Molly's sensitivity for weakness,\" your companion says. \"She can be moved to tears by a small kindness. But she recovers, rolls up her sleeves, and goes on helping. I am not sure the rest of us would manage it so well.\""
+  },
+  {
+    "topicKey": "molly_lore_optimism",
+    "text": "\"Molly can find something hopeful to say in nearly any situation,\" your companion tells you. \"I used to think she simply hadn't understood how bad things were. Now I suspect she understands perfectly well and has decided that despair is not especially useful.\""
+  },
+  {
+    "topicKey": "molly_lore_generosity",
+    "text": "\"Molly never seems terribly interested in showing off what she has,\" your companion says. \"She is much more interested in whether someone else needs something. A refreshing habit, though I imagine it makes her an easy target for people with very convincing sob stories.\""
+  },
+  {
+    "topicKey": "molly_lore_cheerful-competition",
+    "text": "\"Molly enjoys a friendly challenge,\" your companion says. \"Especially the sort involving fresh air and a little exertion. She'll cheer you on even while beating you, which is either exceptionally sporting or a very elaborate way of making defeat more embarrassing.\""
+  },
+  {
+    "topicKey": "molly_lore_straightforward",
+    "text": "\"Trying to be mysterious with Molly is usually a waste of time,\" your companion remarks. \"She takes people at their word. If you want her to understand something, you're better off saying it plainly. There's something rather disarming about that.\""
+  },
+  {
+    "topicKey": "molly_lore_love-of-outdoors_private",
+    "text": "\"I love the Academy, truly,\" Molly says, then hesitates. \"Well, I love the people. And some of the lessons. But if I spend too long indoors, I start wondering whether the trees have noticed I'm missing. That's silly, isn't it? Don't answer too quickly.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_walking-in-woods_private",
+    "text": "\"Do you ever go walking just to see where a path leads?\" Molly asks. \"I know you're supposed to have a destination. But sometimes I like coming across a clearing or a stream that I wasn't looking for. It feels like finding a little present nobody knew they'd left for you.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_swimming_private",
+    "text": "\"Swimming is wonderful,\" Molly says brightly. \"You can be as tired and worried as you like, and the moment you're in the water everything seems lighter. Except your clothes, obviously. That is a lesson I learned rather quickly.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_physical-training_private",
+    "text": "\"I like lifting weights,\" Molly admits. \"It's so satisfying when something that used to feel terribly heavy becomes easy. If only studying worked like that. I've tried staring very hard at difficult books, but they refuse to get any lighter.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_green-affinity_private",
+    "text": "\"Green magic makes sense to me,\" Molly says. \"Growing things, helping them recover, giving them a little time... I understand that. Ask me to explain every complicated enchantment and I'm rather less impressive. But I do try.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_study-anxiety_private",
+    "text": "\"Sometimes everyone in class understands something before I do,\" Molly says, her smile turning sheepish. \"I know that doesn't mean I'll never understand it. It's just rather hard to remember when the professor is already three pages ahead of me.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_not-stupid_private",
+    "text": "\"I'm not hopeless at artificery,\" Molly says, a touch more firmly than usual. \"I just have to work harder at the theory. And I think that ought to count for something. Sorry, I didn't mean to sound cross. Actually, perhaps I did, a little.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_animals_private",
+    "text": "\"If I were allowed a pet, I don't think I'd be very good at choosing just one,\" Molly confesses. \"I'd meet some poor little creature and convince myself there was room for another. Very soon I'd be sharing my bed with a family of hedgehogs and wondering where all the blankets went.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_academy-pet-rule_private",
+    "text": "\"They say the no-pets rule is perfectly sensible,\" Molly sighs. \"And I suppose it is. But wouldn't it be lovely to have a dog waiting when you finished a dreadful day of classes? A dog wouldn't ask how your examination went. Well, not in words.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_tutoring-goal_private",
+    "text": "\"I keep thinking about children who'd love to learn but don't get the chance,\" Molly tells you. \"It's hard enough studying when you have books and teachers. Imagine doing it without either. I'd like to help, even if I can only manage a little at first.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_overcommitting_private",
+    "text": "\"I said yes to another favor,\" Molly admits, looking faintly guilty. \"They did need help! Only now I'm not sure where the hours are supposed to come from. Do you think there is an enchantment that makes an afternoon twice as long? Perhaps I should learn that one first.\"",
+    "npcKey": "molly"
+  }
+]

@@ -28,6 +28,13 @@ const PLACES: Record<string, Place> = {
     description: 'The Academy Hall is a place where the students can gather and celebrate.',
     regionKey: 'academy',
   },
+  ['academy-courtyard']: {
+    key: 'academy-courtyard',
+    name: 'Academy Courtyard',
+    description:
+      'The Academy Courtyard is a vast outside area with a lot of trees and room for sports of leisure.',
+    regionKey: 'academy',
+  },
   ['library']: {
     key: 'library',
     name: 'Library',

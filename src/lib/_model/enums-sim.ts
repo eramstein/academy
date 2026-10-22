@@ -82,6 +82,7 @@ export enum ActivityType {
   Event = 'event',
   Adventure = 'adventure',
   LeagueCeremony = 'league_ceremony',
+  Sports = 'sports',
 }
 
 export enum ClassType {
