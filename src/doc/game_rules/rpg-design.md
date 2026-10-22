@@ -97,19 +97,45 @@ An event is one root beat plus an optional tree of later beats called nodes. The
 When an event occurs:
 
 1. Its root narrative is presented in the illustrated book interface, optionally accompanied by a dedicated scene illustration or an NPC portrait with a specific emotion.
-2. The event may apply root effects to the game state, regardless of the player's subsequent choice. Each root effect is an effect/trigger couple: omit the trigger (the default) and it always applies; when triggers are set, every one must match or that effect is skipped. These checks run when the event fires, before options and before the event's once-only stamp. Option outcomes remain plain effect lists with no per-effect triggers.
+2. The event may apply root effects to the game state, regardless of the player's subsequent choice. Each root effect is an effect/trigger couple: omit the trigger (the default) and it always applies; when triggers are set, every one must match or that effect is skipped. These checks run when the event fires, before options and before the event's once-only stamp. Node entry effects and option outcomes remain plain effect lists with no per-effect triggers.
 3. The player is presented with a set of authored options.
 4. The selected option resolves either through a deterministic game-state effect or through a skill check, which determines the outcome and resulting state changes.
-5. If that option names a next node — or the skill-check branch names one — that node is shown immediately, with its own text, image, and options. Entry triggers are judged when the previous beat's choices are built: a choice is hidden when every way forward leads to a locked node. On enter, the node may apply entry effects with the same effect/trigger couple shape as root effects (omit triggers to always apply; otherwise every trigger must match). Those effects run when the beat opens, before its passages and options are resolved, so a story tag set on enter can gate this beat's prose and choices. A node with no available options ends the event. A branch that points at a locked node ends the event on that branch instead of opening it.
+5. If that option names a next node — or the skill-check branch names one — that node is shown immediately, with its own text, image, and options. Entry triggers are judged when the previous beat's choices are built: a choice is hidden when every way forward leads to a locked node. A node with no available options ends the event. A branch that points at a locked node ends the event on that branch instead of opening it.
 6. Otherwise the event ends. Its occurrence, the player's choice, and relevant results can then be referenced by other events' trigger conditions. Remember a branch with a story tag on the option that leads there; the node path itself is not a separate event id.
 
 Conditional event options and text (current implementation)
 
 Individual event options may define trigger conditions using the existing game-state criteria. An option is displayed only when its conditions are satisfied. This allows choices to depend on previous encounters, relationships, skills, resources, or other state. The same conditions can gate a node, but they are read before the choice's effects, so a choice cannot unlock the node it opens.
 
-The root narrative and each node's narrative support conditional text passages, which are resolved according to game state when that beat is shown. For nodes, that resolution happens after on-enter effects. Root-event and node entry effects can use the same trigger vocabulary for optional per-effect gates, as in steps 2 and 5 above.
+The root narrative and each node's narrative support conditional text passages, which are resolved according to game state when that beat is shown. Root-event effects can use the same trigger vocabulary for optional per-effect gates, as in step 2 above.
 
 Current limitation: Conditional text passages within an individual option's post-choice narrative are not supported. Each option has a fixed outcome text. Variations that need a different following scene belong in another node, or in a follow-up event.
+
+### Small talk and scene director (current design)
+
+Ordinary NPC conversations are intended to deliver **useful information** and make characters and the Academy feel connected and alive, without relying solely on hand-scripted major events or generating every scene from scratch. The scene director chooses a `ChatTopic` from current simulation state, then resolves it into dialogue using pre-written `ChatTopicTexts`. Texts may be generic across speakers and places, or tailored to an NPC, activity, or location. The topic is metadata; the text is its narrative realization. See `scene-director.md` for the authoritative selection procedure.
+
+Available topics include:
+
+- **Lore:** world/Academy background, NPC hints, circulating news, and reports of offscreen or missed events. Public lore may be shared widely; some lore is private or excludes particular speakers.
+- **Memory:** a character's meaningful or funny experience, used for callbacks, personal color, or running jokes; normally known only by NPCs who experienced or learned about it.
+- **NPC routine:** information about a character's actual scheduled activities, derived from simulation routines.
+- **Evergreen conversation:** general characterization or atmosphere when other topics are less relevant.
+
+Initial topics and pre-written texts can ship with the game. New topics arise from NPC routines and event effects, with other sources possible later (for example TCG results). When Antonio chats with an NPC, the director filters to topics the NPC knows, ranks candidates with configurable weights (including a preference for topics with NPC-specific text and penalties for recent repetition), and selects one. For that topic, NPC-specific text takes precedence if available; matching activity/location variants are preferred; unused or least-recently-used variants are favored. Conversations record the chosen topic, text, and day to reduce repetition. Runtime LLM generation may serve as a fallback where no suitable pre-written text is available.
+
+**Event authoring: `add_chat_topic`.** Hand-authored events should selectively leave conversational traces through plain effect bullets; the authoring skill converts them to `type: "add_chat_topic"`. The effect has a stable `key`, `type` (`memory` or `lore`), and `text`; optional `knownByNpcKeys`, `excludeNpcKeys`, `npcKey` (speaker-specific wording), and `useOnlyOnce` control delivery. These are **not** the old separate rumor and NPC-memory data structures.
+
+```markdown
+- Add memory `emma_memory_first_impression` for emma: Antonio attempted to introduce himself but couldn't find his words. Emma noticed and teased him.
+- Add lore `emma_lore_public_promising`, exclude emma: Emma is the most promising new student at the academy.
+- Add lore `emma_lore_public_promising`, speaker elsa: Emma is the most promising new student at the academy. I'm super jealous.
+- Add lore `academy_lore_tuition_scandal` (use once): Someone paid three years of savings for a single term.
+```
+
+A memorable or funny experience usually deserves a **memory** for the relevant NPC(s); a declined activity or an important offscreen development can produce **lore** explaining what the NPC did independently. Spectacular public achievements may produce public lore and a separate private memory. Avoid manufacturing gossip about secrets or romantic confidences that others could not know.
+
+**Effect timing matters:** root `## Effects` apply when an event starts; option `**Outcomes:**` apply only for the chosen branch; node entry effects apply on entering that node. Put choice-dependent memories and offscreen/decline lore in the corresponding outcomes. A topic is not itself a world-state mutation or quest condition: use regular state/tag/relationship effects for those consequences as well. For full writing conventions and additional syntax (including `known by`, `exclude`, and `speaker`), see `writing-bible.md`.
 
 ### Relationship narrative design direction (to prototype)
 

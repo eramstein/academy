@@ -37,7 +37,7 @@ This document records agreed narrative conventions for Academy's hand-authored R
 - Qualitative relationship tags can enable callbacks and distinctive dialogue. Low-stakes opt-in tags may establish running jokes without implying romantic commitment.
 - TCG choices matter narratively; narrative choices may affect card ownership, crafting, and future TCG performance.
 - Characters' personal stories progress even without Antonio's participation. His choices may change their course, not determine whether those characters have agency.
-- Important events and choices should usually leave **NPC memories** so later small talk can refer to shared experiences; selectively create **rumors** so developments can reach Antonio through other characters. Keep these distinct from permanent character-sheet discoveries and story tags.
+- Memorable or funny events and choices should often add **memory chat topics** for later callbacks; missed opportunities and public developments can add **lore chat topics** to spread news through conversation. These complement, rather than replace, canonical effects, story tags, relationship-book entries, and character-sheet discoveries.
 
 ## Relationship book versus character sheet
 
@@ -74,7 +74,7 @@ Use this structure for polished event drafts (the IDE workflow handles JSON conv
 
 ## Effects
 
-- [Unconditional changes, including character-sheet discoveries, NPC memories, and rumors; omit or say none if not applicable]
+- [Unconditional changes, including character-sheet discoveries and chat topics (memory or lore); omit or say none if not applicable]
 
 ## Options
 
@@ -86,104 +86,103 @@ Use this structure for polished event drafts (the IDE workflow handles JSON conv
 
 **Outcomes:**
 
-- [State changes, relationship points, tags, cards, NPC bio additions, NPC memories, and rumors specific to this choice]
+- [State changes, relationship points, tags, cards, NPC bio additions, and chat topics specific to this choice]
 
 ### Option B: [Title]
 
 ...
 ```
 
-## NPC memories and rumors for small talk
+## Chat topics for small talk (`add_chat_topic`)
 
-Events should help future routine conversations feel grounded in the story. When authoring an event, consider what its participants **remember** and what other people might **hear about**. These are distinct optional effects, and neither replaces the event log, canonical game state, story tags, or character-sheet discoveries.
+Events can create **chat topics** that the scene director later selects during ordinary social interactions. **The `text` in an event's `add_chat_topic` effect is already a complete, player-facing mini-scene, not a summary, factual hint, prompt for an LLM, or internal memory record.** It must be ready to display directly in the illustrated-book UI, without runtime rewriting. The topic key and access restrictions determine _when and by whom_ that text may be used; separately authored `ChatTopicTexts` can provide alternate or more specific realizations. See `scene-director.md` for selection and reuse rules.
 
-### NPC memories
+Use **plain effect bullets** under `## Effects`, node **On enter**, or option **Outcomes** (including skill-check branches), just like known-trait additions. The event-authoring skill maps them to `add_chat_topic` with the topic `key`, subtype (`memory` or `lore`), scene `text`, and optional `knownByNpcKeys`, `excludeNpcKeys`, `npcKey`, and `useOnlyOnce`. Do **not** write the old `NpcMemory` / `Rumor` structures. Follow the serialization conventions of the actual game schema when converting to JSON.
 
-A memory belongs to a **specific NPC** and summarizes a meaningful experience they can later mention or react to. Significant events and meaningful choices should **usually leave a memory trace** for the NPCs involved, especially when the scene changes trust, feelings, shared history, or their view of Antonio. Minor transitions and purely mechanical effects do not need one.
+### How to write chat-topic scenes
 
-Use the existing `NpcMemory` shape:
+- Write a **brief, complete exchange** in **second person, present tense**, addressing Antonio as _you_, with natural dialogue and one clear beat (a callback, a joke, a small sincere moment, or the delivery of useful information). Usually a short paragraph or two; do not retell the whole original event.
+- The scene happens **later**, when the player chooses to chat; **do not presume it is the next day**, or that Antonio and the NPC are still in the event's original location. Avoid hard-coded "yesterday," "this morning," "here in the workshop," etc., unless the topic's runtime eligibility guarantees them.
+- Make the scene **portable across locations and activities** unless it has explicit restrictions. Avoid requiring props, bystanders, or an activity that may be absent. Dialogue may allude to an earlier incident without reconstructing it.
+- The memory or lore must be **recognizable in the conversation itself**, not described as a third-person database summary. Preserve character voice and an appropriate sense of how familiar the NPC and Antonio are at this point; do not assume a deeper relationship than the branch establishes.
+- **Never invent canon, outcomes, secrets, promises, or changes to game state**. A chat scene recalls or reports what happened; it does not resolve another quest, grant a reward, or establish a new lasting fact.
+- For **speaker-neutral public lore**, avoid named or personality-specific delivery, and do not assume the speaker personally witnessed the event. Use NPC-specific variants when the speaker's reaction is especially interesting. Do not make the subject announce their own reputation unnaturally.
+- Write the text that appears **when this topic is selected**, not instructions such as "Emma teases Antonio about his mistake" or a fact such as "Antonio embarrassed himself." Those are useful editorial notes but are not valid `text` for an authored chat-topic effect.
 
-```ts
-interface NpcMemory {
-  title: string;
-  description: string;
-  day: number;
-  emotion?: Emotion;
-  referenceCount: number;
-}
+### Memory topics: personal callbacks
+
+Add a **memory** after a funny, moving, embarrassing, revealing, or otherwise memorable experience that an NPC can later reference. Choose selectively: routine actions and minor logistical decisions need none. Memories are normally known **only by NPCs who witnessed or learned about that outcome**.
+
+- Put outcome-specific memories in the corresponding option or skill-check branch. A root memory must be true no matter what Antonio later chooses.
+- Use a unique, stable key such as `emma_memory_first_impression`; avoid duplicate keys for different outcomes.
+- Write the callback **as the NPC speaking to Antonio** (plus concise narration), not as a retrospective summary.
+
+```markdown
+## Options
+
+### Option B: A complete failure of higher reasoning
+
+**Outcomes:**
+
+- Add memory `emma_memory_first_impression` for emma: "Fibonacci!" Emma greets you with unmistakable amusement. "I see you've recovered your powers of speech. The last time we met, I thought I might have to conduct the entire conversation myself." You assure her that was an exceptional circumstance. "Naturally," she says. "I'm sure your eloquence is otherwise legendary."
 ```
 
-Writing conventions:
+The longer form is equally valid: `Add chat topic ` followed by the topic key, `(memory), known by emma:` and the same **complete scene**.
 
-- Explicitly name the **recipient NPC** in the Markdown effect (e.g. `NPC memory — Emma`); create separate memories for different NPCs if their knowledge or interpretation differs.
-- `title`: short, identifiable topic, ideally usable for memory retrieval (e.g. `The Falkenheim victory`).
-- `description`: compact, factual, self-contained summary of **what this NPC experienced or learned**, including the relevant outcome and Antonio's actual choice when it matters. Favor one or two concrete sentences over an event transcript. A small emotional interpretation is fine when supported by the scene; do not fabricate hidden intentions, confessions, or events.
-- `emotion` is optional; when supplied, use an existing `Emotion` enum value, not an invented mood label. It represents the memory's emotional coloring **for the receiving NPC**.
-- `day` is the in-game day the memory is created; in event Markdown, specify **current day** rather than inventing a fixed date.
-- `referenceCount` starts at **0** and is incremented by the runtime when the memory is used in later dialogue. Authors should not pre-increment it.
-- Prefer **branch-specific memories in option outcomes** when the player's decision or success/failure changes what happened. A shared memory under `## Effects` is suitable only if it remains accurate for every possible outcome.
-- Avoid duplicates: one meaningful memory for a beat is usually better than several near-identical entries. Do not store information the NPC could not plausibly know.
+### Lore topics: news and offscreen developments
 
-Example effect notation (editorial Markdown, not a new JSON schema):
+Add **lore** for background information, hints about characters, Academy news, notable public achievements, or events Antonio declined or missed. If an NPC continues with an activity without Antonio, a later conversation can reveal what happened—but only if that offscreen outcome is actually established by the event. Particularly spectacular happenings may merit both a public lore topic and a separate personal memory.
+
+- The text must **deliver the information in a short conversational scene**; it is not just the information statement.
+- Public lore can be spoken by any eligible NPC, so write generic dialogue that does not assume a particular voice or firsthand knowledge. Private lore may be voiced specifically by its owner.
+- Do not circulate confidential information unless the event explains how it became known. Report uncertain gossip as uncertain, not as established fact.
+- For declines, do **not** imply Antonio was there. Use `(use once)` for a piece of gossip that should not recur.
+- A speaker-specific version with the **same topic key** is an alternative telling, not a second unrelated fact. It must not contradict the generic version.
+
+**Public world lore:**
 
 ```markdown
 ## Effects
 
-- NPC memory — Emma:
-  - title: Chosen for Falkenheim
-  - description: Emma selected Antonio as her tournament teammate because she trusts his abilities, and he accepted the challenge.
-  - day: current day
-  - emotion: proud
-  - referenceCount: 0
+- Add lore `world_lore_time`: "Funny to think we live in the nineteenth century," your companion remarks. "And the Academy still insists on keeping records as though parchment were the height of modern convenience."
 ```
 
-### Rumors
-
-A rumor is a **small-talk lead or piece of circulating news**, not necessarily an established fact. Rumors can hint at someone's habits, signal an opportunity, or report an offscreen or missed event (especially after Antonio declines to participate). They let the world continue to feel active without requiring Antonio to attend every authored event.
-
-Use the existing `Rumor` shape:
-
-```ts
-interface Rumor {
-  aboutNpcKey?: string;
-  fromNpcKey?: string;
-  text: string;
-  fromDay?: number;
-  untilDay?: number;
-}
-```
-
-Writing conventions:
-
-- `text`: short, natural information that an NPC could plausibly convey in conversation. Be specific enough to encourage a follow-up or establish a new fact, but avoid dumping full event summaries or revealing private information without a credible route for it to spread.
-- `aboutNpcKey`: set when the information is meaningfully **about a particular NPC**, enabling character-related small talk; omit for general Academy or town news.
-- `fromNpcKey`: set **only when that NPC is the sole speaker permitted to share the rumor**; leave unset when multiple NPCs may relay it. It is a speaker restriction, not the identity of whoever originally witnessed an event.
-- `fromDay` and `untilDay`: **relative day offsets from the day the effect fires**, defining the rumor's availability period. They are not absolute calendar days. Omit an offset when no bound is needed; don't invent expiry dates for enduring conversational facts. Make time-limited opportunities expire sensibly.
-- Write rumors to match what characters can reasonably know. Rumors may be incomplete or explicitly uncertain, but should not accidentally assert false canon. If gossip is unreliable, signal this in the wording.
-- For **decline**, missed-opportunity, or offscreen-resolution options, consider a rumor that conveys what happened afterward without pretending Antonio was present. The rumor may have different wording depending on the resolved outcome.
-- Prefer a few distinctive, useful rumors to one for every trivial action. Do not use rumors as substitutes for tags or canonical effects required by future event triggers.
-
-Example effect notation:
+**Private lore (only Emma knows it):**
 
 ```markdown
-**Outcomes:**
-
-- Rumor:
-  - aboutNpcKey: emma
-  - text: Emma has been playing violin at the inn on Friday evenings. Apparently she's very good.
-  - fromDay: 1
-  - untilDay: 14
+- Add lore `emma_lore_private_rabbit`, known by emma: "I have a pet rabbit," Emma tells you. "An excellent listener, incidentally. Less inclined to interrupt me than most of my fellow students."
 ```
 
-For an exclusive firsthand account, add `fromNpcKey: emma`. An unset `fromNpcKey` allows the rumor to be shared by other suitable NPCs.
+**Public lore about Emma (everyone except Emma):**
 
-### Choosing where to place them
+```markdown
+- Add lore `emma_lore_public_promising`, exclude emma: "Have you heard about Emma Delamain?" your companion asks. "People are calling her the Academy's most promising new student. No small expectation to live up to."
+```
 
-- **Shared event facts** that happen regardless of the player's options: put memories or rumors under `## Effects`.
-- **Choice-dependent events, refusals, and skill-check results:** put the corresponding memories or rumors under the appropriate `**Outcomes:**` or success/failure outcome block. Never summarize a success in a memory that can also be awarded on failure.
-- **Offscreen NPC developments:** a rumor can inform Antonio of the result even if he was absent; only give an NPC memory to someone who genuinely participated or learned of it.
-- **Use both when appropriate:** memory records what an NPC remembers, while rumor lets others discuss a public-facing aspect of the same development. Their texts need not match because the audiences and purposes differ.
-- **Avoid spoilers and contradictions:** match the chosen option, relevant tags, prior discoveries, and the timeline. In particular, do not turn unspoken feelings or private romantic moments into public gossip by default.
+**Speaker-specific telling (same topic, Elsa's voice):**
+
+```markdown
+- Add lore `emma_lore_public_promising`, speaker elsa: Elsa gives a delicate sigh. "Apparently everyone has decided Emma Delamain is the Academy's most promising new student. They do so adore announcing a verdict before the competition has begun."
+```
+
+The `speaker` qualifier maps to `npcKey`; `known by` to `knownByNpcKeys`; and `exclude` to `excludeNpcKeys`. For large curated libraries, `ChatTopicTexts` may include additional variants and constraints.
+
+**Once-only gossip:**
+
+```markdown
+- Add lore `academy_lore_tuition_scandal` (use once): "Did you hear about the tuition scandal?" your companion asks. "Someone apparently handed over three years of savings for a single term. If that's an investment in knowledge, I hope the dividends are extraordinary."
+```
+
+### Placement and authoring checklist
+
+- **`## Effects` (root):** fires when the event starts. Add only scenes recalling/reporting facts already established before any option is chosen.
+- **`**Outcomes:**` (option or success/failure):** fires only for the chosen branch. Place choice-specific memories and declined-action news here.
+- **Node `On enter`:** use for facts established on entering that node, not events that may happen later in it.
+- **Memories:** ask, “Would this NPC plausibly bring up this distinctive shared moment in a later chat?” If yes, write their callback as a scene.
+- **Lore:** ask, “Would someone later have useful or amusing news about this?” If yes, write the delivery as dialogue from an eligible speaker.
+- **Both:** when a public achievement also has a personal emotional or comic consequence, use different stable keys for the public report and the private callback.
+- **Causality and portability:** check that each line is true for that branch and remains sensible days or weeks later in an unspecified chat location.
+- **Do not substitute chat topics for canonical state:** any enduring world, relationship, quest, or inventory changes still need their ordinary effects.
 
 **Conditional event passages:** For variations in the event's main narrative, put `{{passageName}}` placeholders directly in `## Text` and define each named passage under `## Conditional passages`. Each passage can have one or more ordered **When:** variants, using the game's existing trigger logic, followed by an **Otherwise:** fallback. The first matching variant wins; the fallback applies if none match. Keep the prose of each variant compact and consistent with the surrounding paragraph. Use passages for prior-event callbacks, first-time introductions, relationship tags, or other relevant game-state differences. Omit `## Conditional passages` when the event has none. **This feature currently applies only to the event's main `text`, not option text**; keep option outcomes as ordinary static prose. Do not invent inline `if` expressions or a separate condition language.
 

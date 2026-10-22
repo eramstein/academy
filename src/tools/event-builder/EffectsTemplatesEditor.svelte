@@ -3,9 +3,9 @@
   import {
     ActivityType,
     CardColor,
+    ChatTopicType,
     ClassType,
     DayPeriod,
-    Emotion,
     EventEffectType,
     JobType,
     PossessionType,
@@ -54,7 +54,7 @@
   const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
   const relationTags = Object.values(RelationTag);
   const possessionTypes = Object.values(PossessionType);
-  const emotions = Object.values(Emotion);
+  const chatTopicTypes = Object.values(ChatTopicType);
 
   type ActivityArgs = Omit<ScheduledActivity, 'day' | 'period'> & { classType?: ClassType };
 
@@ -154,8 +154,8 @@
         return { tag: '', amount: 1 };
       case EventEffectType.AddKnownTrait:
         return { characterKey: '', title: '', description: '' };
-      case EventEffectType.AddMemory:
-        return { characterKey: '', title: '', description: '' };
+      case EventEffectType.AddChatTopic:
+        return { key: '', type: ChatTopicType.Memory, text: '' };
       case EventEffectType.Move:
         return { placeKey: placeKeys[0] ?? '', characterKeys: ['player'] };
       case EventEffectType.UseFocus:
@@ -171,8 +171,6 @@
           description: '',
           characterKey: 'player',
         };
-      case EventEffectType.AddRumor:
-        return { text: '' };
       default:
         return {};
     }
@@ -197,6 +195,18 @@
         i === index ? { type, parameters: defaultParameters(type) } : effect
       )
     );
+  }
+
+  function keyList(value: unknown): string {
+    return Array.isArray(value) ? value.filter((key) => typeof key === 'string').join(', ') : '';
+  }
+
+  function parseKeyList(raw: string): string[] | undefined {
+    const keys = raw
+      .split(',')
+      .map((key) => key.trim())
+      .filter(Boolean);
+    return keys.length > 0 ? keys : undefined;
   }
 
   function setParameter(index: number, key: string, value: unknown) {
@@ -821,45 +831,120 @@
                 oninput={(e) =>
                   setParameter(i, 'description', (e.currentTarget as HTMLInputElement).value)}
               />
-            {:else if effect.type === EventEffectType.AddMemory}
+            {:else if effect.type === EventEffectType.AddChatTopic}
               <input
                 class="input arg"
-                value={effect.parameters.characterKey ?? ''}
-                placeholder="character key"
-                aria-label="Character key"
-                oninput={(e) =>
-                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
-              />
-              <input
-                class="input arg"
-                value={effect.parameters.title ?? ''}
-                placeholder="memory title"
-                aria-label="Memory title"
-                oninput={(e) =>
-                  setParameter(i, 'title', (e.currentTarget as HTMLInputElement).value)}
-              />
-              <input
-                class="input arg"
-                value={effect.parameters.description ?? ''}
-                placeholder="memory description"
-                aria-label="Memory description"
-                oninput={(e) =>
-                  setParameter(i, 'description', (e.currentTarget as HTMLInputElement).value)}
+                value={effect.parameters.key ?? ''}
+                placeholder="topic key"
+                aria-label="Topic key"
+                oninput={(e) => setParameter(i, 'key', (e.currentTarget as HTMLInputElement).value)}
               />
               <select
                 class="input arg"
-                value={effect.parameters.emotion ?? ''}
-                aria-label="Memory emotion"
-                onchange={(e) => {
-                  const value = (e.currentTarget as HTMLSelectElement).value;
-                  setParameter(i, 'emotion', value || undefined);
-                }}
+                value={effect.parameters.type ?? ChatTopicType.Memory}
+                aria-label="Topic type"
+                onchange={(e) =>
+                  setParameter(i, 'type', (e.currentTarget as HTMLSelectElement).value)}
               >
-                <option value="">(no emotion)</option>
-                {#each emotions as value (value)}
-                  <option {value}>{value}</option>
+                {#each chatTopicTypes as type (type)}
+                  <option value={type}>{type}</option>
                 {/each}
               </select>
+              <input
+                class="input arg"
+                value={effect.parameters.text ?? ''}
+                placeholder="line"
+                aria-label="Chat line"
+                oninput={(e) =>
+                  setParameter(i, 'text', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.textKey ?? ''}
+                placeholder="line key (optional)"
+                aria-label="Line key"
+                oninput={(e) => {
+                  const value = (e.currentTarget as HTMLInputElement).value.trim();
+                  setParameter(i, 'textKey', value || undefined);
+                }}
+              />
+              <input
+                class="input arg"
+                value={keyList(effect.parameters.knownByNpcKeys)}
+                placeholder="known by"
+                aria-label="Known by character keys"
+                title="Comma-separated character keys. Empty means everyone."
+                onchange={(e) =>
+                  setParameter(
+                    i,
+                    'knownByNpcKeys',
+                    parseKeyList((e.currentTarget as HTMLInputElement).value)
+                  )}
+              />
+              <input
+                class="input arg"
+                value={keyList(effect.parameters.excludeNpcKeys)}
+                placeholder="exclude"
+                aria-label="Excluded character keys"
+                title="Comma-separated character keys who never mention this."
+                onchange={(e) =>
+                  setParameter(
+                    i,
+                    'excludeNpcKeys',
+                    parseKeyList((e.currentTarget as HTMLInputElement).value)
+                  )}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.npcKey ?? ''}
+                placeholder="speaker (optional)"
+                aria-label="Speaker key"
+                oninput={(e) => {
+                  const value = (e.currentTarget as HTMLInputElement).value.trim();
+                  setParameter(i, 'npcKey', value || undefined);
+                }}
+              />
+              <select
+                class="input arg"
+                value={effect.parameters.activityType ?? ''}
+                aria-label="Activity type"
+                onchange={(e) => {
+                  const value = (e.currentTarget as HTMLSelectElement).value;
+                  setParameter(i, 'activityType', value || undefined);
+                }}
+              >
+                <option value="">(any activity)</option>
+                {#each activityTypes as type (type)}
+                  <option value={type}>{type}</option>
+                {/each}
+              </select>
+              <select
+                class="input arg"
+                value={effect.parameters.placeKey ?? ''}
+                aria-label="Place"
+                onchange={(e) => {
+                  const value = (e.currentTarget as HTMLSelectElement).value;
+                  setParameter(i, 'placeKey', value || undefined);
+                }}
+              >
+                <option value="">(any place)</option>
+                {#each placeKeys as placeKey (placeKey)}
+                  <option value={placeKey}>{placeKey}</option>
+                {/each}
+              </select>
+              <label class="check">
+                <input
+                  type="checkbox"
+                  checked={!!effect.parameters.useOnlyOnce}
+                  onchange={(e) =>
+                    setParameter(
+                      i,
+                      'useOnlyOnce',
+                      (e.currentTarget as HTMLInputElement).checked || undefined
+                    )}
+                />
+                Once
+              </label>
             {:else if effect.type === EventEffectType.AddPossession}
               <select
                 class="input arg"
@@ -907,57 +992,6 @@
                 aria-label="Character key"
                 oninput={(e) =>
                   setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
-              />
-            {:else if effect.type === EventEffectType.AddRumor}
-              <input
-                class="input arg"
-                value={effect.parameters.text ?? ''}
-                placeholder="rumor text"
-                aria-label="Rumor text"
-                oninput={(e) =>
-                  setParameter(i, 'text', (e.currentTarget as HTMLInputElement).value)}
-              />
-              <input
-                class="input arg"
-                value={effect.parameters.aboutNpcKey ?? ''}
-                placeholder="about character key"
-                aria-label="About character key"
-                oninput={(e) => {
-                  const value = (e.currentTarget as HTMLInputElement).value;
-                  setParameter(i, 'aboutNpcKey', value || undefined);
-                }}
-              />
-              <input
-                class="input arg"
-                value={effect.parameters.fromNpcKey ?? ''}
-                placeholder="from character key"
-                aria-label="From character key"
-                oninput={(e) => {
-                  const value = (e.currentTarget as HTMLInputElement).value;
-                  setParameter(i, 'fromNpcKey', value || undefined);
-                }}
-              />
-              <input
-                class="input narrow"
-                type="number"
-                value={effect.parameters.fromDay ?? ''}
-                placeholder="from day"
-                aria-label="From day (offset)"
-                oninput={(e) => {
-                  const raw = (e.currentTarget as HTMLInputElement).value;
-                  setParameter(i, 'fromDay', raw === '' ? undefined : Number(raw));
-                }}
-              />
-              <input
-                class="input narrow"
-                type="number"
-                value={effect.parameters.untilDay ?? ''}
-                placeholder="until day"
-                aria-label="Until day (offset)"
-                oninput={(e) => {
-                  const raw = (e.currentTarget as HTMLInputElement).value;
-                  setParameter(i, 'untilDay', raw === '' ? undefined : Number(raw));
-                }}
               />
             {:else if effect.type === EventEffectType.Move}
               <select

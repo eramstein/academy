@@ -56,7 +56,6 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     matchesRecord: { won: 0, lost: 0 },
     relationTags: [],
     knownTraits: [],
-    memories: [],
     tcgSkill: 0,
     possessions: [],
   };

@@ -4,7 +4,7 @@ Setting for the game and justification for the card game.
 
 ## The World
 
-A low fantasy version of our own world, in a late medieval age, with steam punk technology.
+A low fantasy version of our own world, in the early 19th century, with steam punk technology.
 
 The Academy is located in the Black Forest (western germany), but attracts students from all over Europe, the Arabic world, and even sometimes from African and Asian countries.
 

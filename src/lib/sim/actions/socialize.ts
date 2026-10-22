@@ -2,9 +2,9 @@ import type { Action } from '@/lib/_model';
 import { ActionType, ActivityType } from '@/lib/_model/enums-sim';
 import { gs } from '@/lib/_state';
 import { getCharactersAtScene } from '../characters';
-import { narrateAttemptedAction } from '../narration';
+import { narrateText } from '../narration';
 import { getCurrentScheduledActivity } from '../schedule';
-import { consumeScenePayload, directSocialScene } from '../scene-director';
+import { directSocialScene, recordDirectedChat } from '../scene-director';
 
 export enum SocializeType {
   Chat = 'chat',
@@ -13,28 +13,19 @@ export enum SocializeType {
 export interface SocializeParameters {
   characterKey: string;
   socializeType: SocializeType;
-  /** Optional player intent for LLM narration (does not affect the attribute check). */
-  intent?: string;
 }
 
-/** Chat: the scene director picks one fact, then the writer turns it into prose. */
+/** Chat: the scene director picks a prewritten line for this NPC. */
 export async function socialize(parameters: SocializeParameters): Promise<string> {
-  const intent = parameters.intent?.trim();
-  const action: Action = {
-    label: 'Socialize',
-    actionType: ActionType.Socialize,
-    isLongAction: false,
-    actionParameters: {
-      characterKey: parameters.characterKey,
-      socializeType: parameters.socializeType,
-      ...(intent ? { intent } : {}),
-    },
-  };
-  const direction = directSocialScene(parameters.characterKey);
-  narrateAttemptedAction(action, undefined, {
-    direction,
-    onGenerated: () => consumeScenePayload(direction),
-  });
+  const characterKey = parameters.characterKey;
+  const direction = await directSocialScene(characterKey);
+  if (!direction) {
+    const name = gs.characters[characterKey]?.name ?? 'them';
+    narrateText(`You chat with ${name}, but nothing particular comes up.`, { characterKey });
+    return '';
+  }
+  narrateText(direction.text, { characterKey });
+  recordDirectedChat(direction);
   return '';
 }
 

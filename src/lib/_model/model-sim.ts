@@ -7,6 +7,7 @@ import type {
   ActivityType,
   CharacterGender,
   CharacterTrait,
+  ChatTopicType,
   ClassType,
   DayPeriod,
   Emotion,
@@ -16,7 +17,6 @@ import type {
   PossessionType,
   RelationTag,
   ResourceType,
-  RumorType,
   SchoolName,
   SubscriptionType,
 } from './enums-sim';
@@ -39,16 +39,31 @@ export interface GameState {
   league: League;
   ongoingBattle: OngoingBattle | null;
   storyTags: Record<string, number>;
-  rumors: Rumor[];
+  chatTopics: ChatTopic[];
+  /** Lines created during play. Authored lines stay in the chat topic files. */
+  chatTopicTexts: ChatTopicText[];
 }
 
-export interface Rumor {
-  aboutNpcKey?: string;
-  fromNpcKey?: string; // if set, only that NPC will talk about this rumor
+export interface ChatTopic {
+  key: string;
+  type: ChatTopicType;
+  knownByNpcKeys?: string[]; // only these NPCs will know about the topic, if not set it's public info
+  excludeNpcKeys?: string[]; // these NPCs will never talk about the topic
+  usage: {
+    useOnlyOnce?: boolean;
+    lastUsedOnDay: number;
+    textUsedKey: string;
+  };
+}
+
+export interface ChatTopicText {
+  /** Defaults to topicKey (+ _N if needed) when omitted in authored JSON. */
+  key?: string;
+  topicKey: string;
   text: string;
-  fromDay?: number;
-  untilDay?: number;
-  rumorType?: RumorType;
+  activityType?: ActivityType;
+  placeKey?: string;
+  npcKey?: string;
 }
 
 /** Where to continue an event after the Battle view closes. */
@@ -355,7 +370,6 @@ export interface Npc extends Character {
   matchesRecord: { won: number; lost: number };
   personality: Personality;
   knownTraits: KnownTrait[];
-  memories: NpcMemory[];
   tcgSkill: number;
   routines: NpcRoutine[];
 }
@@ -367,15 +381,6 @@ export interface NpcRoutine {
   placeKey: string;
   description: string;
   isKnown?: boolean;
-}
-
-export interface NpcMemory {
-  title: string;
-  description: string;
-  day: number;
-  emotion?: Emotion;
-  referenceCount: number; // how many times this memory has been referenced
-  lastReferencedDay?: number; // the day this memory was last referenced
 }
 
 export interface KnownTrait {

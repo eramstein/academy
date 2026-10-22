@@ -62,6 +62,7 @@ const emotions = enumValues(enums, 'Emotion');
 const relationTags = enumValues(enums, 'RelationTag');
 const subscriptionTypes = enumValues(enums, 'SubscriptionType');
 const possessionTypes = enumValues(enums, 'PossessionType');
+const chatTopicTypes = enumValues(enums, 'ChatTopicType');
 const cardColors = enumValues(battleEnums, 'CardColor');
 
 const effectTypes = enumValues(enums, 'EventEffectType');
@@ -394,6 +395,17 @@ function checkActionTemplateArgs(where, actionTemplate) {
   }
 }
 
+function checkNpcKeyList(where, label, value) {
+  if (value === undefined) return;
+  if (!Array.isArray(value)) {
+    errors.push(`${where}: ${label} must be an array`);
+    return;
+  }
+  for (const key of value) {
+    checkOneOf(where, label, key, npcKeys);
+  }
+}
+
 function checkEffect(where, effect) {
   const parameters = effect?.parameters ?? {};
   checkOneOf(where, 'type', effect?.type, effectTypes);
@@ -426,21 +438,33 @@ function checkEffect(where, effect) {
         checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
       }
       break;
-    case 'add_rumor':
+    case 'add_chat_topic':
+      if (typeof parameters.key !== 'string' || !parameters.key.trim()) {
+        errors.push(`${where}: key must be a non-empty string`);
+      }
+      checkOneOf(where, 'type', parameters.type, chatTopicTypes);
       if (typeof parameters.text !== 'string' || !parameters.text.trim()) {
         errors.push(`${where}: text must be a non-empty string`);
       }
-      if (parameters.aboutNpcKey !== undefined) {
-        checkOneOf(where, 'aboutNpcKey', parameters.aboutNpcKey, characterKeys);
+      if (
+        parameters.textKey !== undefined &&
+        (typeof parameters.textKey !== 'string' || !parameters.textKey.trim())
+      ) {
+        errors.push(`${where}: textKey must be a non-empty string`);
       }
-      if (parameters.fromNpcKey !== undefined) {
-        checkOneOf(where, 'fromNpcKey', parameters.fromNpcKey, characterKeys);
+      checkNpcKeyList(where, 'knownByNpcKeys', parameters.knownByNpcKeys);
+      checkNpcKeyList(where, 'excludeNpcKeys', parameters.excludeNpcKeys);
+      if (parameters.useOnlyOnce !== undefined && typeof parameters.useOnlyOnce !== 'boolean') {
+        errors.push(`${where}: useOnlyOnce must be a boolean`);
       }
-      if (parameters.fromDay !== undefined && typeof parameters.fromDay !== 'number') {
-        errors.push(`${where}: fromDay must be a number`);
+      if (parameters.npcKey !== undefined) {
+        checkOneOf(where, 'npcKey', parameters.npcKey, npcKeys);
       }
-      if (parameters.untilDay !== undefined && typeof parameters.untilDay !== 'number') {
-        errors.push(`${where}: untilDay must be a number`);
+      if (parameters.activityType !== undefined) {
+        checkOneOf(where, 'activityType', parameters.activityType, activityTypes);
+      }
+      if (parameters.placeKey !== undefined) {
+        checkOneOf(where, 'placeKey', parameters.placeKey, placeKeys);
       }
       break;
     case 'subscribe':
@@ -619,18 +643,6 @@ function checkEffect(where, effect) {
       }
       if (typeof parameters.description !== 'string' || !parameters.description.trim()) {
         errors.push(`${where}: description must be a non-empty string`);
-      }
-      break;
-    case 'add_memory':
-      checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
-      if (typeof parameters.title !== 'string' || !parameters.title.trim()) {
-        errors.push(`${where}: title must be a non-empty string`);
-      }
-      if (typeof parameters.description !== 'string' || !parameters.description.trim()) {
-        errors.push(`${where}: description must be a non-empty string`);
-      }
-      if (parameters.emotion !== undefined) {
-        checkOneOf(where, 'emotion', parameters.emotion, emotions);
       }
       break;
     case 'move':

@@ -1,12 +1,10 @@
 import { ActionType, ActivityType, JobType } from '@/lib/_model/enums-sim';
 import type { Action, AttributeCheck, Npc, ScheduledActivity } from '@/lib/_model/model-sim';
 import { gs } from '@/lib/_state';
-import type { SceneDirection, ScenePayload } from '@/lib/sim/scene-director';
 
 export interface LlmContextParams {
   attributeCheck?: AttributeCheck;
   attemptedAction?: Action;
-  sceneDirection?: SceneDirection;
 }
 
 const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -67,9 +65,6 @@ const GENERIC_ACTION_LABELS = new Set([
 ]);
 
 export function buildLlmContext(params: LlmContextParams = {}): string {
-  if (params.sceneDirection) {
-    return buildDirectedSocialContext(params);
-  }
   const action = params.attributeCheck?.attemptedAction ?? params.attemptedAction;
   const focusKey = getFocusCharacterKey(action);
   const sections = [
@@ -85,54 +80,6 @@ export function buildLlmContext(params: LlmContextParams = {}): string {
     sections.push(buildAttemptedActionContext(params.attemptedAction, focusKey));
   }
   return sections.filter(Boolean).join('\n\n');
-}
-
-/** Voice, personality, and the one fact to convey. */
-function buildDirectedSocialContext(params: LlmContextParams): string {
-  const direction = params.sceneDirection;
-  if (!direction) return '';
-  const npc = gs.characters[direction.characterKey];
-  const name = npc?.name ?? direction.characterKey;
-  return [
-    `NPC: ${name}`,
-    npc ? personalityBlock(npc) : '',
-    direction.payload
-      ? conveyBlock(name, direction.payload)
-      : `Have a short chat with ${name}. Do not invent news or past events.`,
-  ]
-    .filter(Boolean)
-    .join('\n\n');
-}
-
-function personalityBlock(npc: Npc): string {
-  const personality = npc.personality;
-  if (!personality) return '';
-  const traits = Object.entries(personality.traits ?? {})
-    .filter(([, active]) => active)
-    .map(([trait]) => trait);
-  const lines = ['PERSONALITY:'];
-  if (traits.length > 0) lines.push(`Traits: ${traits.join(', ')}.`);
-  if (personality.humor?.trim()) lines.push(personality.humor.trim());
-  if (personality.conflicts?.trim()) lines.push(personality.conflicts.trim());
-  const habits = (personality.habits ?? []).map((habit) => habit.trim()).filter(Boolean);
-  if (habits.length > 0) lines.push(habits.join('. ') + '.');
-  const examples = (personality.speechExamples ?? [])
-    .map((example) => example.trim())
-    .filter(Boolean);
-  if (examples.length > 0) {
-    lines.push('', 'VOICE:', ...examples.map((example) => `"${example}"`));
-  }
-  return lines.length > 1 ? lines.join('\n') : '';
-}
-
-function conveyBlock(npcName: string, payload: ScenePayload): string {
-  if (payload.kind === 'rumor') {
-    return `TELL THE PLAYER THIS. They do not know it yet:\n"${payload.text}"\n${npcName} says it in their own voice. Add no other news.`;
-  }
-  if (payload.kind === 'routine') {
-    return `LET THIS HABIT SLIP, as something the player can learn:\n"${payload.text}"`;
-  }
-  return `REFER BRIEFLY TO THIS MEMORY. Do not retell it, and do not invent any other past event:\n"${payload.text}"`;
 }
 
 export function buildBattleGreetingContext(opponentKey: string): string {

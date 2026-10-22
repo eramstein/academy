@@ -67,16 +67,6 @@ function narrationSystemPrompt(
 
 export const NARRATION_SYSTEM_PROMPT = narrationSystemPrompt(DEFAULT_TONE);
 
-export const SOCIAL_NARRATION_SYSTEM_PROMPT = `You write a short chat for a lighthearted medieval fantasy academy RPG.
-
-Second person, present tense ("you"). About 100 words.
-
-The NPC conveys the supplied fact in their own voice. Match the voice examples in attitude. Do not copy them.
-
-Do not invent other news, past events, or people. If no fact is supplied, keep the chat to the moment and invent nothing about the past.
-
-Return only the scene, as plain prose.`;
-
 export const BATTLE_GREETING_SYSTEM_PROMPT = [
   'You write one line of spoken dialogue for a lighthearted medieval fantasy academy RPG.',
   "The game engine has already sat the player and this character down to a card duel. You only write the opponent's greeting. Do not narrate the match.",

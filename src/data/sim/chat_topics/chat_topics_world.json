@@ -1,0 +1,134 @@
+[
+  {
+    "topicKey": "world_lore_era",
+    "text": "\"It is an extraordinary century to be alive,\" your companion remarks. \"Steam machinery is changing the workshops, artificery is changing the rest, and somehow the paperwork is becoming more complicated than either.\""
+  },
+  {
+    "topicKey": "world_lore_low-magic",
+    "text": "\"People hear the word magic and imagine a wizard waving a staff,\" your companion says. \"They would be disappointed. Most real artificery involves materials, instruments, calculations, and an alarming number of failed prototypes.\""
+  },
+  {
+    "topicKey": "world_lore_no-wands",
+    "text": "\"A magic wand?\" your companion repeats. \"You have been reading the wrong sort of stories, Antonio. Around here, a craftsman with a steady hand and a well-made card is far more useful than someone waving a stick.\""
+  },
+  {
+    "topicKey": "world_lore_captured-essence",
+    "text": "\"The remarkable thing is not the card itself,\" your companion explains. \"It is the essence bound inside it. Put the right essence into the right vessel, and an ordinary object can begin to do something quite extraordinary.\""
+  },
+  {
+    "topicKey": "world_lore_cards-as-vessels",
+    "text": "\"Why cards, rather than coins or little brass boxes?\" your companion asks. \"Convenient size, easy to carry, and excellent for binding essences. Not glamorous, perhaps. But an invention need not be impressive-looking to change the world.\""
+  },
+  {
+    "topicKey": "world_lore_practical-magic",
+    "text": "\"Everyone talks about the splendid things artificers might create,\" your companion says. \"Personally, I would settle for a card that keeps my desk orderly. I suspect that would improve my life more than any grand heroic enchantment.\""
+  },
+  {
+    "topicKey": "world_lore_magic-is-valuable",
+    "text": "\"A properly enchanted card is not something you find in every market stall,\" your companion remarks. \"They are difficult to make and expensive to buy. Which is why we all spend so much time practicing on ones that merely play a game.\""
+  },
+  {
+    "topicKey": "world_lore_artificer-prestige",
+    "text": "\"An accomplished artificer can earn an extraordinary living,\" your companion says. \"People will pay dearly for a useful enchantment, especially one they cannot make themselves. The awkward part is becoming accomplished in the first place.\""
+  },
+  {
+    "topicKey": "world_lore_artificer-aura",
+    "text": "\"You cannot simply hand anyone a set of pigments and declare them an artificer,\" your companion says. \"The talent depends on a suitable magical aura as well as training. I rather wish ordinary examinations worked that way. I could blame my aura for everything.\""
+  },
+  {
+    "topicKey": "world_lore_mature-aura",
+    "text": "\"Ever wonder why the Academy admits so many students in their twenties?\" your companion asks. \"A magical aura takes time to mature. It seems the universe insists we become adults before allowing us to make enchanted cardboard.\""
+  },
+  {
+    "topicKey": "world_lore_green-essence",
+    "text": "\"Green essence is the patient sort,\" your companion says. \"Growth, life, restoration, all those stubborn things that refuse to stay neatly under control. I rather admire it. Even a weed has ambition.\""
+  },
+  {
+    "topicKey": "world_lore_blue-essence",
+    "text": "\"Blue essence rewards a curious mind,\" your companion explains. \"Knowledge, perception, illusion, trickery. Useful qualities for an artificer, though perhaps not all equally reassuring in a fellow student.\""
+  },
+  {
+    "topicKey": "world_lore_red-essence",
+    "text": "\"Red essence is energy, speed, and a certain cheerful disregard for caution,\" your companion says. \"Some people call it chaos. Its admirers usually prefer the word initiative.\""
+  },
+  {
+    "topicKey": "world_lore_black-essence",
+    "text": "\"Black essence gets an unfair reputation,\" your companion says. \"It governs structure and industry as well as preservation and decay. You cannot build something lasting without learning what makes things hold together—or fall apart.\""
+  },
+  {
+    "topicKey": "world_lore_essence-combinations",
+    "text": "\"The four essences are not four separate boxes,\" your companion explains. \"A clever artificer can combine them in the same card. Of course, persuading different forces to cooperate is rather harder than drawing four colored circles on a page.\""
+  },
+  {
+    "topicKey": "world_lore_cultural-traditions",
+    "text": "\"Travel far enough and you will find that different regions favor different combinations of essences,\" your companion says. \"The craft is universal, but everyone brings their own traditions to it. I think that makes the cards much more interesting.\""
+  },
+  {
+    "topicKey": "world_lore_italian-cards",
+    "text": "\"The Italian city-states have a taste for blue-and-black artificery, or so I am told,\" your companion says. \"Knowledge paired with structure and industry. A sensible combination for people who like both clever ideas and getting things built.\""
+  },
+  {
+    "topicKey": "world_lore_arabic-cards",
+    "text": "\"You see a great deal of red-and-blue craft in the Arabic lands,\" your companion remarks. \"Speed and energy married to knowledge and ingenuity. Different schools have their own traditions; that is one reason foreign students are so interesting to talk to.\""
+  },
+  {
+    "topicKey": "world_lore_black-forest",
+    "text": "\"It is a peculiar place to build a famous school, is it not?\" your companion says. \"Deep in the Black Forest, with old woods all around us. I suppose the founders believed serious study required a little distance from the rest of the world.\""
+  },
+  {
+    "topicKey": "world_lore_international-students",
+    "text": "\"Listen to the accents in any busy Academy room,\" your companion suggests. \"Students come from across Europe and farther afield, even from Africa and Asia. The difficult part is agreeing on whose method is the proper one.\""
+  },
+  {
+    "topicKey": "world_lore_global-schools",
+    "text": "\"Our Academy is hardly the only school of artificery,\" your companion says. \"There are institutions across the world, each convinced it teaches the craft properly. It is astonishing how many different ways there are to be entirely certain of oneself.\""
+  },
+  {
+    "topicKey": "world_lore_academy-age",
+    "text": "\"Our Academy is one of the oldest in Europe,\" your companion says. \"That counts for something. Ancient traditions, generations of scholars, and buildings that appear determined to remain standing out of sheer pride.\""
+  },
+  {
+    "topicKey": "world_lore_academy-prestige",
+    "text": "\"The Academy reputation is an odd mixture,\" your companion admits. \"A glorious history, some remarkable students, and rather less money than its newer rivals. Apparently prestige does not always pay for new equipment.\""
+  },
+  {
+    "topicKey": "world_lore_rival-schools",
+    "text": "\"The schools quarrel over more than tournament trophies,\" your companion says. \"They compete for talented students, wealthy patrons, and guild partnerships. One would think a profession devoted to careful reasoning might be a little less competitive. One would be wrong.\""
+  },
+  {
+    "topicKey": "world_lore_patronage",
+    "text": "\"Winning the attention of a wealthy patron can matter almost as much as passing an examination,\" your companion says. \"The finest workshop in the world still needs funding. A very inconvenient truth for anyone who dislikes asking for money.\""
+  },
+  {
+    "topicKey": "world_lore_student-card-game",
+    "text": "\"It seems absurd at first, does it not?\" your companion says. \"All this machinery and learning, just to make cards play a game. But the exercise forces us to build precise enchantments. There is a serious lesson hiding beneath the entertainment.\""
+  },
+  {
+    "topicKey": "world_lore_self-playing-cards",
+    "text": "\"Watch the cards carefully next time you play,\" your companion says. \"They follow instructions, move themselves, and remember the rules. That is already a remarkable piece of craftsmanship, even if it looks like an ordinary card game.\""
+  },
+  {
+    "topicKey": "world_lore_card-illustrations",
+    "text": "\"A dragon on a beginner card is not a promise of an actual dragon,\" your companion cautions. \"It is an illustration for the game. The enchantment makes the card behave correctly on the board; it does not fill the classroom with fire-breathing monsters.\""
+  },
+  {
+    "topicKey": "world_lore_game-as-test",
+    "text": "\"The card game tests two skills at once,\" your companion explains. \"First, can you make the enchantment work? Second, can you use it intelligently? A fine creation in the hands of a poor strategist may not get very far.\""
+  },
+  {
+    "topicKey": "world_lore_students-vs-professionals",
+    "text": "\"A student card that obeys the rules is a beginning, not the finish,\" your companion says. \"Experienced artificers craft things that can be useful outside a game. There is rather a long road between the two.\""
+  },
+  {
+    "topicKey": "world_lore_sentient-cards",
+    "text": "\"Imagine making a card that could actually think,\" your companion says. \"Not merely follow the rules, but offer advice, answer questions, perhaps disagree with you. That is the sort of creation students dream about. I only hope mine would be polite.\""
+  },
+  {
+    "topicKey": "world_lore_sentient-card-applications",
+    "text": "\"A sentient card need not be a grand weapon,\" your companion observes. \"A capable advisor could be worth more to someone than a hundred flashy tournament tricks. It is the practical uses that make advanced artificery so valuable.\""
+  },
+  {
+    "topicKey": "world_lore_defensive-manifestations",
+    "text": "\"Some accomplished cards can produce temporary physical manifestations,\" your companion says. \"Useful for protection, among other things. Temporary is the important word. We are not conjuring permanent armies out of painted paper.\""
+  }
+]

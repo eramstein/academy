@@ -1,0 +1,129 @@
+[
+  {
+    "topicKey": "emma_lore_childhood-pet_private",
+    "text": "\"I have a pet rabbit,\" Emma tells you. \"A surprisingly discerning creature. He listens to my lectures without interrupting, and has yet to dispute a single conclusion.\" She pauses. \"Admittedly, he has eaten some of my notes. No scholar is without flaws.\""
+  },
+  {
+    "topicKey": "emma_lore_academy-promising",
+    "text": "\"Have you heard about Emma Delamain?\" your companion asks. \"Some people are calling her the most promising newcomer at the Academy. That is rather a lot to live up to, particularly when there are so many students eager to test the claim.\""
+  },
+  {
+    "topicKey": "emma_lore_academy-promising",
+    "text": "Elsa makes a small, immaculate adjustment to her cuff. \"Apparently Emma Delamain is the Academy's great new hope. How fortunate for her that reputations are awarded before the examinations.\" She smiles. \"I look forward to the results.\"",
+    "npcKey": "elsa"
+  },
+  {
+    "topicKey": "emma_routine_library",
+    "text": "\"If you're trying to find Emma, the library is a sensible place to begin,\" your companion says. \"She studies there most weekday evenings. I suspect the librarians have begun counting her among the furniture.\""
+  },
+  {
+    "topicKey": "emma_routine_library",
+    "text": "\"Weekday evenings? Usually the library,\" Emma says. \"It's quieter than the common rooms, and the books make fewer demands on my time than the students do.\" She considers you. \"Present company may prove an exception, if it has something interesting to say.\"",
+    "npcKey": "emma"
+  },
+  {
+    "topicKey": "emma_routine_music",
+    "text": "\"Emma plays the violin at the Old Monk's Inn on Friday evenings,\" your companion tells you. \"Quite beautifully, too. It's odd to see someone who can silence a whole room without asking anybody to be quiet.\""
+  },
+  {
+    "topicKey": "emma_routine_music",
+    "text": "\"I play violin at the Old Monk's Inn on Friday evenings,\" Emma says. \"It's a welcome change from cards and calculations. You're welcome to listen, if you can promise not to shout tactical advice between movements.\"",
+    "npcKey": "emma"
+  },
+  {
+    "topicKey": "emma_lore_french-background",
+    "text": "\"Delamain? She's French, I believe,\" your companion says. \"You can hear it in her speech now and then. Though when she corrects someone's grammar, the effect is quite international.\""
+  },
+  {
+    "topicKey": "emma_lore_late-starter",
+    "text": "\"Emma is older than most of the first-year students,\" your companion observes. \"Twenty-seven, apparently. She doesn't seem especially concerned about starting late. She seems more interested in finishing first.\""
+  },
+  {
+    "topicKey": "emma_lore_bookish",
+    "text": "\"Have you seen how many books Emma carries?\" your companion asks. \"I watched her balance a stack that would have defeated a carpenter. She looked more annoyed by the interruption than by the weight.\""
+  },
+  {
+    "topicKey": "emma_lore_work-ethic",
+    "text": "\"People say Emma makes everything look easy,\" your companion remarks. \"I see her practicing when everyone else has gone home. If she has a secret gift, it may be the ability to keep working long after the rest of us give up.\""
+  },
+  {
+    "topicKey": "emma_lore_blue-magic",
+    "text": "\"If you want an argument about blue magic, find Emma Delamain,\" your companion says. \"She can explain the finer points of illusion and control so clearly that you'll almost forget she's dismantling your entire theory.\""
+  },
+  {
+    "topicKey": "emma_lore_tcg-competitor",
+    "text": "\"I wouldn't underestimate Emma across a card table,\" your companion warns. \"She's an excellent player, and losing doesn't put her off. It just gives her another reason to study the match afterward.\""
+  },
+  {
+    "topicKey": "emma_lore_high-standards",
+    "text": "\"Emma has rather exacting standards,\" your companion tells you. \"I once heard her call a perfectly respectable design 'promising.' The student looked delighted until she opened her notebook and began listing improvements.\""
+  },
+  {
+    "topicKey": "emma_lore_not-easily-impressed",
+    "text": "\"Trying to impress Emma Delamain?\" your companion asks. \"You might have better luck showing her a clever piece of work than praising her eyes. She hears plenty of compliments. A useful idea is rarer.\""
+  },
+  {
+    "topicKey": "emma_lore_dry-humor",
+    "text": "\"You have to listen carefully when Emma makes a joke,\" your companion says. \"She delivers it with such perfect seriousness that half the room needs another moment to realize it's been insulted. Affectionately, usually.\""
+  },
+  {
+    "topicKey": "emma_lore_ballet",
+    "text": "\"Apparently Emma practices ballet as well as artificery,\" your companion says. \"I don't know where she finds the hours. Perhaps she's discovered a way of fitting a second timetable inside the first.\""
+  },
+  {
+    "topicKey": "emma_lore_violin-skill",
+    "text": "\"I heard Emma play violin once,\" your companion says. \"The strange thing is how different she seems with the instrument in her hands. The concentration is familiar, but for a few minutes she's not trying to win an argument.\""
+  },
+  {
+    "topicKey": "emma_lore_independent",
+    "text": "\"Emma doesn't seem to enjoy accepting help,\" your companion says. \"She'll assist anyone who can keep up with her, but persuading her to let someone return the favor appears to be an advanced course.\""
+  },
+  {
+    "topicKey": "emma_lore_molly-friendship",
+    "text": "\"Emma and Molly make an unlikely pair, don't they?\" your companion remarks. \"Molly seems ready to befriend half the Academy. Emma looks as though she'd rather interview applicants. Somehow they get along beautifully.\""
+  },
+  {
+    "topicKey": "emma_lore_ambitious",
+    "text": "\"Have you asked Emma what she wants to accomplish here?\" your companion says. \"Don't expect a modest answer. She takes the Academy very seriously. I suspect she intends to leave with rather more than a certificate.\""
+  },
+  {
+    "topicKey": "emma_lore_scholarly-reputation",
+    "text": "\"One of the professors mentioned Emma's work the other day,\" your companion says. \"Not as a warning, for once. Apparently her notes are remarkably thorough. I think the rest of us are hoping nobody makes them the new standard.\""
+  },
+  {
+    "topicKey": "emma_lore_argumentative",
+    "text": "\"I watched Emma disagree with a textbook,\" your companion tells you. \"Not with its author. The book itself. She sat there making corrections in the margin as though she expected it to apologize.\""
+  },
+  {
+    "topicKey": "emma_lore_musical-discipline",
+    "text": "\"Emma's violin playing is rather polished,\" your companion says. \"Someone suggested it must come naturally to her. She just smiled and asked whether they'd care to count the years of practice.\""
+  },
+  {
+    "topicKey": "emma_lore_formidable-partner",
+    "text": "\"Emma seems to choose her collaborators carefully,\" your companion observes. \"If she asks for your opinion, I'd take that as a compliment. Though I'd still prepare to defend it.\""
+  },
+  {
+    "topicKey": "emma_lore_education_private",
+    "text": "\"My parents believed an education was worth almost any sacrifice,\" Emma says. \"I sometimes thought they were being extravagant. Then I met people who could afford every advantage and made very little use of any of them.\" Her smile is brief. \"I resolved not to waste mine.\""
+  },
+  {
+    "topicKey": "emma_lore_french-family_private",
+    "text": "\"I grew up among people who considered a good argument a perfectly respectable form of entertainment,\" Emma tells you. \"My family is French. We have strong opinions about books, music, and occasionally the correct way to cut bread. The books are easier to discuss.\""
+  },
+  {
+    "topicKey": "emma_lore_interrupted-studies_private",
+    "text": "\"I didn't come to the Academy as soon as I wanted,\" Emma admits. \"There were other things to attend to, and money has an irritating habit of deciding the order of one's ambitions.\" She straightens. \"Still. I'm here now. I don't intend to lose any more time.\""
+  },
+  {
+    "topicKey": "emma_lore_ambitions_private",
+    "text": "\"I want to become an artificer whose work actually matters,\" Emma says. \"Not merely someone who wins a few student matches and collects compliments.\" A smile appears. \"Though I see no reason not to win the matches while I'm at it.\""
+  },
+  {
+    "topicKey": "emma_lore_violins_private",
+    "text": "\"Violin is a rather unforgiving instrument,\" Emma tells you. \"A note played badly remains a note played badly, however charmingly you apologize afterward.\" She looks amused. \"I find that refreshingly honest. More people should behave like violins.\""
+  },
+  {
+    "topicKey": "emma_lore_ballet-private_private",
+    "text": "\"Ballet? Yes, I practice,\" Emma says. \"It's good for balance, discipline, and discovering muscles you weren't previously aware could complain.\" She gives you a level look. \"And before you ask, no, you may not grade my technique.\""
+  }
+]

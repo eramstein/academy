@@ -35,11 +35,10 @@ import {
   type TeachColorParameters,
 } from './teach';
 import { addKnownTrait, type AddKnownTraitParameters } from './traits';
-import { addMemory, type AddMemoryParameters } from './memories';
+import { addChatTopic, type AddChatTopicParameters } from './chat-topics';
 import { startMatch, type StartMatchParameters } from './match';
 import { newLeagueSeason, type NewLeagueSeasonParameters } from './league';
 import { addPossession, type AddPossessionParameters } from './possessions';
-import { addRumor, type AddRumorParameters } from './rumors';
 
 export function applyEffect(effect: EventEffect) {
   const result = effectFunctions[effect.type](effect.parameters);
@@ -80,7 +79,8 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.AddStoryTag]: (parameters) => addStoryTag(parameters as AddStoryTagParameters),
   [EventEffectType.AddKnownTrait]: (parameters) =>
     addKnownTrait(parameters as AddKnownTraitParameters),
-  [EventEffectType.AddMemory]: (parameters) => addMemory(parameters as AddMemoryParameters),
+  [EventEffectType.AddChatTopic]: (parameters) =>
+    addChatTopic(parameters as AddChatTopicParameters),
   [EventEffectType.Move]: (parameters) => move(parameters as MoveParameters),
   [EventEffectType.UseFocus]: (parameters) => useFocus(parameters as UseFocusParameters),
   [EventEffectType.StartMatch]: (parameters) => startMatch(parameters as StartMatchParameters),
@@ -88,5 +88,4 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     newLeagueSeason(parameters as NewLeagueSeasonParameters),
   [EventEffectType.AddPossession]: (parameters) =>
     addPossession(parameters as AddPossessionParameters),
-  [EventEffectType.AddRumor]: (parameters) => addRumor(parameters as AddRumorParameters),
 };

@@ -1,6 +1,7 @@
 import { type BattleState, type GameState, type UiState } from '../_model';
 import { defaultBattleState } from '../battle';
 import { getManualSceneTriggers, rebuildWorkingEventTemplates } from '../sim/events';
+import { initChatTopics } from '../sim/chat-topics';
 import { defaultGameState, initSim } from '../sim/init';
 import { getGame, getLatestGame, saveGame, type SaveGame } from './save-games';
 import { uiState } from './state-ui.svelte';
@@ -54,6 +55,17 @@ export const loadGameStateFromLocalStorage = async (id: string) => {
       if (typeof gs.player.maxFocus !== 'number') {
         gs.player.maxFocus = defaultGameState.player.maxFocus;
       }
+      delete (gs as { rumors?: unknown }).rumors;
+      for (const character of Object.values(gs.characters)) {
+        delete (character as { memories?: unknown }).memories;
+      }
+      if (!Array.isArray(gs.chatTopics)) {
+        gs.chatTopics = [];
+      }
+      if (!Array.isArray(gs.chatTopicTexts)) {
+        gs.chatTopicTexts = [];
+      }
+      await initChatTopics({ keepExisting: true });
       rebuildWorkingEventTemplates();
       if ((gs.scene.event?.options?.length ?? 0) > 0 || gs.scene.pendingPeriodEvent) {
         gs.scene.manualTriggers = [];

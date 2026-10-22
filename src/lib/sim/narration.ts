@@ -25,7 +25,6 @@ import { probeFirstExistingImage } from './activity-image';
 import { actionTemplates, getActionTemplateMeta } from './cards/action-templates';
 import { formatKeywordLabel, KEYWORD_KEYS } from './cards/keywords';
 import { getCachedSceneImageUrl, saveCachedSceneImage } from './scene-image-cache';
-import type { SceneDirection } from './scene-director';
 import { getWeekDay, WEEK_DAYS } from './time';
 
 export function narrate(narration: Narration) {
@@ -227,7 +226,6 @@ export type SilentCheckOutcome = {
 };
 
 export type AttemptedNarrationHints = {
-  direction?: SceneDirection;
   /** Called after generated prose is saved. Skipped when the model call fails. */
   onGenerated?: () => void;
 };
@@ -258,19 +256,16 @@ async function fillAttemptedActionNarration(
   let generated = false;
   try {
     const result = outcome
-      ? await generateAttributeCheckNarration(
-          {
-            success: outcome.success,
-            critical: outcome.critical,
-            roll: 0,
-            attribute: outcome.attribute,
-            difficulty: outcome.difficulty,
-            target: 0,
-            attemptedAction: action,
-          },
-          hints?.direction
-        )
-      : await generateAttemptedActionNarration(action, hints?.direction);
+      ? await generateAttributeCheckNarration({
+          success: outcome.success,
+          critical: outcome.critical,
+          roll: 0,
+          attribute: outcome.attribute,
+          difficulty: outcome.difficulty,
+          target: 0,
+          attemptedAction: action,
+        })
+      : await generateAttemptedActionNarration(action);
     text = result.text;
     imagePrompt = result.imagePrompt;
     generated = true;

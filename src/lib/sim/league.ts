@@ -2,7 +2,6 @@ import { ActivityType, DayPeriod, SchoolName, type Character } from '../_model';
 import { gs } from '../_state';
 import { getRandomFromArray } from '../_utils/random';
 import { getCharactersAtScene } from './characters';
-import { recordMatchRumor } from './effects/rumors';
 import { findNextFreeDay } from './effects/schedule';
 import { narrateText } from './narration';
 import { scheduleActivity } from './schedule';
@@ -59,7 +58,6 @@ export function recordLeagueMatchResult(won: boolean) {
   } else {
     gs.characters[opponentKey].matchesRecord.lost++;
   }
-  recordMatchRumor(opponentKey, won);
   autoPlayOtherLeagueMatches();
   // Odd-sized leagues give the player one bye round; those NPC-vs-NPC matches
   // are never auto-played unless we resolve them once the player is done.

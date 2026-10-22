@@ -1,160 +1,191 @@
 /*
-  The scene director picks one fact for a chat: a rumor, a memory, or a routine.
-  The LLM only turns that fact into prose.
+  Picks one prewritten chat line for the NPC the player is talking to.
+  First a topic type is chosen by weighted random, then topics of that
+  type are ranked. Tunables live in CHAT_TOPIC_WEIGHTS.
 */
 
-import type { Npc, NpcMemory, Rumor } from '../_model';
-import { gs } from '../_state';
-import { getRandomFromArray } from '../_utils/random';
-import { formatRoutineText } from './npc';
+import { ChatTopicType, type ChatTopic } from '@/lib/_model';
+import { gs } from '@/lib/_state';
+import { getRandomFromArray, getRandomWeighted } from '@/lib/_utils/random';
+import { readChatTopicText, textsForTopic, type ChatTopicTextMeta } from './chat-topics';
+import { getCurrentScheduledActivity } from './schedule';
 
-export interface ScenePayload {
-  kind: 'rumor' | 'memory' | 'routine';
-  /** Fact the writer must put in the NPC's dialogue. */
-  text: string;
-  index: number;
-}
+/**
+ * Type weights drive the first-pass pick among types that have a speakable
+ * topic. Within a type, each matching factor adds its points; the highest
+ * total is spoken. Ties are broken at random.
+ */
+export const CHAT_TOPIC_WEIGHTS = {
+  type: {
+    [ChatTopicType.Evergreen]: 10,
+    [ChatTopicType.Lore]: 40,
+    [ChatTopicType.Memory]: 80,
+    [ChatTopicType.Routine]: 40,
+  },
+  /** This NPC has a line written specifically for them. */
+  npcSpecificText: 15,
+  /** Subtracted in full when the topic was used today. */
+  mentionedToday: 35,
+  /** How much of that penalty falls away for each day since it was used. */
+  mentionedDecayPerDay: 7,
+};
 
-export interface SceneDirection {
+export interface DirectedChat {
   characterKey: string;
-  payload?: ScenePayload;
+  topicKey: string;
+  textKey: string;
+  text: string;
 }
 
-interface FactCandidate {
-  payload: ScenePayload;
-  /** Lower means less recently used. */
-  rank: number;
+interface RankedTopic {
+  topic: ChatTopic;
+  score: number;
+  lines: ChatTopicTextMeta[];
 }
 
-/** Chooses one fact this NPC can tell without repeating today's material. */
-export function directSocialScene(characterKey: string): SceneDirection {
+/** Chooses the chat line this NPC should speak right now. */
+export async function directSocialScene(characterKey: string): Promise<DirectedChat | undefined> {
   const npc = gs.characters[characterKey];
-  const candidates = npc ? factCandidates(npc) : [];
-  const payload = candidates.length > 0 ? pickLeastUsed(candidates) : undefined;
-  const direction: SceneDirection = {
+  if (!npc) return undefined;
+
+  const ranked = await rankTopics(characterKey);
+  if (ranked.length === 0) {
+    console.log('[scene-director]', { characterKey, name: npc.name, topic: null });
+    return undefined;
+  }
+
+  const chosenType = pickTopicType(ranked);
+  const ofType = ranked.filter((entry) => entry.topic.type === chosenType);
+  const best = Math.max(...ofType.map((entry) => entry.score));
+  const tied = ofType.filter((entry) => entry.score === best);
+  const chosen = getRandomFromArray(tied);
+  const line = pickLine(chosen.lines, chosen.topic.usage?.textUsedKey ?? '');
+  const prose = await readChatTopicText(line);
+  if (!prose) return undefined;
+
+  const firstName = (npc.name ?? characterKey).split(/\s+/)[0] ?? characterKey;
+  const text = prose.replaceAll('your companion', firstName);
+
+  const direction: DirectedChat = {
     characterKey,
-    ...(payload ? { payload } : {}),
+    topicKey: chosen.topic.key,
+    textKey: line.key,
+    text,
   };
   console.log('[scene-director]', {
     characterKey,
-    name: npc?.name,
-    payload: payload ? { kind: payload.kind, index: payload.index, text: payload.text } : null,
+    name: npc.name,
+    topic: chosen.topic.key,
+    type: chosen.topic.type,
+    score: chosen.score,
+    textKey: line.key,
   });
   return direction;
 }
 
-/** Marks the directed fact as used. Call only after the prose was saved. */
-export function consumeScenePayload(direction: SceneDirection): void {
-  const payload = direction.payload;
-  if (!payload) return;
+/** Weighted random among types that still have at least one speakable topic. */
+function pickTopicType(ranked: RankedTopic[]): ChatTopicType {
+  const available = new Set(ranked.map((entry) => entry.topic.type));
+  return getRandomWeighted(
+    [...available].map((type) => ({
+      item: type,
+      weight: CHAT_TOPIC_WEIGHTS.type[type] ?? 0,
+    }))
+  );
+}
 
-  if (payload.kind === 'rumor') {
-    consumeRumor(payload);
+/** Remembers which line was spoken. A use-once topic is removed. */
+export function recordDirectedChat(direction: DirectedChat): void {
+  const topics = gs.chatTopics ?? [];
+  const topic = topics.find((item) => item.key === direction.topicKey);
+  if (!topic) return;
+  if (topic.usage?.useOnlyOnce) {
+    gs.chatTopics = topics.filter((item) => item.key !== topic.key);
     return;
   }
-
-  const npc = gs.characters[direction.characterKey];
-  if (!npc) return;
-
-  if (payload.kind === 'memory') {
-    const memory = npc.memories?.[payload.index];
-    if (memory && payload.text.includes(memory.description)) {
-      memory.referenceCount = (memory.referenceCount ?? 0) + 1;
-      memory.lastReferencedDay = gs.time.day;
-    }
-    return;
-  }
-
-  const routine = npc.routines?.[payload.index];
-  if (routine && formatRoutineText(routine) === payload.text) {
-    routine.isKnown = true;
-  }
+  topic.usage = {
+    ...topic.usage,
+    lastUsedOnDay: gs.time.day,
+    textUsedKey: direction.textKey,
+  };
 }
 
-function factCandidates(npc: Npc): FactCandidate[] {
-  return [...rumorCandidates(npc.key), ...memoryCandidates(npc), ...routineCandidates(npc)];
-}
-
-function pickLeastUsed(candidates: FactCandidate[]): ScenePayload {
-  const best = Math.min(...candidates.map((candidate) => candidate.rank));
-  const tied = candidates.filter((candidate) => candidate.rank === best);
-  const kinds = [...new Set(tied.map((candidate) => candidate.payload.kind))];
-  const kind = getRandomFromArray(kinds);
-  return getRandomFromArray(tied.filter((candidate) => candidate.payload.kind === kind)).payload;
-}
-
-function rumorCandidates(npcKey: string): FactCandidate[] {
-  const day = gs.time.day;
-  return (gs.rumors ?? [])
-    .map((rumor, index) => ({ rumor, index }))
-    .filter(
-      ({ rumor }) =>
-        isRumorActive(rumor, day) && canNpcTell(rumor, npcKey) && rumor.aboutNpcKey !== npcKey
-    )
-    .map(({ rumor, index }) => ({
-      payload: { kind: 'rumor' as const, text: rumor.text, index },
-      rank: 0,
-    }));
-}
-
-function memoryCandidates(npc: Npc): FactCandidate[] {
+async function rankTopics(characterKey: string): Promise<RankedTopic[]> {
   const today = gs.time.day;
-  return (npc.memories ?? [])
-    .map((memory, index) => ({ memory, index }))
-    .filter(({ memory }) => memory.lastReferencedDay !== today)
-    .map(({ memory, index }) => ({
-      payload: {
-        kind: 'memory' as const,
-        text: memoryText(memory),
-        index,
-      },
-      rank: memoryRank(memory, today),
-    }));
+  const activityType = getCurrentScheduledActivity()?.type;
+  const placeKey = gs.characters[characterKey]?.placeKey;
+  const ranked: RankedTopic[] = [];
+
+  for (const topic of gs.chatTopics ?? []) {
+    if (!npcKnowsTopic(topic, characterKey)) continue;
+    const texts = await textsForTopic(topic.key);
+    const dedicated = texts.some((text) => text.npcKey === characterKey);
+    const lines = speakableLines(texts, characterKey, activityType, placeKey);
+    if (lines.length === 0) continue;
+    ranked.push({
+      topic,
+      lines,
+      score: topicScore(topic, dedicated, today),
+    });
+  }
+  return ranked;
 }
 
-function routineCandidates(npc: Npc): FactCandidate[] {
-  return (npc.routines ?? [])
-    .map((routine, index) => ({ routine, index }))
-    .filter(({ routine }) => !routine.isKnown)
-    .map(({ routine, index }) => ({
-      payload: { kind: 'routine' as const, text: formatRoutineText(routine), index },
-      rank: 0,
-    }));
-}
-
-/** Unused facts rank 0. Each past telling pushes a memory back. */
-function memoryRank(memory: NpcMemory, today: number): number {
-  const mentions = memory.referenceCount ?? 0;
-  if (mentions === 0) return 0;
-  const daysSince =
-    memory.lastReferencedDay === undefined
-      ? mentions
-      : Math.max(1, today - memory.lastReferencedDay);
-  return mentions * 10 - Math.min(daysSince, 9);
-}
-
-function memoryText(memory: NpcMemory): string {
-  const title = memory.title?.trim();
-  const description = memory.description?.trim() ?? '';
-  return title ? `${title}. ${description}` : description;
-}
-
-function isRumorActive(rumor: Rumor, day: number): boolean {
-  if (rumor.fromDay !== undefined && day < rumor.fromDay) return false;
-  if (rumor.untilDay !== undefined && day > rumor.untilDay) return false;
+function npcKnowsTopic(topic: ChatTopic, npcKey: string): boolean {
+  const knownBy = topic.knownByNpcKeys;
+  if (knownBy && knownBy.length > 0 && !knownBy.includes(npcKey)) return false;
+  if (topic.excludeNpcKeys?.includes(npcKey)) return false;
+  if (topic.usage?.useOnlyOnce && (topic.usage.textUsedKey || topic.usage.lastUsedOnDay > 0)) {
+    return false;
+  }
   return true;
 }
 
-function canNpcTell(rumor: Rumor, npcKey: string): boolean {
-  return rumor.fromNpcKey === undefined || rumor.fromNpcKey === npcKey;
+function topicScore(topic: ChatTopic, dedicated: boolean, today: number): number {
+  const voiceScore = dedicated ? CHAT_TOPIC_WEIGHTS.npcSpecificText : 0;
+  return voiceScore - mentionPenalty(topic.usage?.lastUsedOnDay ?? 0, today);
 }
 
-function consumeRumor(payload: ScenePayload): void {
-  const rumors = gs.rumors ?? [];
-  if (rumors[payload.index]?.text === payload.text) {
-    rumors.splice(payload.index, 1);
-    return;
-  }
-  const found = rumors.findIndex((rumor) => rumor.text === payload.text);
-  if (found >= 0) rumors.splice(found, 1);
+/** Closer to today means a larger penalty. Never-used topics are not penalized. */
+function mentionPenalty(lastUsedOnDay: number, today: number): number {
+  if (!lastUsedOnDay || lastUsedOnDay > today) return 0;
+  const daysAgo = today - lastUsedOnDay;
+  return Math.max(
+    0,
+    CHAT_TOPIC_WEIGHTS.mentionedToday - daysAgo * CHAT_TOPIC_WEIGHTS.mentionedDecayPerDay
+  );
+}
+
+/**
+ * NPC-specific lines replace the generic ones.
+ * A line that names the current activity or place is preferred over a plain one.
+ * The line used last is skipped when another remains.
+ */
+function speakableLines(
+  texts: ChatTopicTextMeta[],
+  npcKey: string,
+  activityType: ChatTopicTextMeta['activityType'],
+  placeKey: string | undefined
+): ChatTopicTextMeta[] {
+  const dedicated = texts.filter((text) => text.npcKey === npcKey);
+  const pool = dedicated.length > 0 ? dedicated : texts.filter((text) => !text.npcKey);
+  const fitting = pool.filter((text) => fitsContext(text, activityType, placeKey));
+  const contextual = fitting.filter((text) => text.activityType || text.placeKey);
+  return contextual.length > 0 ? contextual : fitting;
+}
+
+function fitsContext(
+  text: ChatTopicTextMeta,
+  activityType: ChatTopicTextMeta['activityType'],
+  placeKey: string | undefined
+): boolean {
+  if (text.activityType && text.activityType !== activityType) return false;
+  if (text.placeKey && text.placeKey !== placeKey) return false;
+  return true;
+}
+
+function pickLine(lines: ChatTopicTextMeta[], lastTextKey: string): ChatTopicTextMeta {
+  const fresh = lastTextKey ? lines.filter((line) => line.key !== lastTextKey) : lines;
+  const pool = fresh.length > 0 ? fresh : lines;
+  return getRandomFromArray(pool);
 }
