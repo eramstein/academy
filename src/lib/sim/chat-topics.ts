@@ -65,6 +65,37 @@ export async function textsForTopic(topicKey: string): Promise<ChatTopicTextMeta
   return [...authored, ...runtime];
 }
 
+/**
+ * Lines tagged for an activity type that fit the given NPCs (and optional place).
+ * NPC-specific lines replace generics; a matching placeKey is preferred when set.
+ */
+export async function textsForActivity(
+  activityType: ActivityType,
+  npcKeys: string[],
+  placeKey?: string
+): Promise<ChatTopicTextMeta[]> {
+  const all = await allTextMetas();
+  const ofActivity = all.filter((text) => text.activityType === activityType);
+  const dedicated = ofActivity.filter(
+    (text) => text.npcKey !== undefined && npcKeys.includes(text.npcKey)
+  );
+  const pool =
+    dedicated.length > 0 ? dedicated : ofActivity.filter((text) => !text.npcKey);
+  const fitting = pool.filter(
+    (text) => !text.placeKey || !placeKey || text.placeKey === placeKey
+  );
+  const atPlace = fitting.filter((text) => text.placeKey && text.placeKey === placeKey);
+  return atPlace.length > 0 ? atPlace : fitting;
+}
+
+async function allTextMetas(): Promise<ChatTopicTextMeta[]> {
+  const catalog = await loadTextCatalog();
+  const runtime = runtimeTexts().map((text) =>
+    toMeta({ ...text, key: text.key ?? text.topicKey }, RUNTIME_SOURCE, -1)
+  );
+  return [...catalog, ...runtime];
+}
+
 export function hasChatTopicText(topicKey: string, textKey: string): boolean {
   const authored = textCatalog?.some((text) => text.topicKey === topicKey && text.key === textKey);
   const runtime = runtimeTexts().some((text) => text.topicKey === topicKey && text.key === textKey);

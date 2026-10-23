@@ -9,7 +9,7 @@ import {
   generateAttemptedActionNarration,
   generateAttributeCheckNarration,
 } from '@/lib/llm/prompts';
-import type { CardTemplate, DayPeriod } from '../_model';
+import { ActivityType, type CardTemplate, type DayPeriod, type ScheduledActivity } from '../_model';
 import { ActionType, Emotion, NarrationType } from '../_model/enums-sim';
 import type {
   Action,
@@ -20,12 +20,29 @@ import type {
   Narration,
 } from '../_model/model-sim';
 import { gs } from '../_state';
+import { getRandomFromArray } from '../_utils/random';
 import type { TransactionParameters } from './actions';
 import { probeFirstExistingImage } from './activity-image';
 import { actionTemplates, getActionTemplateMeta } from './cards/action-templates';
 import { formatKeywordLabel, KEYWORD_KEYS } from './cards/keywords';
+import { readChatTopicText, textsForActivity } from './chat-topics';
 import { getCachedSceneImageUrl, saveCachedSceneImage } from './scene-image-cache';
 import { getWeekDay, WEEK_DAYS } from './time';
+
+const ACTIVITY_NARRATION: Record<ActivityType, string> = {
+  [ActivityType.Class]: 'in class',
+  [ActivityType.Work]: 'working',
+  [ActivityType.Social]: 'socializing',
+  [ActivityType.Date]: 'on a date',
+  [ActivityType.Training]: 'training',
+  [ActivityType.Study]: 'studying',
+  [ActivityType.Tournament]: 'competing',
+  [ActivityType.Exam]: 'taking an exam',
+  [ActivityType.Event]: 'an event occured',
+  [ActivityType.Adventure]: 'adventuring',
+  [ActivityType.LeagueCeremony]: 'attending the league ceremony',
+  [ActivityType.Sports]: 'playing sports',
+};
 
 export function narrate(narration: Narration) {
   const imagePrompt = narration.imageUrl ? undefined : narration.imagePrompt;
@@ -424,4 +441,39 @@ export function narrateRelationUpdate(characterKey: string, tagText: string) {
     characters: [characterKey],
     title: `${firstName} · relation update`,
   });
+}
+
+/** Prefer a ChatTopicText that fits a participant and this activity; else a short stock line. */
+export async function narrateScheduledActivity(activity: ScheduledActivity) {
+  const npcKeys = activity.participants.filter((key) => key !== gs.player.key);
+  const lines = await textsForActivity(activity.type, npcKeys, activity.placeKey);
+  if (lines.length > 0) {
+    const line = getRandomFromArray(lines);
+    const prose = await readChatTopicText(line);
+    if (prose) {
+      const companionKey = line.npcKey ?? npcKeys[0];
+      const companionName = companionKey
+        ? (gs.characters[companionKey]?.name ?? companionKey).split(/\s+/)[0]
+        : undefined;
+      narrateText(
+        companionName ? prose.replaceAll('your companion', companionName) : prose,
+        companionKey ? { characterKey: companionKey } : undefined
+      );
+      return;
+    }
+  }
+
+  const others = npcKeys
+    .map((key) => gs.characters[key]?.name ?? key)
+    .filter(Boolean);
+  const phrase = ACTIVITY_NARRATION[activity.type] ?? activity.type;
+  if (others.length === 0) {
+    narrateText(`You are ${phrase}.`);
+    return;
+  }
+  const withWhom =
+    others.length === 1
+      ? others[0]
+      : `${others.slice(0, -1).join(', ')} and ${others[others.length - 1]}`;
+  narrateText(`You are ${phrase} with ${withWhom}.`);
 }

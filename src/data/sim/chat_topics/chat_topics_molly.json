@@ -125,5 +125,323 @@
     "topicKey": "molly_lore_overcommitting_private",
     "text": "\"I said yes to another favor,\" Molly admits, looking faintly guilty. \"They did need help! Only now I'm not sure where the hours are supposed to come from. Do you think there is an enchantment that makes an afternoon twice as long? Perhaps I should learn that one first.\"",
     "npcKey": "molly"
+  },
+
+  {
+    "topicKey": "molly_lore_friendly-face",
+    "text": "\"Molly Moreno?\" your companion says. \"If you look lost, she is usually the first person to notice. She has a talent for making newcomers feel as though they have been expected all along. I wish the Academy issued more people like her with the welcome packets.\""
+  },
+  {
+    "topicKey": "molly_lore_athletic-strength",
+    "text": "\"Molly looks so gentle that people forget how strong she is,\" your companion observes. \"Then they see her at physical training and reconsider their assumptions. Quite a useful lesson, really. One can be kind and still lift things the rest of us cannot budge.\""
+  },
+  {
+    "topicKey": "molly_lore_running",
+    "text": "\"Molly seems to enjoy running,\" your companion says with a look of mild disbelief. \"Not winning a race, mind you. The actual running. I have watched her finish a lap looking happier than when she started. I find that deeply suspicious.\""
+  },
+  {
+    "topicKey": "molly_lore_nature-lover",
+    "text": "\"If Molly could hold every Academy lesson outdoors, I suspect she would,\" your companion remarks. \"She speaks about the forests and mountains as if they were old friends. Admittedly, the trees are less likely than the professors to assign written examinations.\""
+  },
+  {
+    "topicKey": "molly_lore_animals",
+    "text": "\"Molly has a soft spot for animals,\" your companion tells you. \"A remarkable soft spot, considering how many of them have teeth, claws, or deplorable table manners. She seems convinced that most creatures improve once someone treats them kindly.\""
+  },
+  {
+    "topicKey": "molly_lore_animal-ban",
+    "text": "\"The Academy forbids students from keeping pets, which Molly considers a rather cruel rule,\" your companion says. \"I understand the administration's concerns. But if anyone could persuade a stray creature to behave in a lecture, it might be her. Persuading the creature to stop being adorable would be harder.\""
+  },
+  {
+    "topicKey": "molly_lore_green-magic",
+    "text": "\"Molly seems particularly at home with green magic,\" your companion says. \"Nature and restoration suit her. She talks about those cards with real enthusiasm, even when the rest of artificery leaves her looking as though the textbook has personally insulted her.\""
+  },
+  {
+    "topicKey": "molly_lore_academic-modesty",
+    "text": "\"Molly is forever saying she is not very clever,\" your companion remarks. \"I don't think that's fair. She may not solve every theoretical puzzle, but she notices things about people that half the brightest students walk straight past.\""
+  },
+  {
+    "topicKey": "molly_lore_practical-skills",
+    "text": "\"Put Molly in front of a complicated theorem and she hesitates,\" your companion says. \"Give her a practical problem and she gets moving. It is a rather underrated form of intelligence at a school where everyone is so fond of writing equations.\""
+  },
+  {
+    "topicKey": "molly_lore_helping-others",
+    "text": "\"Molly is always helping somebody,\" your companion observes. \"Sometimes I think she has mistaken the entire Academy for a collection of people who need looking after. It's admirable, although I do wonder when she finds time to look after herself.\""
+  },
+  {
+    "topicKey": "molly_lore_village-children",
+    "text": "\"Have you noticed Molly's interest in the village children?\" your companion asks. \"She worries about families who cannot afford proper lessons. Most students are trying to survive their own education; Molly is busy wondering how other people might get one.\""
+  },
+  {
+    "topicKey": "molly_lore_friendship-emma",
+    "text": "\"Molly and Emma make an unlikely pair,\" your companion says. \"Emma can make a simple question sound like an examination. Molly makes an examination sound as though everyone ought to have a good time. Somehow the two seem to understand each other.\""
+  },
+  {
+    "topicKey": "molly_lore_easy-laughter",
+    "text": "\"Molly has a laugh that is rather difficult not to join in,\" your companion remarks. \"The joke doesn't even have to be particularly good. In fact, I sometimes suspect she laughs hardest when she has misunderstood it entirely.\""
+  },
+  {
+    "topicKey": "molly_lore_sensitive",
+    "text": "\"People sometimes mistake Molly's sensitivity for weakness,\" your companion says. \"She can be moved to tears by a small kindness. But she recovers, rolls up her sleeves, and goes on helping. I am not sure the rest of us would manage it so well.\""
+  },
+  {
+    "topicKey": "molly_lore_optimism",
+    "text": "\"Molly can find something hopeful to say in nearly any situation,\" your companion tells you. \"I used to think she simply hadn't understood how bad things were. Now I suspect she understands perfectly well and has decided that despair is not especially useful.\""
+  },
+  {
+    "topicKey": "molly_lore_generosity",
+    "text": "\"Molly never seems terribly interested in showing off what she has,\" your companion says. \"She is much more interested in whether someone else needs something. A refreshing habit, though I imagine it makes her an easy target for people with very convincing sob stories.\""
+  },
+  {
+    "topicKey": "molly_lore_cheerful-competition",
+    "text": "\"Molly enjoys a friendly challenge,\" your companion says. \"Especially the sort involving fresh air and a little exertion. She'll cheer you on even while beating you, which is either exceptionally sporting or a very elaborate way of making defeat more embarrassing.\""
+  },
+  {
+    "topicKey": "molly_lore_straightforward",
+    "text": "\"Trying to be mysterious with Molly is usually a waste of time,\" your companion remarks. \"She takes people at their word. If you want her to understand something, you're better off saying it plainly. There's something rather disarming about that.\""
+  },
+  {
+    "topicKey": "molly_lore_love-of-outdoors_private",
+    "text": "\"I love the Academy, truly,\" Molly says, then hesitates. \"Well, I love the people. And some of the lessons. But if I spend too long indoors, I start wondering whether the trees have noticed I'm missing. That's silly, isn't it? Don't answer too quickly.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_walking-in-woods_private",
+    "text": "\"Do you ever go walking just to see where a path leads?\" Molly asks. \"I know you're supposed to have a destination. But sometimes I like coming across a clearing or a stream that I wasn't looking for. It feels like finding a little present nobody knew they'd left for you.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_swimming_private",
+    "text": "\"Swimming is wonderful,\" Molly says brightly. \"You can be as tired and worried as you like, and the moment you're in the water everything seems lighter. Except your clothes, obviously. That is a lesson I learned rather quickly.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_physical-training_private",
+    "text": "\"I like lifting weights,\" Molly admits. \"It's so satisfying when something that used to feel terribly heavy becomes easy. If only studying worked like that. I've tried staring very hard at difficult books, but they refuse to get any lighter.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_green-affinity_private",
+    "text": "\"Green magic makes sense to me,\" Molly says. \"Growing things, helping them recover, giving them a little time... I understand that. Ask me to explain every complicated enchantment and I'm rather less impressive. But I do try.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_study-anxiety_private",
+    "text": "\"Sometimes everyone in class understands something before I do,\" Molly says, her smile turning sheepish. \"I know that doesn't mean I'll never understand it. It's just rather hard to remember when the professor is already three pages ahead of me.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_not-stupid_private",
+    "text": "\"I'm not hopeless at artificery,\" Molly says, a touch more firmly than usual. \"I just have to work harder at the theory. And I think that ought to count for something. Sorry, I didn't mean to sound cross. Actually, perhaps I did, a little.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_animals_private",
+    "text": "\"If I were allowed a pet, I don't think I'd be very good at choosing just one,\" Molly confesses. \"I'd meet some poor little creature and convince myself there was room for another. Very soon I'd be sharing my bed with a family of hedgehogs and wondering where all the blankets went.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_academy-pet-rule_private",
+    "text": "\"They say the no-pets rule is perfectly sensible,\" Molly sighs. \"And I suppose it is. But wouldn't it be lovely to have a dog waiting when you finished a dreadful day of classes? A dog wouldn't ask how your examination went. Well, not in words.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_tutoring-goal_private",
+    "text": "\"I keep thinking about children who'd love to learn but don't get the chance,\" Molly tells you. \"It's hard enough studying when you have books and teachers. Imagine doing it without either. I'd like to help, even if I can only manage a little at first.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_overcommitting_private",
+    "text": "\"I said yes to another favor,\" Molly admits, looking faintly guilty. \"They did need help! Only now I'm not sure where the hours are supposed to come from. Do you think there is an enchantment that makes an afternoon twice as long? Perhaps I should learn that one first.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_difficulty-saying-no_private",
+    "text": "\"I know I ought to say no sometimes,\" Molly says. \"People tell me so quite often. But then someone asks for help, and I imagine how awful I'd feel if I were in their place. It all sounds very sensible until there's an actual person standing in front of me.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_trusting-people_private",
+    "text": "\"I suppose I trust people rather easily,\" Molly says. \"That doesn't mean I never notice when someone disappoints me. I do. I just don't want the next person to suffer because the last one behaved badly. Is that terribly foolish?\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_tears_private",
+    "text": "\"I cry at the silliest things,\" Molly confesses. \"A sad story, a happy ending, somebody being unexpectedly kind... It's embarrassing. But the tears go away, and then there's usually something useful I can do. So I try not to worry too much about it.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_courage_private",
+    "text": "\"I'm frightened of plenty of things,\" Molly tells you. \"Examinations, disappointing people, making a fool of myself. But if someone's in trouble, I don't really think about being frightened until afterward. Then my knees sometimes remember for me.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_quiet-anger_private",
+    "text": "\"I don't like arguments,\" Molly says. \"They make my stomach hurt. But I really can't bear it when someone strong picks on someone who can't defend themselves. I get so cross I forget I'm supposed to be shy. Then afterward I feel a bit shaky.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_emma-friendship_private",
+    "text": "\"Emma makes me laugh,\" Molly says warmly. \"Half the time I'm not even sure she meant to! She thinks so hard about everything. I wish she could see that people can enjoy her company without expecting her to be brilliant every minute.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_friendship_private",
+    "text": "\"Making friends is the best part of coming here,\" Molly says. \"I was terribly nervous at first. Everyone seemed to know exactly where they were going. Then I realized lots of us were pretending. It's much nicer being confused together.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_food_private",
+    "text": "\"I'm very fond of a good meal after a long walk,\" Molly says with a grin. \"Actually, I'm fond of a good meal before one too. I don't see why enjoying the outdoors should mean suffering through stale bread when you get home.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_rest_private",
+    "text": "\"Sometimes I plan a wonderfully productive afternoon,\" Molly says, \"and then the sun comes out, and there's somewhere lovely to sit, and I think perhaps I'll rest for just five minutes. It's astonishing how quickly those five minutes turn into an hour.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_future-pressure_private",
+    "text": "\"People often have very definite ideas about what I ought to become,\" Molly says quietly. \"They mean well. Mostly. I just wish deciding what to do with a life were as easy as choosing where to go for a walk. You can always turn around on a path.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_artificery-doubts_private",
+    "text": "\"Being an artificer is a wonderful thing,\" Molly says carefully. \"I can see why people want it so badly. I just... sometimes wonder whether wanting something because it's wonderful is the same as wanting it for yourself. Does that make sense?\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_generosity-and-money_private",
+    "text": "\"Money can do a great deal of good,\" Molly says. \"But I don't like the idea of people being grateful to me just because I can give them things. I'd rather they felt comfortable telling me when I'm wrong. That may be asking rather a lot.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_love-of-company_private",
+    "text": "\"I don't need anything terribly exciting to enjoy an afternoon,\" Molly tells you. \"A nice walk, something good to eat, people I like... Sometimes that's enough. Though if somebody suggests a little adventure, I probably won't say no.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_literal-humor_private",
+    "text": "\"Emma says I'm too easy to tease,\" Molly tells you, smiling. \"The trouble is, she says things with such a serious face! By the time I realize she's joking, she's already enjoying herself far too much. One day I'll catch her out. I hope.\"",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-sports-warm-up_private",
+    "text": "\"Do you always stretch this much?\" you ask. Molly nods solemnly. \"Oh, yes. I once skipped it and spent the rest of the day walking like a very old duck.\" She pauses, then adds brightly, \"I think the duck was probably more graceful.\"",
+    "activityType": "sports",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-sports-friendly-pace_private",
+    "text": "Molly eases her pace to match yours. \"Tell me if I go too fast, all right?\" she says. \"I forget sometimes that other people don’t find this relaxing.\" You ask what she considers tiring. She thinks hard. \"Sitting through two hours of magical theory without moving.\"",
+    "activityType": "sports",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-sports-stronger-than-she-looks_private",
+    "text": "\"Would you mind holding this?\" Molly asks, handing you a training weight. It is considerably heavier than you expect. She notices your expression. \"Oh! Sorry, Antonio. I should have warned you.\" She takes it back with effortless ease, looking rather embarrassed by the whole business.",
+    "activityType": "sports",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-sports-outdoor-preference_private",
+    "text": "\"A fine day for being outdoors,\" Molly declares, taking a grateful breath. \"Of course, I say that about rainy days too. And windy days.\" You ask whether she ever dislikes the weather. \"When it keeps me inside,\" she answers, as though that settles the matter.",
+    "activityType": "sports",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-sports-sporting-spirit_private",
+    "text": "\"Come on, one more round!\" Molly says, then catches your expression. \"Or not. Sorry. I get carried away.\" She grins. \"We could call it a draw.\" You point out that she is clearly winning. \"Oh, I know. I was trying to be polite.\"",
+    "activityType": "sports",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-study-difficult-paragraph_private",
+    "text": "Molly rereads the same paragraph, then gives it a small, reproachful look. \"I understand every word separately,\" she tells you. \"It’s when they get together that they become troublesome.\" She starts again, more slowly. \"There. I think I’ve caught the first half. Now for the dangerous bit.\"",
+    "activityType": "study",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-study-encouraging-partner_private",
+    "text": "\"You explain things much more clearly when I can ask questions,\" Molly says. \"Books never stop when I get confused. They just carry on being terribly certain of themselves.\" She brightens. \"Not that I’m asking you to do all the work. Let me try explaining the next part back to you.\"",
+    "activityType": "study",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-study-practical-example_private",
+    "text": "Molly listens to an explanation of green essences, her brow furrowed. \"So it’s rather like tending a garden? You don’t simply order a plant to grow faster. You have to give it what it needs.\" She looks pleased. \"Oh! That makes much more sense than the chapter did.\"",
+    "activityType": "study",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-study-break-negotiation_private",
+    "text": "\"I’ve made a bargain with myself,\" Molly announces. \"Two more pages, then a short walk.\" You glance at the thick book. \"A very short walk,\" she amends. \"Unless we happen to find a lovely place to sit. Then it might take a little longer.\"",
+    "activityType": "study",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-study-family-expectations_private",
+    "text": "Molly closes her notes with a sigh. \"Some people seem to have known exactly what they wanted to study since they were children.\" She rubs the edge of the page with her thumb. \"I wish I felt so certain.\" Then she opens the book again. \"Still. I’m here, and I may as well learn something useful.\"",
+    "activityType": "study",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-training-lovely-card_private",
+    "text": "Molly examines a card you have just played. \"Oh, that one is lovely!\" She leans closer to admire the illustration. \"I really ought to pay attention to what it does, shouldn’t I?\" A moment later, the card demonstrates exactly what it does. \"Ah,\" she says. \"Yes. I see that now.\"",
+    "activityType": "training",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-training-gentle-competition_private",
+    "text": "\"I promise I won’t be upset if you win,\" Molly says, arranging her cards. \"You can be pleased with yourself. I’d be pleased for you too.\" She considers this. \"Well, mostly. I might want another game straight away.\"",
+    "activityType": "training",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-training-green-strategy_private",
+    "text": "Molly studies her hand. \"I like green cards. They make me think about looking after things instead of destroying them.\" She plays a sturdy creature and smiles. \"Although I suppose looking after your own creatures sometimes means being rather unkind to somebody else’s.\"",
+    "activityType": "training",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-training-misread-ability_private",
+    "text": "\"I thought this card could heal anything,\" Molly admits, checking the rules again. \"Apparently it only heals units next to it.\" She moves it into position, rather pleased. \"Well, that’s all right. A little planning is a better solution than complaining about the rules.\"",
+    "activityType": "training",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-training-practice-progress_private",
+    "text": "Molly looks over the board, then at you. \"Wait. Don’t tell me.\" She studies the available moves for another moment before carefully choosing one. \"There! I worked it out myself.\" Her smile broadens. \"Even if it’s a terrible move, please let me enjoy that for a second.\"",
+    "activityType": "training",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-date-comfortable-company_private",
+    "text": "\"I hope you’re enjoying yourself,\" Molly says, then immediately laughs at herself. \"Oh, that sounds terribly formal, doesn’t it?\" She smiles at you. \"I’m enjoying myself. I just thought you ought to know, rather than spend the whole evening trying to guess.\"",
+    "activityType": "date",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-date-simple-pleasures_private",
+    "text": "\"I don’t think an evening has to be grand to be lovely,\" Molly tells you. \"Good food, someone nice to talk to, perhaps a little fresh air afterward.\" She smiles. \"Though I wouldn’t object to dessert. I’m not that modest.\"",
+    "activityType": "date",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-date-shy-compliment_private",
+    "text": "Molly looks at you with sudden determination. \"Antonio, I wanted to say you look very nice.\" Having delivered the compliment, she blushes and looks briefly triumphant. \"There. I’ve said it. I spent far too long thinking about how to phrase something so simple.\"",
+    "activityType": "date",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-date-natural-conversation_private",
+    "text": "\"Do you ever worry about running out of things to say?\" Molly asks. Before you can answer, she laughs. \"That’s a silly question to ask while we’re talking, isn’t it?\" She settles into a contented smile. \"I think I like that we don’t have to fill every moment.\"",
+    "activityType": "date",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "molly_lore_ambient-date-dream-of-freedom_private",
+    "text": "\"If you could spend a whole week doing exactly as you pleased, where would you go?\" Molly asks. You turn the question back on her. \"Somewhere with mountains. Or a lake. Maybe both.\" Her smile turns thoughtful. \"I’m not sure I’ve ever had an entire week with no one expecting anything of me.\"",
+    "activityType": "date",
+    "npcKey": "molly"
   }
 ]

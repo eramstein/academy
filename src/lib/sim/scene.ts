@@ -22,9 +22,9 @@ import {
   recordEventOccured,
   sceneEventForNode,
 } from './events';
-import { narrateText } from './narration';
+import { narrateScheduledActivity, narrateText } from './narration';
 import { updateNpcLocations } from './npc';
-import { getCurrentScheduledActivity, narrateScheduledActivity } from './schedule';
+import { getCurrentScheduledActivity } from './schedule';
 import { nextPeriod } from './time';
 
 function effectsIncludeNarrate(effects?: EventEffect[]): boolean {
@@ -314,7 +314,7 @@ export function setCurrentActivity(currentScheduledActivity: ScheduledActivity) 
     gs.characters[participant].activityHistory[currentScheduledActivity.type] =
       (gs.characters[participant].activityHistory[currentScheduledActivity.type] || 0) + 1;
   });
-  narrateScheduledActivity(currentScheduledActivity);
+  void narrateScheduledActivity(currentScheduledActivity);
 }
 
 export function nextScene() {

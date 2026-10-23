@@ -1,24 +1,9 @@
-import { ActivityType, DayPeriod, type ScheduledActivity } from '../_model';
+import { DayPeriod, type ScheduledActivity } from '../_model';
 import { isClassActivity } from '../_model/type-lookup-sim';
 import { gs } from '../_state';
 import { setPossibleActions } from './actions';
-import { narrateText } from './narration';
 import { setCurrentActivity } from './scene';
 import { getNextPeriod } from './time';
-
-const ACTIVITY_NARRATION: Record<ActivityType, string> = {
-  [ActivityType.Class]: 'in class',
-  [ActivityType.Work]: 'working',
-  [ActivityType.Social]: 'socializing',
-  [ActivityType.Date]: 'on a date',
-  [ActivityType.Training]: 'training',
-  [ActivityType.Study]: 'studying',
-  [ActivityType.Tournament]: 'competing',
-  [ActivityType.Exam]: 'taking an exam',
-  [ActivityType.Event]: 'an event occured',
-  [ActivityType.Adventure]: 'adventuring',
-  [ActivityType.LeagueCeremony]: 'attending the league ceremony',
-};
 
 function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
@@ -74,18 +59,4 @@ export function formatActivityShortLabel(activity: ScheduledActivity): string {
       ? others[0]
       : `${others.slice(0, -1).join(', ')} and ${others[others.length - 1]}`;
   return `${name} with ${withWhom}`;
-}
-
-export function narrateScheduledActivity(activity: ScheduledActivity) {
-  const others = participantNames(activity);
-  const phrase = ACTIVITY_NARRATION[activity.type] ?? activity.type;
-  if (others.length === 0) {
-    narrateText(`You are ${phrase}.`);
-    return;
-  }
-  const withWhom =
-    others.length === 1
-      ? others[0]
-      : `${others.slice(0, -1).join(', ')} and ${others[others.length - 1]}`;
-  narrateText(`You are ${phrase} with ${withWhom}.`);
 }
