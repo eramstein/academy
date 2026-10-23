@@ -1,12 +1,19 @@
-import type { Position, StatusType, UnitCard, UnitCardTemplate, UnitDeployed } from '@/lib/_model';
+import {
+  type Position,
+  type StatusType,
+  type UnitCard,
+  type UnitCardTemplate,
+  type UnitDeployed,
+} from '@/lib/_model';
 import { config } from '../_config';
 import { bs } from '../_state';
 import { uiState } from '../_state/state-ui.svelte';
 import { clearUnitStaticAbilities } from './ability-static';
 import { isCellFree, isOnPlayersSide } from './boards';
 import { isPayable, payCost } from './cost';
-import { isUnitsTurn } from './player';
+import { removeAllCounters } from './counter';
 import { onDamageUnit, onDeployUnit, onUnitDeath } from './listeners';
+import { isUnitsTurn } from './player';
 import { soundManager } from './sound';
 
 export function deployUnit(unit: UnitCard, position: Position) {
@@ -95,6 +102,7 @@ export function destroyUnit(unit: UnitDeployed) {
   if (unit.isDying) {
     return;
   }
+  removeAllCounters(unit);
   unit.isDying = true;
   bs.players[unit.ownerPlayerId].graveyard.push(unit);
   onUnitDeath(unit);

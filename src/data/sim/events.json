@@ -155,7 +155,9 @@
       {
         "triggerType": "period",
         "parameters": {
-          "periods": ["morning"]
+          "periods": [
+            "morning"
+          ]
         }
       }
     ],
@@ -273,7 +275,9 @@
                 "schedule": {
                   "recurrence": {
                     "maxCount": 12,
-                    "daysOfWeek": [2],
+                    "daysOfWeek": [
+                      2
+                    ],
                     "period": "evening"
                   }
                 }
@@ -345,7 +349,10 @@
           "type": "move",
           "parameters": {
             "placeKey": "library",
-            "characterKeys": ["player", "molly"]
+            "characterKeys": [
+              "player",
+              "molly"
+            ]
           }
         }
       },
@@ -414,7 +421,10 @@
               "parameters": {
                 "activity": {
                   "type": "sports",
-                  "participants": ["player", "molly"],
+                  "participants": [
+                    "player",
+                    "molly"
+                  ],
                   "placeKey": "academy-courtyard"
                 },
                 "schedule": {
@@ -423,7 +433,9 @@
                     "period": "evening"
                   },
                   "recurrence": {
-                    "daysOfWeek": [1],
+                    "daysOfWeek": [
+                      1
+                    ],
                     "period": "evening"
                   }
                 }
@@ -441,7 +453,9 @@
                 "key": "molly_memory_running_race",
                 "type": "memory",
                 "text": "Molly greets you with a grin. \"I still think about that race to the gate, Antonio. You were fast! Next time I'm not letting you sneak ahead in the last few steps.\" She looks rather pleased at the prospect of a rematch.",
-                "knownByNpcKeys": ["molly"]
+                "knownByNpcKeys": [
+                  "molly"
+                ]
               }
             }
           ],
@@ -457,7 +471,10 @@
               "parameters": {
                 "activity": {
                   "type": "sports",
-                  "participants": ["player", "molly"],
+                  "participants": [
+                    "player",
+                    "molly"
+                  ],
                   "placeKey": "academy-courtyard"
                 },
                 "schedule": {
@@ -466,7 +483,9 @@
                     "period": "evening"
                   },
                   "recurrence": {
-                    "daysOfWeek": [1],
+                    "daysOfWeek": [
+                      1
+                    ],
                     "period": "evening"
                   }
                 }
@@ -484,7 +503,9 @@
                 "key": "molly_memory_running_race",
                 "type": "memory",
                 "text": "Molly waves cheerfully. \"Have you recovered from our race? I hope I didn't go too fast. Come along on Monday—we'll get you into splendid shape.\" Her expression suggests that this is a promise, not a threat.",
-                "knownByNpcKeys": ["molly"]
+                "knownByNpcKeys": [
+                  "molly"
+                ]
               }
             }
           ]
@@ -512,7 +533,10 @@
             "parameters": {
               "activity": {
                 "type": "sports",
-                "participants": ["player", "molly"],
+                "participants": [
+                  "player",
+                  "molly"
+                ],
                 "placeKey": "academy-courtyard"
               },
               "schedule": {
@@ -521,7 +545,9 @@
                   "period": "evening"
                 },
                 "recurrence": {
-                  "daysOfWeek": [1],
+                  "daysOfWeek": [
+                    1
+                  ],
                   "period": "evening"
                 }
               }
@@ -539,7 +565,9 @@
               "key": "molly_memory_running_kindness",
               "type": "memory",
               "text": "\"I'm glad you told me to slow down for Emma that day,\" Molly says. \"Sometimes I get so excited that I forget other people aren't enjoying themselves quite as much as I am.\" She smiles. \"Although I do hope you enjoyed it a little!\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           }
         ]
@@ -566,7 +594,11 @@
             "parameters": {
               "activity": {
                 "type": "sports",
-                "participants": ["player", "molly", "emma"],
+                "participants": [
+                  "player",
+                  "molly",
+                  "emma"
+                ],
                 "placeKey": "academy-courtyard"
               },
               "schedule": {
@@ -575,7 +607,9 @@
                   "period": "evening"
                 },
                 "recurrence": {
-                  "daysOfWeek": [1],
+                  "daysOfWeek": [
+                    1
+                  ],
                   "period": "evening"
                 }
               }
@@ -599,7 +633,9 @@
               "key": "molly_memory_running_emma",
               "type": "memory",
               "text": "\"Are you coming running with us again?\" Molly asks brightly. \"Emma says she's only doing it to prove a point.\" A brief pause. \"I'm not quite sure what point, but I'm very proud of her.\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           },
           {
@@ -608,7 +644,9 @@
               "key": "emma_memory_running_tease",
               "type": "memory",
               "text": "Emma regards you with a cool smile. \"Ah, Fibonacci. Come to make another contribution to my athletic education? I assure you my stamina has improved. My tolerance for your commentary remains unchanged.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -654,7 +692,10 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 1,
-                "poolKeys": ["molly", "base"]
+                "poolKeys": [
+                  "molly",
+                  "base"
+                ]
               }
             },
             {
@@ -669,7 +710,9 @@
                 "key": "molly_memory_wrestling_win",
                 "type": "memory",
                 "text": "Molly beams when she sees you. \"I've been practicing that move you used against me, Antonio. You won't catch me with it twice!\" She thinks for a moment. \"Well. Probably not twice.\"",
-                "knownByNpcKeys": ["molly"]
+                "knownByNpcKeys": [
+                  "molly"
+                ]
               }
             }
           ],
@@ -692,7 +735,9 @@
                 "key": "molly_memory_wrestling_loss",
                 "type": "memory",
                 "text": "Molly gives you an encouraging smile. \"You really must wrestle with me again sometime! I've thought of a few things we can practice so you don't go flying quite so quickly.\" She pauses. \"Sorry. That sounded worse than I meant it.\"",
-                "knownByNpcKeys": ["molly"]
+                "knownByNpcKeys": [
+                  "molly"
+                ]
               }
             }
           ],
@@ -732,7 +777,10 @@
                 "parameters": {
                   "activity": {
                     "type": "social",
-                    "participants": ["player", "molly"],
+                    "participants": [
+                      "player",
+                      "molly"
+                    ],
                     "placeKey": "royal-pigeon-inn"
                   },
                   "schedule": {
@@ -768,7 +816,10 @@
                   "parameters": {
                     "activity": {
                       "type": "date",
-                      "participants": ["player", "molly"],
+                      "participants": [
+                        "player",
+                        "molly"
+                      ],
                       "placeKey": "royal-pigeon-inn"
                     },
                     "schedule": {
@@ -791,7 +842,9 @@
                     "key": "molly_memory_wrestling_date",
                     "type": "memory",
                     "text": "Molly looks at you with a shy, delighted smile. \"You know, I thought we were just going to have dinner after our wrestling match. I didn't expect you to ask me on a proper date.\" She laughs softly. \"I'm very glad you did.\"",
-                    "knownByNpcKeys": ["molly"]
+                    "knownByNpcKeys": [
+                      "molly"
+                    ]
                   }
                 },
                 {
@@ -823,7 +876,10 @@
                   "parameters": {
                     "activity": {
                       "type": "social",
-                      "participants": ["player", "molly"],
+                      "participants": [
+                        "player",
+                        "molly"
+                      ],
                       "placeKey": "royal-pigeon-inn"
                     },
                     "schedule": {
@@ -870,7 +926,9 @@
       {
         "triggerType": "period",
         "parameters": {
-          "periods": ["evening"]
+          "periods": [
+            "evening"
+          ]
         }
       }
     ],
@@ -891,7 +949,9 @@
               "key": "emma_lore_pajama_evening",
               "type": "lore",
               "text": "Emma greets you with a smile of such exquisite innocence that you immediately suspect trouble.\n\n\"Antonio! I hear congratulations are in order. Apparently, Molly invited you to spend the night in her bedroom. In front of half the cafeteria, no less!\"\n\nYou attempt to explain, but Emma raises a hand.\n\n\"Please, Fibonacci. Your private affairs are entirely your own. I would never dream of prying.\"\n\nShe pauses, visibly savoring the moment.\n\n\"Although I must say, I rather admire Molly's efficiency. Some girls spend weeks dropping hints. She simply announces her intentions over lunch.\"\n\nThere is absolutely no point arguing. Emma has found a new source of entertainment, and she intends to enjoy it.",
-              "knownByNpcKeys": ["emma"],
+              "knownByNpcKeys": [
+                "emma"
+              ],
               "priority": 3
             }
           },
@@ -899,7 +959,10 @@
             "type": "move",
             "parameters": {
               "placeKey": "molly-room",
-              "characterKeys": ["player", "molly"]
+              "characterKeys": [
+                "player",
+                "molly"
+              ]
             }
           }
         ]
@@ -925,7 +988,9 @@
               "key": "molly_lore_pajama_evening",
               "type": "lore",
               "text": "Molly smiles when you mention her party. \"The hot chocolate was delicious! I did make rather too much, though. I wish you could have joined me, Antonio. Perhaps another time?\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           },
           {
@@ -934,7 +999,9 @@
               "key": "emma_lore_pajama_evening",
               "type": "lore",
               "text": "Emma greets you with a smile of such exquisite innocence that you immediately suspect trouble.\n\n\"Antonio! I hear congratulations are in order. Apparently, Molly invited you to spend the night in her bedroom. In front of half the cafeteria, no less!\"\n\nYou attempt to explain, but Emma raises a hand.\n\n\"Please, Fibonacci. Your private affairs are entirely your own. I would never dream of prying.\"\n\nShe pauses, visibly savoring the moment.\n\n\"Although I must say, I rather admire Molly's efficiency. Some girls spend weeks dropping hints. She simply announces her intentions over lunch.\"\n\nThere is absolutely no point arguing. Emma has found a new source of entertainment, and she intends to enjoy it.",
-              "knownByNpcKeys": ["emma"],
+              "knownByNpcKeys": [
+                "emma"
+              ],
               "priority": 3
             }
           }
@@ -979,7 +1046,9 @@
                   "key": "molly_memory_pajama_pillow_war",
                   "type": "memory",
                   "text": "Molly lowers her voice conspiratorially. \"I've been trying not to laugh whenever I see Margaret. Do you remember her face when she heard us with the pillows?\" She pauses. \"Well, we didn't actually see her face, did we? I think that's what makes it worse.\"",
-                  "knownByNpcKeys": ["molly"]
+                  "knownByNpcKeys": [
+                    "molly"
+                  ]
                 }
               }
             ]
@@ -1013,7 +1082,9 @@
                   "key": "molly_memory_pajama_chocolate",
                   "type": "memory",
                   "text": "\"I keep thinking about our pajama evening,\" Molly says warmly. \"The stories, the chocolate... It was lovely to have someone to be completely silly with. Or completely lazy. Both are terribly important skills, I think.\"",
-                  "knownByNpcKeys": ["molly"]
+                  "knownByNpcKeys": [
+                    "molly"
+                  ]
                 }
               }
             ]
@@ -1049,7 +1120,10 @@
       {
         "triggerType": "day_of_week",
         "parameters": {
-          "daysOfWeek": [6, 7]
+          "daysOfWeek": [
+            6,
+            7
+          ]
         }
       },
       {
@@ -1096,7 +1170,9 @@
               "key": "molly_memory_lake_swim",
               "type": "memory",
               "text": "Molly's eyes brighten. \"Do you remember our race into the lake? I still say you started early!\" She laughs. \"Not that it helped you very much. We should go back when the weather's lovely.\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           }
         ]
@@ -1145,7 +1221,9 @@
               "key": "molly_memory_lake_picnic",
               "type": "memory",
               "text": "\"I found another place that reminds me of our picnic,\" Molly tells you. \"Quiet water, trees, absolutely no one demanding that we study.\" She thinks for a moment. \"Well, there was that duck. But he only demanded sandwiches.\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           }
         ]
@@ -1174,7 +1252,10 @@
           "type": "move",
           "parameters": {
             "placeKey": "gray_mountains",
-            "characterKeys": ["player", "molly"]
+            "characterKeys": [
+              "player",
+              "molly"
+            ]
           }
         }
       }
@@ -1222,7 +1303,9 @@
                     "key": "molly_memory_lake_intimate",
                     "type": "memory",
                     "text": "Molly gives you a mischievous smile. \"I've been thinking about that afternoon at the lake. I had no idea swimming could be quite so entertaining.\" She blushes a little. \"We really ought to go again sometime.\"",
-                    "knownByNpcKeys": ["molly"]
+                    "knownByNpcKeys": [
+                      "molly"
+                    ]
                   }
                 },
                 {
@@ -1231,7 +1314,9 @@
                     "key": "molly_lore_lake_growth",
                     "type": "lore",
                     "text": "Emma greets you with a smile of positively dangerous innocence. \"Antonio! Molly was telling me about your excursion to the lake. Apparently there was a rather remarkable demonstration of Giant Growth.\" You open your mouth to object. \"Oh, spare me the technical details. I only wish to congratulate you on finally discovering an application of green magic that inspires genuine enthusiasm for your studies.\" Her raised eyebrow suggests that further objections would merely improve her afternoon.",
-                    "knownByNpcKeys": ["emma"],
+                    "knownByNpcKeys": [
+                      "emma"
+                    ],
                     "npcKey": "emma"
                   }
                 }
@@ -1270,7 +1355,9 @@
                     "key": "molly_memory_lake_intimate",
                     "type": "memory",
                     "text": "Molly smiles and gives your hand a squeeze. \"Do you remember our afternoon at the lake? It was lovely, Antonio.\" Her expression turns impish. \"And next time, perhaps we won't be in quite such a hurry.\"",
-                    "knownByNpcKeys": ["molly"]
+                    "knownByNpcKeys": [
+                      "molly"
+                    ]
                   }
                 },
                 {
@@ -1279,7 +1366,9 @@
                     "key": "molly_lore_lake_growth",
                     "type": "lore",
                     "text": "Emma greets you with a smile of positively dangerous innocence. \"Antonio! Molly was telling me about your excursion to the lake. Apparently there was a rather remarkable demonstration of Giant Growth.\" You open your mouth to object. \"Oh, spare me the technical details. I only wish to congratulate you on finally discovering an application of green magic that inspires genuine enthusiasm for your studies.\" Her raised eyebrow suggests that further objections would merely improve her afternoon.",
-                    "knownByNpcKeys": ["emma"],
+                    "knownByNpcKeys": [
+                      "emma"
+                    ],
                     "npcKey": "emma",
                     "priority": 3
                   }
@@ -1319,7 +1408,9 @@
                   "key": "molly_memory_lake_retreat",
                   "type": "memory",
                   "text": "Molly covers a smile with her hand. \"You know, Antonio, I've been thinking about Professor Lombard's lesson on refraction. Such a fascinating subject!\" Her eyes sparkle. \"We really should repeat our little experiment someday.\"",
-                  "knownByNpcKeys": ["molly"]
+                  "knownByNpcKeys": [
+                    "molly"
+                  ]
                 }
               },
               {
@@ -1328,7 +1419,9 @@
                   "key": "molly_lore_lake_retreat",
                   "type": "lore",
                   "text": "Emma studies you with an expression of refined disbelief. \"Molly told me about your little swimming expedition. She apparently proposed a most interesting practical experiment, and you fled—citing Professor Lombard's lecture on refraction.\" She pauses to let this sink in. \"Fibonacci, I've always admired a man who knows when to retreat. But to abandon such a promising opportunity in the name of _optics_? Your judgment requires urgent remedial instruction.\" She looks entirely too pleased with herself.",
-                  "knownByNpcKeys": ["emma"],
+                  "knownByNpcKeys": [
+                    "emma"
+                  ],
                   "npcKey": "emma",
                   "priority": 3
                 }
@@ -1362,7 +1455,9 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 1,
-                "specificCardKeys": ["molly_giant_growth"]
+                "specificCardKeys": [
+                  "molly_giant_growth"
+                ]
               }
             }
           }
@@ -1485,7 +1580,9 @@
               "key": "molly_memory_noble_public",
               "type": "memory",
               "text": "Molly gives you a rueful smile. \"Thank you for defending me when Elsa spoke to me like that. I know you meant well.\" She hesitates. \"Next time, perhaps we could do it without making the cleaners wish the floor would swallow them? They already have enough to deal with.\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           },
           {
@@ -1494,7 +1591,9 @@
               "key": "elsa_memory_noble_public",
               "type": "memory",
               "text": "Elsa regards you coolly. \"I remember your little speech about titles and buckets, Fibonacci. A spirited performance. Unfortunately, governing a household requires rather more than spirited performances.\" A faint, reluctant smile appears. \"Though I confess it was a memorable line.\"",
-              "knownByNpcKeys": ["elsa"]
+              "knownByNpcKeys": [
+                "elsa"
+              ]
             }
           }
         ]
@@ -1520,7 +1619,10 @@
             "type": "offer_card_gifts",
             "parameters": {
               "count": 3,
-              "poolKeys": ["molly", "base"]
+              "poolKeys": [
+                "molly",
+                "base"
+              ]
             }
           },
           {
@@ -1535,7 +1637,9 @@
               "key": "molly_memory_noble_comfort",
               "type": "memory",
               "text": "Molly smiles, a little shyly. \"Do you remember when you stayed and helped me finish cleaning after Elsa's lecture? I was having an awful time of it. I don't think I even thanked you properly.\" She pauses. \"Thank you. It meant more than you know.\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           }
         ]
@@ -1592,7 +1696,9 @@
               "key": "molly_memory_noble_solution",
               "type": "memory",
               "text": "\"Marta says the new sorting bins are working!\" Molly beams. \"It's funny—we meant to help clean the floor, and now they have less to clean in the first place. I wonder what else we've all been doing the difficult way?\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           },
           {
@@ -1682,7 +1788,9 @@
               "key": "molly_memory_letter_privacy",
               "type": "memory",
               "text": "Molly smiles warmly. \"Do you remember that great disaster with my basket and the letter from home? You didn't press me about it, even though I was acting so strangely. That was kind of you, Antonio. I haven't forgotten.\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           }
         ]
@@ -1724,7 +1832,9 @@
               "key": "molly_memory_letter_reply",
               "type": "memory",
               "text": "\"I sent that letter we worked on,\" Molly tells you. \"I was so nervous about being honest that I nearly rewrote it in proper formal language.\" She smiles. \"But I didn't. Thank you for helping me find the words.\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           }
         ]
@@ -1758,7 +1868,9 @@
               "key": "molly_memory_letter_seal",
               "type": "memory",
               "text": "Molly bites back a grin. \"I received another letter from home. The seal is enormous, as usual.\" Her eyes brighten. \"I've been thinking about your idea. Perhaps I should ask them to put a duck on it next time. A very dignified duck, of course.\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           }
         ]
@@ -1866,7 +1978,9 @@
               "key": "molly_memory_kitchen_recipe",
               "type": "memory",
               "text": "Molly beams when you mention cooking. \"I've been practicing the stew you taught me! I even remembered to taste it before adding salt.\" She lowers her voice conspiratorially. \"The cook says that's the first principle of not poisoning an entire dining hall.\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           }
         ]
@@ -1915,7 +2029,9 @@
               "key": "molly_memory_kitchen_organized",
               "type": "memory",
               "text": "\"I tried your kitchen trick again,\" Molly tells you proudly. \"I asked everyone what they needed before doing anything. It worked wonderfully!\" She hesitates. \"I did still burn the onions. But nobody had to wait for a plate.\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           }
         ]
@@ -1955,7 +2071,9 @@
               "key": "molly_memory_kitchen_green",
               "type": "memory",
               "text": "Molly smiles at you. \"I used that green-essence trick on some herbs again! Very carefully, just as you showed me.\" She pauses. \"The parsley was splendid. The basil was rather enthusiastic. I'm still working on the basil.\"",
-              "knownByNpcKeys": ["molly"]
+              "knownByNpcKeys": [
+                "molly"
+              ]
             }
           }
         ]
@@ -1979,7 +2097,9 @@
       {
         "triggerType": "period",
         "parameters": {
-          "periods": ["afternoon"]
+          "periods": [
+            "afternoon"
+          ]
         }
       }
     ],
@@ -2142,7 +2262,9 @@
               "key": "emma_memory_first_impression",
               "type": "memory",
               "text": "\"Fibonacci!\" Emma greets you with a smile of unmistakable recognition. \"I see you've recovered the use of your legs. An encouraging sign.\" You assure her your legs were never the problem. \"Quite right. It was speech that deserted you, wasn't it?\" She considers you a moment. \"Well, you've managed three whole sentences today. At this rate, we may have a proper conversation before graduation.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2161,6 +2283,17 @@
             "characterKey": "emma",
             "title": "First impressions",
             "description": "A striking young woman with sharp green eyes, an impressive collection of books, and an equally impressive talent for making you feel foolish. Apparently a fellow first-year student."
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "move",
+          "parameters": {
+            "placeKey": "emma-room",
+            "characterKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -2209,7 +2342,9 @@
               "key": "emma_memory_first_win_analysis",
               "type": "memory",
               "text": "\"I've been thinking about that first match,\" Emma says. \"Not the defeat, naturally. I've recovered from that magnificent tragedy.\" She traces an imaginary move across the table. \"You showed me an alternative I'd completely overlooked. It was infuriatingly elegant.\" You ask whether this counts as praise. \"It counts as an invitation to explain your next trick before you use it on me.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2237,7 +2372,9 @@
               "key": "emma_memory_first_win_boast",
               "type": "memory",
               "text": "\"Tell me, Fibonacci, are you still generously allowing your opponents a sporting chance?\" Emma asks. You suggest that someone must encourage the Academy's promising students. \"How charitable.\" Her smile sharpens. \"I have been practicing since our last match. I intend to repay your kindness in full, preferably while you still have enough cards left to appreciate it.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2274,7 +2411,9 @@
               "key": "emma_memory_first_win_speechless",
               "type": "memory",
               "text": "\"Antonio, a question,\" Emma says gravely. \"How can a man devise a winning attack involving six cards, then lose the ability to assemble six consecutive words?\" You object to this characterization. \"Oh, so the ability has returned!\" She smiles. \"Marvelous. Perhaps next time we play, I'll allow you to choose whether the competition is strategy or conversation.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2389,7 +2528,9 @@
               "key": "emma_memory_happy_card_gift",
               "type": "memory",
               "text": "Emma produces the Happy Little Accident from her deck and holds it up to the light. \"Still a remarkable piece of work,\" she admits. \"And still an extraordinarily generous gift.\" You tell her you're glad she likes it. \"Likes it? Antonio, I may use it to defeat you.\" She smiles at your expression. \"What? You can't give a woman a weapon and then complain when she learns how to wield it.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2444,7 +2585,9 @@
               "key": "emma_memory_happy_card_technique",
               "type": "memory",
               "text": "\"I've been revisiting that peculiar enchantment on your Happy Little Accident,\" Emma says. \"The one you explained with such alarming confidence.\" You remind her it worked. \"Yes, that's the disturbing part.\" She unfolds a page dense with notes. \"I've devised three improvements. Two are sensible; the third may be your fault. I rather hope you'll help me find out.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2486,7 +2629,9 @@
               "key": "emma_memory_happy_card_challenge",
               "type": "memory",
               "text": "\"A brief progress report on our little crafting competition,\" Emma announces. \"I've improved my design twice since you challenged me.\" You ask whether she's won already. \"Certainly not. I have standards.\" She looks pleased with herself. \"I won't claim victory until I've produced something so elegant that you have no choice but to admit it. Voluntarily, if possible.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2558,7 +2703,14 @@
           "type": "move",
           "parameters": {
             "placeKey": "academy-hall",
-            "characterKeys": ["player", "emma", "elsa", "henry", "ousmane", "molly"]
+            "characterKeys": [
+              "player",
+              "emma",
+              "elsa",
+              "henry",
+              "ousmane",
+              "molly"
+            ]
           }
         }
       },
@@ -2597,7 +2749,9 @@
               "key": "emma_memory_ballet_culture",
               "type": "memory",
               "text": "\"I was rather surprised by your opinion of my ballet,\" Emma admits. \"Most people notice the acrobatics. You actually mentioned the technique.\" You say the performance deserved it. \"Careful. Thoughtful compliments are far harder to dismiss.\" She gives you a sideways smile. \"If you ever invite me to the ballet, Fibonacci, I shall expect informed criticism afterward. No pressure whatsoever.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2625,7 +2779,9 @@
               "key": "emma_memory_ballet_elsa_backfire",
               "type": "memory",
               "text": "\"I wonder whether Elsa has recovered from her great ballet triumph,\" Emma muses. You ask which triumph she means. \"The one where she assembled an audience to ridicule me and accidentally organized a standing ovation.\" Emma laughs at the memory. \"Molly was wonderfully kind. The others looked as though they'd forgotten why they had feet. And Elsa—oh, her face was worth the rehearsal.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2668,7 +2824,9 @@
               "key": "emma_memory_ballet_smitten",
               "type": "memory",
               "text": "\"Good afternoon, Antonio. How are your studies in magical resistance progressing?\" Emma asks sweetly. You hesitate. \"Ah. Still struggling, I see.\" She demonstrates a perfectly ordinary stretch of her shoulder, then regards you with scholarly interest. \"Perhaps my ballet rehearsal was simply too advanced for a first-year student. Do let me know when you're ready for the remedial course.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2696,7 +2854,9 @@
               "key": "emma_memory_ballet_showy",
               "type": "memory",
               "text": "\"I practiced a new ballet sequence yesterday,\" Emma says. \"But I'm reluctant to demonstrate it.\" You ask why. \"I fear it might be a little showy.\" Her expression is perfectly solemn. Then she laughs. \"You really did call that performance showy, Antonio. I've decided to treasure the remark. One day I'll find something you're proud of and repay you precisely.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2743,7 +2903,9 @@
             "key": "emma_memory_antonio_league_champion",
             "type": "memory",
             "text": "\"Our reigning league champion,\" Emma says, raising an imaginary glass. \"I suppose I ought to offer my congratulations again.\" You tell her once was enough. \"Nonsense. Winning a whole season deserves recognition.\" She pauses just long enough to seem sincere. \"Enjoy the title, Antonio. I intend to relieve you of its burdens at the earliest opportunity.\"",
-            "knownByNpcKeys": ["emma"]
+            "knownByNpcKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -2799,7 +2961,9 @@
               "key": "emma_memory_league_champion_plaque",
               "type": "memory",
               "text": "\"I've been considering the wording for your commemorative plaque,\" Emma tells you. \"The one we'll unveil when someone finally ends your glorious reign.\" You ask whether she's already commissioned it. \"Not yet. I can't decide between 'A Generous Champion' and 'He Kindly Allowed the Rest of Us to Play.'\" She smiles. \"Perhaps I'll settle the question by winning the next league.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2881,7 +3045,9 @@
               "key": "emma_memory_offered_savings",
               "type": "memory",
               "text": "\"Antonio,\" Emma says, unusually quiet, \"I've never properly thanked you for offering me your savings when the bank caused all that trouble.\" You tell her she already did. \"Then consider this an academic revision.\" She meets your eyes. \"It was a ridiculous offer. Generous, reckless, quite possibly catastrophic for you.\" A small smile returns. \"I was very glad you made it. And I'm still glad I refused.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2932,7 +3098,9 @@
               "key": "emma_memory_tutoring_flattery",
               "type": "memory",
               "text": "\"Molly's tutoring arrangement was an excellent suggestion,\" Emma says. \"Though I confess I remember something else about that conversation.\" You brace yourself. \"Your assessment of my extraordinary intelligence. My discipline. My incomparable suitability for the position.\" You begin to protest. \"Please, Antonio, don't become modest now. You were making such a persuasive argument. I nearly hired myself on the spot.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -2985,7 +3153,9 @@
                 "key": "emma_memory_bank_tax_code",
                 "type": "memory",
                 "text": "Emma sets a thick volume on the table with ceremonial care. \"A little reading for our next romantic evening.\" You peer at the spine. Municipal taxation. \"You promised,\" she reminds you. \"After we rescued my loan agreement, you distinctly suggested that financial law was an insufficiently romantic subject.\" You say you were joking. \"So was I.\" She waits a beat. \"Mostly.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           ],
@@ -3016,7 +3186,9 @@
                 "key": "emma_memory_bank_failed_research",
                 "type": "memory",
                 "text": "\"I passed the bank this morning,\" Emma says. \"I considered going in to demand compensation for one thoroughly wasted night's sleep.\" You remind her that neither of you found a useful clause. \"Quite. Apparently their lawyers were better rested.\" She smiles. \"Still, I rather enjoyed our investigation. Next time, however, I propose an evening activity where the paperwork is less likely to defeat us.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           ]
@@ -3092,7 +3264,10 @@
           "parameters": {
             "activity": {
               "type": "event",
-              "participants": ["player", "emma"],
+              "participants": [
+                "player",
+                "emma"
+              ],
               "placeKey": "emma-room",
               "eventId": "emma_tourney_training"
             },
@@ -3112,7 +3287,9 @@
             "key": "emma_memory_tourney_partners",
             "type": "memory",
             "text": "\"Do you remember the look on your face when I named you my tournament partner?\" Emma asks. You say she might have consulted you first. \"And risk giving you time to invent an excuse? Out of the question.\" She folds her arms. \"Professor Glützenbaum wanted two representatives capable of winning. I chose you. It was a compliment, Fibonacci, however poorly disguised as an order.\"",
-            "knownByNpcKeys": ["emma"]
+            "knownByNpcKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -3261,7 +3438,10 @@
                     "key": "emma_memory_elsa_favor_debt",
                     "type": "memory",
                     "text": "\"Elsa has been smiling at me again,\" Emma remarks. You ask whether that's good. \"Under ordinary circumstances? Unlikely. Given that we owe her a favor in exchange for her brother's decklist? Positively alarming.\" She considers the matter. \"Still, we obtained the information we needed.\" You suggest that a bill eventually comes due. \"Yes, yes. Do stop introducing economics into a perfectly pleasant conversation.\"",
-                    "knownByNpcKeys": ["emma", "elsa"]
+                    "knownByNpcKeys": [
+                      "emma",
+                      "elsa"
+                    ]
                   }
                 }
               ],
@@ -3317,7 +3497,10 @@
                     "key": "emma_memory_elsa_tricked_decklist",
                     "type": "memory",
                     "text": "\"I still think of the expression on Elsa's face when she realized she'd handed us that decklist,\" Emma says, visibly delighted. \"All you had to do was be confidently wrong until she couldn't resist correcting you.\" You call it a sophisticated intelligence-gathering technique. \"Naturally. A triumph of strategic incompetence. I've been tempted to try it on Professor Glützenbaum, though I suspect he'd simply give us a lecture.\"",
-                    "knownByNpcKeys": ["emma", "elsa"]
+                    "knownByNpcKeys": [
+                      "emma",
+                      "elsa"
+                    ]
                   }
                 }
               ],
@@ -3354,7 +3537,10 @@
                     "key": "emma_memory_elsa_outwits_attempt",
                     "type": "memory",
                     "text": "\"I've reviewed your attempt to coax the decklist out of Elsa,\" Emma says. \"A daring plan. Unfortunately, she noticed it before the second question.\" You remind her they got the information anyway. \"Yes, at the modest price of a favor whose terms we don't know.\" She sighs. \"If Elsa ever asks us to perform at one of her parties, I'm blaming you.\"",
-                    "knownByNpcKeys": ["emma", "elsa"]
+                    "knownByNpcKeys": [
+                      "emma",
+                      "elsa"
+                    ]
                   }
                 }
               ],
@@ -3411,7 +3597,9 @@
                     "key": "emma_memory_practice_vile_move",
                     "type": "memory",
                     "text": "\"I've found a defense against that vile move you played during our tournament practice,\" Emma announces. You ask whether she's certain. \"Absolutely. I've tested it six times.\" You suggest a seventh. \"How very helpful.\" Her eyes brighten. \"Actually, yes. Bring your deck. I should hate for you to imagine that one moment of inspired wickedness confers permanent superiority.\"",
-                    "knownByNpcKeys": ["emma"]
+                    "knownByNpcKeys": [
+                      "emma"
+                    ]
                   }
                 }
               ],
@@ -3450,7 +3638,9 @@
                     "key": "emma_memory_practice_checkmate",
                     "type": "memory",
                     "text": "\"Checkmate,\" Emma says without looking up from her cards. You remind her, once again, that this isn't chess. \"And yet the result was unmistakable, wasn't it?\" She gives you an immaculate smile. \"I've also been thinking about the sequence that won our last practice match. There was a rather elegant combination in it. Would you care to hear the explanation again?\"",
-                    "knownByNpcKeys": ["emma"]
+                    "knownByNpcKeys": [
+                      "emma"
+                    ]
                   }
                 }
               ],
@@ -3483,7 +3673,9 @@
                 "key": "emma_memory_tourney_endless_practice",
                 "type": "memory",
                 "text": "\"I found a cup of tea behind my notes this morning,\" Emma says. \"I believe it dates from our tournament practice session.\" You ask whether she drank it. \"Antonio, even I'm not that devoted to scholarship.\" She smiles at the memory. \"We played so long the innkeeper nearly had to remind us that meals exist. An excellent evening. Entirely unreasonable, of course, but excellent.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           }
@@ -3524,7 +3716,10 @@
                 "parameters": {
                   "activity": {
                     "type": "event",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "artificery-room",
                     "eventId": "emma_tourney_crafting"
                   },
@@ -3567,7 +3762,10 @@
                 "parameters": {
                   "activity": {
                     "type": "event",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "artificery-room",
                     "eventId": "emma_tourney_crafting"
                   },
@@ -3681,7 +3879,9 @@
               "key": "emma_memory_joint_card_statue",
               "type": "memory",
               "text": "Emma turns her copy of your joint creation toward you. \"I've reconsidered your role in this portrait.\" You straighten expectantly. \"Moral support,\" she declares. \"An essential contribution, clearly. The magic was mine; the heroic jawline, apparently, yours.\" You ask whether she still thinks the portrait flattering. \"Oh, certainly. Particularly given how generously the artist treated your face.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -3709,7 +3909,9 @@
               "key": "emma_memory_joint_card_team",
               "type": "memory",
               "text": "\"I've been looking at our matching cards again,\" Emma says. \"Not the enchantment this time. The two of us.\" She pauses, then gives you a small smile. \"I meant what I said that evening. I've always worked better alone—or thought I did.\" You remind her that collaboration has advantages. \"Don't become insufferable about it, Fibonacci. But yes. Some advantages are rather difficult to deny.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -3737,7 +3939,9 @@
               "key": "emma_memory_joint_card_romance",
               "type": "memory",
               "text": "\"I've had another look at our famous portrait,\" Emma says. \"The magic still seems convinced we're a very handsome couple.\" You ask whether she disagrees. \"I'm questioning its methodology, Antonio. Artistic enchantments are not a recognized authority on matters of the heart.\" She studies your expression. \"Though I'll concede its taste in company could be considerably worse.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -3772,7 +3976,9 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": ["emma_tourney_spell"]
+            "specificCardKeys": [
+              "emma_tourney_spell"
+            ]
           }
         },
         "triggers": [
@@ -3809,7 +4015,9 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": ["emma_tourney_unit"]
+            "specificCardKeys": [
+              "emma_tourney_unit"
+            ]
           }
         },
         "triggers": [
@@ -3847,7 +4055,10 @@
           "parameters": {
             "activity": {
               "type": "event",
-              "participants": ["player", "emma"],
+              "participants": [
+                "player",
+                "emma"
+              ],
               "placeKey": "falkenheim_school",
               "eventId": "emma_falkenheim_tournament"
             },
@@ -3869,7 +4080,9 @@
             "key": "emma_memory_joint_card_portrait",
             "type": "memory",
             "text": "Emma produces her copy of the jointly crafted card. \"I've examined the duplication enchantment again. Two flawless copies—and this thoroughly inexplicable illustration.\" You look at the painted figures standing close together. \"Yes, yes, the likeness is rather good,\" she says, catching your expression. \"But if Professor Glützenbaum asks, we were investigating advanced magical resonance. Not commissioning portraits.\"",
-            "knownByNpcKeys": ["emma"]
+            "knownByNpcKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -3969,7 +4182,9 @@
           "type": "move",
           "parameters": {
             "placeKey": "falkenheim_school",
-            "characterKeys": ["player"]
+            "characterKeys": [
+              "player"
+            ]
           }
         }
       },
@@ -3978,7 +4193,9 @@
           "type": "move",
           "parameters": {
             "placeKey": "falkenheim_school",
-            "characterKeys": ["emma"]
+            "characterKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -4410,7 +4627,9 @@
                 "key": "emma_memory_falkenheim_emma_tiebreak",
                 "type": "memory",
                 "text": "\"I remain disappointed by one detail of our Falkenheim victory,\" Emma tells you. You ask which detail. \"Your applause after I won the deciding match. I specifically requested modest enthusiasm.\" You protest that you were proud of her. For once she doesn't answer immediately. Then she smiles. \"Well. I suppose I can forgive an occasional lapse in restraint under exceptional circumstances.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           }
@@ -4556,7 +4775,9 @@
                 "key": "emma_memory_cart_shoulder",
                 "type": "memory",
                 "text": "\"Sleep well, Fibonacci?\" Emma asks innocently. You know that tone. \"I've been wondering whether a farmer's cart full of cabbages is your preferred accommodation, or whether my shoulder made the difference.\" You suggest dropping the subject. \"Oh, I wouldn't dream of embarrassing you.\" Her smile widens. \"Not after you looked so peaceful. I even tucked the blanket around you.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           }
@@ -4593,7 +4814,10 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -4602,7 +4826,9 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [2],
+                      "daysOfWeek": [
+                        2
+                      ],
                       "period": "evening"
                     }
                   }
@@ -4646,7 +4872,10 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -4655,7 +4884,9 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [2],
+                      "daysOfWeek": [
+                        2
+                      ],
                       "period": "evening"
                     }
                   }
@@ -4705,7 +4936,9 @@
               "type": "move",
               "parameters": {
                 "placeKey": "academy-hall",
-                "characterKeys": ["player"]
+                "characterKeys": [
+                  "player"
+                ]
               }
             }
           },
@@ -4714,7 +4947,9 @@
               "type": "move",
               "parameters": {
                 "placeKey": "academy-hall",
-                "characterKeys": ["emma"]
+                "characterKeys": [
+                  "emma"
+                ]
               }
             }
           },
@@ -4725,7 +4960,9 @@
                 "key": "emma_memory_tourney_trust_win",
                 "type": "memory",
                 "text": "\"Do you know what I remember most clearly about bringing the Falkenheim trophy home?\" Emma asks. You suggest the magnificent victory. \"Apart from that.\" She looks briefly thoughtful. \"Standing in the Academy hall and realizing I didn't have to plan everything alone anymore.\" Then her usual composure returns. \"Of course, our Tuesday study arrangement remains subject to your arriving on time.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           }
@@ -4846,7 +5083,9 @@
                 "key": "emma_memory_tourney_quiet_carriage",
                 "type": "memory",
                 "text": "\"I discovered something surprising on the journey back from Falkenheim,\" Emma says. \"It is possible to lose a tournament and survive several hours without discussing the decisive turn.\" You express astonishment. \"Don't exaggerate. I still reviewed the match in my head.\" She softens a little. \"But it was pleasant, reading beside you on the way home. Even if you slept through some of my finest commentary.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           }
@@ -4880,7 +5119,9 @@
                 "key": "emma_memory_tourney_trust_loss",
                 "type": "memory",
                 "text": "\"I meant what I said after Falkenheim,\" Emma tells you. \"We lost, and I hated it. I still do.\" She glances at you. \"But I wouldn't trade that week of working together for a safer, quieter one.\" You mention the Tuesday study arrangement. \"Precisely. I intend to extract some lasting value from our partnership. Preferably in the form of better cards and tolerable company.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           }
@@ -4914,7 +5155,10 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -4923,7 +5167,9 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [2],
+                      "daysOfWeek": [
+                        2
+                      ],
                       "period": "evening"
                     }
                   }
@@ -4967,7 +5213,10 @@
                 "parameters": {
                   "activity": {
                     "type": "study",
-                    "participants": ["player", "emma"],
+                    "participants": [
+                      "player",
+                      "emma"
+                    ],
                     "placeKey": "emma-room"
                   },
                   "schedule": {
@@ -4976,7 +5225,9 @@
                       "period": "evening"
                     },
                     "recurrence": {
-                      "daysOfWeek": [2],
+                      "daysOfWeek": [
+                        2
+                      ],
                       "period": "evening"
                     }
                   }
@@ -5108,7 +5359,9 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": ["the_academy"]
+            "specificCardKeys": [
+              "the_academy"
+            ]
           }
         }
       },
@@ -5180,7 +5433,9 @@
                 "key": "emma_memory_falkenheim_reward",
                 "type": "memory",
                 "text": "\"I caught myself doing something quite extraordinary yesterday,\" Emma says. \"Looking at a purchase without first calculating which meal I'd have to skip to afford it.\" You ask whether the Falkenheim prize has changed her habits. \"Not yet. I'm not reckless.\" A smile breaks through. \"But I might permit myself the occasional luxury. A book, perhaps. One that isn't strictly necessary.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           }
@@ -5228,7 +5483,9 @@
       {
         "triggerType": "day_of_week",
         "parameters": {
-          "daysOfWeek": [4]
+          "daysOfWeek": [
+            4
+          ]
         }
       },
       {
@@ -5273,7 +5530,10 @@
             "parameters": {
               "activity": {
                 "type": "event",
-                "participants": ["player", "emma"],
+                "participants": [
+                  "player",
+                  "emma"
+                ],
                 "placeKey": "town-square",
                 "eventId": "emma_ball_shopping"
               },
@@ -5290,7 +5550,10 @@
             "parameters": {
               "activity": {
                 "type": "event",
-                "participants": ["player", "emma"],
+                "participants": [
+                  "player",
+                  "emma"
+                ],
                 "placeKey": "academy-hall",
                 "eventId": "emma_academy_ball"
               },
@@ -5344,7 +5607,9 @@
             "key": "emma_memory_ball_invitation",
             "type": "memory",
             "text": "\"I still don't understand why you looked so alarmed when I invited you to the Academy ball,\" Emma remarks. You mention dancing, formal clothes, and the general danger of embarrassing her. \"Yes, those were my concerns too.\" She waits for your expression to change, then laughs. \"Antonio, I asked you because I wanted your company. The important guests were merely an additional advantage.\"",
-            "knownByNpcKeys": ["emma"]
+            "knownByNpcKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -5631,7 +5896,9 @@
                 "key": "emma_memory_ball_outfit",
                 "type": "memory",
                 "text": "Emma eyes your clothes with the concentration of a master artificer assessing a difficult enchantment. \"You know, I still think blue suits you,\" she declares. You remind her how seriously she approached choosing an outfit for the ball. \"Naturally. One cannot allow one's escort to look as though he has arrived to deliver the vegetables.\" She smiles. \"Though I admit the finished result was quite satisfactory.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           }
@@ -5706,7 +5973,10 @@
           "type": "move",
           "parameters": {
             "placeKey": "academy-hall",
-            "characterKeys": ["player", "emma"]
+            "characterKeys": [
+              "player",
+              "emma"
+            ]
           }
         }
       },
@@ -5963,7 +6233,9 @@
                 "key": "emma_memory_academy_last_dance",
                 "type": "memory",
                 "text": "\"I've been thinking about the Academy ball,\" Emma says. \"We spent half the evening meeting people who seemed to regard a conversation as an investment opportunity.\" You remind her that she enjoyed it. \"Of course I did. But my favorite part was rather less productive.\" Her gaze meets yours. \"That last dance. No introductions, no strategy, no one to impress.\" She smiles. \"A scandalous waste of time. We should repeat it.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           }
@@ -6051,7 +6323,10 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 1,
-                "poolKeys": ["emma", "base"]
+                "poolKeys": [
+                  "emma",
+                  "base"
+                ]
               }
             },
             {
@@ -6224,7 +6499,10 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 1,
-                "poolKeys": ["emma", "base"]
+                "poolKeys": [
+                  "emma",
+                  "base"
+                ]
               }
             }
           },
@@ -6249,7 +6527,9 @@
             "key": "emma_memory_unfair_advantage",
             "type": "memory",
             "text": "\"You were having rather a difficult time concentrating that evening,\" Emma observes. You accuse her of deliberately distracting you. \"Antonio! I was being the very picture of academic diligence.\" She sets down her pen, looking innocent in a way that convinces absolutely no one. \"Surely a capable artificer can survive a little distraction. Shall we test that proposition again?\"",
-            "knownByNpcKeys": ["emma"]
+            "knownByNpcKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -6334,7 +6614,9 @@
                 "key": "emma_memory_cooking_recovery",
                 "type": "memory",
                 "text": "\"I've considered writing down the recipe from our dinner,\" Emma says. You ask which part of the evening she intends to preserve. \"Not the disasters. The parts that were edible.\" You remind her that this might be a very short recipe. \"Then we'll have plenty of room for annotations.\" She laughs. \"Still, it was a pleasant evening. Next time I suggest we begin with something neither of us can accidentally ruin.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           },
@@ -6382,7 +6664,10 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 3,
-                "poolKeys": ["emma", "base"]
+                "poolKeys": [
+                  "emma",
+                  "base"
+                ]
               }
             }
           }
@@ -6483,7 +6768,9 @@
             "key": "emma_memory_molly_matchmaking",
             "type": "memory",
             "text": "\"Well, Antonio? Have you given any thought to my excellent advice about Molly?\" Emma asks. You accuse her of treating your romantic prospects like a research project. \"Only because you insist on providing such fascinatingly incomplete data.\" She leans closer, amused. \"She's lovely, you know. Though if you'd prefer to remain a free and mysterious adventurer, I suppose I'll have to abandon my brilliant matchmaking career.\"",
-            "knownByNpcKeys": ["emma"]
+            "knownByNpcKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -6560,7 +6847,10 @@
               "type": "offer_card_gifts",
               "parameters": {
                 "count": 3,
-                "poolKeys": ["emma", "base"]
+                "poolKeys": [
+                  "emma",
+                  "base"
+                ]
               }
             }
           },
@@ -6579,7 +6869,9 @@
                 "key": "emma_memory_kiss_lucky_day",
                 "type": "memory",
                 "text": "\"I trust you're appreciating your extraordinary good fortune,\" Emma remarks. You ask which fortune she means. \"A fine new card, and a kiss from the prettiest girl in town, all in a single day.\" You point out that she's quoting herself. \"Someone has to preserve an accurate historical record.\" She smiles. \"Besides, you looked so wonderfully uncertain about which gift to thank me for first.\"",
-                "knownByNpcKeys": ["emma"]
+                "knownByNpcKeys": [
+                  "emma"
+                ]
               }
             }
           }
@@ -6601,7 +6893,9 @@
             "key": "emma_memory_tactical_kiss",
             "type": "memory",
             "text": "\"For the record,\" Emma says, \"my little diversion in the market worked beautifully.\" You ask whether unexpectedly kissing you was really necessary. \"The gentlemen were persistent. We needed a convincing distraction.\" She studies your face with open amusement. \"Unless you're proposing an alternative strategy, Fibonacci? Do be specific. I should hate to repeat an experiment without considering the evidence.\"",
-            "knownByNpcKeys": ["emma"]
+            "knownByNpcKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -6688,7 +6982,9 @@
             "key": "emma_memory_schlupak_expedition",
             "type": "memory",
             "text": "\"I've been examining our notes from the Forest of Schlupak,\" Emma says. \"Crimson mushrooms, treacherous ground, and a truly unreasonable number of ways to fall into trouble.\" You suggest she could have collected safer ingredients. \"Where would the scientific merit be in that?\" She gives you a challenging smile. \"Besides, I did bring a companion. One ought to test the reliability of one's field assistants.\"",
-            "knownByNpcKeys": ["emma"]
+            "knownByNpcKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -6770,7 +7066,9 @@
             "key": "emma_memory_dreaming_hollow",
             "type": "memory",
             "text": "\"That hollow in the forest still troubles me,\" Emma admits. \"Floating Dreamspheres on one side, rare spores on the other, and no way to collect everything without damaging something.\" You remind her that they chose. \"Yes, and I stand by it.\" She pauses. \"Mostly. It's the sort of dilemma that makes a scientist want to return with twice the equipment and no one telling her to be sensible.\"",
-            "knownByNpcKeys": ["emma"]
+            "knownByNpcKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -6930,7 +7228,9 @@
             "key": "emma_memory_elsa_birthday_invite",
             "type": "memory",
             "text": "\"Elsa's birthday invitation was a masterpiece,\" Emma says dryly. \"One part celebration, two parts social obligation, and just enough menace to make the stationery memorable.\" You ask whether she's looking forward to the party. \"I'm looking forward to discovering what she expects of us.\" Her smile is perfectly polished. \"If there are refreshments, I shall consider them partial compensation.\"",
-            "knownByNpcKeys": ["emma"]
+            "knownByNpcKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -6984,7 +7284,9 @@
             "key": "emma_memory_violin_discovery",
             "type": "memory",
             "text": "\"You looked rather surprised when you found me playing at the Old Monk Inn,\" Emma remarks. You admit you hadn't known about her violin. \"A grave omission in your research, Fibonacci.\" She rests her fingers lightly on the instrument case. \"I don't talk about it as often as artificery. Sometimes it's nice to be good at something simply because I love it.\" She smiles. \"Though I don't object to applause.\"",
-            "knownByNpcKeys": ["emma"]
+            "knownByNpcKeys": [
+              "emma"
+            ]
           }
         }
       },
@@ -6995,7 +7297,9 @@
             "key": "emma_lore_violin_inn_performance",
             "type": "lore",
             "text": "\"Have you heard Emma Delamain play the violin?\" the speaker asks. \"She performed at the Old Monk Inn, and she was remarkable. Who knew the Academy's fearsome artificer could make something sound so beautiful without enchanting a single card?\" There is a small, appreciative pause. \"Worth hearing if you ever get the chance.\"",
-            "excludeNpcKeys": ["emma"]
+            "excludeNpcKeys": [
+              "emma"
+            ]
           }
         }
       }
@@ -7081,7 +7385,10 @@
                 "type": "offer_card_gifts",
                 "parameters": {
                   "count": 1,
-                  "poolKeys": ["emma", "base"]
+                  "poolKeys": [
+                    "emma",
+                    "base"
+                  ]
                 }
               },
               {
@@ -7167,7 +7474,9 @@
                 "placeKey": "old-monk-inn",
                 "schedule": {
                   "recurrence": {
-                    "daysOfWeek": [5],
+                    "daysOfWeek": [
+                      5
+                    ],
                     "period": "evening"
                   }
                 }
@@ -7194,7 +7503,9 @@
               "key": "emma_memory_violin_partnership",
               "type": "memory",
               "text": "\"I've been looking over the Friday performance arrangements,\" Emma says. \"It's rather pleasant having a partner who understands that music involves rather more than appearing onstage.\" You remind her that you agreed to help. \"And I haven't forgotten.\" She smiles. \"If the evenings go well, I may even allow you to claim a small share of the glory. The administrative glory, naturally.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -7214,7 +7525,9 @@
               "key": "emma_memory_violin_independent",
               "type": "memory",
               "text": "\"I've sorted out the Friday performances,\" Emma tells you. \"I found another way to manage the arrangements, so you needn't worry about not being available.\" You thank her for understanding. \"Of course I understand. You have your own commitments.\" Her expression brightens. \"Though you are still permitted to come and listen. I shall endeavor to make it worth your time.\"",
-              "knownByNpcKeys": ["emma"]
+              "knownByNpcKeys": [
+                "emma"
+              ]
             }
           }
         ]
@@ -7249,7 +7562,9 @@
           "type": "offer_card_gifts",
           "parameters": {
             "count": 1,
-            "specificCardKeys": ["happy_little_accident"]
+            "specificCardKeys": [
+              "happy_little_accident"
+            ]
           }
         }
       }
@@ -7268,7 +7583,9 @@
       {
         "triggerType": "period",
         "parameters": {
-          "periods": ["morning"]
+          "periods": [
+            "morning"
+          ]
         }
       }
     ],

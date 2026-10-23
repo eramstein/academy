@@ -31,3 +31,13 @@ export function removeCounters(unit: UnitDeployed, counterType: CounterType, val
       break;
   }
 }
+
+export function removeAllCounters(unit: UnitDeployed) {
+  if (unit.counters.growth) {
+    removeCounters(unit, CounterType.Growth, unit.counters.growth);
+  }
+  if (unit.counters.decay) {
+    removeCounters(unit, CounterType.Decay, unit.counters.decay);
+  }
+  unit.counters = {};
+}
