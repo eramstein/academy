@@ -51,6 +51,8 @@ Then, it ranks them. Each factors adds points, the highest comes out (random sel
 - Topic types: evergreen counts for less then the other types
 - NPC specific text exists: grants some points
 - Topic already mentionned: lose points, the more the closest it is to today
+- Recently created topics (`usage.generatedOnDay`): gain points that decay each day (seed catalog topics use day 0 and get no boost)
+- Author `usage.priority` (0–3): each step adds a fixed boost so important callbacks can compete with fresher gossip
 
 ## Resolving a topic into a conversation scene
 

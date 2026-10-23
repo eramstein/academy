@@ -12,8 +12,10 @@
     type ConjurationAugury,
   } from '@/lib/sim/actions';
   import { skillCheckDifficultyLabels } from '@/lib/sim/attribute-checks';
+  import { formatOutcomeEffectHints } from '@/lib/sim/effects/effect-hints';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
+  import Tooltip from '@/lib/ui/Tooltip.svelte';
   import Conjure from './Conjure.svelte';
   import Enchantment from './Enchantment.svelte';
   import Invoke from './Invoke.svelte';
@@ -23,6 +25,8 @@
   const actions = $derived(gs.scene.actions);
   const manualTriggers = $derived(gs.scene.manualTriggers ?? []);
   const pendingPeriodEvent = $derived(gs.scene.pendingPeriodEvent);
+
+  let hoveredOptionIndex = $state<number | null>(null);
 
   const actionIcons: Partial<Record<ActionType, string>> = {
     [ActionType.Socialize]: 'people',
@@ -308,17 +312,30 @@
     <div class="action-buttons">
       {#if event && event.options.length > 0}
         {#each event.options as option, i (i)}
-          <OrnateButton onclick={() => selectOption(option)}>
-            {option.text}
-            {#if option.outcome.attributeCheck}
-              <span class="skill-check-hint">
-                {attributeCheckHint(
-                  option.outcome.attributeCheck.attribute,
-                  option.outcome.attributeCheck.difficulty
-                )}
-              </span>
-            {/if}
-          </OrnateButton>
+          {@const effectHint = formatOutcomeEffectHints(option.outcome)}
+          <Tooltip
+            content={effectHint}
+            show={!!effectHint && hoveredOptionIndex === i}
+            placement="top"
+          >
+            <div
+              class="event-option"
+              onmouseenter={() => (hoveredOptionIndex = i)}
+              onmouseleave={() => (hoveredOptionIndex = null)}
+            >
+              <OrnateButton onclick={() => selectOption(option)}>
+                {option.text}
+                {#if option.outcome.attributeCheck}
+                  <span class="skill-check-hint">
+                    {attributeCheckHint(
+                      option.outcome.attributeCheck.attribute,
+                      option.outcome.attributeCheck.difficulty
+                    )}
+                  </span>
+                {/if}
+              </OrnateButton>
+            </div>
+          </Tooltip>
         {/each}
       {:else if pendingPeriodEvent}
         <OrnateButton icon="book" onclick={() => playPendingPeriodEvent()}>
@@ -430,6 +447,14 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: color-mix(in srgb, var(--color-cream) 65%, transparent);
+  }
+
+  .event-option {
+    display: inline-block;
+  }
+
+  .action-buttons :global(.tooltip-reference) {
+    display: inline-block;
   }
 
   .option-thumb {

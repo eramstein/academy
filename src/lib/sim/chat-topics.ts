@@ -171,7 +171,8 @@ function topicKeysIn(catalog: ChatTopicTextMeta[]): string[] {
  * Public (non-routine) → that NPC is excluded; routines stay speakable by their NPC.
  */
 function topicFromKey(topicKey: string): ChatTopic {
-  const usage = { lastUsedOnDay: 0, textUsedKey: '' };
+  /** Day 0 = seed catalog; no recency boost in the scene director. */
+  const usage = { lastUsedOnDay: 0, textUsedKey: '', generatedOnDay: 0 };
   const parsed = parseTopicKey(topicKey);
   const topic: ChatTopic = {
     key: topicKey,

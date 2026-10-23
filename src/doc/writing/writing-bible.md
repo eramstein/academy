@@ -97,7 +97,7 @@ Use this structure for polished event drafts (the IDE workflow handles JSON conv
 
 Events can create **chat topics** that the scene director later selects during ordinary social interactions. **The `text` in an event's `add_chat_topic` effect is already a complete, player-facing mini-scene, not a summary, factual hint, prompt for an LLM, or internal memory record.** It must be ready to display directly in the illustrated-book UI, without runtime rewriting. The topic key and access restrictions determine _when and by whom_ that text may be used; separately authored `ChatTopicTexts` can provide alternate or more specific realizations. See `scene-director.md` for selection and reuse rules.
 
-Use **plain effect bullets** under `## Effects`, node **On enter**, or option **Outcomes** (including skill-check branches), just like known-trait additions. The event-authoring skill maps them to `add_chat_topic` with the topic `key`, subtype (`memory` or `lore`), scene `text`, and optional `knownByNpcKeys`, `excludeNpcKeys`, `npcKey`, and `useOnlyOnce`. Do **not** write the old `NpcMemory` / `Rumor` structures. Follow the serialization conventions of the actual game schema when converting to JSON.
+Use **plain effect bullets** under `## Effects`, node **On enter**, or option **Outcomes** (including skill-check branches), just like known-trait additions. The event-authoring skill maps them to `add_chat_topic` with the topic `key`, subtype (`memory` or `lore`), scene `text`, and optional `knownByNpcKeys`, `excludeNpcKeys`, `npcKey`, `useOnlyOnce`, and `priority` (0–3; higher = more likely to be picked soon). Creation day is set automatically at runtime and also boosts pick chance while the topic is fresh. Do **not** write the old `NpcMemory` / `Rumor` structures. Follow the serialization conventions of the actual game schema when converting to JSON.
 
 ### How to write chat-topic scenes
 
@@ -167,10 +167,18 @@ Add **lore** for background information, hints about characters, Academy news, n
 
 The `speaker` qualifier maps to `npcKey`; `known by` to `knownByNpcKeys`; and `exclude` to `excludeNpcKeys`. For large curated libraries, `ChatTopicTexts` may include additional variants and constraints.
 
+**Same topic key, second line:** only adds another `text` (give it a distinct `textKey` or `npcKey`). It does **not** change `knownByNpcKeys` or `priority` — those stick from the first create. Different knowers need different topic keys (e.g. `molly_lore_…` vs `emma_lore_…`).
+
 **Once-only gossip:**
 
 ```markdown
 - Add lore `academy_lore_tuition_scandal` (use once): "Did you hear about the tuition scandal?" your companion asks. "Someone apparently handed over three years of savings for a single term. If that's an investment in knowledge, I hope the dividends are extraordinary."
+```
+
+**High-priority callback** (0–3; omit for default 0):
+
+```markdown
+- Add memory `molly_memory_pajama_dare`, known by molly, priority 2: Molly grins. "Still thinking about that dare, aren't you? Don't worry — I haven't forgotten either."
 ```
 
 ### Placement and authoring checklist

@@ -53,6 +53,8 @@ export interface ChatTopic {
     useOnlyOnce?: boolean;
     lastUsedOnDay: number;
     textUsedKey: string;
+    generatedOnDay: number;
+    priority?: number; // 3 = highest priority, 0 = lowest priority. Defaults to 0.
   };
 }
 

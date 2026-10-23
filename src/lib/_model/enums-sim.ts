@@ -192,8 +192,10 @@ export enum RelationTag {
   SignificantOther = 'significant_other',
   // NPC specific tags
   EmmaSmitten = "You are under Emma's spell",
+  MollyJustForFun = 'Molly is not as shy as you thought',
 }
 
 export enum PossessionType {
   Clothing = 'clothing',
+  Tool = 'tool',
 }

@@ -1,4 +1,5 @@
 import type { EffectArgs, TargetDefinition } from '@/lib/_model/model-battle';
+import { combineEffectLabels } from './effect-labels';
 import { DataEffectTemplates } from './effect-templates';
 
 /*
@@ -29,11 +30,11 @@ export const DataEffectPrimers: Record<
       });
     },
     label: (targets: TargetDefinition[]) => {
-      return effectTemplates
-        .map((effectTemplate) =>
+      return combineEffectLabels(
+        effectTemplates.map((effectTemplate) =>
           DataEffectTemplates[effectTemplate.name](effectTemplate.args).label(targets)
         )
-        .join(' and ');
+      );
     },
   }),
   useEnergy: ({

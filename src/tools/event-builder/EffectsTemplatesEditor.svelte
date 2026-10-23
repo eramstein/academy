@@ -945,6 +945,21 @@
                 />
                 Once
               </label>
+              <select
+                class="input arg"
+                value={effect.parameters.priority ?? ''}
+                aria-label="Topic priority"
+                title="0–3 selection boost. Higher = more likely to be picked. Empty = 0."
+                onchange={(e) => {
+                  const value = (e.currentTarget as HTMLSelectElement).value;
+                  setParameter(i, 'priority', value === '' ? undefined : Number(value));
+                }}
+              >
+                <option value="">priority 0</option>
+                <option value={1}>priority 1</option>
+                <option value={2}>priority 2</option>
+                <option value={3}>priority 3</option>
+              </select>
             {:else if effect.type === EventEffectType.AddPossession}
               <select
                 class="input arg"

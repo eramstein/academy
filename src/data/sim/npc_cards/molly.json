@@ -126,5 +126,50 @@
       }
     ],
     "poolKeys": ["molly", "base"]
+  },
+  {
+    "id": "molly_giant_growth",
+    "imageFileName": "molly_giant_growth",
+    "name": "Uncontained Entushiasm",
+    "type": "spell",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "combine",
+          "args": {
+            "effectTemplates": [
+              {
+                "name": "staticKeyword",
+                "args": {
+                  "abilityName": "mollysGrowth",
+                  "keyword": "haste"
+                }
+              },
+              {
+                "name": "addCounters",
+                "args": {
+                  "counterType": "growth",
+                  "counterValue": 3
+                }
+              }
+            ]
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "poolKeys": ["molly", "event"]
   }
 ]

@@ -457,6 +457,16 @@ function checkEffect(where, effect) {
       if (parameters.useOnlyOnce !== undefined && typeof parameters.useOnlyOnce !== 'boolean') {
         errors.push(`${where}: useOnlyOnce must be a boolean`);
       }
+      if (parameters.priority !== undefined) {
+        if (
+          typeof parameters.priority !== 'number' ||
+          !Number.isInteger(parameters.priority) ||
+          parameters.priority < 0 ||
+          parameters.priority > 3
+        ) {
+          errors.push(`${where}: priority must be an integer from 0 to 3`);
+        }
+      }
       if (parameters.npcKey !== undefined) {
         checkOneOf(where, 'npcKey', parameters.npcKey, npcKeys);
       }

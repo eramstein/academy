@@ -70,7 +70,6 @@
 
   /**
    * Story tags referenced by triggers (event, nodes, options, passages, gated effects).
-   * Does not include tags only produced by `add_story_tag`.
    */
   function storyTagsReferencedInEvent(event: EventTemplate): Set<string> {
     const tags = new Set<string>();
@@ -126,23 +125,28 @@
     return [...tags].sort((a, b) => a.localeCompare(b));
   }
 
+  /**
+   * Tags referenced or produced in this arc. Count = events across the full
+   * catalog that gate on the tag; 0 means created but never used as a trigger.
+   */
   const tagUsage = $derived.by(() => {
-    const usedInArc = new Set<string>();
+    const inArc = new Set<string>();
     for (const event of events) {
-      for (const tag of storyTagsReferencedInEvent(event)) usedInArc.add(tag);
+      for (const tag of storyTagsReferencedInEvent(event)) inArc.add(tag);
+      for (const tag of storyTagsGeneratedByEvent(event)) inArc.add(tag);
     }
 
     const counts = new Map<string, number>();
-    for (const tag of usedInArc) counts.set(tag, 0);
+    for (const tag of inArc) counts.set(tag, 0);
 
     for (const event of allEvents) {
       const tags = storyTagsReferencedInEvent(event);
-      for (const tag of usedInArc) {
+      for (const tag of inArc) {
         if (tags.has(tag)) counts.set(tag, (counts.get(tag) ?? 0) + 1);
       }
     }
 
-    return [...usedInArc]
+    return [...inArc]
       .map((tag) => ({ tag, count: counts.get(tag) ?? 0 }))
       .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
   });
@@ -360,7 +364,7 @@
   <p class="empty">No events for this character arc.</p>
 {:else}
   {#if tagUsage.length > 0}
-    <section class="tag-list" aria-label="Story tags used in this arc">
+    <section class="tag-list" aria-label="Story tags in this arc">
       <button
         type="button"
         class="tag-heading"
@@ -372,7 +376,11 @@
       {#if tagsExpanded}
         <ul class="tags">
           {#each tagUsage as entry (entry.tag)}
-            <li class="tag-item" title={entry.tag}>
+            <li
+              class="tag-item"
+              class:unused={entry.count === 0}
+              title={entry.count === 0 ? `${entry.tag} (unused)` : entry.tag}
+            >
               <span class="tag-name">{entry.tag}</span>
               <span class="tag-count">{entry.count}</span>
             </li>
@@ -528,6 +536,10 @@
     color: var(--color-muted-label);
     font-size: 0.8rem;
     flex-shrink: 0;
+  }
+
+  .tag-item.unused .tag-name {
+    color: var(--color-muted-label);
   }
 
   .graph-wrap {

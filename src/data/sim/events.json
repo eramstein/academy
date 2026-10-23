@@ -620,7 +620,6 @@
   },
   {
     "key": "molly_gentle_art_wrestling",
-    "title": "The Gentle Art of Wrestling",
     "text": "You encounter Molly in the Academy courtyard just as she's finishing an afternoon of exercise. Her hair has escaped its ribbon, her cheeks are pink, and she looks entirely too pleased with herself for someone who has apparently spent the last hour being thrown about on a patch of grass.\n\n\"Antonio!\" She hurries over and takes your hand in greeting. Her grip is firm. Very firm. For one alarming instant, you wonder whether the Academy has secretly installed a mechanical hand beneath her sleeve.\n\n\"Good heavens, Molly. Do you crack walnuts with that thing?\"\n\n\"Sometimes!\" She laughs. \"Well, not often. It's rather messy.\"\n\nShe notices you flexing your fingers and looks suddenly apologetic. \"Oh! Did I squeeze too hard? I'm sorry. I've been practicing wrestling since I was little. My father's guards taught me. They said I was too small to manage the larger boys, so naturally I had to prove them wrong.\"\n\nHer embarrassment gives way to a mischievous smile. \"Actually, I think I could take you.\"\n\nYou look at this cheerful young woman, considerably smaller than you, with her loose hair and innocent expression. One doesn't often receive such a generous invitation to make a fool of oneself.\n\n\"Would you like to try?\" she asks eagerly. \"Just a friendly bout! First to pin the other's shoulders, and no rough stuff.\"",
     "triggers": [
       {
@@ -702,6 +701,11 @@
         }
       }
     ],
+    "title": "The Gentle Art of Wrestling",
+    "characterArc": "molly",
+    "emotion": "happy",
+    "image": "molly_gentle_art_wrestling.jpg",
+    "imageSize": "large",
     "nodes": {
       "dinner_invitation": {
         "text": "Molly retrieves her belongings and glances toward the Academy buildings. \"All this exercise has made me terribly hungry. Oh! Why don't you come to dinner with me? I live at the Royal Pigeon Inn. Their dining room is wonderful, and the cook makes the most marvelous roast potatoes.\"\n\nShe gives your arm an affectionate squeeze. \"The next evening we're both free. My treat! We can celebrate our match, and you can tell me how your studies are going.\"\n\nShe looks at you expectantly. The invitation seems entirely sincere, with none of Emma's carefully calculated ambiguity. Of course, whether it is only dinner is another question.",
@@ -789,6 +793,14 @@
                     "text": "Molly looks at you with a shy, delighted smile. \"You know, I thought we were just going to have dinner after our wrestling match. I didn't expect you to ask me on a proper date.\" She laughs softly. \"I'm very glad you did.\"",
                     "knownByNpcKeys": ["molly"]
                   }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "molly",
+                    "relationParameter": "love",
+                    "amount": 1
+                  }
                 }
               ],
               "failureEffects": [
@@ -835,10 +847,1123 @@
         "title": "An Invitation",
         "emotion": "happy"
       }
-    },
+    }
+  },
+  {
+    "key": "molly_pajama_party",
+    "text": "The cafeteria is busy when Molly spots you coming through the door. She waves so vigorously that two students turn around to see whom she's greeting.\n\n\"Antonio! Just the person I wanted!\" She hurries over, glowing with excitement. \"Would you like to spend the night with me?\"\n\nA spoon clatters onto a plate at the next table.\n\nWell. That is unusually direct.\n\n_She means an evening together,_ you tell yourself. _Perhaps a late supper._\n\nOf course. A perfectly sensible interpretation. And yet she did say _the night_.\n\nMolly doesn't notice your sudden interest in precise vocabulary. \"I've been planning it for days! I've already bought the chocolate, and there are plenty of pillows. You won't need to bring a thing.\"\n\nThe conversation around you seems to have developed an unexpected interest in silence. A young man behind Molly raises his eyebrows so high they threaten to disappear into his hair.\n\n_Chocolate. Pillows. Her room._\n\nSteady, Fibonacci. You have known this girl for approximately five minutes in the grand scheme of human relationships. There must be some innocent explanation.\n\n\"At the Royal Pigeon,\" she adds helpfully. \"My room's quite large. And don't worry, I have something you can wear!\"\n\nAn innocent explanation is becoming distressingly difficult to construct.\n\nAround you, several students are now listening with shameless attention. Molly glances at them, then back at you. \"So? Would you like to come?\"\n\nYou are rapidly acquiring a reputation without having made a single decision. Which, admittedly, is an efficient way to acquire one.",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 10
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "value": 2
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "periods": ["evening"]
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept the invitation",
+        "nextNode": "the_party",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I... yes. I'd be delighted.\"\n\n\"Wonderful!\" Molly clasps her hands. \"Come by after supper. Margaret says we mustn't make too much noise, so naturally we'll have to be very quiet.\"\n\n_Very quiet._ You nod with what you hope is a worldly, unflustered expression.\n\nYou may wish to practice that expression before the evening. The cafeteria, judging by the smirks, has found the present version unconvincing."
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "emma_lore_pajama_evening",
+              "type": "lore",
+              "text": "Emma greets you with a smile of such exquisite innocence that you immediately suspect trouble.\n\n\"Antonio! I hear congratulations are in order. Apparently, Molly invited you to spend the night in her bedroom. In front of half the cafeteria, no less!\"\n\nYou attempt to explain, but Emma raises a hand.\n\n\"Please, Fibonacci. Your private affairs are entirely your own. I would never dream of prying.\"\n\nShe pauses, visibly savoring the moment.\n\n\"Although I must say, I rather admire Molly's efficiency. Some girls spend weeks dropping hints. She simply announces her intentions over lunch.\"\n\nThere is absolutely no point arguing. Emma has found a new source of entertainment, and she intends to enjoy it.",
+              "knownByNpcKeys": ["emma"],
+              "priority": 3
+            }
+          },
+          {
+            "type": "move",
+            "parameters": {
+              "placeKey": "molly-room",
+              "characterKeys": ["player", "molly"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Save your reputation",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Thank you, Molly, but I don't think I can make it.\"\n\n\"Oh, what a pity!\" She looks genuinely disappointed, but only for a moment. \"I thought you'd enjoy a pajama party. We used to have such fun with pillow fights and hot chocolate when I was little! Never mind. I'll save you some chocolate if there's any left. Although I can't promise there will be.\"\n\n_A pajama party._ Ah.\n\nShe gives your hand a quick affectionate squeeze and goes off to tell the next unfortunate acquaintance about her evening plans. The cafeteria's audience, robbed of its scandal, returns reluctantly to lunch."
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_pajama_declined"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_lore_pajama_evening",
+              "type": "lore",
+              "text": "Molly smiles when you mention her party. \"The hot chocolate was delicious! I did make rather too much, though. I wish you could have joined me, Antonio. Perhaps another time?\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "emma_lore_pajama_evening",
+              "type": "lore",
+              "text": "Emma greets you with a smile of such exquisite innocence that you immediately suspect trouble.\n\n\"Antonio! I hear congratulations are in order. Apparently, Molly invited you to spend the night in her bedroom. In front of half the cafeteria, no less!\"\n\nYou attempt to explain, but Emma raises a hand.\n\n\"Please, Fibonacci. Your private affairs are entirely your own. I would never dream of prying.\"\n\nShe pauses, visibly savoring the moment.\n\n\"Although I must say, I rather admire Molly's efficiency. Some girls spend weeks dropping hints. She simply announces her intentions over lunch.\"\n\nThere is absolutely no point arguing. Emma has found a new source of entertainment, and she intends to enjoy it.",
+              "knownByNpcKeys": ["emma"],
+              "priority": 3
+            }
+          }
+        ]
+      }
+    ],
+    "title": "An Invitation from Molly",
     "characterArc": "molly",
     "emotion": "happy",
-    "image": "molly_gentle_art_wrestling.jpg",
+    "image": "molly_pajama_party.jpg",
+    "imageSize": "large",
+    "nodes": {
+      "the_party": {
+        "text": "The Royal Pigeon Inn has never looked more respectable. Its polished corridors, velvet carpets, and discreetly attentive staff seem designed to assure wealthy travelers that nothing undignified has ever happened within its walls.\n\nOn the way upstairs, you remind yourself to be mature, considerate, and above all prepared for whatever Molly has in mind. _Naturally._ The fact that you have adjusted your collar three times is merely a coincidence.\n\nMolly opens the door with a brilliant smile. \"You're here! Come in, come in!\"\n\nHer room makes a brave attempt to challenge the inn's reputation.\n\nThe chairs have been pushed aside, cushions cover the carpet, and an impressive mountain of pillows occupies the middle of the room. A tray holds two steaming mugs of chocolate and enough biscuits to sustain a small military campaign. Molly is wearing a comfortable cream linen nightshirt and loose trousers, her short hair even more unruly than usual.\n\n_Pillows everywhere. A nightshirt. A private room._\n\nYour imagination rallies for one last, rather heroic effort.\n\n\"I made us a fort!\" Molly announces proudly, pointing at an arrangement of cushions and blankets. \"And I found my old favorite pajamas for you. I hope these fit. They're rather large on me, but you are rather large compared with me, so it should work out splendidly.\"\n\nOh.\n\n_Oh._\n\nThe truth arrives with the slow, terrible majesty of a collapsing cathedral. She means a pajama party. An actual pajama party. With pajamas.\n\nFor one brief, shameful moment, you contemplate the distance between the evening you imagined and the evening arranged before you. Then Molly holds up the spare trousers, looking so delighted by her preparations that the disappointment begins to seem rather foolish.\n\nThe trousers fit. The top is a little short in the sleeves. Molly considers you for a moment and nods with satisfaction.\n\n\"Perfect! Now, the first rule of pajama parties is that nobody has to be terribly grown-up. The second rule is that we mustn't spill chocolate on Margaret's carpet. She was _very_ particular about that.\"\n\n\"And the third rule?\" you ask.\n\n\"Oh, there isn't one. I only thought of two.\" She takes a mug, settles cross-legged among the cushions, and looks up at you expectantly.\n\nYou take a biscuit. The chocolate smells wonderful. Against all expectations—and perhaps against your better judgment—you find yourself smiling.",
+        "optionTemplates": [
+          {
+            "text": "Declare a pillow war",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "You pick up a pillow and examine it thoughtfully. \"And what, exactly, are the rules concerning armed conflict?\"\n\nMolly's eyes widen. \"Oh, no, you don't—\"\n\nYour first strike catches her harmlessly on the shoulder. She retaliates immediately, and with such enthusiasm that you are forced into a strategic retreat behind an armchair. For several glorious minutes, the Royal Pigeon becomes the scene of a battle that military historians will never be permitted to study.\n\nAt last Molly collapses onto the cushions, breathless with laughter. \"Truce! Truce! I surrender!\"\n\nThere is a soft knock at the door.\n\n\"Miss Moreno?\" comes Margaret's impeccably controlled voice. \"Is everything quite all right?\"\n\nYou and Molly look at each other. A feather floats slowly between you.\n\n\"Perfectly!\" Molly calls. \"We're being very quiet!\"\n\nThe silence on the other side of the door is eloquent. Then Margaret's footsteps retreat down the corridor.\n\nMolly presses a pillow over her mouth to smother another fit of giggles. A moment later you're laughing too, with no trace left of the elaborate evening your imagination had prepared. This is, rather inconveniently, much more fun."
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "molly",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "molly_pajama_pillow_war"
+                }
+              },
+              {
+                "type": "add_chat_topic",
+                "parameters": {
+                  "key": "molly_memory_pajama_pillow_war",
+                  "type": "memory",
+                  "text": "Molly lowers her voice conspiratorially. \"I've been trying not to laugh whenever I see Margaret. Do you remember her face when she heard us with the pillows?\" She pauses. \"Well, we didn't actually see her face, did we? I think that's what makes it worse.\"",
+                  "knownByNpcKeys": ["molly"]
+                }
+              }
+            ]
+          },
+          {
+            "text": "Settle in for chocolate and stories",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "You accept a mug and settle beside Molly among the cushions. \"I think I'd rather begin with the chocolate. You promised something magnificent.\"\n\n\"And you shall have it!\" She offers you the biscuit tin with great ceremony. \"My grandmother used to make hot chocolate for all the cousins during winter visits. We would stay up telling stories until someone fell asleep in the middle of one. Usually me.\"\n\nShe recounts a childhood expedition to rescue a kitten from an apple tree, which apparently ended with three children, one confused gardener, and a ladder stuck in a pond. You contribute a story of your own. Molly listens with the rapt attention of someone for whom another person's adventures are as exciting as her own.\n\nAfter a while she draws her knees up beneath her nightshirt and smiles into her mug. \"It's nice, isn't it? Just being silly and comfortable with someone. No lessons, no examinations, nobody expecting us to accomplish anything important.\"\n\nFor once, neither of you feels obliged to improve the evening by doing anything at all. Whatever you thought you were coming here for, you discover that a mug of excellent chocolate and Molly's delighted company are very difficult to improve upon."
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "molly",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "molly_pajama_cozy_evening"
+                }
+              },
+              {
+                "type": "add_chat_topic",
+                "parameters": {
+                  "key": "molly_memory_pajama_chocolate",
+                  "type": "memory",
+                  "text": "\"I keep thinking about our pajama evening,\" Molly says warmly. \"The stories, the chocolate... It was lovely to have someone to be completely silly with. Or completely lazy. Both are terribly important skills, I think.\"",
+                  "knownByNpcKeys": ["molly"]
+                }
+              }
+            ]
+          }
+        ],
+        "title": "Pillows and Chocolate",
+        "emotion": "happy",
+        "image": "the_party.jpg",
+        "imageSize": "large"
+      }
+    }
+  },
+  {
+    "key": "molly_lake_above_town",
+    "text": "Molly finds you just as you are contemplating the rare and precious luxury of a morning without lectures.\n\n\"Antonio! You're free today, aren't you? Wonderful! There's a lake in the hills above town. It's beautiful, and hardly anyone ever goes there. We could walk up, have a picnic, and go swimming!\"\n\nThis is less an invitation than a small avalanche of enthusiasm. Before you've had time to decide how ambitious you feel, Molly produces an enormous picnic basket from behind her back.\n\n\"I made sandwiches! And there are apples, cheese, honey cakes... Oh, and towels. Don't worry about carrying it all, I'm quite used to hiking.\"\n\nSo much for a restful morning. Still, the prospect of spending a sunny day with Molly has its attractions. You agree, and she leads you out of town at a brisk pace, chattering about birds, wildflowers, and a fox she once spent three days trying to befriend. The fox, by her account, remained disappointingly committed to being a fox.\n\nAn hour later, the path opens onto a little mountain lake, clear and blue beneath a ring of green slopes. Sunlight dances on the water. A willow leans over the shore, and a grassy bank offers an ideal place for the picnic. There isn't another soul in sight.\n\nMolly drops the basket and surveys the scene with satisfaction. \"Perfect! I told you it was worth the walk.\"\n\nShe sets aside her walking clothes, revealing simple, opaque linen underclothes: a cream sleeveless top and loose dark-green shorts, both thoroughly practical for swimming. She seems no more self-conscious about this than she would about removing a raincoat. You, on the other hand, have suddenly become very interested in the local geology.\n\n\"Coming in?\" she asks, stepping toward the water. \"It's lovely once you get used to it!\"\n\nAn inviting lake, a beautiful day, and Molly smiling at you over her shoulder. There are worse ways to spend a weekend.",
+    "triggers": [
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "value": 3
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "love",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "day_of_week",
+        "parameters": {
+          "daysOfWeek": [6, 7]
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "morning"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Race her into the lake",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You shed your outer clothes, keeping your own modest swimming underclothes, and head for the water. \"Last one in has to carry the basket home!\"\n\n\"Oh, that's not fair!\" Molly cries, already running. \"You've got a head start!\"\n\nShe overtakes you before your feet touch the shallows. The first plunge is shockingly cold; your breath vanishes, along with several of your more dignified intentions. Molly surfaces beside you, laughing, and flicks a handful of water in your direction.\n\nYou retaliate. A spirited exchange follows, interrupted by a swim toward a sun-warmed rock on the far shore. Molly moves through the water as easily as she does over land, but she slows so you can enjoy the crossing together.\n\nBy the time you return, you're pleasantly exhausted. Molly wraps herself in a towel and passes you a honey cake. \"That was wonderful! We ought to come here more often.\"\n\nYou consider the long walk home. Then the cake. On balance, she makes a persuasive argument."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "level_attribute",
+            "parameters": {
+              "attribute": "vitality",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_lake_swim"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_lake_swim",
+              "type": "memory",
+              "text": "Molly's eyes brighten. \"Do you remember our race into the lake? I still say you started early!\" She laughs. \"Not that it helped you very much. We should go back when the weather's lovely.\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Enjoy the shore together",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I think I'll stay here for a while. Someone ought to defend the picnic from marauding wildlife.\"\n\nMolly considers this. \"A very important responsibility. Especially where honey cakes are concerned.\"\n\nShe goes for a swim while you settle beneath the willow. Watching her splash happily in the blue water, you find that doing absolutely nothing is an occupation with considerable merit.\n\nWhen Molly returns, she stretches out on a towel beside you and opens the basket. Between mouthfuls of bread and cheese, she points out plants growing along the bank: a cooling herb useful for minor burns, soft moss prized by green artificers, and a little blue flower whose name she can't quite remember.\n\n\"I'm not very good at remembering the scholarly names,\" she admits. \"But I know what grows where. My old gardener taught me when I was small.\"\n\nTogether you collect a few useful specimens without disturbing the rest. The afternoon passes in easy conversation, occasional comfortable silences, and one determined attempt by a duck to negotiate a share of the sandwiches. Molly insists that the duck is being perfectly polite."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_resource",
+            "parameters": {
+              "resourceType": "magic_dust",
+              "amount": 10
+            }
+          },
+          {
+            "type": "add_known_trait",
+            "parameters": {
+              "characterKey": "molly",
+              "title": "Wild plants",
+              "description": "Molly has extensive practical knowledge of wild plants, learned during her childhood outdoors."
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_lake_picnic"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_lake_picnic",
+              "type": "memory",
+              "text": "\"I found another place that reminds me of our picnic,\" Molly tells you. \"Quiet water, trees, absolutely no one demanding that we study.\" She thinks for a moment. \"Well, there was that duck. But he only demanded sandwiches.\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Find out what Molly has in mind",
+        "nextNode": "molly_lake_fun",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You follow Molly toward the shallows. Something about her smile suggests she's enjoying this invitation for reasons that may have very little to do with swimming."
+            }
+          }
+        ]
+      }
+    ],
+    "title": "The Lake Above Town",
+    "characterArc": "molly",
+    "emotion": "happy",
+    "image": "molly_lake_above_town.jpg",
+    "imageSize": "large",
+    "effects": [
+      {
+        "effect": {
+          "type": "move",
+          "parameters": {
+            "placeKey": "gray_mountains",
+            "characterKeys": ["player", "molly"]
+          }
+        }
+      }
+    ],
+    "nodes": {
+      "molly_lake_fun": {
+        "text": "Molly wades in enthusiastically, swims several yards, and turns to wave.\n\n\"Come on! Don't be shy!\"\n\nYou're beginning to suspect that Molly is considerably less shy than she sometimes appears. Well, there's only one thing for it. You leave your shirt and trousers on the bank, keeping your modest swimming underclothes, and try to ignore the enormous grin with which Molly observes your preparations.\n\nYou join her in the water. Almost immediately, a small complication presents itself. Molly's practical linen swimming top, perfectly modest on dry land, has become rather less discreet now that it's soaked. Apparently, the lake has very strong opinions about the laws of transparency.\n\nYou're doing your best to behave like a civilized scholar when Molly notices that the view has had a noticeable effect on your composure. Her eyes widen for a heartbeat. Then she breaks into a delighted, wicked little smile.\n\n\"Well, Antonio! It seems I'm not the only one who knows how to cast Giant Growth. And I thought you only used that card in _Hordes_!\"\n\nThere are moments when a rigorous education in magical theory is of absolutely no assistance whatsoever.\n\nMolly glides closer, still smiling. \"If you'd like,\" she adds, lowering her voice, \"I could try reversing the effect.\"\n\n_Gulp._",
+        "optionTemplates": [
+          {
+            "text": "Let her try",
+            "attributeCheck": {
+              "attribute": "vitality",
+              "difficulty": "hard",
+              "successEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "You return Molly's smile and draw her gently closer. That, apparently, is all the encouragement she needs.\n\nThere follows a considerable amount of splashing, fresh evidence of Molly's formidable wrestling skills, and the abrupt departure of several scandalized birds. The rest is a private matter between two consenting scholars, and the local wildlife has already heard quite enough.\n\nWhen you finally gather your thoughts, you're standing in the shallows with Molly close against you, her legs wrapped securely around your waist. Both of you are breathless; Molly looks positively radiant.\n\n\"Antonio,\" she whispers into your ear, \"we can do that again whenever you like. With or without the water.\"\n\nShe laughs and kisses you. \"Just for fun, you know? When we both feel like it. No need to decide the rest of our lives over a swim.\"\n\nYou agree. A remarkably sensible arrangement, considering the astonishing lack of sensible behavior that produced it."
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "molly",
+                    "relationParameter": "love",
+                    "amount": 2
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "molly_lake_intimate"
+                  }
+                },
+                {
+                  "type": "add_relation_tag",
+                  "parameters": {
+                    "characterKey": "molly",
+                    "relationTag": "Molly is not as shy as you thought"
+                  }
+                },
+                {
+                  "type": "add_chat_topic",
+                  "parameters": {
+                    "key": "molly_memory_lake_intimate",
+                    "type": "memory",
+                    "text": "Molly gives you a mischievous smile. \"I've been thinking about that afternoon at the lake. I had no idea swimming could be quite so entertaining.\" She blushes a little. \"We really ought to go again sometime.\"",
+                    "knownByNpcKeys": ["molly"]
+                  }
+                },
+                {
+                  "type": "add_chat_topic",
+                  "parameters": {
+                    "key": "molly_lore_lake_growth",
+                    "type": "lore",
+                    "text": "Emma greets you with a smile of positively dangerous innocence. \"Antonio! Molly was telling me about your excursion to the lake. Apparently there was a rather remarkable demonstration of Giant Growth.\" You open your mouth to object. \"Oh, spare me the technical details. I only wish to congratulate you on finally discovering an application of green magic that inspires genuine enthusiasm for your studies.\" Her raised eyebrow suggests that further objections would merely improve her afternoon.",
+                    "knownByNpcKeys": ["emma"],
+                    "npcKey": "emma"
+                  }
+                }
+              ],
+              "failureEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "You return Molly's smile, and she meets you halfway with a delighted kiss.\n\nThere follows a considerable amount of splashing, further evidence of Molly's remarkable wrestling skills, and the abrupt evacuation of several nearby birds. The problem is resolved right there in the lake. Promptly. Perhaps a little _too_ promptly.\n\nBack on the bank, Molly spreads her damp things over a sun-warmed stone. She catches your sheepish expression and laughs—not unkindly, but with infectious amusement.\n\n\"Don't worry, Antonio. My enthusiasm does have a way of being contagious.\" She leans close and lowers her voice. \"Next time...\" A very knowing smile. \"...I'm sure you'll take a little more time.\"\n\n_Next time._ There are encouraging phrases, and then there are phrases capable of restoring an entire man's self-confidence.\n\n\"If you'd like a next time, that is,\" Molly adds, suddenly a little shy. \"I would. Something just for fun, now and then, without making a grand fuss about it.\"\n\nYou tell her you'd like that too. Molly squeezes your hand, plainly delighted with the arrangement."
+                  }
+                },
+                {
+                  "type": "change_relation",
+                  "parameters": {
+                    "characterKey": "molly",
+                    "relationParameter": "love",
+                    "amount": 1
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "molly_lake_intimate"
+                  }
+                },
+                {
+                  "type": "add_relation_tag",
+                  "parameters": {
+                    "characterKey": "molly",
+                    "relationTag": "Molly is not as shy as you thought"
+                  }
+                },
+                {
+                  "type": "add_chat_topic",
+                  "parameters": {
+                    "key": "molly_memory_lake_intimate",
+                    "type": "memory",
+                    "text": "Molly smiles and gives your hand a squeeze. \"Do you remember our afternoon at the lake? It was lovely, Antonio.\" Her expression turns impish. \"And next time, perhaps we won't be in quite such a hurry.\"",
+                    "knownByNpcKeys": ["molly"]
+                  }
+                },
+                {
+                  "type": "add_chat_topic",
+                  "parameters": {
+                    "key": "molly_lore_lake_growth",
+                    "type": "lore",
+                    "text": "Emma greets you with a smile of positively dangerous innocence. \"Antonio! Molly was telling me about your excursion to the lake. Apparently there was a rather remarkable demonstration of Giant Growth.\" You open your mouth to object. \"Oh, spare me the technical details. I only wish to congratulate you on finally discovering an application of green magic that inspires genuine enthusiasm for your studies.\" Her raised eyebrow suggests that further objections would merely improve her afternoon.",
+                    "knownByNpcKeys": ["emma"],
+                    "npcKey": "emma",
+                    "priority": 3
+                  }
+                }
+              ],
+              "successNode": "molly_lake_gift",
+              "failureNode": "molly_lake_gift"
+            }
+          },
+          {
+            "text": "A strategic retreat",
+            "nextNode": "molly_lake_gift",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "Oh, dear. That wasn't a bluff.\n\nA strategic withdrawal is clearly in order. Red as a tomato, you begin edging toward the shore, doing your best to conceal the source of Molly's rapidly growing amusement.\n\n\"It's just that... you know, reflections in water can create rather misleading impressions of submerged objects...\"\n\nMolly nods with exaggerated seriousness. \"Oh, yes! Professor Lombard was explaining that in class the other day.\"\n\nFor one glorious moment, you think you've been saved by academic rigor.\n\n\"That must be it, of course,\" she continues solemnly. \"Still, I'll be sure to record the results of our experiment.\"\n\nShe bursts into laughter. You cannot help joining in, even as you retreat to the towels with what little dignity remains. Molly follows, cheerful as ever, and offers you a honey cake as a peace treaty."
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "molly",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "molly_lake_retreat"
+                }
+              },
+              {
+                "type": "add_chat_topic",
+                "parameters": {
+                  "key": "molly_memory_lake_retreat",
+                  "type": "memory",
+                  "text": "Molly covers a smile with her hand. \"You know, Antonio, I've been thinking about Professor Lombard's lesson on refraction. Such a fascinating subject!\" Her eyes sparkle. \"We really should repeat our little experiment someday.\"",
+                  "knownByNpcKeys": ["molly"]
+                }
+              },
+              {
+                "type": "add_chat_topic",
+                "parameters": {
+                  "key": "molly_lore_lake_retreat",
+                  "type": "lore",
+                  "text": "Emma studies you with an expression of refined disbelief. \"Molly told me about your little swimming expedition. She apparently proposed a most interesting practical experiment, and you fled—citing Professor Lombard's lecture on refraction.\" She pauses to let this sink in. \"Fibonacci, I've always admired a man who knows when to retreat. But to abandon such a promising opportunity in the name of _optics_? Your judgment requires urgent remedial instruction.\" She looks entirely too pleased with herself.",
+                  "knownByNpcKeys": ["emma"],
+                  "npcKey": "emma",
+                  "priority": 3
+                }
+              }
+            ]
+          }
+        ],
+        "effects": [
+          {
+            "effect": {
+              "type": "add_known_trait",
+              "parameters": {
+                "characterKey": "molly",
+                "title": "Not so shy",
+                "description": "Molly is definitely not as shy as you thought. If she proposes you some sportive activity, be prepared."
+              }
+            }
+          }
+        ],
+        "title": "A Curious Growth Phenomenon",
+        "emotion": "flirtatious",
+        "image": "molly_lake_fun.jpg",
+        "imageSize": "large"
+      },
+      "molly_lake_gift": {
+        "text": "As you gather the picnic things, Molly suddenly brightens. \"Oh! I nearly forgot. I brought you something.\"\n\nShe fishes a green magic card out of a dry pocket in her basket and presents it with a flourish: **Giant Growth**.\n\n{{giftJoke}}\n\nThe card is genuinely useful. Molly's pleasure in giving it to you is genuine, too. Her sense of comic timing, however, may be developing into a public menace.",
+        "optionTemplates": [],
+        "effects": [
+          {
+            "effect": {
+              "type": "offer_card_gifts",
+              "parameters": {
+                "count": 1,
+                "specificCardKeys": ["molly_giant_growth"]
+              }
+            }
+          }
+        ],
+        "title": "A Parting Gift",
+        "emotion": "amused",
+        "passages": {
+          "giftJoke": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "story_tag",
+                    "parameters": {
+                      "tag": "molly_lake_retreat",
+                      "value": 1
+                    }
+                  }
+                ],
+                "text": "\"For your future experiments,\" she says, with exaggerated scholarly dignity. \"In case you decide the optical conditions are more favorable next time.\""
+              }
+            ],
+            "fallback": "\"I thought you deserved a souvenir of our afternoon,\" she says, blushing and smiling at once. \"Though judging by what happened earlier, perhaps you didn't need the extra growth after all!\""
+          }
+        }
+      }
+    }
+  },
+  {
+    "key": "molly_noble_conduct",
+    "title": "Noble Conduct",
+    "text": "You are crossing a side corridor of the Academy when you discover Molly on her knees, scrubbing a stubborn patch of ink from the stone floor. Beside her, two cleaners are moving a heavy bucket between them. Molly's sleeves are rolled to the elbows; she has acquired a streak of soot across one cheek and looks rather pleased with the arrangement.\n\n\"Antonio!\" She waves the cloth at you. \"Did you know the workshop drains clog if you wash powdered iron into them? I didn't! But Marta showed me how to clear one. It's quite clever, really.\"\n\n\"Lady Moreno?\"\n\nThe voice comes from behind you. Elsa stands in the doorway, immaculately dressed, staring at Molly's wet sleeves. The cleaners straighten at once. Molly looks up with an open smile.\n\n\"Oh, hello, Elsa! Would you mind passing me that other rag?\"\n\nFor a moment, the corridor is very quiet.\n\n\"You are the daughter of a duke,\" Elsa says, keeping her voice controlled. \"Students here know that. So do the servants. You cannot simply kneel in the corridor and do their work for them.\"\n\n\"Why not? They had three people to clean the whole workshop, and someone spilled an entire bottle of—\"\n\n\"Because you represent your family, Molly. If people see a noblewoman working as a scullery maid, they will not say what a generous heart she has. They will say the Morenos have forgotten their station. And the next time you need the staff to follow an instruction, what authority will you have left?\"\n\nMolly lowers the rag. \"I wasn't giving anyone instructions. I was helping.\"\n\n\"Precisely.\" Elsa's glance flicks toward the cleaners. \"That is the problem.\"\n\nThe words land harder than Elsa seems to expect. Molly blinks rapidly. Her mouth trembles; she tries to answer and cannot. A tear slips down her cheek, making a clean track through the soot. The cleaners look at their shoes. Elsa, suddenly aware of her audience, draws herself a little straighter.\n\n\"I don't mean to be cruel,\" she says, with unfortunate timing. \"But someone ought to tell you.\"\n\nMolly wipes her eyes on her sleeve. \"You have. Thank you.\" Her voice is small, but quite steady by the end. She rises, sets down the cloth, and turns to the cleaners. \"Marta, you said the storeroom is short of hands on Thursdays. I can come then, too. If you'll have me.\"\n\n\"Of course, miss,\" Marta replies softly.\n\nMolly nods. She is still crying a little. Apparently, tears are not preventing her from making appointments.\n\nElsa looks between them, evidently dismayed that her lecture has produced the exact opposite of its intended effect. You have a moment to intervene.",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 8
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "value": 1
+        }
+      }
+    ],
+    "effects": [
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "molly",
+            "title": "Criticism and conviction",
+            "description": "Criticism can hurt her deeply, even bringing her to tears, but she does not abandon a conviction simply because it is painful to defend. She respects the Academy's workers and volunteers alongside them."
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "elsa",
+            "title": "Noble obligations",
+            "description": "Elsa believes noble status carries public obligations, including maintaining visible distinctions between those who give orders and those who serve. She worries that disregarding such conventions weakens a family's authority."
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_story_tag",
+          "parameters": {
+            "tag": "molly_noble_conduct_seen"
+          }
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Challenge Elsa in front of everyone",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"If a title is so fragile that a bucket of water can ruin it,\" you tell Elsa, \"perhaps the title is the problem.\"\n\nElsa turns toward you. \"How very easy to say when you have no family name to safeguard.\"\n\n\"You're right,\" you say. \"I've had to earn the respect I get. Perhaps that explains my confusion.\"\n\nIt is not the most diplomatic answer of your academic career. Elsa's eyes narrow. She takes a small purse from her belt and puts several coins into Molly's hand, deliberately, where everyone can see.\n\n\"Very well. If we are employing noble daughters as cleaners, we should at least pay them properly. I would hate to be accused of exploiting your generosity.\"\n\nShe departs with the dignified speed of someone who desperately wishes to slam a door but has been denied a suitable door.\n\nMolly stares at the coins. \"Oh, that wasn't very kind of her.\" She glances toward the cleaners. \"And it wasn't kind to them, either.\" Turning to you, she presses the purse into your palm. \"Would you hold on to these? You can put them toward something useful. I don't want to keep them.\"\n\nThere is no triumph in her voice. She looks relieved that somebody challenged Elsa, but troubled by how much louder the whole business became."
+            }
+          },
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": 150
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "elsa",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_noble_conduct_challenged_elsa"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_noble_public",
+              "type": "memory",
+              "text": "Molly gives you a rueful smile. \"Thank you for defending me when Elsa spoke to me like that. I know you meant well.\" She hesitates. \"Next time, perhaps we could do it without making the cleaners wish the floor would swallow them? They already have enough to deal with.\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "elsa_memory_noble_public",
+              "type": "memory",
+              "text": "Elsa regards you coolly. \"I remember your little speech about titles and buckets, Fibonacci. A spirited performance. Unfortunately, governing a household requires rather more than spirited performances.\" A faint, reluctant smile appears. \"Though I confess it was a memorable line.\"",
+              "knownByNpcKeys": ["elsa"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Stay with Molly after Elsa leaves",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You let Elsa go without a reply. Instead, you kneel beside Molly and pick up the abandoned rag.\n\n\"I think you missed a spot,\" you say.\n\nMolly gives a watery laugh. \"I think I missed several. My eyes went all blurry. It's terribly inconvenient.\"\n\nYou work together in silence until Marta takes the bucket away. Only then does Molly sit back on her heels. \"Elsa probably thinks she's helping me,\" she says. \"Perhaps she is, in her own way. But she made Marta feel ashamed of letting me help. That's the part I can't bear.\"\n\n\"You can still help her,\" you say. \"And you don't have to be cheerful every second of it.\"\n\n\"Thank goodness.\" Molly sniffs, then brightens. \"Because I seem to have used up today's supply.\"\n\nLater, she finds you with three cards laid out carefully in her hands. \"I wanted to give you something for staying. Pick whichever you like! They're all useful, and I promise none of them have ever cleaned a drain.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 2
+            }
+          },
+          {
+            "type": "offer_card_gifts",
+            "parameters": {
+              "count": 3,
+              "poolKeys": ["molly", "base"]
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_noble_conduct_comforted"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_noble_comfort",
+              "type": "memory",
+              "text": "Molly smiles, a little shyly. \"Do you remember when you stayed and helped me finish cleaning after Elsa's lecture? I was having an awful time of it. I don't think I even thanked you properly.\" She pauses. \"Thank you. It meant more than you know.\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Ask the workers what would actually help",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Marta,\" you ask, \"if Molly and I wanted to make this easier next week, what would you need?\"\n\nMarta eyes the bucket. \"A second handcart would be a start. And a place to sort all the useful bits the workshops throw away. They leave everything mixed with broken glass, and we spend half our time picking through it.\"\n\nMolly looks up, her tears momentarily forgotten. \"They throw away useful materials?\"\n\n\"Not useful to the professors,\" Marta says. \"Useful to anyone willing to sort them.\"\n\nYou suggest a separate collection bin for metal offcuts and usable scraps. Molly immediately volunteers to speak to the workshop steward and arrange a cart; Marta insists that the staff decide where the bins go. Within a few minutes, the cleaners are explaining their work to two students who are, for once, listening.\n\nWhen Elsa sees the discussion turning into a practical arrangement, she hesitates by the doorway. \"A proper system would at least be preferable to noble students randomly scrubbing floors,\" she remarks. She considers the bins. \"They ought to be labeled.\"\n\n\"That's a good idea!\" Molly says earnestly. Elsa seems unsure what to do with the compliment.\n\nA little later, Marta brings you a neatly wrapped bundle. \"First things we rescued from the discard basket. You two can have them. Better used than melted down for nothing.\"\n\nInside are three small pieces of mithril. Astonishing, really, what an institution can overlook when somebody else is expected to sweep it up."
+            }
+          },
+          {
+            "type": "add_resource",
+            "parameters": {
+              "resourceType": "mithril",
+              "amount": 3
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "elsa",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_noble_conduct_scrap_scheme"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_noble_solution",
+              "type": "memory",
+              "text": "\"Marta says the new sorting bins are working!\" Molly beams. \"It's funny—we meant to help clean the floor, and now they have less to clean in the first place. I wonder what else we've all been doing the difficult way?\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "academy_lore_workshop_scraps",
+              "type": "lore",
+              "text": "Elsa folds her arms. \"That system for collecting workshop scraps? Yes, I heard about it. Sensible enough, once somebody remembered to involve the staff who actually do the work.\" She gives you a measuring look. \"Do try not to look so astonished that I approve of something.\"",
+              "npcKey": "elsa"
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "molly",
+    "emotion": "sad",
+    "image": "molly_noble_conduct.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "molly_letter_with_seal",
+    "title": "A Letter with a Seal",
+    "text": "Molly is making her way through an Academy corridor with a basket balanced on one arm and a stack of books pressed against her chest. A loaf of sweet bread protrudes from the basket at a precarious angle. She greets you enthusiastically, which proves too much for the entire arrangement.\n\nOne book slides free. Then another. The bread makes a bid for independence. You catch the basket just as a heavy envelope flutters to the floor.\n\nThe envelope is thick cream paper, folded with almost military precision and closed by an imposing red wax seal. A coat of arms is pressed into it, surrounded by enough flourishes to suggest that the sender has never written an informal note in their life. Across the front, in impeccable calligraphy, is Molly's name—accompanied by an impressive procession of titles.\n\n\"Oh! My letter.\" Molly snatches up the envelope, then catches herself. \"Sorry, Antonio. I didn't mean to grab it from you. Thank you for saving the cakes!\"\n\nShe slips the letter between her books, but not before you notice the corner is creased from being opened and folded again. Her sunny expression falters for a moment.\n\n\"It's from home,\" she explains. \"They want to know how my studies are going. Whether I've made the proper acquaintances. Whether I'm making progress toward... well, the things I'm supposed to do afterward.\"\n\nShe looks down at her basket. \"The cakes are for some of the first-years. They looked terribly miserable after the alchemy test. I was going to cheer them up.\"\n\nApparently the first-years' spirits are an urgent matter. The weight of a family dynasty is rather less convenient to carry around in a basket.",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 12
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "value": 3
+        }
+      }
+    ],
+    "effects": [
+      {
+        "effect": {
+          "type": "add_story_tag",
+          "parameters": {
+            "tag": "molly_family_letter_received"
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "molly",
+            "title": "Expectations from home",
+            "description": "Molly's family expects regular reports on her academic progress, social connections, and preparation for responsibilities after the Academy. Their expectations make her uneasy."
+          }
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Respect her privacy",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"You don't have to explain,\" you tell her, handing back the books. \"It looks like a private letter.\"\n\nMolly's shoulders relax. \"Thank you. It's not a secret, exactly. It's just... complicated.\"\n\nShe hesitates, studying the seal. \"Everyone at home is very certain about what would make me useful. I suppose they're trying to look after me.\"\n\nYou let the subject rest. Molly places the letter safely beneath her books, then offers you a pastry with the solemn gratitude of someone bestowing a medal.\n\n\"Here. For rescuing the basket. And for not asking questions I don't quite know how to answer yet.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_letter_privacy_respected"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_letter_privacy",
+              "type": "memory",
+              "text": "Molly smiles warmly. \"Do you remember that great disaster with my basket and the letter from home? You didn't press me about it, even though I was acting so strangely. That was kind of you, Antonio. I haven't forgotten.\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Offer to help with her reply",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Would it help if we worked on a reply together? Not the private parts. Just the part about your studies.\"\n\nMolly considers this with immediate relief. \"Oh, that would be wonderful! I always get stuck trying to sound... important.\"\n\nYou suggest beginning with what she has actually been doing: lessons attended, exercises completed, people met. Molly counts these on her fingers, then adds, \"And I helped some children with their reading! Although I don't suppose that counts as academic progress.\"\n\n\"Why shouldn't it? You've learned enough to teach somebody else.\"\n\n\"Oh! That's true, isn't it?\" Her face brightens. \"I never thought of putting it that way.\"\n\nShe pulls a little notebook from her basket and begins jotting down ideas. After a moment, she pauses. \"I still want to tell them the truth. I'm not getting top marks. And I haven't decided what I want to do afterward.\"\n\n\"Then that's what the letter should say.\"\n\n\"Yes,\" Molly says, quietly but firmly. \"I think it should.\"\n\nThe draft, when she reads it back to you, is less grand than the envelope. It is also unmistakably hers."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_letter_honest_reply"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_letter_reply",
+              "type": "memory",
+              "text": "\"I sent that letter we worked on,\" Molly tells you. \"I was so nervous about being honest that I nearly rewrote it in proper formal language.\" She smiles. \"But I didn't. Thank you for helping me find the words.\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Admire the magnificently pompous stationery",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You gesture toward the envelope peeking out between her books. \"Molly, I had no idea one could fit an entire family history into a blob of wax. Do they send invitations to breakfast by royal proclamation?\"\n\nMolly takes the envelope and peers at it seriously. \"Well, breakfast invitations are usually on smaller paper.\"\n\nYou look at her. She looks at you. Then she realizes what you mean and starts laughing.\n\n\"Oh, Antonio! No, not every breakfast! Only when we have guests.\" She pauses. \"That sounded worse, didn't it?\"\n\n\"A little.\"\n\n\"I once tried to send my brother a letter with a drawing of a duck instead of a proper seal,\" she confesses. \"The household secretary sent it back because he thought someone had tampered with the correspondence.\"\n\nYou suggest that the duck may have been insufficiently heraldic. Molly laughs so hard she has to put the basket down before the pastries make a second escape.\n\n\"I know they're trying to be proper,\" she says when she catches her breath. \"But sometimes I wish they'd just write, 'Dear Molly, how are you?'\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_letter_seal_joke"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_letter_seal",
+              "type": "memory",
+              "text": "Molly bites back a grin. \"I received another letter from home. The seal is enormous, as usual.\" Her eyes brighten. \"I've been thinking about your idea. Perhaps I should ask them to put a duck on it next time. A very dignified duck, of course.\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "molly",
+    "emotion": "surprised",
+    "image": "molly_letter_with_seal.jpg",
+    "imageSize": "medium"
+  },
+  {
+    "key": "molly_kitchen_volunteers",
+    "title": "Kitchen Volunteers",
+    "text": "The smell reaches you before the noise: onions, fresh bread, and something that may once have been soup but is currently reconsidering its place in the world.\n\nYou follow the commotion to the Academy cafeteria kitchen. A cook is trying to rescue a boiling pot, an assistant is counting plates with the expression of a defeated general, and Molly stands in the middle of it all wearing an enormous borrowed apron. Her cheeks are flushed, her sleeves rolled up, and three vegetables are balanced precariously against her elbow.\n\n\"Antonio! Thank goodness!\" she cries. One of the vegetables escapes. \"I only came to help with lunch. They were short-handed, and I thought, how difficult can chopping and stirring be?\"\n\nThere are many possible answers. The state of the kitchen suggests she has been discovering them experimentally.\n\n{{referral}}\n\nMolly points to the great pot. \"I followed the recipe! Well, most of it. I was trying to make enough for everyone, so I multiplied everything by four. Including the salt.\" She lowers her voice. \"And perhaps the pepper.\"\n\nThe head cook, a broad-shouldered woman with flour on both forearms, looks you over. \"If you're here to help, pick a station. If you're here to admire the disaster, take a number.\"\n\nMolly clasps her hands hopefully. \"Oh, Antonio, will you? I really do want to be useful.\"",
+    "passages": {
+      "referral": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_memory_cooking_reputation",
+                  "value": 1
+                }
+              }
+            ],
+            "text": "Emma is leaning against the doorframe, having evidently delivered you to the scene with the air of a scholar unveiling an important discovery. \"I recommended you,\" she announces. \"After tasting Antonio's cooking, I thought you deserved competent assistance. Also, if I have to eat what is currently in that pot, I intend to hold somebody accountable.\"\n\n\"Emma!\" Molly looks scandalized. \"It isn't _that_ bad.\"\n\nEmma samples one cautious spoonful. Her face remains admirably composed. \"No. Quite right. The salt is excellent. One can almost detect a soup underneath it.\"\n\nMolly looks at you helplessly as Emma retreats toward lunch, her good deed apparently complete."
+          }
+        ],
+        "fallback": "\"One of the staff told me you've worked in a proper kitchen,\" Molly explains. \"I hope you don't mind that I asked them about you. I wasn't spying! I just thought you might know how to save lunch.\" She surveys the pots and gives you an apologetic smile. \"You could say it's a little urgent.\""
+      }
+    },
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 10
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "molly",
+          "relationParameter": "friendship",
+          "value": 1
+        }
+      }
+    ],
+    "effects": [
+      {
+        "effect": {
+          "type": "add_story_tag",
+          "parameters": {
+            "tag": "molly_kitchen_volunteers_seen"
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "molly",
+            "title": "Eager but inexperienced",
+            "description": "Molly readily volunteers for practical work, but enthusiasm sometimes outruns her knowledge. She can admit mistakes and is keen to learn rather than leave the work to others."
+          }
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Teach Molly a recipe she can make again",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"First,\" you say, gently removing a knife from beneath a precarious pile of carrots, \"let's make something simple. Something that won't require an emergency committee.\"\n\nMolly nods with deep seriousness. \"Excellent. An emergency committee sounds terribly time-consuming.\"\n\nYou show her how to prepare a sturdy vegetable stew: brown the onions, cut the vegetables to similar sizes, add stock gradually, taste before seasoning, and keep the heat low. Molly follows your hands carefully and asks questions—not always the expected ones. \"How do you know when an onion is properly browned?\" is followed by \"Do onions mind being browned?\" The latter requires a moment of reflection from everyone involved.\n\nWhen the stew is ready, the head cook tastes it and nods. \"Good. And she made most of that herself.\"\n\nMolly positively glows. \"I did! Well, Antonio stopped me from adding four times the salt again, but otherwise I did!\"\n\nAfter the meal, the cook presents you with a compact, well-kept kit of utensils and measuring implements. \"We have a spare. A cook who teaches instead of shouting can put it to use.\"\n\nMolly takes your hand in both of hers. \"Next time, perhaps I can cook something for you. Something edible, I mean.\""
+            }
+          },
+          {
+            "type": "add_possession",
+            "parameters": {
+              "type": "tool",
+              "name": "Cooking set",
+              "description": "A compact, well-kept kit of utensils and measuring implements."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 2
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_kitchen_learned_recipe"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_kitchen_recipe",
+              "type": "memory",
+              "text": "Molly beams when you mention cooking. \"I've been practicing the stew you taught me! I even remembered to taste it before adding salt.\" She lowers her voice conspiratorially. \"The cook says that's the first principle of not poisoning an entire dining hall.\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Bring order to the chaos",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You take stock of the room. There are six cooks, three chopping boards, enough potatoes to provision an army, and no clear idea who is doing what. The ingredients are fine. The arrangement is a catastrophe wearing an apron.\n\n\"Molly, take charge of washing and sorting the vegetables. Ask the cooks what they need first. I'll clear the worktops and set up stations.\"\n\n\"Me? Take charge?\" She looks alarmed, then glances at the exhausted assistants. \"All right! Everyone, please tell me what you need. One at a time—oh! Sorry, I was shouting too.\"\n\nYou separate preparation from cooking, move the flour away from the washbasin, and get the assistants working in a sensible order. Molly turns out to have a gift for remembering whose hands are full and who has been waiting too long for help. Once the work has a rhythm, she keeps it going with cheerful, practical attention.\n\nBy lunchtime the dishes arrive hot, the plates arrive clean, and the kitchen is quiet enough to hear the head cook mutter in disbelief.\n\n\"I was going to send these back to the workshop,\" she says, handing you three unused moxes from a box of surplus kitchen requisitions. \"They'll do more good in an artificer's hands. Consider them thanks for saving the service.\"\n\nMolly looks at the tidy counters, pleased but thoughtful. \"I wanted to do everything myself. It turns out asking everyone what they need works rather better.\""
+            }
+          },
+          {
+            "type": "add_resource",
+            "parameters": {
+              "resourceType": "moxes",
+              "amount": 3
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_kitchen_organized"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_kitchen_organized",
+              "type": "memory",
+              "text": "\"I tried your kitchen trick again,\" Molly tells you proudly. \"I asked everyone what they needed before doing anything. It worked wonderfully!\" She hesitates. \"I did still burn the onions. But nobody had to wait for a plate.\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Experiment with green essence",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You notice a small rack of culinary artificery cards beside the stove: common green-essence tools for preserving herbs, coaxing vegetables to ripen, and keeping produce fresh on long journeys. Molly catches your glance and immediately brightens.\n\n\"Oh! We could use those! Do you think one could fix the soup?\"\n\n\"The soup has made its choices,\" you say. \"Let's start with the vegetables.\"\n\nYou select a harmless growth-aspected card and carefully adjust its application to a tray of wilted herbs. Under the cook's watchful eye, the leaves straighten, turn fresh green, and release a vivid fragrance. Molly is delighted. She offers suggestions, helps you compare the effects on different leaves, and discovers that a small, controlled influence produces much better results than the enthusiastic overuse she initially proposes.\n\nThe cook adds the revived herbs to a new pot. This time, when she tastes the result, her eyebrows rise in genuine approval.\n\n\"There,\" Molly says, looking from the herbs to the card in your hand. \"I've never understood green essence so well in class. Apparently I needed it explained by a parsley leaf.\"\n\nYou find yourself understanding its practical behavior more clearly, too. A lesson learned over a boiling pot is still a lesson—even if nobody will award you a scholarly medal for it."
+            }
+          },
+          {
+            "type": "teach_color",
+            "parameters": {
+              "color": "green"
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_kitchen_green_essence"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_kitchen_green",
+              "type": "memory",
+              "text": "Molly smiles at you. \"I used that green-essence trick on some herbs again! Very carefully, just as you showed me.\" She pauses. \"The parsley was splendid. The basil was rather enthusiastic. I'm still working on the basil.\"",
+              "knownByNpcKeys": ["molly"]
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "molly",
+    "emotion": "surprised",
+    "image": "molly_kitchen_volunteers.jpg",
     "imageSize": "large"
   },
   {
@@ -5210,6 +6335,15 @@
                 "type": "memory",
                 "text": "\"I've considered writing down the recipe from our dinner,\" Emma says. You ask which part of the evening she intends to preserve. \"Not the disasters. The parts that were edible.\" You remind her that this might be a very short recipe. \"Then we'll have plenty of room for annotations.\" She laughs. \"Still, it was a pleasant evening. Next time I suggest we begin with something neither of us can accidentally ruin.\"",
                 "knownByNpcKeys": ["emma"]
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "add_story_tag",
+              "parameters": {
+                "tag": "emma_memory_cooking_reputation",
+                "amount": 1
               }
             }
           }

@@ -194,3 +194,157 @@ export function magnitudeLabel(described: { equalTo?: string; number?: number })
   }
   return String(Math.abs(described.number ?? 0));
 }
+
+type ParsedEffectLabel =
+  | {
+      form: 'to';
+      verb: string;
+      benefit: string;
+      target: string;
+      trailing: string;
+    }
+  | {
+      form: 'gets';
+      benefit: string;
+      target?: string;
+      trailing: string;
+    }
+  | { form: 'raw'; text: string };
+
+const TO_TARGET_VERBS = 'Give|Add|Deal|Restore|Apply|Multiply';
+const GRANT_VERBS = new Set(['give', 'add']);
+
+function splitBodyAndTrailing(label: string): { body: string; trailing: string } {
+  const trimmed = label.trim();
+  const match = trimmed.match(/^([^.]+)\.\s*(.*)$/);
+  if (!match) {
+    return { body: trimmed.replace(/[.!?]$/, ''), trailing: '' };
+  }
+  return { body: match[1].trim(), trailing: match[2].trim() };
+}
+
+function parseEffectLabel(label: string): ParsedEffectLabel {
+  const { body, trailing } = splitBodyAndTrailing(label);
+
+  const apply = body.match(/^Apply\s+(.+?)\s+to\s+(.+?)\s+for\s+(.+)$/i);
+  if (apply) {
+    return {
+      form: 'to',
+      verb: 'Apply',
+      benefit: `${apply[1]} for ${apply[3]}`,
+      target: apply[2],
+      trailing,
+    };
+  }
+
+  const toMatch = body.match(new RegExp(`^(${TO_TARGET_VERBS})\\s+(.+)\\s+to\\s+(.+)$`, 'i'));
+  if (toMatch) {
+    return {
+      form: 'to',
+      verb: toMatch[1],
+      benefit: toMatch[2],
+      target: toMatch[3],
+      trailing,
+    };
+  }
+
+  const selfGets = body.match(/^Gets\s+(.+)$/i);
+  if (selfGets) {
+    return { form: 'gets', benefit: selfGets[1], trailing };
+  }
+
+  const subjectGets = body.match(/^(.+?)\s+gets?\s+(.+)$/i);
+  if (subjectGets) {
+    return {
+      form: 'gets',
+      target: subjectGets[1],
+      benefit: subjectGets[2],
+      trailing,
+    };
+  }
+
+  return { form: 'raw', text: label.trim() };
+}
+
+function joinAsSentences(labels: string[]): string {
+  return labels
+    .map((text) => {
+      const trimmed = text.trim();
+      return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+    })
+    .join(' ');
+}
+
+/** Merge effect labels that share a target (used by the combine primer). */
+export function combineEffectLabels(labels: string[]): string {
+  if (labels.length <= 1) {
+    return labels[0] ?? '';
+  }
+
+  const parsed = labels.map(parseEffectLabel);
+  if (parsed.some((part) => part.form === 'raw')) {
+    return joinAsSentences(labels);
+  }
+
+  const targetKeys = parsed.map((part) => {
+    if (part.form === 'to') {
+      return part.target.toLowerCase();
+    }
+    return (part.target ?? '__self__').toLowerCase();
+  });
+  if (new Set(targetKeys).size !== 1) {
+    return joinAsSentences(labels);
+  }
+
+  const sharedKey = targetKeys[0];
+  const sharedTarget =
+    parsed.find((part) => part.form === 'to')?.target ??
+    parsed.find((part) => part.form === 'gets' && part.target)?.target;
+
+  const pieces = parsed.map((part) => {
+    if (part.form === 'to') {
+      return { verb: part.verb, benefit: part.benefit };
+    }
+    return { verb: 'Gets', benefit: part.benefit };
+  });
+
+  const trailings = [
+    ...new Set(
+      parsed
+        .map((part) => ('trailing' in part ? part.trailing : ''))
+        .filter((text): text is string => !!text)
+    ),
+  ];
+
+  const verbs = pieces.map((piece) => piece.verb.toLowerCase());
+  const allGrantOrGets = verbs.every(
+    (verb) => GRANT_VERBS.has(verb) || verb === 'gets'
+  );
+  const sameVerb = verbs.every((verb) => verb === verbs[0]);
+
+  let body: string;
+  if (sharedKey === '__self__') {
+    body = `Gets ${joinList(pieces.map((piece) => piece.benefit))}`;
+  } else if (allGrantOrGets || sameVerb) {
+    const lead =
+      pieces.find((piece) => GRANT_VERBS.has(piece.verb.toLowerCase())) ?? pieces[0];
+    if (lead.verb.toLowerCase() === 'gets' && sharedTarget) {
+      body = getsClause(sharedTarget, joinList(pieces.map((piece) => piece.benefit)), false);
+    } else {
+      const verb = lead.verb.toLowerCase() === 'gets' ? 'Give' : cap(lead.verb);
+      body = `${verb} ${joinList(pieces.map((piece) => piece.benefit))} to ${sharedTarget}`;
+    }
+  } else {
+    const fragments = pieces.map((piece, index) => {
+      if (piece.verb.toLowerCase() === 'gets') {
+        return piece.benefit;
+      }
+      const verb = index === 0 ? cap(piece.verb) : piece.verb.toLowerCase();
+      return `${verb} ${piece.benefit}`;
+    });
+    body = `${joinList(fragments)} to ${sharedTarget}`;
+  }
+
+  const combined = sentence(body);
+  return trailings.length > 0 ? `${combined} ${trailings.join(' ')}` : combined;
+}

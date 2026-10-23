@@ -1,7 +1,8 @@
 /*
   Picks one prewritten chat line for the NPC the player is talking to.
   First a topic type is chosen by weighted random, then topics of that
-  type are ranked. Tunables live in CHAT_TOPIC_WEIGHTS.
+  type are ranked (NPC voice, author priority, creation recency, recent
+  mention penalty). Tunables live in CHAT_TOPIC_WEIGHTS.
 */
 
 import { ChatTopicType, type ChatTopic } from '@/lib/_model';
@@ -28,6 +29,12 @@ export const CHAT_TOPIC_WEIGHTS = {
   mentionedToday: 35,
   /** How much of that penalty falls away for each day since it was used. */
   mentionedDecayPerDay: 7,
+  /** Added in full when the topic was created today (event-made topics). */
+  generatedToday: 40,
+  /** How much of that boost falls away for each day since creation. */
+  generatedDecayPerDay: 8,
+  /** Multiplied by usage.priority (0–3). */
+  priorityPoint: 30,
 };
 
 export interface DirectedChat {
@@ -143,7 +150,13 @@ function npcKnowsTopic(topic: ChatTopic, npcKey: string): boolean {
 
 function topicScore(topic: ChatTopic, dedicated: boolean, today: number): number {
   const voiceScore = dedicated ? CHAT_TOPIC_WEIGHTS.npcSpecificText : 0;
-  return voiceScore - mentionPenalty(topic.usage?.lastUsedOnDay ?? 0, today);
+  const priority = Math.max(0, Math.min(3, topic.usage?.priority ?? 0));
+  return (
+    voiceScore +
+    priority * CHAT_TOPIC_WEIGHTS.priorityPoint +
+    recencyBonus(topic.usage?.generatedOnDay ?? 0, today) -
+    mentionPenalty(topic.usage?.lastUsedOnDay ?? 0, today)
+  );
 }
 
 /** Closer to today means a larger penalty. Never-used topics are not penalized. */
@@ -153,6 +166,18 @@ function mentionPenalty(lastUsedOnDay: number, today: number): number {
   return Math.max(
     0,
     CHAT_TOPIC_WEIGHTS.mentionedToday - daysAgo * CHAT_TOPIC_WEIGHTS.mentionedDecayPerDay
+  );
+}
+
+/**
+ * Newer topics score higher. Seed catalog topics use generatedOnDay 0 and get no boost.
+ */
+function recencyBonus(generatedOnDay: number, today: number): number {
+  if (!generatedOnDay || generatedOnDay > today) return 0;
+  const daysAgo = today - generatedOnDay;
+  return Math.max(
+    0,
+    CHAT_TOPIC_WEIGHTS.generatedToday - daysAgo * CHAT_TOPIC_WEIGHTS.generatedDecayPerDay
   );
 }
 

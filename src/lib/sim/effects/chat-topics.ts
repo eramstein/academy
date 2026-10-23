@@ -15,6 +15,8 @@ export interface AddChatTopicParameters {
   /** These NPCs never mention the topic. */
   excludeNpcKeys?: string[];
   useOnlyOnce?: boolean;
+  /** 0–3 selection boost. Higher = more likely to be picked. Defaults to 0. */
+  priority?: number;
   /** When set, only this NPC speaks this line. */
   npcKey?: string;
   activityType?: ActivityType;
@@ -45,6 +47,8 @@ export function addChatTopic(parameters: AddChatTopicParameters): string {
   if (parameters.useOnlyOnce !== undefined && typeof parameters.useOnlyOnce !== 'boolean') {
     return 'useOnlyOnce must be true or false.';
   }
+  const priority = readPriority(parameters.priority);
+  if (typeof priority === 'string') return priority;
   const npcKey = readOptionalKey(parameters.npcKey, 'npcKey');
   if (npcKey instanceof Error) return npcKey.message;
   if (npcKey && !gs.characters[npcKey]) return `Invalid npcKey: ${npcKey}.`;
@@ -63,17 +67,30 @@ export function addChatTopic(parameters: AddChatTopicParameters): string {
   if (existing && existing.type !== parameters.type) {
     return `Chat topic ${key} already exists as ${existing.type}.`;
   }
-  if (hasChatTopicText(key, textKey)) return '';
+  if (hasChatTopicText(key, textKey)) {
+    console.warn(
+      `[add_chat_topic] skipped duplicate textKey "${textKey}" on topic "${key}"` +
+        (parameters.knownByNpcKeys || parameters.priority !== undefined
+          ? ' (knownBy/priority only apply when the topic is first created; use a distinct key or textKey for another line)'
+          : '')
+    );
+    return '';
+  }
 
   if (!existing) {
     const topic: ChatTopic = {
       key,
       type: parameters.type,
-      usage: { lastUsedOnDay: 0, textUsedKey: '' },
+      usage: {
+        lastUsedOnDay: 0,
+        textUsedKey: '',
+        generatedOnDay: gs.time.day,
+      },
     };
     if (knownBy.length > 0) topic.knownByNpcKeys = knownBy;
     if (excluded.length > 0) topic.excludeNpcKeys = excluded;
     if (parameters.useOnlyOnce) topic.usage.useOnlyOnce = true;
+    if (priority > 0) topic.usage.priority = priority;
     gs.chatTopics.push(topic);
   }
 
@@ -104,6 +121,15 @@ function readOptionalKey(value: unknown, label: string): string | undefined | Er
   if (typeof value !== 'string') return new Error(`${label} must be a string.`);
   const key = value.trim();
   return key || undefined;
+}
+
+/** 0–3, or an error message. Omitted → 0. */
+function readPriority(value: unknown): number | string {
+  if (value === undefined || value === null || value === '') return 0;
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 0 || value > 3) {
+    return 'priority must be an integer from 0 to 3.';
+  }
+  return value;
 }
 
 function isChatTopicType(value: unknown): value is ChatTopicType {
