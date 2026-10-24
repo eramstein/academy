@@ -181,13 +181,13 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
   const SUCTION_START = 900;
   const SUCTION_MS = 600;
   const RADIUS_BASE: Record<ResourceType, number> = {
-    [ResourceType.MagicDust]: 103,
-    [ResourceType.Mithril]: 84,
-    [ResourceType.Moxes]: 65,
-    [ResourceType.MollysBeads]: 55,
-    [ResourceType.SchlupakMushrooms]: 48,
-    [ResourceType.SchlupakDreamspheres]: 42,
-    [ResourceType.SchlupakSpores]: 36,
+    [ResourceType.MagicDust]: 118,
+    [ResourceType.Mithril]: 96,
+    [ResourceType.Moxes]: 74,
+    [ResourceType.MollysBeads]: 62,
+    [ResourceType.SchlupakMushrooms]: 54,
+    [ResourceType.SchlupakDreamspheres]: 48,
+    [ResourceType.SchlupakSpores]: 42,
   };
   /** Wider orbits when the forming card sits in the enlarged split circle. */
   const RADIUS_SPLIT: Record<ResourceType, number> = {
@@ -208,7 +208,7 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     [ResourceType.SchlupakDreamspheres]: -0.0006,
     [ResourceType.SchlupakSpores]: 0.00058,
   };
-  const CHARM_RADIUS = { base: 88, split: 172 };
+  const CHARM_RADIUS = { base: 100, split: 172 };
   const CHARM_SPEED = 0.00052;
   const CHARM_STAGGER = 120;
   const SEAL_HOLD_MS = 180;
@@ -1472,11 +1472,12 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
   class:auguring={rollAugury}
   class:settled={dim && !ignite}
   class:split
+  class:conjure={craft === 'conjure'}
   class:no-materials={hideMaterials}
   bind:this={benchEl}
   style="--page: url('{pagePath}'); --plaque: url('{parchmentPath}')"
 >
-  <div class="prep" class:split class:no-materials={hideMaterials}>
+  <div class="prep" class:split class:conjure={craft === 'conjure'} class:no-materials={hideMaterials}>
     {#if !hideMaterials}
       {#if split}
         <div class="materials-col">
@@ -1555,6 +1556,26 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
             </div>
           </div>
         </div>
+      {:else if craft === 'conjure'}
+        <div class="bonus-top">
+          <BonusReadout
+            layout="plaque"
+            icon={RESOURCE_ICONS[ResourceType.MagicDust]}
+            label="Inspiration"
+            singular="Card choice"
+            plural="Card choices"
+            tip={inspirationTip}
+            sure={profile.conjureOptions.sure}
+            chance={profile.conjureOptions.chance}
+            phase={inspirationPhase}
+            face={inspirationFace}
+            need={inspirationNeed}
+          >
+            {#snippet die()}
+              {@render percentDie(inspirationPhase, inspirationPct, inspirationNeed, 'Inspiration')}
+            {/snippet}
+          </BonusReadout>
+        </div>
       {:else}
         <div class="materials">
           {#each resourceRows as row (row.type)}
@@ -1569,25 +1590,6 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
             />
           {/each}
         </div>
-        {#if craft === 'conjure'}
-          <div class="bonus-top">
-            <BonusReadout
-              label="Inspiration"
-              singular="Card choice"
-              plural="Card choices"
-              tip={inspirationTip}
-              sure={profile.conjureOptions.sure}
-              chance={profile.conjureOptions.chance}
-              phase={inspirationPhase}
-              face={inspirationFace}
-              need={inspirationNeed}
-            >
-              {#snippet die()}
-                {@render percentDie(inspirationPhase, inspirationPct, inspirationNeed, 'Inspiration')}
-              {/snippet}
-            </BonusReadout>
-          </div>
-        {/if}
       {/if}
     {/if}
 
@@ -1601,6 +1603,8 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
       {#if !split && craft === 'conjure'}
         <div class="bonus-flank left">
           <BonusReadout
+            layout="plaque"
+            icon={RESOURCE_ICONS[ResourceType.Moxes]}
             label="Erudition"
             singular="Knowledge"
             plural="Knowledge"
@@ -1610,7 +1614,6 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
             phase={learningPhase}
             face={learningFace}
             need={learningNeed}
-            dieSide="left"
           >
             {#snippet die()}
               {@render percentDie(learningPhase, learningPct, learningNeed, 'Erudition')}
@@ -1690,6 +1693,8 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
       {#if !split && craft === 'conjure'}
         <div class="bonus-flank right">
           <BonusReadout
+            layout="plaque"
+            icon={RESOURCE_ICONS[ResourceType.Mithril]}
             label="Mastery"
             singular="Budget"
             plural="Budget"
@@ -1699,7 +1704,6 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
             phase={auguryFortunePhase}
             face={auguryFortuneFace}
             need={auguryFortuneNeed}
-            dieSide="right"
           >
             {#snippet die()}
               {@render percentDie(auguryFortunePhase, auguryFortunePct, auguryFortuneNeed, 'Mastery')}
@@ -1725,6 +1729,26 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
         </div>
       {/if}
     </div>
+
+    {#if !hideMaterials && !split && craft === 'conjure'}
+      <div class="ingredients">
+        <h3 class="ingredients-title">Ingredients</h3>
+        <div class="materials below-ritual">
+          {#each resourceRows as row (row.type)}
+            <IngredientPile
+              type={row.type}
+              selected={row.selected}
+              owned={row.owned}
+              {disabled}
+              showCount
+              fraction
+              onChange={(next) => feed(row.type, next)}
+            />
+          {/each}
+        </div>
+      </div>
+    {/if}
+
     {#if showFlank && flank}
       <div class="flank" in:fly={{ x: 28, duration: 460, delay: 100 }}>
         <div class="flank-body">{@render flank()}</div>
@@ -1796,25 +1820,86 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
       transform 0.7s ease;
   }
 
-  .bench.consume .materials {
+  .ingredients {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 34px;
+    transition:
+      opacity 0.7s ease,
+      transform 0.7s ease;
+  }
+
+  .ingredients-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 0;
+    font-family: var(--font-narrative);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: #3d342b;
+  }
+
+  .ingredients-title::before,
+  .ingredients-title::after {
+    content: '';
+    width: 4.6rem;
+    height: 1px;
+    background: #6b5c4c;
+  }
+
+  .materials.below-ritual {
+    position: relative;
+    z-index: 3;
+    margin-top: 0;
+    gap: 36px;
+  }
+
+  .materials.below-ritual :global(.pile),
+  .materials.below-ritual :global(.pile.on),
+  .materials.below-ritual :global(.pile:hover:not(:disabled):not(.empty)) {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .bench.consume .materials,
+  .bench.consume .ingredients {
     opacity: 0;
     transform: translateY(36px) scale(0.45);
     pointer-events: none;
   }
 
+  .prep.conjure {
+    padding-top: 0;
+    padding-bottom: 0;
+    gap: 0;
+  }
+
   .bonus-top {
+    position: relative;
+    z-index: 3;
     display: flex;
     justify-content: center;
-    width: min(100%, 16rem);
-    margin: 6px auto 2px;
+    width: min(100%, 22rem);
+    margin: 4px auto 18px;
+    padding-top: 0.35rem;
     overflow: visible;
     transition: opacity 0.4s ease;
   }
 
-  .bonus-top .fortune-die-slot {
-    top: auto;
+  .bonus-top .fortune-die-slot,
+  .bonus-flank .fortune-die-slot {
+    top: calc(100% + 6px);
     right: auto;
-    bottom: calc(100% + 4px);
+    bottom: auto;
     left: 50%;
     transform: translateX(-50%);
     z-index: 7;
@@ -1822,36 +1907,82 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
 
   .bonus-flank {
     position: relative;
-    flex: 0 0 10.5rem;
-    width: 10.5rem;
+    z-index: 3;
+    flex: 0 0 auto;
+    width: min(22rem, 30%);
+    padding-top: 0;
     overflow: visible;
     transition: opacity 0.4s ease;
   }
 
-  .bonus-flank.left .fortune-die-slot {
-    top: 50%;
-    bottom: auto;
-    left: auto;
-    right: calc(100% + 8px);
-    transform: translateY(-50%);
-  }
-
-  .bonus-flank.right .fortune-die-slot {
-    top: 50%;
-    bottom: auto;
-    left: calc(100% + 8px);
-    right: auto;
-    transform: translateY(-50%);
-  }
-
   .ritual.conjure-ritual {
-    gap: 18px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(36px, 4.5vw, 76px);
     margin-top: 4px;
+    padding: 0 12px;
+    box-sizing: border-box;
   }
 
   .ritual.conjure-ritual .circle-slot {
-    width: 240px;
-    height: 240px;
+    width: min(400px, 34vw);
+    height: min(400px, 34vw);
+  }
+
+  /* The painted plate is the circle; keep it inside the slot so the flanks can sit close. */
+  .ritual.conjure-ritual .circle-slot :global(.plate) {
+    inset: -1%;
+    transform: none;
+  }
+
+  .ritual.conjure-ritual .circle-slot :global(.spiral) {
+    inset: 37%;
+  }
+
+  .ritual.conjure-ritual .circle-slot :global(.core) {
+    inset: 33%;
+  }
+
+  .materials.below-ritual :global(.pile) {
+    width: 6.6rem;
+    gap: 1px;
+    padding: 2px 4px 0;
+  }
+
+  .materials.below-ritual :global(.glyph-col) {
+    position: relative;
+  }
+
+  .materials.below-ritual :global(.glyph-wrap),
+  .materials.below-ritual :global(.glyph) {
+    width: 48px;
+    height: 48px;
+  }
+
+  .materials.below-ritual :global(.well) {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .materials.below-ritual :global(.name) {
+    font-size: 0.86rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .materials.below-ritual :global(.stock),
+  .materials.below-ritual :global(.stock .in),
+  .materials.below-ritual :global(.stock .of) {
+    margin-top: 0;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--color-ink);
   }
 
   .prep.split {
@@ -2301,6 +2432,10 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     justify-content: center;
     align-items: center;
     gap: 22px;
+  }
+
+  .ritual.flanked.conjure-ritual {
+    gap: 92px;
   }
 
   .gauge {

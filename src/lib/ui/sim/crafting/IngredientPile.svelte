@@ -9,6 +9,7 @@
     disabled = false,
     showCount = false,
     showIcon = true,
+    fraction = false,
     layout = 'stack',
     onChange,
   }: {
@@ -20,6 +21,8 @@
     showCount?: boolean;
     /** When false, only the name / count remain (orbit icons carry the art). */
     showIcon?: boolean;
+    /** Always show `selected / owned`, even when nothing is in the circle. */
+    fraction?: boolean;
     /** `row` puts the name and count beside the icon. */
     layout?: 'stack' | 'row';
     onChange: (next: number, event: MouseEvent) => void;
@@ -106,7 +109,7 @@
     <span class="name">{label}</span>
     {#if showCount}
       <span class="stock">
-        {#if selected > 0}<span class="in">{selected}</span><span class="of">/</span>{/if}{owned}
+        {#if fraction || selected > 0}<span class="in">{selected}</span><span class="of">{fraction ? ' / ' : '/'}</span>{/if}{owned}
       </span>
     {/if}
   </span>

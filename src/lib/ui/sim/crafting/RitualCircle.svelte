@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getUiIconPath } from '@/lib/_utils/asset-paths';
+  import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
 
   let {
     charge = 0,
@@ -20,6 +20,7 @@
   } = $props();
 
   const spiral = getUiIconPath('conjure');
+  const plate = getAssetPath('images/ui/backgrounds/ritual_area.png');
   const clamped = $derived(Math.min(1, Math.max(0, charge)));
   const lit = $derived(clamped > 0 || ignite);
   const unstable = $derived(clamped >= 1);
@@ -33,13 +34,14 @@
   class:unstable
   class:suppress-core={suppressCore}
   class:ornate
-  style="--charge: {clamped}; --spiral: url('{spiral}')"
+  class:plated={!ornate}
+  style="--charge: {clamped}; --spiral: url('{spiral}'); --plate: url('{plate}')"
   aria-hidden="true"
 >
-  <span class="ring outer"></span>
-  <span class="ring mid"></span>
-  <span class="ring inner"></span>
   {#if ornate}
+    <span class="ring outer"></span>
+    <span class="ring mid"></span>
+    <span class="ring inner"></span>
     <svg class="chart" viewBox="0 0 100 100">
       <circle cx="50" cy="50" r="47.5" />
       <circle cx="50" cy="50" r="39" />
@@ -48,6 +50,8 @@
     </svg>
     <span class="ticks"></span>
     <span class="dust"></span>
+  {:else}
+    <span class="plate"></span>
   {/if}
   <span class="core"></span>
   <span class="spiral"></span>
@@ -150,31 +154,29 @@
     transition: opacity 0.35s ease, transform 0.35s ease;
   }
 
-  /* Conjure parchment: ink strokes + darker glyph so the circle does not wash out. */
-  .circle:not(.ornate) .ring.outer {
-    border-color: color-mix(in srgb, #2c251d 72%, var(--color-brass));
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, #2c251d 28%, transparent),
-      0 1px 3px rgba(42, 24, 16, 0.35),
-      0 0 calc(8px + var(--charge) * 18px)
-        color-mix(in srgb, var(--color-golden) calc(var(--charge) * 55%), transparent),
-      inset 0 0 calc(6px + var(--charge) * 12px)
-        color-mix(in srgb, var(--color-golden) calc(var(--charge) * 22%), transparent);
-    opacity: 0.9;
+  /* Conjure parchment: painted plate replaces CSS rings; spiral stays in the open core. */
+  .plate {
+    position: absolute;
+    /* Bleed past the slot; scale up so runes/stars read large under the bonuses. */
+    inset: -8%;
+    background: var(--plate) center / contain no-repeat;
+    opacity: calc(0.78 + var(--charge) * 0.22);
+    transform: scale(1.5);
+    transform-origin: center;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
   }
 
-  .circle:not(.ornate) .ring.mid {
-    border-width: 1.5px;
-    border-color: color-mix(in srgb, #2c251d 58%, var(--color-brass));
-    opacity: 0.8;
+  .circle.plated.lit .plate {
+    filter: drop-shadow(
+      0 0 calc(4px + var(--charge) * 10px)
+        color-mix(in srgb, var(--color-golden) calc(18% + var(--charge) * 35%), transparent)
+    );
   }
 
-  .circle:not(.ornate) .ring.inner {
-    border-color: color-mix(in srgb, #3d3228 55%, var(--color-golden));
-    opacity: calc(0.48 + var(--charge) * 0.42);
-  }
-
-  .circle:not(.ornate) .core {
+  .circle.plated .core {
+    /* Fit the open void (~36% of the plate); plate bleeds 8% so void ≈ 42% of slot. */
+    inset: 29%;
     background: radial-gradient(
       circle,
       color-mix(in srgb, #2a3344 calc(18% + var(--charge) * 28%), transparent),
@@ -184,7 +186,8 @@
     opacity: calc(0.45 + var(--charge) * 0.55);
   }
 
-  .circle:not(.ornate) .spiral {
+  .circle.plated .spiral {
+    inset: 33%;
     opacity: calc(0.72 + var(--charge) * 0.28);
     filter:
       brightness(0.55)

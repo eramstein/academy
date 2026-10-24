@@ -413,6 +413,8 @@
 
 <style>
   .pigments {
+    position: relative;
+    z-index: 5;
     display: flex;
     justify-content: center;
     margin: 0 0 12px;
@@ -428,53 +430,56 @@
 
   .pigment-cluster {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 18px;
   }
 
   .pigment {
     display: grid;
     place-items: center;
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     padding: 0;
-    border: none;
-    border-radius: 4px;
+    border: 1px solid #8d7352;
+    border-radius: 50%;
     background: transparent;
+    box-shadow: 0 1px 2px rgba(42, 24, 16, 0.28);
     cursor: pointer;
-    opacity: 0.55;
-    filter: grayscale(0.35);
+    opacity: 0.92;
     transition:
       opacity 0.18s ease,
-      filter 0.18s ease,
-      transform 0.18s ease;
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
   }
 
   .pigment img {
-    width: 36px;
-    height: 36px;
+    width: 94%;
+    height: 94%;
     object-fit: contain;
     pointer-events: none;
-    filter: drop-shadow(0 2px 3px rgba(42, 24, 16, 0.35));
+    filter: drop-shadow(0 1px 2px rgba(42, 24, 16, 0.35));
   }
 
   .pigment:hover,
   .pigment:focus-visible {
-    opacity: 0.85;
-    filter: none;
+    opacity: 1;
   }
 
   .pigment.in-mix {
     opacity: 1;
-    filter: none;
     transform: translateY(-2px);
+    border-color: #d7b56a;
+    box-shadow:
+      0 1px 0 rgba(255, 248, 230, 0.45),
+      0 4px 8px rgba(42, 24, 16, 0.45),
+      0 0 6px rgba(191, 161, 74, 0.4);
   }
 
   .pigment.in-mix img {
-    filter: drop-shadow(0 2px 3px rgba(42, 24, 16, 0.35))
-      drop-shadow(0 0 6px color-mix(in srgb, var(--color-golden) 55%, transparent));
+    filter:
+      drop-shadow(0 1px 2px rgba(42, 24, 16, 0.35))
+      drop-shadow(0 0 4px rgba(191, 161, 74, 0.4));
   }
 
   .creations {

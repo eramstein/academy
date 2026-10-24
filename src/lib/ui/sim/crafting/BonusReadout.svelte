@@ -1,5 +1,6 @@
 <script lang="ts">
   import { percentThreshold } from '@/lib/sim/cards/crafting-skills';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
   import type { Snippet } from 'svelte';
   import { untrack } from 'svelte';
@@ -40,14 +41,16 @@
     prefix?: string;
     /** When set, replaces the numeric amount (e.g. "2 / 5"). */
     amountText?: string;
-    /** Optional painted icon for the chart layout. */
+    /** Optional painted icon (chart row, or plaque badge). */
     icon?: string;
-    /** `chart` is the materials-column row; `stack` is the conjure flanks. */
-    layout?: 'stack' | 'chart';
+    /** `chart` materials column; `plaque` conjure framed box; `stack` plain. */
+    layout?: 'stack' | 'chart' | 'plaque';
     /** Where the percent die sits relative to the readout. */
     dieSide?: 'top' | 'left' | 'right';
     die?: Snippet;
   } = $props();
+
+  const boxPath = getAssetPath('images/ui/backgrounds/box.png');
 
   const FILL_MS = 460;
   const CREST_MS = 110;
@@ -275,16 +278,18 @@
 <div
   class="bonus"
   class:chart={layout === 'chart'}
+  class:plaque={layout === 'plaque'}
   class:live={phase === 'rolling'}
   class:missed={outcome === 'miss'}
   class:die-left={dieSide === 'left'}
   class:die-right={dieSide === 'right'}
+  style={layout === 'plaque' ? `--box: url('${boxPath}')` : undefined}
 >
   {#if die}
     {@render die()}
   {/if}
   {#if icon}
-    <img class="icon" src={icon} alt="" draggable="false" />
+    <img class="icon" class:badge={layout === 'plaque'} src={icon} alt="" draggable="false" />
   {/if}
   <div class="body">
     <p class="head">
@@ -457,6 +462,99 @@
   .bonus.chart .track {
     margin: 3px 0 2px;
     border-radius: 999px;
+  }
+
+  .bonus.plaque {
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 11.5rem;
+    aspect-ratio: 1673 / 853;
+    padding: 15% 12% 8%;
+    box-sizing: border-box;
+    background: var(--box) center / 100% 100% no-repeat;
+  }
+
+  .bonus.plaque .body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .bonus.plaque .head,
+  .bonus.plaque .track,
+  .bonus.plaque .caption {
+    flex-shrink: 0;
+  }
+
+  .bonus.plaque .icon.badge {
+    position: absolute;
+    left: 50%;
+    top: 17.6%;
+    width: 13%;
+    height: auto;
+    aspect-ratio: 1;
+    padding: 0;
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    filter:
+      grayscale(0.28)
+      sepia(0.72)
+      saturate(0.55)
+      brightness(0.9)
+      contrast(0.95)
+      drop-shadow(0 1px 1px rgba(42, 24, 16, 0.35));
+  }
+
+  .bonus.plaque .head {
+    gap: 0.08em;
+  }
+
+  .bonus.plaque .label {
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    color: #2c251d;
+  }
+
+  .bonus.plaque .num {
+    font-size: 1.72rem;
+    color: #2a3344;
+  }
+
+  .bonus.plaque .unit {
+    font-size: 1.02rem;
+    font-weight: 500;
+    color: #2c251d;
+  }
+
+  .bonus.plaque .prefix {
+    font-size: 1.35rem;
+    color: #2a3344;
+  }
+
+  .bonus.plaque .num.promoted,
+  .bonus.plaque .num.held {
+    color: var(--bonus-glow);
+  }
+
+  .bonus.plaque .track {
+    width: 86%;
+    max-width: none;
+    height: 6px;
+    margin: 4px 0 7px;
+    border-radius: 1px;
+    background: rgba(44, 37, 29, 0.28);
+  }
+
+  .bonus.plaque .caption {
+    min-height: 0;
+    margin-top: 1px;
+    font-size: 0.8rem;
+    line-height: 1.1;
+    color: #5a4e42;
   }
 
   .fill {

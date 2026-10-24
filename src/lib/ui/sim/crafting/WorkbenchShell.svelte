@@ -107,7 +107,33 @@
   }
 
   .frame.roomy {
-    width: min(980px, 100%);
+    width: min(1440px, calc(100vw - 16px));
+    min-height: min(96vh, 980px);
+    max-height: min(98vh, 1040px);
+  }
+
+  .frame.roomy .panel {
+    overflow: visible;
+    padding: 22px 28px 32px;
+  }
+
+  .frame.roomy .title {
+    margin-bottom: 6px;
+    font-size: 1.12rem;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    gap: 16px;
+  }
+
+  .frame.roomy .star {
+    width: 7px;
+    height: 7px;
+  }
+
+  .frame.roomy .actions {
+    min-height: 4.1rem;
+    padding: 12px 8px 14px;
+    gap: 18px;
   }
 
   .panel {
