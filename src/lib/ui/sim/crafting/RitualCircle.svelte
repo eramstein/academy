@@ -150,6 +150,52 @@
     transition: opacity 0.35s ease, transform 0.35s ease;
   }
 
+  /* Conjure parchment: ink strokes + darker glyph so the circle does not wash out. */
+  .circle:not(.ornate) .ring.outer {
+    border-color: color-mix(in srgb, #2c251d 72%, var(--color-brass));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #2c251d 28%, transparent),
+      0 1px 3px rgba(42, 24, 16, 0.35),
+      0 0 calc(8px + var(--charge) * 18px)
+        color-mix(in srgb, var(--color-golden) calc(var(--charge) * 55%), transparent),
+      inset 0 0 calc(6px + var(--charge) * 12px)
+        color-mix(in srgb, var(--color-golden) calc(var(--charge) * 22%), transparent);
+    opacity: 0.9;
+  }
+
+  .circle:not(.ornate) .ring.mid {
+    border-width: 1.5px;
+    border-color: color-mix(in srgb, #2c251d 58%, var(--color-brass));
+    opacity: 0.8;
+  }
+
+  .circle:not(.ornate) .ring.inner {
+    border-color: color-mix(in srgb, #3d3228 55%, var(--color-golden));
+    opacity: calc(0.48 + var(--charge) * 0.42);
+  }
+
+  .circle:not(.ornate) .core {
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, #2a3344 calc(18% + var(--charge) * 28%), transparent),
+      color-mix(in srgb, var(--color-golden) calc(8% + var(--charge) * 30%), transparent) 42%,
+      transparent 72%
+    );
+    opacity: calc(0.45 + var(--charge) * 0.55);
+  }
+
+  .circle:not(.ornate) .spiral {
+    opacity: calc(0.72 + var(--charge) * 0.28);
+    filter:
+      brightness(0.55)
+      sepia(0.35)
+      drop-shadow(0 1px 1px rgba(42, 24, 16, 0.45))
+      drop-shadow(
+        0 0 calc(4px + var(--charge) * 10px)
+          color-mix(in srgb, var(--color-golden) calc(var(--charge) * 80%), transparent)
+      );
+  }
+
   .suppress-core .spiral,
   .suppress-core .core {
     opacity: 0;

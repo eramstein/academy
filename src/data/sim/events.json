@@ -2226,6 +2226,12 @@
         "parameters": {
           "characterKey": "emma"
         }
+      },
+      {
+        "triggerType": "day",
+        "parameters": {
+          "day": 1
+        }
       }
     ],
     "optionTemplates": [

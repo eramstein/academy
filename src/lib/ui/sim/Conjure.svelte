@@ -64,36 +64,24 @@
   const ABSORB_MS = 1500;
 
   const availableColors = $derived(
-    Object.values(CardColor).filter((color) => (gs.player.craftingKnowledge.colors?.[color] ?? 0) >= 1)
+    Object.values(CardColor).filter(
+      (color) => (gs.player.craftingKnowledge.colors?.[color] ?? 0) >= 1
+    )
   );
 
   const title = $derived(
     phase === 'idle' ? 'Conjuration' : phase === 'revealed' ? 'Choose your creation' : 'Conjuring'
   );
   const auguryStatus = $derived.by(() => {
-    const knowledge =
-      auguryBeat.learning && auguryBeat.learning > 0
-        ? `Erudition grants ${auguryBeat.learning} knowledge.`
-        : 'Erudition grants no knowledge.';
-    const budget =
-      auguryBeat.fortune && auguryBeat.fortune > 0
-        ? `Mastery grants +${auguryBeat.fortune} budget.`
-        : 'Mastery grants no bonus budget.';
-    const visions =
-      auguryBeat.optionCount != null
-        ? `${auguryBeat.optionCount} vision${auguryBeat.optionCount === 1 ? '' : 's'}${
-            (auguryBeat.discoveryIndex ?? -1) >= 0 ? ', including new lore' : ''
-          }.`
-        : '';
     if (auguryBeat.stage === 'learning') return 'Erudition stirs…';
-    if (auguryBeat.stage === 'insight') return knowledge;
-    if (auguryBeat.stage === 'inspiration') {
-      return visions ? `${knowledge} ${visions}` : `${knowledge} Inspiration stirs…`;
+    if (auguryBeat.stage === 'insight') {
+      return auguryBeat.learning && auguryBeat.learning > 0
+        ? 'Knowledge takes hold.'
+        : 'The lore stays shut.';
     }
-    if (auguryBeat.stage === 'fortune') {
-      return `${knowledge} ${visions} Mastery turns…`.replace(/\s+/g, ' ').trim();
-    }
-    return `${knowledge} ${budget} ${visions}`.trim();
+    if (auguryBeat.stage === 'inspiration') return 'Inspiration turns…';
+    if (auguryBeat.stage === 'fortune') return 'Mastery turns…';
+    return '';
   });
   const hasAnyOption = $derived(summonSlots.some((slot) => slot.result !== null));
 
@@ -113,10 +101,9 @@
   });
 
   function countsFrom(list: ResourceAmount[]): Record<ResourceType, number> {
-    const counts = Object.fromEntries(Object.values(ResourceType).map((type) => [type, 0])) as Record<
-      ResourceType,
-      number
-    >;
+    const counts = Object.fromEntries(
+      Object.values(ResourceType).map((type) => [type, 0])
+    ) as Record<ResourceType, number>;
     for (const resource of list) {
       counts[resource.type] = resource.count;
     }
@@ -126,7 +113,9 @@
   /** Most common color in the player's collection among known crafting colors. */
   function defaultColors(): CardColor[] {
     const known = new Set(
-      Object.values(CardColor).filter((color) => (gs.player.craftingKnowledge.colors?.[color] ?? 0) >= 1)
+      Object.values(CardColor).filter(
+        (color) => (gs.player.craftingKnowledge.colors?.[color] ?? 0) >= 1
+      )
     );
     if (known.size === 0) return [];
 
@@ -313,23 +302,23 @@
 {#snippet auguryMarks()}
   {#if auguryBeat.learning != null}
     <span class="insight-mark" class:hit={auguryBeat.learning > 0}>
-      {auguryBeat.learning > 0 ? `Erudition +${auguryBeat.learning}` : 'No knowledge'}
-    </span>
-  {/if}
-  {#if auguryBeat.fortune != null}
-    <span class="insight-mark" class:hit={auguryBeat.fortune > 0}>
-      {auguryBeat.fortune > 0 ? `Mastery +${auguryBeat.fortune}` : 'No bonus budget'}
+      {auguryBeat.learning} knowledge
     </span>
   {/if}
   {#if auguryBeat.optionCount != null}
     <span class="insight-mark" class:hit={(auguryBeat.discoveryIndex ?? -1) >= 0}>
-      {auguryBeat.optionCount} visions
-      {(auguryBeat.discoveryIndex ?? -1) >= 0 ? '· new lore' : '· familiar lore'}
+      {auguryBeat.optionCount} card choice{auguryBeat.optionCount === 1 ? '' : 's'}
+      {(auguryBeat.discoveryIndex ?? -1) >= 0 ? '· new lore' : ''}
+    </span>
+  {/if}
+  {#if auguryBeat.fortune != null}
+    <span class="insight-mark" class:hit={auguryBeat.fortune > 0}>
+      {auguryBeat.fortune > 0 ? `+${auguryBeat.fortune} budget` : 'No bonus budget'}
     </span>
   {/if}
 {/snippet}
 
-<WorkbenchShell {title} ignite={phase === 'augury' || phase === 'conjuring'}>
+<WorkbenchShell {title} roomy ignite={phase === 'augury' || phase === 'conjuring'}>
   {#if phase === 'idle'}
     <section class="pigments" aria-label="Colors">
       {#if availableColors.length === 0}
@@ -367,7 +356,7 @@
     craft="conjure"
     rollAugury={phase === 'augury'}
     onAuguryBeat={(beat) => (auguryBeat = beat)}
-    onAuguryComplete={onAuguryComplete}
+    {onAuguryComplete}
   >
     {#if phase === 'conjuring' || phase === 'revealed'}
       <div class="creations" class:summoning={phase === 'conjuring'}>
@@ -380,7 +369,9 @@
               class="card-pick"
               class:summon-slot={phase === 'conjuring' || !slot.result}
               class:chosen={!!slot.result && pickedId === slot.result.template.id}
-              class:picking={pickedId !== null && !!slot.result && pickedId !== slot.result.template.id}
+              class:picking={pickedId !== null &&
+                !!slot.result &&
+                pickedId !== slot.result.template.id}
               style="--i: {i}; --tilt: {tilts[i % 3]}deg; --lift: {lifts[i % 3]}px"
               disabled={phase !== 'revealed' || !slot.result || pickedId !== null}
               onclick={() => pick(slot)}

@@ -7,6 +7,7 @@
     subtitle = '',
     ignite = false,
     wide = false,
+    roomy = false,
     scene = 'parchment',
     children,
     footer,
@@ -15,6 +16,8 @@
     subtitle?: string;
     ignite?: boolean;
     wide?: boolean;
+    /** A bit wider than the default parchment sheet (e.g. Conjure flanks). */
+    roomy?: boolean;
     /** `invocation` paints the card-creation scene instead of a plain parchment sheet. */
     scene?: 'parchment' | 'invocation';
     children: Snippet;
@@ -41,6 +44,7 @@
     class="frame"
     class:ignite
     class:wide
+    class:roomy
     class:invocation={scene === 'invocation'}
     role="dialog"
     aria-modal="true"
@@ -100,6 +104,10 @@
     max-height: min(96vh, 940px);
     /* Avoid scrollbar flash when vessel / card transitions briefly overflow. */
     overflow: hidden;
+  }
+
+  .frame.roomy {
+    width: min(980px, 100%);
   }
 
   .panel {

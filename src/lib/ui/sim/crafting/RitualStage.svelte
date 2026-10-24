@@ -11,6 +11,8 @@
     craftProfile,
     displayPercentRoll,
     formatPointRoll,
+    formatSkillSource,
+    knowledgeSource,
     percentThreshold,
     rollConjureOptionCount,
     rollDiscoveryIndex,
@@ -23,10 +25,12 @@
     isUniqueResource,
   } from '@/lib/sim/cards/resources';
   import { playAddResourceSound } from '@/lib/sim/sound';
+  import Tooltip from '@/lib/ui/Tooltip.svelte';
   import type { Snippet } from 'svelte';
   import { untrack } from 'svelte';
   import { cubicOut } from 'svelte/easing';
   import { fly, scale } from 'svelte/transition';
+  import BonusReadout from './BonusReadout.svelte';
   import IngredientPile from './IngredientPile.svelte';
   import RitualCircle from './RitualCircle.svelte';
 
@@ -326,6 +330,8 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     return forecast;
   }
 
+  let hoveredGauge = $state<string | null>(null);
+
   function outcomeNote(
     phase: DiePhase,
     face: number,
@@ -404,6 +410,7 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
 
   const eruditionGauge = $derived({
     label: 'Erudition',
+    tip: 'Chance of improving crafting knowledge',
     value: pointValue(learningPhase, learningFace, formatPointRoll(profile.knowledge)),
     note:
       craft === 'conjure'
@@ -418,6 +425,7 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
 
   const masteryGauge = $derived({
     label: 'Mastery',
+    tip: 'Expected card budget increase',
     value: pointValue(budgetPhase, budgetFace, formatPointRoll(profile.extraBudget)),
     note:
       craft === 'conjure'
@@ -430,45 +438,34 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     phase: budgetPhase,
   });
 
-  const inspirationGauge = $derived.by(() => {
+  const eruditionTip = $derived(
+    `Guaranteed knowledge, then a chance of one more. ${knowledgeSource(profile.erudition)}.`
+  );
+  const inspirationTip = $derived.by(() => {
+    if (craft === 'enchant') {
+      return `Mana cost you can raise or lower. ${formatSkillSource(profile.inspiration)}.`;
+    }
+    if (craft === 'invoke') {
+      return `Ingredient capacity. ${formatSkillSource(profile.inspiration)}.`;
+    }
+    return `Guaranteed card choices, then a chance of one more. ${formatSkillSource(profile.inspiration)}.`;
+  });
+  const masteryTip = $derived(
+    `Guaranteed bonus budget, then a chance of one more. ${formatSkillSource(profile.mastery)}.`
+  );
+  const inspirationAmount = $derived.by(() => {
     if (craft === 'invoke') {
       const cap = profile.scope;
-      return {
-        label: 'Inspiration',
-        value: cap > 0 ? `${charms.length} / ${cap}` : '0',
-        note: 'Ingredients',
-        fill: cap > 0 ? Math.min(1, charms.length / cap) : 0,
-        extra: false,
-        pct: 0,
-        need: 0,
-        phase: 'idle' as DiePhase,
-      };
+      return cap > 0 ? `${charms.length} / ${cap}` : '0';
     }
-    if (craft === 'enchant') {
-      const mana = profile.scope;
-      return {
-        label: 'Inspiration',
-        value: mana > 0 ? `±${mana}` : '0',
-        note: 'Mana',
-        fill: Math.min(1, mana / 3),
-        extra: false,
-        pct: 0,
-        need: 0,
-        phase: 'idle' as DiePhase,
-      };
-    }
-    const rolled = inspirationPhase === 'hit' || inspirationPhase === 'miss';
-    const count = rolled ? inspirationFace : null;
-    return {
-      label: 'Inspiration',
-      value: rolled ? String(count) : formatPointRoll(profile.conjureOptions),
-      note: '',
-      fill: Math.min(1, (count ?? profile.conjureOptions.expected) / 4),
-      extra: rolled && count! > profile.conjureOptions.sure,
-      pct: inspirationPct,
-      need: inspirationNeed,
-      phase: inspirationPhase,
-    };
+    return '';
+  });
+  const inspirationSure = $derived(craft === 'enchant' || craft === 'invoke' ? profile.scope : profile.conjureOptions.sure);
+  const inspirationChance = $derived(craft === 'conjure' ? profile.conjureOptions.chance : 0);
+  const inspirationUnit = $derived.by(() => {
+    if (craft === 'enchant') return { singular: 'Mana', plural: 'Mana' };
+    if (craft === 'invoke') return { singular: 'Ingredient', plural: 'Ingredients' };
+    return { singular: 'Card choice', plural: 'Card choices' };
   });
 
   function setCount(type: ResourceType, value: number) {
@@ -1413,6 +1410,16 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
   }
 </script>
 
+{#snippet gaugeLabel(label: string, tip: string)}
+  <Tooltip content={tip} show={hoveredGauge === label} placement="top">
+    <span
+      class="gauge-label"
+      onmouseenter={() => (hoveredGauge = label)}
+      onmouseleave={() => (hoveredGauge = null)}
+    >{label}</span>
+  </Tooltip>
+{/snippet}
+
 {#snippet percentDie(phase: DiePhase, pct: number, need: number, label: string)}
   {#if phase !== 'idle' && need > 0}
     <div class="fortune-die-slot">
@@ -1490,69 +1497,61 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
           </div>
           <div class="fortune-stage">
             <div class="gauge-pair">
-              <div class="gauge chart" class:extra={inspirationGauge.extra}>
-                <img class="gauge-icon" src={spiralIcon} alt="" />
-                <div class="gauge-head">
-                  <span class="gauge-label">{inspirationGauge.label}</span>
-                  <span class="gauge-value" class:extra={inspirationGauge.extra}
-                    >{inspirationGauge.value}</span
-                  >
-                </div>
-                <span class="gauge-track" aria-hidden="true">
-                  <span class="gauge-fill" style="width: {inspirationGauge.fill * 100}%"></span>
-                </span>
-                {#if inspirationGauge.note}
-                  <span class="augury-note">{inspirationGauge.note}</span>
-                {/if}
-              </div>
-              <div
-                class="gauge chart"
-                class:fortune-live={learningPhase === 'rolling' || learningPhase === 'hit'}
-                class:extra={eruditionGauge.extra}
+              <BonusReadout
+                layout="chart"
+                icon={spiralIcon}
+                label="Inspiration"
+                singular={inspirationUnit.singular}
+                plural={inspirationUnit.plural}
+                tip={inspirationTip}
+                prefix={craft === 'enchant' && inspirationSure > 0 ? '±' : ''}
+                amountText={inspirationAmount}
+                sure={inspirationSure}
+                chance={inspirationChance}
+                phase="idle"
+                face={0}
+                need={0}
+              />
+              <BonusReadout
+                layout="chart"
+                icon={bookIcon}
+                label="Erudition"
+                singular="Knowledge"
+                plural="Knowledge"
+                tip={eruditionTip}
+                sure={profile.knowledge.sure}
+                chance={profile.knowledge.chance}
+                phase={learningPhase}
+                face={learningFace}
+                need={learningNeed}
+                dieSide="right"
               >
-                <img class="gauge-icon" src={bookIcon} alt="" />
-                <div class="gauge-head">
-                  <span class="gauge-label">{eruditionGauge.label}</span>
-                  <span class="gauge-value" class:extra={eruditionGauge.extra}
-                    >{eruditionGauge.value}</span
-                  >
-                </div>
-                <span class="gauge-track" aria-hidden="true">
-                  <span class="gauge-fill" style="width: {eruditionGauge.fill * 100}%"></span>
-                </span>
-                {#if eruditionGauge.note}
-                  <span class="augury-note" class:miss={learningPhase === 'miss' && learningFace <= 0}
-                    >{eruditionGauge.note}</span
-                  >
-                {/if}
-                {@render percentDie(learningPhase, learningPct, learningNeed, 'Erudition')}
-              </div>
-              <div
-                class="gauge chart"
-                class:fortune-live={budgetPhase === 'rolling' || budgetPhase === 'hit'}
-                class:extra={masteryGauge.extra}
+                {#snippet die()}
+                  {@render percentDie(learningPhase, learningPct, learningNeed, 'Erudition')}
+                {/snippet}
+              </BonusReadout>
+              <BonusReadout
+                layout="chart"
+                icon={starIcon}
+                label="Mastery"
+                singular="Budget"
+                plural="Budget"
+                tip={masteryTip}
+                sure={profile.extraBudget.sure}
+                chance={profile.extraBudget.chance}
+                phase={budgetPhase}
+                face={budgetFace}
+                need={budgetNeed}
+                dieSide="right"
               >
-                <img class="gauge-icon" src={starIcon} alt="" />
-                <div class="gauge-head">
-                  <span class="gauge-label">{masteryGauge.label}</span>
-                  <span class="gauge-value" class:extra={masteryGauge.extra}
-                    >{masteryGauge.value}</span
-                  >
-                </div>
-                <span class="gauge-track" aria-hidden="true">
-                  <span class="gauge-fill" style="width: {masteryGauge.fill * 100}%"></span>
-                </span>
-                {#if masteryGauge.note}
-                  <span class="augury-note" class:miss={budgetPhase === 'miss' && budgetFace <= 0}
-                    >{masteryGauge.note}</span
-                  >
-                {/if}
-                {#if craft === 'enchant' || craft === 'invoke'}
-                  {@render percentDieAnchor(budgetPhase, budgetPct, budgetNeed, 'Mastery')}
-                {:else}
-                  {@render percentDie(budgetPhase, budgetPct, budgetNeed, 'Mastery')}
-                {/if}
-              </div>
+                {#snippet die()}
+                  {#if craft === 'enchant' || craft === 'invoke'}
+                    {@render percentDieAnchor(budgetPhase, budgetPct, budgetNeed, 'Mastery')}
+                  {:else}
+                    {@render percentDie(budgetPhase, budgetPct, budgetNeed, 'Mastery')}
+                  {/if}
+                {/snippet}
+              </BonusReadout>
             </div>
           </div>
         </div>
@@ -1571,30 +1570,60 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
           {/each}
         </div>
         {#if craft === 'conjure'}
-          <div
-            class="gauge vision-gauge"
-            class:fortune-live={inspirationPhase === 'rolling' || inspirationPhase === 'hit'}
-            class:extra={inspirationGauge.extra}
-          >
-            <span class="gauge-label">{inspirationGauge.label}</span>
-            <span class="gauge-track" aria-hidden="true">
-              <span class="gauge-fill" style="transform: scaleX({inspirationGauge.fill})"></span>
-            </span>
-            <span class="gauge-value" class:extra={inspirationGauge.extra}>{inspirationGauge.value}</span>
-            {@render percentDie(inspirationPhase, inspirationPct, inspirationNeed, 'Inspiration')}
+          <div class="bonus-top">
+            <BonusReadout
+              label="Inspiration"
+              singular="Card choice"
+              plural="Card choices"
+              tip={inspirationTip}
+              sure={profile.conjureOptions.sure}
+              chance={profile.conjureOptions.chance}
+              phase={inspirationPhase}
+              face={inspirationFace}
+              need={inspirationNeed}
+            >
+              {#snippet die()}
+                {@render percentDie(inspirationPhase, inspirationPct, inspirationNeed, 'Inspiration')}
+              {/snippet}
+            </BonusReadout>
           </div>
         {/if}
       {/if}
     {/if}
 
-    <div class="ritual" class:flanked={!split} class:drop-hot={acceptingDrop} data-ingredient-drop>
-      {#if !split}
+    <div
+      class="ritual"
+      class:flanked={!split}
+      class:conjure-ritual={craft === 'conjure'}
+      class:drop-hot={acceptingDrop}
+      data-ingredient-drop
+    >
+      {#if !split && craft === 'conjure'}
+        <div class="bonus-flank left">
+          <BonusReadout
+            label="Erudition"
+            singular="Knowledge"
+            plural="Knowledge"
+            tip={eruditionTip}
+            sure={profile.knowledge.sure}
+            chance={profile.knowledge.chance}
+            phase={learningPhase}
+            face={learningFace}
+            need={learningNeed}
+            dieSide="left"
+          >
+            {#snippet die()}
+              {@render percentDie(learningPhase, learningPct, learningNeed, 'Erudition')}
+            {/snippet}
+          </BonusReadout>
+        </div>
+      {:else if !split}
         <div class="gauge-row">
           <div
             class="gauge"
             class:fortune-live={learningPhase === 'rolling' || learningPhase === 'hit'}
           >
-            <span class="gauge-label">{eruditionGauge.label}</span>
+            {@render gaugeLabel(eruditionGauge.label, eruditionGauge.tip)}
             <span class="gauge-track" aria-hidden="true">
               <span class="gauge-fill" style="transform: scaleX({eruditionGauge.fill})"></span>
             </span>
@@ -1658,13 +1687,32 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
         </div>
       {/if}
 
-      {#if !split}
+      {#if !split && craft === 'conjure'}
+        <div class="bonus-flank right">
+          <BonusReadout
+            label="Mastery"
+            singular="Budget"
+            plural="Budget"
+            tip={masteryTip}
+            sure={profile.extraBudget.sure}
+            chance={profile.extraBudget.chance}
+            phase={auguryFortunePhase}
+            face={auguryFortuneFace}
+            need={auguryFortuneNeed}
+            dieSide="right"
+          >
+            {#snippet die()}
+              {@render percentDie(auguryFortunePhase, auguryFortunePct, auguryFortuneNeed, 'Mastery')}
+            {/snippet}
+          </BonusReadout>
+        </div>
+      {:else if !split}
         <div class="gauge-row">
           <div
             class="gauge"
             class:fortune-live={auguryFortunePhase === 'rolling' || auguryFortunePhase === 'hit'}
           >
-            <span class="gauge-label">{masteryGauge.label}</span>
+            {@render gaugeLabel(masteryGauge.label, masteryGauge.tip)}
             <span class="gauge-track" aria-hidden="true">
               <span class="gauge-fill" style="transform: scaleX({masteryGauge.fill})"></span>
             </span>
@@ -1754,25 +1802,56 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     pointer-events: none;
   }
 
-  .vision-gauge {
-    position: relative;
+  .bonus-top {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    margin: 4px 0 0;
-    min-width: 7rem;
+    justify-content: center;
+    width: min(100%, 16rem);
+    margin: 6px auto 2px;
+    overflow: visible;
+    transition: opacity 0.4s ease;
   }
 
-  .vision-gauge .fortune-die-slot {
+  .bonus-top .fortune-die-slot {
+    top: auto;
+    right: auto;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 7;
+  }
+
+  .bonus-flank {
+    position: relative;
+    flex: 0 0 10.5rem;
+    width: 10.5rem;
+    overflow: visible;
+    transition: opacity 0.4s ease;
+  }
+
+  .bonus-flank.left .fortune-die-slot {
     top: 50%;
     bottom: auto;
-    left: calc(100% + 10px);
+    left: auto;
+    right: calc(100% + 8px);
     transform: translateY(-50%);
   }
 
-  .vision-gauge .gauge-value.extra {
-    color: var(--color-golden);
+  .bonus-flank.right .fortune-die-slot {
+    top: 50%;
+    bottom: auto;
+    left: calc(100% + 8px);
+    right: auto;
+    transform: translateY(-50%);
+  }
+
+  .ritual.conjure-ritual {
+    gap: 18px;
+    margin-top: 4px;
+  }
+
+  .ritual.conjure-ritual .circle-slot {
+    width: 240px;
+    height: 240px;
   }
 
   .prep.split {
@@ -1882,85 +1961,21 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
       inset 0 0 0 1px rgba(255, 248, 230, 0.35);
   }
 
-  .materials-col .gauge.chart {
-    position: relative;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    column-gap: 8px;
-    row-gap: 3px;
-    align-items: center;
-    min-width: 0;
-    width: 100%;
-  }
-
-  .materials-col .gauge.chart .fortune-die-slot {
+  .materials-col .gauge-pair .fortune-die-slot {
     top: 50%;
     bottom: auto;
     left: calc(100% + 8px);
     transform: translateY(-50%);
   }
 
-  .materials-col .gauge.chart .gauge-icon {
-    grid-row: 1 / span 2;
-    align-self: center;
-    width: 18px;
-    height: 18px;
-    object-fit: contain;
-    filter: drop-shadow(0 1px 1px rgba(42, 24, 16, 0.35));
-  }
-
-  .materials-col .gauge.chart .gauge-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 6px;
-    min-width: 0;
-  }
-
-  .materials-col .gauge.chart .gauge-label {
-    margin: 0;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+  .materials-col .gauge-pair :global(.bonus.chart .caption) {
     text-align: left;
-    color: var(--color-ink);
+    font-size: 0.68rem;
+    min-height: 1.05em;
   }
 
-  .materials-col .gauge.chart .gauge-value {
-    margin: 0;
-    font-size: 0.78rem;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    color: var(--color-ink);
-    text-align: right;
-  }
-
-  .materials-col .gauge.chart .gauge-value.extra,
   .gauge-value.extra {
     color: var(--color-golden);
-  }
-
-  .materials-col .gauge.chart .gauge-track {
-    grid-column: 2;
-    width: 100%;
-    min-width: 0;
-    height: 7px;
-    border-radius: 999px;
-    background: rgba(74, 58, 42, 0.22);
-    box-shadow: inset 0 1px 2px rgba(42, 24, 16, 0.28);
-    overflow: hidden;
-  }
-
-  .materials-col .gauge.chart .gauge-fill {
-    display: block;
-    height: 100%;
-    max-width: 100%;
-    border-radius: inherit;
-    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.35) 100%), #1a2433;
-    transform: none;
-    transform-origin: left center;
-    transition: width 0.28s ease;
   }
 
   .prep.split .ritual {
@@ -2067,19 +2082,6 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     bottom: 2px;
     z-index: 6;
     perspective: 120px;
-  }
-
-  .materials-col .gauge.chart .augury-note {
-    grid-column: 2;
-    margin: 0;
-    min-height: 1.15em;
-    font-size: 0.68rem;
-    line-height: 1.15;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    text-align: left;
-    white-space: nowrap;
-    color: var(--color-ink-muted);
   }
 
   .pct-die {
@@ -2311,7 +2313,9 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
   }
 
   .bench.consume:not(.auguring) .gauge,
-  .bench.consume:not(.auguring) .gauge-row {
+  .bench.consume:not(.auguring) .gauge-row,
+  .bench.consume:not(.auguring) .bonus-top,
+  .bench.consume:not(.auguring) .bonus-flank {
     opacity: 0;
   }
 
@@ -2366,6 +2370,13 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #4a3f32;
+    cursor: help;
+  }
+
+  .gauge-head :global(.tooltip-reference),
+  .gauge :global(.tooltip-reference) {
+    display: inline-block;
+    min-width: 0;
   }
 
   .gauge-track {
