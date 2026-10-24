@@ -1126,6 +1126,16 @@ const council_envoy = {
               count: 1,
             },
           },
+          targets: [
+            {
+              type: 'unit',
+              count: 1,
+            },
+            {
+              type: 'cell_empty',
+              count: 1,
+            },
+          ],
         },
       ],
     },

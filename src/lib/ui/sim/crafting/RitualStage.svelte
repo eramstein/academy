@@ -285,7 +285,7 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
       type,
       selected: selected[type] ?? 0,
       owned: gs.player.resources[type] ?? 0,
-    }))
+    })).filter((row) => row.owned > 0 || row.selected > 0)
   );
 
   const resources = $derived(

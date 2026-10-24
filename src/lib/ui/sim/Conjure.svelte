@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { CardTemplate } from '@/lib/_model';
-  import { ResourceType } from '@/lib/_model';
+  import { CardColor, ResourceType } from '@/lib/_model';
+  import { gs } from '@/lib/_state';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
   import {
     getConjurationOptionCount,
     type CardCreationResult,
@@ -8,7 +10,7 @@
     type ConjurationAugury,
     type SummonRevealStage,
   } from '@/lib/sim/actions';
-  import { playSimSound } from '@/lib/sim/sound';
+  import { playAddResourceSound, playSimSound } from '@/lib/sim/sound';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import RitualStage, { type AuguryBeat as RitualAuguryBeat } from './crafting/RitualStage.svelte';
@@ -37,7 +39,7 @@
     onConjure: (
       resources: ResourceAmount[],
       onProgress: (progress: CardSummonProgress) => void,
-      flavorText?: string,
+      colors?: CardColor[],
       augury?: ConjurationAugury
     ) => CardCreationResult[] | Promise<CardCreationResult[]>;
     onPick: (result: CardCreationResult) => void;
@@ -48,7 +50,7 @@
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let selected = $state<Record<ResourceType, number>>(countsFrom(initialResources));
-  let flavorText = $state('');
+  let colors = $state<CardColor[]>(defaultColors());
   let phase = $state<Phase>('idle');
   let summonSlots = $state<SummonSlot[]>([]);
   let statusLine = $state('The materials take form…');
@@ -57,10 +59,13 @@
   let absorbStartedAt = 0;
   let revealTimer: ReturnType<typeof setTimeout> | undefined;
   let pickTimer: ReturnType<typeof setTimeout> | undefined;
-  let incantationInput: HTMLInputElement | undefined = $state();
 
   /** Matches RitualStage SUCTION_START + SUCTION_MS. */
   const ABSORB_MS = 1500;
+
+  const availableColors = $derived(
+    Object.values(CardColor).filter((color) => (gs.player.craftingKnowledge.colors?.[color] ?? 0) >= 1)
+  );
 
   const title = $derived(
     phase === 'idle' ? 'Conjuration' : phase === 'revealed' ? 'Choose your creation' : 'Conjuring'
@@ -107,12 +112,6 @@
     };
   });
 
-  $effect(() => {
-    if (phase === 'idle') {
-      incantationInput?.focus();
-    }
-  });
-
   function countsFrom(list: ResourceAmount[]): Record<ResourceType, number> {
     const counts = Object.fromEntries(Object.values(ResourceType).map((type) => [type, 0])) as Record<
       ResourceType,
@@ -124,10 +123,68 @@
     return counts;
   }
 
+  /** Most common color in the player's collection among known crafting colors. */
+  function defaultColors(): CardColor[] {
+    const known = new Set(
+      Object.values(CardColor).filter((color) => (gs.player.craftingKnowledge.colors?.[color] ?? 0) >= 1)
+    );
+    if (known.size === 0) return [];
+
+    const tallies = Object.fromEntries([...known].map((color) => [color, 0])) as Record<
+      CardColor,
+      number
+    >;
+    for (const card of gs.player.collection) {
+      const seen = new Set<CardColor>();
+      for (const entry of card.colors ?? []) {
+        if (!(entry.color in tallies) || seen.has(entry.color)) continue;
+        seen.add(entry.color);
+        tallies[entry.color] += 1;
+      }
+    }
+
+    let best: CardColor | null = null;
+    let bestCount = -1;
+    for (const color of Object.values(CardColor)) {
+      if (!(color in tallies)) continue;
+      const count = tallies[color];
+      if (count > bestCount) {
+        best = color;
+        bestCount = count;
+      }
+    }
+    return best != null && bestCount > 0 ? [best] : [];
+  }
+
   function committedResources(): ResourceAmount[] {
     return Object.values(ResourceType)
       .map((type) => ({ type, count: selected[type] ?? 0 }))
       .filter((row) => row.count > 0);
+  }
+
+  function colorPath(color: CardColor): string {
+    return getAssetPath(`images/ui/icons/color_${color}.png`);
+  }
+
+  function capitalize(value: string): string {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  function onPigment(color: CardColor, remove: boolean) {
+    if (phase !== 'idle') return;
+    if (remove) {
+      if (!colors.includes(color)) return;
+      colors = colors.filter((entry) => entry !== color);
+      return;
+    }
+    if (colors.includes(color)) return;
+    colors = [...colors, color];
+    playAddResourceSound();
+  }
+
+  function togglePigment(color: CardColor) {
+    if (colors.includes(color)) onPigment(color, true);
+    else onPigment(color, false);
   }
 
   function statusForStage(stage: SummonRevealStage): string {
@@ -210,7 +267,7 @@
     const results = await onConjure(
       committedResources(),
       onSummonProgress,
-      flavorText.trim() || undefined,
+      colors.length ? colors : undefined,
       augury
     );
     const next = [...summonSlots];
@@ -274,23 +331,32 @@
 
 <WorkbenchShell {title} ignite={phase === 'augury' || phase === 'conjuring'}>
   {#if phase === 'idle'}
-    <label class="incantation" class:spoken={flavorText.trim().length > 0}>
-      <span class="incantation-field">
-        <span class="quote open" aria-hidden="true">“</span>
-        <input
-          bind:this={incantationInput}
-          type="text"
-          class="incantation-input"
-          bind:value={flavorText}
-          placeholder="Whisper a form into being…"
-          maxlength="120"
-          autocomplete="off"
-          spellcheck="false"
-          aria-label="Incantation"
-        />
-        <span class="quote close" aria-hidden="true">”</span>
-      </span>
-    </label>
+    <section class="pigments" aria-label="Colors">
+      {#if availableColors.length === 0}
+        <p class="pigments-empty">No known colors yet.</p>
+      {:else}
+        <div class="pigment-cluster">
+          {#each availableColors as color (color)}
+            {@const inMix = colors.includes(color)}
+            <button
+              type="button"
+              class="pigment"
+              class:in-mix={inMix}
+              aria-pressed={inMix}
+              aria-label={capitalize(color)}
+              title="{capitalize(color)} · Click to {inMix ? 'remove' : 'add'}"
+              onclick={() => togglePigment(color)}
+              oncontextmenu={(event) => {
+                event.preventDefault();
+                onPigment(color, true);
+              }}
+            >
+              <img src={colorPath(color)} alt="" draggable="false" />
+            </button>
+          {/each}
+        </div>
+      {/if}
+    </section>
   {/if}
   <RitualStage
     bind:selected
@@ -355,99 +421,69 @@
 </WorkbenchShell>
 
 <style>
-  .incantation {
+  .pigments {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    margin: 2px 0 14px;
-    cursor: text;
+    justify-content: center;
+    margin: 0 0 12px;
   }
 
-  .incantation-field {
-    position: relative;
-    display: flex;
-    align-items: baseline;
-    gap: 2px;
-    padding: 6px 4px 10px;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-brown-border) 55%, transparent);
-    transition:
-      border-color 0.25s ease,
-      box-shadow 0.25s ease;
-  }
-
-  .incantation-field::after {
-    content: '';
-    position: absolute;
-    left: 12%;
-    right: 12%;
-    bottom: -1px;
-    height: 1px;
-    background: color-mix(in srgb, var(--color-golden) 75%, transparent);
-    opacity: 0;
-    transform: scaleX(0.4);
-    transition:
-      opacity 0.28s ease,
-      transform 0.28s ease;
-  }
-
-  .incantation:focus-within .incantation-field,
-  .incantation.spoken .incantation-field {
-    border-color: color-mix(in srgb, var(--color-golden) 55%, var(--color-brown-border));
-    box-shadow: 0 8px 18px -14px color-mix(in srgb, var(--color-golden) 70%, transparent);
-  }
-
-  .incantation:focus-within .incantation-field::after,
-  .incantation.spoken .incantation-field::after {
-    opacity: 1;
-    transform: scaleX(1);
-  }
-
-  .incantation .quote {
-    flex: 0 0 auto;
-    font-family: var(--font-narrative);
-    font-size: 1.55rem;
-    line-height: 1;
-    color: color-mix(in srgb, var(--color-ink-muted) 70%, transparent);
-    user-select: none;
-    transition: color 0.25s ease;
-  }
-
-  .incantation:focus-within .quote,
-  .incantation.spoken .quote {
-    color: color-mix(in srgb, var(--color-golden) 65%, var(--color-ink-muted));
-  }
-
-  .incantation-input {
-    flex: 1 1 auto;
-    min-width: 0;
-    width: 100%;
-    box-sizing: border-box;
+  .pigments-empty {
     margin: 0;
-    padding: 2px 4px;
-    border: none;
-    outline: none;
-    background: transparent;
     font-family: var(--font-narrative);
-    font-size: 1.12rem;
+    font-size: 0.95rem;
     font-style: italic;
-    letter-spacing: 0.02em;
-    line-height: 1.45;
-    text-align: center;
-    color: var(--color-ink);
-    caret-color: var(--color-golden);
-    user-select: text;
-    -webkit-user-select: text;
+    color: var(--color-ink-muted);
   }
 
-  .incantation-input::placeholder {
-    color: color-mix(in srgb, var(--color-ink-muted) 78%, transparent);
-    font-style: italic;
-    letter-spacing: 0.01em;
+  .pigment-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .pigment {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.55;
+    filter: grayscale(0.35);
+    transition:
+      opacity 0.18s ease,
+      filter 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  .pigment img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 3px rgba(42, 24, 16, 0.35));
+  }
+
+  .pigment:hover,
+  .pigment:focus-visible {
+    opacity: 0.85;
+    filter: none;
+  }
+
+  .pigment.in-mix {
     opacity: 1;
+    filter: none;
+    transform: translateY(-2px);
   }
 
-  .incantation:focus-within .incantation-input {
-    text-shadow: 0 0 18px color-mix(in srgb, var(--color-golden) 28%, transparent);
+  .pigment.in-mix img {
+    filter: drop-shadow(0 2px 3px rgba(42, 24, 16, 0.35))
+      drop-shadow(0 0 6px color-mix(in srgb, var(--color-golden) 55%, transparent));
   }
 
   .creations {
@@ -570,9 +606,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .incantation-field,
-    .incantation-field::after,
-    .incantation .quote {
+    .pigment {
       transition: none;
     }
 

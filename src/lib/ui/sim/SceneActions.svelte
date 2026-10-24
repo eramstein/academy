@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ActionType, type Action, type ResourceType } from '@/lib/_model';
+  import { ActionType, type Action, type CardColor, type ResourceType } from '@/lib/_model';
   import { playManualTriggerEvent, playPendingPeriodEvent, selectOption } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state';
   import {
@@ -235,7 +235,7 @@
   async function generateConjureOptions(
     resources: { type: ResourceType; count: number }[],
     onProgress: (progress: CardSummonProgress) => void,
-    flavorText?: string,
+    colors?: CardColor[],
     augury?: ConjurationAugury
   ) {
     if (!cardCraftAction) return [];
@@ -245,10 +245,11 @@
         ...cardCraftAction.actionParameters,
         source: 'conjure',
         resources,
+        colors,
       },
       'player',
       onProgress,
-      flavorText,
+      undefined,
       augury
     );
     return conjureOptions;
