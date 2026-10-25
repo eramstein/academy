@@ -441,15 +441,16 @@
     width: 46px;
     height: 46px;
     padding: 0;
-    border: 1px solid #8d7352;
+    border: 2px solid rgba(44, 37, 29, 0.28);
     border-radius: 50%;
     background: transparent;
-    box-shadow: 0 1px 2px rgba(42, 24, 16, 0.28);
+    box-shadow: none;
     cursor: pointer;
-    opacity: 0.92;
+    opacity: 0.55;
     transition:
       opacity 0.18s ease,
       transform 0.18s ease,
+      border-color 0.18s ease,
       box-shadow 0.18s ease;
   }
 
@@ -458,28 +459,29 @@
     height: 94%;
     object-fit: contain;
     pointer-events: none;
-    filter: drop-shadow(0 1px 2px rgba(42, 24, 16, 0.35));
+    filter:
+      grayscale(0.35)
+      brightness(0.92)
+      drop-shadow(0 1px 2px rgba(42, 24, 16, 0.35));
   }
 
   .pigment:hover,
   .pigment:focus-visible {
-    opacity: 1;
+    opacity: 0.85;
+    border-color: rgba(44, 37, 29, 0.55);
   }
 
   .pigment.in-mix {
     opacity: 1;
-    transform: translateY(-2px);
-    border-color: #d7b56a;
+    transform: translateY(-1px);
+    border-color: var(--color-ink);
     box-shadow:
-      0 1px 0 rgba(255, 248, 230, 0.45),
-      0 4px 8px rgba(42, 24, 16, 0.45),
-      0 0 6px rgba(191, 161, 74, 0.4);
+      0 0 0 2px var(--color-golden),
+      0 2px 6px rgba(42, 24, 16, 0.45);
   }
 
   .pigment.in-mix img {
-    filter:
-      drop-shadow(0 1px 2px rgba(42, 24, 16, 0.35))
-      drop-shadow(0 0 4px rgba(191, 161, 74, 0.4));
+    filter: drop-shadow(0 1px 2px rgba(42, 24, 16, 0.4));
   }
 
   .creations {

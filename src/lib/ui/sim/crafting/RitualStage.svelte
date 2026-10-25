@@ -2,11 +2,7 @@
   import { ResourceType } from '@/lib/_model';
   import { gs } from '@/lib/_state';
   import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
-  import {
-    fortuneBudgetToStats,
-    rollExtraBudget,
-    type ConjurationAugury,
-  } from '@/lib/sim/actions';
+  import { fortuneBudgetToStats, rollExtraBudget, type ConjurationAugury } from '@/lib/sim/actions';
   import {
     craftProfile,
     displayPercentRoll,
@@ -20,10 +16,7 @@
     type CraftMode,
     type PointRoll,
   } from '@/lib/sim/cards/crafting-skills';
-  import {
-    craftableResourceTypes,
-    isUniqueResource,
-  } from '@/lib/sim/cards/resources';
+  import { craftableResourceTypes, isUniqueResource } from '@/lib/sim/cards/resources';
   import { playAddResourceSound } from '@/lib/sim/sound';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
   import type { Snippet } from 'svelte';
@@ -36,15 +29,15 @@
 
   export type RitualCharm = { id: string; icon: string };
 
-export type AuguryBeat = {
-  stage: 'learning' | 'insight' | 'inspiration' | 'fortune' | 'shown';
-  learning: number | null;
-  fortune: number | null;
-  optionCount?: number | null;
-  discoveryIndex?: number | null;
-};
+  export type AuguryBeat = {
+    stage: 'learning' | 'insight' | 'inspiration' | 'fortune' | 'shown';
+    learning: number | null;
+    fortune: number | null;
+    optionCount?: number | null;
+    discoveryIndex?: number | null;
+  };
 
-type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
+  type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
 
   type CharmPhase = 'enter' | 'orbit' | 'exit' | 'seal';
 
@@ -415,7 +408,13 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     note:
       craft === 'conjure'
         ? ''
-        : outcomeNote(learningPhase, learningFace, 'Chance of learning', 'knowledge', 'No learning'),
+        : outcomeNote(
+            learningPhase,
+            learningFace,
+            'Chance of learning',
+            'knowledge',
+            'No learning'
+          ),
     fill: Math.min(1, profile.knowledge.expected / 2),
     extra: (learningPhase === 'hit' || learningPhase === 'miss') && learningFace > 0,
     pct: learningPct,
@@ -460,7 +459,9 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     }
     return '';
   });
-  const inspirationSure = $derived(craft === 'enchant' || craft === 'invoke' ? profile.scope : profile.conjureOptions.sure);
+  const inspirationSure = $derived(
+    craft === 'enchant' || craft === 'invoke' ? profile.scope : profile.conjureOptions.sure
+  );
   const inspirationChance = $derived(craft === 'conjure' ? profile.conjureOptions.chance : 0);
   const inspirationUnit = $derived.by(() => {
     if (craft === 'enchant') return { singular: 'Mana', plural: 'Mana' };
@@ -1415,8 +1416,8 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     <span
       class="gauge-label"
       onmouseenter={() => (hoveredGauge = label)}
-      onmouseleave={() => (hoveredGauge = null)}
-    >{label}</span>
+      onmouseleave={() => (hoveredGauge = null)}>{label}</span
+    >
   </Tooltip>
 {/snippet}
 
@@ -1477,7 +1478,12 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
   bind:this={benchEl}
   style="--page: url('{pagePath}'); --plaque: url('{parchmentPath}')"
 >
-  <div class="prep" class:split class:conjure={craft === 'conjure'} class:no-materials={hideMaterials}>
+  <div
+    class="prep"
+    class:split
+    class:conjure={craft === 'conjure'}
+    class:no-materials={hideMaterials}
+  >
     {#if !hideMaterials}
       {#if split}
         <div class="materials-col">
@@ -1630,10 +1636,14 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
             <span class="gauge-track" aria-hidden="true">
               <span class="gauge-fill" style="transform: scaleX({eruditionGauge.fill})"></span>
             </span>
-            <span class="gauge-value" class:extra={eruditionGauge.extra}>{eruditionGauge.value}</span>
+            <span class="gauge-value" class:extra={eruditionGauge.extra}
+              >{eruditionGauge.value}</span
+            >
           </div>
           {#if eruditionGauge.note}
-            <span class="augury-note" class:miss={learningPhase === 'miss' && learningFace <= 0}>{eruditionGauge.note}</span>
+            <span class="augury-note" class:miss={learningPhase === 'miss' && learningFace <= 0}
+              >{eruditionGauge.note}</span
+            >
           {/if}
           {@render percentDie(learningPhase, learningPct, learningNeed, 'Erudition')}
         </div>
@@ -1664,10 +1674,7 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
 
       {#if split}
         <div class="shape-block" class:ready={showVessel}>
-          <p
-            class="shape-hint"
-            aria-hidden={!showVessel || !(shapeText || shapeCost)}
-          >
+          <p class="shape-hint" aria-hidden={!showVessel || !(shapeText || shapeCost)}>
             {#if shapeCost != null && shapeCost !== 0}
               <strong class="shape-cost" class:cut={shapeCost < 0}
                 >{shapeCost > 0 ? '+' : ''}{shapeCost} mana</strong
@@ -1676,10 +1683,7 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
             {shapeText || '\u00a0'}
           </p>
           {#if budgetRemaining != null && budgetRemaining > 0}
-            <div
-              class="budget-remaining"
-              aria-label="{budgetRemaining} budget remaining"
-            >
+            <div class="budget-remaining" aria-label="{budgetRemaining} budget remaining">
               {#each Array(budgetRemaining) as _, i (i)}
                 <span class="budget-pip" aria-hidden="true"></span>
               {/each}
@@ -1706,7 +1710,12 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
             need={auguryFortuneNeed}
           >
             {#snippet die()}
-              {@render percentDie(auguryFortunePhase, auguryFortunePct, auguryFortuneNeed, 'Mastery')}
+              {@render percentDie(
+                auguryFortunePhase,
+                auguryFortunePct,
+                auguryFortuneNeed,
+                'Mastery'
+              )}
             {/snippet}
           </BonusReadout>
         </div>
@@ -1723,7 +1732,9 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
             <span class="gauge-value" class:extra={masteryGauge.extra}>{masteryGauge.value}</span>
           </div>
           {#if masteryGauge.note}
-            <span class="augury-note" class:miss={budgetPhase === 'miss' && budgetFace <= 0}>{masteryGauge.note}</span>
+            <span class="augury-note" class:miss={budgetPhase === 'miss' && budgetFace <= 0}
+              >{masteryGauge.note}</span
+            >
           {/if}
           {@render percentDie(auguryFortunePhase, auguryFortunePct, auguryFortuneNeed, 'Mastery')}
         </div>
@@ -2508,7 +2519,6 @@ type DiePhase = 'idle' | 'rolling' | 'hit' | 'miss';
     cursor: help;
   }
 
-  .gauge-head :global(.tooltip-reference),
   .gauge :global(.tooltip-reference) {
     display: inline-block;
     min-width: 0;

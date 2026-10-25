@@ -16,7 +16,21 @@
       "Overgrown ruins",
       "Enchanted garden",
       "Giant mushroom forest",
-      "Underground root cavern"
+      "Underground root cavern",
+      "Wind-bent coastal orchard",
+      "Chalk cliffs crowded with seabirds",
+      "Alpine pasture above the clouds",
+      "Sunken terraced rice fields",
+      "Abandoned greenhouse reclaimed by vines",
+      "Petrified forest",
+      "Autumn vineyard on a hillside",
+      "Salt marsh with reeds and tidal pools",
+      "Prairie crossed by a bison trail",
+      "Glacial valley with hardy wildflowers",
+      "Fruit-laden village orchard",
+      "Bioluminescent cave garden",
+      "Dry thorn scrubland",
+      "River delta with tangled mangroves"
     ],
     "dominantColors": [
       "Deep emerald green",
@@ -40,7 +54,18 @@
       "Scarlet maple and burnt orange",
       "Rust brown and golden ochre",
       "Snow white and pine green",
-      "Icy blue and bare gray"
+      "Icy blue and bare gray",
+      "Chalk white and dusty rose",
+      "Deep wine red and faded leaf gold",
+      "Cornflower blue and butter yellow",
+      "Heather mauve and weathered granite",
+      "Burnt sienna and pale straw",
+      "Black soil and vivid fuchsia blossoms",
+      "Sea-glass aqua and sandy cream",
+      "Pale peach and fresh mint",
+      "Indigo shadows and silver birch white",
+      "Muted coral and gray-green reeds",
+      "Bronze bark and ivory mushrooms"
     ],
     "atmospheres": [
       "Soft morning sunlight",
@@ -66,7 +91,17 @@
       "Crisp autumn afternoon",
       "Falling leaves in slanted light",
       "Pale winter dusk",
-      "Snow-laden forest hush"
+      "Snow-laden forest hush",
+      "Wind shaking seed heads across a dry plain",
+      "Clear coastal morning with salt spray",
+      "Late-afternoon shadows across an orchard",
+      "Moonlit frost sparkling on tall grasses",
+      "Quiet blue hour beside a still pond",
+      "Low clouds racing over an alpine ridge",
+      "Sunlight breaking through a canopy after a storm",
+      "Dusty drought-season heat",
+      "Bright snow glare beneath a cloudless sky",
+      "Fireflies over a dark summer marsh"
     ]
   },
   "black": {
@@ -89,7 +124,22 @@
       "Mining settlement",
       "Underground mine",
       "Narrow city alleyways",
-      "Overgrown urban ruins"
+      "Overgrown urban ruins",
+      "Cluttered municipal records office",
+      "Busy railway depot with steam engines",
+      "Flooded basement beneath a tenement",
+      "Ornate but neglected opera house",
+      "Crowded courthouse corridor",
+      "Rain-soaked market arcade",
+      "Quarantine ward in an old hospital",
+      "Stone bridge lined with toll booths",
+      "Clockwork assembly hall",
+      "Deserted merchant countinghouse",
+      "Ship-breaking yard",
+      "Snowbound workers' housing district",
+      "Funeral procession through a town square",
+      "Abandoned botanical conservatory",
+      "Bureaucratic archive with towering shelves"
     ],
     "dominantColors": [
       "Charcoal black and dark gray",
@@ -106,7 +156,18 @@
       "Pale stone gray and muted beige",
       "Dark sepia and bronze",
       "Moss green and weathered stone",
-      "Burnt orange and smoky gray"
+      "Burnt orange and smoky gray",
+      "Faded rose pink and tarnished brass",
+      "Cream limestone and deep crimson banners",
+      "Petroleum blue and dull gold",
+      "Chalky turquoise and rusted iron",
+      "Ivory plaster and near-black ink",
+      "Ox-blood red and pale marble",
+      "Sulfur yellow and cold blue shadows",
+      "Dusty lilac and oxidized silver",
+      "Brick orange and rain-washed cyan",
+      "Desaturated sea green and bone white",
+      "Sunlit sandstone and dark walnut"
     ],
     "atmospheres": [
       "Dim overcast daylight",
@@ -136,7 +197,17 @@
       "Brown leaves drifting through smoke",
       "Freezing winter rain",
       "Snow on black rooftops",
-      "Frost on iron at dawn"
+      "Frost on iron at dawn",
+      "Bright noon light exposing every crack and stain",
+      "Cold fluorescent-like alchemical lamps",
+      "Long shadows beneath an elevated viaduct",
+      "Patches of cheerful sunlight in a neglected courtyard",
+      "Rainwater reflecting colorful market awnings",
+      "Dense white steam escaping from valves",
+      "Windblown paper scraps in a deserted square",
+      "Quiet predawn streets after a night shift",
+      "Bleached summer light on crumbling masonry",
+      "Glittering frost on orderly rows of machinery"
     ]
   },
   "red": {
@@ -159,7 +230,21 @@
       "Stormy coastline",
       "Jagged sea cliffs",
       "Wild mountain pass",
-      "Chaotic city streets"
+      "Chaotic city streets",
+      "Racing course cut through a wheat field",
+      "Frozen lake used as a dueling ground",
+      "Crowded tavern during a brawl",
+      "Rooftops above a bustling bazaar",
+      "Festival square filled with banners",
+      "River rapids beneath a rope bridge",
+      "Narrow avalanche chute",
+      "Ship deck in rough seas",
+      "Sunlit quarry full of loose stone",
+      "Thunder-split plateau",
+      "Icebound mountain trail",
+      "Springtime horse fair",
+      "Windmill ridge during a gale",
+      "Cliffside smugglers' stairway"
     ],
     "dominantColors": [
       "Fiery red and orange",
@@ -176,7 +261,18 @@
       "Copper brown and warm gold",
       "Pale sandstone and muted red",
       "Deep indigo and electric purple",
-      "Black volcanic rock and molten gold"
+      "Black volcanic rock and molten gold",
+      "Glacial white and fierce cobalt blue",
+      "Bright turquoise and sun-baked coral",
+      "Grass green and scarlet pennants",
+      "Pale lemon yellow and storm-cloud navy",
+      "Hot pink and dark petrol green",
+      "Cold silver and bruised plum",
+      "White limestone and vivid vermilion",
+      "Dusty lilac and copper sand",
+      "Seafoam green and lightning white",
+      "Saffron cloth and clear azure sky",
+      "Deep jade and bright brass"
     ],
     "atmospheres": [
       "Harsh midday sunlight",
@@ -205,7 +301,17 @@
       "Low red autumn sun through dust",
       "Biting winter wind",
       "Driving snow under an ember dusk",
-      "Hard winter sunlight on bare rock"
+      "Hard winter sunlight on bare rock",
+      "Dazzling sunlight reflected from fresh snow",
+      "Sudden squall under a bright turquoise sky",
+      "Colorful festival flags snapping in gusts",
+      "Hard blue hour with silhouettes in motion",
+      "Cloud shadows racing across yellow fields",
+      "A flash of sunlight between thunderheads",
+      "Churning white sea spray",
+      "Abrupt hailstorm in a mountain pass",
+      "Pink dawn after a night of unrest",
+      "Dry leaves whirling in a sunlit courtyard"
     ]
   },
   "blue": {
@@ -228,7 +334,23 @@
       "Mysterious mirror hall",
       "Ancient archive",
       "Foggy harbor",
-      "Submerged ruins"
+      "Submerged ruins",
+      "Sunlit university courtyard with mathematical mosaics",
+      "Velvet-draped theater backstage",
+      "Scholar's study with red lacquer cabinets",
+      "Desert astronomical station",
+      "Snow-covered signal tower",
+      "Rooftop greenhouse used for experiments",
+      "Busy bookbinder's workshop",
+      "Gilded diplomatic reception hall",
+      "Forgotten clock chamber beneath a city",
+      "Coastal lighthouse full of navigation charts",
+      "Autumn garden with a mirrored reflecting pool",
+      "Hidden room behind a tapestry",
+      "Pale limestone maze beneath a palace",
+      "Sun-drenched archaeological excavation",
+      "Quiet mountain monastery scriptorium",
+      "Canal-side café frequented by spies"
     ],
     "dominantColors": [
       "Deep sapphire blue",
@@ -246,7 +368,22 @@
       "Pale mint green and turquoise",
       "Dusty blue and warm beige",
       "Deep petrol blue and copper",
-      "Pearlescent white and violet"
+      "Pearlescent white and violet",
+      "Dark oxblood red and antique ivory",
+      "Terracotta orange and deep ink black",
+      "Dusty rose and burnished copper",
+      "Warm mahogany and cream parchment",
+      "Saffron yellow and dark bottle green",
+      "Muted olive and ruby red",
+      "Sunlit sandstone and lapis accents",
+      "Pale peach and smoky charcoal",
+      "Crimson velvet and tarnished silver",
+      "Moss green and aged brass",
+      "Amber glass and chocolate brown",
+      "Chalk white and vermilion seals",
+      "Soft coral and storm gray",
+      "Black lacquer and pale jade",
+      "Copper pink and midnight teal"
     ],
     "atmospheres": [
       "Cool diffused daylight",
@@ -276,7 +413,19 @@
       "Fine autumn rain on the harbor",
       "Clear winter starlight",
       "Frosted winter morning",
-      "Thin winter sun through icy mist"
+      "Thin winter sun through icy mist",
+      "Warm late-afternoon sunlight across a reading desk",
+      "Sharp midday sun casting geometric shadows",
+      "Red sunset refracted through laboratory glass",
+      "Candlelight reflected in polished dark wood",
+      "Clear autumn daylight on pale limestone",
+      "Rainbows scattered by glass prisms",
+      "Sunlit dust suspended in a silent archive",
+      "Quiet amber lamplight behind closed curtains",
+      "Harsh white light in a room of mirrors",
+      "Soft rose-colored dawn over a deserted observatory",
+      "Warm firelight with cool shadows beyond",
+      "Storm light flashing across gilded walls"
     ]
   }
 }

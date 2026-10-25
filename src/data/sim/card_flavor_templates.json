@@ -143,6 +143,23 @@
     ]
   },
   {
+    "name": "Anchor Beacon",
+    "imagePrompt": "An immovable lighthouse-machine fused to bedrock, lamp locked forward, no wheels or legs anywhere on its bulk. Foggy harbor headland, steel blue iron and charcoal stone, cold morning fog.",
+    "imageName": "anchor_beacon",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "immobile"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
     "name": "Angry Lizard",
     "imagePrompt": "Angry Lizard",
     "imageName": "angry_lizard",
@@ -235,6 +252,57 @@
     ]
   },
   {
+    "name": "Ash Reclaimer",
+    "imagePrompt": "A soot-stained automaton with circular grate-mouth and sweeping arms, gathering burned scraps into its chest-bin. Underground catacombs furnace niche, steel blue iron and charcoal ash, faint arcane glow.",
+    "imageName": "ash_reclaimer",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "recycleCard"
+    ]
+  },
+  {
+    "name": "Ashen Provost",
+    "imagePrompt": "An elderly high archivist in soot-trimmed robes cradles a restored grimoire, expression wistful and proud. Ancient archive dais, midnight blue velvet and silver embroidery, faint light through dusty windows.",
+    "imageName": "ashen_provost",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "recycleCard"
+    ]
+  },
+  {
+    "name": "Ashen Recall",
+    "imagePrompt": "Charred page fragments drift upward and reassemble into a readable leaf, edges still faintly smoking. Ancient archive stack, dusty blue wood and warm beige parchment, faint light through dusty windows.",
+    "imageName": "ashen_recall",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "recycleCard"
+    ]
+  },
+  {
     "name": "Ashling",
     "imagePrompt": "A withered stalk splits and a fresh living copy unfurls from the dead one.",
     "imageName": "ashling",
@@ -247,6 +315,23 @@
     "keywords": [],
     "actions": [
       "regrowCard"
+    ]
+  },
+  {
+    "name": "Auger Golem",
+    "imagePrompt": "A broad construct with a spinning drill-arm and a predatory lean, bit gleaming past any plate it faces. Magical workshop forge, dark navy plating and bronze bit, warm furnace-like faint arcane glow.",
+    "imageName": "auger_golem",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "construct"
     ]
   },
   {
@@ -282,6 +367,24 @@
     ],
     "actions": [
       "healUnit"
+    ]
+  },
+  {
+    "name": "Banishing Vizier",
+    "imagePrompt": "An elite court mage in layered blue robes raises one dismissive hand, rings glowing with return-sigils. Grand palace interior throne hall, royal purple marble and gold leaf, soft light through stained glass.",
+    "imageName": "banishing_vizier",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "bounceUnit"
     ]
   },
   {
@@ -368,6 +471,21 @@
     ],
     "actions": [
       "root"
+    ]
+  },
+  {
+    "name": "Board Sweep",
+    "imagePrompt": "A triumphant arc of telekinetic wind clears a chessboard-sized stretch of floor in one decisive rush. Grand palace interior, royal purple carpet and gold trim, dramatic magical backlighting.",
+    "imageName": "board_sweep",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "forceMoveUnit"
     ]
   },
   {
@@ -458,6 +576,24 @@
     ]
   },
   {
+    "name": "Card Cataloger",
+    "imagePrompt": "A neat junior librarian with ink on her nose and a stack of index slips fanned like a winning hand. Ancient archive desk, dusty blue wood and warm beige paper, soft light through stained glass.",
+    "imageName": "card_cataloger",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
     "name": "Colossus Agaric",
     "imagePrompt": "A towering fly agaric, cap still swelling, new rings of flesh stacked up the stalk.",
     "imageName": "colossus_agaric",
@@ -473,6 +609,74 @@
     ],
     "actions": [
       "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Crumble Wisp",
+    "imagePrompt": "A ragged little golem of powdered mortar and cracked tile, joints flaking as if the ground wore thin through it. Submerged ruins threshold, deep petrol blue stone and copper stains, soft underwater light.",
+    "imageName": "crumble_wisp",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "damageLand"
+    ]
+  },
+  {
+    "name": "Crystal Stasis",
+    "imagePrompt": "A towering prism freezes a ribbon of motion inside itself, the trapped ripple held monumental and still. Crystal cavern chamber, pearlescent white facets and violet veins, soft underwater light.",
+    "imageName": "crystal_stasis",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "mezz"
+    ]
+  },
+  {
+    "name": "Dart Courier",
+    "imagePrompt": "A lean runner in short blue cloak coils on the balls of her feet, satchel strap tight, ready to sprint then strike. Foggy harbor gangway, steel blue planks and charcoal rope, cold morning fog.",
+    "imageName": "dart_courier",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
+    "name": "Deep Reader",
+    "imagePrompt": "A calm scholar mid-page-turn, eyes reflecting an entire paragraph of floating glyphs across her irises. Ancient library atrium, midnight blue columns and silver lamps, soft spring light through high windows.",
+    "imageName": "deep_reader",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "drawCards"
     ]
   },
   {
@@ -506,6 +710,60 @@
     ],
     "actions": [
       "addMana"
+    ]
+  },
+  {
+    "name": "Displacement Crane",
+    "imagePrompt": "A lanky iron crane-golem with a magnetic claw suspended mid-swing, joints humming with relocated weight. Alchemist laboratory gantry, deep petrol blue steel and copper joints, dramatic magical backlighting.",
+    "imageName": "displacement_crane",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "forceMoveUnit"
+    ]
+  },
+  {
+    "name": "Dizzy Lantern",
+    "imagePrompt": "A living lamp of swirling light with a woozy flame-face and a tilted glass body that never quite settles. Alchemist laboratory table, pale mint glass and turquoise oil, gentle floating particles.",
+    "imageName": "dizzy_lantern",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
+    "name": "Dream Binder",
+    "imagePrompt": "A towering horned binder with silk-thread arms and a cruel gentle smile, wrapping empty air in sleep-knots. Secret underground chamber throne, amethyst purple silk and black marble, deep nighttime shadows.",
+    "imageName": "dream_binder",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "demon"
+    ],
+    "actions": [
+      "mezz"
     ]
   },
   {
@@ -1396,6 +1654,42 @@
     ]
   },
   {
+    "name": "Echo Armature",
+    "imagePrompt": "A human-sized brass frame whose silhouette doubles a half-step behind itself, as if already halfway unsummoned. Mysterious mirror hall, amethyst purple glass and black iron, flickering magical reflections.",
+    "imageName": "echo_armature",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "bounceUnit"
+    ]
+  },
+  {
+    "name": "Echo Reliquary",
+    "imagePrompt": "A small shrine-box with circular brass doors half-open, whispering light cycling in and out of its hollow. Forgotten temple niche, deep navy stone and bronze filigree, soft moonlight.",
+    "imageName": "echo_reliquary",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "recycleCard"
+    ]
+  },
+  {
     "name": "Elder Yew",
     "imagePrompt": "An ancient yew with a vast crown and a trunk split by fresh wood pushing outward. Ancient forest interior, deep emerald canopy and dark leaf litter, dappled sunlight through leaves.",
     "imageName": "elder_yew",
@@ -1542,6 +1836,21 @@
     "keywords": []
   },
   {
+    "name": "Exact Page",
+    "imagePrompt": "A single wanted leaf peeks from a closed tome with a shy glow, bookmark ribbon curling like a smile. Wizard tower reading nook, emerald teal shelves and deep blue carpet, soft spring light through high windows.",
+    "imageName": "exact_page",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "tutorCard"
+    ]
+  },
+  {
     "name": "Execution",
     "imagePrompt": "Execution",
     "imageName": "execution",
@@ -1650,6 +1959,24 @@
     ]
   },
   {
+    "name": "Farstrike Adept",
+    "imagePrompt": "A mage in travel cloak aims an outstretched finger at the horizon, bolt of sapphire already leaving the tip. Foggy harbor breakwater, steel blue rock and charcoal spray, pale autumn light through fog.",
+    "imageName": "farstrike_adept",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "damageOpponent"
+    ]
+  },
+  {
     "name": "Fat Pigeon",
     "imagePrompt": "Fat Pigeon",
     "imageName": "fat_pigeon",
@@ -1665,6 +1992,24 @@
     ],
     "unitTypes": [
       "beast"
+    ]
+  },
+  {
+    "name": "Faultline Keep",
+    "imagePrompt": "A fortress whose foundations crack the earth in blue lightning-seams, towers leaning over a spreading fracture. Submerged ruins ridgeline, deep petrol blue stone and copper braces, overcast twilight.",
+    "imageName": "faultline_keep",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "damageLand"
     ]
   },
   {
@@ -1771,6 +2116,23 @@
     ]
   },
   {
+    "name": "Fixed Orrery",
+    "imagePrompt": "A heavy orrery-machine bolted to the floor, planetary arms locked in place, base wider than a doorway. Enchanted observatory center, pearlescent white brass and violet enamel, clear winter starlight.",
+    "imageName": "fixed_orrery",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "immobile"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
     "name": "Flammen Werfer",
     "imagePrompt": "Flammen Werfer",
     "imageName": "flammen_werfer",
@@ -1786,6 +2148,24 @@
     ],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Flux Archon",
+    "imagePrompt": "A monumental spirit of shifting equations, body a waterfall of rewriting glyphs that never settle. Mysterious mirror hall, amethyst purple glass and black void, subtle shimmering illusions.",
+    "imageName": "flux_archon",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "cycleCards"
     ]
   },
   {
@@ -1831,6 +2211,21 @@
     "keywords": [],
     "actions": [
       "fortifyLand"
+    ]
+  },
+  {
+    "name": "Foundation Fracture",
+    "imagePrompt": "A jagged blue crack races across flagstones, splitting mortar as if the ground itself were glass. Submerged ruins plaza, deep petrol blue stone and copper fittings, overcast twilight.",
+    "imageName": "foundation_fracture",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "damageLand"
     ]
   },
   {
@@ -1886,6 +2281,24 @@
     "keywords": [],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Gale Palm",
+    "imagePrompt": "A living gust shaped like a giant open hand, fingers curling as if mid-shove, edges trailing mist. Mystical floating islands ledge, pale icy blue cloud and white vapor, cool spring mist at dawn.",
+    "imageName": "gale_palm",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "forceMoveUnit"
     ]
   },
   {
@@ -2022,6 +2435,23 @@
     ]
   },
   {
+    "name": "Glass Moth",
+    "imagePrompt": "A palm-wide moth of clear brass-framed glass holds translucent wings open, antennae glowing with faint runes. Magical workshop rafter, dark navy timber and bronze fittings, faint arcane glow.",
+    "imageName": "glass_moth",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "flying"
+    ],
+    "unitTypes": [
+      "construct"
+    ]
+  },
+  {
     "name": "Glimmer Sprite",
     "imagePrompt": "A thumbnail sprite, wings like caught sunlight, a bead of green mana bright in its chest. Enchanted garden border, lavender petals and violet shade, silver moonlight.",
     "imageName": "glimmer_sprite",
@@ -2111,6 +2541,24 @@
     ]
   },
   {
+    "name": "Grand Hypnotist",
+    "imagePrompt": "A towering showman-mage with a swinging pendulum-amulet and eyes like nested circles of threat. Moonlit courtyard plaza, steel blue stone and charcoal shadow, soft moonlight.",
+    "imageName": "grand_hypnotist",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
     "name": "Grave Hyena",
     "imagePrompt": "A barrow-dusted hyena with a seed-carved bone held crosswise in its jaws. Overgrown barrow stones, gray masonry and muted green lichen, cool twilight.",
     "imageName": "grave_hyena",
@@ -2126,6 +2574,21 @@
     ],
     "actions": [
       "regrowCard"
+    ]
+  },
+  {
+    "name": "Grave Index",
+    "imagePrompt": "A cruel catalog needle spears a discarded scroll and threads it back toward a waiting deck-shaped vault. Underground catacombs niche, amethyst purple stone and black soot, deep nighttime shadows.",
+    "imageName": "grave_index",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "recycleCard"
     ]
   },
   {
@@ -2264,6 +2727,24 @@
       "black"
     ],
     "keywords": []
+  },
+  {
+    "name": "Hand Dealer",
+    "imagePrompt": "A sly court magician fans glowing cards between long fingers, ready to discard and draw in one flourish. Grand palace interior salon, royal purple silk and gold trim, soft light through stained glass.",
+    "imageName": "hand_dealer",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "cycleCards"
+    ]
   },
   {
     "name": "Hans is Back",
@@ -2473,6 +2954,24 @@
     ]
   },
   {
+    "name": "Horizon Slinger",
+    "imagePrompt": "A squat slingshot automaton aims a glowing marble skyward, posture locked toward a far-off target beyond the frame. Enchanted observatory roof, steel blue brass and charcoal slate, clear winter starlight.",
+    "imageName": "horizon_slinger",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "damageOpponent"
+    ]
+  },
+  {
     "name": "Hungry Hermit",
     "imagePrompt": "Hungry Hermit",
     "imageName": "hungry_hermit",
@@ -2527,6 +3026,41 @@
     ]
   },
   {
+    "name": "Hypno Prism",
+    "imagePrompt": "A fist-sized crystal automaton etched with spinning eye-patterns, facets catching light in confusing rings. Crystal cavern ledge, pearlescent white crystal and violet shadow, subtle shimmering illusions.",
+    "imageName": "hypno_prism",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
+    "name": "Ice Awl",
+    "imagePrompt": "A needle-bodied ice horror no longer than a forearm, tip wickedly fine, frost ridges like cutting teeth. Crystal cavern floor, pale icy blue ice and white glitter, thin winter sun through icy mist.",
+    "imageName": "ice_awl",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
     "name": "Improve Engine",
     "imagePrompt": "Improve Engine",
     "imageName": "improve_engine",
@@ -2538,6 +3072,42 @@
       "black"
     ],
     "keywords": []
+  },
+  {
+    "name": "Index Spire",
+    "imagePrompt": "A slim tower of labeled drawers and brass call-numbers, one drawer glowing open toward a chosen shelf. Ancient archive wing, midnight blue wood and silver plaques, quiet scholarly atmosphere.",
+    "imageName": "index_spire",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "tutorCard"
+    ]
+  },
+  {
+    "name": "Insight Engine",
+    "imagePrompt": "A chest-high clockwork scribe with an open cranial lid spilling luminous script, quill-arms poised. Magical workshop bay, dark navy casing and bronze pipes, faint arcane glow.",
+    "imageName": "insight_engine",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "drawCards"
+    ]
   },
   {
     "name": "Iron Golem",
@@ -2717,6 +3287,42 @@
     ]
   },
   {
+    "name": "Labyrinth Sphinx",
+    "imagePrompt": "A colossal winged sphinx with spiral-marked eyes and a smile that promises wrong turns, paws planted wide. Forgotten temple approach, muted lavender sandstone and gray hieroglyphs, eerie stillness.",
+    "imageName": "labyrinth_sphinx",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
+    "name": "Ledger Shade",
+    "imagePrompt": "A translucent clerk-spirit whose torso is a flipping account book, numbers rewriting themselves across its chest. Ancient archive gallery, dusty blue shelves and warm beige vellum, quiet scholarly atmosphere.",
+    "imageName": "ledger_shade",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "cycleCards"
+    ]
+  },
+  {
     "name": "Leonardo Borgio",
     "imagePrompt": "Leonardo Borgio",
     "imageName": "leonardo_borgio",
@@ -2735,6 +3341,24 @@
     ]
   },
   {
+    "name": "Leviathan Current",
+    "imagePrompt": "A monumental river of living water rearing like a serpent, coils poised to shove anything aside. Submerged ruins canyon, emerald teal depths and deep blue stone, soft underwater light.",
+    "imageName": "leviathan_current",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "forceMoveUnit"
+    ]
+  },
+  {
     "name": "Ley Bull",
     "imagePrompt": "A huge bull with earth-light running the length of its lowered horns. Rolling grassland ridge, dark olive turf and olive-shaded earth, approaching thunderstorm.",
     "imageName": "ley_bull",
@@ -2750,6 +3374,24 @@
     ],
     "actions": [
       "addMana"
+    ]
+  },
+  {
+    "name": "Library Titan",
+    "imagePrompt": "An enormous scholar whose cloak is a cascade of open tomes, arms spread as if unveiling every secret at once. Ancient library nave, midnight blue stacks and silver ladders, grand soft light through high windows.",
+    "imageName": "library_titan",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "drawCards"
     ]
   },
   {
@@ -3031,6 +3673,24 @@
     ]
   },
   {
+    "name": "Master of Exchanges",
+    "imagePrompt": "A triumphant archmage holds two glowing decks aloft, ready to trade destinies with a flourish. Arcane academy amphitheater, deep sapphire benches and silver runes, bold dramatic magical backlighting.",
+    "imageName": "master_of_exchanges",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "cycleCards"
+    ]
+  },
+  {
     "name": "Meadow Shirriff",
     "imagePrompt": "A halfling shirriff in a green tabard, chin out, a cracked stick across his shoulders. Wildflower meadow, sage grass and muted green blooms, warm afternoon light.",
     "imageName": "meadow_shirriff",
@@ -3091,6 +3751,93 @@
     ],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Mesmer Tutor",
+    "imagePrompt": "A composed instructor whose concentric-ringed eyes refuse a fixed focus, pointer frozen mid-arc. Arcane academy hall, deep sapphire banners and silver thread, cool diffused daylight.",
+    "imageName": "mesmer_tutor",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
+    "name": "Mindspike",
+    "imagePrompt": "A thin sapphire dart of thought streaks toward a distant unseen mark, leaving a ringing afterimage. Foggy harbor pier, steel blue water and charcoal pilings, fine autumn rain on the harbor.",
+    "imageName": "mindspike",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "damageOpponent"
+    ]
+  },
+  {
+    "name": "Mist Latchling",
+    "imagePrompt": "A palm-sized vapor child with dissolving fingertips and a hopeful open mouth, edges already thinning into fog. Secret underground chamber stair, cool cyan stone and turquoise moisture, mysterious blue mist.",
+    "imageName": "mist_latchling",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "bounceUnit"
+    ]
+  },
+  {
+    "name": "Mnemonic Host",
+    "imagePrompt": "A colossal memory-spirit whose cloak is a swirl of returning ghosts of pages, quiet face half-turned toward what was lost. Underground catacombs hall, dusty blue bone and warm beige ash, pale autumn light through fog.",
+    "imageName": "mnemonic_host",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "recycleCard"
+    ]
+  },
+  {
+    "name": "Mnemonic Salvager",
+    "imagePrompt": "A weathered archivist with charcoal gloves and a satchel of half-burned tomes, smile soft with recovered hope. Secret underground chamber vault, dusty blue brick and warm beige paper, cold morning fog.",
+    "imageName": "mnemonic_salvager",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "recycleCard"
     ]
   },
   {
@@ -3288,6 +4035,24 @@
     ]
   },
   {
+    "name": "Needle Finder",
+    "imagePrompt": "A slender brass probe-golem with a single pointing finger and a magnifying chest-lens aimed at something only it sees. Ancient library stack, emerald teal shelves and deep blue carpet, quiet scholarly atmosphere.",
+    "imageName": "needle_finder",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "tutorCard"
+    ]
+  },
+  {
     "name": "Neutralize",
     "imagePrompt": "Neutralize",
     "imageName": "neutralize",
@@ -3395,6 +4160,24 @@
     ]
   },
   {
+    "name": "Omniscient Veil",
+    "imagePrompt": "A vast translucent face of mist opens like a curtain of eyes, each pupil holding a different open page. Ancient archive vault, pearlescent white fog and violet depth, pale starlight.",
+    "imageName": "omniscient_veil",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
     "name": "Opera Singer",
     "imagePrompt": "Opera Singer",
     "imageName": "opera_singer",
@@ -3412,6 +4195,24 @@
     ],
     "actions": [
       "daze"
+    ]
+  },
+  {
+    "name": "Oracle Array",
+    "imagePrompt": "A towering lattice of linked scrying lenses focusing on one glowing panel among hundreds, triumphant in its certainty. Enchanted observatory core, pearlescent white brass and violet lenses, clear winter starlight.",
+    "imageName": "oracle_array",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "tutorCard"
     ]
   },
   {
@@ -3474,6 +4275,39 @@
     "cheapImage": false,
     "colors": [],
     "keywords": []
+  },
+  {
+    "name": "Page Whisperer",
+    "imagePrompt": "A soft-spoken scholar leans toward an open book, lips parted as if calling a hidden leaf by name. Grand palace interior study, royal purple drapes and gold leaf, soft light through stained glass.",
+    "imageName": "page_whisperer",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "tutorCard"
+    ]
+  },
+  {
+    "name": "Palimpsest Flare",
+    "imagePrompt": "Ink burns through a layered page, revealing a newer spell beneath the scorched script in a sudden white flash. Ancient library alcove, midnight blue shelves and silver dust, faint arcane glow.",
+    "imageName": "palimpsest_flare",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "cycleCards"
+    ]
   },
   {
     "name": "Pandy Panda",
@@ -3582,6 +4416,24 @@
     ],
     "unitTypes": [
       "beast"
+    ]
+  },
+  {
+    "name": "Peeking Familiar",
+    "imagePrompt": "A round blue sprite peeks from behind a translucent veil, only enormous curious eyes and soft ear-tufts showing. Moonlit courtyard fountain, soft silver water and pale blue tile, soft moonlight.",
+    "imageName": "peeking_familiar",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "drawCards"
     ]
   },
   {
@@ -3721,6 +4573,24 @@
     ]
   },
   {
+    "name": "Quake Krakenling",
+    "imagePrompt": "A compact tentacled horror with stone-crushing suckers and a body that seems to grind bedrock beneath it. Submerged ruins trench, deep petrol blue rock and copper wreckage, soft underwater light.",
+    "imageName": "quake_krakenling",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "damageLand"
+    ]
+  },
+  {
     "name": "Rage Elemental",
     "imagePrompt": "Rage Elemental",
     "imageName": "rage_elemental",
@@ -3773,6 +4643,24 @@
     ]
   },
   {
+    "name": "Rebound Puppet",
+    "imagePrompt": "A knee-high brass marionette with spring-loaded joints and a smug tilt, strings coiled tight as if ready to yank itself away. Magical workshop shelf, dark navy tools and bronze gears, dim candlelight.",
+    "imageName": "rebound_puppet",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "bounceUnit"
+    ]
+  },
+  {
     "name": "Rebuild",
     "imagePrompt": "Rebuild",
     "imageName": "rebuild",
@@ -3783,6 +4671,24 @@
     "keywords": [],
     "actions": [
       "fortifyLand"
+    ]
+  },
+  {
+    "name": "Recall Colossus",
+    "imagePrompt": "A towering brass titan with hollow palms that pull light inward, silhouette already thinning at the edges. Wizard tower courtyard, deep sapphire plating and silver rivets, cool diffused daylight.",
+    "imageName": "recall_colossus",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "bounceUnit"
     ]
   },
   {
@@ -3839,6 +4745,93 @@
     ]
   },
   {
+    "name": "Relocation Bastion",
+    "imagePrompt": "A sliding fortress-gate on crystalline rails, buttresses angled as if the whole wall could shove sideways. Wizard tower outer wall, cool cyan crystal and turquoise mortar, cool spring mist at dawn.",
+    "imageName": "relocation_bastion",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "forceMoveUnit"
+    ]
+  },
+  {
+    "name": "Reluctant Nudge",
+    "imagePrompt": "A polite blue force-arrow bows before shoving empty space aside, leaving a crooked trail of displaced dust. Moonlit courtyard tiles, muted lavender stone and gray mortar, pale starlight.",
+    "imageName": "reluctant_nudge",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "forceMoveUnit"
+    ]
+  },
+  {
+    "name": "Remnant Picker",
+    "imagePrompt": "A scavenger scholar kneels with tweezers and a pouch of salvaged spell-scraps, expression quietly intent. Underground catacombs shelf, dark indigo bone and violet dust, pale autumn light through fog.",
+    "imageName": "remnant_picker",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "recycleCard"
+    ]
+  },
+  {
+    "name": "Return Broker",
+    "imagePrompt": "A sharp-dressed mage with dissolving cuffs and a dismissive wave already half-faded into blue smoke. Hidden city alleyways corner, dark indigo brick and violet shadow, overcast twilight.",
+    "imageName": "return_broker",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "bounceUnit"
+    ]
+  },
+  {
+    "name": "Revelation Press",
+    "imagePrompt": "A towering printing-press golem extruding luminous sheets from a glowing maw, gears roaring with discovery. Magical workshop press bay, deep petrol blue iron and copper rollers, faint arcane glow.",
+    "imageName": "revelation_press",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
     "name": "Rock Drop",
     "imagePrompt": "Rock Drop",
     "imageName": "rock_drop",
@@ -3868,6 +4861,23 @@
     ],
     "unitTypes": [
       "elemental"
+    ]
+  },
+  {
+    "name": "Rooted Lecturer",
+    "imagePrompt": "An elderly professor whose robes fuse into the floorboards, immovable podium growing from his waist like furniture. Wizard tower lecture hall, dusty blue wood and warm beige chalk, faint light through dusty windows.",
+    "imageName": "rooted_lecturer",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "immobile"
+    ],
+    "unitTypes": [
+      "human"
     ]
   },
   {
@@ -4021,6 +5031,24 @@
     ]
   },
   {
+    "name": "Scribe Imp",
+    "imagePrompt": "A tiny horned clerk with ink-stained claws and a ledger taller than itself, eyes bright with stolen gossip. Hidden city alleyways doorway, amethyst purple brick and black soot, cold morning fog.",
+    "imageName": "scribe_imp",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "demon"
+    ],
+    "actions": [
+      "drawCards"
+    ]
+  },
+  {
     "name": "Second Breakfast",
     "imagePrompt": "Second Breakfast",
     "imageName": "second_breakfast",
@@ -4034,6 +5062,21 @@
     "actions": [
       "grow",
       "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Second Thought Cascade",
+    "imagePrompt": "A spiral of parchment cards flipping into brighter copies mid-air, each face grinning as it replaces the last. Arcane academy corridor, deep sapphire blue stone and silver inlay, cool diffused daylight.",
+    "imageName": "second_thought_cascade",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "cycleCards"
     ]
   },
   {
@@ -4053,6 +5096,42 @@
     "actions": [
       "stun",
       "mezz"
+    ]
+  },
+  {
+    "name": "Seeker of the Exact",
+    "imagePrompt": "A legendary finder in travel-worn blues holds a compass that points at a single unread spine across the room. Ancient library mezzanine, emerald teal railings and deep blue carpet, quiet scholarly atmosphere.",
+    "imageName": "seeker_of_the_exact",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "tutorCard"
+    ]
+  },
+  {
+    "name": "Seeking Current",
+    "imagePrompt": "A ribbon of living water shaped like a pointing finger, tip glowing where it has found the right current. Submerged ruins corridor, cool cyan water and turquoise stone, soft underwater light.",
+    "imageName": "seeking_current",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "tutorCard"
     ]
   },
   {
@@ -4124,6 +5203,40 @@
     ]
   },
   {
+    "name": "Shard Lance",
+    "imagePrompt": "A spear-tall elemental of living crystal narrowed to one merciless point, edges keen enough to ignore armor. Crystal cavern vault, pale icy blue facets and white glare, thin winter sun through icy mist.",
+    "imageName": "shard_lance",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "elemental"
+    ]
+  },
+  {
+    "name": "Shell Study",
+    "imagePrompt": "A tiny armored booth of overlapping blue plates with a reading slit and no feet, planted like a stubborn turtle desk. Arcane academy cloister, muted lavender stone and gray slate, calm cool diffused daylight.",
+    "imageName": "shell_study",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "armor"
+    ],
+    "unitTypes": [
+      "building"
+    ]
+  },
+  {
     "name": "Sherazad",
     "imagePrompt": "Sherazad",
     "imageName": "sherazad",
@@ -4162,6 +5275,24 @@
     ]
   },
   {
+    "name": "Shove Sprite",
+    "imagePrompt": "A cheeky fey no taller than a candle leans forward with both palms out, hair streaming as if mid-push. Mystical floating islands cliff, cool cyan grass and turquoise rock, hazy summer daylight.",
+    "imageName": "shove_sprite",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "forceMoveUnit"
+    ]
+  },
+  {
     "name": "Shroomy",
     "imagePrompt": "Shroomy",
     "imageName": "shroomy",
@@ -4193,6 +5324,59 @@
     "keywords": [],
     "unitTypes": [
       "mushroom"
+    ]
+  },
+  {
+    "name": "Skirmish Wisp",
+    "imagePrompt": "A lean battle-sprite with a short spear and wind-ruffled cloak, body coiled to dash then jab. Crystal cavern pass, emerald teal crystal and deep blue shadow, gentle floating particles.",
+    "imageName": "skirmish_wisp",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [
+      "moveAndAttack"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
+  },
+  {
+    "name": "Skybore Wyrm",
+    "imagePrompt": "A coiled sky-serpent with a drill-like horn aimed past the horizon, predatory eyes locked on a distant foe. Mystical floating islands cliff, cool cyan rock and turquoise sky, hazy summer daylight.",
+    "imageName": "skybore_wyrm",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "damageOpponent"
+    ]
+  },
+  {
+    "name": "Sleepwarden Chick",
+    "imagePrompt": "A drowsy young warder in oversized robes hugs a pillow-shaped ward-stone, eyelids heavy but posture careful. Wizard tower dormer, muted lavender blankets and gray stone, dim candlelight.",
+    "imageName": "sleepwarden_chick",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "mezz"
     ]
   },
   {
@@ -4267,6 +5451,21 @@
     ]
   },
   {
+    "name": "Soft Binding",
+    "imagePrompt": "Gentle blue ribbons settle around an invisible form, tying a calm knot that glows without strain. Forgotten temple nave, soft silver pillars and pale blue haze, quiet scholarly atmosphere.",
+    "imageName": "soft_binding",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "mezz"
+    ]
+  },
+  {
     "name": "Soil's Memory",
     "imagePrompt": "Pale roots drag a leaf-wrapped relic back out of the soil. Buried root hollow, charcoal loam and forest-green root fibers, deep nighttime shadows.",
     "imageName": "soil_s_memory",
@@ -4316,6 +5515,39 @@
     ],
     "unitTypes": [
       "mushroom"
+    ]
+  },
+  {
+    "name": "Spinning Lattice",
+    "imagePrompt": "A ridiculous wheel of glowing threads whirls too fast, knotting itself into a slapstick tangle of light. Enchanted observatory dome, pale icy blue brass and white frost, soft moonlight.",
+    "imageName": "spinning_lattice",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
+    "name": "Spinning Sextant",
+    "imagePrompt": "A waist-high brass navigator-golem with a whirling sight-ring for a head, needles spinning past readable marks. Enchanted observatory floor, steel blue metal and charcoal enamel, pale starlight.",
+    "imageName": "spinning_sextant",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "daze"
     ]
   },
   {
@@ -4388,6 +5620,24 @@
     ]
   },
   {
+    "name": "Stage Director",
+    "imagePrompt": "A theatrical mage with outstretched arms and chalk-marked sleeves, pose commanding empty space to rearrange. Moonlit courtyard stage, muted lavender flagstones and gray arches, soft moonlight.",
+    "imageName": "stage_director",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "forceMoveUnit"
+    ]
+  },
+  {
     "name": "Stampede",
     "imagePrompt": "Stampede",
     "imageName": "stampede",
@@ -4403,6 +5653,42 @@
     "actions": [
       "grow",
       "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Stasis Bubble",
+    "imagePrompt": "A calm orb of living frost holds a single snowflake motionless at its heart, surface smooth as glass. Enchanted observatory balcony, pale icy blue metal and white rime, frosted winter morning.",
+    "imageName": "stasis_bubble",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "mezz"
+    ]
+  },
+  {
+    "name": "Stasis Cathedral",
+    "imagePrompt": "A vast clockwork chapel frozen mid-chime, every gear locked, stained glass holding a stopped beam of light. Forgotten temple nave, soft silver glass and pale blue stone, eerie stillness.",
+    "imageName": "stasis_cathedral",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "mezz"
     ]
   },
   {
@@ -4422,6 +5708,24 @@
     ],
     "actions": [
       "bounceUnit"
+    ]
+  },
+  {
+    "name": "Stillness Pavilion",
+    "imagePrompt": "A freestanding gazebo of frozen glass panels, doorway hung with unmoving blue curtains like held breath. Forgotten temple courtyard, soft silver lattice and pale blue frost, eerie stillness.",
+    "imageName": "stillness_pavilion",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "mezz"
     ]
   },
   {
@@ -4516,6 +5820,24 @@
     "keywords": [],
     "actions": [
       "addMana"
+    ]
+  },
+  {
+    "name": "Swap Apprentice",
+    "imagePrompt": "A young mage holds two mismatched gloves on the wrong hands, grinning as if the trade were the whole lesson. Arcane academy classroom, deep sapphire desks and silver chalk, cool diffused daylight.",
+    "imageName": "swap_apprentice",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "cycleCards"
     ]
   },
   {
@@ -4726,6 +6048,24 @@
     ]
   },
   {
+    "name": "Tide Marshal",
+    "imagePrompt": "A commanding admiral-mage with a staff like a tiller, cloak billowing as if directing a current. Foggy harbor citadel, steel blue coat and charcoal braid, fine autumn rain on the harbor.",
+    "imageName": "tide_marshal",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "forceMoveUnit"
+    ]
+  },
+  {
     "name": "Tim",
     "imagePrompt": "Tim",
     "imageName": "tim",
@@ -4817,6 +6157,21 @@
     ],
     "actions": [
       "regrowCard"
+    ]
+  },
+  {
+    "name": "Trade of Secrets",
+    "imagePrompt": "Two sealed envelopes swap seals in mid-toss, wax crests trading places with a mischievous spark. Magical workshop bench, cool cyan glass and turquoise vials, flickering magical reflections.",
+    "imageName": "trade_of_secrets",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "cycleCards"
     ]
   },
   {
@@ -4957,6 +6312,24 @@
     ]
   },
   {
+    "name": "Two-Faced Codex",
+    "imagePrompt": "A walking book with hinged covers for faces, one smiling and one frowning, pages fluttering between expressions. Ancient library aisle, midnight blue leather and silver clasps, quiet scholarly atmosphere.",
+    "imageName": "two_faced_codex",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "cycleCards"
+    ]
+  },
+  {
     "name": "Uncle Bobo",
     "imagePrompt": "Uncle Bobo",
     "imageName": "uncle_bobo",
@@ -4992,6 +6365,24 @@
     ],
     "unitTypes": [
       "beast"
+    ]
+  },
+  {
+    "name": "Unmaking Djinn",
+    "imagePrompt": "A towering smoke-giant whose lower half unravels into ribbons, grand arms open as if dismissing the room itself. Mystical floating islands summit, dark indigo cloud and violet lightning, dramatic magical backlighting.",
+    "imageName": "unmaking_djinn",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "bounceUnit"
     ]
   },
   {
@@ -5056,6 +6447,39 @@
     ],
     "unitTypes": [
       "beast"
+    ]
+  },
+  {
+    "name": "Vertigo Engine",
+    "imagePrompt": "A cathedral-sized gyroscope of brass rings spinning inside one another, whole frame leaning sickeningly. Magical workshop hangar, dark navy iron and bronze rings, dramatic magical backlighting.",
+    "imageName": "vertigo_engine",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "daze"
+    ]
+  },
+  {
+    "name": "Vertigo Glyph",
+    "imagePrompt": "A rotating rune hangs in the air, its strokes warping into a dizzy spiral that refuses a fixed center. Mysterious mirror hall, dark indigo frames and violet glass, eerie stillness.",
+    "imageName": "vertigo_glyph",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "actions": [
+      "daze"
     ]
   },
   {
@@ -5178,6 +6602,24 @@
     "keywords": []
   },
   {
+    "name": "Wheel of Revisions",
+    "imagePrompt": "A massive rotating library-wheel of brass shelves, books swapping places as the rim turns. Ancient library rotunda, midnight blue wood and silver tracks, quiet scholarly atmosphere.",
+    "imageName": "wheel_of_revisions",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "cycleCards"
+    ]
+  },
+  {
     "name": "Where there is a Whip",
     "imagePrompt": "Where there is a Whip",
     "imageName": "where_there_is_a_whip",
@@ -5216,6 +6658,24 @@
       "green"
     ],
     "keywords": []
+  },
+  {
+    "name": "Whorl Nymph",
+    "imagePrompt": "A water-fey whose hair coils into dizzy spirals, smile too knowing, body half-turned as if the room were tilting. Foggy harbor quay, cool cyan mist and turquoise water, fine autumn rain on the harbor.",
+    "imageName": "whorl_nymph",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "blue"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "daze"
+    ]
   },
   {
     "name": "Wisdom of Old",
