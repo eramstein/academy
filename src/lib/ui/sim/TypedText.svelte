@@ -1,17 +1,18 @@
 <script lang="ts">
   import { tick, untrack } from 'svelte';
+  import { settings, TEXT_SPEED_MS } from '@/lib/_state/settings.svelte';
   import { revealInk, type InkBeat } from './ink-beat';
 
   let {
     text,
     class: className = '',
-    // msPerChar = 18,
-    msPerChar = 0,
+    msPerChar,
     onBeat,
     onDone,
   }: {
     text: string;
     class?: string;
+    /** Override the Settings text speed (ms per character). 0 = instant. */
     msPerChar?: number;
     onBeat?: (beat: Exclude<InkBeat, { kind: 'layout' }>) => void | Promise<void>;
     onDone?: () => void;
@@ -38,11 +39,13 @@
 
   $effect(() => {
     const full = text;
-    const stepMs = Math.min(28, Math.max(10, msPerChar));
+    const rawMs = msPerChar ?? TEXT_SPEED_MS[settings.textSpeed];
+    const instant = rawMs <= 0;
+    const stepMs = instant ? 0 : Math.min(28, Math.max(10, rawMs));
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     finished = false;
 
-    if (reduceMotion || full.length === 0) {
+    if (instant || reduceMotion || full.length === 0) {
       displayed = full;
       finished = true;
       untrack(() => onDone?.());

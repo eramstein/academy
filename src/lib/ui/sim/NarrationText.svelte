@@ -1,6 +1,7 @@
 <script lang="ts">
   import { tick, untrack } from 'svelte';
   import type { Mentions } from '@/lib/_model';
+  import { settings, TEXT_SPEED_MS } from '@/lib/_state/settings.svelte';
   import { selectSimCharacter } from '@/lib/_state/state-ui.svelte';
   import { getActionTooltip } from '@/lib/sim/cards/action-templates';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
@@ -13,7 +14,7 @@
     mentions,
     animate = false,
     class: className = '',
-    msPerChar = 0,
+    msPerChar,
     onBeat,
     onDone,
   }: {
@@ -21,6 +22,7 @@
     mentions?: Mentions;
     animate?: boolean;
     class?: string;
+    /** Override the Settings text speed (ms per character). 0 = instant. */
     msPerChar?: number;
     onBeat?: (beat: Exclude<InkBeat, { kind: 'layout' }>) => void | Promise<void>;
     onDone?: () => void;
@@ -51,11 +53,13 @@
   $effect(() => {
     const full = text;
     const shouldAnimate = animate;
-    const stepMs = Math.min(28, Math.max(10, msPerChar));
+    const rawMs = msPerChar ?? TEXT_SPEED_MS[settings.textSpeed];
+    const instant = rawMs <= 0;
+    const stepMs = instant ? 0 : Math.min(28, Math.max(10, rawMs));
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     finished = false;
 
-    if (!shouldAnimate || reduceMotion || full.length === 0) {
+    if (!shouldAnimate || instant || reduceMotion || full.length === 0) {
       visibleLength = full.length;
       finished = true;
       untrack(() => onDone?.());

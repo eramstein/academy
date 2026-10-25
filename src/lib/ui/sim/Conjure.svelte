@@ -10,7 +10,7 @@
     type ConjurationAugury,
     type SummonRevealStage,
   } from '@/lib/sim/actions';
-  import { playAddResourceSound, playSimSound } from '@/lib/sim/sound';
+  import { playSimSound } from '@/lib/sim/sound';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
   import RitualStage, { type AuguryBeat as RitualAuguryBeat } from './crafting/RitualStage.svelte';
@@ -168,7 +168,6 @@
     }
     if (colors.includes(color)) return;
     colors = [...colors, color];
-    playAddResourceSound();
   }
 
   function togglePigment(color: CardColor) {

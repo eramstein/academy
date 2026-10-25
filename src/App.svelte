@@ -9,6 +9,7 @@
   import { handleKeybinds } from './lib/ui/_keybinds/keybinds';
   import Main from './lib/ui/Main.svelte';
   import Navigation from './lib/ui/Navigation.svelte';
+  import Settings from './lib/ui/Settings.svelte';
   import SaveManagerModal from './lib/ui/sim/SaveManagerModal.svelte';
   import EventEditor from './tools/event-builder/EventEditor.svelte';
   import FlavorBrowser from './tools/flavor-templates/FlavorBrowser.svelte';
@@ -50,6 +51,8 @@
       <EventEditor />
     {:else if uiState.currentView === UiView.FlavorBrowser}
       <FlavorBrowser />
+    {:else if uiState.currentView === UiView.Settings}
+      <Settings />
     {:else}
       <Main />
     {/if}
