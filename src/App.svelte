@@ -13,6 +13,7 @@
   import SaveManagerModal from './lib/ui/sim/SaveManagerModal.svelte';
   import EventEditor from './tools/event-builder/EventEditor.svelte';
   import FlavorBrowser from './tools/flavor-templates/FlavorBrowser.svelte';
+  import CardBuilder from './tools/card-builder/CardBuilder.svelte';
 
   let isLoading = $state(true);
 
@@ -51,6 +52,8 @@
       <EventEditor />
     {:else if uiState.currentView === UiView.FlavorBrowser}
       <FlavorBrowser />
+    {:else if uiState.currentView === UiView.CardBuilder}
+      <CardBuilder />
     {:else if uiState.currentView === UiView.Settings}
       <Settings />
     {:else}

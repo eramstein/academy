@@ -11,6 +11,7 @@
     { view: UiView.Settings, label: 'Settings', icon: '⚙️' },
     { view: UiView.EventEditor, label: 'Events', icon: '📜' },
     { view: UiView.FlavorBrowser, label: 'Flavors', icon: '🎴' },
+    { view: UiView.CardBuilder, label: 'Cards', icon: '🃏' },
   ];
 
   const stopBattle = (concession: boolean) => {

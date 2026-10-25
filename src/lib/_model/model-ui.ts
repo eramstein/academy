@@ -109,6 +109,7 @@ export enum UiView {
   Analytics = 'Analytics',
   EventEditor = 'EventEditor',
   FlavorBrowser = 'FlavorBrowser',
+  CardBuilder = 'CardBuilder',
   Settings = 'Settings',
   Battle = 'Battle',
 }
