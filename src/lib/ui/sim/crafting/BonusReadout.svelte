@@ -27,6 +27,8 @@
     layout = 'stack',
     frame = 'box',
     dieSide = 'top',
+    /** When set, the bar is sure/scaleMax (e.g. ingredient capacity out of 10). */
+    scaleMax = 0,
     showOutcome = false,
     reward,
     die,
@@ -64,6 +66,8 @@
     frame?: 'box' | 'long';
     /** Where the percent die sits relative to the readout. */
     dieSide?: 'top' | 'left' | 'right';
+    /** Count scale for the bar (0 = percent chance mode). */
+    scaleMax?: number;
     /** Replace the forecast with the roll's reward. */
     showOutcome?: boolean;
     reward?: Snippet;
@@ -105,6 +109,11 @@
   let promoteTimer = 0;
   const pending: number[] = [];
 
+  const countScale = $derived(scaleMax > 0);
+  const scaleTicks = $derived.by(() => {
+    if (!countScale || scaleMax < 2) return [] as number[];
+    return Array.from({ length: scaleMax - 1 }, (_, i) => ((i + 1) / scaleMax) * 100);
+  });
   const hasExtra = $derived(extraChance !== undefined);
   const unit = $derived(displaySure === 1 ? singular : plural);
   const pctLabel = $derived(Math.round(Math.min(100, Math.max(0, shownPct))));
@@ -112,19 +121,26 @@
   const caption = $derived(
     captionText !== undefined
       ? captionText
-      : outcome === 'miss'
-        ? 'Missed'
-        : outcome === 'hit' || pctLabel <= 0
-          ? ''
-          : `${pctLabel}% for one more`
+      : countScale
+        ? ''
+        : outcome === 'miss'
+          ? 'Missed'
+          : outcome === 'hit' || pctLabel <= 0
+            ? ''
+            : `${pctLabel}% for one more`
   );
   const extraCaption = $derived(
     extraPctLabel <= 0 ? '' : `${extraPctLabel}% chance`
   );
 
+  function scalePct(value: number): number {
+    if (scaleMax <= 0) return 0;
+    return Math.min(100, Math.max(0, (value / scaleMax) * 100));
+  }
+
   $effect(() => {
     const nextSure = sure;
-    const nextChance = percentThreshold(chance);
+    const nextChance = countScale ? scalePct(sure) : percentThreshold(chance);
     const nextPhase = phase;
     const nextFace = face;
     const nextNeed = need;
@@ -305,6 +321,17 @@
       return;
     }
 
+    if (countScale) {
+      if (nextSure === displaySure && Math.abs(shownPct - nextChance) < 0.4) return;
+      const gen = ++generation;
+      const rising = nextSure > displaySure;
+      displaySure = nextSure;
+      if (rising) flashPromote();
+      else promoted = false;
+      await drivePct(nextChance, gen);
+      return;
+    }
+
     if (nextPhase === 'rolling') {
       if (lastPhase !== 'rolling') {
         generation += 1;
@@ -431,11 +458,21 @@
             </span>
           </p>
         {/if}
-        <span class="track" aria-hidden="true">
-          <span class="fill" class:crest={shownPct >= 99.5} style="width: {shownPct}%"></span>
-          <span class="tick" style="left: 25%"></span>
-          <span class="tick" style="left: 50%"></span>
-          <span class="tick" style="left: 75%"></span>
+        <span class="track" class:scaled={countScale} aria-hidden="true">
+          <span
+            class="fill"
+            class:crest={!countScale && shownPct >= 99.5}
+            style="width: {shownPct}%"
+          ></span>
+          {#if countScale}
+            {#each scaleTicks as at (at)}
+              <span class="tick" style="left: {at}%"></span>
+            {/each}
+          {:else}
+            <span class="tick" style="left: 25%"></span>
+            <span class="tick" style="left: 50%"></span>
+            <span class="tick" style="left: 75%"></span>
+          {/if}
         </span>
         <p class="caption" class:full={pctLabel >= 100 && outcome !== 'miss'}>{caption || '\u00a0'}</p>
       </div>
@@ -606,8 +643,10 @@
   .track {
     position: relative;
     display: block;
+    width: 100%;
     height: 7px;
     margin: 7px 0 5px;
+    overflow: hidden;
     border-radius: 2px;
     background: rgba(44, 37, 29, 0.22);
     box-shadow: inset 0 1px 2px rgba(42, 24, 16, 0.28);
@@ -616,6 +655,10 @@
   .bonus.chart .track {
     margin: 3px 0 2px;
     border-radius: 999px;
+  }
+
+  .track.scaled {
+    border-radius: 2px;
   }
 
   .bonus.plaque {
@@ -698,7 +741,7 @@
   .meters {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     width: 100%;
   }
 
@@ -712,17 +755,13 @@
   .meter {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     min-width: 0;
     width: 100%;
   }
 
   .meters.dual .meter {
     flex: 1 1 0;
-  }
-
-  .meters.dual .track {
-    width: 100%;
   }
 
   .meter-head {
@@ -795,7 +834,7 @@
     width: 86%;
     max-width: none;
     height: 6px;
-    margin: 4px 0 7px;
+    margin: 4px auto 7px;
     border-radius: 1px;
     background: rgba(44, 37, 29, 0.28);
   }

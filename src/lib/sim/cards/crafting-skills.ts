@@ -30,6 +30,8 @@ export const KNOWLEDGE_BASE = 0.25;
 export const CONJURE_OPTION_BASE = 2;
 export const DISCOVERY_BASE = 0.2;
 export const DISCOVERY_PER_INSPIRATION = 0.2;
+/** Invoke ingredient cap / enchant mana delta ceiling. */
+export const INSPIRATION_CAP = 10;
 
 export type CraftMode = 'conjure' | 'invoke' | 'enchant';
 
@@ -166,7 +168,12 @@ export function craftProfile(
   const bonus = resourceBonus(resources);
   const mastery = stack(skills?.mastery ?? 0, bonus.mastery, 'mithril');
   const erudition = stack(skills?.erudition ?? 0, bonus.erudition, 'moxes');
-  const inspiration = stack(skills?.inspiration ?? 0, bonus.inspiration, 'magic dust');
+  const inspiration = cappedStack(
+    skills?.inspiration ?? 0,
+    bonus.inspiration,
+    'magic dust',
+    INSPIRATION_CAP
+  );
   const discovery = Math.min(1, DISCOVERY_BASE + DISCOVERY_PER_INSPIRATION * inspiration.total);
   return {
     mode,
@@ -281,6 +288,17 @@ function resourceBonus(resources: { type: ResourceType; count: number }[] | unde
 function stack(skill: number, fromResource: number, resourceName: string): SkillStack {
   const base = Math.max(0, skill);
   const added = Math.max(0, fromResource);
+  return { skill: base, fromResource: added, total: base + added, resourceName };
+}
+
+function cappedStack(
+  skill: number,
+  fromResource: number,
+  resourceName: string,
+  max: number
+): SkillStack {
+  const base = Math.min(max, Math.max(0, skill));
+  const added = Math.min(Math.max(0, fromResource), Math.max(0, max - base));
   return { skill: base, fromResource: added, total: base + added, resourceName };
 }
 

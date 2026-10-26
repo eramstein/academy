@@ -9,6 +9,7 @@
     displayPercentRoll,
     formatPointRoll,
     formatSkillSource,
+    INSPIRATION_CAP,
     knowledgeSource,
     percentThreshold,
     rollConjureOptionCount,
@@ -472,10 +473,8 @@
     `Guaranteed bonus budget, then a chance of one more. ${formatSkillSource(profile.mastery)}.`
   );
   const inspirationAmount = $derived.by(() => {
-    if (craft === 'invoke') {
-      const cap = profile.scope;
-      return cap > 0 ? `${charms.length} / ${cap}` : '0';
-    }
+    if (craft === 'invoke') return `${profile.scope} / ${INSPIRATION_CAP}`;
+    if (craft === 'enchant') return `±${profile.scope} / ${INSPIRATION_CAP}`;
     return '';
   });
   const inspirationSure = $derived(
@@ -502,6 +501,11 @@
       }
       selected = updated;
       return;
+    }
+    // Magic dust only fills inspiration up to the cap.
+    if (type === ResourceType.MagicDust) {
+      const skill = gs.player.craftingSkills?.inspiration ?? 0;
+      next = Math.min(next, Math.max(0, INSPIRATION_CAP - skill));
     }
     selected = { ...selected, [type]: next };
   }
@@ -1560,10 +1564,11 @@
                 singular={inspirationUnit.singular}
                 plural={inspirationUnit.plural}
                 tip={inspirationTip}
-                prefix={craft === 'enchant' && inspirationSure > 0 ? '±' : ''}
                 amountText={inspirationAmount}
                 sure={inspirationSure}
                 chance={inspirationChance}
+                scaleMax={craft === 'invoke' || craft === 'enchant' ? INSPIRATION_CAP : 0}
+                captionText={craft === 'invoke' ? 'Ingredients' : craft === 'enchant' ? 'Mana' : undefined}
                 phase="idle"
                 face={0}
                 need={0}
