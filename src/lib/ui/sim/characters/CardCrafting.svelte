@@ -46,10 +46,9 @@
   );
 
   const craftingColors = $derived(
-    Object.entries(character.craftingKnowledge.colors ?? {}).map(([color, level]) => ({
-      color: color as CardColor,
-      level,
-    }))
+    Object.values(CardColor)
+      .map((color) => ({ color, level: character.colorTechPoints[color] ?? 0 }))
+      .filter((entry) => entry.level > 0)
   );
 
   const craftingKeywords = $derived(
@@ -91,6 +90,14 @@
     style="--icon: url('{iconUrl(name)}')"
     aria-hidden="true"
   ></span>
+{/snippet}
+
+{#snippet levelBar(level: number)}
+  <span class="level-bar" aria-label="Level {level} of 3" title="Level {level}">
+    {#each [1, 2, 3] as step (step)}
+      <span class="level-cell" class:filled={level >= step} aria-hidden="true"></span>
+    {/each}
+  </span>
 {/snippet}
 
 {#snippet divider()}
@@ -153,6 +160,7 @@
         {#each craftingKeywords as { keyword, level } (keyword)}
           {@const label = formatKeyword(keyword)}
           <li class="kv-pair">
+            {@render levelBar(level)}
             <Tooltip content={label} show={hoveredLabel === keyword && labelTruncated}>
               <span
                 class="kv-name keyword"
@@ -163,7 +171,6 @@
                 {label}
               </span>
             </Tooltip>
-            <span class="kv-value">{level}</span>
           </li>
         {/each}
       </ul>
@@ -185,6 +192,7 @@
         {#each craftingActions as { name, level, label, description } (name)}
           {@const tip = actionTooltip(label, description, labelTruncated && hoveredLabel === name)}
           <li class="kv-pair">
+            {@render levelBar(level ?? 0)}
             <Tooltip content={tip} show={hoveredLabel === name && !!tip}>
               <span
                 class="kv-name action"
@@ -195,7 +203,6 @@
                 {label}
               </span>
             </Tooltip>
-            <span class="kv-value">{level}</span>
           </li>
         {/each}
       </ul>
@@ -362,9 +369,9 @@
 
   .kv-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
-    column-gap: 0.85rem;
-    row-gap: 0.3rem;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    column-gap: 1.1rem;
+    row-gap: 0.4rem;
   }
 
   .kv-row {
@@ -377,8 +384,8 @@
 
   .kv-pair {
     display: flex;
-    align-items: baseline;
-    gap: 0.3rem;
+    align-items: center;
+    gap: 0.35rem;
     min-width: 0;
     overflow: hidden;
     font-size: 0.85rem;
@@ -413,6 +420,27 @@
 
   .kv-pair .kv-value {
     flex-shrink: 0;
+  }
+
+  .level-bar {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 2px;
+    height: 0.55rem;
+  }
+
+  .level-cell {
+    width: 0.45rem;
+    height: 100%;
+    border: 1px solid color-mix(in srgb, var(--color-brass) 55%, transparent);
+    border-radius: 1px;
+    background: transparent;
+  }
+
+  .level-cell.filled {
+    border-color: var(--color-brass);
+    background: var(--color-brass);
   }
 
   .action {

@@ -270,8 +270,18 @@ export interface Narration {
   characters?: string[];
   emotion?: Emotion;
   won?: boolean;
+  /** Keyword/action crafting knowledge raised after a match (or similar). */
+  craftingKnowledgeGain?: CraftingKnowledgeGain;
   transaction?: TransactionParameters;
   gold?: number;
+}
+
+export interface CraftingKnowledgeGain {
+  kind: 'keyword' | 'action';
+  key: string;
+  label: string;
+  level: number;
+  previous: number;
 }
 
 // First string is the word appearing in the text, second is id
@@ -331,6 +341,7 @@ export interface Character {
   resources: Record<ResourceType, number>;
   craftingKnowledge: CardKnowledge;
   craftingSkills: CardCraftingSkills;
+  colorTechPoints: ColorTechPoints;
   jobs: Job[];
   possessions: Possession[];
 }
@@ -448,9 +459,15 @@ export interface Attributes {
 }
 
 export interface CardKnowledge {
-  colors?: Partial<Record<CardColor, number>>;
   keywords?: Partial<Record<keyof UnitKeywords, number>>;
   actions?: Partial<Record<string, number>>;
+}
+
+export interface ColorTechPoints {
+  green: number;
+  blue: number;
+  red: number;
+  black: number;
 }
 
 export interface CardCraftingSkills {

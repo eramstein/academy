@@ -25,9 +25,9 @@ export function deployUnit(unit: UnitCard, position: Position) {
 
   // Create and deploy unit
   bs.units.push(makeDeployedUnit(unit, position));
-  bs.players[unit.ownerPlayerId].hand = bs.players[unit.ownerPlayerId].hand.filter(
-    (card) => card.instanceId !== unit.instanceId
-  );
+  const owner = bs.players[unit.ownerPlayerId];
+  owner.hand = owner.hand.filter((card) => card.instanceId !== unit.instanceId);
+  (owner.playedCards ??= []).push(unit);
 
   if (!uiState.isHeadless) {
     // Play deploy sound

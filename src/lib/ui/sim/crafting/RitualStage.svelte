@@ -10,7 +10,6 @@
     formatPointRoll,
     formatSkillSource,
     INSPIRATION_CAP,
-    knowledgeSource,
     percentThreshold,
     rollConjureOptionCount,
     rollDiscoveryIndex,
@@ -140,7 +139,7 @@
     /** Name and icon of lore revealed on the discovery card, once it is known. */
     discoveredLore?: { label: string; icon: string } | null;
     /** Trait raised by this ritual's erudition roll, once the visions exist. */
-    knowledgeGain?: { label: string; icon: string; from: number; to: number } | null;
+    knowledgeGain?: { label: string; icon: string; points: number } | null;
     /** Drop point for a charm that is about to join the orbit. */
     charmEntry?: { id: string; x: number; y: number } | null;
     /** Ingredient drag is in progress; highlight the circle. */
@@ -223,7 +222,6 @@
   const OUTCOME_BEAT_MS = 780;
   /** Conjure: let colors and ingredients fade before the first die. */
   const OFFERING_FADE_MS = 620;
-  const KNOWLEDGE_TRACK = 5;
   const DIE_TICK_MS = 40;
   const healthIcon = getAssetPath('images/ui/icons/health-icon-decorated.png');
   const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon-decorated.png');
@@ -455,7 +453,7 @@
   });
 
   const eruditionTip = $derived(
-    `Guaranteed knowledge, then a chance of one more. ${knowledgeSource(profile.erudition)}.`
+    `Guaranteed color tech, then a chance of one more. ${formatSkillSource(profile.erudition)}.`
   );
   const inspirationTip = $derived.by(() => {
     if (craft === 'enchant') {
@@ -655,9 +653,7 @@
     const learning = rollPoints(profile.knowledge.expected);
     const wantFortune = rollFortune || bonusKind === 'creation';
     const fortune = wantFortune ? rollExtraBudget(profile.extraBudget.expected) : 0;
-    if (bonusKind === 'creation') {
-      onAuguryPrepared?.({ learning, fortuneBudget: fortune });
-    }
+    onAuguryPrepared?.({ learning, fortuneBudget: fortune });
     beginChanceRoll(
       profile.knowledge,
       learning,
@@ -707,15 +703,10 @@
             true
           );
         };
-        if (hold <= 0) afterLearning();
-        else {
-          if (sealTimer) clearTimeout(sealTimer);
-          sealTimer = window.setTimeout(() => {
-            sealTimer = 0;
-            if (sealFinished) return;
-            afterLearning();
-          }, hold);
-        }
+        afterRoll(hold, () => (eruditionOutcome = true), () => {
+          if (sealFinished) return;
+          afterLearning();
+        });
       },
       true
     );
@@ -1474,6 +1465,25 @@
   </Tooltip>
 {/snippet}
 
+{#snippet eruditionReward()}
+  {@const points = knowledgeGain?.points ?? learningFace}
+  <div class="masterwork" class:hit={learningFace > 0} class:miss={learningFace <= 0}>
+    {#if learningFace > 0}
+      <span class="masterwork-value">+{points}</span>
+      <span class="masterwork-name level-trait">
+        <img src={knowledgeGain?.icon ?? bookIcon} alt="" draggable="false" />
+        {#key knowledgeGain?.label ?? 'color'}
+          <span class:lore={!!knowledgeGain}>{knowledgeGain?.label ?? 'Color tech'}</span>
+        {/key}
+      </span>
+      <span class="masterwork-note">Color tech</span>
+    {:else}
+      <span class="masterwork-value">—</span>
+      <span class="masterwork-note">No bonus</span>
+    {/if}
+  </div>
+{/snippet}
+
 {#snippet percentDie(phase: DiePhase, pct: number, need: number, label: string)}
   {#if phase !== 'idle' && need > 0}
     <div class="fortune-die-slot">
@@ -1586,9 +1596,13 @@
                 face={learningFace}
                 need={learningNeed}
                 dieSide="right"
+                showOutcome={eruditionOutcome}
               >
                 {#snippet die()}
                   {@render percentDie(learningPhase, learningPct, learningNeed, 'Erudition')}
+                {/snippet}
+                {#snippet reward()}
+                  {@render eruditionReward()}
                 {/snippet}
               </BonusReadout>
               <BonusReadout
@@ -1710,40 +1724,7 @@
               {@render percentDie(learningPhase, learningPct, learningNeed, 'Erudition')}
             {/snippet}
             {#snippet reward()}
-              {@const from = knowledgeGain?.from ?? 0}
-              {@const to = knowledgeGain?.to ?? learningFace}
-              {@const filled = knowledgeGain ? to : learningFace}
-              {@const track = Math.max(KNOWLEDGE_TRACK, filled)}
-              <div class="level-up" class:hit={learningFace > 0} class:miss={learningFace <= 0}>
-                <p class="level-trait">
-                  <img src={knowledgeGain?.icon ?? bookIcon} alt="" draggable="false" />
-                  {#key knowledgeGain?.label ?? 'knowledge'}
-                    <span class:lore={!!knowledgeGain}>{knowledgeGain?.label ?? 'Knowledge'}</span>
-                  {/key}
-                </p>
-                {#if learningFace > 0 && knowledgeGain}
-                  <p class="level-line">
-                    Level <span class="from">{from}</span>
-                    <span class="arrow" aria-hidden="true">→</span>
-                    <span class="to">{to}</span>
-                    <span class="cap">/ {track}</span>
-                  </p>
-                {:else if learningFace > 0}
-                  <p class="level-line">+{learningFace} knowledge</p>
-                {:else}
-                  <p class="level-line shut">The lore stays shut</p>
-                {/if}
-                <div class="pips" aria-hidden="true">
-                  {#each Array(track) as _, i (i)}
-                    <span
-                      class="pip"
-                      class:filled={i < filled}
-                      class:newest={learningFace > 0 && i === filled - 1}
-                      style="--pip: {i}"
-                    ></span>
-                  {/each}
-                </div>
-              </div>
+              {@render eruditionReward()}
             {/snippet}
           </BonusReadout>
         </div>
@@ -2114,14 +2095,15 @@
     height: 48px;
   }
 
-  .materials.below-ritual :global(.well) {
-    position: absolute;
-    left: 50%;
-    top: calc(46% + 50px);
-    width: 16px;
-    height: 16px;
-    margin: 0;
-    transform: translate(-50%, -50%);
+  /* In-flow under the labels so bead glyphs stay inside the pile's click target. */
+  .materials.below-ritual :global(.well.nest-only) {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 64px;
+    height: 56px;
+    margin: 6px 0 0;
+    transform: none;
   }
 
   .materials.below-ritual :global(.name) {
@@ -2370,7 +2352,6 @@
     transition: opacity 0.35s ease;
   }
 
-  .level-up,
   .masterwork,
   .augury-rewards {
     display: flex;
@@ -2382,71 +2363,16 @@
   }
 
   .level-trait {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    margin: 0;
-    font-size: 0.92rem;
-    font-weight: 700;
   }
 
   .level-trait img {
     width: 16px;
     height: 16px;
     object-fit: contain;
-  }
-
-  .level-line {
-    margin: 2px 0 0;
-    font-size: 0.84rem;
-    letter-spacing: 0.02em;
-    color: #4a3f32;
-  }
-
-  .level-line .to {
-    font-weight: 700;
-    color: #2a3344;
-  }
-
-  .level-line .cap,
-  .level-line.shut {
-    color: var(--color-ink-muted);
-    font-style: italic;
-  }
-
-  .level-up.hit .level-trait {
-    color: #2c251d;
-  }
-
-  .pips {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    margin-top: 6px;
-  }
-
-  .pip {
-    width: 18px;
-    height: 11px;
-    border-radius: 2px;
-    background: rgba(44, 37, 29, 0.22);
-    box-shadow:
-      inset 0 1px 1px rgba(42, 24, 16, 0.35),
-      inset 0 0 0 1px rgba(44, 37, 29, 0.38);
-  }
-
-  .pip.filled {
-    background: #2a3344;
-    animation: pip-fill 0.38s ease backwards;
-    animation-delay: calc(var(--pip) * 90ms);
-  }
-
-  .pip.newest {
-    background: #2a3344;
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, #2a3344 55%, #2c251d),
-      0 0 8px color-mix(in srgb, #2a3344 45%, transparent);
   }
 
   .augury-rewards {
@@ -2543,14 +2469,6 @@
     margin-top: 2px;
     font-size: 0.78rem;
     letter-spacing: 0.16em;
-  }
-
-  @keyframes pip-fill {
-    from {
-      opacity: 0;
-      transform: scale(0.35);
-      filter: brightness(2);
-    }
   }
 
   @keyframes lore-name {
@@ -2993,7 +2911,6 @@
     .materials,
     .gauge,
     .gauge-fill,
-    .pip.filled,
     .reward-name.lore,
     .prep.conjure .ingredients,
     .fortune-die-slot {

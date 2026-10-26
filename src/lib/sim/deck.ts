@@ -68,10 +68,6 @@ export function initNpcDecks() {
       .find((baseDeck) => baseDeck !== undefined);
     if (deck) {
       redeemBaseDeck(deck, student);
-      student.craftingKnowledge.colors = {
-        ...student.craftingKnowledge.colors,
-        ...Object.fromEntries(student.favoriteColors.map((color) => [color, 1])),
-      };
       learnFromDeck(deck, student.key);
     }
   });

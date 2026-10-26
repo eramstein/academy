@@ -65,6 +65,7 @@ export enum NarrationType {
   GiftCardChoice = 'gift_card_choice',
   NewPeriod = 'new_period',
   MatchResult = 'match_result',
+  CraftingKnowledge = 'crafting_knowledge',
   Transaction = 'transaction',
   JobResult = 'job_result',
   RelationUpdate = 'relation_update',

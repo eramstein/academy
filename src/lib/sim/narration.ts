@@ -14,6 +14,7 @@ import { ActionType, Emotion, NarrationType } from '../_model/enums-sim';
 import type {
   Action,
   AttributeCheck,
+  CraftingKnowledgeGain,
   EventImageSize,
   Job,
   Mentions,
@@ -372,10 +373,23 @@ export function narrateNewPeriod(day: number, period: DayPeriod) {
 export function narrateMatchResult(won: boolean, opponentKey: string) {
   narrate({
     id: crypto.randomUUID(),
-    text: `${won ? 'Victory!' : 'Defeat...'}`,
+    text: won ? 'Victory!' : 'Defeat...',
     type: NarrationType.MatchResult,
     characters: [opponentKey],
     won,
+  });
+}
+
+export function narrateCraftingKnowledgeGain(gain: CraftingKnowledgeGain) {
+  const text =
+    gain.previous < 1
+      ? `You learn ${gain.label}.`
+      : `You raise your ${gain.label} knowledge to ${gain.level}.`;
+  narrate({
+    id: crypto.randomUUID(),
+    text,
+    type: NarrationType.CraftingKnowledge,
+    craftingKnowledgeGain: gain,
   });
 }
 

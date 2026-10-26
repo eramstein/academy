@@ -28,7 +28,11 @@
   } from '@/lib/sim/cards/action-templates';
   import { getAbilityCost, getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
   import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
-  import { craftProfile } from '@/lib/sim/cards/crafting-skills';
+  import {
+    craftProfile,
+    previewColorTechGains,
+    type KnowledgeGain,
+  } from '@/lib/sim/cards/crafting-skills';
   import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import { playAddResourceSound } from '@/lib/sim/sound';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
@@ -161,9 +165,13 @@
     clearManifestTimers();
   });
 
-  const availableColors = $derived(
-    Object.values(CardColor).filter((color) => (gs.player.craftingKnowledge.colors?.[color] ?? 0) >= 1)
-  );
+  const availableColors = $derived(Object.values(CardColor));
+  let knowledgeGain = $state<{
+    label: string;
+    icon: string;
+    points: number;
+  } | null>(null);
+  let pendingLearningGains = $state<KnowledgeGain[] | null>(null);
   const availableKeywords = $derived(
     KEYWORD_KEYS.filter((key) => (gs.player.craftingKnowledge.keywords?.[key] ?? 0) >= 1)
   );
@@ -173,6 +181,22 @@
 
   const isUnit = $derived(cardType === CardType.Unit);
   const selectedColors = $derived(colors.length ? colors : availableColors);
+
+  function colorPath(color: CardColor): string {
+    return getAssetPath(`images/ui/icons/color_${color}.png`);
+  }
+
+  function primaryGain(
+    gains: KnowledgeGain[] | undefined
+  ): { label: string; icon: string; points: number } | null {
+    if (!gains?.length) return null;
+    const gain = gains.find((entry) => entry.unlocked) ?? gains[0];
+    return {
+      label: gain.label,
+      icon: colorPath(gain.key),
+      points: gains.reduce((sum, entry) => sum + (entry.level - entry.previous), 0),
+    };
+  }
 
   function activeArgs(name: string, committed: Record<string, number>, active: boolean) {
     if (active) {
@@ -599,7 +623,16 @@
       summon = null;
       return;
     }
-    creationResult = result;
+    const gains =
+      pendingLearningGains ??
+      previewColorTechGains(
+        gs.player,
+        (result.template.colors ?? []).map((entry) => entry.color),
+        result.learningRoll ?? 0
+      );
+    pendingLearningGains = gains;
+    knowledgeGain = primaryGain(gains);
+    creationResult = { ...result, learningGains: gains };
     createdCard = result.template;
     const hold = reduceMotion ? 0 : REVEAL_HOLD_MS;
     manifestTimers.push(
@@ -616,11 +649,16 @@
   }
 
   function onAuguryPrepared(augury: ConjurationAugury) {
+    const gains = previewColorTechGains(gs.player, selectedColors, augury.learning);
+    pendingLearningGains = gains;
+    knowledgeGain = primaryGain(gains);
     ensureSummon(augury);
   }
 
   function invoke() {
     if (!cardType || sealing || manifest !== 'idle' || abandoned) return;
+    knowledgeGain = null;
+    pendingLearningGains = null;
     sealing = true;
   }
 
@@ -665,6 +703,7 @@
     {onCharmDismiss}
     {onSealComplete}
     {onAuguryPrepared}
+    knowledgeGain={knowledgeGain}
     bonusKind="creation"
     seal={sealing}
     shapeText={inscription}

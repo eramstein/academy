@@ -1,5 +1,6 @@
 <script lang="ts">
   import {
+    CardColor,
     CardType,
     isSpellCard,
     isUnitCard,
@@ -9,6 +10,7 @@
     type CardTemplate,
     type UnitKeywords,
   } from '@/lib/_model';
+  import { gs } from '@/lib/_state';
   import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
   import {
     getDistillPreview,
@@ -16,6 +18,7 @@
     getMaxManaCostDelta,
     performAction,
     type ActionArgDeltas,
+    type ConjurationAugury,
     type DistillParameters,
   } from '@/lib/sim/actions';
   import { getAbilityActionNames } from '@/lib/sim/cards/ability-templates';
@@ -24,6 +27,10 @@
     getActionTemplateMeta,
     getActionTemplateNameForEffect,
   } from '@/lib/sim/cards/action-templates';
+  import {
+    previewKnowledgeGains,
+    type KnowledgeGain,
+  } from '@/lib/sim/cards/crafting-skills';
   import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import { playAddResourceSound } from '@/lib/sim/sound';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
@@ -308,19 +315,55 @@
     if (next > prev) playAddResourceSound();
   }
 
+  let learningGains = $state<KnowledgeGain[]>([]);
+  let knowledgeGain = $state<{
+    label: string;
+    icon: string;
+    points: number;
+  } | null>(null);
+
+  function colorPath(color: CardColor): string {
+    return getAssetPath(`images/ui/icons/color_${color}.png`);
+  }
+
+  function primaryGain(
+    gains: KnowledgeGain[] | undefined
+  ): { label: string; icon: string; points: number } | null {
+    if (!gains?.length) return null;
+    const gain = gains.find((entry) => entry.unlocked) ?? gains[0];
+    return {
+      label: gain.label,
+      icon: colorPath(gain.key),
+      points: gains.reduce((sum, entry) => sum + (entry.level - entry.previous), 0),
+    };
+  }
+
   function confirmDistill() {
     if (!distillReady || sealing) return;
+    knowledgeGain = null;
+    learningGains = [];
     sealing = true;
   }
 
+  function onAuguryPrepared(augury: ConjurationAugury) {
+    const gains = previewKnowledgeGains(gs.player, sourceCard, augury.learning);
+    learningGains = gains;
+    knowledgeGain = primaryGain(gains);
+  }
+
   function onSealComplete(result: { fortuneBudget: number; learning?: number }) {
+    const learningRoll = result.learning ?? 0;
+    if (!learningGains.length && learningRoll > 0) {
+      learningGains = previewKnowledgeGains(gs.player, sourceCard, learningRoll);
+    }
     performAction({
       ...action,
       actionParameters: {
         ...action.actionParameters,
         ...distillParameters,
         fortuneBudget: result.fortuneBudget,
-        learningRoll: result.learning ?? 0,
+        learningRoll,
+        learningGains,
       },
       missingParameters: {},
     });
@@ -376,6 +419,8 @@
       {charms}
       {onCharmDismiss}
       {onSealComplete}
+      {onAuguryPrepared}
+      knowledgeGain={knowledgeGain}
       seal={sealing}
       shapeText={shapeSummary}
       shapeCost={distillReady ? -costDecrease : null}

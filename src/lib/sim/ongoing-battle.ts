@@ -1,10 +1,13 @@
 import type { Deck, Npc } from '../_model';
+import { bs } from '../_state';
 import { gs } from '../_state/main.svelte';
 import { getRandomFromArray } from '../_utils/random';
 import { initBattle } from '../battle/init';
+import { getHumanPlayer } from '../battle/player';
 import { setPossibleActions } from './actions';
+import { gainCraftingKnowledgeFromPlayedCards } from './cards/battle-knowledge';
 import { recordLeagueMatchResult } from './league';
-import { narrateMatchResult } from './narration';
+import { narrateCraftingKnowledgeGain, narrateMatchResult } from './narration';
 
 export function pickNpcDeck(npcKey: string): Deck {
   return getRandomFromArray(gs.characters[npcKey].decks);
@@ -35,6 +38,15 @@ export function recordBattleResult(won: boolean) {
     recordLeagueMatchResult(won);
   }
   narrateMatchResult(won, gs.ongoingBattle.opponentKey);
+  if (bs.players.length > 0) {
+    const gain = gainCraftingKnowledgeFromPlayedCards(
+      gs.player,
+      getHumanPlayer().playedCards ?? []
+    );
+    if (gain) {
+      narrateCraftingKnowledgeGain(gain);
+    }
+  }
   // Keep ongoingBattle until the victory modal dismisses so Main stays on Battle.
   if (gs.ongoingBattle.resume) {
     gs.scene.pendingEventResume = gs.ongoingBattle.resume;

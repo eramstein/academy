@@ -56,6 +56,7 @@ function resolveSpell(spell: SpellCard, targets: EffectTargets[][]) {
       player,
     });
   });
+  (player.playedCards ??= []).push(spell);
   discard(spell.instanceId, spell.ownerPlayerId);
 }
 

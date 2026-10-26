@@ -50,7 +50,7 @@ export function learnFromDeck(deck: DeckBlueprint, characterKey = 'player'): str
       character.craftingKnowledge.keywords = {};
     }
     for (const keyword of learntKeywords) {
-      character.craftingKnowledge.keywords[keyword as keyof UnitKeywords] = 1;
+      character.craftingKnowledge.keywords[keyword as keyof UnitKeywords] = 2;
     }
   }
 
@@ -59,7 +59,7 @@ export function learnFromDeck(deck: DeckBlueprint, characterKey = 'player'): str
       character.craftingKnowledge.actions = {};
     }
     for (const actionName of learntActions) {
-      character.craftingKnowledge.actions[actionName] = 1;
+      character.craftingKnowledge.actions[actionName] = 2;
     }
   }
 

@@ -21,9 +21,11 @@ import { cardBudget, featureCosts, getActionBudget, getCardBudget } from '../car
 import { colorPie, getCardDominantColor } from '../cards/color-pie';
 import {
   applyKnowledgeGains,
+  commitKnowledgeGains,
   craftProfile,
   describeKnowledgeGains,
   rollPoints,
+  type KnowledgeGain,
 } from '../cards/crafting-skills';
 import { addKeyword, formatKeywordLabel, KEYWORD_KEYS, removeKeyword } from '../cards/keywords';
 import { getActingCharacter } from '../characters';
@@ -48,6 +50,8 @@ export interface AugmentParameters {
   fortuneBudget?: number;
   /** Pre-rolled erudition points; rolled on apply if omitted. */
   learningRoll?: number;
+  /** Predetermined color tech gains from the seal UI. */
+  learningGains?: KnowledgeGain[];
 }
 
 export interface CardEnchantmentBonuses {
@@ -88,6 +92,8 @@ export interface DistillParameters {
   fortuneBudget?: number;
   /** Pre-rolled erudition points; rolled on apply if omitted. */
   learningRoll?: number;
+  /** Predetermined color tech gains from the seal UI. */
+  learningGains?: KnowledgeGain[];
 }
 
 export interface DistillPreview {
@@ -466,12 +472,18 @@ function describeEnchantResult(
   summary: string,
   oldCard: CardTemplate,
   newCard: CardTemplate,
-  parameters: { resources: { type: ResourceType; count: number }[]; learningRoll?: number },
+  parameters: {
+    resources: { type: ResourceType; count: number }[];
+    learningRoll?: number;
+    learningGains?: KnowledgeGain[];
+  },
   fortune: number
 ): string {
   const profile = craftProfile(gs.player.craftingSkills, parameters.resources, 'enchant');
   const points = parameters.learningRoll ?? rollPoints(profile.knowledge.expected);
-  const gains = applyKnowledgeGains(gs.player, newCard, points, undefined, oldCard);
+  const gains = parameters.learningGains?.length
+    ? (commitKnowledgeGains(gs.player, parameters.learningGains), parameters.learningGains)
+    : applyKnowledgeGains(gs.player, newCard, points, undefined, oldCard);
   const parts = [summary];
   if (fortune > 0) parts.push(`Mastery granted ${fortune} bonus budget.`);
   const knowledge = describeKnowledgeGains(gains);

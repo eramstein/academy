@@ -198,7 +198,8 @@ export function commitInvokedCard(result: CardCreationResult, characterKey = 'pl
     result.bonusBudget,
     getActingCharacter(characterKey),
     result.actionName,
-    result.learningRoll
+    result.learningRoll,
+    result.learningGains
   );
 }
 
@@ -255,7 +256,7 @@ export async function getConjurationOtions(
             await generateGameplayFromFlavor(trimmedFlavor)
           )
         : conjureParameters;
-      return limitParametersToKnownColors(base, character);
+      return base;
     })
   );
 
@@ -299,16 +300,13 @@ export async function getConjurationOtions(
   return options;
 }
 
-function limitParametersToKnownColors(
-  parameters: CardCreationParameters,
-  character: Character
-): CardCreationParameters {
-  const knownColors = character.craftingKnowledge.colors;
-  let colors = parameters.colors?.filter((color) => knownColors?.[color]);
-  if (!colors?.length) {
-    colors = knownColors ? Object.keys(knownColors).map((color) => color as CardColor) : undefined;
-  }
-  return { ...parameters, colors };
+const MIN_SKILL_LEVEL = 3;
+
+function hasSkill(
+  record: Partial<Record<string, number>> | undefined,
+  key: string
+): boolean {
+  return (record?.[key] ?? 0) >= MIN_SKILL_LEVEL;
 }
 
 function limitParametersToSkills(
@@ -317,30 +315,31 @@ function limitParametersToSkills(
 ): CardCreationParameters {
   const knownKeywords = character.craftingKnowledge.keywords;
   const knownActions = character.craftingKnowledge.actions;
-  const { colors } = limitParametersToKnownColors(parameters, character);
 
   let keywords = parameters.keywords;
   if (keywords) {
     const pruned = Object.fromEntries(
-      Object.entries(keywords).filter(([key]) => knownKeywords?.[key as keyof UnitKeywords])
+      Object.entries(keywords).filter(([key]) => hasSkill(knownKeywords, key))
     ) as UnitKeywords;
     keywords = Object.keys(pruned).length ? pruned : undefined;
   }
 
   let ability = parameters.ability;
-  if (ability && !knownActions?.[ability.action]) {
+  if (ability && !hasSkill(knownActions, ability.action)) {
     ability = undefined;
   }
 
-  let actions = parameters.actions?.filter((action) => knownActions?.[action]);
+  let actions = parameters.actions?.filter((action) => hasSkill(knownActions, action));
   if (!actions?.length) {
-    actions = knownActions ? Object.keys(knownActions) : undefined;
+    const skilled = Object.keys(knownActions ?? {}).filter((action) =>
+      hasSkill(knownActions, action)
+    );
+    actions = skilled.length ? skilled : undefined;
   }
 
   return limitInvokeIngredients(
     {
       ...parameters,
-      colors,
       keywords,
       ability,
       actions,

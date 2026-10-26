@@ -10,6 +10,7 @@
   import { untrack } from 'svelte';
   import AttributeCheckEntry from './AttributeCheckEntry.svelte';
   import CharacterPortrait from './characters/CharacterPortrait.svelte';
+  import CraftingKnowledgeNarration from './CraftingKnowledgeNarration.svelte';
   import type { InkBeat } from './ink-beat';
   import NarrationText from './NarrationText.svelte';
 
@@ -290,6 +291,8 @@
     {@render periodSeparator(entry)}
   {:else if entry.type === NarrationType.MatchResult}
     {@render matchResult(entry, animate)}
+  {:else if entry.type === NarrationType.CraftingKnowledge}
+    {@render craftingKnowledge(entry, animate)}
   {:else if entry.type === NarrationType.Transaction}
     {@render transaction(entry, animate)}
   {:else if entry.type === NarrationType.RelationUpdate}
@@ -485,6 +488,18 @@
       onDone={() => onTextDone(entry)}
     />
   </div>
+{/snippet}
+
+{#snippet craftingKnowledge(entry: Narration, animate: boolean)}
+  {#if entry.craftingKnowledgeGain}
+    <CraftingKnowledgeNarration
+      gain={entry.craftingKnowledgeGain}
+      text={entry.text}
+      {animate}
+      onProgress={(beat) => onProgress?.(beat)}
+      onDone={() => onTextDone(entry)}
+    />
+  {/if}
 {/snippet}
 
 {#snippet relationUpdate(entry: Narration, animate: boolean)}

@@ -40,10 +40,7 @@ export function teachColor(parameters: TeachColorParameters): string {
     if (!playerOwnsColorCard(color)) {
       const deckKey = BASE_DECK_KEY_BY_COLOR[color];
       if (deckKey) {
-        // getDeck sets the color to 1; keep the level we just taught.
-        const level = gs.player.craftingKnowledge.colors![color]!;
         getDeck({ deckKey });
-        gs.player.craftingKnowledge.colors![color] = level;
         gaveDeck = true;
       }
     }
@@ -64,13 +61,11 @@ function pickColorFromCharacter(
   if (!character) {
     return `Invalid character key: ${characterKey}.`;
   }
-  const known = Object.entries(character.craftingKnowledge.colors ?? {})
-    .filter(([, level]) => (level ?? 0) >= 1)
-    .map(([c]) => c as CardColor);
+  const known = [...(character.favoriteColors ?? [])];
   if (!known.length) {
     return `${character.name} does not know any colors.`;
   }
-  const playerColors = gs.player.craftingKnowledge.colors ?? {};
+  const playerColors = gs.player.colorTechPoints;
   const unknownToPlayer = known.filter((c) => (playerColors[c] ?? 0) < 1);
   return {
     color: getRandomFromArray(unknownToPlayer.length ? unknownToPlayer : known),
@@ -83,12 +78,12 @@ function bumpColor(color: CardColor, characterKey = 'player'): string {
   if (typeof learner === 'string') {
     return learner;
   }
-  if (!learner.character.craftingKnowledge.colors) {
-    learner.character.craftingKnowledge.colors = {};
+  if (!learner.isPlayer) {
+    return formatKnowledgeMessage(learner, formatKeywordLabel(color), 0, 1);
   }
-  const previous = learner.character.craftingKnowledge.colors[color] ?? 0;
+  const previous = gs.player.colorTechPoints[color] ?? 0;
   const level = previous + 1;
-  learner.character.craftingKnowledge.colors[color] = level;
+  gs.player.colorTechPoints[color] = level;
   return formatKnowledgeMessage(learner, formatKeywordLabel(color), previous, level);
 }
 

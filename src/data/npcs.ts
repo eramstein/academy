@@ -58,6 +58,12 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     knownTraits: [],
     tcgSkill: 0,
     possessions: [],
+    colorTechPoints: {
+      green: 0,
+      red: 0,
+      blue: 0,
+      black: 0,
+    },
   };
 }
 

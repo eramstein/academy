@@ -68,8 +68,7 @@
   let knowledgeGain = $state<{
     label: string;
     icon: string;
-    from: number;
-    to: number;
+    points: number;
   } | null>(null);
   let absorbStartedAt = 0;
   let revealTimer: ReturnType<typeof setTimeout> | undefined;
@@ -84,11 +83,7 @@
   /** Matches RitualStage SUCTION_START + SUCTION_MS. */
   const ABSORB_MS = 1500;
 
-  const availableColors = $derived(
-    Object.values(CardColor).filter(
-      (color) => (gs.player.craftingKnowledge.colors?.[color] ?? 0) >= 1
-    )
-  );
+  const availableColors = $derived(Object.values(CardColor));
 
   const title = $derived(
     phase === 'idle' ? 'Conjuration' : phase === 'revealed' ? 'Choose your creation' : 'Conjuring'
@@ -132,16 +127,9 @@
     return counts;
   }
 
-  /** Most common color in the player's collection among known crafting colors. */
+  /** Most common color in the player's collection. */
   function defaultColors(): CardColor[] {
-    const known = new Set(
-      Object.values(CardColor).filter(
-        (color) => (gs.player.craftingKnowledge.colors?.[color] ?? 0) >= 1
-      )
-    );
-    if (known.size === 0) return [];
-
-    const tallies = Object.fromEntries([...known].map((color) => [color, 0])) as Record<
+    const tallies = Object.fromEntries(Object.values(CardColor).map((color) => [color, 0])) as Record<
       CardColor,
       number
     >;
@@ -157,14 +145,13 @@
     let best: CardColor | null = null;
     let bestCount = -1;
     for (const color of Object.values(CardColor)) {
-      if (!(color in tallies)) continue;
       const count = tallies[color];
       if (count > bestCount) {
         best = color;
         bestCount = count;
       }
     }
-    return best != null && bestCount > 0 ? [best] : [];
+    return best != null && bestCount > 0 ? [best] : [CardColor.Red];
   }
 
   function committedResources(): ResourceAmount[] {
@@ -252,21 +239,18 @@
   }
 
   function gainIcon(gain: KnowledgeGain): string {
-    if (gain.kind === 'color') return colorPath(gain.key as CardColor);
-    if (gain.kind === 'keyword') return getAssetPath(`images/keywords/${gain.key}.png`);
-    return getActionTypeIconPath(gain.key);
+    return colorPath(gain.key);
   }
 
   function primaryGain(
     gains: KnowledgeGain[] | undefined
-  ): { label: string; icon: string; from: number; to: number } | null {
+  ): { label: string; icon: string; points: number } | null {
     if (!gains?.length) return null;
     const gain = gains.find((entry) => entry.unlocked) ?? gains[0];
     return {
       label: gain.label,
       icon: gainIcon(gain),
-      from: gain.previous,
-      to: gain.level,
+      points: gains.reduce((sum, entry) => sum + (entry.level - entry.previous), 0),
     };
   }
 
@@ -411,30 +395,26 @@
 
 <WorkbenchShell {title} scene="invocation" ignite={phase === 'augury' || phase === 'conjuring'}>
   <section class="pigments" class:gone={phase !== 'idle'} aria-label="Colors" aria-hidden={phase !== 'idle'}>
-      {#if availableColors.length === 0}
-        <p class="pigments-empty">No known colors yet.</p>
-      {:else}
-        <div class="pigment-cluster">
-          {#each availableColors as color (color)}
-            {@const inMix = colors.includes(color)}
-            <button
-              type="button"
-              class="pigment"
-              class:in-mix={inMix}
-              aria-pressed={inMix}
-              aria-label={capitalize(color)}
-              title="{capitalize(color)} · Click to {inMix ? 'remove' : 'add'}"
-              onclick={() => togglePigment(color)}
-              oncontextmenu={(event) => {
-                event.preventDefault();
-                onPigment(color, true);
-              }}
-            >
-              <img src={colorPath(color)} alt="" draggable="false" />
-            </button>
-          {/each}
-        </div>
-      {/if}
+      <div class="pigment-cluster">
+        {#each availableColors as color (color)}
+          {@const inMix = colors.includes(color)}
+          <button
+            type="button"
+            class="pigment"
+            class:in-mix={inMix}
+            aria-pressed={inMix}
+            aria-label={capitalize(color)}
+            title="{capitalize(color)} · Click to {inMix ? 'remove' : 'add'}"
+            onclick={() => togglePigment(color)}
+            oncontextmenu={(event) => {
+              event.preventDefault();
+              onPigment(color, true);
+            }}
+          >
+            <img src={colorPath(color)} alt="" draggable="false" />
+          </button>
+        {/each}
+      </div>
   </section>
   <RitualStage
     bind:selected

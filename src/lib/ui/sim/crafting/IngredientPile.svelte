@@ -95,6 +95,17 @@
   oncontextmenu={(event) => commit(event, true)}
   onanimationend={() => (bump = false)}
 >
+  {#snippet metaBlock()}
+    <span class="meta">
+      <span class="name">{label}</span>
+      {#if showCount}
+        <span class="stock">
+          {#if fraction || selected > 0}<span class="in">{selected}</span><span class="of">{fraction ? ' / ' : '/'}</span>{/if}{owned}
+        </span>
+      {/if}
+    </span>
+  {/snippet}
+
   {#if showIcon}
     <span class="glyph-col">
       <span class="glyph-wrap">
@@ -102,17 +113,15 @@
       </span>
       <span class="well" data-token-nest={type} aria-hidden="true"></span>
     </span>
+    {@render metaBlock()}
+  {:else if layout === 'row'}
+    <span class="well nest-only" data-token-nest={type} aria-hidden="true"></span>
+    {@render metaBlock()}
   {:else}
+    <!-- Labels above; nest below so resting beads stay inside the button hit target. -->
+    {@render metaBlock()}
     <span class="well nest-only" data-token-nest={type} aria-hidden="true"></span>
   {/if}
-  <span class="meta">
-    <span class="name">{label}</span>
-    {#if showCount}
-      <span class="stock">
-        {#if fraction || selected > 0}<span class="in">{selected}</span><span class="of">{fraction ? ' / ' : '/'}</span>{/if}{owned}
-      </span>
-    {/if}
-  </span>
 </button>
 
 <style>
@@ -224,9 +233,9 @@
   .well.nest-only {
     flex-shrink: 0;
     width: 64px;
-    height: 48px;
+    height: 56px;
+    /* Invisible, but must receive hits so iconless piles stay clickable over the beads. */
     opacity: 0;
-    pointer-events: none;
   }
 
   .pile.iconless.row .well.nest-only {

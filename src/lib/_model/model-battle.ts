@@ -29,6 +29,8 @@ export interface Player {
   hand: Card[];
   deck: Card[];
   graveyard: Card[];
+  /** Cards this player successfully played from hand this match. */
+  playedCards: Card[];
   lands: Land[];
   colors: Partial<Record<CardColor, number>>;
   abilityUsed: boolean;

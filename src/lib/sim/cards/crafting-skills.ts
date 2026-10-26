@@ -1,19 +1,13 @@
 import {
   CardColor,
-  isSpellCard,
-  isUnitCard,
   ResourceType,
   type CardCraftingSkills,
   type CardTemplate,
   type Character,
+  type ColorTechPoints,
   type UnitKeywords,
 } from '@/lib/_model';
-import { getAbilityActionNames } from './ability-templates';
-import {
-  ACTION_TEMPLATE_KEYS,
-  getActionTemplateMeta,
-  getActionTemplateNameForEffect,
-} from './action-templates';
+import { ACTION_TEMPLATE_KEYS } from './action-templates';
 import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from './keywords';
 
 /**
@@ -26,7 +20,6 @@ import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from './keywords';
  */
 
 export const SKILL_RATE = 0.25;
-export const KNOWLEDGE_BASE = 0.25;
 export const CONJURE_OPTION_BASE = 2;
 export const DISCOVERY_BASE = 0.2;
 export const DISCOVERY_PER_INSPIRATION = 0.2;
@@ -57,7 +50,7 @@ export interface CraftProfile {
   inspiration: SkillStack;
   /** Mastery → bonus budget spent automatically on stats. */
   extraBudget: PointRoll;
-  /** Base 25% plus the erudition formula. Levels above 1 are stored only. */
+  /** Erudition → color tech points (same floor + chance formula as mastery). */
   knowledge: PointRoll;
   /** Invoke ingredient cap and enchant mana-cost delta. The inspiration total. */
   scope: number;
@@ -68,20 +61,15 @@ export interface CraftProfile {
 }
 
 export interface KnowledgeGain {
-  kind: 'color' | 'keyword' | 'action';
-  key: string;
+  kind: 'color';
+  key: CardColor;
   label: string;
   level: number;
-  /** Level before this craft spent points on the trait. */
+  /** Level before this craft spent points on the color. */
   previous: number;
-  /** True when this craft raised the trait from 0 to at least 1. */
+  /** True when this craft raised the color from 0 to at least 1. */
   unlocked: boolean;
 }
-
-type KnowledgeRef = {
-  kind: KnowledgeGain['kind'];
-  key: string;
-};
 
 export function pointRoll(expected: number): PointRoll {
   const value = Math.max(0, expected);
@@ -146,12 +134,6 @@ export function formatSkillSource(stack: SkillStack): string {
   return `Skill ${stack.skill}`;
 }
 
-export function knowledgeSource(stack: SkillStack): string {
-  const skill = formatSkillSource(stack);
-  if (stack.total <= 0) return '25% base';
-  return `25% base · ${skill}`;
-}
-
 /** How discovery chance is built from inspiration (base + per point). */
 export function discoverySource(inspiration: SkillStack): string {
   const base = `${Math.round(DISCOVERY_BASE * 100)}% base`;
@@ -181,7 +163,7 @@ export function craftProfile(
     erudition,
     inspiration,
     extraBudget: pointRoll(mastery.total * SKILL_RATE),
-    knowledge: pointRoll(KNOWLEDGE_BASE + erudition.total * SKILL_RATE),
+    knowledge: pointRoll(erudition.total * SKILL_RATE),
     scope: inspiration.total,
     conjureOptions: pointRoll(CONJURE_OPTION_BASE + inspiration.total * SKILL_RATE),
     discoveryChance: discovery,
@@ -189,20 +171,18 @@ export function craftProfile(
 }
 
 /**
- * Spend `points` knowledge increments on traits printed on the card.
- * Each point raises one associated color, keyword, or action by 1.
- * Unknown keywords/actions (conjure discoveries) take priority until unlocked;
- * remaining points pick at random from the full pool.
- * Values above 1 are kept for later; unlocking still only requires 1.
+ * Spend `points` erudition increments on color tech points.
+ * Each point raises one of the crafted card's colors by 1 (picked at random
+ * when the card is multicolored).
  */
 export function applyKnowledgeGains(
   character: Character,
   template: CardTemplate,
   points: number,
-  actionNames?: string[],
+  _actionNames?: string[],
   also?: CardTemplate
 ): KnowledgeGain[] {
-  const gains = previewKnowledgeGains(character, template, points, actionNames, also);
+  const gains = previewKnowledgeGains(character, template, points, _actionNames, also);
   commitKnowledgeGains(character, gains);
   return gains;
 }
@@ -212,41 +192,37 @@ export function previewKnowledgeGains(
   character: Character,
   template: CardTemplate,
   points: number,
-  actionNames?: string[],
+  _actionNames?: string[],
   also?: CardTemplate
 ): KnowledgeGain[] {
-  const pool = knowledgePool(template, actionNames);
-  if (also) {
-    for (const ref of knowledgePool(also)) {
-      if (!pool.some((entry) => entry.kind === ref.kind && entry.key === ref.key)) {
-        pool.push(ref);
-      }
-    }
-  }
+  return previewColorTechGains(character, colorsOnCards(template, also), points);
+}
+
+/** Preview erudition gains for an explicit color pool (e.g. invoke pigment picks). */
+export function previewColorTechGains(
+  character: Character,
+  colors: CardColor[],
+  points: number
+): KnowledgeGain[] {
+  const pool = [...new Set(colors)];
   if (!pool.length || points <= 0) return [];
 
-  const virtual = new Map<string, number>();
-  for (const ref of pool) {
-    virtual.set(`${ref.kind}:${ref.key}`, knowledgeLevel(character, ref));
+  const virtual = new Map<CardColor, number>();
+  for (const color of pool) {
+    virtual.set(color, colorTechLevel(character, color));
   }
 
-  const gains = new Map<string, KnowledgeGain>();
+  const gains = new Map<CardColor, KnowledgeGain>();
   for (let i = 0; i < points; i++) {
-    const discoveries = pool.filter((ref) => {
-      if (ref.kind !== 'keyword' && ref.kind !== 'action') return false;
-      return (virtual.get(`${ref.kind}:${ref.key}`) ?? 0) < 1;
-    });
-    const candidates = discoveries.length ? discoveries : pool;
-    const ref = candidates[Math.floor(Math.random() * candidates.length)];
-    const key = `${ref.kind}:${ref.key}`;
-    const before = virtual.get(key) ?? 0;
+    const color = pool[Math.floor(Math.random() * pool.length)];
+    const before = virtual.get(color) ?? 0;
     const level = before + 1;
-    virtual.set(key, level);
-    const prior = gains.get(key);
-    gains.set(key, {
-      kind: ref.kind,
-      key: ref.key,
-      label: knowledgeLabel(ref),
+    virtual.set(color, level);
+    const prior = gains.get(color);
+    gains.set(color, {
+      kind: 'color',
+      key: color,
+      label: formatKeywordLabel(color),
       level,
       previous: prior?.previous ?? before,
       unlocked: (prior?.previous ?? before) < 1,
@@ -255,18 +231,16 @@ export function previewKnowledgeGains(
   return [...gains.values()];
 }
 
-/** Write predetermined knowledge gains onto the character. */
+/** Write predetermined color tech gains onto the player. */
 export function commitKnowledgeGains(character: Character, gains: KnowledgeGain[]) {
   for (const gain of gains) {
-    writeKnowledgeLevel(character, gain);
+    writeColorTechLevel(character, gain);
   }
 }
 
 export function describeKnowledgeGains(gains: KnowledgeGain[]): string {
   if (!gains.length) return '';
-  const parts = gains.map((gain) =>
-    gain.unlocked ? `learnt ${gain.label}` : `raised ${gain.label} to ${gain.level}`
-  );
+  const parts = gains.map((gain) => `raised ${gain.label} to ${gain.level}`);
   return `Erudition: ${joinList(parts)}.`;
 }
 
@@ -307,68 +281,29 @@ function resourceLabel(entry: SkillStack): string {
   return entry.resourceName;
 }
 
-function knowledgePool(template: CardTemplate, actionNames?: string[]): KnowledgeRef[] {
-  const pool: KnowledgeRef[] = [];
-  for (const color of new Set(template.colors?.map((entry) => entry.color) ?? [])) {
-    pool.push({ kind: 'color', key: color });
-  }
-  if (isUnitCard(template)) {
-    for (const key of Object.keys(template.keywords ?? {}) as (keyof UnitKeywords)[]) {
-      if (template.keywords?.[key]) pool.push({ kind: 'keyword', key });
+function colorsOnCards(...templates: (CardTemplate | undefined)[]): CardColor[] {
+  const colors = new Set<CardColor>();
+  for (const template of templates) {
+    for (const entry of template?.colors ?? []) {
+      colors.add(entry.color);
     }
   }
-  const names = actionNames?.length ? actionNames : actionNamesOn(template);
-  for (const name of new Set(names)) {
-    if (name) pool.push({ kind: 'action', key: name });
-  }
-  return pool;
+  return [...colors];
 }
 
-function actionNamesOn(template: CardTemplate): string[] {
-  if (isUnitCard(template)) {
-    return (template.abilities ?? []).flatMap(getAbilityActionNames);
-  }
-  if (isSpellCard(template)) {
-    return template.actions
-      .map((action) => getActionTemplateNameForEffect(action.effect.name))
-      .filter((name): name is string => !!name);
-  }
-  return [];
+function playerColorTech(character: Character): ColorTechPoints | null {
+  if (!('colorTechPoints' in character)) return null;
+  return character.colorTechPoints ?? null;
 }
 
-function knowledgeLevel(character: Character, ref: KnowledgeRef): number {
-  const knowledge = character.craftingKnowledge;
-  if (ref.kind === 'color') return knowledge?.colors?.[ref.key as CardColor] ?? 0;
-  if (ref.kind === 'keyword') {
-    return knowledge?.keywords?.[ref.key as keyof UnitKeywords] ?? 0;
-  }
-  return knowledge?.actions?.[ref.key] ?? 0;
+function colorTechLevel(character: Character, color: CardColor): number {
+  return playerColorTech(character)?.[color] ?? 0;
 }
 
-function knowledgeLabel(ref: KnowledgeRef): string {
-  if (ref.kind === 'action') {
-    return getActionTemplateMeta(ref.key)?.label ?? formatKeywordLabel(ref.key);
-  }
-  return formatKeywordLabel(ref.key);
-}
-
-function writeKnowledgeLevel(character: Character, gain: KnowledgeGain) {
-  if (!character.craftingKnowledge) {
-    character.craftingKnowledge = {};
-  }
-  const knowledge = character.craftingKnowledge;
-  if (gain.kind === 'color') {
-    if (!knowledge.colors) knowledge.colors = {};
-    knowledge.colors[gain.key as CardColor] = gain.level;
-    return;
-  }
-  if (gain.kind === 'keyword') {
-    if (!knowledge.keywords) knowledge.keywords = {};
-    knowledge.keywords[gain.key as keyof UnitKeywords] = gain.level;
-    return;
-  }
-  if (!knowledge.actions) knowledge.actions = {};
-  knowledge.actions[gain.key] = gain.level;
+function writeColorTechLevel(character: Character, gain: KnowledgeGain) {
+  const tech = playerColorTech(character);
+  if (!tech) return;
+  tech[gain.key] = gain.level;
 }
 
 function joinList(names: string[]): string {

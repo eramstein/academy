@@ -4,8 +4,8 @@ import { DayPeriod, ResourceType, type GameState } from '../_model';
 import { gs } from '../_state';
 import { clearUsedFlavors } from './cards/flavor-generation-pipeline/used-flavors';
 import { loadCardTemplates, restoreCardTemplates } from './cards/npc-card-templates';
-import { getBasicLands, initNpcDecks } from './deck';
 import { initChatTopics } from './chat-topics';
+import { getBasicLands, initNpcDecks } from './deck';
 import { loadEventTemplates, restoreEventTemplates } from './events';
 import { setSceneEvents } from './scene';
 
@@ -50,13 +50,13 @@ export const defaultGameState: GameState = {
       inn: 0,
     },
     craftingKnowledge: {
-      colors: {
-        red: 1,
-        green: 1,
-        blue: 1,
-        black: 1,
-      },
       keywords: {},
+    },
+    colorTechPoints: {
+      green: 0,
+      red: 0,
+      blue: 0,
+      black: 0,
     },
     craftingSkills: {
       mastery: 1,

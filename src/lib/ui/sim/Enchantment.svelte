@@ -19,6 +19,7 @@
     previewAugmentedCard,
     type ActionArgDeltas,
     type AugmentParameters,
+    type ConjurationAugury,
   } from '@/lib/sim/actions';
   import { buildAbility, getTriggerTemplateLabel } from '@/lib/sim/cards/ability-templates';
   import {
@@ -32,6 +33,10 @@
   } from '@/lib/sim/cards/action-templates';
   import { getAbilityCost, getKeywordBudget } from '@/lib/sim/cards/card-budget';
   import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
+  import {
+    previewKnowledgeGains,
+    type KnowledgeGain,
+  } from '@/lib/sim/cards/crafting-skills';
   import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
   import { playAddResourceSound } from '@/lib/sim/sound';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
@@ -668,6 +673,9 @@
 
   function confirmAugment() {
     if (!augmentParameters || !hasAugmentIngredients || augmentPreview?.error || sealing) return;
+    knowledgeGain = null;
+    learningGains = [];
+    learningRoll = 0;
     sealing = true;
   }
 
@@ -704,6 +712,36 @@
   }
 
   let learningRoll = $state(0);
+  let learningGains = $state<KnowledgeGain[]>([]);
+  let knowledgeGain = $state<{
+    label: string;
+    icon: string;
+    points: number;
+  } | null>(null);
+
+  function colorPath(color: CardColor): string {
+    return getAssetPath(`images/ui/icons/color_${color}.png`);
+  }
+
+  function primaryGain(
+    gains: KnowledgeGain[] | undefined
+  ): { label: string; icon: string; points: number } | null {
+    if (!gains?.length) return null;
+    const gain = gains.find((entry) => entry.unlocked) ?? gains[0];
+    return {
+      label: gain.label,
+      icon: colorPath(gain.key),
+      points: gains.reduce((sum, entry) => sum + (entry.level - entry.previous), 0),
+    };
+  }
+
+  function onAuguryPrepared(augury: ConjurationAugury) {
+    if (!sourceCard) return;
+    const gains = previewKnowledgeGains(gs.player, sourceCard, augury.learning);
+    learningRoll = augury.learning;
+    learningGains = gains;
+    knowledgeGain = primaryGain(gains);
+  }
 
   function onSealComplete(result: { fortuneBudget: number; learning?: number }) {
     if (!augmentParameters || !sourceCard || finished) {
@@ -712,6 +750,10 @@
     }
     fortuneBudget = result.fortuneBudget;
     learningRoll = result.learning ?? 0;
+    if (!learningGains.length && learningRoll > 0) {
+      learningGains = previewKnowledgeGains(gs.player, sourceCard, learningRoll);
+      knowledgeGain = primaryGain(learningGains);
+    }
     if (!infusedCard) onIngredientsSealed();
     if (result.fortuneBudget > 0) onFortuneLanded(result.fortuneBudget);
     finished = true;
@@ -726,6 +768,7 @@
         ...augmentParameters,
         fortuneBudget,
         learningRoll,
+        learningGains,
       },
       missingParameters: {},
     });
@@ -865,6 +908,8 @@
       {onIngredientsSealed}
       {onFortuneLanded}
       {onSealComplete}
+      {onAuguryPrepared}
+      knowledgeGain={knowledgeGain}
       seal={sealing}
       shapeText={shapeSummary}
       shapeCost={hasAugmentIngredients ? (augmentPreview?.costIncrease ?? null) : null}
