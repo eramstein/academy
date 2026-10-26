@@ -5,6 +5,7 @@
   import { fortuneBudgetToStats, rollExtraBudget, type ConjurationAugury } from '@/lib/sim/actions';
   import {
     craftProfile,
+    discoverySource,
     displayPercentRoll,
     formatPointRoll,
     formatSkillSource,
@@ -449,6 +450,9 @@
     }
     return `Guaranteed card choices, then a chance of one more. ${formatSkillSource(profile.inspiration)}.`;
   });
+  const discoveryTip = $derived(
+    `Chance one vision includes an unknown keyword or action. ${discoverySource(profile.inspiration)}.`
+  );
   const masteryTip = $derived(
     `Guaranteed bonus budget, then a chance of one more. ${formatSkillSource(profile.mastery)}.`
   );
@@ -1566,6 +1570,7 @@
         <div class="bonus-top">
           <BonusReadout
             layout="plaque"
+            frame="long"
             icon={RESOURCE_ICONS[ResourceType.MagicDust]}
             label="Inspiration"
             singular="Card choice"
@@ -1576,6 +1581,9 @@
             phase={inspirationPhase}
             face={inspirationFace}
             need={inspirationNeed}
+            extraChance={profile.discoveryChance}
+            extraLabel="Discovery chance"
+            extraTip={discoveryTip}
           >
             {#snippet die()}
               {@render percentDie(inspirationPhase, inspirationPct, inspirationNeed, 'Inspiration')}
@@ -1899,7 +1907,7 @@
     z-index: 3;
     display: flex;
     justify-content: center;
-    width: min(100%, 22rem);
+    width: min(100%, 28rem);
     margin: 4px auto 18px;
     padding-top: 0.35rem;
     overflow: visible;

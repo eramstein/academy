@@ -1,5 +1,94 @@
 [
   {
+    "id": "facetious_djinn",
+    "name": "Facetious Djinn",
+    "imageFileName": "facetious_djinn",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "poolKeys": ["emma", "base"],
+    "type": "unit",
+    "power": 2,
+    "maxHealth": 2,
+    "retaliate": 0,
+    "keywords": {
+      "resist": 2
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "bounceUnit",
+              "args": {
+                "range": {
+                  "excludeSelf": true,
+                  "allies": true,
+                  "sameRow": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "infinite_triage_unit",
+    "name": "Infinite Triage Unit",
+    "imageFileName": "infinite_triage_unit",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "type": "unit",
+    "power": 0,
+    "maxHealth": 8,
+    "retaliate": 0,
+    "keywords": {
+      "immobile": true,
+      "armor": 1
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "recycleCard",
+              "args": {}
+            },
+            "targets": [
+              {
+                "type": "graveyard_card",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "poolKeys": ["emma", "base"]
+  },
+  {
     "id": "subtle_confusion",
     "name": "Subtle Confusion",
     "imageFileName": "subtle_confusion",

@@ -1,15 +1,19 @@
 import {
   CardColor,
-  ResourceType,
   isSpellCard,
   isUnitCard,
+  ResourceType,
   type CardCraftingSkills,
   type CardTemplate,
   type Character,
   type UnitKeywords,
 } from '@/lib/_model';
 import { getAbilityActionNames } from './ability-templates';
-import { ACTION_TEMPLATE_KEYS, getActionTemplateMeta, getActionTemplateNameForEffect } from './action-templates';
+import {
+  ACTION_TEMPLATE_KEYS,
+  getActionTemplateMeta,
+  getActionTemplateNameForEffect,
+} from './action-templates';
 import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from './keywords';
 
 /**
@@ -132,8 +136,7 @@ export function displayPercentRoll(
 }
 
 export function formatSkillSource(stack: SkillStack): string {
-  const resource =
-    stack.fromResource > 0 ? `${stack.fromResource} ${resourceLabel(stack)}` : '';
+  const resource = stack.fromResource > 0 ? `${stack.fromResource} ${resourceLabel(stack)}` : '';
   if (stack.skill > 0 && resource) return `Skill ${stack.skill} + ${resource}`;
   if (resource) return resource;
   return `Skill ${stack.skill}`;
@@ -145,6 +148,14 @@ export function knowledgeSource(stack: SkillStack): string {
   return `25% base · ${skill}`;
 }
 
+/** How discovery chance is built from inspiration (base + per point). */
+export function discoverySource(inspiration: SkillStack): string {
+  const base = `${Math.round(DISCOVERY_BASE * 100)}% base`;
+  if (inspiration.total <= 0) return base;
+  const per = Math.round(DISCOVERY_PER_INSPIRATION * 100);
+  return `${base} · +${per}% × ${formatSkillSource(inspiration)}`;
+}
+
 export function craftProfile(
   skills: CardCraftingSkills | undefined,
   resources: { type: ResourceType; count: number }[] | undefined,
@@ -154,10 +165,7 @@ export function craftProfile(
   const mastery = stack(skills?.mastery ?? 0, bonus.mastery, 'mithril');
   const erudition = stack(skills?.erudition ?? 0, bonus.erudition, 'moxes');
   const inspiration = stack(skills?.inspiration ?? 0, bonus.inspiration, 'magic dust');
-  const discovery = Math.min(
-    1,
-    DISCOVERY_BASE + DISCOVERY_PER_INSPIRATION * inspiration.total
-  );
+  const discovery = Math.min(1, DISCOVERY_BASE + DISCOVERY_PER_INSPIRATION * inspiration.total);
   return {
     mode,
     mastery,
@@ -276,7 +284,13 @@ function bumpKnowledge(character: Character, ref: KnowledgeRef): KnowledgeGain {
     const previous = knowledge.colors[key] ?? 0;
     const level = previous + 1;
     knowledge.colors[key] = level;
-    return { kind: ref.kind, key: ref.key, label: formatKeywordLabel(ref.key), level, unlocked: previous < 1 };
+    return {
+      kind: ref.kind,
+      key: ref.key,
+      label: formatKeywordLabel(ref.key),
+      level,
+      unlocked: previous < 1,
+    };
   }
   if (ref.kind === 'keyword') {
     if (!knowledge.keywords) knowledge.keywords = {};

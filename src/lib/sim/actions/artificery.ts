@@ -123,8 +123,6 @@ export async function getNewCardTemplate(
   prune = false,
   usedFlavors?: UsedFlavors,
   onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void,
-  flavorText?: string,
-  allowAiGenerate = true,
   fortuneBudget?: number
 ): Promise<CardCreationResult | null> {
   if (!parameters.resources) {
@@ -151,8 +149,6 @@ export async function getNewCardTemplate(
       bonuses,
       usedFlavors,
       onSummonProgress,
-      flavorText,
-      allowAiGenerate,
       fortuneBudget
     );
     return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
@@ -165,8 +161,6 @@ export async function getNewCardTemplate(
     character,
     usedFlavors,
     onSummonProgress,
-    flavorText,
-    allowAiGenerate,
     fortuneBudget
   );
   return { template, bonusBudget, learningChance: bonuses.learningChance, actionName };
@@ -185,8 +179,6 @@ export async function summonInvokedCard(
     true,
     undefined,
     undefined,
-    undefined,
-    true,
     augury?.fortuneBudget
   );
   if (!result?.template) return null;
@@ -265,12 +257,8 @@ export async function getConjurationOtions(
     names: new Set(character.collection.map((card) => card.name)),
     images: new Set(character.collection.map((card) => card.imageFileName)),
   };
-  // Player: at most one option may use AI for name/image. NPCs: catalog only.
-  const allowAiGenerate = characterKey === 'player';
-  const aiOptionIndex = optionsCount > 1 ? Math.floor(Math.random() * optionsCount) : 0;
   const options: CardCreationResult[] = [];
   for (let i = 0; i < optionsCount; i++) {
-    const useAi = allowAiGenerate && i === aiOptionIndex;
     const result = await getNewCardTemplate(
       { ...optionParameters[i], discoverUnknown: i === discoveryIndex },
       false,
@@ -280,8 +268,6 @@ export async function getConjurationOtions(
       (stage, template) => {
         onProgress?.({ index: i, total: optionsCount, stage, template });
       },
-      useAi ? trimmedFlavor : undefined,
-      useAi,
       augury?.fortuneBudget
     );
     if (result) {
@@ -542,8 +528,6 @@ async function getUnitTemplate(
   character: Character,
   usedFlavors?: UsedFlavors,
   onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void,
-  flavorText?: string,
-  allowAiGenerate = true,
   fortuneBudget?: number
 ): Promise<{
   template: UnitCardTemplate;
@@ -599,18 +583,8 @@ async function getUnitTemplate(
 
   const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), {
     batch: usedFlavors,
-    flavorText,
-    allowAiGenerate,
+    allowAiGenerate: false,
     onProgress: (event) => {
-      if (event.stage === 'name_ready') {
-        draft.name = event.name;
-        draft.imageFileName = '';
-        if (!constrainedUnitTypes.length && event.unitTypes?.length) {
-          draft.unitTypes = event.unitTypes;
-        }
-        onSummonProgress?.('name', draft);
-        return;
-      }
       if (event.stage === 'reuse' || event.stage === 'fallback') {
         draft.name = event.flavor.name;
         draft.imageFileName = '';
@@ -619,15 +593,6 @@ async function getUnitTemplate(
         }
         onSummonProgress?.('name', draft);
         draft.imageFileName = event.flavor.imageName;
-        onSummonProgress?.('image', draft);
-        return;
-      }
-      if (event.stage === 'image_ready') {
-        draft.name = event.flavor.name;
-        draft.imageFileName = event.flavor.imageName;
-        if (!constrainedUnitTypes.length && event.flavor.unitTypes?.length) {
-          draft.unitTypes = event.flavor.unitTypes;
-        }
         onSummonProgress?.('image', draft);
       }
     },
@@ -655,8 +620,6 @@ async function getSpellTemplate(
   bonuses: CardCreationBonuses,
   usedFlavors?: UsedFlavors,
   onSummonProgress?: (stage: SummonRevealStage, template: CardTemplate) => void,
-  flavorText?: string,
-  allowAiGenerate = true,
   fortuneBudget?: number
 ): Promise<{
   template: SpellCardTemplate;
@@ -693,25 +656,12 @@ async function getSpellTemplate(
 
   const flavor = await resolveFlavorTemplate(toGameplayTemplate(templateParameters), {
     batch: usedFlavors,
-    flavorText,
-    allowAiGenerate,
+    allowAiGenerate: false,
     onProgress: (event) => {
-      if (event.stage === 'name_ready') {
-        draft.name = event.name;
-        draft.imageFileName = '';
-        onSummonProgress?.('name', draft);
-        return;
-      }
       if (event.stage === 'reuse' || event.stage === 'fallback') {
         draft.name = event.flavor.name;
         draft.imageFileName = '';
         onSummonProgress?.('name', draft);
-        draft.imageFileName = event.flavor.imageName;
-        onSummonProgress?.('image', draft);
-        return;
-      }
-      if (event.stage === 'image_ready') {
-        draft.name = event.flavor.name;
         draft.imageFileName = event.flavor.imageName;
         onSummonProgress?.('image', draft);
       }

@@ -50,7 +50,7 @@ They can be units, spells, or lands. They can have effects selected from a very 
 
 Unlike tradionnal TCGs, each card is unique, with it own name, gameplay stats (which can eveolves over the playthrough) and illustration. It represents an item crafted by a character in the game.
 
-Cards are created during artificery lessons, either via conjuration (top down design: you set a flavor/theme, and the game generates the gameplay attributes, e.g. I ask for a dragon, I get a red 5/5/2 flying) or invocation (bottom up design: I ask for a green 2/2/0 which heals, I get a halfing druid with a matching name and illustration). They can then further be fine tuned in enchantment classes (remove stats to make them cheaper, or vice versa). The player can use crafting resources (ingredients) to get more flexibility or power when crafting, and level skills and knowledge that open more possibilities in terms of gameplay capabilities of the created cards.
+Cards are created during artificery lessons, either via conjuration (choice between random procedurally generated cards, with any keyword or ability) or invocation (ability to create custom cards, but within the limit of your crafting knowledge). They can then further be fine tuned in enchantment classes (remove stats to make them cheaper, or vice versa). The player can use crafting resources (ingredients) to get more flexibility or power when crafting, and level skills and knowledge that open more possibilities in terms of gameplay capabilities of the created cards.
 
 The RPG facet lets the player acquire cards (gifts from NPCs, quest rewards...), resources (common or unique) and level up skills to help them improve their card collection.
 

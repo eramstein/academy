@@ -1128,11 +1128,11 @@ const council_envoy = {
           },
           targets: [
             {
-              type: 'unit',
+              type: TargetType.Units,
               count: 1,
             },
             {
-              type: 'cell_empty',
+              type: TargetType.EmptyCell,
               count: 1,
             },
           ],
@@ -1743,8 +1743,8 @@ export const BASE_DECK_GREEN: DeckBlueprint = {
     snek,
   ],
   lands: [forest, plains, market, enchanter_lair],
-  learntKeywords: ['poisonous', 'regeneration', 'trample'],
-  learntActions: ['addGrowthCounters', 'healUnit', 'regrowCard'],
+  learntKeywords: ['regeneration', 'trample'],
+  learntActions: ['addGrowthCounters', 'healUnit'],
 };
 
 export const BASE_DECK_RED: DeckBlueprint = {
@@ -1773,7 +1773,7 @@ export const BASE_DECK_RED: DeckBlueprint = {
     earthquake,
   ],
   lands: [mountain, plains, market, enchanter_lair],
-  learntKeywords: ['lance', 'zerk', 'haste'],
+  learntKeywords: ['lance', 'haste'],
   learntActions: ['directDamage', 'damageLand'],
 };
 
@@ -1803,8 +1803,8 @@ export const BASE_DECK_BLACK: DeckBlueprint = {
     plague_spreader,
   ],
   lands: [city, plains, market, enchanter_lair],
-  learntKeywords: ['ranged', 'immobile', 'flying'],
-  learntActions: ['addDecayCounters', 'destroyUnit', 'fortifyLand', 'reanimate', 'tutorCard'],
+  learntKeywords: ['ranged', 'immobile'],
+  learntActions: ['destroyUnit', 'reanimate'],
 };
 
 export const BASE_DECK_BLUE: DeckBlueprint = {
@@ -1833,16 +1833,8 @@ export const BASE_DECK_BLUE: DeckBlueprint = {
     hurried_student,
   ],
   lands: [island, plains, market, enchanter_lair],
-  learntKeywords: ['immobile', 'moveAndAttack', 'ranged', 'flying'],
-  learntActions: [
-    'bounceUnit',
-    'controlUnit',
-    'drawCards',
-    'cycleCards',
-    'mezz',
-    'recycleCard',
-    'forceMoveUnit',
-  ],
+  learntKeywords: ['ranged', 'flying'],
+  learntActions: ['bounceUnit', 'drawCards'],
 };
 
 export const BASIC_LANDS: BaseCardTemplate[] = [forest, plains, city, mountain];

@@ -19,8 +19,13 @@
     need,
     prefix = '',
     amountText = '',
+    captionText,
+    extraChance,
+    extraLabel = 'Discovery chance',
+    extraTip = '',
     icon = '',
     layout = 'stack',
+    frame = 'box',
     dieSide = 'top',
     die,
   }: {
@@ -41,16 +46,32 @@
     prefix?: string;
     /** When set, replaces the numeric amount (e.g. "2 / 5"). */
     amountText?: string;
+    /** When set, replaces the default chance caption under the bar. */
+    captionText?: string;
+    /** Optional second forecast bar (e.g. discovery), 0–1. */
+    extraChance?: number;
+    /** Top label for the second bar. */
+    extraLabel?: string;
+    /** Tooltip for the second bar label. */
+    extraTip?: string;
     /** Optional painted icon (chart row, or plaque badge). */
     icon?: string;
     /** `chart` materials column; `plaque` conjure framed box; `stack` plain. */
     layout?: 'stack' | 'chart' | 'plaque';
+    /** Plaque art: standard `box.png`, or wider `box_long.png`. */
+    frame?: 'box' | 'long';
     /** Where the percent die sits relative to the readout. */
     dieSide?: 'top' | 'left' | 'right';
     die?: Snippet;
   } = $props();
 
-  const boxPath = getAssetPath('images/ui/backgrounds/box.png');
+  const boxPath = $derived(
+    getAssetPath(
+      frame === 'long'
+        ? 'images/ui/backgrounds/box_long.png'
+        : 'images/ui/backgrounds/box.png'
+    )
+  );
 
   const FILL_MS = 460;
   const CREST_MS = 110;
@@ -59,28 +80,41 @@
 
   let displaySure = $state(sure);
   let shownPct = $state(percentThreshold(chance));
+  let shownExtraPct = $state(
+    extraChance === undefined ? 0 : percentThreshold(extraChance)
+  );
   let promoted = $state(false);
   /** Stays gold after a successful roll, until the ritual resets. */
   let held = $state(false);
   let outcome = $state<'none' | 'hit' | 'miss'>('none');
   let liveText = $state('');
   let hovered = $state(false);
+  let extraHovered = $state(false);
 
   let generation = 0;
+  let extraGeneration = 0;
   let primed = false;
   let lastPhase: RollPhase = 'idle';
   let raf = 0;
+  let extraRaf = 0;
   let promoteTimer = 0;
   const pending: number[] = [];
 
+  const hasExtra = $derived(extraChance !== undefined);
   const unit = $derived(displaySure === 1 ? singular : plural);
   const pctLabel = $derived(Math.round(Math.min(100, Math.max(0, shownPct))));
+  const extraPctLabel = $derived(Math.round(Math.min(100, Math.max(0, shownExtraPct))));
   const caption = $derived(
-    outcome === 'miss'
-      ? 'Missed'
-      : outcome === 'hit' || pctLabel <= 0
-        ? ''
-        : `${pctLabel}% for one more`
+    captionText !== undefined
+      ? captionText
+      : outcome === 'miss'
+        ? 'Missed'
+        : outcome === 'hit' || pctLabel <= 0
+          ? ''
+          : `${pctLabel}% for one more`
+  );
+  const extraCaption = $derived(
+    extraPctLabel <= 0 ? '' : `${extraPctLabel}% chance`
   );
 
   $effect(() => {
@@ -94,9 +128,19 @@
     });
   });
 
+  $effect(() => {
+    if (extraChance === undefined) return;
+    const nextExtra = percentThreshold(extraChance);
+    untrack(() => {
+      void syncExtra(nextExtra);
+    });
+  });
+
   $effect(() => () => {
     generation += 1;
+    extraGeneration += 1;
     if (raf) cancelAnimationFrame(raf);
+    if (extraRaf) cancelAnimationFrame(extraRaf);
     for (const id of pending) clearTimeout(id);
     pending.length = 0;
     if (promoteTimer) clearTimeout(promoteTimer);
@@ -120,34 +164,69 @@
     shownPct = value;
   }
 
-  function drivePct(to: number, gen: number): Promise<void> {
-    if (raf) cancelAnimationFrame(raf);
-    raf = 0;
-    const from = shownPct;
+  function driveBar(
+    from: number,
+    to: number,
+    gen: number,
+    currentGen: () => number,
+    setValue: (n: number) => void,
+    setRaf: (id: number) => void
+  ): Promise<void> {
     if (reduceMotion || Math.abs(to - from) < 0.4) {
-      shownPct = to;
+      setValue(to);
       return Promise.resolve();
     }
     const start = performance.now();
     return new Promise((resolve) => {
       const step = (now: number) => {
-        if (gen !== generation) {
-          raf = 0;
+        if (gen !== currentGen()) {
+          setRaf(0);
           resolve();
           return;
         }
         const t = Math.min(1, (now - start) / FILL_MS);
         const eased = 1 - (1 - t) ** 3;
-        shownPct = from + (to - from) * eased;
-        if (t < 1) raf = requestAnimationFrame(step);
+        setValue(from + (to - from) * eased);
+        if (t < 1) setRaf(requestAnimationFrame(step));
         else {
-          shownPct = to;
-          raf = 0;
+          setValue(to);
+          setRaf(0);
           resolve();
         }
       };
-      raf = requestAnimationFrame(step);
+      setRaf(requestAnimationFrame(step));
     });
+  }
+
+  function drivePct(to: number, gen: number): Promise<void> {
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+    return driveBar(
+      shownPct,
+      to,
+      gen,
+      () => generation,
+      (n) => (shownPct = n),
+      (id) => (raf = id)
+    );
+  }
+
+  async function syncExtra(nextExtra: number) {
+    if (Math.abs(shownExtraPct - nextExtra) < 0.4) {
+      shownExtraPct = nextExtra;
+      return;
+    }
+    const gen = ++extraGeneration;
+    if (extraRaf) cancelAnimationFrame(extraRaf);
+    extraRaf = 0;
+    await driveBar(
+      shownExtraPct,
+      nextExtra,
+      gen,
+      () => extraGeneration,
+      (n) => (shownExtraPct = n),
+      (id) => (extraRaf = id)
+    );
   }
 
   function flashPromote() {
@@ -279,6 +358,7 @@
   class="bonus"
   class:chart={layout === 'chart'}
   class:plaque={layout === 'plaque'}
+  class:long={layout === 'plaque' && frame === 'long'}
   class:live={phase === 'rolling'}
   class:missed={outcome === 'miss'}
   class:die-left={dieSide === 'left'}
@@ -291,32 +371,91 @@
   {#if icon}
     <img class="icon" class:badge={layout === 'plaque'} src={icon} alt="" draggable="false" />
   {/if}
-  <div class="body">
-    <p class="head">
-      <Tooltip content={tip} show={hovered} placement="top">
-        <span
-          class="label"
-          onmouseenter={() => (hovered = true)}
-          onmouseleave={() => (hovered = false)}>{label}</span
-        >
-      </Tooltip>
-      <span class="amount">
-        {#if amountText}
-          <span class="num custom" class:promoted class:held>{amountText}</span>
-        {:else}
-          {#if prefix}<span class="prefix">{prefix}</span>{/if}
-          <span class="num" class:promoted class:held>{displaySure}</span>
-          <span class="unit">{unit}</span>
+  <div class="body" class:dual={hasExtra}>
+    {#if !hasExtra}
+      <p class="head">
+        <Tooltip content={tip} show={hovered} placement="top">
+          <span
+            class="label"
+            onmouseenter={() => (hovered = true)}
+            onmouseleave={() => (hovered = false)}>{label}</span
+          >
+        </Tooltip>
+        <span class="amount">
+          {#if amountText}
+            <span class="num custom" class:promoted class:held>{amountText}</span>
+          {:else}
+            {#if prefix}<span class="prefix">{prefix}</span>{/if}
+            <span class="num" class:promoted class:held>{displaySure}</span>
+            <span class="unit">{unit}</span>
+          {/if}
+        </span>
+      </p>
+    {:else}
+      <p class="head title-only">
+        <Tooltip content={tip} show={hovered} placement="top">
+          <span
+            class="label"
+            onmouseenter={() => (hovered = true)}
+            onmouseleave={() => (hovered = false)}>{label}</span
+          >
+        </Tooltip>
+      </p>
+    {/if}
+    <div class="meters" class:dual={hasExtra}>
+      <div class="meter">
+        {#if hasExtra}
+          <p class="meter-head">
+            <span class="amount">
+              {#if amountText}
+                <span class="num custom" class:promoted class:held>{amountText}</span>
+              {:else}
+                {#if prefix}<span class="prefix">{prefix}</span>{/if}
+                <span class="num" class:promoted class:held>{displaySure}</span>
+                <span class="unit">{unit}</span>
+              {/if}
+            </span>
+          </p>
         {/if}
-      </span>
-    </p>
-    <span class="track" aria-hidden="true">
-      <span class="fill" class:crest={shownPct >= 99.5} style="width: {shownPct}%"></span>
-      <span class="tick" style="left: 25%"></span>
-      <span class="tick" style="left: 50%"></span>
-      <span class="tick" style="left: 75%"></span>
-    </span>
-    <p class="caption" class:full={pctLabel >= 100 && outcome !== 'miss'}>{caption || '\u00a0'}</p>
+        <span class="track" aria-hidden="true">
+          <span class="fill" class:crest={shownPct >= 99.5} style="width: {shownPct}%"></span>
+          <span class="tick" style="left: 25%"></span>
+          <span class="tick" style="left: 50%"></span>
+          <span class="tick" style="left: 75%"></span>
+        </span>
+        <p class="caption" class:full={pctLabel >= 100 && outcome !== 'miss'}>{caption || '\u00a0'}</p>
+      </div>
+      {#if hasExtra}
+        <div class="meter">
+          <p class="meter-head">
+            {#if extraTip}
+              <Tooltip content={extraTip} show={extraHovered} placement="top">
+                <span
+                  class="amount"
+                  onmouseenter={() => (extraHovered = true)}
+                  onmouseleave={() => (extraHovered = false)}
+                >
+                  <span class="unit">{extraLabel}</span>
+                </span>
+              </Tooltip>
+            {:else}
+              <span class="amount"><span class="unit">{extraLabel}</span></span>
+            {/if}
+          </p>
+          <span class="track" aria-hidden="true">
+            <span
+              class="fill"
+              class:crest={shownExtraPct >= 99.5}
+              style="width: {shownExtraPct}%"
+            ></span>
+            <span class="tick" style="left: 25%"></span>
+            <span class="tick" style="left: 50%"></span>
+            <span class="tick" style="left: 75%"></span>
+          </span>
+          <p class="caption" class:full={extraPctLabel >= 100}>{extraCaption || '\u00a0'}</p>
+        </div>
+      {/if}
+    </div>
   </div>
   <span class="live-text" aria-live="polite">{liveText}</span>
 </div>
@@ -474,6 +613,38 @@
     background: var(--box) center / 100% 100% no-repeat;
   }
 
+  .bonus.plaque.long {
+    min-width: 16rem;
+    aspect-ratio: 2320 / 853;
+    padding: 13% 8% 6%;
+  }
+
+  /* Same absolute badge size as the standard plaque (13% of narrower box). */
+  .bonus.plaque.long .icon.badge {
+    width: 9.4%;
+    transform: translate(calc(-50% - 1px), calc(-50% - 2px));
+  }
+
+  .bonus.plaque.long .body.dual {
+    gap: 2px;
+  }
+
+  .bonus.plaque.long .head.title-only {
+    margin-bottom: 2px;
+  }
+
+  .bonus.plaque.long .meter-head .num {
+    font-size: 1.35rem;
+  }
+
+  .bonus.plaque.long .meter-head .unit {
+    font-size: 0.88rem;
+  }
+
+  .bonus.plaque.long .caption {
+    font-size: 0.74rem;
+  }
+
   .bonus.plaque .body {
     display: flex;
     flex-direction: column;
@@ -484,9 +655,55 @@
   }
 
   .bonus.plaque .head,
+  .bonus.plaque .meters,
   .bonus.plaque .track,
   .bonus.plaque .caption {
     flex-shrink: 0;
+  }
+
+  .meters {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .meters.dual {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 10px;
+    width: 92%;
+  }
+
+  .meter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .meters.dual .meter {
+    flex: 1 1 0;
+  }
+
+  .meters.dual .track {
+    width: 100%;
+  }
+
+  .meter-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin: 0 0 2px;
+    min-width: 0;
+    font-family: var(--font-narrative);
+    color: var(--color-ink);
+    text-align: center;
+  }
+
+  .meter-head .amount {
+    cursor: help;
   }
 
   .bonus.plaque .icon.badge {
