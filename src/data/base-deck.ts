@@ -1596,6 +1596,7 @@ const demonic_tutor = {
         name: 'tutorCard',
         args: {},
       },
+      targets: [{ type: TargetType.DeckCard, count: 1 }],
     },
   ],
 };

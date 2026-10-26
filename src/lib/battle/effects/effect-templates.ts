@@ -63,11 +63,7 @@ import {
   words,
 } from './effect-labels';
 import { DataEffectPrimers } from './effect-primers';
-import {
-  getUnitFromTriggerParam,
-  getUnitsInRange,
-  type UnitFilterArgs,
-} from './unit-filters';
+import { getUnitFromTriggerParam, getUnitsInRange, type UnitFilterArgs } from './unit-filters';
 
 export const DataEffectTemplates: Record<
   string,
