@@ -1886,6 +1886,7 @@
               owned={row.owned}
               {disabled}
               showCount
+              showIcon={false}
               fraction
               onChange={(next) => feed(row.type, next)}
             />
@@ -2116,7 +2117,7 @@
   .materials.below-ritual :global(.well) {
     position: absolute;
     left: 50%;
-    top: 46%;
+    top: calc(46% + 50px);
     width: 16px;
     height: 16px;
     margin: 0;

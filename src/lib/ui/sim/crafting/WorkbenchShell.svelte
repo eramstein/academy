@@ -161,8 +161,14 @@
   }
 
   .frame.invocation {
-    width: min(1600px, calc(100vw - 20px));
-    height: min(1000px, calc(100vh - 16px));
+    /* card-creation.png is 1536×1024 (3:2); size to that ratio so the art isn't stretched. */
+    --inv-footer: 3.4rem;
+    width: min(
+      1440px,
+      calc(100vw - 20px),
+      calc((100vh - 16px - var(--inv-footer)) * 3 / 2)
+    );
+    height: auto;
     max-height: calc(100vh - 16px);
     padding: 0;
     /* Outer wood sits under the footer; the scene lives on .panel. */
@@ -174,23 +180,21 @@
   }
 
   .frame.invocation .panel {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
+    width: 100%;
+    aspect-ratio: 3 / 2;
     min-height: 0;
     overflow: hidden;
     border-radius: 0;
     box-shadow: none;
-    /* Painted scene fills only the main area — never the footer. */
-    background: var(--scene) center / 100% 100% no-repeat;
+    /* Matching 3:2 panel + cover = full scene, no crop or stretch. */
+    background: var(--scene) center / cover no-repeat;
     padding: 4.2% 4.5% 1.2% 4%;
     color: var(--color-ink);
   }
 
   .heading {
     flex: 0 0 auto;
-  }
-
-  .frame.invocation .heading {
-    transform: translateX(-150px);
   }
 
   .frame.invocation .title {

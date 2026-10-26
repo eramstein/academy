@@ -409,7 +409,7 @@
   const lifts = [0, -8, 0, -4, -6, -2];
 </script>
 
-<WorkbenchShell {title} roomy ignite={phase === 'augury' || phase === 'conjuring'}>
+<WorkbenchShell {title} scene="invocation" ignite={phase === 'augury' || phase === 'conjuring'}>
   <section class="pigments" class:gone={phase !== 'idle'} aria-label="Colors" aria-hidden={phase !== 'idle'}>
       {#if availableColors.length === 0}
         <p class="pigments-empty">No known colors yet.</p>
@@ -582,14 +582,14 @@
   .pigment.in-mix {
     opacity: 1;
     transform: translateY(-1px);
-    border-color: #2a3344;
+    border-color: transparent;
     box-shadow:
-      0 0 0 2px #2a3344,
-      0 2px 6px rgba(42, 24, 16, 0.45);
+      0 3px 10px rgba(42, 24, 16, 0.55),
+      0 1px 3px rgba(42, 24, 16, 0.4);
   }
 
   .pigment.in-mix img {
-    filter: drop-shadow(0 1px 2px rgba(42, 24, 16, 0.4));
+    filter: drop-shadow(0 2px 4px rgba(42, 24, 16, 0.45));
   }
 
   .creations {
