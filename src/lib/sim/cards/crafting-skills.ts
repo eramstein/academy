@@ -29,7 +29,7 @@ export const SKILL_RATE = 0.25;
 export const KNOWLEDGE_BASE = 0.25;
 export const CONJURE_OPTION_BASE = 2;
 export const DISCOVERY_BASE = 0.2;
-export const DISCOVERY_PER_INSPIRATION = 0.1;
+export const DISCOVERY_PER_INSPIRATION = 0.2;
 
 export type CraftMode = 'conjure' | 'invoke' | 'enchant';
 
@@ -70,6 +70,8 @@ export interface KnowledgeGain {
   key: string;
   label: string;
   level: number;
+  /** Level before this craft spent points on the trait. */
+  previous: number;
   /** True when this craft raised the trait from 0 to at least 1. */
   unlocked: boolean;
 }
@@ -181,10 +183,25 @@ export function craftProfile(
 
 /**
  * Spend `points` knowledge increments on traits printed on the card.
- * Each point raises one random associated color, keyword, or action by 1.
+ * Each point raises one associated color, keyword, or action by 1.
+ * Unknown keywords/actions (conjure discoveries) take priority until unlocked;
+ * remaining points pick at random from the full pool.
  * Values above 1 are kept for later; unlocking still only requires 1.
  */
 export function applyKnowledgeGains(
+  character: Character,
+  template: CardTemplate,
+  points: number,
+  actionNames?: string[],
+  also?: CardTemplate
+): KnowledgeGain[] {
+  const gains = previewKnowledgeGains(character, template, points, actionNames, also);
+  commitKnowledgeGains(character, gains);
+  return gains;
+}
+
+/** Same rolls as apply, without writing to the character. */
+export function previewKnowledgeGains(
   character: Character,
   template: CardTemplate,
   points: number,
@@ -201,13 +218,41 @@ export function applyKnowledgeGains(
   }
   if (!pool.length || points <= 0) return [];
 
+  const virtual = new Map<string, number>();
+  for (const ref of pool) {
+    virtual.set(`${ref.kind}:${ref.key}`, knowledgeLevel(character, ref));
+  }
+
   const gains = new Map<string, KnowledgeGain>();
   for (let i = 0; i < points; i++) {
-    const ref = pool[Math.floor(Math.random() * pool.length)];
-    const gain = bumpKnowledge(character, ref);
-    gains.set(`${gain.kind}:${gain.key}`, gain);
+    const discoveries = pool.filter((ref) => {
+      if (ref.kind !== 'keyword' && ref.kind !== 'action') return false;
+      return (virtual.get(`${ref.kind}:${ref.key}`) ?? 0) < 1;
+    });
+    const candidates = discoveries.length ? discoveries : pool;
+    const ref = candidates[Math.floor(Math.random() * candidates.length)];
+    const key = `${ref.kind}:${ref.key}`;
+    const before = virtual.get(key) ?? 0;
+    const level = before + 1;
+    virtual.set(key, level);
+    const prior = gains.get(key);
+    gains.set(key, {
+      kind: ref.kind,
+      key: ref.key,
+      label: knowledgeLabel(ref),
+      level,
+      previous: prior?.previous ?? before,
+      unlocked: (prior?.previous ?? before) < 1,
+    });
   }
   return [...gains.values()];
+}
+
+/** Write predetermined knowledge gains onto the character. */
+export function commitKnowledgeGains(character: Character, gains: KnowledgeGain[]) {
+  for (const gain of gains) {
+    writeKnowledgeLevel(character, gain);
+  }
 }
 
 export function describeKnowledgeGains(gains: KnowledgeGain[]): string {
@@ -273,45 +318,39 @@ function actionNamesOn(template: CardTemplate): string[] {
   return [];
 }
 
-function bumpKnowledge(character: Character, ref: KnowledgeRef): KnowledgeGain {
+function knowledgeLevel(character: Character, ref: KnowledgeRef): number {
+  const knowledge = character.craftingKnowledge;
+  if (ref.kind === 'color') return knowledge?.colors?.[ref.key as CardColor] ?? 0;
+  if (ref.kind === 'keyword') {
+    return knowledge?.keywords?.[ref.key as keyof UnitKeywords] ?? 0;
+  }
+  return knowledge?.actions?.[ref.key] ?? 0;
+}
+
+function knowledgeLabel(ref: KnowledgeRef): string {
+  if (ref.kind === 'action') {
+    return getActionTemplateMeta(ref.key)?.label ?? formatKeywordLabel(ref.key);
+  }
+  return formatKeywordLabel(ref.key);
+}
+
+function writeKnowledgeLevel(character: Character, gain: KnowledgeGain) {
   if (!character.craftingKnowledge) {
     character.craftingKnowledge = {};
   }
   const knowledge = character.craftingKnowledge;
-  if (ref.kind === 'color') {
+  if (gain.kind === 'color') {
     if (!knowledge.colors) knowledge.colors = {};
-    const key = ref.key as CardColor;
-    const previous = knowledge.colors[key] ?? 0;
-    const level = previous + 1;
-    knowledge.colors[key] = level;
-    return {
-      kind: ref.kind,
-      key: ref.key,
-      label: formatKeywordLabel(ref.key),
-      level,
-      unlocked: previous < 1,
-    };
+    knowledge.colors[gain.key as CardColor] = gain.level;
+    return;
   }
-  if (ref.kind === 'keyword') {
+  if (gain.kind === 'keyword') {
     if (!knowledge.keywords) knowledge.keywords = {};
-    const key = ref.key as keyof UnitKeywords;
-    const previous = knowledge.keywords[key] ?? 0;
-    const level = previous + 1;
-    knowledge.keywords[key] = level;
-    return {
-      kind: ref.kind,
-      key: ref.key,
-      label: formatKeywordLabel(ref.key),
-      level,
-      unlocked: previous < 1,
-    };
+    knowledge.keywords[gain.key as keyof UnitKeywords] = gain.level;
+    return;
   }
   if (!knowledge.actions) knowledge.actions = {};
-  const previous = knowledge.actions[ref.key] ?? 0;
-  const level = previous + 1;
-  knowledge.actions[ref.key] = level;
-  const label = getActionTemplateMeta(ref.key)?.label ?? formatKeywordLabel(ref.key);
-  return { kind: ref.kind, key: ref.key, label, level, unlocked: previous < 1 };
+  knowledge.actions[gain.key] = gain.level;
 }
 
 function joinList(names: string[]): string {

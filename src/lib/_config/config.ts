@@ -17,4 +17,5 @@ export const config = {
   continuationEnabled: false,
   continuationSteps: 6,
   continuationBranch: 4,
+  maxCraftingKnowledge: 5,
 };

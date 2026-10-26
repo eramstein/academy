@@ -15,16 +15,19 @@ import { getAbilityActionNames, type AbilityPick } from '../cards/ability-templa
 import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
 import {
   applyKnowledgeGains,
+  commitKnowledgeGains,
   craftProfile,
   describeKnowledgeGains,
   isNumericKeyword,
   knownKeys,
+  previewKnowledgeGains,
   rollConjureOptionCount,
   rollDiscoveryIndex,
   rollPoints,
   unknownActions,
   unknownKeywords,
   type CraftProfile,
+  type KnowledgeGain,
 } from '../cards/crafting-skills';
 import { buildSpellCard, buildUnitCard, randomUnitTypes } from '../cards/creation';
 import {
@@ -81,6 +84,8 @@ export interface CardCreationResult {
   actionName?: string[];
   /** Pre-rolled learning points. When set, commit uses this instead of rolling again. */
   learningRoll?: number;
+  /** Predetermined erudition gains for this option (conjure choice preview). */
+  learningGains?: KnowledgeGain[];
 }
 
 /** Learning and fortune results shown before conjured cards appear. */
@@ -217,7 +222,8 @@ export function conjureCard(parameters: CardCreationResult, characterKey = 'play
     parameters.bonusBudget,
     getActingCharacter(characterKey),
     parameters.actionName,
-    parameters.learningRoll
+    parameters.learningRoll,
+    parameters.learningGains
   );
   return '';
 }
@@ -273,7 +279,15 @@ export async function getConjurationOtions(
     if (result) {
       usedFlavors.names.add(result.template.name);
       usedFlavors.images.add(result.template.imageFileName);
-      options.push(augury ? { ...result, learningRoll: augury.learning } : result);
+      const withAugury = augury ? { ...result, learningRoll: augury.learning } : result;
+      const points = withAugury.learningRoll ?? rollPoints(withAugury.learningChance);
+      const learningGains = previewKnowledgeGains(
+        character,
+        withAugury.template,
+        points,
+        withAugury.actionName
+      );
+      options.push({ ...withAugury, learningRoll: points, learningGains });
       onProgress?.({
         index: i,
         total: optionsCount,
@@ -480,10 +494,17 @@ function learnCard(
   bonusBudget: number,
   character: Character,
   actionName?: string[],
-  learningRoll?: number
+  learningRoll?: number,
+  learningGains?: KnowledgeGain[]
 ) {
-  const points = learningRoll ?? rollPoints(learningChance);
-  const gains = applyKnowledgeGains(character, template, points, actionName);
+  const gains = learningGains?.length
+    ? (commitKnowledgeGains(character, learningGains), learningGains)
+    : applyKnowledgeGains(
+        character,
+        template,
+        learningRoll ?? rollPoints(learningChance),
+        actionName
+      );
   character.collection.push(template);
   if (character.key === gs.player.key) {
     narrateCardLearnt(template, bonusBudget, gains);

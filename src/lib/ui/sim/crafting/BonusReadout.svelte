@@ -27,6 +27,8 @@
     layout = 'stack',
     frame = 'box',
     dieSide = 'top',
+    showOutcome = false,
+    reward,
     die,
   }: {
     label: string;
@@ -62,6 +64,9 @@
     frame?: 'box' | 'long';
     /** Where the percent die sits relative to the readout. */
     dieSide?: 'top' | 'left' | 'right';
+    /** Replace the forecast with the roll's reward. */
+    showOutcome?: boolean;
+    reward?: Snippet;
     die?: Snippet;
   } = $props();
 
@@ -363,6 +368,7 @@
   class:missed={outcome === 'miss'}
   class:die-left={dieSide === 'left'}
   class:die-right={dieSide === 'right'}
+  class:show-outcome={showOutcome}
   style={layout === 'plaque' ? `--box: url('${boxPath}')` : undefined}
 >
   {#if die}
@@ -371,8 +377,15 @@
   {#if icon}
     <img class="icon" class:badge={layout === 'plaque'} src={icon} alt="" draggable="false" />
   {/if}
-  <div class="body" class:dual={hasExtra}>
-    {#if !hasExtra}
+  <div class="body" class:dual={hasExtra && !showOutcome} class:outcome={showOutcome}>
+    {#if showOutcome}
+      <p class="head title-only">
+        <span class="label">{label}</span>
+      </p>
+      <div class="outcome-slot">
+        {@render reward?.()}
+      </div>
+    {:else if !hasExtra}
       <p class="head">
         <Tooltip content={tip} show={hovered} placement="top">
           <span
@@ -402,6 +415,7 @@
         </Tooltip>
       </p>
     {/if}
+    {#if !showOutcome}
     <div class="meters" class:dual={hasExtra}>
       <div class="meter">
         {#if hasExtra}
@@ -456,6 +470,7 @@
         </div>
       {/if}
     </div>
+    {/if}
   </div>
   <span class="live-text" aria-live="polite">{liveText}</span>
 </div>
@@ -652,6 +667,25 @@
     justify-content: center;
     height: 100%;
     min-height: 0;
+  }
+
+  .body.outcome {
+    justify-content: center;
+    gap: 1px;
+  }
+
+  .outcome-slot {
+    width: 100%;
+    min-height: 0;
+    animation: outcome-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes outcome-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.92);
+      filter: brightness(1.6);
+    }
   }
 
   .bonus.plaque .head,
@@ -871,6 +905,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .outcome-slot {
+      animation: none;
+    }
+
     .num.promoted,
     .bonus.missed .track {
       animation: none;

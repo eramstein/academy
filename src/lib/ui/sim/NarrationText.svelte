@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { tick, untrack } from 'svelte';
   import type { Mentions } from '@/lib/_model';
   import { settings, TEXT_SPEED_MS } from '@/lib/_state/settings.svelte';
   import { selectSimCharacter } from '@/lib/_state/state-ui.svelte';
   import { getActionTooltip } from '@/lib/sim/cards/action-templates';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
   import { getKeywordTooltip } from '@/lib/ui/_helpers/keywordTooltips';
+  import { tick, untrack } from 'svelte';
   import { revealInk, type InkBeat } from './ink-beat';
   import { segmentNarration, visibleSegments } from './narration-mentions';
 

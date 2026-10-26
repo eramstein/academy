@@ -83,6 +83,8 @@
     onAuguryBeat,
     onAuguryPrepared,
     onAuguryComplete,
+    discoveredLore = null,
+    knowledgeGain = null,
     charmEntry = null,
     acceptingDrop = false,
     circleContent,
@@ -134,6 +136,10 @@
     /** Fired as soon as Learning and Fortune are rolled, before the dice finish. */
     onAuguryPrepared?: (result: ConjurationAugury) => void;
     onAuguryComplete?: (result: ConjurationAugury) => void;
+    /** Name and icon of lore revealed on the discovery card, once it is known. */
+    discoveredLore?: { label: string; icon: string } | null;
+    /** Trait raised by this ritual's erudition roll, once the visions exist. */
+    knowledgeGain?: { label: string; icon: string; from: number; to: number } | null;
     /** Drop point for a charm that is about to join the orbit. */
     charmEntry?: { id: string; x: number; y: number } | null;
     /** Ingredient drag is in progress; highlight the circle. */
@@ -155,6 +161,7 @@
   const bookIcon = getUiIconPath('book');
   const starIcon = getUiIconPath('star');
   const spiralIcon = getUiIconPath('spiral');
+  const decksIcon = getUiIconPath('decks');
   const RESOURCE_ICONS: Record<ResourceType, string> = {
     [ResourceType.MagicDust]: getUiIconPath('magic_dust'),
     [ResourceType.Mithril]: getUiIconPath('metal_bar'),
@@ -211,6 +218,11 @@
   const FORTUNE_HIT_HOLD_MS = 480;
   /** Linger after bonus icons reach the card, before the form closes. */
   const FORTUNE_SEE_MS = 720;
+  /** How long a conjure plaque shows its reward before the next die starts. */
+  const OUTCOME_BEAT_MS = 780;
+  /** Conjure: let colors and ingredients fade before the first die. */
+  const OFFERING_FADE_MS = 620;
+  const KNOWLEDGE_TRACK = 5;
   const DIE_TICK_MS = 40;
   const healthIcon = getAssetPath('images/ui/icons/health-icon-decorated.png');
   const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon-decorated.png');
@@ -295,6 +307,9 @@
   const profile = $derived(craftProfile(gs.player.craftingSkills, resources, craft));
   let visionCount = $state<number | null>(null);
   let visionDiscovery = $state<number | null>(null);
+  let eruditionOutcome = $state(false);
+  let inspirationOutcome = $state(false);
+  let masteryOutcome = $state(false);
   let pendingVisions: number | null = null;
   let pendingDiscovery: number | null = null;
   const charge = $derived(
@@ -762,12 +777,24 @@
     }, delay);
   }
 
+  /** Read the settled die, swap the plaque to its reward, then run the next beat. */
+  function afterRoll(hold: number, reveal: () => void, next: () => void) {
+    const read = reduceMotion ? 0 : Math.max(hold, 340);
+    armAugury(read, () => {
+      reveal();
+      armAugury(reduceMotion ? 0 : OUTCOME_BEAT_MS, next);
+    });
+  }
+
   function settleLearningHold(learning: number, fortune: number, learningEnd: DiePhase) {
     const hold = settleHold(learningEnd, learningNeed, learning);
-    armAugury(hold, () => {
-      if (craft === 'conjure') startAuguryInspiration(learning, fortune);
-      else startAuguryFortune(learning, fortune);
-    });
+    if (craft !== 'conjure') {
+      armAugury(hold, () => startAuguryFortune(learning, fortune));
+      return;
+    }
+    afterRoll(hold, () => (eruditionOutcome = true), () =>
+      startAuguryInspiration(learning, fortune)
+    );
   }
 
   function settleLearning(learning: number, fortune: number, learningEnd: DiePhase) {
@@ -803,7 +830,9 @@
           discoveryIndex: pendingDiscovery ?? visionDiscovery,
         });
         const hold = settleHold(inspirationEnd, inspirationNeed, count);
-        armAugury(hold, () => startAuguryFortune(learning, fortune));
+        afterRoll(hold, () => (inspirationOutcome = true), () =>
+          startAuguryFortune(learning, fortune)
+        );
       }
     );
   }
@@ -827,14 +856,21 @@
         setSpinAt: (n) => (auguryFortuneSpinAt = n),
       },
       () => {
-        publishAugury({
-          stage: 'shown',
-          learning,
-          fortune,
-          optionCount: visionCount,
-          discoveryIndex: visionDiscovery,
-        });
-        armAugury(FORTUNE_SEE_MS, () => finishAugury(learning, fortune));
+        const hold = settleHold(auguryFortunePhase, auguryFortuneNeed, fortune);
+        afterRoll(
+          hold,
+          () => {
+            masteryOutcome = true;
+            publishAugury({
+              stage: 'shown',
+              learning,
+              fortune,
+              optionCount: visionCount,
+              discoveryIndex: visionDiscovery,
+            });
+          },
+          () => finishAugury(learning, fortune)
+        );
       }
     );
   }
@@ -1122,6 +1158,9 @@
     auguryFinished = false;
     visionCount = null;
     visionDiscovery = null;
+    eruditionOutcome = false;
+    inspirationOutcome = false;
+    masteryOutcome = false;
     pendingVisions = null;
     pendingDiscovery = null;
     if (auguryTimer) {
@@ -1157,7 +1196,13 @@
 
   $effect(() => {
     if (!rollAugury) return;
-    untrack(() => beginAugury());
+    untrack(() => {
+      if (craft !== 'conjure' || reduceMotion) {
+        beginAugury();
+        return;
+      }
+      armAugury(OFFERING_FADE_MS, () => beginAugury());
+    });
   });
 
   $effect(() => {
@@ -1567,7 +1612,7 @@
           </div>
         </div>
       {:else if craft === 'conjure'}
-        <div class="bonus-top">
+        <div class="bonus-top" class:outcome={inspirationOutcome}>
           <BonusReadout
             layout="plaque"
             frame="long"
@@ -1584,9 +1629,35 @@
             extraChance={profile.discoveryChance}
             extraLabel="Discovery chance"
             extraTip={discoveryTip}
+            showOutcome={inspirationOutcome}
           >
             {#snippet die()}
               {@render percentDie(inspirationPhase, inspirationPct, inspirationNeed, 'Inspiration')}
+            {/snippet}
+            {#snippet reward()}
+              {@const choices = visionCount ?? inspirationFace}
+              {@const extra = Math.max(0, choices - profile.conjureOptions.sure)}
+              {@const found = (visionDiscovery ?? -1) >= 0}
+              <div class="augury-rewards">
+                <div class="augury-reward" class:hit={extra > 0}>
+                  <img class="choice-icon" src={decksIcon} alt="" draggable="false" />
+                  <span class="reward-title">
+                    {extra > 0 ? `+${extra} Choice` : `${choices} Choices`}
+                  </span>
+                  <span class="reward-note">{extra > 0 ? 'Bonus card' : 'Visions'}</span>
+                </div>
+                <div class="augury-reward" class:hit={found} class:miss={!found}>
+                  <img src={discoveredLore?.icon ?? spiralIcon} alt="" draggable="false" />
+                  {#key discoveredLore?.label ?? (found ? 'new' : 'none')}
+                    <span class="reward-name lore">
+                      {discoveredLore?.label ?? (found ? 'Discovery' : 'Sealed')}
+                    </span>
+                  {/key}
+                  <span class="reward-note">
+                    {discoveredLore ? 'Discovery' : found ? 'One vision' : 'No discovery'}
+                  </span>
+                </div>
+              </div>
             {/snippet}
           </BonusReadout>
         </div>
@@ -1615,7 +1686,7 @@
       data-ingredient-drop
     >
       {#if !split && craft === 'conjure'}
-        <div class="bonus-flank left">
+        <div class="bonus-flank left" class:outcome={eruditionOutcome}>
           <BonusReadout
             layout="plaque"
             icon={RESOURCE_ICONS[ResourceType.Moxes]}
@@ -1628,9 +1699,46 @@
             phase={learningPhase}
             face={learningFace}
             need={learningNeed}
+            showOutcome={eruditionOutcome}
           >
             {#snippet die()}
               {@render percentDie(learningPhase, learningPct, learningNeed, 'Erudition')}
+            {/snippet}
+            {#snippet reward()}
+              {@const from = knowledgeGain?.from ?? 0}
+              {@const to = knowledgeGain?.to ?? learningFace}
+              {@const filled = knowledgeGain ? to : learningFace}
+              {@const track = Math.max(KNOWLEDGE_TRACK, filled)}
+              <div class="level-up" class:hit={learningFace > 0} class:miss={learningFace <= 0}>
+                <p class="level-trait">
+                  <img src={knowledgeGain?.icon ?? bookIcon} alt="" draggable="false" />
+                  {#key knowledgeGain?.label ?? 'knowledge'}
+                    <span class:lore={!!knowledgeGain}>{knowledgeGain?.label ?? 'Knowledge'}</span>
+                  {/key}
+                </p>
+                {#if learningFace > 0 && knowledgeGain}
+                  <p class="level-line">
+                    Level <span class="from">{from}</span>
+                    <span class="arrow" aria-hidden="true">→</span>
+                    <span class="to">{to}</span>
+                    <span class="cap">/ {track}</span>
+                  </p>
+                {:else if learningFace > 0}
+                  <p class="level-line">+{learningFace} knowledge</p>
+                {:else}
+                  <p class="level-line shut">The lore stays shut</p>
+                {/if}
+                <div class="pips" aria-hidden="true">
+                  {#each Array(track) as _, i (i)}
+                    <span
+                      class="pip"
+                      class:filled={i < filled}
+                      class:newest={learningFace > 0 && i === filled - 1}
+                      style="--pip: {i}"
+                    ></span>
+                  {/each}
+                </div>
+              </div>
             {/snippet}
           </BonusReadout>
         </div>
@@ -1703,7 +1811,7 @@
       {/if}
 
       {#if !split && craft === 'conjure'}
-        <div class="bonus-flank right">
+        <div class="bonus-flank right" class:outcome={masteryOutcome}>
           <BonusReadout
             layout="plaque"
             icon={RESOURCE_ICONS[ResourceType.Mithril]}
@@ -1716,6 +1824,7 @@
             phase={auguryFortunePhase}
             face={auguryFortuneFace}
             need={auguryFortuneNeed}
+            showOutcome={masteryOutcome}
           >
             {#snippet die()}
               {@render percentDie(
@@ -1724,6 +1833,18 @@
                 auguryFortuneNeed,
                 'Mastery'
               )}
+            {/snippet}
+            {#snippet reward()}
+              <div class="masterwork" class:hit={auguryFortuneFace > 0} class:miss={auguryFortuneFace <= 0}>
+                {#if auguryFortuneFace > 0}
+                  <span class="masterwork-value">+{auguryFortuneFace}</span>
+                  <span class="masterwork-name">Masterwork</span>
+                  <span class="masterwork-note">All cards</span>
+                {:else}
+                  <span class="masterwork-value">—</span>
+                  <span class="masterwork-note">No bonus</span>
+                {/if}
+              </div>
             {/snippet}
           </BonusReadout>
         </div>
@@ -1892,8 +2013,16 @@
   .bench.consume .materials,
   .bench.consume .ingredients {
     opacity: 0;
-    transform: translateY(36px) scale(0.45);
     pointer-events: none;
+  }
+
+  .bench.consume:not(.conjure) .materials,
+  .bench.consume:not(.conjure) .ingredients {
+    transform: translateY(36px) scale(0.45);
+  }
+
+  .prep.conjure .ingredients {
+    transition: opacity 0.55s ease;
   }
 
   .prep.conjure {
@@ -2232,6 +2361,198 @@
     bottom: 2px;
     z-index: 6;
     perspective: 120px;
+    transition: opacity 0.35s ease;
+  }
+
+  .level-up,
+  .masterwork,
+  .augury-rewards {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    font-family: var(--font-narrative);
+    color: var(--color-ink);
+  }
+
+  .level-trait {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 700;
+  }
+
+  .level-trait img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+  }
+
+  .level-line {
+    margin: 2px 0 0;
+    font-size: 0.84rem;
+    letter-spacing: 0.02em;
+    color: #4a3f32;
+  }
+
+  .level-line .to {
+    font-weight: 700;
+    color: #2a3344;
+  }
+
+  .level-line .cap,
+  .level-line.shut {
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .level-up.hit .level-trait {
+    color: #2c251d;
+  }
+
+  .pips {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 6px;
+  }
+
+  .pip {
+    width: 18px;
+    height: 11px;
+    border-radius: 2px;
+    background: rgba(44, 37, 29, 0.22);
+    box-shadow:
+      inset 0 1px 1px rgba(42, 24, 16, 0.35),
+      inset 0 0 0 1px rgba(44, 37, 29, 0.38);
+  }
+
+  .pip.filled {
+    background: #2a3344;
+    animation: pip-fill 0.38s ease backwards;
+    animation-delay: calc(var(--pip) * 90ms);
+  }
+
+  .pip.newest {
+    background: #2a3344;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #2a3344 55%, #2c251d),
+      0 0 8px color-mix(in srgb, #2a3344 45%, transparent);
+  }
+
+  .augury-rewards {
+    flex-direction: row;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 2px;
+  }
+
+  .augury-reward {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    flex: 1 1 0;
+    gap: 0;
+  }
+
+  .augury-reward img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    margin-bottom: 1px;
+    filter: drop-shadow(0 1px 1px rgba(42, 24, 16, 0.35));
+  }
+
+  .augury-reward img.choice-icon {
+    width: 39px;
+    height: 39px;
+  }
+
+  .level-trait .lore {
+    animation: lore-name 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reward-value,
+  .reward-name,
+  .reward-title,
+  .masterwork-value,
+  .masterwork-name {
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.05;
+  }
+
+  .reward-value {
+    font-size: 1.05rem;
+  }
+
+  .reward-name {
+    font-size: 0.72rem;
+  }
+
+  .reward-title {
+    font-size: 0.92rem;
+    white-space: nowrap;
+  }
+
+  .reward-name.lore {
+    letter-spacing: 0.06em;
+    text-align: center;
+    animation: lore-name 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reward-note,
+  .masterwork-note {
+    margin-top: 1px;
+    font-size: 0.72rem;
+    font-style: italic;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    color: var(--color-ink-muted);
+  }
+
+  .augury-reward.hit .reward-value,
+  .augury-reward.hit .reward-name,
+  .augury-reward.hit .reward-title,
+  .masterwork.hit .masterwork-value {
+    color: #2a3344;
+  }
+
+  .augury-reward.miss,
+  .masterwork.miss {
+    opacity: 0.78;
+  }
+
+  .masterwork-value {
+    font-size: 1.65rem;
+    line-height: 0.95;
+  }
+
+  .masterwork-name {
+    margin-top: 2px;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+  }
+
+  @keyframes pip-fill {
+    from {
+      opacity: 0;
+      transform: scale(0.35);
+      filter: brightness(2);
+    }
+  }
+
+  @keyframes lore-name {
+    from {
+      opacity: 0;
+      transform: translateY(4px) scale(0.92);
+      filter: brightness(1.8);
+    }
   }
 
   .pct-die {
@@ -2466,11 +2787,17 @@
     transition: opacity 0.4s ease;
   }
 
-  .bench.consume:not(.auguring) .gauge,
-  .bench.consume:not(.auguring) .gauge-row,
-  .bench.consume:not(.auguring) .bonus-top,
-  .bench.consume:not(.auguring) .bonus-flank {
+  .bench.consume:not(.auguring):not(.conjure) .gauge,
+  .bench.consume:not(.auguring):not(.conjure) .gauge-row,
+  .bench.consume:not(.auguring):not(.conjure) .bonus-top,
+  .bench.consume:not(.auguring):not(.conjure) .bonus-flank {
     opacity: 0;
+  }
+
+  .bonus-top.outcome .fortune-die-slot,
+  .bonus-flank.outcome .fortune-die-slot {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .bench.consume:not(.auguring) .beads,
@@ -2659,7 +2986,11 @@
   @media (prefers-reduced-motion: reduce) {
     .materials,
     .gauge,
-    .gauge-fill {
+    .gauge-fill,
+    .pip.filled,
+    .reward-name.lore,
+    .prep.conjure .ingredients,
+    .fortune-die-slot {
       animation: none;
       transition: none;
     }

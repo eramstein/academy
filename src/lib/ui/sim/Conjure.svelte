@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { CardTemplate } from '@/lib/_model';
-  import { CardColor, ResourceType } from '@/lib/_model';
+  import type { CardTemplate, UnitKeywords } from '@/lib/_model';
+  import { CardColor, ResourceType, isSpellCard, isUnitCard } from '@/lib/_model';
   import { gs } from '@/lib/_state';
-  import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { getActionTypeIconPath, getAssetPath } from '@/lib/_utils/asset-paths';
   import {
     getConjurationOptionCount,
     type CardCreationResult,
@@ -10,6 +10,13 @@
     type ConjurationAugury,
     type SummonRevealStage,
   } from '@/lib/sim/actions';
+  import { getAbilityActionNames } from '@/lib/sim/cards/ability-templates';
+  import {
+    getActionTemplateMeta,
+    getActionTemplateNameForEffect,
+  } from '@/lib/sim/cards/action-templates';
+  import type { KnowledgeGain } from '@/lib/sim/cards/crafting-skills';
+  import { formatKeywordLabel } from '@/lib/sim/cards/keywords';
   import { playSimSound } from '@/lib/sim/sound';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
@@ -56,9 +63,23 @@
   let statusLine = $state('The materials take form…');
   let auguryBeat = $state<RitualAuguryBeat>({ stage: 'learning', learning: null, fortune: null });
   let pickedId = $state<string | null>(null);
+  let rollsReady = $state(false);
+  let discoveredLore = $state<{ label: string; icon: string } | null>(null);
+  let knowledgeGain = $state<{
+    label: string;
+    icon: string;
+    from: number;
+    to: number;
+  } | null>(null);
   let absorbStartedAt = 0;
   let revealTimer: ReturnType<typeof setTimeout> | undefined;
+  let fadeTimer: ReturnType<typeof setTimeout> | undefined;
   let pickTimer: ReturnType<typeof setTimeout> | undefined;
+  let knownKeywords = new Set<string>();
+  let knownActions = new Set<string>();
+
+  /** Colors and ingredients leave before the first die spins. */
+  const FADE_MS = 620;
 
   /** Matches RitualStage SUCTION_START + SUCTION_MS. */
   const ABSORB_MS = 1500;
@@ -96,6 +117,7 @@
     return () => {
       window.removeEventListener('keydown', onKey);
       if (revealTimer) clearTimeout(revealTimer);
+      if (fadeTimer) clearTimeout(fadeTimer);
       if (pickTimer) clearTimeout(pickTimer);
     };
   });
@@ -216,6 +238,85 @@
     return next;
   }
 
+  function snapshotKnowledge() {
+    knownKeywords = new Set(
+      Object.entries(gs.player.craftingKnowledge.keywords ?? {})
+        .filter(([, level]) => (level ?? 0) >= 1)
+        .map(([key]) => key)
+    );
+    knownActions = new Set(
+      Object.entries(gs.player.craftingKnowledge.actions ?? {})
+        .filter(([, level]) => (level ?? 0) >= 1)
+        .map(([key]) => key)
+    );
+  }
+
+  function gainIcon(gain: KnowledgeGain): string {
+    if (gain.kind === 'color') return colorPath(gain.key as CardColor);
+    if (gain.kind === 'keyword') return getAssetPath(`images/keywords/${gain.key}.png`);
+    return getActionTypeIconPath(gain.key);
+  }
+
+  function primaryGain(
+    gains: KnowledgeGain[] | undefined
+  ): { label: string; icon: string; from: number; to: number } | null {
+    if (!gains?.length) return null;
+    const gain = gains.find((entry) => entry.unlocked) ?? gains[0];
+    return {
+      label: gain.label,
+      icon: gainIcon(gain),
+      from: gain.previous,
+      to: gain.level,
+    };
+  }
+
+  function setKnowledgeFromResults(results: CardCreationResult[], discoveryIndex?: number | null) {
+    const preferred =
+      discoveryIndex != null && discoveryIndex >= 0 ? results[discoveryIndex] : undefined;
+    knowledgeGain =
+      primaryGain(preferred?.learningGains) ??
+      primaryGain(results.find((result) => result.learningGains?.length)?.learningGains) ??
+      null;
+  }
+
+  function loreFromCard(template: CardTemplate): { label: string; icon: string } | null {
+    if (isUnitCard(template)) {
+      for (const key of Object.keys(template.keywords ?? {}) as (keyof UnitKeywords)[]) {
+        if (!template.keywords?.[key] || knownKeywords.has(key)) continue;
+        return {
+          label: formatKeywordLabel(key),
+          icon: getAssetPath(`images/keywords/${key}.png`),
+        };
+      }
+      for (const name of (template.abilities ?? []).flatMap(getAbilityActionNames)) {
+        if (!name || knownActions.has(name)) continue;
+        return {
+          label: getActionTemplateMeta(name)?.label ?? formatKeywordLabel(name),
+          icon: getActionTypeIconPath(name),
+        };
+      }
+    }
+    if (isSpellCard(template)) {
+      for (const action of template.actions) {
+        const name = getActionTemplateNameForEffect(action.effect.name);
+        if (!name || knownActions.has(name)) continue;
+        return {
+          label: getActionTemplateMeta(name)?.label ?? formatKeywordLabel(name),
+          icon: getActionTypeIconPath(name),
+        };
+      }
+    }
+    return null;
+  }
+
+  function noteDiscoveredLore(progress: CardSummonProgress) {
+    if (discoveredLore) return;
+    const index = auguryBeat.discoveryIndex;
+    if (index == null || index < 0 || progress.index !== index) return;
+    const lore = loreFromCard(progress.template);
+    if (lore) discoveredLore = lore;
+  }
+
   function onSummonProgress(progress: CardSummonProgress) {
     const next = ensureSlot(progress.index, progress.total);
     const slot = next[progress.index];
@@ -228,14 +329,23 @@
     };
     summonSlots = next;
     statusLine = statusForStage(progress.stage);
+    noteDiscoveredLore(progress);
   }
 
   function begin() {
     if (phase !== 'idle') return;
     phase = 'augury';
+    rollsReady = false;
+    discoveredLore = null;
+    knowledgeGain = null;
+    snapshotKnowledge();
     absorbStartedAt = performance.now();
     auguryBeat = { stage: 'learning', learning: null, fortune: null };
     playSimSound('big-swoosh');
+    if (fadeTimer) clearTimeout(fadeTimer);
+    fadeTimer = setTimeout(() => {
+      rollsReady = true;
+    }, reduceMotion ? 0 : FADE_MS);
   }
 
   async function onAuguryComplete(augury: ConjurationAugury) {
@@ -276,6 +386,7 @@
       };
     }
     summonSlots = results.length === 0 ? [] : next.slice(0, results.length);
+    setKnowledgeFromResults(results, augury.discoveryIndex);
 
     // Absorb starts with Conjure; wait until beads are gone before the choice step.
     const remaining = ABSORB_MS - (performance.now() - absorbStartedAt);
@@ -294,32 +405,12 @@
     pickTimer = setTimeout(() => onPick(result), delay);
   }
 
-  const tilts = [-2.4, 0.7, 2.2];
-  const lifts = [0, -8, 0];
+  const tilts = [-2.4, 0.7, 2.2, -1.6, 1.8, -0.8];
+  const lifts = [0, -8, 0, -4, -6, -2];
 </script>
 
-{#snippet auguryMarks()}
-  {#if auguryBeat.learning != null}
-    <span class="insight-mark" class:hit={auguryBeat.learning > 0}>
-      {auguryBeat.learning} knowledge
-    </span>
-  {/if}
-  {#if auguryBeat.optionCount != null}
-    <span class="insight-mark" class:hit={(auguryBeat.discoveryIndex ?? -1) >= 0}>
-      {auguryBeat.optionCount} card choice{auguryBeat.optionCount === 1 ? '' : 's'}
-      {(auguryBeat.discoveryIndex ?? -1) >= 0 ? '· new lore' : ''}
-    </span>
-  {/if}
-  {#if auguryBeat.fortune != null}
-    <span class="insight-mark" class:hit={auguryBeat.fortune > 0}>
-      {auguryBeat.fortune > 0 ? `+${auguryBeat.fortune} budget` : 'No bonus budget'}
-    </span>
-  {/if}
-{/snippet}
-
 <WorkbenchShell {title} roomy ignite={phase === 'augury' || phase === 'conjuring'}>
-  {#if phase === 'idle'}
-    <section class="pigments" aria-label="Colors">
+  <section class="pigments" class:gone={phase !== 'idle'} aria-label="Colors" aria-hidden={phase !== 'idle'}>
       {#if availableColors.length === 0}
         <p class="pigments-empty">No known colors yet.</p>
       {:else}
@@ -344,21 +435,28 @@
           {/each}
         </div>
       {/if}
-    </section>
-  {/if}
+  </section>
   <RitualStage
     bind:selected
     disabled={phase !== 'idle'}
     ignite={phase === 'augury' || phase === 'conjuring'}
-    dim={phase === 'revealed' || phase === 'conjuring'}
+    dim={phase === 'revealed'}
     consume={phase !== 'idle'}
     craft="conjure"
     rollAugury={phase === 'augury'}
+    suppressCore={phase === 'conjuring' || phase === 'revealed'}
+    discoveredLore={discoveredLore}
+    knowledgeGain={knowledgeGain}
     onAuguryBeat={(beat) => (auguryBeat = beat)}
     {onAuguryComplete}
   >
+    {#snippet circleContent()}
     {#if phase === 'conjuring' || phase === 'revealed'}
-      <div class="creations" class:summoning={phase === 'conjuring'}>
+      <div
+        class="creations"
+        class:summoning={phase === 'conjuring'}
+        class:rows={summonSlots.length >= 3}
+      >
         {#if phase === 'revealed' && !hasAnyOption}
           <p class="empty">Nothing took form.</p>
         {:else}
@@ -371,8 +469,15 @@
               class:picking={pickedId !== null &&
                 !!slot.result &&
                 pickedId !== slot.result.template.id}
-              style="--i: {i}; --tilt: {tilts[i % 3]}deg; --lift: {lifts[i % 3]}px"
+              style="--i: {i}; --tilt: {tilts[i % tilts.length]}deg; --lift: {lifts[
+                i % lifts.length
+              ]}px"
               disabled={phase !== 'revealed' || !slot.result || pickedId !== null}
+              onmouseenter={() => {
+                if (slot.result?.learningGains?.length) {
+                  knowledgeGain = primaryGain(slot.result.learningGains);
+                }
+              }}
               onclick={() => pick(slot)}
             >
               {#if slot.template}
@@ -387,25 +492,23 @@
         {/if}
       </div>
     {/if}
+    {/snippet}
   </RitualStage>
 
   {#snippet footer()}
     {#if phase === 'idle'}
       <OrnateButton icon="arrow-left" onclick={onDone}>Abandon ritual</OrnateButton>
       <OrnateButton icon="spiral" onclick={begin}>Conjure</OrnateButton>
+    {:else if phase === 'augury' && !rollsReady}
+      <p class="status">The offering sinks…</p>
     {:else if phase === 'augury'}
       <p class="status">{auguryStatus}</p>
     {:else if phase === 'conjuring'}
-      <p class="status">
-        {statusLine}
-        {#if auguryBeat.stage === 'shown'}
-          {@render auguryMarks()}
-        {/if}
-      </p>
+      <p class="status">{statusLine}</p>
     {:else if !hasAnyOption}
       <OrnateButton icon="arrow-left" onclick={onDone}>Leave</OrnateButton>
     {:else}
-      <p class="status">{@render auguryMarks()}</p>
+      <p class="status choose">Select one creation</p>
     {/if}
   {/snippet}
 </WorkbenchShell>
@@ -417,6 +520,12 @@
     display: flex;
     justify-content: center;
     margin: 0 0 12px;
+    transition: opacity 0.5s ease;
+  }
+
+  .pigments.gone {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .pigments-empty {
@@ -473,9 +582,9 @@
   .pigment.in-mix {
     opacity: 1;
     transform: translateY(-1px);
-    border-color: var(--color-ink);
+    border-color: #2a3344;
     box-shadow:
-      0 0 0 2px var(--color-golden),
+      0 0 0 2px #2a3344,
       0 2px 6px rgba(42, 24, 16, 0.45);
   }
 
@@ -485,14 +594,24 @@
 
   .creations {
     position: absolute;
-    inset: 0;
+    left: 50%;
+    top: 50%;
+    z-index: 5;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    z-index: 4;
-    padding: 8px 4px 12px;
+    gap: 14px;
+    width: max-content;
+    max-width: min(92vw, 52rem);
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+
+  .creations.rows {
+    flex-wrap: wrap;
+    width: min(92vw, 28rem);
+    max-width: min(92vw, 28rem);
+    row-gap: 10px;
   }
 
   .card-pick {
@@ -521,8 +640,8 @@
   }
 
   .card-body.enter {
-    animation: materialize 0.55s ease-out backwards;
-    animation-delay: calc(var(--i) * 0.12s);
+    animation: materialize 0.72s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    animation-delay: calc(0.08s + var(--i) * 0.18s);
   }
 
   .empty-frame {
@@ -574,21 +693,38 @@
     color: var(--color-muted-label);
   }
 
-  .insight-mark:not(:first-child) {
-    margin-left: 0.7em;
-    padding-left: 0.7em;
-    border-left: 1px solid color-mix(in srgb, var(--color-brass) 45%, transparent);
+  .status.choose {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: none;
+    color: var(--color-cream);
   }
 
-  .insight-mark.hit {
-    color: var(--color-golden);
+  .status.choose::before,
+  .status.choose::after {
+    content: '';
+    width: 4.2rem;
+    height: 1px;
+    background: color-mix(in srgb, var(--color-brass) 70%, transparent);
   }
 
   @keyframes materialize {
-    from {
+    0% {
       opacity: 0;
-      transform: translateY(36px) scale(0.55) rotate(var(--tilt, 0deg));
-      filter: brightness(1.8);
+      transform: translateY(36px) scale(0.4);
+      filter: brightness(2.3) saturate(0.65);
+    }
+    62% {
+      filter: brightness(1.2);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+      filter: none;
     }
   }
 
@@ -603,6 +739,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .pigments,
     .pigment {
       transition: none;
     }
