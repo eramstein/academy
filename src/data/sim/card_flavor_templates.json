@@ -251,6 +251,24 @@
     ]
   },
   {
+    "name": "Apron Shift",
+    "imagePrompt": "A mill-hand skeleton in a patched leather apron, copper wire drawn through every seam, one eye a slow flywheel, as if the shift had been wound back on. Textile-mill aisle, warm ivory cloth and industrial charcoal frames, soft daylight through the factory windows.",
+    "imageName": "apron_shift",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "undead"
+    ],
+    "actions": [
+      "reanimate"
+    ]
+  },
+  {
     "name": "Archdruid",
     "imagePrompt": "An archdruid packs living bark over a terrible wound until it seals.",
     "imageName": "archdruid",
@@ -266,39 +284,6 @@
     ],
     "actions": [
       "healUnit"
-    ]
-  },
-  {
-    "name": "Archive Salvager",
-    "imagePrompt": "A careful clerk brushing soot from a half-burned folio, pages already knitting under the brush. Bureaucratic archive with towering shelves, charcoal black wood and dark gray ash, soft light through dirty windows.",
-    "imageName": "archive_salvager",
-    "cardType": "unit",
-    "unitSize": "medium",
-    "cheapImage": false,
-    "colors": [
-      "black"
-    ],
-    "keywords": [],
-    "unitTypes": [
-      "human"
-    ],
-    "actions": [
-      "regrowCard"
-    ]
-  },
-  {
-    "name": "Ash Ledger",
-    "imagePrompt": "Charred account pages sift upward and knit into a readable ledger leaf. Bureaucratic archive aisle, ivory plaster and near-black ink, soft light through dirty windows.",
-    "imageName": "ash_ledger",
-    "cardType": "spell",
-    "unitSize": "medium",
-    "cheapImage": false,
-    "colors": [
-      "black"
-    ],
-    "keywords": [],
-    "actions": [
-      "regrowCard"
     ]
   },
   {
@@ -401,23 +386,6 @@
     "keywords": [],
     "actions": [
       "regrowCard"
-    ]
-  },
-  {
-    "name": "Auger Behemoth",
-    "imagePrompt": "A hulking drill-monster with a spiral bit for a face, tip gleaming past any armor imaginable. Underground mine gallery, dark iron bit and steel blue ore, glittering frost on orderly rows of machinery.",
-    "imageName": "auger_behemoth",
-    "cardType": "unit",
-    "unitSize": "powerful",
-    "cheapImage": false,
-    "colors": [
-      "black"
-    ],
-    "keywords": [
-      "armorPiercing"
-    ],
-    "unitTypes": [
-      "monster"
     ]
   },
   {
@@ -593,24 +561,6 @@
     ]
   },
   {
-    "name": "Bell Corpse",
-    "imagePrompt": "A child-sized corpse half out of a packing crate, a silver waking-bell clenched in stiff fingers, eyes not yet open. Ornate but neglected opera house foyer, faded rose pink plaster and tarnished brass, soft light through dirty windows.",
-    "imageName": "bell_corpse",
-    "cardType": "unit",
-    "unitSize": "weak",
-    "cheapImage": false,
-    "colors": [
-      "black"
-    ],
-    "keywords": [],
-    "unitTypes": [
-      "undead"
-    ],
-    "actions": [
-      "reanimate"
-    ]
-  },
-  {
     "name": "Bellwake",
     "imagePrompt": "A proud ripple from a funeral bell lifts a shrouded body clear of a crypt slab, cloth snapping like a banner. Decaying castle crypt mouth, deep burgundy velvet and black marble, flickering torchlight.",
     "imageName": "bellwake",
@@ -621,24 +571,6 @@
       "black"
     ],
     "keywords": [],
-    "actions": [
-      "reanimate"
-    ]
-  },
-  {
-    "name": "Bier Beetle",
-    "imagePrompt": "A man-sized beetle with a coffin-lid shell half-raised, empty velvet lining turned inward like a private room. Funeral procession through a town square, faded purple shell and charcoal wood, damp and decaying atmosphere.",
-    "imageName": "bier_beetle",
-    "cardType": "unit",
-    "unitSize": "medium",
-    "cheapImage": false,
-    "colors": [
-      "black"
-    ],
-    "keywords": [],
-    "unitTypes": [
-      "insect"
-    ],
     "actions": [
       "reanimate"
     ]
@@ -659,6 +591,24 @@
     ],
     "actions": [
       "reanimate"
+    ]
+  },
+  {
+    "name": "Bin Jack",
+    "imagePrompt": "A clockwork man built entirely of tiny drawers, one drawer popped at a ridiculous angle to offer a single brass gauge-cock. Warehouse aisle open to the street, chocolate-brown crates and pale sage canvas, busy daytime carts at the doors.",
+    "imageName": "bin_jack",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "tutorCard"
     ]
   },
   {
@@ -864,6 +814,41 @@
     ]
   },
   {
+    "name": "Bore Hydra",
+    "imagePrompt": "A huge hydra with a drill for every neck, heads tipped at jaunty angles, one drill winking with a painted eye on the housing. Bedrock street of the underground city, dark sepia stone and bronze lamps, cold winter twilight.",
+    "imageName": "bore_hydra",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
+    "name": "Brand Overseer",
+    "imagePrompt": "A towering fiend in a too-tight mill coat, branding-iron horns raised, chest forward, the grin of a shift that never ends. Barracks parade ground, ox-blood brick and pale marble sills, clear blue sky above the smoking chimneys.",
+    "imageName": "brand_overseer",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "demon"
+    ],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
     "name": "Brawling Ettin",
     "imagePrompt": "An ettin with two snarling heads shoved nose to nose on one body.",
     "imageName": "brawling_ettin",
@@ -969,11 +954,65 @@
     ]
   },
   {
+    "name": "Button Rot",
+    "imagePrompt": "A still foreman-corpse in a mildewed coat, brass buttons slipping through rotten buttonholes, shoulders slumped in a private quiet. Workers' housing stoop, pale stone gray and muted beige plaster, frost glittering at dawn.",
+    "imageName": "button_rot",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "undead"
+    ],
+    "actions": [
+      "addDecayCounters"
+    ]
+  },
+  {
     "name": "Buttress Gate",
     "imagePrompt": "A squat gatehouse whose buttresses dig into the earth, stones knitting tighter along every seam. Decaying castle approach, moss green stone and weathered gray mortar, cold autumn drizzle.",
     "imageName": "buttress_gate",
     "cardType": "unit",
     "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "fortifyLand"
+    ]
+  },
+  {
+    "name": "Cage Master",
+    "imagePrompt": "A vast warehouseman whose arms are rack-hooks, a ring of brass tags at the throat, one brass elbow held up in a still, threatening pinch. Inventors' fair aisle, cobalt enamel cases and copper pipe, cheerful bustle of the trade fair.",
+    "imageName": "cage_master",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "tutorCard"
+    ]
+  },
+  {
+    "name": "Capstone Kiosk",
+    "imagePrompt": "A knee-high stone booth with a single dark window-slot, iron hoops cinched tight, and a capstone that seems to lean in and listen. City-gate niche, black iron grating and bright vermilion paint, clear morning sun.",
+    "imageName": "capstone_kiosk",
+    "cardType": "unit",
+    "unitSize": "weak",
     "cheapImage": false,
     "colors": [
       "black"
@@ -1023,6 +1062,24 @@
     ]
   },
   {
+    "name": "Chief Wrecker",
+    "imagePrompt": "An enormous wrecking chief with a round gentle face and a wrecking ball tucked under one arm like a beloved toy, the chain looping the shoulders. Bridge-works, brick-red piers and a pale blue sky, triumphant daylight on the cranes.",
+    "imageName": "chief_wrecker",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
     "name": "Chimney Wyvern",
     "imagePrompt": "A vast wyvern with chimney-pipe wings spread in a lopsided grin, soot puffing from one nostril like a joke. Crowded industrial district skyline, soot black wings and warm amber furnace glow, thick industrial smoke.",
     "imageName": "chimney_wyvern",
@@ -1057,39 +1114,57 @@
     ]
   },
   {
-    "name": "Cinder Binder",
-    "imagePrompt": "A quiet binder whose black ribbon is stitching charred scraps back into a single readable quire. Ship-breaking yard shed, burnt orange rust and smoky gray wood, ash drifting through the air.",
-    "imageName": "cinder_binder",
+    "name": "Cistern Crown",
+    "imagePrompt": "A colossal water tower banded in iron rings, buttresses tucked close, a dark inspection door like a knowing eye. Canal pumping basin, verdigris copper and cream stone, steam billowing against a pale blue sky.",
+    "imageName": "cistern_crown",
     "cardType": "unit",
-    "unitSize": "weak",
+    "unitSize": "powerful",
     "cheapImage": false,
     "colors": [
       "black"
     ],
     "keywords": [],
     "unitTypes": [
-      "human"
-    ],
-    "actions": [
-      "regrowCard"
-    ]
-  },
-  {
-    "name": "Cobble Lad",
-    "imagePrompt": "A grinning street boy buried under a stack of spare cobbles taller than his head, one stone balanced on his cap. Medieval city street curb, pale stone gray and muted beige mortar, patches of cheerful sunlight in a neglected courtyard.",
-    "imageName": "cobble_lad",
-    "cardType": "unit",
-    "unitSize": "weak",
-    "cheapImage": false,
-    "colors": [
-      "black"
-    ],
-    "keywords": [],
-    "unitTypes": [
-      "human"
+      "building"
     ],
     "actions": [
       "fortifyLand"
+    ]
+  },
+  {
+    "name": "Clinker Fist",
+    "imagePrompt": "A squat soot-skeleton with a jagged clinker for a fist, one clinker brow cocked, and a kettle hat dented into a smile. Chimney-crowded rooftop, burnt orange pots and smoky gray lead, gentle smoke above the brick.",
+    "imageName": "clinker_fist",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "undead"
+    ],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
+    "name": "Cobble Prier",
+    "imagePrompt": "A narrow youth hunched like a wedge, crowbar spine bent over the shoulders, prybar boots, and a tense listening stare. Crumbling mill street, sickly green plaster and dark gray setts, cold drizzle on weathered stone.",
+    "imageName": "cobble_prier",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "damageLand"
     ]
   },
   {
@@ -1108,6 +1183,24 @@
     ],
     "actions": [
       "addGrowthCounters"
+    ]
+  },
+  {
+    "name": "Cotter Kid",
+    "imagePrompt": "A small round-faced apprentice in a too-big leather cap, eyes wide and gentle, one soft hand a bolt-cutter jaw grown from the wrist. Assembly-shop corner, charcoal housings and warm brass screws, warm workshop lamplight.",
+    "imageName": "cotter_kid",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "destroyUnit"
     ]
   },
   {
@@ -1159,6 +1252,42 @@
     "keywords": [],
     "actions": [
       "mezz"
+    ]
+  },
+  {
+    "name": "Cullet Colossus",
+    "imagePrompt": "A colossus of slag and broken glass with a surprised little mouth, a discarded boiler door risen into the chest like a medal it found. Exhibition-hall nave, silver-gray iron and muted coral glass, sunlight filtering through the iron-and-glass ceiling.",
+    "imageName": "cullet_colossus",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
+  },
+  {
+    "name": "Curb Setter",
+    "imagePrompt": "A stocky child paver planted wide with chin high, dressed-stone shoulders, and a fresh limestone curb locked across the back like a yoke. Half-finished street edge, cream limestone blocks and deep crimson site banners, dusty construction sunlight.",
+    "imageName": "curb_setter",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "fortifyLand"
     ]
   },
   {
@@ -1299,6 +1428,24 @@
     ],
     "actions": [
       "mezz"
+    ]
+  },
+  {
+    "name": "Drop-Hammer Joan",
+    "imagePrompt": "A broad forewoman with a wrecking-hammer head for a bonnet, the handle absurdly taller than she is, one boot kicked up as if the hammer had swung her. Casting pit, deep burgundy brick and polished iron flasks, warm furnace light across the metal.",
+    "imageName": "drop_hammer_joan",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "destroyUnit"
     ]
   },
   {
@@ -2261,6 +2408,24 @@
     ]
   },
   {
+    "name": "Ember Mote",
+    "imagePrompt": "A fist-sized living coal, rounded and at ease, with one lazy whip of white-hot cinder curled outward. Ironworks floor, petroleum-blue housings and dull gold melt, molten metal glowing in the furnaces.",
+    "imageName": "ember_mote",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "damageOpponent"
+    ]
+  },
+  {
     "name": "Emergency Repairs",
     "imagePrompt": "Emergency Repairs",
     "imageName": "emergency_repairs",
@@ -2719,6 +2884,24 @@
     ],
     "unitTypes": [
       "construct"
+    ]
+  },
+  {
+    "name": "Flywheel Wight",
+    "imagePrompt": "An ancient giant skeleton with a flywheel sunk in the shoulder and still turning, copper seams blazing, the whole mill of a body risen back onto its feet. Clocktower stair, midnight-blue iron and warm ivory plaster, late factory windows glowing in rows.",
+    "imageName": "flywheel_wight",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "undead"
+    ],
+    "actions": [
+      "reanimate"
     ]
   },
   {
@@ -3507,6 +3690,21 @@
     ]
   },
   {
+    "name": "Hose Lash",
+    "imagePrompt": "A brass fire-hose nozzle kicks and throws a proud, scalding jet straight outward. Fire-station apron, cream-yellow doors and faded crimson hose, cheerful sunlight on the polished brass.",
+    "imageName": "hose_lash",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "damageOpponent"
+    ]
+  },
+  {
     "name": "Hungry Hermit",
     "imagePrompt": "Hungry Hermit",
     "imageName": "hungry_hermit",
@@ -3721,6 +3919,24 @@
     ],
     "unitTypes": [
       "beast"
+    ]
+  },
+  {
+    "name": "Kiln Nymph",
+    "imagePrompt": "An ash-skinned fey with a cruel smile, cracks in the hide glowing where an ember heart has just been lit again. Blacksmith hearth, deep plum brick and copper-gold tools, warm late-afternoon light on the copper.",
+    "imageName": "kiln_nymph",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "reanimate"
     ]
   },
   {
@@ -3957,6 +4173,24 @@
     "keywords": [],
     "actions": [
       "directDamage"
+    ]
+  },
+  {
+    "name": "Lobber Stack",
+    "imagePrompt": "An enormous walking smokestack on riveted legs, a crane claw for a jaw, one paving brick cocked to throw, the mouth a cruel iron line. Fortress battery, deep navy stone and polished bronze, ominous storm clouds over the walls.",
+    "imageName": "lobber_stack",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "construct"
+    ],
+    "actions": [
+      "damageOpponent"
     ]
   },
   {
@@ -4307,6 +4541,24 @@
     ]
   },
   {
+    "name": "Mildew Inspector",
+    "imagePrompt": "A round, gentle inspector with spore-freckles and a soft smile, frock coat blooming pale mold, brass buttons loosening in the rot. Waterworks gallery, desaturated sea-green tile and bone-white porcelain, cool morning light on the pumps.",
+    "imageName": "mildew_inspector",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "addDecayCounters"
+    ]
+  },
+  {
     "name": "Mindspike",
     "imagePrompt": "A thin sapphire dart of thought streaks toward a distant unseen mark, leaving a ringing afterimage. Foggy harbor pier, steel blue water and charcoal pilings, fine autumn rain on the harbor.",
     "imageName": "mindspike",
@@ -4434,6 +4686,24 @@
     ],
     "unitTypes": [
       "insect"
+    ]
+  },
+  {
+    "name": "Mortar Lump",
+    "imagePrompt": "A lumpy humanoid of wet mortar and brick, arms locked like shores, with a lopsided grin pressed into the cement. Cathedral scaffold bay, ivory plaster and dark walnut beams, proud daylight on work just finished.",
+    "imageName": "mortar_lump",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "fortifyLand"
     ]
   },
   {
@@ -4972,6 +5242,39 @@
     ]
   },
   {
+    "name": "Pier Cinch",
+    "imagePrompt": "Iron straps cinch a sagging stone pier, the buckle tied into a perfect steel bow that looks entirely too pleased with itself. Ruined wall under new scaffolding, weathered brick red and dusty turquoise poles, cheerful patches of courtyard sun.",
+    "imageName": "pier_cinch",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "fortifyLand"
+    ]
+  },
+  {
+    "name": "Pier Gargoyle",
+    "imagePrompt": "A colossal gargoyle crouched in a long quiet, shoulders built as stone piers, wings folded into buttresses, chin resting on its claws. Toll-bridge pier, weathered sandstone and jade-green iron, long shadows under the viaduct.",
+    "imageName": "pier_gargoyle",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "fortifyLand"
+    ]
+  },
+  {
     "name": "Pit Hydra",
     "imagePrompt": "A massive hydra, many heads crowded around one body, each lunging at the next. Dark swamp pit, indigo water and purple-black mud, approaching thunderstorm.",
     "imageName": "pit_hydra",
@@ -5108,6 +5411,23 @@
     ]
   },
   {
+    "name": "Pumping House",
+    "imagePrompt": "A squat engine-house planted proud on a bolted plinth, pipes driven into the floor, no wheels and no door that could ever leave. Canal lock beside the barges, dark iron gates and steel-blue water, dense white steam from the valves.",
+    "imageName": "pumping_house",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [
+      "immobile"
+    ],
+    "unitTypes": [
+      "building"
+    ]
+  },
+  {
     "name": "Quake Krakenling",
     "imagePrompt": "A compact tentacled horror with stone-crushing suckers and a body that seems to grind bedrock beneath it. Submerged ruins trench, deep petrol blue rock and copper wreckage, soft underwater light.",
     "imageName": "quake_krakenling",
@@ -5175,6 +5495,24 @@
     "keywords": [],
     "actions": [
       "reanimate"
+    ]
+  },
+  {
+    "name": "Ramhouse",
+    "imagePrompt": "A hunched workshop with a roof beam hung as a battering ram, walls drawn in, and a dark open maw of a door. Ship-yard way, sunlit sandstone and dark walnut scaffolding, bright midday sun.",
+    "imageName": "ramhouse",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "destroyUnit"
     ]
   },
   {
@@ -5280,6 +5618,24 @@
     ]
   },
   {
+    "name": "Relit Stall",
+    "imagePrompt": "A small shuttered market stall, scarred boards nailed back into place, one shutter lifted, and a lonely lamp burning again in its own window. Working-class corner, faded rose brick and tarnished brass, soft evening light from apartment windows.",
+    "imageName": "relit_stall",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "building"
+    ],
+    "actions": [
+      "reanimate"
+    ]
+  },
+  {
     "name": "Relocation Bastion",
     "imagePrompt": "A sliding fortress-gate on crystalline rails, buttresses angled as if the whole wall could shove sideways. Wizard tower outer wall, cool cyan crystal and turquoise mortar, cool spring mist at dawn.",
     "imageName": "relocation_bastion",
@@ -5364,6 +5720,24 @@
     ],
     "actions": [
       "drawCards"
+    ]
+  },
+  {
+    "name": "Rivet Roller",
+    "imagePrompt": "A palm-sized beetle with a sly tilt of the head and a shell mosaic of scrap rivets, one discarded rivet still half-swallowed into the wing case. Salvage-yard heap, rusty red scrap and dark brown timber, bright daylight on steel and copper.",
+    "imageName": "rivet_roller",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "insect"
+    ],
+    "actions": [
+      "regrowCard"
     ]
   },
   {
@@ -5464,6 +5838,24 @@
     ],
     "unitTypes": [
       "human"
+    ]
+  },
+  {
+    "name": "Rust Hornet",
+    "imagePrompt": "A huge hornet with a sneezing, cross-eyed glee, abdomen a vast rusted boiler, the rust already eating holes through its own stripes. Gasworks yard, sulfur-yellow tanks and cold blue shadow, ash drifting near the furnaces.",
+    "imageName": "rust_hornet",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "insect"
+    ],
+    "actions": [
+      "addDecayCounters"
     ]
   },
   {
@@ -5580,6 +5972,24 @@
     "keywords": [],
     "actions": [
       "directDamage"
+    ]
+  },
+  {
+    "name": "Scrap Chimera",
+    "imagePrompt": "A boiler-bodied chimera with a valve-horn, a hoist-chain tail, a puzzled tilt to the face, and a discarded lantern seated in the chest. Unfinished-invention shop, rich copper housings and cheerful turquoise paint, playful confusion of half-built machines.",
+    "imageName": "scrap_chimera",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "regrowCard"
     ]
   },
   {
@@ -5772,6 +6182,24 @@
     ]
   },
   {
+    "name": "Shear Mantis",
+    "imagePrompt": "A mantis at rest, forearms long sheets of sharpened iron, posture loose and unhurried, the shears folded like a nap. Factory conveyor lane, mustard-yellow guards and industrial blue belts, machines running at full speed.",
+    "imageName": "shear_mantis",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "insect"
+    ],
+    "actions": [
+      "destroyUnit"
+    ]
+  },
+  {
     "name": "Shell Study",
     "imagePrompt": "A tiny armored booth of overlapping blue plates with a reading slit and no feet, planted like a stubborn turtle desk. Arcane academy cloister, muted lavender stone and gray slate, calm cool diffused daylight.",
     "imageName": "shell_study",
@@ -5824,6 +6252,24 @@
     ],
     "actions": [
       "stun"
+    ]
+  },
+  {
+    "name": "Shift Waif",
+    "imagePrompt": "A child-sized skeleton in a billowing boiler suit, copper stitches blazing, ember eyes just lit, chin lifted as if the shift had been called again. Factory courtyard at the whistle, dusty ochre brick and brown wool awnings, bustling morning light.",
+    "imageName": "shift_waif",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "undead"
+    ],
+    "actions": [
+      "reanimate"
     ]
   },
   {
@@ -5911,6 +6357,39 @@
     ],
     "actions": [
       "damageOpponent"
+    ]
+  },
+  {
+    "name": "Slag Gleaner",
+    "imagePrompt": "A grinning ragpicker whose coat has grown a salvaged pulley at the hip, as if the cloth had hooked it back from the heap. Abandoned factory floor, oxidized copper pipe and muted teal rust, pale moonlight on the dead machines.",
+    "imageName": "slag_gleaner",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "regrowCard"
+    ]
+  },
+  {
+    "name": "Slag Return",
+    "imagePrompt": "A discarded gear climbs out of a slag heap on its own teeth, wobbling, and hops back onto a bare axle with a comic little spin. Coal-settlement tipple, copper-brown slag and pale mint weeds, crisp autumn morning.",
+    "imageName": "slag_return",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "regrowCard"
     ]
   },
   {
@@ -6030,6 +6509,24 @@
     "keywords": [],
     "actions": [
       "regrowCard"
+    ]
+  },
+  {
+    "name": "Soot Nipper",
+    "imagePrompt": "A palm-sized chimney sweep with a sooty grin too big for the face, round cheeks, and a tiny coat already blooming orange rust-mold. Rain-soaked alley between tenements, soot-black brick and warm amber puddles, harsh alley shadows.",
+    "imageName": "soot_nipper",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "addDecayCounters"
     ]
   },
   {
@@ -6360,6 +6857,24 @@
     ]
   },
   {
+    "name": "Subsidence Wyrm",
+    "imagePrompt": "A vast low wyrm at ease, belly a mill of fused cobbles, the body broad enough to sag a street by simply lying there. Sewer gallery, chalky turquoise tile and rusted iron pipes, heavy rain on the deserted street above.",
+    "imageName": "subsidence_wyrm",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "damageLand"
+    ]
+  },
+  {
     "name": "Sucker Punch",
     "imagePrompt": "Sucker Punch",
     "imageName": "sucker_punch",
@@ -6441,6 +6956,21 @@
     ],
     "unitTypes": [
       "construct"
+    ]
+  },
+  {
+    "name": "Tagged Valve",
+    "imagePrompt": "One rounded brass valve with a cheerful tin tag eases out of a crowded rack, while every other fitting stays shyly in place. Covered arcade, soft peach plaster and black wrought iron, lively market morning under colored awnings.",
+    "imageName": "tagged_valve",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "actions": [
+      "tutorCard"
     ]
   },
   {
@@ -7296,6 +7826,24 @@
     ],
     "actions": [
       "daze"
+    ]
+  },
+  {
+    "name": "Wick Sprite",
+    "imagePrompt": "A tiny gas-flame sprite pinched into a single wick-trimmer, grin thin and mean, the right tool and no other. Machine-shop bench, polished brass and cherry-red enamel, sparks flying off the wheel.",
+    "imageName": "wick_sprite",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "black"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "spirit"
+    ],
+    "actions": [
+      "tutorCard"
     ]
   },
   {
