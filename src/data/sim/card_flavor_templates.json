@@ -457,6 +457,23 @@
     ]
   },
   {
+    "name": "Awlfang",
+    "imagePrompt": "A young basilisk crouched low, crest raised and stone-gray, one forefang grown long as an awl, eyes narrow and unblinking. Desert canyon, crimson rock and black shadow, red twilight.",
+    "imageName": "awlfang",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
     "name": "Balmleaf",
     "imagePrompt": "A young herb wraps a nick in a living leaf and the nick vanishes.",
     "imageName": "balmleaf",
@@ -526,6 +543,24 @@
     ]
   },
   {
+    "name": "Basalt Tyrant",
+    "imagePrompt": "A colossal fire giant with chest thrown out and beard a banner of flame, one boot planted so slag-bright cracks spider through the rock under his sole. Volcanic waste, black rock and molten gold, an eruption lighting the sky.",
+    "imageName": "basalt_tyrant",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "giant"
+    ],
+    "actions": [
+      "damageLand"
+    ]
+  },
+  {
     "name": "Basilisk",
     "imagePrompt": "A huge basilisk with wet fangs and a sick green sheen down its throat.",
     "imageName": "basilisk",
@@ -558,6 +593,42 @@
     ],
     "actions": [
       "fortifyLand"
+    ]
+  },
+  {
+    "name": "Bedrock Wyrm",
+    "imagePrompt": "An immense wingless wyrm, horned skull lifted high, copper scales broad as shields, the lowest coil grinding bedrock to powder beneath its own weight. Mountain pass, copper-brown rock and warm gold dust, harsh midday sun.",
+    "imageName": "bedrock_wyrm",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "dragon"
+    ],
+    "actions": [
+      "damageLand"
+    ]
+  },
+  {
+    "name": "Bellknocker",
+    "imagePrompt": "A young dwarf with a round bell for a hammerhead, ears perked, tongue caught at the corner of his mouth, shock-lines still trembling in the air around the bell. Tavern corner, burnt-orange floorboards and dark brown beams, flickering firelight.",
+    "imageName": "bellknocker",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "dwarf"
+    ],
+    "actions": [
+      "stun"
     ]
   },
   {
@@ -714,6 +785,23 @@
     ]
   },
   {
+    "name": "Bodkin Champion",
+    "imagePrompt": "A pit champion with chin high and weight on the back foot, a narrow estoc held point-first like a banner, the blade a bright needle. Gladiatorial arena, white limestone and vivid vermilion sand, blazing midsummer noon.",
+    "imageName": "bodkin_champion",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
     "name": "Bog Snare",
     "imagePrompt": "Mud and reed-roots lock around a pair of ankles and hold them fast.",
     "imageName": "bog_snare",
@@ -849,6 +937,24 @@
     ]
   },
   {
+    "name": "Brandmaw",
+    "imagePrompt": "A huge chimera with a lion's shoulders, a snarling goat-head, and a maw full of coiled flame, serpent tail arched, the whole beast leaned forward in a cruel hungry stillness. Ancient battlefield, burgundy clay and purple shale, dusty haze.",
+    "imageName": "brandmaw",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "monster"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
     "name": "Brawling Ettin",
     "imagePrompt": "An ettin with two snarling heads shoved nose to nose on one body.",
     "imageName": "brawling_ettin",
@@ -900,6 +1006,24 @@
     ],
     "actions": [
       "fortifyLand"
+    ]
+  },
+  {
+    "name": "Brine Troll",
+    "imagePrompt": "A full-grown cliff troll hunched and threatening, knuckles of wet granite, the ledge under his planted fists already split by his weight. Jagged sea cliff, seafoam-green rock and lightning-white foam, churning spray.",
+    "imageName": "brine_troll",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "giant"
+    ],
+    "actions": [
+      "damageLand"
     ]
   },
   {
@@ -1097,6 +1221,23 @@
     ]
   },
   {
+    "name": "Cinder Awl",
+    "imagePrompt": "A tall cinder nymph, ash-pale and ember-veined, face still and unreadable, one finger drawn out into a white-hot needle of flame. Outlaw hideout, hot-pink cloth and dark petrol timber, hard blue hour.",
+    "imageName": "cinder_awl",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "armorPiercing"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
+  },
+  {
     "name": "Cinder Bat",
     "imagePrompt": "A soot-black bat hovering with wings spread in a lopsided heart, one ear cocked, ember eyes mismatched. Smoky foundry rafters, soot black beams and warm amber sparks, thick industrial smoke.",
     "imageName": "cinder_bat",
@@ -1168,6 +1309,41 @@
     ]
   },
   {
+    "name": "Cobblemaul",
+    "imagePrompt": "A broad dwarf siege engineer in a ram-skull helm two sizes too big, maul planted between his boots in a crater of his own making, eyes lost and pleased inside the helm. Chaotic city street, saffron awnings and azure tile, blazing sunset.",
+    "imageName": "cobblemaul",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "dwarf"
+    ],
+    "actions": [
+      "damageLand"
+    ]
+  },
+  {
+    "name": "Coilrunner",
+    "imagePrompt": "A whip-thin grassland raider with a sly half-smile, knees bent and heels light, scarf already streaming, every line of him coiled to be gone. Windswept grassland, pale lemon grass and navy cloud-shadow, fast-moving storm clouds.",
+    "imageName": "coilrunner",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
     "name": "Colossus Agaric",
     "imagePrompt": "A towering fly agaric, cap still swelling, new rings of flesh stacked up the stalk.",
     "imageName": "colossus_agaric",
@@ -1222,6 +1398,24 @@
     ]
   },
   {
+    "name": "Crevice Tapper",
+    "imagePrompt": "A small dwarf miner, round-faced and soot-freckled, short pick hugged to his chest, iron toes planted with shy care in a little web of cracks. Sunlit quarry, sandy beige stone and terracotta rubble, dusty spring sunlight.",
+    "imageName": "crevice_tapper",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "dwarf"
+    ],
+    "actions": [
+      "damageLand"
+    ]
+  },
+  {
     "name": "Crumble Wisp",
     "imagePrompt": "A ragged little golem of powdered mortar and cracked tile, joints flaking as if the ground wore thin through it. Submerged ruins threshold, deep petrol blue stone and copper stains, soft underwater light.",
     "imageName": "crumble_wisp",
@@ -1234,6 +1428,24 @@
     "keywords": [],
     "unitTypes": [
       "construct"
+    ],
+    "actions": [
+      "damageLand"
+    ]
+  },
+  {
+    "name": "Crustwalker",
+    "imagePrompt": "A person-tall figure of living magma seen from below, crust plates shifting, orange melt in every seam, the stone at its feet slumped to slag. Open steppe, dusty lilac grass and copper sand, clear daylight.",
+    "imageName": "crustwalker",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
     ],
     "actions": [
       "damageLand"
@@ -2426,6 +2638,23 @@
     ]
   },
   {
+    "name": "Emberwhim",
+    "imagePrompt": "A palm-sized cinder pixie with round cheeks, one pointed ear tipped forward, and spark-wings held open in a small bright hover. Cliffside smugglers' stair, turquoise spray and sun-baked coral stone, a sudden squall.",
+    "imageName": "emberwhim",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "flying"
+    ],
+    "unitTypes": [
+      "spirit"
+    ]
+  },
+  {
     "name": "Emergency Repairs",
     "imagePrompt": "Emergency Repairs",
     "imageName": "emergency_repairs",
@@ -3277,6 +3506,24 @@
     ]
   },
   {
+    "name": "Granite Oath",
+    "imagePrompt": "An ancient dwarf thane seated at ease, white beard pooled in his lap, both hands resting on a hammer whose head sits quietly in a split foundation stone. Ruined fortress yard, pale sandstone blocks and muted red dust, low autumn sun.",
+    "imageName": "granite_oath",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "dwarf"
+    ],
+    "actions": [
+      "damageLand"
+    ]
+  },
+  {
     "name": "Grave Hyena",
     "imagePrompt": "A barrow-dusted hyena with a seed-carved bone held crosswise in its jaws. Overgrown barrow stones, gray masonry and muted green lichen, cool twilight.",
     "imageName": "grave_hyena",
@@ -3940,6 +4187,24 @@
     ]
   },
   {
+    "name": "Kiln Pebble",
+    "imagePrompt": "A fist-sized knot of living coal with a crooked grin and stubby molten toes, delighted with the sagging puddle of stone melted under its own feet. Narrow avalanche chute, ash-gray gravel and ember-orange scree, abrupt hail.",
+    "imageName": "kiln_pebble",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "damageLand"
+    ]
+  },
+  {
     "name": "Kit Vixen",
     "imagePrompt": "A young vixen with a torn ear, milk-teeth bared, and fur standing in a scrappy ruff. Forest clearing edge, rust-red brush and copper bracken, bright spring daylight.",
     "imageName": "kit_vixen",
@@ -3973,6 +4238,24 @@
     ],
     "actions": [
       "healUnit"
+    ]
+  },
+  {
+    "name": "Knucklethunder",
+    "imagePrompt": "A huge coastal reaver, scarred and cruel-eyed, fist halted a finger short of the end of its swing, a hard ring of compressed air shivering around the knuckles. Stormy coastline, deep indigo water and electric purple cloud, a violent thunderstorm.",
+    "imageName": "knucklethunder",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "stun"
     ]
   },
   {
@@ -4191,6 +4474,21 @@
     ],
     "actions": [
       "damageOpponent"
+    ]
+  },
+  {
+    "name": "Lonely Seam",
+    "imagePrompt": "A single hairline crack crosses bare stone, subdued and solitary, the broken lip glowing with a faint warmth. Wild mountain peak, cold gray stone and blood-red lichen, windswept dawn.",
+    "imageName": "lonely_seam",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "damageLand"
     ]
   },
   {
@@ -5600,6 +5898,23 @@
     ]
   },
   {
+    "name": "Reed Lancer",
+    "imagePrompt": "A skinny youth peeking over a lance held dead level, the shaft absurdly long past both shoulders, eyes wide at the trouble of balancing it. Festival square, grass-green cloth and scarlet pennants, flags snapping in gusts.",
+    "imageName": "reed_lancer",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "lance"
+    ],
+    "unitTypes": [
+      "human"
+    ]
+  },
+  {
     "name": "Relic Hunter",
     "imagePrompt": "A green-cloaked hunter with grave-dirt on the knees and a leaf-wrapped token at the belt. Overgrown ruin floor, pale silver stone and icy blue shadow, dim diffused daylight.",
     "imageName": "relic_hunter",
@@ -5990,6 +6305,24 @@
     ],
     "actions": [
       "regrowCard"
+    ]
+  },
+  {
+    "name": "Scree Kicker",
+    "imagePrompt": "A wiry highland youth with a sly grin and wind-tossed hair, iron soles planted in a fresh web of cracks opened under his own feet. Rugged highland slope, rust-red scree and dusty ochre grass, a sharp spring wind.",
+    "imageName": "scree_kicker",
+    "cardType": "unit",
+    "unitSize": "weak",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "human"
+    ],
+    "actions": [
+      "damageLand"
     ]
   },
   {
@@ -6411,6 +6744,23 @@
     ]
   },
   {
+    "name": "Snap-Haunch",
+    "imagePrompt": "A full-grown manticore caught in an absurd crouch, man's face grinning far too wide, lion haunches shoved high, scorpion tail curled into a tight spring. Wheat-field racing course, golden stalks and amber dust, cloud shadows racing overhead.",
+    "imageName": "snap_haunch",
+    "cardType": "unit",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "haste"
+    ],
+    "unitTypes": [
+      "monster"
+    ]
+  },
+  {
     "name": "Snek",
     "imagePrompt": "Snek",
     "imageName": "snek",
@@ -6479,6 +6829,21 @@
     ],
     "unitTypes": [
       "monster"
+    ]
+  },
+  {
+    "name": "Snowhalt",
+    "imagePrompt": "A gentle ring of still air rests on the ice, snowflakes hung motionless inside it, the pause as soft as a hand on a shoulder. Frozen dueling lake, glacial white ice and fierce cobalt cracks, dazzling sunlight on fresh snow.",
+    "imageName": "snowhalt",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "stun"
     ]
   },
   {
@@ -7145,6 +7510,24 @@
     ]
   },
   {
+    "name": "Thunderbone",
+    "imagePrompt": "A towering figure of braided lightning, face lost in the glare, one arm shaped as a finished bolt and the free hand lifted in a small secretive curl. Thunder-split plateau, storm-blue stone and charcoal gravel, lightning in the clouds.",
+    "imageName": "thunderbone",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "unitTypes": [
+      "elemental"
+    ],
+    "actions": [
+      "directDamage"
+    ]
+  },
+  {
     "name": "Tide Marshal",
     "imagePrompt": "A commanding admiral-mage with a staff like a tiller, cloak billowing as if directing a current. Foggy harbor citadel, steel blue coat and charcoal braid, fine autumn rain on the harbor.",
     "imageName": "tide_marshal",
@@ -7799,6 +8182,23 @@
     ]
   },
   {
+    "name": "White-Eye Smith",
+    "imagePrompt": "An elite dwarf smith in a scorched apron and one mismatched slipper, eyes blank white, hammer locked mid-swing as if it had decided to keep going without him. Barbarian encampment, fiery red canvas and orange hide, wild flames in the distance.",
+    "imageName": "white_eye_smith",
+    "cardType": "unit",
+    "unitSize": "powerful",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [
+      "zerk"
+    ],
+    "unitTypes": [
+      "dwarf"
+    ]
+  },
+  {
     "name": "Who is fat ???",
     "imagePrompt": "Who is fat ???",
     "imageName": "who_is_fat",
@@ -7844,6 +8244,21 @@
     ],
     "actions": [
       "tutorCard"
+    ]
+  },
+  {
+    "name": "Wintersplit",
+    "imagePrompt": "A slab of trail ice heaves in a lonely tilt, sheets of snow sliding off in quiet, a dull red glow deep in the new gap. Icebound mountain trail, cold silver ice and bruised-plum rock, driving snow under an ember dusk.",
+    "imageName": "wintersplit",
+    "cardType": "spell",
+    "unitSize": "medium",
+    "cheapImage": false,
+    "colors": [
+      "red"
+    ],
+    "keywords": [],
+    "actions": [
+      "damageLand"
     ]
   },
   {
