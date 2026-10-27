@@ -1,5 +1,49 @@
 [
   {
+    "id": "emma_halloween",
+    "name": "Erudite Vampire",
+    "imageFileName": "emma_halloween",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["emma", "event"],
+    "type": "unit",
+    "power": 2,
+    "maxHealth": 4,
+    "retaliate": 2,
+    "keywords": {
+      "moveAndAttack": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Reach",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "drawCard",
+              "args": {
+                "cardCount": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "facetious_djinn",
     "name": "Facetious Djinn",
     "imageFileName": "facetious_djinn",

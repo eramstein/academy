@@ -47,19 +47,19 @@
 
   const craftingColors = $derived(
     Object.values(CardColor)
-      .map((color) => ({ color, level: character.colorTechPoints[color] ?? 0 }))
+      .map((color) => ({ color, level: character.colorMasteryPoints?.[color] ?? 0 }))
       .filter((entry) => entry.level > 0)
   );
 
   const craftingKeywords = $derived(
-    Object.entries(character.craftingKnowledge.keywords ?? {}).map(([keyword, level]) => ({
+    Object.entries(character.craftingKnowledge?.keywords ?? {}).map(([keyword, level]) => ({
       keyword: keyword as keyof UnitKeywords,
       level,
     }))
   );
 
   const craftingActions = $derived(
-    Object.entries(character.craftingKnowledge.actions ?? {}).map(([name, level]) => {
+    Object.entries(character.craftingKnowledge?.actions ?? {}).map(([name, level]) => {
       const meta = getActionTemplateMeta(name);
       return {
         name,

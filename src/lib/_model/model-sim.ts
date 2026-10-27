@@ -5,6 +5,7 @@ import type { CardColor } from './enums-battle';
 import type {
   ActionType,
   ActivityType,
+  ArtifactType,
   CharacterGender,
   CharacterTrait,
   ChatTopicType,
@@ -341,7 +342,7 @@ export interface Character {
   resources: Record<ResourceType, number>;
   craftingKnowledge: CardKnowledge;
   craftingSkills: CardCraftingSkills;
-  colorTechPoints: ColorTechPoints;
+  colorMasteryPoints: ColorMasteryPoints;
   jobs: Job[];
   possessions: Possession[];
 }
@@ -463,7 +464,7 @@ export interface CardKnowledge {
   actions?: Partial<Record<string, number>>;
 }
 
-export interface ColorTechPoints {
+export interface ColorMasteryPoints {
   green: number;
   blue: number;
   red: number;
@@ -495,4 +496,12 @@ export interface Schedule {
     daysOfWeek?: number[];
     period?: DayPeriod;
   };
+}
+
+export interface Artifact {
+  key: string;
+  name: string;
+  description: string;
+  colorCost: { color: CardColor; cost: number }[];
+  type: ArtifactType;
 }

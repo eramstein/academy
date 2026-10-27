@@ -200,3 +200,10 @@ export enum PossessionType {
   Clothing = 'clothing',
   Tool = 'tool',
 }
+
+export enum ArtifactType {
+  PermanentEffect = 'permanent_effect',
+  BattleEffect = 'battle_effect',
+  CraftingEffetc = 'crafting_effect',
+  EventEffect = 'event_effect',
+}

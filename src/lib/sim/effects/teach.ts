@@ -65,7 +65,7 @@ function pickColorFromCharacter(
   if (!known.length) {
     return `${character.name} does not know any colors.`;
   }
-  const playerColors = gs.player.colorTechPoints;
+  const playerColors = gs.player.colorMasteryPoints;
   const unknownToPlayer = known.filter((c) => (playerColors[c] ?? 0) < 1);
   return {
     color: getRandomFromArray(unknownToPlayer.length ? unknownToPlayer : known),
@@ -81,9 +81,9 @@ function bumpColor(color: CardColor, characterKey = 'player'): string {
   if (!learner.isPlayer) {
     return formatKnowledgeMessage(learner, formatKeywordLabel(color), 0, 1);
   }
-  const previous = gs.player.colorTechPoints[color] ?? 0;
+  const previous = gs.player.colorMasteryPoints[color] ?? 0;
   const level = previous + 1;
-  gs.player.colorTechPoints[color] = level;
+  gs.player.colorMasteryPoints[color] = level;
   return formatKnowledgeMessage(learner, formatKeywordLabel(color), previous, level);
 }
 
@@ -186,8 +186,7 @@ function resolveLearner(characterKey = 'player'): Learner | string {
   const isPlayer = character.key === gs.player.key;
   const name = isPlayer
     ? 'You'
-    : character.name?.trim() ||
-      characterKey.charAt(0).toUpperCase() + characterKey.slice(1);
+    : character.name?.trim() || characterKey.charAt(0).toUpperCase() + characterKey.slice(1);
   return { character, isPlayer, name };
 }
 

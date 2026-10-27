@@ -1,5 +1,52 @@
 [
   {
+    "id": "molly_halloween",
+    "name": "Friendly Werewolf",
+    "imageFileName": "molly_halloween",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      },
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["molly", "event"],
+    "type": "unit",
+    "power": 4,
+    "maxHealth": 4,
+    "retaliate": 0,
+    "keywords": {
+      "cleave": true
+    },
+    "unitTypes": ["beast", "human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "ennemies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "decay",
+                "counterValue": 1,
+                "fromTriggerParam": "defender"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "red_haired_bard",
     "name": "Red Haired Bard",
     "imageFileName": "red_haired_bard",

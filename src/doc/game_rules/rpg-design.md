@@ -56,6 +56,20 @@ The RPG facet lets the player acquire cards (gifts from NPCs, quest rewards...),
 
 Some rare late game cards will be "legendary". They will have their own "free will" and act as NPCs: give you quests, give you special powers in the RPG in exchange of special extra difficulty during a match (e.g. reroll attribute checks...) etc... This is a mechanic to let the TCG aspect influence the RPG in more diverse ways than tournament results.
 
+### Crafting knowledge loop
+
+Invocation and Enchantment allow the players to create highly custom cards that fit a precise need in their deck. However, they are limited to the keywords and action types they already know. To unlock new knowledge, the player must first use Conjuration to get random cards with new abilities, and then play them in actual matches to raise their knowledge and finally use these abilities in custom card creations.
+
+Conjure -> play and learn -> Invoke and Enchant
+
+### Artifacts
+
+Players can accumulate color mastery points, for each color of magic. These can be acquired during card crafting (based on the erudition skill) or during study activities.
+
+Mastery points are used to create artifacts, artificery devices that can be used during card crafting, TCG battles, or RPG events. Artifacts can provide a variety of buffs, battle global effects, unique card or crafting effects, unlock features like color combinations or RPG places.
+
+Artifacts are built during Enchantment classes or a study activity. They present the currently possible crafts by color, and spend color mastery points.
+
 ### Characters, relationships and events
 
 The RPG facet is very much focused on characters. There will be a few (maybe 10) that will be deeply developped, with their own story, personality and ambitions.
@@ -136,13 +150,3 @@ Initial topics and pre-written texts can ship with the game. New topics arise fr
 A memorable or funny experience usually deserves a **memory** for the relevant NPC(s); a declined activity or an important offscreen development can produce **lore** explaining what the NPC did independently. Spectacular public achievements may produce public lore and a separate private memory. Avoid manufacturing gossip about secrets or romantic confidences that others could not know.
 
 **Effect timing matters:** root `## Effects` apply when an event starts; option `**Outcomes:**` apply only for the chosen branch; node entry effects apply on entering that node. Put choice-dependent memories and offscreen/decline lore in the corresponding outcomes. A topic is not itself a world-state mutation or quest condition: use regular state/tag/relationship effects for those consequences as well. For full writing conventions and additional syntax (including `known by`, `exclude`, and `speaker`), see `writing-bible.md`.
-
-### Relationship narrative design direction (to prototype)
-
-The intended approach is a hybrid between fixed, on-rails character arcs and disconnected standalone anecdotes:
-
-- **Numeric relationship values** (friendship, respect, love, rivalry) provide flexible prerequisites, with many ways to reach a threshold.
-- **Mini-arcs** connect small groups of events through prior occurrences, choices, and outcomes, giving local narrative continuity.
-- **Milestones and relationship tags** represent qualitative changes (for example, becoming significant others) and can gate later events. Major goals, such as a possible marriage, should require meaningful developments and choices rather than repeated numerical grinding.
-
-The aim is to let different playthroughs produce different yet coherent illustrated stories with each NPC. Emma's relationship arc will be used as an initial design prototype. The precise milestone structure and event-selection rules are not yet finalized.

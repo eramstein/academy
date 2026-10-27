@@ -4,7 +4,7 @@ import {
   type CardCraftingSkills,
   type CardTemplate,
   type Character,
-  type ColorTechPoints,
+  type ColorMasteryPoints,
   type UnitKeywords,
 } from '@/lib/_model';
 import { ACTION_TEMPLATE_KEYS } from './action-templates';
@@ -291,9 +291,9 @@ function colorsOnCards(...templates: (CardTemplate | undefined)[]): CardColor[] 
   return [...colors];
 }
 
-function playerColorTech(character: Character): ColorTechPoints | null {
-  if (!('colorTechPoints' in character)) return null;
-  return character.colorTechPoints ?? null;
+function playerColorTech(character: Character): ColorMasteryPoints | null {
+  if (!('colorMasteryPoints' in character)) return null;
+  return character.colorMasteryPoints ?? null;
 }
 
 function colorTechLevel(character: Character, color: CardColor): number {
