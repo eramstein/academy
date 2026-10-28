@@ -1,0 +1,12 @@
+[
+  {
+    "patternKey": "vitality-amulet",
+    "name": "Vitality Amulet",
+    "description": "A amulet that increases the wearer's vitality.",
+    "colorCost": [{ "color": "green", "cost": 3 }],
+    "resourcesCost": { "gold": 100, "magicDust": 5 },
+    "attributeBonuses": {
+      "vitality": 1
+    }
+  }
+]

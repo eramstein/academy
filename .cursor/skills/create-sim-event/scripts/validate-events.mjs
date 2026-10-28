@@ -84,6 +84,25 @@ const deckKeys = [...read('src/lib/sim/effects/decks.ts').matchAll(/deckKey === 
   (m) => m[1]
 );
 
+const artifactsDir = path.join(root, 'src/data/sim/artifacts');
+const artifactPatternKeys = fs.existsSync(artifactsDir)
+  ? fs
+      .readdirSync(artifactsDir)
+      .filter((name) => name.endsWith('.json'))
+      .flatMap((name) => {
+        try {
+          const parsed = JSON.parse(fs.readFileSync(path.join(artifactsDir, name), 'utf-8'));
+          return Array.isArray(parsed)
+            ? parsed
+                .map((artifact) => artifact?.patternKey)
+                .filter((key) => typeof key === 'string')
+            : [];
+        } catch {
+          return [];
+        }
+      })
+  : [];
+
 const keywordKeys = [
   ...(
     read('src/lib/sim/cards/keywords.ts').match(
@@ -434,6 +453,12 @@ function checkEffect(where, effect) {
       if (parameters.count !== undefined && typeof parameters.count !== 'number') {
         errors.push(`${where}: count must be a number`);
       }
+      if (parameters.characterKey !== undefined) {
+        checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
+      }
+      break;
+    case 'acquire_artifact_pattern':
+      checkOneOf(where, 'patternKey', parameters.patternKey, artifactPatternKeys);
       if (parameters.characterKey !== undefined) {
         checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
       }

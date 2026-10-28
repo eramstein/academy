@@ -62,11 +62,11 @@ Invocation and Enchantment allow the players to create highly custom cards that 
 
 Conjure -> play and learn -> Invoke and Enchant
 
-### Artifacts
+### Artifacts crafting
 
 Players can accumulate color mastery points, for each color of magic. These can be acquired during card crafting (based on the erudition skill) or during study activities.
 
-Mastery points are used to create artifacts, artificery devices that can be used during card crafting, TCG battles, or RPG events. Artifacts can provide a variety of buffs, battle global effects, unique card or crafting effects, unlock features like color combinations or RPG places.
+Mastery points are used to create artificery devices that can be used during card crafting, TCG battles, or RPG events. Artifacts can provide a variety of buffs, battle global effects, unique card or crafting effects, unlock features like color combinations or RPG places.
 
 Artifacts are built during Enchantment classes or a study activity. They present the currently possible crafts by color, and spend color mastery points.
 

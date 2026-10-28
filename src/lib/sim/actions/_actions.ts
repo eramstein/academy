@@ -26,6 +26,11 @@ import {
   type CardCreationResult,
 } from './artificery';
 import {
+  craftArtifact,
+  getCraftArtifactActions,
+  type CraftArtifactParameters,
+} from './craft-artifact';
+import {
   augmentCard,
   distillCard,
   type AugmentParameters,
@@ -52,6 +57,7 @@ export function getPossibleActions(): Action[] {
   const actions: Action[] = [];
 
   actions.push(...getSocializeActions());
+  actions.push(...getCraftArtifactActions());
   actions.push(...getLessonActions());
   actions.push(...getStudyActions());
   actions.push(...getShopActions());
@@ -153,4 +159,6 @@ const actionFunctions: Record<
   [ActionType.StudyColors]: (parameters) => teachColor(parameters as TeachColorParameters),
   [ActionType.StudyAbilities]: (parameters) => teachAbility(parameters as TeachAbilityParameters),
   [ActionType.Invite]: (parameters) => invite(parameters as InviteParameters),
+  [ActionType.CraftArtifact]: (parameters) =>
+    craftArtifact(parameters as CraftArtifactParameters),
 };

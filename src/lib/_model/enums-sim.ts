@@ -38,12 +38,14 @@ export enum EventEffectType {
   StartMatch = 'start_match',
   NewLeagueSeason = 'new_league_season',
   AddPossession = 'add_possession',
+  AcquireArtifactPattern = 'acquire_artifact_pattern',
 }
 
 export enum ActionType {
   PerformJob = 'perform_job',
   Invoke = 'invoke',
   Conjure = 'conjure',
+  CraftArtifact = 'craft_artifact',
   Augment = 'augment',
   Distill = 'distill',
   Move = 'move',
@@ -95,7 +97,7 @@ export enum SubscriptionType {
   Academy = 'academy',
   Library = 'library',
   Inn = 'inn',
-  MaterialShop = 'material_shop',
+  MaterialShop = 'material shop',
 }
 
 export enum CharacterTrait {
@@ -199,11 +201,4 @@ export enum RelationTag {
 export enum PossessionType {
   Clothing = 'clothing',
   Tool = 'tool',
-}
-
-export enum ArtifactType {
-  PermanentEffect = 'permanent_effect',
-  BattleEffect = 'battle_effect',
-  CraftingEffetc = 'crafting_effect',
-  EventEffect = 'event_effect',
 }

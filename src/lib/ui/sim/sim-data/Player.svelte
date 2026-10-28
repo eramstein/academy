@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { isLandCard, type Job } from '@/lib/_model';
+  import type { Job } from '@/lib/_model';
   import { ResourceType, SubscriptionType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
   import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
@@ -41,10 +41,6 @@
       amount: player.resources[type] ?? 0,
     }))
   );
-
-  const collectionCount = $derived(player.collection.length);
-  const landCount = $derived(player.collection.filter(isLandCard).length);
-  const cardCount = $derived(collectionCount - landCount);
 
   function formatResource(type: ResourceType): string {
     return type.replace(/_/g, ' ');
@@ -165,39 +161,6 @@
       </section>
 
       <CardCrafting character={player} />
-
-      <section class="section">
-        <h3 class="section-title">
-          {@render icon('book')}
-          Collection
-        </h3>
-        {@render divider()}
-        {#if collectionCount === 0}
-          <p class="empty">Empty.</p>
-        {:else}
-          <p class="summary">{cardCount} cards · {landCount} lands</p>
-        {/if}
-      </section>
-
-      <section class="section">
-        <h3 class="section-title">
-          {@render icon('cards')}
-          Decks
-        </h3>
-        {@render divider()}
-        {#if player.decks.length === 0}
-          <p class="empty">None yet.</p>
-        {:else}
-          <ul class="kv-list">
-            {#each player.decks as deck (deck.key)}
-              <li class="kv-row">
-                <span class="kv-name">{deck.name}</span>
-                <span class="kv-value">{deck.cards.length} cards · {deck.lands.length} lands</span>
-              </li>
-            {/each}
-          </ul>
-        {/if}
-      </section>
     </div>
   </div>
 </div>
@@ -306,8 +269,7 @@
     color: var(--brass);
   }
 
-  .empty,
-  .summary {
+  .empty {
     margin: 0;
     font-size: 0.95rem;
     color: var(--color-muted-label);

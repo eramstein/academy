@@ -55,6 +55,16 @@ export const loadGameStateFromLocalStorage = async (id: string) => {
       if (typeof gs.player.maxFocus !== 'number') {
         gs.player.maxFocus = defaultGameState.player.maxFocus;
       }
+      if (!gs.player.artifacts) {
+        gs.player.artifacts = { patterns: [], tools: [], trinkets: [] };
+      } else {
+        gs.player.artifacts.patterns ??= [];
+        gs.player.artifacts.tools ??= [];
+        gs.player.artifacts.trinkets ??= [];
+      }
+      if (!Array.isArray(gs.player.artifactProgress)) {
+        gs.player.artifactProgress = [];
+      }
       delete (gs as { rumors?: unknown }).rumors;
       for (const character of Object.values(gs.characters)) {
         delete (character as { memories?: unknown }).memories;

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { DayPeriod, isClassActivity, type ScheduledActivity } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
+  import League from './League.svelte';
 
   const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const periods = [DayPeriod.Morning, DayPeriod.Afternoon, DayPeriod.Evening];
@@ -79,6 +80,8 @@
       {/each}
     {/each}
   </div>
+
+  <League />
 </div>
 
 <style>

@@ -2,6 +2,7 @@ import { npcs } from '@/data/npcs';
 import { PLACES, REGIONS } from '@/data/sim/places';
 import { DayPeriod, ResourceType, type GameState } from '../_model';
 import { gs } from '../_state';
+import { loadArtifacts } from './artifacts';
 import { clearUsedFlavors } from './cards/flavor-generation-pipeline/used-flavors';
 import { loadCardTemplates, restoreCardTemplates } from './cards/npc-card-templates';
 import { initChatTopics } from './chat-topics';
@@ -24,6 +25,7 @@ export const defaultGameState: GameState = {
     gold: 1000,
     focus: 3,
     maxFocus: 3,
+    artifactProgress: [],
     decks: [],
     collection: [],
     placeKey: 'admin-office',
@@ -35,6 +37,11 @@ export const defaultGameState: GameState = {
       aura: 7,
     },
     possessions: [],
+    artifacts: {
+      patterns: [],
+      tools: [],
+      trinkets: [],
+    },
     resources: {
       [ResourceType.MagicDust]: 2,
       [ResourceType.Mithril]: 2,
@@ -103,6 +110,7 @@ export const initSim = async () => {
   await loadEventTemplates();
   await restoreCardTemplates();
   await loadCardTemplates();
+  loadArtifacts();
   await initChatTopics();
   getBasicLands();
   setSceneEvents();

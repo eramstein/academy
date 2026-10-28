@@ -1,0 +1,32 @@
+[
+  {
+    "patternKey": "basic-stabilisator",
+    "name": "Basic Stabilisator",
+    "description": "A matter stabilisator helping with crafting precision.",
+    "colorCost": [{ "color": "black", "cost": 3 }],
+    "resourcesCost": { "gold": 100, "mithril": 5 },
+    "skillBonuses": {
+      "mastery": 1
+    }
+  },
+  {
+    "patternKey": "basic-codex",
+    "name": "Basic Codex",
+    "description": "A codex helps with keeping track of the crafting processes.",
+    "colorCost": [{ "color": "blue", "cost": 3 }],
+    "resourcesCost": { "gold": 100, "mox": 5 },
+    "skillBonuses": {
+      "erudition": 1
+    }
+  },
+  {
+    "patternKey": "basic-porticulis",
+    "name": "Basic Porticuli",
+    "description": "A porticulis offering glimpses of the possible.",
+    "colorCost": [{ "color": "red", "cost": 3 }],
+    "resourcesCost": { "gold": 100, "magicDust": 5 },
+    "skillBonuses": {
+      "inspiration": 1
+    }
+  }
+]

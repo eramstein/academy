@@ -64,6 +64,11 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
       blue: 0,
       black: 0,
     },
+    artifacts: {
+      patterns: [],
+      tools: [],
+      trinkets: [],
+    },
   };
 }
 
@@ -96,6 +101,35 @@ export const npcs: Record<string, Npc> = {
     gender: CharacterGender.Male,
     age: 54,
     bio: `Wolfgang Helmert administers the Academy as other men keep a fortress: with ledgers instead of swords, and a patience worn thin by years of excuses. At fifty-four he has the look of someone who has heard every plea twice and believed none of them the second time. Students know him as the grim presence behind the office door, whose word can open a future or close it without raising his voice. He is fiercely intelligent, little given to charm, and possessed of a residual aura that reminds the careless he was never merely a clerk. Decades of petitions, missing funds, and half-mended disasters have left him short-tempered, though not without a private sense of duty. He loves the institution more than he loves the people in it, and he would deny even that. Those who waste his time find him unyielding; those who come prepared find him, if not kind, at least exact. He keeps the school standing, and he expects the school, in return, to stand up straight.`,
+  },
+  frank_artifact_master: {
+    ...createDefaultNpc(),
+    key: 'frank_artifact_master',
+    name: 'Frank, Artifact Master',
+    placeKey: 'academy-workshop',
+    attributes: { dexterity: 19, intelligence: 11, vitality: 15, charisma: 12, aura: 8 },
+    personality: {
+      traits: { [CharacterTrait.Friendly]: true, [CharacterTrait.Assertive]: true },
+      speechExamples: [
+        'When a student brings a broken piece: "Ha! Good. Failures teach faster than manuals. Set it there—we\'ll put her right."',
+        'When someone is too timid at the bench: "Louder, friend! The forge can\'t hear a whisper, and neither can I."',
+        'When a design finally works: "There she is! Beautiful as a thunderstorm. Now do it again so it wasn\'t luck."',
+      ],
+      humor:
+        'Booming and generous. Workshop jokes, nicknames for stubborn mechanisms, a laugh that rattles the tools. He never mocks a honest try—only half-hearted ones.',
+      conflicts:
+        'He does not simmer; he thunders, then offers a handshake and a better plan. Sloppy work earns a loud correction. Laziness earns the same. After that he expects you back at the bench.',
+      habits: [
+        'Wipes grease on his apron mid-sentence and keeps talking',
+        'Claps a student on the shoulder hard enough to stagger them',
+        'Talks through a repair out loud as if the artifact can hear him',
+        'Whistles over the hammer until the piece rings true',
+      ],
+      preferredResponseDynamics: {},
+    },
+    gender: CharacterGender.Male,
+    age: 42,
+    bio: `Frank runs the Academy workshop the way a river runs a mill: loud, constant, and somehow always productive. At forty-two he is a broad man with forge-scarred forearms, a voice built for shouting over hammers, and a grin that arrives before the greeting. Students expecting a remote master of relics find instead an engineer who treats every broken artifact as a welcome puzzle and every hesitant apprentice as raw material worth shaping. He is industrious to a fault—early at the bench, late at the quench, forever halfway through three projects and somehow finishing all of them. Friendly without being soft, he will clap you on the back for a good try and roar corrections when the work is careless. He loves the craft more than the ceremony around it, and he has little patience for theory that will not survive contact with iron. The workshop smells of oil, hot metal, and his laughter. Under Frank, things get fixed, rebuilt, and occasionally improved until the original inventor would not recognize them—and he would call that a compliment.`,
   },
   rustic_innkeeper: {
     ...createDefaultNpc(),

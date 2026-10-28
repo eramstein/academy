@@ -1,5 +1,6 @@
 <script lang="ts">
   import { gs } from '@/lib/_state/main.svelte';
+  import { getUiIconPath } from '@/lib/_utils/asset-paths';
 
   function characterName(characterKey: string): string {
     if (characterKey === gs.player.key) {
@@ -14,10 +15,12 @@
       (a, b) => b.points - a.points || a.characterKey.localeCompare(b.characterKey)
     )
   );
+  const trophyIcon = getUiIconPath('trophy');
 </script>
 
 <div class="league">
   <h3 class="section-title">
+    <span class="title-icon" style="--icon: url('{trophyIcon}')" aria-hidden="true"></span>
     {#if season > 0}
       Season {season}
     {:else}
@@ -47,10 +50,15 @@
     gap: 0.75rem;
     color: var(--color-cream);
     font-family: var(--font-narrative);
-    padding: 12px 16px;
+    margin-top: 1.25rem;
+    padding: 1rem 0.25rem 0.25rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-brass) 45%, transparent);
   }
 
   .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
     margin: 0;
     font-size: 0.85rem;
     font-weight: 600;
@@ -59,6 +67,14 @@
     color: var(--color-muted-label);
     padding-bottom: 0.35rem;
     border-bottom: 1px solid var(--color-brass);
+  }
+
+  .title-icon {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    background: var(--icon) center / contain no-repeat;
   }
 
   .empty {

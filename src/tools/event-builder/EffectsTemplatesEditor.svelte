@@ -171,6 +171,11 @@
           description: '',
           characterKey: 'player',
         };
+      case EventEffectType.AcquireArtifactPattern:
+        return {
+          patternKey: '',
+          characterKey: 'player',
+        };
       default:
         return {};
     }
@@ -999,6 +1004,23 @@
                   const raw = (e.currentTarget as HTMLInputElement).value;
                   setParameter(i, 'count', raw === '' ? undefined : Number(raw));
                 }}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? 'player'}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+            {:else if effect.type === EventEffectType.AcquireArtifactPattern}
+              <input
+                class="input arg"
+                value={effect.parameters.patternKey ?? ''}
+                placeholder="pattern key"
+                aria-label="Artifact pattern key"
+                oninput={(e) =>
+                  setParameter(i, 'patternKey', (e.currentTarget as HTMLInputElement).value)}
               />
               <input
                 class="input arg"

@@ -90,18 +90,126 @@ You make for the food, where a plate of suspiciously lifelike marzipan fingers h
 ## Node: emma_halloween_party
 
 **Title:** A dance with a vampire
-**Image:** academy_halloween_emma.jpg large
+**Image:** emma_halloween_party.jpg large
+**Emotion:** amused
+
+Emma proves an excellent companion for an evening of mild chaos. She informs Professor Glützenbaum that his vampire disguise is undermined by the crumbs in his beard. He replies that these are _historically accurate_ crumbs.
+
+You catch Emma examining the punch, one delicate eyebrow raised. "Do you suppose the professor has realized we're both vampires? I'm afraid the Academy's supply of victims is rather limited."
+
+An answer springs to mind. It involves vampires, sucking, and Emma. It is, by every reasonable measure, an appalling idea.
+
+_No,_ advises the small, overworked part of your brain responsible for preserving your dignity. _Don't say it. Whatever you're thinking, don't._
+
+Unfortunately, the rest of your brain has already begun constructing the sentence.
+
+### Option A: Try **not** to make the joke
+
+**Check:** intelligence impossible
+**On success:**
+
+- **Next:** emma_cuts_you_off
+
+**On failure:**
+
+- **Next:** emma_cuts_you_off
+
+**Text:**
+
+You summon every scrap of intellect at your disposal in a desperate attempt to keep your mouth shut.
+
+**Outcomes:**
+
+- No additional game-state effects.
+
+## Node: emma_cuts_you_off
+
+**Title:** An excellent prevention
+**Emotion:** amused
+
+Emma watches your expression change. Her eyes narrow behind her glasses.
+
+"No."
+
+You haven't said anything yet.
+
+"I can see the joke forming, Antonio. You have exactly the face of a man about to say something about vampires sucking." She holds up one finger. "And before you ask: yes, I thought of it first. No, you may not hear my version. It was better."
+
+You open your mouth to protest. She raises a second finger.
+
+"Careful. That would be your second mistake, and it's still early."
+
+The narrator would like to congratulate Emma on averting a catastrophe. The narrator would also like to point out that you were only _considering_ a catastrophe.
+
+Before you can defend yourself, Emma spots Molly across the room, happily passing pastries to a pair of nervous first-year students. An unmistakable gleam appears in Emma's eyes.
+
+"Now," she says, drawing herself up to her full aristocratic vampire height, "watch a professional."
+
+### Option A: Follow Emma's demonstration of terror
+
+**Next:** emma_scares_molly
+
+**Text:**
+
+You follow at a discreet distance, eager to see whether Emma's confidence is justified.
+
+**Outcomes:**
+
+- No additional game-state effects.
+
+## Node: emma_scares_molly
+
+**Title:** A fearsome predator
 **Emotion:** happy
 
-Emma proves an excellent companion for an evening of mild chaos. She offers devastatingly polite compliments to Ousmane's pirate outfit, persuades Farid to demonstrate his most theatrical bow, and informs Professor Glützenbaum that his vampire disguise is undermined somewhat by the crumbs in his beard.
+Emma approaches Molly from behind, gliding silently between the tables. She bares her little costume fangs and whispers into Molly's ear, in her most dreadful voice, "Beware, mortal. Your blood is mine."
 
-When the musicians strike up a lively dance, she turns toward you. "Well? You didn't invite me here merely to watch me eat pastries, I hope."
+Molly turns around. "Emma! You look _wonderful!_"
+
+Before Emma can retreat, Molly wraps her in an enormous werewolf hug. Emma's elegant cape gets trapped under a furry paw, and her carefully arranged collar folds over one ear.
+
+"Molly," comes a muffled voice, "this is not how the encounter is supposed to work."
+
+"Oh! Sorry!" Molly loosens her grip. "Was I meant to be frightened? Shall we try again?"
+
+"Absolutely not." Emma straightens her collar with the dignity of a deposed monarch. "My reputation has suffered enough."
+
+Molly grins, pats Emma's shoulder, and goes back to distributing pastries. Emma watches her leave.
+
+"There's no reasoning with werewolves," she mutters. "They're all teeth and unconditional affection."
+
+The musicians strike up a lively dance, offering Emma a convenient escape from further humiliation. She turns to you and extends a hand.
+
+"Come on, Fibonacci. Perhaps I can salvage this evening by defeating you at something civilized."
+
+### Option A: Accept the challenge
+
+**Next:** emma_dance
+
+**Text:**
+
+You take her hand. "Is dancing really a competition?"
+
+"Not ordinarily," Emma says. "But you've met me."
+
+**Outcomes:**
+
+- No additional game-state effects.
+
+## Node: emma_dance
+
+**Title:** The vampire waltz
+**Emotion:** happy
 
 {{ emmaDance }}
 
-You join the dancers. Emma moves with practiced grace, but tonight she seems less concerned with perfection than with enjoying herself. When you nearly collide with a student dressed as an enormous mushroom, she catches your arm and laughs so hard that she misses a step herself.
+You join the dancers. Emma moves with practiced grace, although tonight she seems more interested in having fun than in getting every step right. When you nearly collide with a student dressed as an enormous mushroom, she pulls you aside at the last instant—and laughs hard enough to miss a step herself.
 
-"Not a word, Fibonacci," she warns, still laughing. "That never happened."
+"Not a word, Fibonacci. Nobody saw that."
+
+"The mushroom saw."
+
+"The mushroom knows what's good for him."
 
 **Passages:**
 
@@ -109,11 +217,11 @@ You join the dancers. Emma moves with practiced grace, but tonight she seems les
 
 **When:** Story tag `emma_ballet_shared_evening` is present
 
-"You remember our last dance, don't you?" she asks. "Let's see whether you've improved since then."
+"You remember our last dance, don't you?" she asks. "I've decided to measure your progress. I may even publish the results. Anonymously, if they're dreadful."
 
 **Otherwise:**
 
-"Don't look so alarmed," she says. "I promise not to grade your footwork. Strictly speaking, I'm off duty."
+"Don't look so alarmed," she says. "I promise not to grade your footwork. I left the marking rubric at home."
 
 ### Option A: Tell her she's enjoying herself
 
@@ -123,9 +231,9 @@ You join the dancers. Emma moves with practiced grace, but tonight she seems les
 
 "You know, I don't think I've ever seen you laugh quite so much."
 
-Emma gives you a thoughtful look. "Perhaps I should spend less time being sensible. Don't tell the professor I said that."
+"That's because you're usually too busy giving me reasons to sigh." Emma considers this, then smiles. "But perhaps I've been taking myself a little too seriously. Don't tell anyone. I have an image to maintain."
 
-She squeezes your hand briefly before the music carries you both back into the crowd.
+She squeezes your hand briefly as the music carries you both back into the crowd.
 
 **Outcomes:**
 
@@ -137,9 +245,9 @@ She squeezes your hand briefly before the music carries you both back into the c
 
 **Text:**
 
-"One more?" you ask. "Unless you're afraid I might outdance you."
+"One more? Unless you're afraid I might outdance you."
 
-Emma looks positively delighted. "Oh, Antonio. You really should know better by now."
+Emma looks delighted. "There it is. The brave confidence of a man who has learned absolutely nothing."
 
 She takes your hand and leads you straight back onto the floor. You suspect you've just committed yourself to a very long evening.
 
@@ -152,13 +260,17 @@ She takes your hand and leads you straight back onto the floor. You suspect you'
 **Title:** A little something
 **Emotion:** happy
 
-The party is winding down when Emma draws you aside, away from the music. From a small pocket in her gown she produces a card, its illustration showing a mischievous vampire surrounded by elegant blue enchantments.
+The party is winding down when Emma draws you aside, away from the music. From a small pocket in her gown she produces a card depicting a bespectacled vampire with a smug little smile. The resemblance is difficult to miss.
 
-"I made this earlier in the week," she says. "A seasonal experiment. Entirely frivolous, academically indefensible, and rather good, if I say so myself."
+"A seasonal experiment," she explains. "Entirely frivolous, academically indefensible, and remarkably effective. I thought you'd appreciate a card with some intelligence behind the fangs."
 
-She places it in your hand. "I thought you might like it. And before you ask, no, it isn't a declaration of undying devotion. That would be terribly on the nose, given the costume."
+You glance at the illustration. "You gave yourself glasses."
 
-Her smile softens. "Thank you for inviting me, Antonio. I had a lovely evening."
+"Of course. I'm not going to spend eternity squinting."
+
+She places the card in your hand. "And before you ask, it isn't a declaration of undying devotion. That would be terribly on the nose, given the costume."
+
+Her smile softens. "Thank you for inviting me, Antonio. I had a lovely evening. Even if my reign of terror lasted approximately four seconds."
 
 **On enter:**
 
@@ -169,7 +281,7 @@ Her smile softens. "Thank you for inviting me, Antonio. I had a lovely evening."
 ## Node: molly_halloween_party
 
 **Title:** The gentlest werewolf
-**Image:** academy_halloween_molly.jpg large
+**Image:** molly_halloween_party.jpg large
 **Emotion:** happy
 
 Molly throws herself into the festivities with infectious enthusiasm. She insists you sample the pumpkin pastries, introduces you to half a dozen students you already know, and somehow becomes involved in a contest to see who can make the most convincing monster noise.

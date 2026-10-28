@@ -5,7 +5,6 @@ import type { CardColor } from './enums-battle';
 import type {
   ActionType,
   ActivityType,
-  ArtifactType,
   CharacterGender,
   CharacterTrait,
   ChatTopicType,
@@ -345,6 +344,11 @@ export interface Character {
   colorMasteryPoints: ColorMasteryPoints;
   jobs: Job[];
   possessions: Possession[];
+  artifacts: {
+    patterns: string[];
+    tools: ArtifactTool[];
+    trinkets: ArtifactTrinket[];
+  };
 }
 
 export interface Possession {
@@ -368,6 +372,8 @@ export interface Job {
 export interface Player extends Character {
   maxFocus: number;
   focus: number;
+  /** Unfinished crafts. `colorCost.cost` is how many cells of that color are filled. */
+  artifactProgress: { key: string; colorCost: { color: CardColor; cost: number }[] }[];
 }
 
 export interface Npc extends Character {
@@ -499,9 +505,18 @@ export interface Schedule {
 }
 
 export interface Artifact {
-  key: string;
+  patternKey: string;
   name: string;
   description: string;
   colorCost: { color: CardColor; cost: number }[];
-  type: ArtifactType;
+  resourcesCost: Record<ResourceType, number>;
+  requiredPatterns?: string[];
+}
+
+export interface ArtifactTool extends Artifact {
+  skillBonuses: CardCraftingSkills;
+}
+
+export interface ArtifactTrinket extends Artifact {
+  attributeBonuses: Attributes;
 }

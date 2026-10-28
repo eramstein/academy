@@ -18,8 +18,7 @@ export type SimDataTab =
   | 'schedule'
   | 'places'
   | 'collection'
-  | 'decks'
-  | 'league';
+  | 'decks';
 
 export type UiState = {
   currentView: UiView;

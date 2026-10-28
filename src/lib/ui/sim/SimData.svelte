@@ -5,7 +5,6 @@
   import Characters from './sim-data/Characters.svelte';
   import Collection from './sim-data/Collection.svelte';
   import Decks from './sim-data/Decks.svelte';
-  import League from './sim-data/League.svelte';
   import Places from './sim-data/Places.svelte';
   import Player from './sim-data/Player.svelte';
   import SceneData from './sim-data/SceneData.svelte';
@@ -20,7 +19,6 @@
     { id: 'places', label: 'Places', icon: 'pin' },
     { id: 'collection', label: 'Cards', icon: 'book' },
     { id: 'decks', label: 'Decks', icon: 'cards' },
-    { id: 'league', label: 'League', icon: 'trophy' },
   ];
 
   const selected = $derived(uiState.sim.dataTab);
@@ -104,8 +102,6 @@
         <Collection />
       {:else if selected === 'decks'}
         <Decks />
-      {:else if selected === 'league'}
-        <League />
       {/if}
     </div>
   </div>
