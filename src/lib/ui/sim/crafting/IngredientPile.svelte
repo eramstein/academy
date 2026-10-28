@@ -1,6 +1,6 @@
 <script lang="ts">
   import { ResourceType } from '@/lib/_model';
-  import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
+  import ResourceIcon from '@/lib/ui/sim/ResourceIcon.svelte';
 
   let {
     type,
@@ -28,16 +28,6 @@
     onChange: (next: number, event: MouseEvent) => void;
   } = $props();
 
-  const RESOURCE_ICONS: Record<ResourceType, string> = {
-    [ResourceType.MagicDust]: 'magic_dust',
-    [ResourceType.Mithril]: 'metal_bar',
-    [ResourceType.Moxes]: 'gem',
-    [ResourceType.MollysBeads]: 'leaf',
-    [ResourceType.SchlupakMushrooms]: 'feather',
-    [ResourceType.SchlupakDreamspheres]: 'feather',
-    [ResourceType.SchlupakSpores]: 'feather',
-  };
-
   const RESOURCE_ROLES: Record<ResourceType, string> = {
     [ResourceType.Mithril]: 'Mastery',
     [ResourceType.MagicDust]: 'Inspiration',
@@ -48,9 +38,6 @@
     [ResourceType.SchlupakSpores]: 'Unique',
   };
 
-  const iconName = RESOURCE_ICONS[type];
-  const iconUrl = getUiIconPath(iconName);
-  const painted = isPaintedUiIcon(iconName);
   const label = type.replace(/_/g, ' ');
   const role = RESOURCE_ROLES[type];
   const remaining = $derived(Math.max(0, owned - selected));
@@ -88,7 +75,6 @@
   class:empty
   class:bump
   disabled={inactive}
-  style="--icon: url('{iconUrl}')"
   aria-label="{label} ({role}): {selected} in the circle, {remaining} remaining. Click to add, right-click to remove, shift-click for five."
   title="{role} · Click to add · Right-click to remove · Shift-click for 5"
   onclick={(event) => commit(event, false)}
@@ -109,7 +95,9 @@
   {#if showIcon}
     <span class="glyph-col">
       <span class="glyph-wrap">
-        <span class="glyph" class:painted aria-hidden="true"></span>
+        <span class="glyph" aria-hidden="true">
+          <ResourceIcon {type} />
+        </span>
       </span>
       <span class="well" data-token-nest={type} aria-hidden="true"></span>
     </span>
@@ -266,9 +254,6 @@
     display: block;
     width: 64px;
     height: 64px;
-    background: var(--color-brass);
-    mask: var(--icon) center / contain no-repeat;
-    -webkit-mask: var(--icon) center / contain no-repeat;
     filter: drop-shadow(0 4px 5px rgba(42, 24, 16, 0.4));
     animation: float 3.4s ease-in-out infinite;
   }
@@ -276,12 +261,6 @@
   .pile.row .glyph {
     width: 44px;
     height: 44px;
-  }
-
-  .glyph.painted {
-    background: var(--icon) center / contain no-repeat;
-    mask: none;
-    -webkit-mask: none;
   }
 
   .pile.on .glyph {

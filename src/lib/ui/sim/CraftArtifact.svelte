@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CardColor, ResourceType, type Action } from '@/lib/_model';
+  import { CardColor, type Action } from '@/lib/_model';
   import { gs } from '@/lib/_state';
   import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
   import {
@@ -12,6 +12,7 @@
     type ArtifactCraftView,
   } from '@/lib/sim/actions';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
+  import ResourceIcon from '@/lib/ui/sim/ResourceIcon.svelte';
   import WorkbenchShell from './crafting/WorkbenchShell.svelte';
 
   let {
@@ -21,16 +22,6 @@
     action: Action;
     onDone: () => void;
   } = $props();
-
-  const RESOURCE_ICONS: Record<ResourceType, string> = {
-    [ResourceType.MagicDust]: 'magic_dust',
-    [ResourceType.Mithril]: 'metal_bar',
-    [ResourceType.Moxes]: 'gem',
-    [ResourceType.MollysBeads]: 'leaf',
-    [ResourceType.SchlupakMushrooms]: 'feather',
-    [ResourceType.SchlupakDreamspheres]: 'feather',
-    [ResourceType.SchlupakSpores]: 'feather',
-  };
 
   const patterns = $derived(getCraftablePatterns());
   let selectedKey = $state<string | null>(null);
@@ -72,11 +63,6 @@
 
   function colorPath(color: CardColor): string {
     return getAssetPath(`images/ui/icons/color_${color}.png`);
-  }
-
-  function costIcon(key: ArtifactCraftView['costs'][number]['key']): string {
-    if (key === 'gold') return getUiIconPath('coin');
-    return getUiIconPath(RESOURCE_ICONS[key]);
   }
 
   function selectPattern(patternKey: string) {
@@ -200,7 +186,13 @@
         <ul class="costs">
           {#each selected.costs as line (line.key)}
             <li class:short={!line.enough}>
-              <img src={costIcon(line.key)} alt="" />
+              {#if line.key === 'gold'}
+                <img src={getUiIconPath('coin')} alt="" />
+              {:else}
+                <span class="cost-icon">
+                  <ResourceIcon type={line.key} />
+                </span>
+              {/if}
               <span class="cost-label">{line.label}</span>
               <span class="cost-amount">have {line.have} · need {line.need}</span>
               <span class="cost-state">{line.enough ? 'enough' : 'short'}</span>
@@ -401,10 +393,16 @@
 
   .pip img,
   .costs img,
+  .cost-icon,
   .bar-pip {
     width: 22px;
     height: 22px;
     object-fit: contain;
+  }
+
+  .cost-icon {
+    display: block;
+    flex-shrink: 0;
   }
 
   .pip span,

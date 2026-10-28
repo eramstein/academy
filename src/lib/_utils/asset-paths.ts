@@ -1,4 +1,4 @@
-import { Emotion } from '@/lib/_model/enums-sim';
+import { Emotion, ResourceType } from '@/lib/_model/enums-sim';
 import { findModImages, modImageUrl, type ModImageKind } from '@/lib/mods';
 
 /** Characters with a 4×4 emotion spritesheet (314px cells → 1256×1256) under images/characters/sheets. */
@@ -6,6 +6,50 @@ const CHARACTER_EMOTION_SHEETS = new Set(['molly', 'emma']);
 
 const EMOTION_SHEET_COLS = 4;
 const EMOTION_SHEET_ROWS = 4;
+
+/** 5×5 resource icons under images/ui/icons/resources (see spritehseet.json). */
+const RESOURCE_SHEET_COLS = 5;
+const RESOURCE_SHEET_ROWS = 5;
+
+/** Sprite name → [column, row] on the resource sheet (zero-based, origin top-left). */
+const RESOURCE_SPRITE_CELLS: Record<string, readonly [number, number]> = {
+  magic_dust: [0, 0],
+  mithril: [1, 0],
+  moxes: [2, 0],
+  dried_herbs: [3, 0],
+  mushrooms: [4, 0],
+  feather: [0, 1],
+  potion_vial: [1, 1],
+  crystal_shards: [2, 1],
+  dragon_scale: [3, 1],
+  twisted_root: [4, 1],
+  bone: [0, 2],
+  pearl: [1, 2],
+  spider_silk: [2, 2],
+  honeycomb: [3, 2],
+  mistletoe: [4, 2],
+  leather: [0, 3],
+  coal: [1, 3],
+  iron_ore: [2, 3],
+  seashell: [3, 3],
+  fireflies: [4, 3],
+  crow_feather: [0, 4],
+  incense: [1, 4],
+  rune_stone: [2, 4],
+  tree_resin: [3, 4],
+  acorn: [4, 4],
+};
+
+/** ResourceType → sprite name on the sheet (resources-map in spritehseet.json). */
+const RESOURCE_ICON_SPRITES: Record<ResourceType, string> = {
+  [ResourceType.MagicDust]: 'magic_dust',
+  [ResourceType.Mithril]: 'mithril',
+  [ResourceType.Moxes]: 'moxes',
+  [ResourceType.MollysBeads]: 'dried_herbs',
+  [ResourceType.SchlupakMushrooms]: 'mushrooms',
+  [ResourceType.SchlupakDreamspheres]: 'pearl',
+  [ResourceType.SchlupakSpores]: 'mistletoe',
+};
 
 /** Grid position [col, row] for each emotion on character sheets. */
 const EMOTION_SHEET_CELLS: Record<Emotion, readonly [number, number]> = {
@@ -72,6 +116,25 @@ export function getEmotionSheetBackgroundPosition(emotion: Emotion): { x: number
 /** CSS background-size for a 4×4 emotion sheet (`400% 400%`). */
 export function getEmotionSheetBackgroundSize(): string {
   return `${EMOTION_SHEET_COLS * 100}% ${EMOTION_SHEET_ROWS * 100}%`;
+}
+
+export function getResourceIconSheetPath(): string {
+  return getAssetPath('images/ui/icons/resources/resources_sheet.png');
+}
+
+/** Zero-based [column, row] of a resource on the 5×5 sheet. */
+export function getResourceIconCell(type: ResourceType): { col: number; row: number } {
+  const sprite = RESOURCE_ICON_SPRITES[type];
+  const [col, row] = RESOURCE_SPRITE_CELLS[sprite] ?? RESOURCE_SPRITE_CELLS.magic_dust;
+  return { col, row };
+}
+
+export function getResourceIconSheetCols(): number {
+  return RESOURCE_SHEET_COLS;
+}
+
+export function getResourceIconSheetRows(): number {
+  return RESOURCE_SHEET_ROWS;
 }
 
 export function getSoundPath(soundName: string): string {
@@ -255,8 +318,6 @@ const PAINTED_UI_ICONS: Record<string, string> = {
   handshake: 'handshake',
   finger_pointing: 'finger_pointing',
   gem: 'gem',
-  magic_dust: 'magic_dust',
-  metal_bar: 'metal_bar',
   crown: 'more_icons',
   befriend: 'handshake',
   taunt: 'finger_pointing',

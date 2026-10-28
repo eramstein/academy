@@ -6,11 +6,13 @@
     Attributes,
     CardCraftingSkills,
   } from '@/lib/_model';
-  import { CardColor, ResourceType } from '@/lib/_model';
+  import { CardColor } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import { getArtifactCostLines, type ArtifactCostLine } from '@/lib/sim/actions';
   import { getLoadedArtifact } from '@/lib/sim/artifacts';
+  import ResourceIcon from '@/lib/ui/sim/ResourceIcon.svelte';
+  import ArtifactThumb from './ArtifactThumb.svelte';
   import PlayerDetail from './PlayerDetail.svelte';
 
   let { onBack }: { onBack: () => void } = $props();
@@ -26,16 +28,6 @@
     costs: ArtifactCostLine[];
     filled: number[];
     requiredNames: string[];
-  };
-
-  const RESOURCE_ICONS: Record<ResourceType, string> = {
-    [ResourceType.MagicDust]: 'magic_dust',
-    [ResourceType.Mithril]: 'metal_bar',
-    [ResourceType.Moxes]: 'gem',
-    [ResourceType.MollysBeads]: 'leaf',
-    [ResourceType.SchlupakMushrooms]: 'feather',
-    [ResourceType.SchlupakDreamspheres]: 'feather',
-    [ResourceType.SchlupakSpores]: 'feather',
   };
 
   const owned = $derived.by((): OwnedEntry[] => {
@@ -116,22 +108,8 @@
     return `${have}/${need} cells`;
   }
 
-  function costIcon(key: ArtifactCostLine['key']): string {
-    if (key === 'gold') return getUiIconPath('coin');
-    return getUiIconPath(RESOURCE_ICONS[key]);
-  }
-
   function colorPath(color: CardColor): string {
     return getAssetPath(`images/ui/icons/color_${color}.png`);
-  }
-
-  function artifactImage(patternKey: string): string {
-    return getAssetPath(`images/artifacts/${patternKey}.jpg`);
-  }
-
-  function hideBrokenImage(event: Event) {
-    const target = event.currentTarget;
-    if (target instanceof HTMLImageElement) target.hidden = true;
   }
 
   function iconUrl(name: string) {
@@ -155,10 +133,8 @@
 )}
   {@const effects = effectLines(artifact)}
   {@const progress = opts?.filled ? progressLabel(opts.filled, artifact) : ''}
-  <li class="card" class:pattern={opts?.pattern}>
-    <span class="thumb">
-      <img src={artifactImage(artifact.patternKey)} alt="" onerror={hideBrokenImage} />
-    </span>
+  <li class="card">
+    <ArtifactThumb patternKey={artifact.patternKey} size="md" muted={opts?.pattern} />
     <div class="copy">
       <div class="headline">
         <span class="name">{artifact.name}</span>
@@ -185,7 +161,13 @@
         <ul class="costs">
           {#each opts.costs as line (line.key)}
             <li class="cost" class:short={!line.enough}>
-              <img src={costIcon(line.key)} alt="" />
+              {#if line.key === 'gold'}
+                <img src={getUiIconPath('coin')} alt="" />
+              {:else}
+                <span class="cost-icon">
+                  <ResourceIcon type={line.key} />
+                </span>
+              {/if}
               <span>{line.label}</span>
               <span class="cost-amount">{line.need}</span>
             </li>
@@ -303,21 +285,6 @@
     align-items: start;
   }
 
-  .thumb {
-    width: 4.5rem;
-    height: 4.5rem;
-    border-radius: 4px;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.35);
-  }
-
-  .thumb img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
   .copy {
     display: flex;
     flex-direction: column;
@@ -379,10 +346,16 @@
   }
 
   .color img,
-  .cost img {
+  .cost img,
+  .cost-icon {
     width: 1.15rem;
     height: 1.15rem;
     object-fit: contain;
+  }
+
+  .cost-icon {
+    display: block;
+    flex-shrink: 0;
   }
 
   .cost-amount {
@@ -396,9 +369,5 @@
 
   .cost.short .cost-amount {
     color: inherit;
-  }
-
-  .card.pattern .thumb {
-    opacity: 0.88;
   }
 </style>

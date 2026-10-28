@@ -1,7 +1,9 @@
 <script lang="ts">
+  import type { ResourceType } from '@/lib/_model/enums-sim';
   import { percentThreshold } from '@/lib/sim/cards/crafting-skills';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
+  import ResourceIcon from '@/lib/ui/sim/ResourceIcon.svelte';
   import type { Snippet } from 'svelte';
   import { untrack } from 'svelte';
 
@@ -24,6 +26,7 @@
     extraLabel = 'Discovery chance',
     extraTip = '',
     icon = '',
+    resourceType,
     layout = 'stack',
     frame = 'box',
     dieSide = 'top',
@@ -58,8 +61,10 @@
     extraLabel?: string;
     /** Tooltip for the second bar label. */
     extraTip?: string;
-    /** Optional painted icon (chart row, or plaque badge). */
+    /** Optional painted icon URL (chart row, or plaque badge). */
     icon?: string;
+    /** When set, uses the resource spritesheet instead of `icon`. */
+    resourceType?: ResourceType;
     /** `chart` materials column; `plaque` conjure framed box; `stack` plain. */
     layout?: 'stack' | 'chart' | 'plaque';
     /** Plaque art: standard `box.png`, or wider `box_long.png`. */
@@ -401,7 +406,11 @@
   {#if die}
     {@render die()}
   {/if}
-  {#if icon}
+  {#if resourceType}
+    <span class="icon" class:badge={layout === 'plaque'}>
+      <ResourceIcon type={resourceType} />
+    </span>
+  {:else if icon}
     <img class="icon" class:badge={layout === 'plaque'} src={icon} alt="" draggable="false" />
   {/if}
   <div class="body" class:dual={hasExtra && !showOutcome} class:outcome={showOutcome}>
@@ -547,8 +556,10 @@
   }
 
   .icon {
+    display: block;
     width: 18px;
     height: 18px;
+    flex-shrink: 0;
     object-fit: contain;
     filter: drop-shadow(0 1px 1px rgba(42, 24, 16, 0.35));
   }

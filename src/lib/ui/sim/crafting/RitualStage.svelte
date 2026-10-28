@@ -24,6 +24,7 @@
   import { untrack } from 'svelte';
   import { cubicOut } from 'svelte/easing';
   import { fly, scale } from 'svelte/transition';
+  import ResourceIcon from '@/lib/ui/sim/ResourceIcon.svelte';
   import BonusReadout from './BonusReadout.svelte';
   import IngredientPile from './IngredientPile.svelte';
   import RitualCircle from './RitualCircle.svelte';
@@ -162,15 +163,6 @@
   const starIcon = getUiIconPath('star');
   const spiralIcon = getUiIconPath('spiral');
   const decksIcon = getUiIconPath('decks');
-  const RESOURCE_ICONS: Record<ResourceType, string> = {
-    [ResourceType.MagicDust]: getUiIconPath('magic_dust'),
-    [ResourceType.Mithril]: getUiIconPath('metal_bar'),
-    [ResourceType.Moxes]: getUiIconPath('gem'),
-    [ResourceType.MollysBeads]: getUiIconPath('leaf'),
-    [ResourceType.SchlupakMushrooms]: getUiIconPath('feather'),
-    [ResourceType.SchlupakDreamspheres]: getUiIconPath('feather'),
-    [ResourceType.SchlupakSpores]: getUiIconPath('feather'),
-  };
   const BEAD = 28;
   const CHARM = 32;
   const FLY_MS = 520;
@@ -1635,7 +1627,7 @@
           <BonusReadout
             layout="plaque"
             frame="long"
-            icon={RESOURCE_ICONS[ResourceType.MagicDust]}
+            resourceType={ResourceType.MagicDust}
             label="Inspiration"
             singular="Card choice"
             plural="Card choices"
@@ -1708,7 +1700,7 @@
         <div class="bonus-flank left" class:outcome={eruditionOutcome}>
           <BonusReadout
             layout="plaque"
-            icon={RESOURCE_ICONS[ResourceType.Moxes]}
+            resourceType={ResourceType.Moxes}
             label="Erudition"
             singular="Knowledge"
             plural="Knowledge"
@@ -1800,7 +1792,7 @@
         <div class="bonus-flank right" class:outcome={masteryOutcome}>
           <BonusReadout
             layout="plaque"
-            icon={RESOURCE_ICONS[ResourceType.Mithril]}
+            resourceType={ResourceType.Mithril}
             label="Mastery"
             singular="Budget"
             plural="Budget"
@@ -1887,13 +1879,13 @@
 
   <div class="beads" aria-hidden="true">
     {#each tokens as token (token.id)}
-      <img
+      <span
         class="bead"
         data-type={token.type}
-        src={RESOURCE_ICONS[token.type]}
-        alt=""
         use:registerToken={token.id}
-      />
+      >
+        <ResourceIcon type={token.type} />
+      </span>
     {/each}
     {#each orbitIds as charm (charm.id)}
       <img
@@ -2819,9 +2811,9 @@
     position: absolute;
     top: 0;
     left: 0;
+    display: block;
     width: 28px;
     height: 28px;
-    object-fit: contain;
     border-radius: 0;
     background: transparent;
     box-shadow: none;

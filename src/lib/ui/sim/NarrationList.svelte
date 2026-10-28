@@ -13,6 +13,7 @@
   import CraftingKnowledgeNarration from './CraftingKnowledgeNarration.svelte';
   import type { InkBeat } from './ink-beat';
   import NarrationText from './NarrationText.svelte';
+  import ResourceIcon from './ResourceIcon.svelte';
 
   let {
     done = $bindable(false),
@@ -26,16 +27,6 @@
     [DayPeriod.Morning]: 'sunrise',
     [DayPeriod.Afternoon]: 'sun',
     [DayPeriod.Evening]: 'moon',
-  };
-
-  const resourceIcon: Record<ResourceType, string> = {
-    [ResourceType.MagicDust]: 'magic_dust',
-    [ResourceType.Mithril]: 'metal_bar',
-    [ResourceType.Moxes]: 'gem',
-    [ResourceType.MollysBeads]: 'leaf',
-    [ResourceType.SchlupakMushrooms]: 'feather',
-    [ResourceType.SchlupakDreamspheres]: 'feather',
-    [ResourceType.SchlupakSpores]: 'feather',
   };
 
   const narration = $derived(gs.scene.narration);
@@ -550,13 +541,10 @@
       {#if items.length > 0 || possessionNames.length > 0}
         <span class="tx-arrow">→</span>
         {#each items as item (item.type)}
-          {@const iconPath = uiIconPath(resourceIcon[item.type])}
           <span class="tx-chip tx-item">
-            <span
-              class="tx-icon"
-              class:painted={isPaintedUiIcon(resourceIcon[item.type])}
-              style="--icon: url('{iconPath}')"
-            ></span>
+            <span class="tx-icon sheet">
+              <ResourceIcon type={item.type} />
+            </span>
             <span class="tx-label">{item.count} {item.label}</span>
           </span>
         {/each}
@@ -942,6 +930,12 @@
 
   .tx-icon.painted {
     background: var(--icon) center / contain no-repeat;
+    mask: none;
+    -webkit-mask: none;
+  }
+
+  .tx-icon.sheet {
+    background: none;
     mask: none;
     -webkit-mask: none;
   }

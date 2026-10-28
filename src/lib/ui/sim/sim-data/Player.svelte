@@ -2,9 +2,11 @@
   import type { ArtifactTool, ArtifactTrinket, CardCraftingSkills } from '@/lib/_model';
   import { PossessionType, ResourceType, SubscriptionType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
-  import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
+  import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import Attributes from '../Attributes.svelte';
   import CharacterIdentity from '../characters/CharacterIdentity.svelte';
+  import ResourceIcon from '../ResourceIcon.svelte';
+  import ArtifactThumb from './player/ArtifactThumb.svelte';
   import Artifacts from './player/Artifacts.svelte';
   import Crafting from './player/Crafting.svelte';
   import Jobs from './player/Jobs.svelte';
@@ -25,16 +27,6 @@
     ResourceType.Mithril,
     ResourceType.Moxes,
   ];
-
-  const RESOURCE_ICONS: Record<ResourceType, string> = {
-    [ResourceType.MagicDust]: 'magic_dust',
-    [ResourceType.Mithril]: 'metal_bar',
-    [ResourceType.Moxes]: 'gem',
-    [ResourceType.MollysBeads]: 'leaf',
-    [ResourceType.SchlupakMushrooms]: 'feather',
-    [ResourceType.SchlupakDreamspheres]: 'feather',
-    [ResourceType.SchlupakSpores]: 'feather',
-  };
 
   const SUB_ICONS: Record<SubscriptionType, string> = {
     [SubscriptionType.Academy]: 'temple',
@@ -61,7 +53,6 @@
     FEATURED_RESOURCES.map((type) => ({
       type,
       amount: player.resources?.[type] ?? 0,
-      icon: RESOURCE_ICONS[type],
       label: resourceLabel(type),
     }))
   );
@@ -172,10 +163,6 @@
     return getUiIconPath(name);
   }
 
-  function artifactImage(patternKey: string): string {
-    return getAssetPath(`images/artifacts/${patternKey}.jpg`);
-  }
-
   function bonusLabel(artifact: ArtifactTool | ArtifactTrinket): string {
     const entries =
       'skillBonuses' in artifact
@@ -185,11 +172,6 @@
       .filter((entry): entry is [string, number] => typeof entry[1] === 'number' && entry[1] !== 0)
       .map(([key, value]) => `${value > 0 ? '+' : ''}${value} ${titleWord(key)}`)
       .join(' · ');
-  }
-
-  function hideBrokenImage(event: Event) {
-    const target = event.currentTarget;
-    if (target instanceof HTMLImageElement) target.hidden = true;
   }
 
   function closePane() {
@@ -258,7 +240,12 @@
             <ul class="resources">
               {#each featuredResources as resource (resource.type)}
                 <li class="resource">
-                  {@render icon(resource.icon)}
+                  <span
+                    class="resource-glyph"
+                    class:magic-dust={resource.type === ResourceType.MagicDust}
+                  >
+                    <ResourceIcon type={resource.type} />
+                  </span>
                   <span class="resource-name">{resource.label}</span>
                   <span class="resource-amount">{resource.amount}</span>
                 </li>
@@ -279,13 +266,7 @@
                 {#each previewArtifacts as entry, index (`${entry.kind}-${entry.artifact.patternKey}-${index}`)}
                   {@const bonus = bonusLabel(entry.artifact)}
                   <li class="artifact">
-                    <span class="thumb">
-                      <img
-                        src={artifactImage(entry.artifact.patternKey)}
-                        alt=""
-                        onerror={hideBrokenImage}
-                      />
-                    </span>
+                    <ArtifactThumb patternKey={entry.artifact.patternKey} size="sm" />
                     <span class="artifact-copy">
                       <span class="artifact-name" title={entry.artifact.name}>
                         {entry.artifact.name}
@@ -593,10 +574,16 @@
     border-left: 1px solid rgba(175, 142, 103, 0.28);
   }
 
-  .resource .icon {
+  .resource-glyph {
     grid-row: 1 / span 2;
+    display: block;
     width: 2.65rem;
     height: 2.65rem;
+    flex-shrink: 0;
+  }
+
+  .resource-glyph.magic-dust {
+    transform: translateY(-5px);
   }
 
   .resource-name,
@@ -636,21 +623,6 @@
     gap: 0.55rem;
     align-items: center;
     min-width: 0;
-  }
-
-  .thumb {
-    width: 3.25rem;
-    height: 3.25rem;
-    border-radius: 4px;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.35);
-  }
-
-  .thumb img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
   }
 
   .artifact-copy {
