@@ -151,11 +151,16 @@ export function fillArtifactCell(
 }
 
 /** Spend gold and materials, add the artifact, and clear its progress. */
-export function completeCraftedArtifact(patternKey: string): boolean {
+export function completeCraftedArtifact(
+  patternKey: string,
+  options?: { free?: boolean }
+): boolean {
   const artifact = getLoadedArtifact(patternKey);
   if (!artifact) return false;
-  if (!isFilled(artifact, filledCounts(artifact))) return false;
-  if (!spendArtifactCosts(artifact)) return false;
+  if (!options?.free) {
+    if (!isFilled(artifact, filledCounts(artifact))) return false;
+    if (!spendArtifactCosts(artifact)) return false;
+  }
 
   ensureCraftState();
   const copy = structuredClone(artifact);
@@ -228,6 +233,11 @@ function isFilled(artifact: Artifact, filled: number[]): boolean {
   return artifact.colorCost.every((entry, index) => (filled[index] ?? 0) >= entry.cost);
 }
 
+/** Resource and gold costs for an artifact pattern, with current stock. */
+export function getArtifactCostLines(artifact: Artifact): ArtifactCostLine[] {
+  return readCostLines(artifact);
+}
+
 function readCostLines(artifact: Artifact): ArtifactCostLine[] {
   const lines: ArtifactCostLine[] = [];
   for (const [raw, amount] of Object.entries(artifact.resourcesCost ?? {})) {
@@ -271,5 +281,6 @@ function amountOnHand(key: 'gold' | ResourceType): number {
 
 function costLabel(key: 'gold' | ResourceType): string {
   if (key === 'gold') return 'Gold';
+  if (key === ResourceType.MollysBeads) return "Molly's Beads";
   return key.replace(/_/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
 }

@@ -7,6 +7,9 @@ import { scheduleClassesForCurrentTerm } from '../../sim/academy';
 import { ACTION_TEMPLATE_KEYS } from '../../sim/cards/action-templates';
 import { KEYWORD_KEYS } from '../../sim/cards/keywords';
 import { redeemBaseDeck } from '../../sim/deck';
+import { completeCraftedArtifact } from '../../sim/actions/craft-artifact';
+import { getLoadedArtifact } from '../../sim/artifacts';
+import { acquireArtifactPattern } from '../../sim/effects/artifacts';
 import { addResource } from '../../sim/effects/resources';
 import { newLeagueSeason } from '../../sim/league';
 import { initOngoingBattle } from '../../sim/ongoing-battle';
@@ -184,6 +187,26 @@ export async function executeCommand(input: string): Promise<CommandResult> {
       const winnerKey = parts[1] || 'player';
       newLeagueSeason(winnerKey);
       return { ok: true, message: `Started new league season; winner: ${winnerKey}` };
+    }
+
+    case 'artifact': {
+      // /artifact <patternKey> — grant pattern + finished tool/trinket (no costs)
+      const patternKey = parts[1];
+      if (!patternKey) {
+        return { ok: false, message: 'Usage: /artifact <patternKey>' };
+      }
+      const patternMessage = acquireArtifactPattern({ patternKey });
+      if (
+        !patternMessage.includes('acquire') &&
+        !patternMessage.includes('already know')
+      ) {
+        return { ok: false, message: patternMessage };
+      }
+      if (!completeCraftedArtifact(patternKey, { free: true })) {
+        return { ok: false, message: `Failed to craft artifact: ${patternKey}` };
+      }
+      const name = getLoadedArtifact(patternKey)?.name ?? patternKey;
+      return { ok: true, message: `Granted pattern and crafted ${name}` };
     }
 
     default:

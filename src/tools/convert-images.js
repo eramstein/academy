@@ -38,6 +38,13 @@ const targets = [
     maxFileSizeKB: 300,
   },
   {
+    dir: './public/assets/images/artifacts',
+    quality: 90,
+    width: 256,
+    height: 256,
+    maxFileSizeKB: 100,
+  },
+  {
     dir: './public/assets/images/jobs',
     quality: 90,
     width: 1024,
