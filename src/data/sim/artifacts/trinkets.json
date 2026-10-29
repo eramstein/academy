@@ -4,7 +4,10 @@
     "image": "amulet-of-vitality",
     "name": "Vitality Amulet",
     "description": "A amulet that increases the wearer's vitality.",
-    "colorCost": [{ "color": "green", "cost": 3 }],
+    "colorCost": [
+      { "color": "green", "cost": 3 },
+      { "color": "black", "cost": 2 }
+    ],
     "pieces": [
       {
         "name": "chain",

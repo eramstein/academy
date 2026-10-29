@@ -331,11 +331,12 @@
     justify-content: center;
     gap: 0.55cqw;
     margin: 0 0 1.2cqw;
-    font-size: 1.15cqw;
+    font-family: var(--font-narrative);
+    font-size: 0.85rem;
     font-weight: 700;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-ink);
+    color: var(--color-ink-muted);
   }
 
   .star {
@@ -381,9 +382,10 @@
 
   .piece-name {
     margin: 0;
-    font-size: 1.45cqw;
+    font-family: var(--font-narrative);
+    font-size: 1.05rem;
     font-weight: 600;
-    line-height: 1.15;
+    line-height: 1.2;
     text-align: left;
     color: var(--color-ink);
   }
@@ -397,11 +399,11 @@
   }
 
   .pager button {
-    width: 1.7cqw;
-    height: 1.7cqw;
+    width: 1.4rem;
+    height: 1.4rem;
     padding: 0;
     font-family: var(--font-narrative);
-    font-size: 1.45cqw;
+    font-size: 1.2rem;
     line-height: 1;
     color: var(--color-ink);
     background: transparent;
@@ -415,8 +417,9 @@
   }
 
   .pager-count {
-    min-width: 3cqw;
-    font-size: 1.05cqw;
+    min-width: 2.8rem;
+    font-family: var(--font-narrative);
+    font-size: 0.92rem;
     letter-spacing: 0.04em;
     text-align: center;
     color: var(--color-ink-muted);
@@ -470,16 +473,18 @@
 
   .chip-label,
   .inv-label {
-    margin-top: 0.2cqw;
-    font-size: 1.05cqw;
-    line-height: 1.15;
+    margin-top: 0.15rem;
+    font-family: var(--font-narrative);
+    font-size: 0.85rem;
+    line-height: 1.2;
     color: var(--color-ink);
   }
 
   .chip-need,
   .inv-count {
-    font-size: 1.2cqw;
-    line-height: 1.15;
+    font-family: var(--font-narrative);
+    font-size: 0.95rem;
+    line-height: 1.2;
     font-variant-numeric: tabular-nums;
     color: var(--color-ink);
   }
@@ -530,9 +535,11 @@
   }
 
   .seal {
-    width: 1.05cqw;
-    height: 1.05cqw;
-    margin-top: 0.2cqw;
+    display: grid;
+    place-items: center;
+    width: 0.95rem;
+    height: 0.95rem;
+    margin-top: 0.2rem;
     border: 1.5px solid var(--color-brown-border);
     border-radius: 50%;
     box-sizing: border-box;
@@ -546,13 +553,12 @@
 
   .seal.met::after {
     content: '';
-    position: absolute;
-    left: 28%;
-    top: 14%;
-    width: 22%;
-    height: 42%;
+    width: 0.28rem;
+    height: 0.48rem;
+    margin-top: -0.08rem;
     border: solid #f4efe2;
     border-width: 0 1.5px 1.5px 0;
+    box-sizing: border-box;
     transform: rotate(45deg);
   }
 
@@ -561,9 +567,10 @@
   }
 
   .muted {
-    margin: 0.6cqw 0 0;
-    font-size: 0.9cqw;
-    line-height: 1.35;
+    margin: 0.5rem 0 0;
+    font-family: var(--font-narrative);
+    font-size: 0.92rem;
+    line-height: 1.4;
     color: var(--color-ink-muted);
   }
 
@@ -573,8 +580,9 @@
   }
 
   .short-note {
-    margin: 0.45cqw 0 0;
-    font-size: 0.85cqw;
+    margin: 0.4rem 0 0;
+    font-family: var(--font-narrative);
+    font-size: 0.9rem;
     color: var(--color-red);
   }
 
@@ -608,9 +616,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.8cqw;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    gap: 0.55rem;
+    font-family: var(--font-narrative);
   }
 
   .diamond {
