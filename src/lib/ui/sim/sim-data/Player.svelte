@@ -255,45 +255,43 @@
             {/if}
           </section>
 
-          <section class="block">
-            {@render sectionTitle('Artifacts', 'spiral', 'artifacts')}
-            {@render divider()}
-            {#if previewArtifacts.length === 0}
-              <p class="empty">None yet.</p>
-            {:else}
-              <ul class="artifacts">
-                {#each previewArtifacts as entry, index (`${entry.kind}-${entry.artifact.patternKey}-${index}`)}
-                  {@const bonus = bonusLabel(entry.artifact)}
-                  <li class="artifact">
-                    <ArtifactThumb
-                      patternKey={entry.artifact.patternKey}
-                      image={entry.artifact.image}
-                      size="sm"
-                    />
-                    <span class="artifact-copy">
-                      <span class="artifact-name" title={entry.artifact.name}>
-                        {entry.artifact.name}
+          {#if ownedArtifacts.length > 0 || patternsToRealize > 0}
+            <section class="block">
+              {@render sectionTitle('Artifacts', 'spiral', 'artifacts')}
+              {@render divider()}
+              {#if previewArtifacts.length > 0}
+                <ul class="artifacts">
+                  {#each previewArtifacts as entry, index (`${entry.kind}-${entry.artifact.patternKey}-${index}`)}
+                    {@const bonus = bonusLabel(entry.artifact)}
+                    <li class="artifact">
+                      <ArtifactThumb
+                        patternKey={entry.artifact.patternKey}
+                        image={entry.artifact.image}
+                        size="sm"
+                      />
+                      <span class="artifact-copy">
+                        <span class="artifact-name" title={entry.artifact.name}>
+                          {entry.artifact.name}
+                        </span>
+                        <span class="artifact-kind">{entry.kind}</span>
+                        {#if bonus}
+                          <span class="artifact-bonus">{bonus}</span>
+                        {/if}
                       </span>
-                      <span class="artifact-kind">{entry.kind}</span>
-                      {#if bonus}
-                        <span class="artifact-bonus">{bonus}</span>
-                      {/if}
-                    </span>
-                  </li>
-                {/each}
-              </ul>
+                    </li>
+                  {/each}
+                </ul>
+              {/if}
               {#if artifactAside}
                 <p class="aside">{artifactAside}</p>
               {/if}
-            {/if}
-          </section>
+            </section>
+          {/if}
 
-          <section class="block">
-            {@render sectionTitle('Possessions', 'boot', 'possessions')}
-            {@render divider()}
-            {#if possessionGroups.length === 0}
-              <p class="empty">None yet.</p>
-            {:else}
+          {#if possessionGroups.length > 0}
+            <section class="block">
+              {@render sectionTitle('Possessions', 'boot', 'possessions')}
+              {@render divider()}
               <ul class="possessions">
                 {#each possessionGroups as group (group.type)}
                   <li>
@@ -302,8 +300,8 @@
                   </li>
                 {/each}
               </ul>
-            {/if}
-          </section>
+            </section>
+          {/if}
 
           <section class="block">
             {@render sectionTitle('Card Crafting', 'spiral', 'crafting')}
@@ -536,6 +534,10 @@
     margin: 0;
     font-size: 0.84rem;
     color: var(--color-muted-label);
+  }
+
+  .aside {
+    text-align: center;
   }
 
   .resources,

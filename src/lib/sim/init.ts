@@ -48,7 +48,7 @@ export const defaultGameState: GameState = {
       [ResourceType.Moxes]: 2,
       [ResourceType.MollysBeads]: 0,
       [ResourceType.SchlupakMushrooms]: 0,
-      [ResourceType.Dreamspheres]: 0,
+      [ResourceType.Dreamspheres]: 2,
       [ResourceType.SchlupakSpores]: 0,
       [ResourceType.SchlupakHoney]: 0,
       [ResourceType.Mithril]: 2,

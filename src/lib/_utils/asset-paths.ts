@@ -218,6 +218,64 @@ export function getArtifactIconSheetRows(): number {
   return ARTIFACT_SHEET_ROWS;
 }
 
+/** 5×5 piece icons under images/artifacts/pieces (see pieces_spritesheet.json). */
+const PIECE_SHEET_COLS = 5;
+const PIECE_SHEET_ROWS = 5;
+
+const PIECE_SPRITES: Record<string, { name: string; col: number; row: number }> = {
+  casing: { name: 'Casing', col: 0, row: 0 },
+  shaft: { name: 'Shaft', col: 1, row: 0 },
+  blade: { name: 'Blade', col: 2, row: 0 },
+  'crystal-core': { name: 'Crystal Core', col: 3, row: 0 },
+  gear: { name: 'Gear', col: 4, row: 0 },
+  'brass-ring': { name: 'Brass Ring', col: 0, row: 1 },
+  handle: { name: 'Handle', col: 1, row: 1 },
+  hilt: { name: 'Hilt', col: 2, row: 1 },
+  guard: { name: 'Guard', col: 3, row: 1 },
+  lens: { name: 'Lens', col: 4, row: 1 },
+  spring: { name: 'Spring', col: 0, row: 2 },
+  chain: { name: 'Chain', col: 1, row: 2 },
+  socket: { name: 'Socket', col: 2, row: 2 },
+  'metal-plate': { name: 'Metal Plate', col: 3, row: 2 },
+  piston: { name: 'Piston', col: 4, row: 2 },
+  valve: { name: 'Valve', col: 0, row: 3 },
+  'rune-stone': { name: 'Rune Stone', col: 1, row: 3 },
+  'gem-setting': { name: 'Gem Setting', col: 2, row: 3 },
+  'wire-coil': { name: 'Wire Coil', col: 3, row: 3 },
+  hinge: { name: 'Hinge', col: 4, row: 3 },
+  nozzle: { name: 'Nozzle', col: 0, row: 4 },
+  clasp: { name: 'Clasp', col: 1, row: 4 },
+  'focus-orb': { name: 'Focus Orb', col: 2, row: 4 },
+  frame: { name: 'Frame', col: 3, row: 4 },
+  seal: { name: 'Seal', col: 4, row: 4 },
+};
+
+export function getPieceIconSheetPath(): string {
+  return getAssetPath('images/artifacts/pieces/artifact-components.png');
+}
+
+/** Zero-based cell for a piece key, or null when the sheet has no match. */
+export function getPieceIconCell(pieceKey: string): { col: number; row: number } | null {
+  const piece = PIECE_SPRITES[pieceKey];
+  if (!piece) return null;
+  return { col: piece.col, row: piece.row };
+}
+
+export function getPieceDisplayName(pieceKey: string): string {
+  return (
+    PIECE_SPRITES[pieceKey]?.name ??
+    pieceKey.replace(/[-_]/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
+  );
+}
+
+export function getPieceIconSheetCols(): number {
+  return PIECE_SHEET_COLS;
+}
+
+export function getPieceIconSheetRows(): number {
+  return PIECE_SHEET_ROWS;
+}
+
 export function getPlaceImagePath(placeKey: string): string {
   return getAssetPath(`images/places/${placeKey}.jpg`);
 }

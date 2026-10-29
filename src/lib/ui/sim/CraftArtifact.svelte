@@ -1,7 +1,7 @@
 <script lang="ts">
   import { CardColor, ResourceType, type Action } from '@/lib/_model';
   import { gs } from '@/lib/_state';
-  import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
   import {
     artifactProgressChance,
     canAffordPieceChoices,
@@ -17,6 +17,7 @@
   } from '@/lib/sim/actions';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import ResourceIcon from '@/lib/ui/sim/ResourceIcon.svelte';
+  import ArtifactMaterials from './crafting/ArtifactMaterials.svelte';
   import PatternBook from './crafting/PatternBook.svelte';
   import WorkbenchShell from './crafting/WorkbenchShell.svelte';
 
@@ -28,8 +29,11 @@
     onDone: () => void;
   } = $props();
 
+  type CraftStep = 'materials' | 'colors';
+
   const patterns = $derived(getCraftablePatterns());
   let selectedKey = $state<string | null>(null);
+  let craftStep = $state<CraftStep>('materials');
   let pieceChoices = $state<number[]>([]);
   let focusToSpend = $state(0);
   let takeYourTime = $state(false);
@@ -70,8 +74,14 @@
         void commit('paused');
         return;
       }
+      if (selectedKey && craftStep === 'colors') {
+        craftStep = 'materials';
+        notice = '';
+        return;
+      }
       if (selectedKey) {
         selectedKey = null;
+        craftStep = 'materials';
         pieceChoices = [];
         notice = '';
         return;
@@ -96,6 +106,7 @@
   function selectPattern(patternKey: string) {
     const view = patterns.find((pattern) => pattern.artifact.patternKey === patternKey);
     selectedKey = patternKey;
+    craftStep = 'materials';
     pieceChoices =
       view?.affordableChoices ?? view?.pieces.map((piece) => piece.suggestedIndex) ?? [];
     focusToSpend = 0;
@@ -108,10 +119,32 @@
     notice = '';
   }
 
-  function selectPieceAlternative(pieceIndex: number, alternativeIndex: number) {
+  function clearPattern() {
+    selectedKey = null;
+    craftStep = 'materials';
+    pieceChoices = [];
+    notice = '';
+  }
+
+  function goToColors() {
     if (!selected || leaving) return;
+    craftStep = 'colors';
+    notice = '';
+  }
+
+  function goToMaterials() {
+    if (working || leaving) return;
+    craftStep = 'materials';
+    notice = '';
+  }
+
+  function cyclePiece(pieceIndex: number, delta: number) {
+    if (!selected || leaving || craftStep !== 'materials') return;
+    const count = selected.pieces[pieceIndex]?.alternatives.length ?? 0;
+    if (count <= 1) return;
+    const current = pieceChoices[pieceIndex] ?? 0;
     const next = [...pieceChoices];
-    next[pieceIndex] = alternativeIndex;
+    next[pieceIndex] = (current + delta + count) % count;
     pieceChoices = next;
   }
 
@@ -122,7 +155,7 @@
   }
 
   function begin() {
-    if (!selected || working || leaving || complete) return;
+    if (!selected || working || leaving || complete || craftStep !== 'colors') return;
     sessionTakeYourTime = takeYourTime;
     spentFocus = takeYourTime ? 0 : spendCraftFocus(focusToSpend);
     working = true;
@@ -135,7 +168,7 @@
   }
 
   async function onCell(barIndex: number) {
-    if (leaving || !working || !selectedKey) return;
+    if (leaving || !working || !selectedKey || craftStep !== 'colors') return;
     if (sessionTakeYourTime && progressedThisSession) return;
     const result = fillArtifactCell(selectedKey, barIndex, chance, payment);
     if (!result) return;
@@ -203,247 +236,219 @@
     onConfirm={confirmPattern}
     onBack={onDone}
   />
+{:else if craftStep === 'materials'}
+  <ArtifactMaterials
+    pieces={selected.pieces}
+    {pieceChoices}
+    {leaving}
+    affordable={choicesAffordable}
+    onCycle={cyclePiece}
+    onBack={clearPattern}
+    onAssemble={goToColors}
+  />
 {:else}
   <WorkbenchShell title="Craft Artifact" {subtitle} wide>
+    <nav class="steps" aria-label="Crafting steps">
+      <button
+        type="button"
+        class="step"
+        class:active={craftStep === 'materials'}
+        class:done={craftStep === 'colors'}
+        disabled={leaving || working}
+        onclick={goToMaterials}
+      >
+        <span class="step-num">1</span>
+        <span class="step-label">Materials</span>
+      </button>
+      <span class="step-rule" aria-hidden="true"></span>
+      <button
+        type="button"
+        class="step"
+        class:active={craftStep === 'colors'}
+        disabled={leaving || working || craftStep !== 'colors'}
+        onclick={goToColors}
+      >
+        <span class="step-num">2</span>
+        <span class="step-label">Colors</span>
+      </button>
+    </nav>
+
     <p class="description">{selected.artifact.description}</p>
 
     <div class="mastery" aria-label="Color mastery">
-      {#each Object.values(CardColor) as color (color)}
-        <span class="pip">
-          <img src={colorPath(color)} alt="" />
-          <span>{gs.player.colorMasteryPoints?.[color] ?? 0}</span>
+        {#each Object.values(CardColor) as color (color)}
+          <span class="pip">
+            <img src={colorPath(color)} alt="" />
+            <span>{gs.player.colorMasteryPoints?.[color] ?? 0}</span>
+          </span>
+        {/each}
+        <span class="pip dreamsphere-pip">
+          <span class="cost-icon">
+            <ResourceIcon type={ResourceType.Dreamspheres} />
+          </span>
+          <span>{dreamspheres}</span>
         </span>
-      {/each}
-      <span class="pip dreamsphere-pip">
-        <span class="cost-icon">
-          <ResourceIcon type={ResourceType.Dreamspheres} />
-        </span>
-        <span>{dreamspheres}</span>
-      </span>
-      <span class="focus-count">Focus {gs.player.focus}</span>
-    </div>
-
-    <section class="block">
-      <h3>Pay with</h3>
-      <div class="pay-options" role="radiogroup" aria-label="Color cell payment">
-        <button
-          type="button"
-          class="pay-option"
-          class:chosen={payment === 'mastery'}
-          role="radio"
-          aria-checked={payment === 'mastery'}
-          disabled={leaving}
-          onclick={() => (payment = 'mastery')}
-        >
-          Color mastery
-        </button>
-        <button
-          type="button"
-          class="pay-option"
-          class:chosen={payment === 'dreamsphere'}
-          role="radio"
-          aria-checked={payment === 'dreamsphere'}
-          disabled={leaving || dreamspheres <= 0}
-          onclick={() => (payment = 'dreamsphere')}
-        >
-          Dreamspheres
-        </button>
+        <span class="focus-count">Focus {gs.player.focus}</span>
       </div>
-      <p class="muted">
-        {#if payment === 'dreamsphere'}
-          One dreamsphere fills any color cell.
-        {:else}
-          Each cell spends one mastery point of that color.
-        {/if}
-      </p>
-    </section>
 
-    <section class="block">
-      <h3>Pieces</h3>
-      {#if selected.pieces.length === 0}
-        <p class="muted">This pattern asks for nothing.</p>
-      {:else}
-        <ul class="pieces">
-          {#each selected.pieces as piece, pieceIndex (piece.name)}
-            <li class="piece">
-              <h4 class="piece-name">{piece.name}</h4>
-              <ul class="alts" role="radiogroup" aria-label={`${piece.name} materials`}>
-                {#each piece.alternatives as alt, altIndex (altIndex)}
-                  {@const chosen = pieceChoices[pieceIndex] === altIndex}
-                  <li>
+      <section class="block">
+        <h3>Pay with</h3>
+        <div class="pay-options" role="radiogroup" aria-label="Color cell payment">
+          <button
+            type="button"
+            class="pay-option"
+            class:chosen={payment === 'mastery'}
+            role="radio"
+            aria-checked={payment === 'mastery'}
+            disabled={leaving}
+            onclick={() => (payment = 'mastery')}
+          >
+            Color mastery
+          </button>
+          <button
+            type="button"
+            class="pay-option"
+            class:chosen={payment === 'dreamsphere'}
+            role="radio"
+            aria-checked={payment === 'dreamsphere'}
+            disabled={leaving || dreamspheres <= 0}
+            onclick={() => (payment = 'dreamsphere')}
+          >
+            Dreamspheres
+          </button>
+        </div>
+        <p class="muted">
+          {#if payment === 'dreamsphere'}
+            One dreamsphere fills any color cell.
+          {:else}
+            Each cell spends one mastery point of that color.
+          {/if}
+        </p>
+      </section>
+
+      <section class="block">
+        <h3>Colors</h3>
+        {#if selected.artifact.colorCost.length === 0}
+          <p class="muted">This pattern has no color cells.</p>
+        {:else}
+          <div class="bars">
+            {#each selected.artifact.colorCost as bar, barIndex (barIndex)}
+              <div class="bar">
+                <img class="bar-pip" src={colorPath(bar.color)} alt="" />
+                <span class="bar-name">{bar.color}</span>
+                <span class="cells">
+                  {#each Array.from({ length: bar.cost }, (_, cellIndex) => cellIndex) as cellIndex (cellIndex)}
+                    {@const filled = cellIndex < (selected.filled[barIndex] ?? 0)}
                     <button
                       type="button"
-                      class="alt"
-                      class:chosen
-                      class:short={!alt.enough}
-                      role="radio"
-                      aria-checked={chosen}
-                      disabled={leaving || alt.lines.length === 0}
-                      onclick={() => selectPieceAlternative(pieceIndex, altIndex)}
-                    >
-                      <span class="alt-mark" aria-hidden="true"></span>
-                      <span class="alt-lines">
-                        {#each alt.lines as line, lineIndex (line.key)}
-                          {#if lineIndex > 0}
-                            <span class="alt-plus">+</span>
-                          {/if}
-                          <span class="alt-line" class:short={!line.enough}>
-                            {#if line.key === 'gold'}
-                              <img src={getUiIconPath('coin')} alt="" />
-                            {:else}
-                              <span class="cost-icon">
-                                <ResourceIcon type={line.key} />
-                              </span>
-                            {/if}
-                            <span>{line.need} {line.label}</span>
-                          </span>
-                        {/each}
-                      </span>
-                      {#if altIndex < piece.alternatives.length - 1}
-                        <span class="or-tag">or</span>
-                      {/if}
-                    </button>
-                  </li>
-                {/each}
-              </ul>
-            </li>
-          {/each}
-        </ul>
-      {/if}
-      <p class="muted">Gold and materials are paid when the artifact is finished. Pick one recipe per piece.</p>
-    </section>
-
-    <section class="block">
-      <h3>Colors</h3>
-      {#if selected.artifact.colorCost.length === 0}
-        <p class="muted">This pattern has no color cells.</p>
-      {:else}
-        <div class="bars">
-          {#each selected.artifact.colorCost as bar, barIndex (barIndex)}
-            <div class="bar">
-              <img class="bar-pip" src={colorPath(bar.color)} alt="" />
-              <span class="bar-name">{bar.color}</span>
-              <span class="cells">
-                {#each Array.from({ length: bar.cost }, (_, cellIndex) => cellIndex) as cellIndex (cellIndex)}
-                  {@const filled = cellIndex < (selected.filled[barIndex] ?? 0)}
-                  <button
-                    type="button"
-                    class="cell"
-                    class:filled
-                    style="--swatch: var(--color-{bar.color})"
-                    disabled={cellDisabled(selected, barIndex, cellIndex)}
-                    aria-label={filled ? `${bar.color} cell filled` : `Fill a ${bar.color} cell`}
-                    onclick={() => onCell(barIndex)}
-                  ></button>
-                {/each}
-              </span>
-              <span class="bar-count">{selected.filled[barIndex] ?? 0}/{bar.cost}</span>
-            </div>
-          {/each}
-        </div>
-      {/if}
-    </section>
-
-    {#if !complete}
-      <section class="block focus-block">
-        <h3>Care</h3>
-        {#if working}
-          {#if sessionTakeYourTime}
-            <p>
-              Taking your time. Extra cell chance: {chance}%.
-              {#if progressedThisSession}
-                One attempt used.
-              {:else}
-                One attempt left this session.
-              {/if}
-            </p>
-          {:else}
-            <p>Spent this action: {spentFocus}. Extra cell chance: {chance}%.</p>
-          {/if}
-        {:else}
-          <label class="take-time">
-            <input
-              type="checkbox"
-              checked={takeYourTime}
-              disabled={leaving}
-              onchange={(event) => setTakeYourTime(event.currentTarget.checked)}
-            />
-            <span>Take your time</span>
-          </label>
-          {#if takeYourTime}
-            <p class="muted">
-              One color attempt this session. Extra cell chance: 100%.
-            </p>
-          {:else}
-            <div class="stepper">
-              <button
-                type="button"
-                onclick={() => (focusToSpend = Math.max(0, focusToSpend - 1))}
-                disabled={focusToSpend <= 0}
-              >
-                −
-              </button>
-              <span>{focusToSpend}</span>
-              <button
-                type="button"
-                onclick={() =>
-                  (focusToSpend = Math.min(gs.player.focus ?? 0, focusToSpend + 1))}
-                disabled={focusToSpend >= (gs.player.focus ?? 0)}
-              >
-                +
-              </button>
-            </div>
-            <p class="muted">
-              Extra cell chance: {chance}%. Dexterity {gs.player.attributes.dexterity} × 2, plus 5
-              per focus.
-            </p>
-          {/if}
+                      class="cell"
+                      class:filled
+                      style="--swatch: var(--color-{bar.color})"
+                      disabled={cellDisabled(selected, barIndex, cellIndex)}
+                      aria-label={filled ? `${bar.color} cell filled` : `Fill a ${bar.color} cell`}
+                      onclick={() => onCell(barIndex)}
+                    ></button>
+                  {/each}
+                </span>
+                <span class="bar-count">{selected.filled[barIndex] ?? 0}/{bar.cost}</span>
+              </div>
+            {/each}
+          </div>
         {/if}
       </section>
-    {/if}
 
-    {#if notice}
-      <p class="notice">{notice}</p>
-    {/if}
-    {#if complete && !choicesAffordable}
-      <p class="notice">The color work is done. Gold and materials are still short.</p>
-    {/if}
+      {#if !complete}
+        <section class="block focus-block">
+          <h3>Care</h3>
+          {#if working}
+            {#if sessionTakeYourTime}
+              <p>
+                Taking your time. Extra cell chance: {chance}%.
+                {#if progressedThisSession}
+                  One attempt used.
+                {:else}
+                  One attempt left this session.
+                {/if}
+              </p>
+            {:else}
+              <p>Spent this action: {spentFocus}. Extra cell chance: {chance}%.</p>
+            {/if}
+          {:else}
+            <label class="take-time">
+              <input
+                type="checkbox"
+                checked={takeYourTime}
+                disabled={leaving}
+                onchange={(event) => setTakeYourTime(event.currentTarget.checked)}
+              />
+              <span>Take your time</span>
+            </label>
+            {#if takeYourTime}
+              <p class="muted">
+                One color attempt this session. Extra cell chance: 100%.
+              </p>
+            {:else}
+              <div class="stepper">
+                <button
+                  type="button"
+                  onclick={() => (focusToSpend = Math.max(0, focusToSpend - 1))}
+                  disabled={focusToSpend <= 0}
+                >
+                  −
+                </button>
+                <span>{focusToSpend}</span>
+                <button
+                  type="button"
+                  onclick={() =>
+                    (focusToSpend = Math.min(gs.player.focus ?? 0, focusToSpend + 1))}
+                  disabled={focusToSpend >= (gs.player.focus ?? 0)}
+                >
+                  +
+                </button>
+              </div>
+              <p class="muted">
+                Extra cell chance: {chance}%. Dexterity {gs.player.attributes.dexterity} × 2, plus 5
+                per focus.
+              </p>
+            {/if}
+          {/if}
+        </section>
+      {/if}
 
-  {#snippet footer()}
-    {#if !working}
-      <OrnateButton
-        variant="muted"
-        onclick={() => {
-          selectedKey = null;
-          pieceChoices = [];
-        }}
-      >
-        Back
-      </OrnateButton>
-      {#if complete}
-        <OrnateButton
-          disabled={!choicesAffordable || leaving}
-          onclick={() => commit('completed')}
-        >
-          Finish
-        </OrnateButton>
+      {#if notice}
+        <p class="notice">{notice}</p>
+      {/if}
+      {#if complete && !choicesAffordable}
+        <p class="notice warn">The color work is done. Gold and materials are still short.</p>
+      {/if}
+
+    {#snippet footer()}
+      {#if !working}
+        <OrnateButton variant="muted" onclick={goToMaterials}>Back</OrnateButton>
+        {#if complete}
+          <OrnateButton
+            disabled={!choicesAffordable || leaving}
+            onclick={() => commit('completed')}
+          >
+            Finish
+          </OrnateButton>
+        {:else}
+          <OrnateButton disabled={leaving} onclick={begin}>Begin</OrnateButton>
+        {/if}
       {:else}
-        <OrnateButton disabled={leaving} onclick={begin}>Begin</OrnateButton>
-      {/if}
-    {:else}
-      <OrnateButton variant="muted" disabled={leaving} onclick={() => commit('paused')}>
-        Stop
-      </OrnateButton>
-      {#if complete}
-        <OrnateButton
-          disabled={!choicesAffordable || leaving}
-          onclick={() => commit('completed')}
-        >
-          Finish
+        <OrnateButton variant="muted" disabled={leaving} onclick={() => commit('paused')}>
+          Stop
         </OrnateButton>
+        {#if complete}
+          <OrnateButton
+            disabled={!choicesAffordable || leaving}
+            onclick={() => commit('completed')}
+          >
+            Finish
+          </OrnateButton>
+        {/if}
       {/if}
-    {/if}
-  {/snippet}
+    {/snippet}
   </WorkbenchShell>
 {/if}
 
@@ -463,6 +468,71 @@
     line-height: 1.7;
   }
 
+  .steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 0 14px;
+  }
+
+  .step {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    font-family: var(--font-narrative);
+    color: var(--color-ink-muted);
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .step:disabled {
+    cursor: default;
+  }
+
+  .step.active {
+    color: var(--color-ink);
+  }
+
+  .step.done:not(.active) {
+    color: var(--color-ink);
+  }
+
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border: 1px solid var(--color-brown-border);
+    border-radius: 50%;
+    font-size: 0.8rem;
+    line-height: 1;
+  }
+
+  .step.active .step-num,
+  .step.done .step-num {
+    border-color: var(--color-golden);
+    background: color-mix(in srgb, var(--color-golden) 22%, transparent);
+    color: var(--color-ink);
+  }
+
+  .step-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .step-rule {
+    width: 28px;
+    height: 1px;
+    background: var(--color-brown-border);
+  }
+
   .mastery {
     display: flex;
     flex-wrap: wrap;
@@ -475,7 +545,6 @@
   }
 
   .pip,
-  .alt-line,
   .bar {
     display: flex;
     align-items: center;
@@ -483,7 +552,6 @@
   }
 
   .pip img,
-  .alt-line img,
   .cost-icon,
   .bar-pip {
     width: 22px;
@@ -499,9 +567,7 @@
   .pip span,
   .focus-count,
   .bar-name,
-  .bar-count,
-  .piece-name,
-  .alt-line {
+  .bar-count {
     font-family: var(--font-narrative);
     color: var(--color-ink);
   }
@@ -567,100 +633,6 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-ink-muted);
-  }
-
-  .pieces,
-  .alts {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .piece {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .piece-name {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-  }
-
-  .alts {
-    gap: 4px;
-  }
-
-  .alt {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 6px 8px;
-    text-align: left;
-    font-family: var(--font-narrative);
-    color: var(--color-ink);
-    background: transparent;
-    border: 1px solid var(--color-brown-border);
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .alt:hover:not(:disabled) {
-    border-color: var(--color-brass);
-  }
-
-  .alt.chosen {
-    border-color: var(--color-golden);
-  }
-
-  .alt:disabled {
-    cursor: default;
-    opacity: 0.55;
-  }
-
-  .alt-mark {
-    width: 12px;
-    height: 12px;
-    flex-shrink: 0;
-    border: 1px solid var(--color-brown-border);
-    border-radius: 50%;
-    background: transparent;
-  }
-
-  .alt.chosen .alt-mark {
-    border-color: var(--color-golden);
-    background: var(--color-golden);
-  }
-
-  .alt-lines {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-  }
-
-  .alt-plus,
-  .or-tag {
-    color: var(--color-ink-muted);
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .or-tag {
-    margin-left: auto;
-  }
-
-  .alt.short .alt-line.short,
-  .alt-line.short {
-    color: var(--color-red);
   }
 
   .muted {
@@ -738,5 +710,9 @@
   .notice {
     margin-top: 14px;
     color: var(--color-ink);
+  }
+
+  .notice.warn {
+    color: var(--color-red);
   }
 </style>
