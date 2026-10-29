@@ -152,13 +152,17 @@ export enum EventTriggerType {
 export enum ResourceType {
   // Common resources
   MagicDust = 'magic_dust',
-  Mithril = 'mithril',
+  Silver = 'silver',
   Moxes = 'moxes',
+  // Rare resources
+  Dreamspheres = 'dreamspheres', // alt to knowledge points in artifact crafting
+  SchlupakMushrooms = 'schlupak_mushrooms',
+  SchlupakSpores = 'schlupak_spores',
+  SchlupakHoney = 'schlupak_honey',
+  Mithril = 'mithril',
+  IthildinCrystal = 'ithildin_crystal',
   // Unique resources
   MollysBeads = 'mollys_beads',
-  SchlupakMushrooms = 'schlupak_mushrooms',
-  SchlupakDreamspheres = 'schlupak_dreamspheres',
-  SchlupakSpores = 'schlupak_spores',
 }
 
 export enum JobType {

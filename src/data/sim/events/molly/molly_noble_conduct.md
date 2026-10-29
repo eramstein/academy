@@ -124,11 +124,11 @@ When Elsa sees the discussion turning into a practical arrangement, she hesitate
 
 A little later, Marta brings you a neatly wrapped bundle. "First things we rescued from the discard basket. You two can have them. Better used than melted down for nothing."
 
-Inside are three small pieces of mithril. Astonishing, really, what an institution can overlook when somebody else is expected to sweep it up.
+Inside are three small pieces of silver. Astonishing, really, what an institution can overlook when somebody else is expected to sweep it up.
 
 **Outcomes:**
 
-- Gain resource **3 mithril**
+- Gain resource **3 silver**
 - Molly respect +1.
 - Molly friendship +1.
 - Elsa respect +1.

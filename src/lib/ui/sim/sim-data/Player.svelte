@@ -6,8 +6,8 @@
   import Attributes from '../Attributes.svelte';
   import CharacterIdentity from '../characters/CharacterIdentity.svelte';
   import ResourceIcon from '../ResourceIcon.svelte';
-  import ArtifactThumb from './player/ArtifactThumb.svelte';
   import Artifacts from './player/Artifacts.svelte';
+  import ArtifactThumb from './player/ArtifactThumb.svelte';
   import Crafting from './player/Crafting.svelte';
   import Jobs from './player/Jobs.svelte';
   import Possessions from './player/Possessions.svelte';
@@ -24,7 +24,7 @@
 
   const FEATURED_RESOURCES: ResourceType[] = [
     ResourceType.MagicDust,
-    ResourceType.Mithril,
+    ResourceType.Silver,
     ResourceType.Moxes,
   ];
 
@@ -96,9 +96,8 @@
 
   const patternsToRealize = $derived.by(() => {
     const realized = new Set(ownedArtifacts.map((entry) => entry.artifact.patternKey));
-    return new Set(
-      (player.artifacts?.patterns ?? []).filter((key) => key && !realized.has(key))
-    ).size;
+    return new Set((player.artifacts?.patterns ?? []).filter((key) => key && !realized.has(key)))
+      .size;
   });
 
   const artifactAside = $derived(
@@ -266,7 +265,11 @@
                 {#each previewArtifacts as entry, index (`${entry.kind}-${entry.artifact.patternKey}-${index}`)}
                   {@const bonus = bonusLabel(entry.artifact)}
                   <li class="artifact">
-                    <ArtifactThumb patternKey={entry.artifact.patternKey} size="sm" />
+                    <ArtifactThumb
+                      patternKey={entry.artifact.patternKey}
+                      image={entry.artifact.image}
+                      size="sm"
+                    />
                     <span class="artifact-copy">
                       <span class="artifact-name" title={entry.artifact.name}>
                         {entry.artifact.name}

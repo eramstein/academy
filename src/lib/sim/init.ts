@@ -22,7 +22,7 @@ export const defaultGameState: GameState = {
   player: {
     key: 'player',
     name: 'Antonio Fibonacci',
-    gold: 1000,
+    gold: 2000,
     focus: 3,
     maxFocus: 3,
     artifactProgress: [],
@@ -44,12 +44,15 @@ export const defaultGameState: GameState = {
     },
     resources: {
       [ResourceType.MagicDust]: 2,
-      [ResourceType.Mithril]: 2,
+      [ResourceType.Silver]: 2,
       [ResourceType.Moxes]: 2,
       [ResourceType.MollysBeads]: 0,
       [ResourceType.SchlupakMushrooms]: 0,
-      [ResourceType.SchlupakDreamspheres]: 0,
+      [ResourceType.Dreamspheres]: 0,
       [ResourceType.SchlupakSpores]: 0,
+      [ResourceType.SchlupakHoney]: 0,
+      [ResourceType.Mithril]: 2,
+      [ResourceType.IthildinCrystal]: 2,
     },
     subscriptions: {
       academy: 0,
@@ -60,10 +63,10 @@ export const defaultGameState: GameState = {
       keywords: {},
     },
     colorMasteryPoints: {
-      green: 0,
-      red: 0,
-      blue: 0,
-      black: 0,
+      green: 10,
+      red: 10,
+      blue: 10,
+      black: 10,
     },
     craftingSkills: {
       mastery: 1,

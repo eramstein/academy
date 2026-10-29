@@ -38,13 +38,6 @@ const targets = [
     maxFileSizeKB: 300,
   },
   {
-    dir: './public/assets/images/artifacts',
-    quality: 90,
-    width: 256,
-    height: 256,
-    maxFileSizeKB: 100,
-  },
-  {
     dir: './public/assets/images/jobs',
     quality: 90,
     width: 1024,
@@ -156,9 +149,14 @@ async function processImage(inputPath, { width, height, maxFileSizeKB, quality }
 }
 
 async function walkDir(dir, settings) {
+  const excludeDirs = settings.excludeDirs ?? [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
+      if (excludeDirs.includes(entry.name)) {
+        console.log(`⏭️ Skipping excluded directory: ${fullPath}`);
+        continue;
+      }
       await walkDir(fullPath, settings);
     } else {
       await processImage(fullPath, settings);

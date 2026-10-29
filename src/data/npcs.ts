@@ -27,11 +27,11 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
     routines: [],
     resources: {
       [ResourceType.MagicDust]: 0,
-      [ResourceType.Mithril]: 0,
+      [ResourceType.Silver]: 0,
       [ResourceType.Moxes]: 0,
       [ResourceType.MollysBeads]: 0,
       [ResourceType.SchlupakMushrooms]: 0,
-      [ResourceType.SchlupakDreamspheres]: 0,
+      [ResourceType.Dreamspheres]: 0,
       [ResourceType.SchlupakSpores]: 0,
     },
     relationProgress: {
@@ -217,7 +217,7 @@ export const npcs: Record<string, Npc> = {
     },
     gender: CharacterGender.Female,
     age: 40,
-    bio: `Matilda keeps the materials shop of Godsend Town, and the place smells of earth, resin, and crushed petal long before one sees her behind the counter. She is forty, deft of hand and easy of manner, a woman who can weigh mithril and prune a rosebush with the same unhurried grace. Gardening is not a pastime for her but a vocation: she speaks of plants as other people speak of friends, and her window boxes are the envy of the street. Customers come for reagents and stay for advice, for she has a gift for knowing what a student actually needs rather than what they think they want. She is warm without being foolish, generous without being taken in. Years of trade have given her a practical intelligence, but it is her affection for living things that colors every corner of the shop. In a town of grand theories and dangerous experiments, Matilda remains rooted—quite literally—in the quiet work of growing, gathering, and making do.`,
+    bio: `Matilda keeps the materials shop of Godsend Town, and the place smells of earth, resin, and crushed petal long before one sees her behind the counter. She is forty, deft of hand and easy of manner, a woman who can weigh silver and prune a rosebush with the same unhurried grace. Gardening is not a pastime for her but a vocation: she speaks of plants as other people speak of friends, and her window boxes are the envy of the street. Customers come for reagents and stay for advice, for she has a gift for knowing what a student actually needs rather than what they think they want. She is warm without being foolish, generous without being taken in. Years of trade have given her a practical intelligence, but it is her affection for living things that colors every corner of the shop. In a town of grand theories and dangerous experiments, Matilda remains rooted—quite literally—in the quiet work of growing, gathering, and making do.`,
   },
   molly: {
     ...createDefaultNpc(),

@@ -26,7 +26,7 @@
     <div class="portraits">
       {#each presentCharacters as character (character.key)}
         <button type="button" class="portrait-btn" onclick={() => inspectCharacter(character)}>
-          <CharacterPortrait {character} zoom={1.2} />
+          <CharacterPortrait {character} zoom={1.35} />
         </button>
       {/each}
     </div>

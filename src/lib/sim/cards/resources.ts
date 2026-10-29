@@ -12,14 +12,14 @@ import { addKeyword } from './keywords';
 
 export const COMMON_RESOURCE_TYPES: ResourceType[] = [
   ResourceType.MagicDust,
-  ResourceType.Mithril,
+  ResourceType.Silver,
   ResourceType.Moxes,
 ];
 
 export const UNIQUE_RESOURCE_TYPES: ResourceType[] = [
   ResourceType.MollysBeads,
   ResourceType.SchlupakMushrooms,
-  ResourceType.SchlupakDreamspheres,
+  ResourceType.Dreamspheres,
   ResourceType.SchlupakSpores,
 ];
 
@@ -77,8 +77,8 @@ export function applyUniqueResourceEffects(cardTemplate: CardTemplate, resourceT
       return applyMollysBeadsEffects(cardTemplate);
     case ResourceType.SchlupakMushrooms:
       return applySchlupakMushroomsEffects(cardTemplate);
-    case ResourceType.SchlupakDreamspheres:
-      return applySchlupakDreamspheresEffects(cardTemplate);
+    case ResourceType.Dreamspheres:
+      return applyDreamspheresEffects(cardTemplate);
     case ResourceType.SchlupakSpores:
       return applySchlupakSporesEffects(cardTemplate);
   }
@@ -145,7 +145,7 @@ function applySchlupakMushroomsEffects(cardTemplate: CardTemplate) {
 
 // Schlupak dreamspheres: +1 duration on mezz / daze / root / stun
 // (spell effects or unit abilities)
-function applySchlupakDreamspheresEffects(cardTemplate: CardTemplate) {
+function applyDreamspheresEffects(cardTemplate: CardTemplate) {
   forEachCardAction(cardTemplate, (action) => {
     if (action.effect.name !== 'applyUnitStatus') return;
     if (!CONTROL_STATUS_TYPES.has(action.effect.args.statusType)) return;

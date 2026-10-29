@@ -506,11 +506,22 @@ export interface Schedule {
 
 export interface Artifact {
   patternKey: string;
+  /** Key into `artifacts_spritesheet.json` / the full-artifacts icon sheet. */
+  image?: string;
   name: string;
   description: string;
   colorCost: { color: CardColor; cost: number }[];
-  resourcesCost: Record<ResourceType, number>;
+  pieces: ArtifactPiece[];
   requiredPatterns?: string[];
+}
+
+/** One recipe option for a piece. Keys are `gold` or a ResourceType (camelCase aliases allowed). */
+export type ArtifactResourceCost = Partial<Record<ResourceType | 'gold', number>>;
+
+export interface ArtifactPiece {
+  name: string;
+  /** Player pays exactly one alternative per piece. */
+  alternativeResourcesCost: ArtifactResourceCost[];
 }
 
 export interface ArtifactTool extends Artifact {

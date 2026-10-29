@@ -117,7 +117,7 @@ const PLACES: Record<string, Place> = {
     regionKey: 'town',
     itemsOnSale: {
       resources: {
-        [ResourceType.Mithril]: { price: 50, count: 10 },
+        [ResourceType.Silver]: { price: 50, count: 10 },
         [ResourceType.Moxes]: { price: 750, count: 1 },
         [ResourceType.MagicDust]: { price: 10, count: 100 },
       },

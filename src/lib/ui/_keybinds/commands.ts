@@ -8,7 +8,7 @@ import { ACTION_TEMPLATE_KEYS } from '../../sim/cards/action-templates';
 import { KEYWORD_KEYS } from '../../sim/cards/keywords';
 import { redeemBaseDeck } from '../../sim/deck';
 import { completeCraftedArtifact } from '../../sim/actions/craft-artifact';
-import { getLoadedArtifact } from '../../sim/artifacts';
+import { getLoadedArtifact, getLoadedArtifacts } from '../../sim/artifacts';
 import { acquireArtifactPattern } from '../../sim/effects/artifacts';
 import { addResource } from '../../sim/effects/resources';
 import { newLeagueSeason } from '../../sim/league';
@@ -19,6 +19,7 @@ import {
   formatSimulatedMessage,
 } from '../../sim/event-debug';
 import { simulateEvent } from '../../sim/scene';
+import { openCraftArtifactAction } from '../craft-artifact-session.svelte';
 import { openEventDebug } from '../event-debug-session.svelte';
 import { goToPeriod } from '../../sim/time';
 
@@ -120,11 +121,11 @@ export async function executeCommand(input: string): Promise<CommandResult> {
     }
 
     case 'res': {
-      // /res <dust|mithril|moxes> <amount>
+      // /res <dust|silver|moxes> <amount>
       const resourceType = parts[1] ? resolveResource(parts[1]) : undefined;
       const amount = parseInt(parts[2], 10);
       if (!resourceType || Number.isNaN(amount)) {
-        return { ok: false, message: 'Usage: /res <dust|mithril|moxes> <amount>' };
+        return { ok: false, message: 'Usage: /res <dust|silver|moxes> <amount>' };
       }
       const message = addResource({ resourceType, amount });
       return { ok: true, message };
@@ -196,10 +197,7 @@ export async function executeCommand(input: string): Promise<CommandResult> {
         return { ok: false, message: 'Usage: /artifact <patternKey>' };
       }
       const patternMessage = acquireArtifactPattern({ patternKey });
-      if (
-        !patternMessage.includes('acquire') &&
-        !patternMessage.includes('already know')
-      ) {
+      if (!patternMessage.includes('acquire') && !patternMessage.includes('already know')) {
         return { ok: false, message: patternMessage };
       }
       if (!completeCraftedArtifact(patternKey, { free: true })) {
@@ -207,6 +205,24 @@ export async function executeCommand(input: string): Promise<CommandResult> {
       }
       const name = getLoadedArtifact(patternKey)?.name ?? patternKey;
       return { ok: true, message: `Granted pattern and crafted ${name}` };
+    }
+
+    case 'artifact-test': {
+      // /artifact-test — grant every pattern and open Craft Artifact
+      const all = getLoadedArtifacts();
+      if (all.length === 0) {
+        return { ok: false, message: 'No artifact patterns loaded' };
+      }
+      let added = 0;
+      for (const artifact of all) {
+        const message = acquireArtifactPattern({ patternKey: artifact.patternKey });
+        if (message.includes('acquire')) added += 1;
+      }
+      openCraftArtifactAction();
+      return {
+        ok: true,
+        message: `Granted ${added} new pattern${added === 1 ? '' : 's'} (${all.length} total); opened Craft Artifact`,
+      };
     }
 
     default:

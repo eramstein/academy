@@ -1,5 +1,49 @@
 [
   {
+    "id": "emma_horse",
+    "name": "Gourmet Horse",
+    "imageFileName": "emma_horse",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      },
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "poolKeys": ["emma", "event"],
+    "type": "unit",
+    "power": 4,
+    "maxHealth": 4,
+    "retaliate": 1,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Before Moving",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "forceMoveUnit",
+              "args": {
+                "range": {
+                  "adjacent": true,
+                  "enemies": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "emma_halloween",
     "name": "Erudite Vampire",
     "imageFileName": "emma_halloween",

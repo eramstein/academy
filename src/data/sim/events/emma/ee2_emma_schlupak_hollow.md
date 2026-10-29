@@ -7,7 +7,7 @@ Manual trigger: Emma has another proposal — Forest of Schlupak
 
 Rewards (choose one):
 
-- 2 SchlupakDreamspheres — improve spell control effects.
+- 2 Dreamspheres — improve spell control effects.
 - 2 SchlupakSpores — improve draw and bounce effects.
   Opening
   "Antonio, do you remember our little expedition to the Forest of Schlupak?"
@@ -72,7 +72,7 @@ Her expression grows thoughtful.
 
 "Do remind me never to play against you without a suitable counterspell."
 
-Outcomes: Gain 2 SchlupakDreamspheres.
+Outcomes: Gain 2 Dreamspheres.
 
 B — Collect the Spores
 

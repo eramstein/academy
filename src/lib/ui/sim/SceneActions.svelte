@@ -16,6 +16,10 @@
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
+  import {
+    closeCraftArtifactAction,
+    craftArtifactSession,
+  } from '@/lib/ui/craft-artifact-session.svelte';
   import Conjure from './Conjure.svelte';
   import CraftArtifact from './CraftArtifact.svelte';
   import Enchantment from './Enchantment.svelte';
@@ -59,7 +63,6 @@
   let enchantAction = $state<Action | null>(null);
 
   let shopAction = $state<Action | null>(null);
-  let craftArtifactAction = $state<Action | null>(null);
   let cardCraftAction = $state<Action | null>(null);
   let cardCraftStep = $state<'invoke' | 'conjure'>('invoke');
   let recipeResources = $state<{ type: ResourceType; count: number }[]>([]);
@@ -226,7 +229,7 @@
       return;
     }
     if (next.actionType === ActionType.CraftArtifact) {
-      craftArtifactAction = next;
+      craftArtifactSession.action = next;
       return;
     }
     commitAction(next);
@@ -291,8 +294,8 @@
 {#if shopAction}
   <Shop action={shopAction} onDone={() => (shopAction = null)} />
 {/if}
-{#if craftArtifactAction}
-  <CraftArtifact action={craftArtifactAction} onDone={() => (craftArtifactAction = null)} />
+{#if craftArtifactSession.action}
+  <CraftArtifact action={craftArtifactSession.action} onDone={closeCraftArtifactAction} />
 {/if}
 {#if cardCraftAction && cardCraftStep === 'conjure'}
   <Conjure

@@ -19,12 +19,12 @@
   } from '@/lib/sim/cards/crafting-skills';
   import { craftableResourceTypes, isUniqueResource } from '@/lib/sim/cards/resources';
   import { playAddResourceSound } from '@/lib/sim/sound';
+  import ResourceIcon from '@/lib/ui/sim/ResourceIcon.svelte';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
   import type { Snippet } from 'svelte';
   import { untrack } from 'svelte';
   import { cubicOut } from 'svelte/easing';
   import { fly, scale } from 'svelte/transition';
-  import ResourceIcon from '@/lib/ui/sim/ResourceIcon.svelte';
   import BonusReadout from './BonusReadout.svelte';
   import IngredientPile from './IngredientPile.svelte';
   import RitualCircle from './RitualCircle.svelte';
@@ -175,30 +175,30 @@
   const SUCTION_MS = 600;
   const RADIUS_BASE: Record<ResourceType, number> = {
     [ResourceType.MagicDust]: 118,
-    [ResourceType.Mithril]: 96,
+    [ResourceType.Silver]: 96,
     [ResourceType.Moxes]: 74,
     [ResourceType.MollysBeads]: 62,
     [ResourceType.SchlupakMushrooms]: 54,
-    [ResourceType.SchlupakDreamspheres]: 48,
+    [ResourceType.Dreamspheres]: 48,
     [ResourceType.SchlupakSpores]: 42,
   };
   /** Wider orbits when the forming card sits in the enlarged split circle. */
   const RADIUS_SPLIT: Record<ResourceType, number> = {
     [ResourceType.MagicDust]: 214,
-    [ResourceType.Mithril]: 202,
+    [ResourceType.Silver]: 202,
     [ResourceType.Moxes]: 190,
     [ResourceType.MollysBeads]: 178,
     [ResourceType.SchlupakMushrooms]: 166,
-    [ResourceType.SchlupakDreamspheres]: 154,
+    [ResourceType.Dreamspheres]: 154,
     [ResourceType.SchlupakSpores]: 142,
   };
   const SPEED: Record<ResourceType, number> = {
     [ResourceType.MagicDust]: 0.0007,
-    [ResourceType.Mithril]: -0.00055,
+    [ResourceType.Silver]: -0.00055,
     [ResourceType.Moxes]: 0.00088,
     [ResourceType.MollysBeads]: -0.00072,
     [ResourceType.SchlupakMushrooms]: 0.00065,
-    [ResourceType.SchlupakDreamspheres]: -0.0006,
+    [ResourceType.Dreamspheres]: -0.0006,
     [ResourceType.SchlupakSpores]: 0.00058,
   };
   const CHARM_RADIUS = { base: 100, split: 172 };
@@ -695,10 +695,14 @@
             true
           );
         };
-        afterRoll(hold, () => (eruditionOutcome = true), () => {
-          if (sealFinished) return;
-          afterLearning();
-        });
+        afterRoll(
+          hold,
+          () => (eruditionOutcome = true),
+          () => {
+            if (sealFinished) return;
+            afterLearning();
+          }
+        );
       },
       true
     );
@@ -779,8 +783,10 @@
       armAugury(hold, () => startAuguryFortune(learning, fortune));
       return;
     }
-    afterRoll(hold, () => (eruditionOutcome = true), () =>
-      startAuguryInspiration(learning, fortune)
+    afterRoll(
+      hold,
+      () => (eruditionOutcome = true),
+      () => startAuguryInspiration(learning, fortune)
     );
   }
 
@@ -817,8 +823,10 @@
           discoveryIndex: pendingDiscovery ?? visionDiscovery,
         });
         const hold = settleHold(inspirationEnd, inspirationNeed, count);
-        afterRoll(hold, () => (inspirationOutcome = true), () =>
-          startAuguryFortune(learning, fortune)
+        afterRoll(
+          hold,
+          () => (inspirationOutcome = true),
+          () => startAuguryFortune(learning, fortune)
         );
       }
     );
@@ -1570,7 +1578,11 @@
                 sure={inspirationSure}
                 chance={inspirationChance}
                 scaleMax={craft === 'invoke' || craft === 'enchant' ? INSPIRATION_CAP : 0}
-                captionText={craft === 'invoke' ? 'Ingredients' : craft === 'enchant' ? 'Mana' : undefined}
+                captionText={craft === 'invoke'
+                  ? 'Ingredients'
+                  : craft === 'enchant'
+                    ? 'Mana'
+                    : undefined}
                 phase="idle"
                 face={0}
                 need={0}
@@ -1792,7 +1804,7 @@
         <div class="bonus-flank right" class:outcome={masteryOutcome}>
           <BonusReadout
             layout="plaque"
-            resourceType={ResourceType.Mithril}
+            resourceType={ResourceType.Silver}
             label="Mastery"
             singular="Budget"
             plural="Budget"
@@ -1813,7 +1825,11 @@
               )}
             {/snippet}
             {#snippet reward()}
-              <div class="masterwork" class:hit={auguryFortuneFace > 0} class:miss={auguryFortuneFace <= 0}>
+              <div
+                class="masterwork"
+                class:hit={auguryFortuneFace > 0}
+                class:miss={auguryFortuneFace <= 0}
+              >
                 {#if auguryFortuneFace > 0}
                   <span class="masterwork-value">+{auguryFortuneFace}</span>
                   <span class="masterwork-name">Masterwork</span>
@@ -1879,11 +1895,7 @@
 
   <div class="beads" aria-hidden="true">
     {#each tokens as token (token.id)}
-      <span
-        class="bead"
-        data-type={token.type}
-        use:registerToken={token.id}
-      >
+      <span class="bead" data-type={token.type} use:registerToken={token.id}>
         <ResourceIcon type={token.type} />
       </span>
     {/each}
@@ -2400,7 +2412,6 @@
     animation: lore-name 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .reward-value,
   .reward-name,
   .reward-title,
   .masterwork-value,
@@ -2409,10 +2420,6 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     line-height: 1.05;
-  }
-
-  .reward-value {
-    font-size: 1.05rem;
   }
 
   .reward-name {
@@ -2440,7 +2447,6 @@
     color: var(--color-ink-muted);
   }
 
-  .augury-reward.hit .reward-value,
   .augury-reward.hit .reward-name,
   .augury-reward.hit .reward-title,
   .masterwork.hit .masterwork-value {

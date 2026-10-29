@@ -9,7 +9,7 @@
   "coordinateSystem": "zero-based, origin top-left",
   "sprites": [
     { "name": "magic_dust", "row": 0, "column": 0 },
-    { "name": "mithril", "row": 0, "column": 1 },
+    { "name": "silver", "row": 0, "column": 1 },
     { "name": "moxes", "row": 0, "column": 2 },
     { "name": "dried_herbs", "row": 0, "column": 3 },
     { "name": "mushrooms", "row": 0, "column": 4 },
@@ -36,11 +36,14 @@
   ],
   "resources-map": {
     "magic_dust": "magic_dust",
-    "mithril": "mithril",
+    "silver": "silver",
     "moxes": "moxes",
     "mollys_beads": "dried_herbs",
     "schlupak_mushrooms": "mushrooms",
-    "schlupak_dreamspheres": "pearl",
-    "schlupak_spores": "mistletoe"
+    "dreamspheres": "pearl",
+    "schlupak_spores": "mistletoe",
+    "schlupak_honey": "honeycomb",
+    "mithril": "iron_ore",
+    "ithildin_crystal": "crystal_shards"
   }
 }

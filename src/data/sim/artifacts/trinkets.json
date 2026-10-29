@@ -1,10 +1,20 @@
 [
   {
     "patternKey": "vitality-amulet",
+    "image": "amulet-of-vitality",
     "name": "Vitality Amulet",
     "description": "A amulet that increases the wearer's vitality.",
     "colorCost": [{ "color": "green", "cost": 3 }],
-    "resourcesCost": { "gold": 100, "magicDust": 5 },
+    "pieces": [
+      {
+        "name": "chain",
+        "alternativeResourcesCost": [{ "gold": 100, "magicDust": 5 }, { "mithril": 1 }]
+      },
+      {
+        "name": "gem-setting",
+        "alternativeResourcesCost": [{ "gold": 500, "moxes": 2 }, { "ithildin_crystal": 1 }]
+      }
+    ],
     "attributeBonuses": {
       "vitality": 1
     }

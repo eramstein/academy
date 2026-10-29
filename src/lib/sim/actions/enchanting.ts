@@ -44,7 +44,7 @@ export interface AugmentParameters {
   ability?: AbilityPick;
   abilityArgs?: ActionArgDeltas;
   removeAbilities?: number[];
-  /** Mithril adds mastery, magic dust adds inspiration, moxes add erudition. */
+  /** Silver adds mastery, magic dust adds inspiration, moxes add erudition. */
   resources: { type: ResourceType; count: number }[];
   /** Pre-rolled fortune budget from the seal animation; rolled on apply if omitted. */
   fortuneBudget?: number;
@@ -86,7 +86,7 @@ export interface DistillParameters {
   ability?: AbilityPick;
   abilityArgs?: ActionArgDeltas;
   removeAbilities?: number[];
-  /** Mithril adds mastery, magic dust adds inspiration, moxes add erudition. */
+  /** Silver adds mastery, magic dust adds inspiration, moxes add erudition. */
   resources: { type: ResourceType; count: number }[];
   /** Pre-rolled fortune budget from the seal animation; rolled on apply if omitted. */
   fortuneBudget?: number;
@@ -227,11 +227,7 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
       ? parameters.costIncrease
       : requiredCostIncrease(card.cost, spent, maxDelta);
 
-  if (
-    costIncrease === null ||
-    costIncrease > maxDelta ||
-    card.cost + costIncrease > 9
-  ) {
+  if (costIncrease === null || costIncrease > maxDelta || card.cost + costIncrease > 9) {
     return {
       error:
         costIncrease !== null && card.cost + costIncrease > 9
@@ -307,7 +303,11 @@ export function augmentCard(parameters: AugmentParameters): string {
   const fortune = resolveEnchantFortune(parameters);
   parameters.fortuneBudget = fortune;
   applyEnchantmentFortune(card, parameters.resources, fortune);
-  narrateCardEncanted(oldCard, card, describeEnchantResult(describeAugment(oldCard, card), oldCard, card, parameters, fortune));
+  narrateCardEncanted(
+    oldCard,
+    card,
+    describeEnchantResult(describeAugment(oldCard, card), oldCard, card, parameters, fortune)
+  );
 
   return '';
 }
@@ -442,7 +442,11 @@ export function distillCard(parameters: DistillParameters): string {
   const fortune = resolveEnchantFortune(parameters);
   parameters.fortuneBudget = fortune;
   applyEnchantmentFortune(card, parameters.resources, fortune);
-  narrateCardEncanted(oldCard, card, describeEnchantResult(describeDistill(oldCard, card), oldCard, card, parameters, fortune));
+  narrateCardEncanted(
+    oldCard,
+    card,
+    describeEnchantResult(describeDistill(oldCard, card), oldCard, card, parameters, fortune)
+  );
 
   return '';
 }
@@ -463,7 +467,10 @@ export function getEnchantableCards(options: { distill?: boolean } = {}): CardTe
   });
 }
 
-function resolveEnchantFortune(parameters: { resources: { type: ResourceType; count: number }[]; fortuneBudget?: number }): number {
+function resolveEnchantFortune(parameters: {
+  resources: { type: ResourceType; count: number }[];
+  fortuneBudget?: number;
+}): number {
   if (parameters.fortuneBudget != null) return parameters.fortuneBudget;
   return rollExtraBudget(getCardEnchantmentBonuses(parameters.resources).extraBudgetChance);
 }

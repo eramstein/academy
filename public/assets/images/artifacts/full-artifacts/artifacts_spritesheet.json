@@ -1,0 +1,132 @@
+{
+  "image": "artifact-icons.png",
+  "sheetWidth": 1402,
+  "sheetHeight": 1122,
+  "columns": 5,
+  "rows": 4,
+  "coordinateSystem": "zero-based",
+  "artifacts": [
+    { "key": "stabilisator", "name": "Stabilisator", "category": "tool", "row": 0, "column": 0 },
+    {
+      "key": "artificers-codex",
+      "name": "Artificer's Codex",
+      "category": "tool",
+      "row": 0,
+      "column": 1
+    },
+    { "key": "porticulis", "name": "Porticulis", "category": "tool", "row": 0, "column": 2 },
+    {
+      "key": "runic-calipers",
+      "name": "Runic Calipers",
+      "category": "tool",
+      "row": 0,
+      "column": 3
+    },
+    {
+      "key": "prismatic-lens",
+      "name": "Prismatic Lens",
+      "category": "tool",
+      "row": 0,
+      "column": 4
+    },
+    {
+      "key": "mnemonic-orrery",
+      "name": "Mnemonic Orrery",
+      "category": "tool",
+      "row": 1,
+      "column": 0
+    },
+    {
+      "key": "essence-distiller",
+      "name": "Essence Distiller",
+      "category": "tool",
+      "row": 1,
+      "column": 1
+    },
+    {
+      "key": "clockwork-familiar",
+      "name": "Clockwork Familiar",
+      "category": "tool",
+      "row": 1,
+      "column": 2
+    },
+    {
+      "key": "amulet-of-vitality",
+      "name": "Amulet of Vitality",
+      "category": "trinket",
+      "row": 1,
+      "column": 3
+    },
+    {
+      "key": "gloves-of-precision",
+      "name": "Gloves of Precision",
+      "category": "trinket",
+      "row": 1,
+      "column": 4
+    },
+    {
+      "key": "scholars-monocle",
+      "name": "Scholar's Monocle",
+      "category": "trinket",
+      "row": 2,
+      "column": 0
+    },
+    {
+      "key": "silver-tongue-brooch",
+      "name": "Silver Tongue Brooch",
+      "category": "trinket",
+      "row": 2,
+      "column": 1
+    },
+    {
+      "key": "lionheart-medallion",
+      "name": "Lionheart Medallion",
+      "category": "trinket",
+      "row": 2,
+      "column": 2
+    },
+    {
+      "key": "seven-league-boots",
+      "name": "Seven-League Boots",
+      "category": "trinket",
+      "row": 2,
+      "column": 3
+    },
+    {
+      "key": "circlet-of-clarity",
+      "name": "Circlet of Clarity",
+      "category": "trinket",
+      "row": 2,
+      "column": 4
+    },
+    { "key": "pocket-aegis", "name": "Pocket Aegis", "category": "device", "row": 3, "column": 0 },
+    {
+      "key": "chronometer-of-fortune",
+      "name": "Chronometer of Fortune",
+      "category": "device",
+      "row": 3,
+      "column": 1
+    },
+    {
+      "key": "dreamcatcher-lantern",
+      "name": "Dreamcatcher Lantern",
+      "category": "device",
+      "row": 3,
+      "column": 2
+    },
+    {
+      "key": "aether-compass",
+      "name": "Aether Compass",
+      "category": "device",
+      "row": 3,
+      "column": 3
+    },
+    {
+      "key": "alchemists-crucible",
+      "name": "Alchemist's Crucible",
+      "category": "device",
+      "row": 3,
+      "column": 4
+    }
+  ]
+}

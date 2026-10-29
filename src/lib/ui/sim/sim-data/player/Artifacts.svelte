@@ -9,7 +9,7 @@
   import { CardColor } from '@/lib/_model';
   import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
-  import { getArtifactCostLines, type ArtifactCostLine } from '@/lib/sim/actions';
+  import { getArtifactPieceCosts, type ArtifactPieceCostView } from '@/lib/sim/actions';
   import { getLoadedArtifact } from '@/lib/sim/artifacts';
   import ResourceIcon from '@/lib/ui/sim/ResourceIcon.svelte';
   import ArtifactThumb from './ArtifactThumb.svelte';
@@ -25,7 +25,7 @@
   type PatternEntry = {
     artifact: Artifact;
     kind: 'Tool' | 'Trinket';
-    costs: ArtifactCostLine[];
+    pieces: ArtifactPieceCostView[];
     filled: number[];
     requiredNames: string[];
   };
@@ -57,7 +57,7 @@
           {
             artifact,
             kind: artifactKind(artifact),
-            costs: getArtifactCostLines(artifact),
+            pieces: getArtifactPieceCosts(artifact),
             filled: filledCounts(artifact),
             requiredNames: (artifact.requiredPatterns ?? []).map(
               (key) => getLoadedArtifact(key)?.name ?? key
@@ -129,12 +129,22 @@
 {#snippet artifactCard(
   artifact: Artifact,
   kind: 'Tool' | 'Trinket',
-  opts?: { costs?: ArtifactCostLine[]; filled?: number[]; requiredNames?: string[]; pattern?: boolean }
+  opts?: {
+    pieces?: ArtifactPieceCostView[];
+    filled?: number[];
+    requiredNames?: string[];
+    pattern?: boolean;
+  }
 )}
   {@const effects = effectLines(artifact)}
   {@const progress = opts?.filled ? progressLabel(opts.filled, artifact) : ''}
   <li class="card">
-    <ArtifactThumb patternKey={artifact.patternKey} size="md" muted={opts?.pattern} />
+    <ArtifactThumb
+      patternKey={artifact.patternKey}
+      image={artifact.image}
+      size="md"
+      muted={opts?.pattern}
+    />
     <div class="copy">
       <div class="headline">
         <span class="name">{artifact.name}</span>
@@ -157,19 +167,33 @@
           {/each}
         </ul>
       {/if}
-      {#if opts?.costs && opts.costs.length > 0}
-        <ul class="costs">
-          {#each opts.costs as line (line.key)}
-            <li class="cost" class:short={!line.enough}>
-              {#if line.key === 'gold'}
-                <img src={getUiIconPath('coin')} alt="" />
-              {:else}
-                <span class="cost-icon">
-                  <ResourceIcon type={line.key} />
-                </span>
-              {/if}
-              <span>{line.label}</span>
-              <span class="cost-amount">{line.need}</span>
+      {#if opts?.pieces && opts.pieces.length > 0}
+        <ul class="pieces">
+          {#each opts.pieces as piece (piece.name)}
+            <li class="piece" class:short={!piece.enough}>
+              <span class="piece-name">{piece.name}</span>
+              <span class="piece-alts">
+                {#each piece.alternatives as alt, altIndex (altIndex)}
+                  {#if altIndex > 0}
+                    <span class="or">or</span>
+                  {/if}
+                  <span class="alt" class:short={!alt.enough}>
+                    {#each alt.lines as line, lineIndex (line.key)}
+                      {#if lineIndex > 0}<span class="plus">+</span>{/if}
+                      <span class="cost" class:short={!line.enough}>
+                        {#if line.key === 'gold'}
+                          <img src={getUiIconPath('coin')} alt="" />
+                        {:else}
+                          <span class="cost-icon">
+                            <ResourceIcon type={line.key} />
+                          </span>
+                        {/if}
+                        <span class="cost-amount">{line.need}</span>
+                      </span>
+                    {/each}
+                  </span>
+                {/each}
+              </span>
             </li>
           {/each}
         </ul>
@@ -212,7 +236,7 @@
       <ul class="cards">
         {#each patterns as entry (entry.artifact.patternKey)}
           {@render artifactCard(entry.artifact, entry.kind, {
-            costs: entry.costs,
+            pieces: entry.pieces,
             filled: entry.filled,
             requiredNames: entry.requiredNames,
             pattern: true,
@@ -327,7 +351,7 @@
   }
 
   .colors,
-  .costs {
+  .pieces {
     margin: 0.1rem 0 0;
     padding: 0;
     list-style: none;
@@ -336,13 +360,48 @@
     gap: 0.45rem 0.85rem;
   }
 
+  .pieces {
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
   .color,
-  .cost {
+  .cost,
+  .piece,
+  .alt {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     font-size: 0.88rem;
     color: var(--color-cream);
+  }
+
+  .piece {
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+
+  .piece-name {
+    min-width: 4.5rem;
+    color: var(--color-muted-label);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .piece-alts {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.45rem;
+  }
+
+  .or,
+  .plus {
+    color: var(--color-muted-label);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   .color img,
@@ -363,11 +422,10 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .cost.short {
-    color: #c9897a;
-  }
-
+  .piece.short .piece-name,
+  .alt.short,
+  .cost.short,
   .cost.short .cost-amount {
-    color: inherit;
+    color: #c9897a;
   }
 </style>

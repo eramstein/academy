@@ -16,7 +16,7 @@ import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from './keywords';
  * A skill of n yields floor(n * 0.25) points for sure, plus a (n % 4) * 25%
  * chance of one more. Mastery 9 → 2 points, and a 25% chance of a third.
  * Resources add to a skill for that craft only:
- * mithril → mastery, magic dust → inspiration, moxes → erudition.
+ * silver → mastery, magic dust → inspiration, moxes → erudition.
  */
 
 export const SKILL_RATE = 0.25;
@@ -148,7 +148,7 @@ export function craftProfile(
   mode: CraftMode
 ): CraftProfile {
   const bonus = resourceBonus(resources);
-  const mastery = stack(skills?.mastery ?? 0, bonus.mastery, 'mithril');
+  const mastery = stack(skills?.mastery ?? 0, bonus.mastery, 'silver');
   const erudition = stack(skills?.erudition ?? 0, bonus.erudition, 'moxes');
   const inspiration = cappedStack(
     skills?.inspiration ?? 0,
@@ -252,7 +252,7 @@ function resourceBonus(resources: { type: ResourceType; count: number }[] | unde
   const bonus = { mastery: 0, erudition: 0, inspiration: 0 };
   for (const resource of resources ?? []) {
     const count = Math.max(0, resource.count);
-    if (resource.type === ResourceType.Mithril) bonus.mastery += count;
+    if (resource.type === ResourceType.Silver) bonus.mastery += count;
     else if (resource.type === ResourceType.Moxes) bonus.erudition += count;
     else if (resource.type === ResourceType.MagicDust) bonus.inspiration += count;
   }

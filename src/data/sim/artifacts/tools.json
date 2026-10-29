@@ -1,30 +1,57 @@
 [
   {
     "patternKey": "basic-stabilisator",
+    "image": "stabilisator",
     "name": "Basic Stabilisator",
     "description": "A matter stabilisator helping with crafting precision.",
     "colorCost": [{ "color": "black", "cost": 3 }],
-    "resourcesCost": { "gold": 100, "mithril": 5 },
+    "pieces": [
+      {
+        "name": "casing",
+        "alternativeResourcesCost": [
+          { "gold": 100, "silver": 5 },
+          { "gold": 100, "mithril": 1 }
+        ]
+      }
+    ],
     "skillBonuses": {
       "mastery": 1
     }
   },
   {
     "patternKey": "basic-codex",
+    "image": "artificers-codex",
     "name": "Basic Codex",
     "description": "A codex helps with keeping track of the crafting processes.",
     "colorCost": [{ "color": "blue", "cost": 3 }],
-    "resourcesCost": { "gold": 100, "mox": 5 },
+    "pieces": [
+      {
+        "name": "frame",
+        "alternativeResourcesCost": [
+          { "gold": 100, "moxes": 5 },
+          { "gold": 100, "mithril": 1 }
+        ]
+      }
+    ],
     "skillBonuses": {
       "erudition": 1
     }
   },
   {
     "patternKey": "basic-porticulis",
+    "image": "porticulis",
     "name": "Basic Porticuli",
     "description": "A porticulis offering glimpses of the possible.",
     "colorCost": [{ "color": "red", "cost": 3 }],
-    "resourcesCost": { "gold": 100, "magicDust": 5 },
+    "pieces": [
+      {
+        "name": "lens",
+        "alternativeResourcesCost": [
+          { "gold": 100, "magicDust": 5 },
+          { "gold": 100, "mithril": 1 }
+        ]
+      }
+    ],
     "skillBonuses": {
       "inspiration": 1
     }

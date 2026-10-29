@@ -29,12 +29,12 @@
   } = $props();
 
   const RESOURCE_ROLES: Record<ResourceType, string> = {
-    [ResourceType.Mithril]: 'Mastery',
+    [ResourceType.Silver]: 'Mastery',
     [ResourceType.MagicDust]: 'Inspiration',
     [ResourceType.Moxes]: 'Erudition',
     [ResourceType.MollysBeads]: 'Unique',
     [ResourceType.SchlupakMushrooms]: 'Unique',
-    [ResourceType.SchlupakDreamspheres]: 'Unique',
+    [ResourceType.Dreamspheres]: 'Unique',
     [ResourceType.SchlupakSpores]: 'Unique',
   };
 
@@ -86,7 +86,9 @@
       <span class="name">{label}</span>
       {#if showCount}
         <span class="stock">
-          {#if fraction || selected > 0}<span class="in">{selected}</span><span class="of">{fraction ? ' / ' : '/'}</span>{/if}{owned}
+          {#if fraction || selected > 0}<span class="in">{selected}</span><span class="of"
+              >{fraction ? ' / ' : '/'}</span
+            >{/if}{owned}
         </span>
       {/if}
     </span>
@@ -264,8 +266,7 @@
   }
 
   .pile.on .glyph {
-    filter:
-      drop-shadow(0 4px 5px rgba(42, 24, 16, 0.4))
+    filter: drop-shadow(0 4px 5px rgba(42, 24, 16, 0.4))
       drop-shadow(0 0 10px color-mix(in srgb, var(--color-golden) 55%, transparent));
   }
 

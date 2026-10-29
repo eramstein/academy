@@ -1546,13 +1546,13 @@
           {
             "type": "narrate",
             "parameters": {
-              "text": "\"Marta,\" you ask, \"if Molly and I wanted to make this easier next week, what would you need?\"\n\nMarta eyes the bucket. \"A second handcart would be a start. And a place to sort all the useful bits the workshops throw away. They leave everything mixed with broken glass, and we spend half our time picking through it.\"\n\nMolly looks up, her tears momentarily forgotten. \"They throw away useful materials?\"\n\n\"Not useful to the professors,\" Marta says. \"Useful to anyone willing to sort them.\"\n\nYou suggest a separate collection bin for metal offcuts and usable scraps. Molly immediately volunteers to speak to the workshop steward and arrange a cart; Marta insists that the staff decide where the bins go. Within a few minutes, the cleaners are explaining their work to two students who are, for once, listening.\n\nWhen Elsa sees the discussion turning into a practical arrangement, she hesitates by the doorway. \"A proper system would at least be preferable to noble students randomly scrubbing floors,\" she remarks. She considers the bins. \"They ought to be labeled.\"\n\n\"That's a good idea!\" Molly says earnestly. Elsa seems unsure what to do with the compliment.\n\nA little later, Marta brings you a neatly wrapped bundle. \"First things we rescued from the discard basket. You two can have them. Better used than melted down for nothing.\"\n\nInside are three small pieces of mithril. Astonishing, really, what an institution can overlook when somebody else is expected to sweep it up."
+              "text": "\"Marta,\" you ask, \"if Molly and I wanted to make this easier next week, what would you need?\"\n\nMarta eyes the bucket. \"A second handcart would be a start. And a place to sort all the useful bits the workshops throw away. They leave everything mixed with broken glass, and we spend half our time picking through it.\"\n\nMolly looks up, her tears momentarily forgotten. \"They throw away useful materials?\"\n\n\"Not useful to the professors,\" Marta says. \"Useful to anyone willing to sort them.\"\n\nYou suggest a separate collection bin for metal offcuts and usable scraps. Molly immediately volunteers to speak to the workshop steward and arrange a cart; Marta insists that the staff decide where the bins go. Within a few minutes, the cleaners are explaining their work to two students who are, for once, listening.\n\nWhen Elsa sees the discussion turning into a practical arrangement, she hesitates by the doorway. \"A proper system would at least be preferable to noble students randomly scrubbing floors,\" she remarks. She considers the bins. \"They ought to be labeled.\"\n\n\"That's a good idea!\" Molly says earnestly. Elsa seems unsure what to do with the compliment.\n\nA little later, Marta brings you a neatly wrapped bundle. \"First things we rescued from the discard basket. You two can have them. Better used than melted down for nothing.\"\n\nInside are three small pieces of silver. Astonishing, really, what an institution can overlook when somebody else is expected to sweep it up."
             }
           },
           {
             "type": "add_resource",
             "parameters": {
-              "resourceType": "mithril",
+              "resourceType": "silver",
               "amount": 3
             }
           },
@@ -7537,7 +7537,7 @@
           {
             "type": "add_resource",
             "parameters": {
-              "resourceType": "schlupak_dreamspheres",
+              "resourceType": "dreamspheres",
               "amount": 2
             }
           }
@@ -8029,6 +8029,365 @@
     "manualTrigger": "Emma has a proposition"
   },
   {
+    "key": "emma_schlupak_ride",
+    "text": "Emma finds you after lunch with a folded itinerary in one hand and the expression of someone about to make an offer you would be foolish to refuse.\n\n\"I have decided to take up riding,\" she announces. \"It seems one cannot move in distinguished circles without eventually being expected to sit on a horse. I refuse to have my future ruined by a saddle.\"\n\n\"A sound academic concern.\"\n\n\"Quite. I've arranged two horses, equipment, and an afternoon's excursion through the countryside. The stablemaster assures me the animals are exceptionally docile.\" She pauses. \"I thought you might like to come.\"\n\nShe offers you the itinerary, then draws it back before you can unfold it. \"And before you ask: yes, I could go alone. I simply think your company might improve the experience. Don't make me regret saying so.\"",
+    "triggers": [
+      {
+        "triggerType": "day_of_week",
+        "parameters": {
+          "daysOfWeek": [7]
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "afternoon"
+        }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_trusted_companion",
+          "value": 1
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept the invitation",
+        "nextNode": "emma_the_ride",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"How could I refuse an opportunity to see you conquer yet another discipline?\"\n\n\"You are welcome to admire my progress from a safe distance,\" Emma says. \"Ideally from a horse that is slower than mine.\"\n\nShe slips the itinerary into her pocket, looking quite pleased despite herself."
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Decline",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You thank her, but tell her you have other plans this afternoon.\n\n\"Of course.\" She folds the itinerary with unnecessary precision. \"I'll have to face the perils of respectable society without you.\"\n\nHer smile returns. \"If I return speaking exclusively about bloodlines and hunting parties, please intervene.\"\n\nShe leaves for the stables. It occurs to you that she had already arranged the outing for two."
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "emma_lore_riding_lessons",
+              "type": "lore",
+              "text": "\"Apparently Emma Delamain has taken up riding,\" your companion remarks. \"She says it's useful for making connections in society. Though she did admit the countryside was rather lovely. I suspect she's discovered a pastime she enjoys.\"",
+              "excludeNpcKeys": ["emma"]
+            }
+          }
+        ]
+      }
+    ],
+    "title": "A Most Useful Afternoon",
+    "characterArc": "emma",
+    "emotion": "happy",
+    "nodes": {
+      "emma_the_ride": {
+        "text": "The first stretch of the ride is glorious. Beyond the Academy's fields, the road winds between golden meadows and low stone walls. The dark line of the Schlupak forest lies across the distant hills. Emma sits remarkably straight in her saddle, watching the stablemaster's lesson pay off with each passing minute.\n\n\"Well?\" she asks, guiding her horse alongside yours. \"Do I look as if I belong at a country estate?\"\n\nYou are still considering your answer when your horse decides to investigate a particularly interesting rut. The world tilts. Your boots lose their stirrups, and you land in the grass with a thud that thoroughly extinguishes any aristocratic aspirations you might have entertained.\n\n\"Antonio!\"\n\nEmma is off her horse almost before you have caught your breath. She drops to her knees beside you, one hand on your shoulder, the other hovering anxiously near your face. \"Are you hurt? Where? Look at me.\"\n\nYou manage to assure her that you are whole, if somewhat less dignified. Only then does she exhale. Her fingers remain on your shoulder a moment longer than necessary.\n\n{{almost_kiss}}\n\nFrom the direction of the forest comes a long, wavering howl. Another answers it. Emma's horse jerks its head, tears free of the reins she has dropped, and bolts straight toward the trees. Your own horse, apparently possessed of better judgment, gallops back toward the Academy.\n\nFor a moment, you both stare after them.\n\n\"Well,\" Emma says faintly. \"The stablemaster did say they were docile. He neglected to specify under what circumstances.\"\n\n\"Wolves?\"\n\n\"Likely far away. But my horse is heading into Schlupak, and I'm responsible for him.\" She rises and brushes the grass from her skirts. \"We have to find him.\"",
+        "optionTemplates": [
+          {
+            "text": "Follow the tracks carefully",
+            "attributeCheck": {
+              "attribute": "intelligence",
+              "difficulty": "medium",
+              "successEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "You study the churned earth at the forest edge. The horse's prints are easy to distinguish from older tracks, and broken fern stems reveal where he left the path. You lead Emma along a winding but reliable trail.\n\n\"A convincing performance,\" she admits. \"If your artificery career fails, you might consider becoming a bloodhound.\""
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "emma_ride_tracking_success"
+                  }
+                }
+              ],
+              "failureEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "You follow a promising trail until it disappears in a patch of stones. A detour, two mistaken hoofprints, and a spirited disagreement about moss later, you finally hear contented chewing ahead.\n\n\"If we ever become lost together,\" Emma says, \"I shall insist we disagree in a more orderly fashion.\""
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "emma_ride_tracking_failure"
+                  }
+                }
+              ],
+              "successNode": "emma_honey_clearing",
+              "failureNode": "emma_honey_clearing"
+            }
+          },
+          {
+            "text": "Run after him",
+            "attributeCheck": {
+              "attribute": "vitality",
+              "difficulty": "hard",
+              "successEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "You sprint beneath the branches, vault a fallen log, and keep the flash of the horse's pale tail in sight. Emma follows, refusing to be left behind. You slow at last when the animal stops in a sunlit clearing.\n\nEmma catches her breath beside you. \"An excellent demonstration of speed. I trust you'll never ask me to applaud it while running.\""
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "emma_ride_tracking_success"
+                  }
+                }
+              ],
+              "failureEffects": [
+                {
+                  "type": "narrate",
+                  "parameters": {
+                    "text": "The first hundred paces go splendidly. The next hundred convince you that horses possess a rather unfair advantage in the matter of legs. You lose him among the trees and spend a good while searching with Emma before a suspiciously satisfied snort gives him away.\n\n\"Your dedication is admirable,\" Emma says, supporting herself against a tree. \"Your pace was, eventually, negotiable.\""
+                  }
+                },
+                {
+                  "type": "add_story_tag",
+                  "parameters": {
+                    "tag": "emma_ride_tracking_failure"
+                  }
+                }
+              ],
+              "successNode": "emma_honey_clearing",
+              "failureNode": "emma_honey_clearing"
+            }
+          }
+        ],
+        "title": "An Undignified Dismount",
+        "emotion": "happy",
+        "image": "emma_schlupak_ride.jpg",
+        "imageSize": "large",
+        "passages": {
+          "almost_kiss": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "relation_parameter",
+                    "parameters": {
+                      "characterKey": "emma",
+                      "relationParameter": "love",
+                      "value": 4
+                    }
+                  }
+                ],
+                "text": "You reach for the hand against your cheek. Emma notices, and for once has nothing clever to say. She is very close. Her gaze slips briefly to your lips; you lean toward one another, slowly enough that either of you could stop. Neither does—until the howl cuts through the afternoon."
+              }
+            ],
+            "fallback": "\"You frightened me,\" she says, unexpectedly quiet. Then she notices her hand still resting on you and withdraws it. \"Next time you wish to impress me, Antonio, I recommend remaining on the horse.\""
+          }
+        }
+      },
+      "emma_honey_clearing": {
+        "text": "The runaway stands in a clearing, entirely untroubled by his adventure. He has discovered a fallen, honey-filled comb beside an old hollow tree and is happily devouring its contents. Golden drops cling to his muzzle.\n\nEmma steps forward, then freezes. \"Antonio. Is that _Schlupak honey_?\"\n\nIt is. Rare forest bees produce it in tiny quantities, and artificers prize it as a powerful crafting ingredient. A modest fortune is disappearing into a horse with no appreciation of market prices.\n\nThe horse looks up, chews thoughtfully, and goes back for more.",
+        "optionTemplates": [
+          {
+            "text": "Let him have his treat",
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_ride_tracking_success",
+                  "value": 1
+                }
+              }
+            ],
+            "nextNode": "emma_ride_home",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"He's had quite a fright,\" you say. \"Let him finish.\"\n\nEmma looks from the comb to the horse, then to you. \"You do realize what he's eating?\"\n\n\"Every expensive mouthful.\"\n\nShe smiles, and reaches out to stroke the animal's neck. \"I suppose he deserves a little comfort. And perhaps we do, too.\""
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "love",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "schedule_activity",
+                "parameters": {
+                  "activity": {
+                    "type": "event",
+                    "participants": ["player", "emma"],
+                    "placeKey": "academy-hall",
+                    "eventId": "emma_horse_gift"
+                  },
+                  "schedule": {
+                    "date": {
+                      "day": 1,
+                      "period": "evening"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "text": "Save the precious honey",
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_ride_tracking_success",
+                  "value": 1
+                }
+              }
+            ],
+            "nextNode": "emma_ride_home",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"Hold his reins,\" you tell Emma. \"We can still rescue some of it.\"\n\nWhile she calms the horse, you carefully collect three intact portions of the honeycomb. The animal watches your work with an expression of deep personal betrayal.\n\n\"A sound investment,\" Emma concedes, eyeing your prize. \"Though I suspect he will never forgive you.\""
+                }
+              },
+              {
+                "type": "add_resource",
+                "parameters": {
+                  "resourceType": "schlupak_honey",
+                  "amount": 3
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "respect",
+                  "amount": 1
+                }
+              }
+            ]
+          },
+          {
+            "text": "Admire the world's most expensive snack",
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_ride_tracking_failure",
+                  "value": 1
+                }
+              }
+            ],
+            "nextNode": "emma_ride_home",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "By the time you reach him, the last useful drop has vanished. The horse stands amid the wreckage of a small fortune, honey dripping from his whiskers.\n\n\"We've been robbed,\" you say.\n\n\"By a creature that cannot count,\" Emma replies. She tries to maintain a severe expression. The horse sneezes. Emma bursts out laughing, and you soon join her, both of you helpless before the spectacle.\n\n\"Well,\" she says at last, wiping her eyes, \"at least someone has had a profitable afternoon.\""
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "love",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "change_relation",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationParameter": "friendship",
+                  "amount": 1
+                }
+              },
+              {
+                "type": "schedule_activity",
+                "parameters": {
+                  "activity": {
+                    "type": "event",
+                    "participants": ["player", "emma"],
+                    "placeKey": "academy-hall",
+                    "eventId": "emma_horse_gift"
+                  },
+                  "schedule": {
+                    "date": {
+                      "day": 1,
+                      "period": "evening"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "title": "The Sweetest Crime",
+        "emotion": "happy",
+        "image": "emma_honey_clearing.jpg",
+        "imageSize": "large"
+      },
+      "emma_ride_home": {
+        "text": "Emma takes the reins, and together you guide the horse back to the path. With your own mount long gone, there is only one sensible way home: you share the saddle, Emma in front and you behind her, keeping the horse at a gentle walk.\n\nThe afternoon light turns amber over the fields. Emma occasionally points out a distant farmhouse or a peculiar shape in the clouds, but there are stretches when neither of you feels the need to speak. The road is narrow, the saddle is not designed for two, and every bend brings you a little closer together.\n\n\"I must say, Antonio, you're proving to be a remarkably comfortable riding accessory.\"\n\n\"Accessory?\"\n\n\"Yes. A little bulky, perhaps, but quite effective at keeping me warm.\" She pauses, then adds sharply, \"And before you say whatever disgraceful thing has just occurred to you, don't.\"\n\n\"I haven't said anything!\"\n\n\"Precisely. I'd like to preserve that happy state of affairs.\"\n\nYou hear the smile in her voice. A moment later, she settles back against you, apparently deciding that her riding accessory might as well be put to good use.\n\n\"I had intended this excursion to improve my prospects in society,\" she says eventually. \"Instead I've lost a horse, nearly lost you, and discovered that equestrian training involves rather more running than advertised.\"\n\n\"A wasted afternoon, then?\"\n\n\"Not at all.\" She rests one hand lightly over yours for a moment. \"I think I'd like to do something equally impractical again.\"\n\nAs the Academy comes into view, she straightens in the saddle. \"Naturally, we shall tell the stablemaster that everything went precisely according to plan.\"",
+        "optionTemplates": [],
+        "effects": [
+          {
+            "effect": {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "love",
+                "amount": 1
+              }
+            }
+          },
+          {
+            "effect": {
+              "type": "add_chat_topic",
+              "parameters": {
+                "key": "emma_memory_schlupak_ride",
+                "type": "memory",
+                "text": "Emma gives you a sidelong look. \"I was considering another outing. Somewhere with fewer wolves, perhaps.\" You ask whether horses are included. \"Only if you promise to remain on yours this time.\" She smiles. \"Though I admit the journey back wasn't entirely unpleasant.\"",
+                "knownByNpcKeys": ["emma"]
+              }
+            }
+          }
+        ],
+        "title": "The Long Way Home",
+        "emotion": "happy",
+        "image": "emma_ride_home.jpg",
+        "imageSize": "large"
+      }
+    }
+  },
+  {
     "key": "happy_little_accident",
     "text": "Your third artificery lesson is progressing remarkably well. You've arranged your ingredients, prepared your pigments, and even managed to follow most of the professor's instructions. At this rate, you might produce something almost respectable.\n\nThen your elbow catches a jar.\n\nA cascade of shimmering blue powder spills across the workbench, mixing with your carefully prepared ingredients. You grab for a cloth, knock over a second jar, and watch in horror as the entire mixture begins to glow.\n\nThere is a sharp pop, a flash of blue light, and the unmistakable smell of burnt cinnamon.\n\nWhen the smoke clears, a perfectly formed card lies in the middle of the table.\n\nYou pick it up cautiously. The enchantments woven into its surface are unlike anything you've seen before: intricate, powerful, and somehow perfectly balanced.\n\nThe professor approaches, examines your creation, and falls silent.\n\n\"Fibonacci. How exactly did you achieve this?\"\n\nAn excellent question. One you would very much like to know the answer to yourself.\n\n\"Remarkable,\" the professor murmurs. \"Quite remarkable. You must document your procedure.\"\n\nYes. Of course. Your procedure.\n\nYou glance at the empty jars, the stained workbench, and the smoking remains of your notes.\n\nThis could be difficult.",
     "triggers": [
@@ -8126,7 +8485,7 @@
   {
     "key": "frank_artifact_workshop_welcome",
     "title": "A Few Patterns to Get You Started",
-    "text": "The Academy workshop smells of hot metal, sawdust, and something faintly sweet that is probably best left unidentified. Tools hang in neat rows above crowded benches. Along one wall, a collection of unfinished contraptions clicks, hums, and occasionally shudders.\n\nFrank stands at an anvil, holding a small piece of metal in a pair of tongs. He spots you, breaks into a grin, and sets it aside.\n\n\"There you are! Come in, come in. Mind the bucket.\"\n\nYou step around a bucket full of bent brass rods.\n\n\"Other bucket.\"\n\nYou narrowly avoid a second one.\n\n\"Excellent. Good awareness of your surroundings. Essential workshop skill.\"\n\nHe wipes his hands on his apron and clears a space on the nearest bench, shifting an alarming quantity of metal with one enormous forearm. From a drawer, he produces four rolled sheets of thick paper.\n\n\"Now, I promised you a few patterns. **Three tools and a trinket.** Simple enough to start with, useful enough to keep.\"\n\nHe spreads out the first sheet and holds its curling corners down with a hammer and a mug.\n\n\"**Basic Stabilisator.** Keeps the matter you're working with steady while you shape it. Helps with precision, gives you a little more mastery over the work. Black magic, a bit of mithril, and a steady hand. Preferably yours.\"\n\nThe next sheet is covered in neatly ruled diagrams and cramped annotations.\n\n\"**Basic Codex.** Helps you keep track of the crafting process. What you've done, what comes next, which step you were absolutely certain you could skip. Good for your erudition. You'll need blue magic and some mox for that one.\"\n\nHe unrolls the third pattern, revealing a curious arrangement of small apertures.\n\n\"**Basic Porticuli.** Gives you glimpses of what might be possible. Handy when you're short on inspiration. Red magic and magic dust. Don't spend all afternoon peering into it, though. At some point you've got to actually make something.\"\n\nThe final sheet bears the drawing of an amulet.\n\n\"And a **Vitality Amulet**. A little something to put a bit more life in you. Green magic, magic dust. Useful outside the workshop, too. Especially if your idea of lunch is whatever you can eat while running to your next lesson.\"\n\nHe gathers the four patterns and pushes them towards you.\n\n\"These are yours. No charge for the patterns. **Materials are still your responsibility**, mind. Each one takes a hundred gold's worth of supplies, plus five of the material marked on the sheet. You'll need a proper grasp of its color, too.\"\n\nYou look over the diagrams. They seem considerably less simple now that they are in front of you.\n\nFrank notices your expression.\n\n\"Don't worry about making all four at once. Pick something you can manage and take it one step at a time. Read the pattern before you start, measure before you cut, and ask if you're unsure.\"\n\nSomething behind him gives a sharp metallic ping.\n\nWithout looking round, Frank reaches back and catches a small brass wheel.\n\n\"And keep an eye on your surroundings.\"\n\nHe drops the wheel into the first bucket and gives you a cheerful nod.\n\n\"Right, then. Let's see what you can make!\"",
+    "text": "The Academy workshop smells of hot metal, sawdust, and something faintly sweet that is probably best left unidentified. Tools hang in neat rows above crowded benches. Along one wall, a collection of unfinished contraptions clicks, hums, and occasionally shudders.\n\nFrank stands at an anvil, holding a small piece of metal in a pair of tongs. He spots you, breaks into a grin, and sets it aside.\n\n\"There you are! Come in, come in. Mind the bucket.\"\n\nYou step around a bucket full of bent brass rods.\n\n\"Other bucket.\"\n\nYou narrowly avoid a second one.\n\n\"Excellent. Good awareness of your surroundings. Essential workshop skill.\"\n\nHe wipes his hands on his apron and clears a space on the nearest bench, shifting an alarming quantity of metal with one enormous forearm. From a drawer, he produces four rolled sheets of thick paper.\n\n\"Now, I promised you a few patterns. **Three tools and a trinket.** Simple enough to start with, useful enough to keep.\"\n\nHe spreads out the first sheet and holds its curling corners down with a hammer and a mug.\n\n\"**Basic Stabilisator.** Keeps the matter you're working with steady while you shape it. Helps with precision, gives you a little more mastery over the work. Black magic, a bit of silver, and a steady hand. Preferably yours.\"\n\nThe next sheet is covered in neatly ruled diagrams and cramped annotations.\n\n\"**Basic Codex.** Helps you keep track of the crafting process. What you've done, what comes next, which step you were absolutely certain you could skip. Good for your erudition. You'll need blue magic and some mox for that one.\"\n\nHe unrolls the third pattern, revealing a curious arrangement of small apertures.\n\n\"**Basic Porticuli.** Gives you glimpses of what might be possible. Handy when you're short on inspiration. Red magic and magic dust. Don't spend all afternoon peering into it, though. At some point you've got to actually make something.\"\n\nThe final sheet bears the drawing of an amulet.\n\n\"And a **Vitality Amulet**. A little something to put a bit more life in you. Green magic, magic dust. Useful outside the workshop, too. Especially if your idea of lunch is whatever you can eat while running to your next lesson.\"\n\nHe gathers the four patterns and pushes them towards you.\n\n\"These are yours. No charge for the patterns. **Materials are still your responsibility**, mind. Each one takes a hundred gold's worth of supplies, plus five of the material marked on the sheet. You'll need a proper grasp of its color, too.\"\n\nYou look over the diagrams. They seem considerably less simple now that they are in front of you.\n\nFrank notices your expression.\n\n\"Don't worry about making all four at once. Pick something you can manage and take it one step at a time. Read the pattern before you start, measure before you cut, and ask if you're unsure.\"\n\nSomething behind him gives a sharp metallic ping.\n\nWithout looking round, Frank reaches back and catches a small brass wheel.\n\n\"And keep an eye on your surroundings.\"\n\nHe drops the wheel into the first bucket and gives you a cheerful nod.\n\n\"Right, then. Let's see what you can make!\"",
     "triggers": [
       {
         "triggerType": "place",

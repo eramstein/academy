@@ -27,7 +27,7 @@ He wipes his hands on his apron and clears a space on the nearest bench, shiftin
 
 He spreads out the first sheet and holds its curling corners down with a hammer and a mug.
 
-"**Basic Stabilisator.** Keeps the matter you're working with steady while you shape it. Helps with precision, gives you a little more mastery over the work. Black magic, a bit of mithril, and a steady hand. Preferably yours."
+"**Basic Stabilisator.** Keeps the matter you're working with steady while you shape it. Helps with precision, gives you a little more mastery over the work. Black magic, a bit of silver, and a steady hand. Preferably yours."
 
 The next sheet is covered in neatly ruled diagrams and cramped annotations.
 

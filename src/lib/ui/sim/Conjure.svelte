@@ -508,14 +508,6 @@
     pointer-events: none;
   }
 
-  .pigments-empty {
-    margin: 0;
-    font-family: var(--font-narrative);
-    font-size: 0.95rem;
-    font-style: italic;
-    color: var(--color-ink-muted);
-  }
-
   .pigment-cluster {
     display: flex;
     align-items: center;

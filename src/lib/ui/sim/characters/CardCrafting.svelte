@@ -418,10 +418,6 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .kv-pair .kv-value {
-    flex-shrink: 0;
-  }
-
   .level-bar {
     display: flex;
     flex-shrink: 0;

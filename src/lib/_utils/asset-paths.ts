@@ -14,7 +14,7 @@ const RESOURCE_SHEET_ROWS = 5;
 /** Sprite name → [column, row] on the resource sheet (zero-based, origin top-left). */
 const RESOURCE_SPRITE_CELLS: Record<string, readonly [number, number]> = {
   magic_dust: [0, 0],
-  mithril: [1, 0],
+  silver: [1, 0],
   moxes: [2, 0],
   dried_herbs: [3, 0],
   mushrooms: [4, 0],
@@ -43,12 +43,15 @@ const RESOURCE_SPRITE_CELLS: Record<string, readonly [number, number]> = {
 /** ResourceType → sprite name on the sheet (resources-map in spritehseet.json). */
 const RESOURCE_ICON_SPRITES: Record<ResourceType, string> = {
   [ResourceType.MagicDust]: 'magic_dust',
-  [ResourceType.Mithril]: 'mithril',
+  [ResourceType.Silver]: 'silver',
   [ResourceType.Moxes]: 'moxes',
   [ResourceType.MollysBeads]: 'dried_herbs',
   [ResourceType.SchlupakMushrooms]: 'mushrooms',
-  [ResourceType.SchlupakDreamspheres]: 'pearl',
+  [ResourceType.Dreamspheres]: 'pearl',
   [ResourceType.SchlupakSpores]: 'mistletoe',
+  [ResourceType.SchlupakHoney]: 'honeycomb',
+  [ResourceType.Mithril]: 'iron_ore',
+  [ResourceType.IthildinCrystal]: 'crystal_shards',
 };
 
 /** Grid position [col, row] for each emotion on character sheets. */
@@ -167,6 +170,52 @@ export function getCardBackImagePath(): string {
 
 export function getItemImagePath(itemKey: string): string {
   return getAssetPath(`images/items/${itemKey}.jpg`);
+}
+
+/** 5×4 full-artifact icons under images/artifacts/full-artifacts (see artifacts_spritesheet.json). */
+const ARTIFACT_SHEET_COLS = 5;
+const ARTIFACT_SHEET_ROWS = 4;
+
+/** Sprite key → [column, row] on the artifact sheet (zero-based, origin top-left). */
+const ARTIFACT_SPRITE_CELLS: Record<string, readonly [number, number]> = {
+  stabilisator: [0, 0],
+  'artificers-codex': [1, 0],
+  porticulis: [2, 0],
+  'runic-calipers': [3, 0],
+  'prismatic-lens': [4, 0],
+  'mnemonic-orrery': [0, 1],
+  'essence-distiller': [1, 1],
+  'clockwork-familiar': [2, 1],
+  'amulet-of-vitality': [3, 1],
+  'gloves-of-precision': [4, 1],
+  'scholars-monocle': [0, 2],
+  'silver-tongue-brooch': [1, 2],
+  'lionheart-medallion': [2, 2],
+  'seven-league-boots': [3, 2],
+  'circlet-of-clarity': [4, 2],
+  'pocket-aegis': [0, 3],
+  'chronometer-of-fortune': [1, 3],
+  'dreamcatcher-lantern': [2, 3],
+  'aether-compass': [3, 3],
+  'alchemists-crucible': [4, 3],
+};
+
+export function getArtifactIconSheetPath(): string {
+  return getAssetPath('images/artifacts/full-artifacts/artifact-icons.png');
+}
+
+/** Zero-based [column, row] for an artifact `image` key on the 5×4 sheet. */
+export function getArtifactIconCell(imageKey: string): { col: number; row: number } {
+  const [col, row] = ARTIFACT_SPRITE_CELLS[imageKey] ?? ARTIFACT_SPRITE_CELLS.stabilisator;
+  return { col, row };
+}
+
+export function getArtifactIconSheetCols(): number {
+  return ARTIFACT_SHEET_COLS;
+}
+
+export function getArtifactIconSheetRows(): number {
+  return ARTIFACT_SHEET_ROWS;
 }
 
 export function getPlaceImagePath(placeKey: string): string {

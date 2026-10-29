@@ -37,6 +37,6 @@ Inspiration sets the scope of what can happen:
 
 In addition to the player skills, ingredients can be used when crafting. Using N ingredients adds to the corresponding skill for the duration of that craft.
 
-- mithril adds to mastery
+- silver adds to mastery
 - magic dust adds to inspiration
 - moxes add to erudition
