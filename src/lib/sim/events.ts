@@ -78,6 +78,8 @@ export interface EventTriggerParameters {
   [EventTriggerType.LastMatchWon]: Record<string, never>;
   /** `gs.scene.lastMatchWon === false` after a finished match. */
   [EventTriggerType.LastMatchLost]: Record<string, never>;
+  /** Player owns a finished artifact (tool or trinket) with this `patternKey`. */
+  [EventTriggerType.ArtifactOwned]: { patternKey: string };
 }
 
 export type EventTrigger = {
@@ -389,6 +391,8 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       return gs.scene.lastMatchWon === true;
     case EventTriggerType.LastMatchLost:
       return gs.scene.lastMatchWon === false;
+    case EventTriggerType.ArtifactOwned:
+      return checkArtifactOwned(trigger);
     default:
       return false;
   }
@@ -482,6 +486,18 @@ function checkKnownTraits(
   const character = gs.characters[characterKey];
   if (!character) return false;
   return (character.knownTraits?.length ?? 0) >= count;
+}
+
+function checkArtifactOwned(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.ArtifactOwned }>
+): boolean {
+  const { patternKey } = trigger.parameters;
+  if (!patternKey) return false;
+  const artifacts = gs.player.artifacts;
+  if (!artifacts) return false;
+  const ownsTool = (artifacts.tools ?? []).some((tool) => tool.patternKey === patternKey);
+  if (ownsTool) return true;
+  return (artifacts.trinkets ?? []).some((trinket) => trinket.patternKey === patternKey);
 }
 
 const PASSAGE_TOKEN = /\{\{\s*([\w-]+)\s*\}\}/g;

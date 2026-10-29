@@ -55,5 +55,34 @@
     "skillBonuses": {
       "inspiration": 1
     }
+  },
+  {
+    "patternKey": "italian_codex",
+    "image": "artificers-codex",
+    "name": "Italian Codex",
+    "description": "An aged Italian pattern that helps its owner craft elegant Italian cards.",
+    "colorCost": [
+      { "color": "blue", "cost": 3 },
+      { "color": "black", "cost": 2 }
+    ],
+    "pieces": [
+      {
+        "name": "binding",
+        "alternativeResourcesCost": [
+          { "gold": 100, "moxes": 5 },
+          { "gold": 100, "mithril": 1 }
+        ]
+      },
+      {
+        "name": "illuminated-folio",
+        "alternativeResourcesCost": [
+          { "gold": 200, "magicDust": 5 },
+          { "gold": 100, "mithril": 1 }
+        ]
+      }
+    ],
+    "skillBonuses": {
+      "erudition": 2
+    }
   }
 ]

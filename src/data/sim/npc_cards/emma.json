@@ -1,5 +1,48 @@
 [
   {
+    "id": "emma_chaos_faerie",
+    "name": "Chaos Faerie",
+    "imageFileName": "emma_chaos_faerie",
+    "cost": 7,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 4
+      }
+    ],
+    "poolKeys": ["emma", "event"],
+    "type": "unit",
+    "power": 2,
+    "maxHealth": 2,
+    "retaliate": 0,
+    "keywords": {
+      "flying": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "bounceUnit",
+              "args": {
+                "range": {
+                  "all": true,
+                  "excludeSelf": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "emma_horse",
     "name": "Gourmet Horse",
     "imageFileName": "emma_horse",
@@ -411,6 +454,32 @@
           "type": "After Moving",
           "range": {
             "self": true
+          }
+        }
+      }
+    ],
+    "poolKeys": ["emma", "special"]
+  },
+  {
+    "id": "emma_chaos_faerie",
+    "name": "Chaos Faerie",
+    "imageFileName": "emma_chaos_faerie",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      { "color": "red", "count": 1 },
+      { "color": "blue", "count": 1 }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageUnit",
+          "args": {
+            "damage": 1,
+            "range": {
+              "ennemies": true,
+              "all": true
+            }
           }
         }
       }

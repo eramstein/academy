@@ -19,6 +19,7 @@ import {
   rebuildWorkingEventTemplates,
   type EventTrigger,
 } from './events';
+import { completeCraftedArtifact } from './actions/craft-artifact';
 import { getWeekDay, WEEK_DAYS } from './time';
 
 /**
@@ -60,7 +61,8 @@ export type SceneChange =
       activityType: ActivityType;
       value: number;
       label: string;
-    };
+    }
+  | { kind: 'artifact'; patternKey: string; label: string };
 
 export type EventDebugAction =
   | { kind: 'story_tag'; tag: string; value: number }
@@ -648,6 +650,15 @@ function triggerToChange(trigger: EventTrigger): SceneChange | null {
         value: trigger.parameters.value,
         label: `${who(trigger.parameters.characterKey)} ${trigger.parameters.activityType} × ${trigger.parameters.value}`,
       };
+    case EventTriggerType.ArtifactOwned: {
+      const { patternKey } = trigger.parameters;
+      if (!patternKey?.trim()) return null;
+      return {
+        kind: 'artifact',
+        patternKey,
+        label: `Own artifact ${patternKey}`,
+      };
+    }
     default:
       return null;
   }
@@ -759,6 +770,17 @@ function applySceneChange(change: SceneChange): string | null {
       character.activityHistory[change.activityType] = change.value;
       return change.label;
     }
+    case 'artifact': {
+      const artifacts = gs.player.artifacts;
+      const owned =
+        (artifacts?.tools ?? []).some((tool) => tool.patternKey === change.patternKey) ||
+        (artifacts?.trinkets ?? []).some((trinket) => trinket.patternKey === change.patternKey);
+      if (owned) return null;
+      if (!completeCraftedArtifact(change.patternKey, { free: true })) {
+        return `Unknown artifact ${change.patternKey}`;
+      }
+      return change.label;
+    }
     default:
       return null;
   }
@@ -851,6 +873,8 @@ function triggerSignature(trigger: EventTrigger): string {
       return `activity:${trigger.parameters.activityType}`;
     case EventTriggerType.ScheduledActivity:
       return 'scheduled';
+    case EventTriggerType.ArtifactOwned:
+      return `artifact:${trigger.parameters.patternKey}`;
     default:
       return 'unknown';
   }

@@ -320,6 +320,9 @@ function checkTrigger(where, trigger) {
         errors.push(`${where}: count must be an integer ≥ 1`);
       }
       break;
+    case 'artifact_owned':
+      checkOneOf(where, 'patternKey', params.patternKey, artifactPatternKeys);
+      break;
     case 'scheduled_activity':
       // No parameters: matches when current activity.eventId === this event's key.
       break;
@@ -462,6 +465,10 @@ function checkEffect(where, effect) {
       if (parameters.characterKey !== undefined) {
         checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
       }
+      break;
+    case 'gift_artifact':
+      checkOneOf(where, 'patternKey', parameters.patternKey, artifactPatternKeys);
+      checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
       break;
     case 'add_chat_topic':
       if (typeof parameters.key !== 'string' || !parameters.key.trim()) {

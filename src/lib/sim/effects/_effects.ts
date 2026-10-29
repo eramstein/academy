@@ -39,7 +39,12 @@ import { addChatTopic, type AddChatTopicParameters } from './chat-topics';
 import { startMatch, type StartMatchParameters } from './match';
 import { newLeagueSeason, type NewLeagueSeasonParameters } from './league';
 import { addPossession, type AddPossessionParameters } from './possessions';
-import { acquireArtifactPattern, type AcquireArtifactPatternParameters } from './artifacts';
+import {
+  acquireArtifactPattern,
+  giftArtifact,
+  type AcquireArtifactPatternParameters,
+  type GiftArtifactParameters,
+} from './artifacts';
 
 export function applyEffect(effect: EventEffect) {
   const result = effectFunctions[effect.type](effect.parameters);
@@ -91,4 +96,6 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     addPossession(parameters as AddPossessionParameters),
   [EventEffectType.AcquireArtifactPattern]: (parameters) =>
     acquireArtifactPattern(parameters as AcquireArtifactPatternParameters),
+  [EventEffectType.GiftArtifact]: (parameters) =>
+    giftArtifact(parameters as GiftArtifactParameters),
 };

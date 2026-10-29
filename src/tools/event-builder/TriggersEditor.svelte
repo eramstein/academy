@@ -62,6 +62,7 @@
       [EventTriggerType.KnownTraits]: { characterKey: '', count: 1 },
       [EventTriggerType.LastMatchWon]: {},
       [EventTriggerType.LastMatchLost]: {},
+      [EventTriggerType.ArtifactOwned]: { patternKey: '' },
     };
     return defaults[triggerType];
   }
@@ -364,6 +365,14 @@
               bind:value={trigger.parameters.count}
               aria-label="Known traits count"
               title="Requires knownTraits.length ≥ count for this character"
+            />
+          {:else if trigger.triggerType === EventTriggerType.ArtifactOwned}
+            <input
+              class="input param-input"
+              bind:value={trigger.parameters.patternKey}
+              placeholder="artifact pattern key"
+              aria-label="Artifact pattern key"
+              title="Player owns this pattern as a tool or trinket"
             />
           {/if}
 

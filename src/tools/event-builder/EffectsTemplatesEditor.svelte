@@ -176,6 +176,11 @@
           patternKey: '',
           characterKey: 'player',
         };
+      case EventEffectType.GiftArtifact:
+        return {
+          patternKey: '',
+          characterKey: '',
+        };
       default:
         return {};
     }
@@ -1025,6 +1030,23 @@
               <input
                 class="input arg"
                 value={effect.parameters.characterKey ?? 'player'}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+            {:else if effect.type === EventEffectType.GiftArtifact}
+              <input
+                class="input arg"
+                value={effect.parameters.patternKey ?? ''}
+                placeholder="pattern key"
+                aria-label="Artifact pattern key"
+                oninput={(e) =>
+                  setParameter(i, 'patternKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? ''}
                 placeholder="character key"
                 aria-label="Character key"
                 oninput={(e) =>

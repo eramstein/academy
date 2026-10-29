@@ -88,6 +88,9 @@
       const { characterKey, count } = trigger.parameters;
       return `${trigger.triggerType}: ${characterKey} ≥${count}`;
     }
+    if (trigger.triggerType === EventTriggerType.ArtifactOwned) {
+      return `${trigger.triggerType}: ${trigger.parameters.patternKey}`;
+    }
     if (trigger.triggerType === EventTriggerType.DayOfWeek) {
       return `${trigger.triggerType}: ${trigger.parameters.daysOfWeek.join(',')}`;
     }

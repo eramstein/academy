@@ -39,6 +39,7 @@ export enum EventEffectType {
   NewLeagueSeason = 'new_league_season',
   AddPossession = 'add_possession',
   AcquireArtifactPattern = 'acquire_artifact_pattern',
+  GiftArtifact = 'gift_artifact',
 }
 
 export enum ActionType {
@@ -147,6 +148,8 @@ export enum EventTriggerType {
   LastMatchWon = 'last_match_won',
   /** Most recent finished match was a loss (`gs.scene.lastMatchWon === false`). */
   LastMatchLost = 'last_match_lost',
+  /** Player owns a finished artifact (tool or trinket) with this `patternKey`. */
+  ArtifactOwned = 'artifact_owned',
 }
 
 export enum ResourceType {

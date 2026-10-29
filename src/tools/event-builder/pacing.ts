@@ -59,6 +59,8 @@ export interface PacingWorld {
   characters: Record<string, PacingNpc>;
   leaguesWon: Record<string, number>;
   lastMatchWon?: boolean;
+  /** Finished artifact pattern keys the player owns (tools or trinkets). */
+  ownedArtifacts: Set<string>;
   /** Event whose outcome is being walked. Its story tag is already stamped. */
   openKey?: string;
   academyScheduled: boolean;
@@ -113,6 +115,7 @@ export function createPacingWorld(): PacingWorld {
     playerPlace: 'admin-office',
     characters,
     leaguesWon: {},
+    ownedArtifacts: new Set(),
     academyScheduled: false,
   };
 }
@@ -430,6 +433,8 @@ function triggerMatches(trigger: EventTrigger, world: PacingWorld, eventKey: str
       return world.lastMatchWon === true;
     case EventTriggerType.LastMatchLost:
       return world.lastMatchWon === false;
+    case EventTriggerType.ArtifactOwned:
+      return world.ownedArtifacts.has(trigger.parameters.patternKey);
     default:
       return false;
   }
