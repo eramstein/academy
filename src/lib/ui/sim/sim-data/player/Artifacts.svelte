@@ -10,7 +10,11 @@
   import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import { getArtifactPieceCosts, type ArtifactPieceCostView } from '@/lib/sim/actions';
-  import { getLoadedArtifact } from '@/lib/sim/artifacts';
+  import {
+    getLoadedArtifact,
+    isArtifactEquipped,
+    toggleEquippedArtifact,
+  } from '@/lib/sim/artifacts';
   import ResourceIcon from '@/lib/ui/sim/ResourceIcon.svelte';
   import ArtifactThumb from './ArtifactThumb.svelte';
   import PlayerDetail from './PlayerDetail.svelte';
@@ -115,6 +119,7 @@
   function iconUrl(name: string) {
     return getUiIconPath(name);
   }
+
 </script>
 
 {#snippet icon(name: string)}
@@ -134,77 +139,94 @@
     filled?: number[];
     requiredNames?: string[];
     pattern?: boolean;
+    equippable?: boolean;
+    equipped?: boolean;
+    onToggle?: () => void;
   }
 )}
   {@const effects = effectLines(artifact)}
   {@const progress = opts?.filled ? progressLabel(opts.filled, artifact) : ''}
-  <li class="card">
-    <ArtifactThumb
-      patternKey={artifact.patternKey}
-      image={artifact.image}
-      size="md"
-      muted={opts?.pattern}
-    />
-    <div class="copy">
-      <div class="headline">
-        <span class="name">{artifact.name}</span>
-        <span class="kind">{opts?.pattern ? 'Pattern' : kind}</span>
+  <li>
+    <svelte:element
+      this={opts?.equippable ? 'button' : 'div'}
+      type={opts?.equippable ? 'button' : undefined}
+      class="card"
+      class:equippable={opts?.equippable}
+      class:equipped={opts?.equipped}
+      aria-pressed={opts?.equippable ? !!opts.equipped : undefined}
+      onclick={opts?.equippable ? opts.onToggle : undefined}
+    >
+      <ArtifactThumb
+        patternKey={artifact.patternKey}
+        image={artifact.image}
+        size="md"
+        muted={opts?.pattern}
+        selected={opts?.equipped}
+      />
+      <div class="copy">
+        <div class="headline">
+          <span class="name">{artifact.name}</span>
+          <span class="kind">{opts?.pattern ? 'Pattern' : kind}</span>
+          {#if opts?.equipped}
+            <span class="equipped-label">Equipped</span>
+          {/if}
+        </div>
+        {#if artifact.description}
+          <p class="desc">{artifact.description}</p>
+        {/if}
+        {#if effects.length > 0}
+          <p class="effects">{effects.join(' · ')}</p>
+        {/if}
+        {#if opts?.pattern && artifact.colorCost.length > 0}
+          <ul class="colors">
+            {#each artifact.colorCost as bar, index (`${bar.color}-${index}`)}
+              {@const filled = opts?.filled?.[index] ?? 0}
+              <li class="color">
+                <img src={colorPath(bar.color)} alt="" />
+                <span>{filled}/{bar.cost}</span>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+        {#if opts?.pieces && opts.pieces.length > 0}
+          <ul class="pieces">
+            {#each opts.pieces as piece (piece.name)}
+              <li class="piece" class:short={!piece.enough}>
+                <span class="piece-name">{piece.name}</span>
+                <span class="piece-alts">
+                  {#each piece.alternatives as alt, altIndex (altIndex)}
+                    {#if altIndex > 0}
+                      <span class="or">or</span>
+                    {/if}
+                    <span class="alt" class:short={!alt.enough}>
+                      {#each alt.lines as line, lineIndex (line.key)}
+                        {#if lineIndex > 0}<span class="plus">+</span>{/if}
+                        <span class="cost" class:short={!line.enough}>
+                          {#if line.key === 'gold'}
+                            <img src={getUiIconPath('coin')} alt="" />
+                          {:else}
+                            <span class="cost-icon">
+                              <ResourceIcon type={line.key} />
+                            </span>
+                          {/if}
+                          <span class="cost-amount">{line.need}</span>
+                        </span>
+                      {/each}
+                    </span>
+                  {/each}
+                </span>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+        {#if opts?.requiredNames && opts.requiredNames.length > 0}
+          <p class="meta">Requires {opts.requiredNames.join(', ')}</p>
+        {/if}
+        {#if progress}
+          <p class="meta">In progress · {progress}</p>
+        {/if}
       </div>
-      {#if artifact.description}
-        <p class="desc">{artifact.description}</p>
-      {/if}
-      {#if effects.length > 0}
-        <p class="effects">{effects.join(' · ')}</p>
-      {/if}
-      {#if opts?.pattern && artifact.colorCost.length > 0}
-        <ul class="colors">
-          {#each artifact.colorCost as bar, index (`${bar.color}-${index}`)}
-            {@const filled = opts?.filled?.[index] ?? 0}
-            <li class="color">
-              <img src={colorPath(bar.color)} alt="" />
-              <span>{filled}/{bar.cost}</span>
-            </li>
-          {/each}
-        </ul>
-      {/if}
-      {#if opts?.pieces && opts.pieces.length > 0}
-        <ul class="pieces">
-          {#each opts.pieces as piece (piece.name)}
-            <li class="piece" class:short={!piece.enough}>
-              <span class="piece-name">{piece.name}</span>
-              <span class="piece-alts">
-                {#each piece.alternatives as alt, altIndex (altIndex)}
-                  {#if altIndex > 0}
-                    <span class="or">or</span>
-                  {/if}
-                  <span class="alt" class:short={!alt.enough}>
-                    {#each alt.lines as line, lineIndex (line.key)}
-                      {#if lineIndex > 0}<span class="plus">+</span>{/if}
-                      <span class="cost" class:short={!line.enough}>
-                        {#if line.key === 'gold'}
-                          <img src={getUiIconPath('coin')} alt="" />
-                        {:else}
-                          <span class="cost-icon">
-                            <ResourceIcon type={line.key} />
-                          </span>
-                        {/if}
-                        <span class="cost-amount">{line.need}</span>
-                      </span>
-                    {/each}
-                  </span>
-                {/each}
-              </span>
-            </li>
-          {/each}
-        </ul>
-      {/if}
-      {#if opts?.requiredNames && opts.requiredNames.length > 0}
-        <p class="meta">Requires {opts.requiredNames.join(', ')}</p>
-      {/if}
-      {#if progress}
-        <p class="meta">In progress · {progress}</p>
-      {/if}
-    </div>
+    </svelte:element>
   </li>
 {/snippet}
 
@@ -219,7 +241,12 @@
     {:else}
       <ul class="cards">
         {#each owned as entry, index (`owned-${entry.artifact.patternKey}-${index}`)}
-          {@render artifactCard(entry.artifact, entry.kind)}
+          {@const equipped = isArtifactEquipped(entry.artifact, entry.kind)}
+          {@render artifactCard(entry.artifact, entry.kind, {
+            equippable: true,
+            equipped,
+            onToggle: () => toggleEquippedArtifact(entry.artifact, entry.kind),
+          })}
         {/each}
       </ul>
     {/if}
@@ -307,6 +334,34 @@
     grid-template-columns: 4.5rem minmax(0, 1fr);
     gap: 0.75rem;
     align-items: start;
+    width: 100%;
+    margin: 0;
+    padding: 0.45rem 0.5rem;
+    box-sizing: border-box;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+  }
+
+  .card.equippable {
+    cursor: pointer;
+  }
+
+  .card.equippable:hover {
+    background: var(--color-data-hover);
+  }
+
+  .card.equipped {
+    border-color: rgba(191, 161, 74, 0.55);
+    background: rgba(26, 36, 51, 0.65);
+  }
+
+  .card.equippable:focus-visible {
+    outline: 1px solid var(--color-golden);
+    outline-offset: 2px;
   }
 
   .copy {
@@ -334,6 +389,14 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-muted-label);
+  }
+
+  .equipped-label {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-golden);
   }
 
   .desc,

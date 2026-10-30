@@ -28,6 +28,7 @@
   } from '@/lib/sim/cards/action-templates';
   import { getAbilityCost, getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
   import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
+  import { effectiveCraftingSkills } from '@/lib/sim/artifacts';
   import {
     craftProfile,
     previewColorTechGains,
@@ -526,7 +527,7 @@
   const shownColors = $derived(colors.filter((color) => shown(`pigment:${color}`)));
 
   const ingredientCap = $derived(
-    craftProfile(gs.player.craftingSkills, selectedResources(), 'invoke').scope
+    craftProfile(effectiveCraftingSkills(gs.player), selectedResources(), 'invoke').scope
   );
 
   function selectedResources(): { type: ResourceType; count: number }[] {

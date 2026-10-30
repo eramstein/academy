@@ -42,6 +42,7 @@ import {
   mergeUniqueResourceUnitTypes,
   unitTypesFromUniqueResources,
 } from '../cards/resources';
+import { effectiveCraftingSkills } from '../artifacts';
 import { getActingCharacter } from '../characters';
 import { narrateCardConjured } from '../narration';
 import { spendResources } from '../resources';
@@ -118,7 +119,8 @@ export function getConjurationOptionCount(
   resources: { type: ResourceType; count: number }[] = []
 ): number {
   const character = getActingCharacter(characterKey);
-  return craftProfile(character.craftingSkills, resources, 'conjure').conjureOptions.sure;
+  return craftProfile(effectiveCraftingSkills(character), resources, 'conjure').conjureOptions
+    .sure;
 }
 
 export async function getNewCardTemplate(
@@ -237,7 +239,11 @@ export async function getConjurationOtions(
   augury?: ConjurationAugury
 ): Promise<CardCreationResult[]> {
   const character = getActingCharacter(characterKey);
-  const profile = craftProfile(character.craftingSkills, parameters.resources ?? [], 'conjure');
+  const profile = craftProfile(
+    effectiveCraftingSkills(character),
+    parameters.resources ?? [],
+    'conjure'
+  );
   const optionsCount = augury?.optionCount ?? rollConjureOptionCount(profile.inspiration.total);
   const discoveryIndex =
     augury?.discoveryIndex ?? rollDiscoveryIndex(profile.discoveryChance, optionsCount);
@@ -432,7 +438,8 @@ function limitInvokeIngredients(
   character: Character
 ): CardCreationParameters {
   if (parameters.source !== 'invoke') return parameters;
-  const cap = craftProfile(character.craftingSkills, parameters.resources, 'invoke').scope;
+  const cap = craftProfile(effectiveCraftingSkills(character), parameters.resources, 'invoke')
+    .scope;
   let next = parameters;
   if (countInvokeIngredients(next) <= cap) return next;
 
@@ -479,7 +486,7 @@ export function getCardCreationBonuses(
   source: CardCreationSource = 'invoke'
 ): CardCreationBonuses {
   const character = getActingCharacter(characterKey);
-  const profile = craftProfile(character.craftingSkills, resources, source);
+  const profile = craftProfile(effectiveCraftingSkills(character), resources, source);
   return {
     learningChance: profile.knowledge.expected,
     extraBudgetChance: profile.extraBudget.expected,

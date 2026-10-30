@@ -1,5 +1,5 @@
 import { gs } from '@/lib/_state';
-import { getLoadedArtifact } from '../artifacts';
+import { getLoadedArtifact, unequipTrinketIfEquipped } from '../artifacts';
 import { getActingCharacter } from '../characters';
 
 export interface AcquireArtifactPatternParameters {
@@ -99,6 +99,7 @@ export function giftArtifact(parameters: GiftArtifactParameters): string {
   }
 
   const [artifact] = gs.player.artifacts.trinkets.splice(trinketIndex, 1);
+  unequipTrinketIfEquipped(artifact);
   character.artifacts.trinkets.push(artifact);
   return `You give the ${artifact.name} to ${character.name}.`;
 }

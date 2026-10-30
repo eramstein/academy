@@ -42,6 +42,7 @@ export const defaultGameState: GameState = {
       tools: [],
       trinkets: [],
     },
+    equippedArtifacts: { tool: null, trinket: null },
     resources: {
       [ResourceType.MagicDust]: 2,
       [ResourceType.Silver]: 2,

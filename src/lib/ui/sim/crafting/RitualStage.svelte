@@ -3,6 +3,7 @@
   import { gs } from '@/lib/_state';
   import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
   import { fortuneBudgetToStats, rollExtraBudget, type ConjurationAugury } from '@/lib/sim/actions';
+  import { effectiveCraftingSkills } from '@/lib/sim/artifacts';
   import {
     craftProfile,
     discoverySource,
@@ -295,7 +296,9 @@
       .map((row) => ({ type: row.type, count: row.selected }))
   );
 
-  const profile = $derived(craftProfile(gs.player.craftingSkills, resources, craft));
+  const profile = $derived(
+    craftProfile(effectiveCraftingSkills(gs.player), resources, craft)
+  );
   let visionCount = $state<number | null>(null);
   let visionDiscovery = $state<number | null>(null);
   let eruditionOutcome = $state(false);
@@ -494,7 +497,7 @@
     }
     // Magic dust only fills inspiration up to the cap.
     if (type === ResourceType.MagicDust) {
-      const skill = gs.player.craftingSkills?.inspiration ?? 0;
+      const skill = effectiveCraftingSkills(gs.player).inspiration;
       next = Math.min(next, Math.max(0, INSPIRATION_CAP - skill));
     }
     selected = { ...selected, [type]: next };

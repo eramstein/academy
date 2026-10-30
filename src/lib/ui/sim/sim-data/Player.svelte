@@ -3,6 +3,7 @@
   import { PossessionType, ResourceType, SubscriptionType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
   import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
+  import { isArtifactEquipped, toggleEquippedArtifact } from '@/lib/sim/artifacts';
   import Attributes from '../Attributes.svelte';
   import CharacterIdentity from '../characters/CharacterIdentity.svelte';
   import ResourceIcon from '../ResourceIcon.svelte';
@@ -263,21 +264,36 @@
                 <ul class="artifacts">
                   {#each previewArtifacts as entry, index (`${entry.kind}-${entry.artifact.patternKey}-${index}`)}
                     {@const bonus = bonusLabel(entry.artifact)}
-                    <li class="artifact">
-                      <ArtifactThumb
-                        patternKey={entry.artifact.patternKey}
-                        image={entry.artifact.image}
-                        size="sm"
-                      />
-                      <span class="artifact-copy">
-                        <span class="artifact-name" title={entry.artifact.name}>
-                          {entry.artifact.name}
+                    {@const equipped = isArtifactEquipped(entry.artifact, entry.kind)}
+                    <li>
+                      <button
+                        type="button"
+                        class="artifact"
+                        class:equipped
+                        aria-pressed={equipped}
+                        onclick={() => toggleEquippedArtifact(entry.artifact, entry.kind)}
+                      >
+                        <ArtifactThumb
+                          patternKey={entry.artifact.patternKey}
+                          image={entry.artifact.image}
+                          size="sm"
+                          selected={equipped}
+                        />
+                        <span class="artifact-copy">
+                          <span class="artifact-name" title={entry.artifact.name}>
+                            {entry.artifact.name}
+                          </span>
+                          <span class="artifact-meta">
+                            <span class="artifact-kind">{entry.kind}</span>
+                            {#if equipped}
+                              <span class="artifact-equipped">Equipped</span>
+                            {/if}
+                          </span>
+                          {#if bonus}
+                            <span class="artifact-bonus">{bonus}</span>
+                          {/if}
                         </span>
-                        <span class="artifact-kind">{entry.kind}</span>
-                        {#if bonus}
-                          <span class="artifact-bonus">{bonus}</span>
-                        {/if}
-                      </span>
+                      </button>
                     </li>
                   {/each}
                 </ul>
@@ -627,7 +643,32 @@
     grid-template-columns: 3.25rem minmax(0, 1fr);
     gap: 0.55rem;
     align-items: center;
+    width: 100%;
     min-width: 0;
+    margin: 0;
+    padding: 0.3rem 0.35rem;
+    box-sizing: border-box;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .artifact:hover {
+    background: var(--color-data-hover);
+  }
+
+  .artifact.equipped {
+    border-color: rgba(191, 161, 74, 0.55);
+    background: rgba(26, 36, 51, 0.65);
+  }
+
+  .artifact:focus-visible {
+    outline: 1px solid var(--color-golden);
+    outline-offset: 2px;
   }
 
   .artifact-copy {
@@ -645,12 +686,27 @@
     white-space: nowrap;
   }
 
+  .artifact-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem 0.55rem;
+  }
+
   .artifact-kind {
     font-size: 0.66rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-muted-label);
+  }
+
+  .artifact-equipped {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-golden);
   }
 
   .artifact-bonus {

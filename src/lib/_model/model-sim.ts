@@ -374,6 +374,7 @@ export interface Player extends Character {
   focus: number;
   /** Unfinished crafts. `colorCost.cost` is how many cells of that color are filled. */
   artifactProgress: { key: string; colorCost: { color: CardColor; cost: number }[] }[];
+  equippedArtifacts: { tool: ArtifactTool | null; trinket: ArtifactTrinket | null };
 }
 
 export interface Npc extends Character {

@@ -28,6 +28,7 @@ import {
   type KnowledgeGain,
 } from '../cards/crafting-skills';
 import { addKeyword, formatKeywordLabel, KEYWORD_KEYS, removeKeyword } from '../cards/keywords';
+import { effectiveCraftingSkills } from '../artifacts';
 import { getActingCharacter } from '../characters';
 import { narrateCardEncanted } from '../narration';
 
@@ -176,7 +177,7 @@ export function getCardEnchantmentBonuses(
   characterKey: string = 'player'
 ): CardEnchantmentBonuses {
   const character = getActingCharacter(characterKey);
-  const profile = craftProfile(character.craftingSkills, resources, 'enchant');
+  const profile = craftProfile(effectiveCraftingSkills(character), resources, 'enchant');
   return {
     extraMana: profile.scope,
     extraBudgetChance: profile.extraBudget.expected,
@@ -486,7 +487,11 @@ function describeEnchantResult(
   },
   fortune: number
 ): string {
-  const profile = craftProfile(gs.player.craftingSkills, parameters.resources, 'enchant');
+  const profile = craftProfile(
+    effectiveCraftingSkills(gs.player),
+    parameters.resources,
+    'enchant'
+  );
   const points = parameters.learningRoll ?? rollPoints(profile.knowledge.expected);
   const gains = parameters.learningGains?.length
     ? (commitKnowledgeGains(gs.player, parameters.learningGains), parameters.learningGains)
