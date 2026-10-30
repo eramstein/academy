@@ -14,8 +14,10 @@ export const config = {
   maxAbsoluteSimulations: 32,
   maxTargetAssignments: 4,
   randomSamples: 1,
-  continuationEnabled: false,
+  /** Greedy follow-ups after each searched first action (see `continuation.ts`). */
+  continuationEnabled: true,
   continuationSteps: 6,
+  /** Non-pass follow-ups tried per step (attacks preferred, plus a spell slot). */
   continuationBranch: 4,
   maxCraftingKnowledge: 5,
 };

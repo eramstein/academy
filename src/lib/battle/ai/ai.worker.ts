@@ -1,8 +1,10 @@
+import { config } from '@/lib/_config';
 import type { BattleState } from '@/lib/_model';
 import { bs } from '@/lib/_state/main.svelte';
 import { uiState } from '@/lib/_state/state-ui.svelte';
 import { nextTurn } from '../turn';
 import { applyCandidate } from './apply';
+import { continueGreedy } from './continuation';
 import { setActivePreset } from './evaluate';
 import { failedCandidate, scoreLine, withId } from './simulate';
 import { replaceBattleState, resetBattleUiPending } from './snapshot';
@@ -38,6 +40,9 @@ self.onmessage = (event: MessageEvent) => {
         resetBattleUiPending();
         uiState.isHeadless = true;
         applyCandidate(candidate);
+        if (config.continuationEnabled && candidate.kind !== 'pass') {
+          return withId(candidate.id, continueGreedy(baseline));
+        }
         return withId(
           candidate.id,
           scoreLine(baseline, AI_PLAYER_ID, {

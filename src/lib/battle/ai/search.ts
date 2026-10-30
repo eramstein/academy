@@ -1,3 +1,4 @@
+import { config } from '@/lib/_config';
 import type { BattleState } from '@/lib/_model';
 import AiWorker from './ai.worker?worker';
 import { applyCandidate, candidateLabel } from './apply';
@@ -30,7 +31,8 @@ export async function chooseAction(): Promise<SearchDecision> {
     live.score.toFixed(1),
     'queue',
     queue.length,
-    answerMode ? 'answers' : 'normal'
+    answerMode ? 'answers' : 'normal',
+    config.continuationEnabled ? `cont×${config.continuationBranch}` : 'no-cont'
   );
 
   const worker = new AiWorker();

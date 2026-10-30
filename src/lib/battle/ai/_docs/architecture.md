@@ -315,11 +315,11 @@ Persona is a weight preset, not a separate policy. `getAiStrategy` selects it fr
 | Aggro | Opponent life at 6, own life at 2, board weight 0.7 |
 | Defend | Own life at 6, opponent life at 3, board weight 1 |
 
-## Greedy continuation (later, off by default)
+## Greedy continuation
 
-The [Obvious lethal](#obvious-lethal) planner covers the multi-step cases that matter most: assemble a win, or block every row that can already kill the AI. One-step search plus latent attacks can still miss ordinary two-step lines outside that (two non-removal spells, a move that only pays off after a non-lethal attack). Continuation would ask: "If I take this first action, and then keep playing greedily until I would pass, how good is the end of my turn?"
+The [Obvious lethal](#obvious-lethal) planner covers the multi-step cases that matter most: assemble a win, or block every row that can already kill the AI. One-step search plus latent attacks can still miss ordinary two-step lines outside that (two non-removal spells, a move that only pays off after a non-lethal attack). Continuation asks: "If I take this first action, and then keep playing greedily until I would pass, how good is the end of my turn?"
 
-It stays behind `continuationEnabled = false`. The branch it would explore is the heuristic's top few, so it finds a second step the ranker already liked. It does not find the spell the ranker left outside the quota. Turn it on only when real games show a two-step line that obvious lethal, latent attacks, and the epilogue all miss. Defaults if that happens: `continuationSteps = 6`, `continuationBranch = 4`, latent credit off on the final score so the same future damage is not counted twice. The live loop still plays only the first action, then replans.
+Implemented in [`continuation.ts`](../continuation.ts), behind `continuationEnabled` (on by default). After each non-pass first action, the worker applies it, then for up to `continuationSteps` picks among a small beam (`continuationBranch`): pass, up to two attacks (kills first), the best primary spell, then other high-rank actions. Each pick is scored with the epilogue and **no latent credit** so follow-up attacks must actually be taken. The live loop still plays only the first action, then replans.
 
 ## What this retires
 
