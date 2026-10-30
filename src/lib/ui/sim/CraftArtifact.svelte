@@ -117,7 +117,7 @@
   }
 
   function goToColors() {
-    if (!selected || leaving) return;
+    if (!selected || leaving || !choicesAffordable) return;
     craftStep = 'colors';
     notice = '';
   }

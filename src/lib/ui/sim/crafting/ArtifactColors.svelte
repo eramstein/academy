@@ -518,10 +518,9 @@
                   aria-valuemax={knowledgeNeed}
                   aria-label="Knowledge set into the artifact"
                 >
-                  <span
-                    class="meter-fill"
-                    style:width="{(knowledgeHave / knowledgeNeed) * 100}%"
-                  ></span>
+                  {#each { length: knowledgeNeed } as _, cell}
+                    <span class="meter-cell" class:filled={cell < knowledgeHave}></span>
+                  {/each}
                 </div>
                 <p class="meter-label">{knowledgeHave} / {knowledgeNeed} knowledge</p>
               </div>
@@ -993,16 +992,25 @@
   }
 
   .meter {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 2px;
     height: 0.85rem;
     overflow: hidden;
     border: 1px solid var(--color-brown-border);
-    border-radius: 99px;
-    background: rgba(44, 37, 29, 0.1);
+    border-radius: 0;
+    background: var(--color-navy);
   }
 
-  .meter-fill {
+  .meter-cell {
     display: block;
     height: 100%;
+    min-width: 0;
+    background: var(--color-navy);
+  }
+
+  .meter-cell.filled {
     background: var(--color-blue);
   }
 
@@ -1059,8 +1067,8 @@
   }
 
   .slot img {
-    width: 74%;
-    height: 74%;
+    width: 95%;
+    height: 95%;
   }
 
   .slot img.dim {

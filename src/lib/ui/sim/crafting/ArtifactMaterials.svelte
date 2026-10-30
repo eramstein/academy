@@ -37,6 +37,49 @@
     return ((raw % count) + count) % count;
   }
 
+  /**
+   * Strip offsets per piece. Moves by ±1 on each pager step (including wrap) so
+   * transform always animates one pane sideways instead of jumping the long way.
+   */
+  let stripAt = $state<number[]>([]);
+
+  $effect(() => {
+    const synced = pieces.map((piece, i) => {
+      const count = piece.alternatives.length;
+      if (count <= 0) return 0;
+      const choice = choiceIndex(i, count);
+      const current = stripAt[i];
+      if (current === undefined) return choice;
+      const mod = ((current % count) + count) % count;
+      return mod === choice ? current : choice;
+    });
+    if (
+      synced.length !== stripAt.length ||
+      synced.some((value, i) => value !== stripAt[i])
+    ) {
+      stripAt = synced;
+    }
+  });
+
+  function cycle(pieceIndex: number, delta: number) {
+    if (leaving) return;
+    const count = pieces[pieceIndex]?.alternatives.length ?? 0;
+    if (count < 2) return;
+    const d = delta > 0 ? 1 : -1;
+    const next = stripAt.slice();
+    while (next.length <= pieceIndex) next.push(0);
+    next[pieceIndex] = (next[pieceIndex] ?? 0) + d;
+    stripAt = next;
+    onCycle(pieceIndex, d);
+  }
+
+  /** Map a strip slot to an alternative; strip can extend past [0, count). */
+  function altAt(piece: ArtifactPieceCostView, slot: number) {
+    const count = piece.alternatives.length;
+    if (count <= 0) return undefined;
+    return piece.alternatives[((slot % count) + count) % count];
+  }
+
   const totals = $derived.by(() => {
     const map = new Map<
       string,
@@ -103,6 +146,23 @@
       },
     };
   }
+
+  function wheelCycle(node: HTMLElement, opts: { pieceIndex: number; count: number }) {
+    const onWheel = (e: WheelEvent) => {
+      if (leaving || opts.count < 2) return;
+      e.preventDefault();
+      cycle(opts.pieceIndex, e.deltaY > 0 ? 1 : -1);
+    };
+    node.addEventListener('wheel', onWheel, { passive: false });
+    return {
+      update(next: { pieceIndex: number; count: number }) {
+        opts = next;
+      },
+      destroy() {
+        node.removeEventListener('wheel', onWheel);
+      },
+    };
+  }
 </script>
 
 {#snippet star()}
@@ -142,9 +202,8 @@
               {#each pieces as piece, pieceIndex (piece.name)}
                 {@const count = piece.alternatives.length}
                 {@const index = choiceIndex(pieceIndex, count)}
-                {@const alternative = piece.alternatives[index]}
                 {@const label = getPieceDisplayName(piece.name)}
-                <li class="piece">
+                <li class="piece" use:wheelCycle={{ pieceIndex, count }}>
                   <span class="piece-art">
                     <PieceIcon name={piece.name} />
                   </span>
@@ -156,7 +215,7 @@
                           type="button"
                           aria-label={`Previous recipe for ${label}`}
                           disabled={leaving || count < 2}
-                          onclick={() => onCycle(pieceIndex, -1)}
+                          onclick={() => cycle(pieceIndex, -1)}
                         >
                           ‹
                         </button>
@@ -165,24 +224,50 @@
                           type="button"
                           aria-label={`Next recipe for ${label}`}
                           disabled={leaving || count < 2}
-                          onclick={() => onCycle(pieceIndex, 1)}
+                          onclick={() => cycle(pieceIndex, 1)}
                         >
                           ›
                         </button>
                       </div>
-                      {#if alternative && alternative.lines.length > 0}
-                        <ul class="chips">
-                          {#each alternative.lines as line (line.key)}
-                            <li class="chip" class:short={!line.enough}>
-                              {@render glyph(line.key)}
-                              <span class="chip-label">{line.label}</span>
-                              <span class="chip-need">{line.need}</span>
-                            </li>
+                      {@const at = stripAt[pieceIndex] ?? index}
+                      {@const currentAlt = altAt(piece, at)}
+                      <div class="chips-slide">
+                        <div class="chips-sizer" aria-hidden="true">
+                          {#if currentAlt && currentAlt.lines.length > 0}
+                            <ul class="chips" class:single={currentAlt.lines.length === 1}>
+                              {#each currentAlt.lines as line (line.key)}
+                                <li class="chip">
+                                  {@render glyph(line.key)}
+                                  <span class="chip-label">{line.label}</span>
+                                  <span class="chip-need">{line.need}</span>
+                                </li>
+                              {/each}
+                            </ul>
+                          {:else}
+                            <p class="muted">No materials.</p>
+                          {/if}
+                        </div>
+                        <div class="chips-track" style="transform: translateX({-at * 100}%)">
+                          {#each [at - 1, at, at + 1] as slot (slot)}
+                            {@const alt = altAt(piece, slot)}
+                            <div class="chips-pane" style="left: {slot * 100}%">
+                              {#if alt && alt.lines.length > 0}
+                                <ul class="chips" class:single={alt.lines.length === 1}>
+                                  {#each alt.lines as line (line.key)}
+                                    <li class="chip" class:short={!line.enough}>
+                                      {@render glyph(line.key)}
+                                      <span class="chip-label">{line.label}</span>
+                                      <span class="chip-need">{line.need}</span>
+                                    </li>
+                                  {/each}
+                                </ul>
+                              {:else}
+                                <p class="muted">No materials.</p>
+                              {/if}
+                            </div>
                           {/each}
-                        </ul>
-                      {:else}
-                        <p class="muted">No materials.</p>
-                      {/if}
+                        </div>
+                      </div>
                     {/if}
                   </div>
                 </li>
@@ -239,9 +324,6 @@
                 {/each}
               </ul>
             {/if}
-            {#if pieces.length > 0 && !affordable}
-              <p class="short-note">Your stores are short for this recipe.</p>
-            {/if}
           </div>
         </div>
       </section>
@@ -250,7 +332,7 @@
     <footer class="actions">
       <OrnateButton variant="muted" onclick={onBack}>Back</OrnateButton>
       <div class="actions-center">
-        <OrnateButton disabled={leaving} onclick={onAssemble}>
+        <OrnateButton disabled={leaving || !affordable} onclick={onAssemble}>
           <span class="assemble-label">
             <span class="diamond" aria-hidden="true"></span>
             Assemble components
@@ -386,14 +468,14 @@
     font-size: 1.05rem;
     font-weight: 600;
     line-height: 1.2;
-    text-align: left;
+    text-align: center;
     color: var(--color-ink);
   }
 
   .pager {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 0.2cqw;
     margin: 0.1cqw 0 0.4cqw;
   }
@@ -425,10 +507,45 @@
     color: var(--color-ink-muted);
   }
 
+  .chips-slide {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .chips-sizer {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .chips-track {
+    position: absolute;
+    inset: 0;
+    transition: transform 240ms ease;
+    will-change: transform;
+  }
+
+  .chips-pane {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   .chips {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.45cqw;
+  }
+
+  .chips.single {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+
+  .chips.single .chip {
+    width: 100%;
+    max-width: 50%;
   }
 
   .chip,
@@ -537,9 +654,9 @@
   .seal {
     display: grid;
     place-items: center;
-    width: 0.95rem;
-    height: 0.95rem;
-    margin-top: 0.2rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    margin-top: 0.25rem;
     border: 1.5px solid var(--color-brown-border);
     border-radius: 50%;
     box-sizing: border-box;
@@ -553,11 +670,11 @@
 
   .seal.met::after {
     content: '';
-    width: 0.28rem;
-    height: 0.48rem;
-    margin-top: -0.08rem;
+    width: 0.38rem;
+    height: 0.68rem;
+    margin-top: -0.1rem;
     border: solid #f4efe2;
-    border-width: 0 1.5px 1.5px 0;
+    border-width: 0 2px 2px 0;
     box-sizing: border-box;
     transform: rotate(45deg);
   }
@@ -574,16 +691,8 @@
     color: var(--color-ink-muted);
   }
 
-  .muted.center,
-  .short-note {
+  .muted.center {
     text-align: center;
-  }
-
-  .short-note {
-    margin: 0.4rem 0 0;
-    font-family: var(--font-narrative);
-    font-size: 0.9rem;
-    color: var(--color-red);
   }
 
   .actions {
