@@ -181,6 +181,8 @@
           patternKey: '',
           characterKey: '',
         };
+      case EventEffectType.UnlockPlace:
+        return { placeKey: placeKeys[0] ?? '' };
       default:
         return {};
     }
@@ -1052,6 +1054,18 @@
                 oninput={(e) =>
                   setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
               />
+            {:else if effect.type === EventEffectType.UnlockPlace}
+              <select
+                class="input arg"
+                value={effect.parameters.placeKey ?? placeKeys[0] ?? ''}
+                aria-label="Place"
+                onchange={(e) =>
+                  setParameter(i, 'placeKey', (e.currentTarget as HTMLSelectElement).value)}
+              >
+                {#each placeKeys as placeKey (placeKey)}
+                  <option value={placeKey}>{PLACES[placeKey].name}</option>
+                {/each}
+              </select>
             {:else if effect.type === EventEffectType.Move}
               <select
                 class="input arg"

@@ -1,0 +1,86 @@
+[
+  {
+    "topicKey": "match-chat-on-win",
+    "text": "Well played! That was a beautiful move."
+  },
+  {
+    "topicKey": "match-chat-on-win",
+    "text": "Remind me to think twice before challenging you again."
+  },
+  {
+    "topicKey": "match-chat-on-win",
+    "text": "Congratulations! I thought I had you for a moment."
+  },
+  {
+    "topicKey": "match-chat-on-win",
+    "text": "Enjoy your victory, Fibonacci. I intend to make it a rare occurrence.",
+    "npcKey": "emma"
+  },
+  {
+    "topicKey": "match-chat-on-win",
+    "text": "An excellent move. Infuriating, naturally, but excellent.",
+    "npcKey": "emma"
+  },
+  {
+    "topicKey": "match-chat-on-win",
+    "text": "I demand a rematch. Purely in the interest of scientific inquiry.",
+    "npcKey": "emma"
+  },
+  {
+    "topicKey": "match-chat-on-win",
+    "text": "That was amazing! You really caught me by surprise!",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "match-chat-on-win",
+    "text": "You could have warned me you were going to be this good!",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "match-chat-on-win",
+    "text": "I was cheering for you! Well, until I remembered I was your opponent.",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "match-chat-on-lose",
+    "text": "Good game! You nearly had me there."
+  },
+  {
+    "topicKey": "match-chat-on-lose",
+    "text": "Don't look so gloomy. There's always the next match!"
+  },
+  {
+    "topicKey": "match-chat-on-lose",
+    "text": "That was closer than it looked. Care for another round?"
+  },
+  {
+    "topicKey": "match-chat-on-lose",
+    "text": "A predictable outcome, of course. Though you did make me work for it.",
+    "npcKey": "emma"
+  },
+  {
+    "topicKey": "match-chat-on-lose",
+    "text": "Don't be discouraged, Fibonacci. Losing to me is a valuable educational experience.",
+    "npcKey": "emma"
+  },
+  {
+    "topicKey": "match-chat-on-lose",
+    "text": "You nearly had me with that last combination. Nearly being the operative word.",
+    "npcKey": "emma"
+  },
+  {
+    "topicKey": "match-chat-on-lose",
+    "text": "Oh, I won! Sorry, I didn't mean to sound so surprised!",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "match-chat-on-lose",
+    "text": "That was fun! And don't worry, I promise not to brag. Much.",
+    "npcKey": "molly"
+  },
+  {
+    "topicKey": "match-chat-on-lose",
+    "text": "Want another go? I'll try to be gentle. No promises, though!",
+    "npcKey": "molly"
+  }
+]

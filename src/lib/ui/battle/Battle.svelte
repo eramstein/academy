@@ -35,7 +35,7 @@
 
   $effect(() => {
     const opponentKey = gs.ongoingBattle?.opponentKey;
-    if (!opponentKey) return;
+    if (!opponentKey || gs.ongoingBattle?.guardianPlaceKey) return;
 
     let cancelled = false;
 

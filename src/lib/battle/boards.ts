@@ -21,6 +21,10 @@ export function isOnPlayersSide(position: Position, playerId: number) {
   return position.column >= config.boardColumns / 2;
 }
 
+export function positionPlayerId(position: Position) {
+  return position.column < config.boardColumns / 2 ? 0 : 1;
+}
+
 export function isBoardSizeFull(player: Player): boolean {
   return (
     bs.units.filter((u) => u.ownerPlayerId === player.id).length ===

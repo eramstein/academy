@@ -28,13 +28,12 @@
     onChange: (next: number, event: MouseEvent) => void;
   } = $props();
 
-  const RESOURCE_ROLES: Record<ResourceType, string> = {
+  const RESOURCE_ROLES: Partial<Record<ResourceType, string>> = {
     [ResourceType.Silver]: 'Mastery',
     [ResourceType.MagicDust]: 'Inspiration',
     [ResourceType.Moxes]: 'Erudition',
     [ResourceType.MollysBeads]: 'Unique',
     [ResourceType.SchlupakMushrooms]: 'Unique',
-    [ResourceType.Dreamspheres]: 'Unique',
     [ResourceType.SchlupakSpores]: 'Unique',
   };
 

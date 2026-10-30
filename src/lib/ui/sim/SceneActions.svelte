@@ -14,6 +14,7 @@
   import { skillCheckDifficultyLabels } from '@/lib/sim/attribute-checks';
   import { formatOutcomeEffectHints } from '@/lib/sim/effects/effect-hints';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
+  import { isPlaceVisible } from '@/lib/sim/guardians';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
   import {
@@ -102,7 +103,8 @@
     if (currentParameterKey === 'placeKey') {
       return value.filter((option) => {
         const key = Array.isArray(option) ? option[0] : option;
-        return !gs.places[key]?.locked;
+        const place = gs.places[key];
+        return place ? isPlaceVisible(place) : false;
       });
     }
     return value;

@@ -2,6 +2,7 @@ import { config } from '@/lib/_config';
 import {
   CounterType,
   TargetType,
+  isUnitCard,
   type ActionDefinition,
   type Card,
   type Land,
@@ -10,8 +11,10 @@ import {
 } from '@/lib/_model';
 import { bs } from '@/lib/_state';
 import { getCardBudget } from '@/lib/sim/cards/card-budget';
+import { positionPlayerId } from '../boards';
 import { getEligibleTargets } from '../target';
 import { valueUnit } from './evaluate';
+import { cellScore } from './heuristic';
 import { AI_PLAYER_ID, type TargetAssignment, type TargetRef } from './model';
 import { refKey, resolveRef, toRef } from './refs';
 
@@ -42,6 +45,8 @@ export function buildAssignments(
       const unique: TargetRef[] = [];
       const seen = new Set<string>();
       for (const ref of ranked) {
+        // Drop hard rejects (e.g. reanimate on a spell) so they do not burn assignment slots.
+        if (targetRank(action, ownerId, ref) <= -1000) continue;
         const key = refKey(ref);
         if (seen.has(key)) continue;
         seen.add(key);
@@ -121,6 +126,11 @@ function targetRank(action: ActionDefinition, ownerId: number, ref: TargetRef): 
       if (ally) return 500 + healed * 20 + vu * 0.2;
       return -500 - vu;
     }
+    if (effect === 'refreshUnit') {
+      if (!ally) return -500 - vu;
+      const spent = unit.hasAttacked || unit.hasMoved || unit.exhausted ? 200 : 0;
+      return 300 + spent + vu * 0.1;
+    }
     if (effect === 'bounceUnit' || effect === 'controlUnit') {
       return enemy ? 500 + vu : -500 - vu;
     }
@@ -140,6 +150,10 @@ function targetRank(action: ActionDefinition, ownerId: number, ref: TargetRef): 
         return enemy ? 300 + vu : -300 - vu;
       }
       return ally ? 100 + vu : 100 + vu * 0.5;
+    }
+    // Buff auras / pumps: prefer own bodies.
+    if (effect === 'staticStats' || effect === 'staticKeyword' || effect === 'temporaryEffect') {
+      return ally ? 300 + vu : -300 - vu;
     }
     if (effect === 'forceMoveUnit' || effect === 'fight') {
       return enemy ? vu : vu * 0.25;
@@ -176,7 +190,12 @@ function targetRank(action: ActionDefinition, ownerId: number, ref: TargetRef): 
     if (!card || !('cost' in card)) return 0;
     const budget = getCardBudget(card);
     const own = card.ownerPlayerId === ownerId;
-    if (effect === 'regrowCard' || effect === 'reanimate' || effect === 'tutorCard') {
+    if (effect === 'reanimate') {
+      // Body ownership follows the cell; any graveyard unit is fair game. Spells no-op.
+      if (!isUnitCard(card)) return -1000;
+      return 200 + Number(card.cost ?? 0);
+    }
+    if (effect === 'regrowCard' || effect === 'tutorCard') {
       return (own ? 1 : 0.25) * (200 + budget);
     }
     if (effect === 'recycleCard') {
@@ -194,6 +213,22 @@ function targetRank(action: ActionDefinition, ownerId: number, ref: TargetRef): 
       return ref.playerId === ownerId ? -1000 : 500 + Number(args.damage ?? 0) * 10;
     }
     return ref.playerId === ownerId ? 1 : -1;
+  }
+
+  if (ref.kind === 'cell') {
+    const cell = { row: ref.row, column: ref.column };
+    const ally = positionPlayerId(cell) === ownerId;
+    const seat = ally ? 500 : -500;
+    // Place a friendly body: own half first, then better lanes via cellScore.
+    if (effect === 'reanimate' || effect === 'controlUnit' || effect === 'summon') {
+      return seat + cellScore(null, cell);
+    }
+    // Push / shove destinations are almost always onto the enemy half.
+    if (effect === 'forceMoveUnit') {
+      return ally ? -500 : 500 + cellScore(null, cell);
+    }
+    // Unknown cell effects: slight bias to own half so lexicographic human cells lose.
+    return seat;
   }
 
   return 0;

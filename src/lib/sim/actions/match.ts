@@ -1,5 +1,6 @@
 import { ActionType, type Action } from '@/lib/_model';
 import { gs } from '@/lib/_state';
+import { startGuardianMatch } from '../guardians';
 import { getPossibleLeagueOpponents } from '../league';
 import { initOngoingBattle, pickNpcDeck } from '../ongoing-battle';
 import { isWeekDay } from '../time';
@@ -7,12 +8,20 @@ import { isWeekDay } from '../time';
 export interface StartMatchParameters {
   playerDeckKey: string;
   opponentKey: string;
+  /** When set, challenge that place's guardian instead of an NPC. */
+  placeKey?: string;
 }
 
 export function startMatch(parameters: StartMatchParameters): string {
   const playerDeck = resolvePlayerDeck(parameters.playerDeckKey);
+  if (!playerDeck) {
+    return 'Missing deck.';
+  }
+  if (parameters.placeKey) {
+    return startGuardianMatch(parameters.placeKey, playerDeck);
+  }
   const opponentDeck = pickNpcDeck(parameters.opponentKey);
-  if (!playerDeck || !opponentDeck) {
+  if (!opponentDeck) {
     return 'Missing deck.';
   }
   initOngoingBattle(gs.characters[parameters.opponentKey], playerDeck, opponentDeck, true);

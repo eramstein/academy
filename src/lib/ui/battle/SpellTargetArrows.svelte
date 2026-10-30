@@ -26,15 +26,21 @@
   }
 
   function getTargetCenter(t: any) {
-    // Priority order: unit, land, player; positions are board cells
+    // Priority order: unit, land, player; positions are board cells.
+    // Lands also have `position` (a number); units have Position objects.
     if (t && typeof t === 'object') {
-      if ('instanceId' in t && 'position' in t) {
+      if ('instanceId' in t && 'hasAttacked' in t) {
         const el = document.querySelector(
           `[data-unit-instance-id="${(t as UnitDeployed).instanceId}"]`
         ) as HTMLElement | null;
         if (el) return centerOf(el);
       }
-      if ('instanceId' in t && 'position' in t === false && 'ownerPlayerId' in t) {
+      if (
+        'instanceId' in t &&
+        'ownerPlayerId' in t &&
+        'position' in t &&
+        typeof (t as Land).position === 'number'
+      ) {
         const el = document.querySelector(
           `[data-land-instance-id="${(t as Land).instanceId}"]`
         ) as HTMLElement | null;

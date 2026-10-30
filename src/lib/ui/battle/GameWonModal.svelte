@@ -1,16 +1,24 @@
 <script lang="ts">
   import type { Player } from '@lib/_model';
   import { UiView } from '@lib/_model';
-  import { uiState } from '@lib/_state';
+  import { gs, uiState } from '@lib/_state';
   import { resetBattleState } from '@lib/_state/main.svelte';
-  import { getAssetPath, getCharacterImagePath } from '@lib/_utils/asset-paths';
+  import {
+    getAssetPath,
+    getCharacterImagePath,
+    getGuardianImagePath,
+  } from '@lib/_utils/asset-paths';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import { resumeEventAfterBattle } from '@/lib/sim/scene';
 
   let { winningPlayer }: { winningPlayer: Player } = $props();
 
   let characterImageName = $derived(winningPlayer.name.toLowerCase().replace(/\s+/g, '_'));
-  let characterImagePath = $derived(getCharacterImagePath(characterImageName));
+  let characterImagePath = $derived(
+    !winningPlayer.isPlayer && gs.ongoingBattle?.guardianPlaceKey
+      ? getGuardianImagePath(gs.ongoingBattle.opponentKey)
+      : getCharacterImagePath(characterImageName)
+  );
 
   const tablePath = getAssetPath('images/ui/backgrounds/table.jpg');
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');

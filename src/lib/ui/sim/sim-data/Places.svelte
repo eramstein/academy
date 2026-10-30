@@ -2,6 +2,7 @@
   import { gs } from '@/lib/_state/main.svelte';
   import { clearSelectedSimPlace, selectSimPlace, uiState } from '@/lib/_state/state-ui.svelte';
   import { getPlaceImagePath } from '@/lib/_utils/asset-paths';
+  import { isPlaceVisible } from '@/lib/sim/guardians';
   import Place from '../Place.svelte';
 
   const regionsWithPlaces = $derived(
@@ -9,7 +10,7 @@
       .map((region) => ({
         region,
         places: Object.values(gs.places).filter(
-          (place) => place.regionKey === region.key && !place.locked
+          (place) => place.regionKey === region.key && isPlaceVisible(place)
         ),
       }))
       .filter(({ places }) => places.length > 0)
@@ -23,7 +24,7 @@
     const key = uiState.sim.selectedPlaceKey;
     if (!key) return;
     const place = gs.places[key];
-    if (!place || place.locked) {
+    if (!place || !isPlaceVisible(place)) {
       uiState.sim.selectedPlaceKey = null;
     }
   });

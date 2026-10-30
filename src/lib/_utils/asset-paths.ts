@@ -99,6 +99,10 @@ export function getCharacterImagePath(characterName: string): string {
   return getAssetPath(`images/characters/${characterName}.jpg`);
 }
 
+export function getGuardianImagePath(guardianKey: string): string {
+  return getAssetPath(`images/characters/guardians/${guardianKey}.jpg`);
+}
+
 export function getCharacterSheetPath(characterKey: string): string {
   return getAssetPath(`images/characters/sheets/${characterKey}.jpg`);
 }

@@ -83,6 +83,12 @@ export interface OngoingBattle {
   resume?: OngoingBattleResume;
   /** `follow_up_event` keys deferred until the Battle view closes. */
   resumeFollowUps?: string[];
+  /** Place being gated by a guardian fight; set instead of an NPC opponent. */
+  guardianPlaceKey?: string;
+  /** Ephemeral card pool for guardian decks (guardians are not in `gs.characters`). */
+  opponentCollection?: CardTemplate[];
+  /** Display name when the opponent is not an NPC (e.g. place guardians). */
+  opponentDisplayName?: string;
 }
 
 export interface League {
@@ -112,6 +118,8 @@ export interface Scene {
    */
   pendingPeriodEvent?: ManualSceneTrigger;
   selectingNextPlace?: boolean; // whether the player is selecting a next place
+  /** Place the player tried to enter that is gated by an undefeated guardian. */
+  pendingGuardianPlaceKey?: string;
   image?: string;
   /**
    * Result of the most recent finished match. Used by `last_match_won` /
@@ -434,6 +442,15 @@ export interface Place {
     resources?: Partial<Record<ResourceType, { price: number; count: number }>>;
   };
   locked?: boolean;
+  guardian?: PlaceGuardian;
+}
+
+export interface PlaceGuardian {
+  key: string;
+  name: string;
+  description: string;
+  deck: Deck;
+  defeated: boolean;
 }
 
 export interface Region {

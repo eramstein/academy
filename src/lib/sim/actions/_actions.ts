@@ -113,6 +113,10 @@ export async function performAction(action: Action) {
     gs.scene.actions = [];
     return;
   }
+  // Move into a guarded place installs its own challenge action — do not overwrite it.
+  if (gs.scene.pendingGuardianPlaceKey) {
+    return;
+  }
   gs.scene.event = undefined;
   setSceneEvents();
   if (sceneWaitingOnEventChoice()) {

@@ -45,6 +45,7 @@ import {
   type AcquireArtifactPatternParameters,
   type GiftArtifactParameters,
 } from './artifacts';
+import { unlockPlace, type UnlockPlaceParameters } from './places';
 
 export function applyEffect(effect: EventEffect) {
   const result = effectFunctions[effect.type](effect.parameters);
@@ -98,4 +99,5 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     acquireArtifactPattern(parameters as AcquireArtifactPatternParameters),
   [EventEffectType.GiftArtifact]: (parameters) =>
     giftArtifact(parameters as GiftArtifactParameters),
+  [EventEffectType.UnlockPlace]: (parameters) => unlockPlace(parameters as UnlockPlaceParameters),
 };

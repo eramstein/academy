@@ -10,16 +10,26 @@ import {
 import { ResourceType } from '@/lib/_model/enums-sim';
 import { addKeyword } from './keywords';
 
+/** Resources that affect card crafting (conjure / invoke / enchant). */
+export const CARD_CRAFT_RESOURCE_TYPES: ResourceType[] = [
+  ResourceType.MagicDust,
+  ResourceType.Silver,
+  ResourceType.Moxes,
+  ResourceType.MollysBeads,
+  ResourceType.SchlupakMushrooms,
+  ResourceType.SchlupakSpores,
+];
+
 export const COMMON_RESOURCE_TYPES: ResourceType[] = [
   ResourceType.MagicDust,
   ResourceType.Silver,
   ResourceType.Moxes,
 ];
 
+/** Unique materials for card crafting (at most one unit, one type per craft). */
 export const UNIQUE_RESOURCE_TYPES: ResourceType[] = [
   ResourceType.MollysBeads,
   ResourceType.SchlupakMushrooms,
-  ResourceType.Dreamspheres,
   ResourceType.SchlupakSpores,
 ];
 
@@ -36,8 +46,9 @@ export function isUniqueResource(type: ResourceType): boolean {
 
 /** Resources selectable in a craft; uniques only when creating cards. */
 export function craftableResourceTypes(includeUnique: boolean): ResourceType[] {
-  const all = Object.values(ResourceType);
-  return includeUnique ? all : all.filter((type) => !isUniqueResource(type));
+  return includeUnique
+    ? CARD_CRAFT_RESOURCE_TYPES
+    : CARD_CRAFT_RESOURCE_TYPES.filter((type) => !isUniqueResource(type));
 }
 
 /** Unit types unique resources require — merge onto CardCreationParameters before flavor. */

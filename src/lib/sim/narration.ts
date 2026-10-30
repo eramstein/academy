@@ -26,7 +26,7 @@ import type { TransactionParameters } from './actions';
 import { probeFirstExistingImage } from './activity-image';
 import { actionTemplates, getActionTemplateMeta } from './cards/action-templates';
 import { formatKeywordLabel, KEYWORD_KEYS } from './cards/keywords';
-import { readChatTopicText, textsForActivity } from './chat-topics';
+import { readChatTopicText, textsForActivity, textsForTopic } from './chat-topics';
 import { getCachedSceneImageUrl, saveCachedSceneImage } from './scene-image-cache';
 import { getWeekDay, WEEK_DAYS } from './time';
 
@@ -370,14 +370,33 @@ export function narrateNewPeriod(day: number, period: DayPeriod) {
   });
 }
 
-export function narrateMatchResult(won: boolean, opponentKey: string) {
-  narrate({
-    id: crypto.randomUUID(),
-    text: won ? 'Victory!' : 'Defeat...',
-    type: NarrationType.MatchResult,
-    characters: [opponentKey],
-    won,
-  });
+/** Post-match chat: pick a ChatTopicText for win/lose, preferring the opponent's voice. */
+export async function narrateMatchResult(won: boolean, opponentKey: string) {
+  if (gs.time.day === 1) return;
+
+  const title = won ? 'Match won' : 'Match loss';
+  const topicKey = won ? 'match-chat-on-win' : 'match-chat-on-lose';
+  const texts = await textsForTopic(topicKey);
+  const dedicated = texts.filter((text) => text.npcKey === opponentKey);
+  const pool =
+    dedicated.length > 0 ? dedicated : texts.filter((text) => !text.npcKey);
+
+  if (pool.length > 0) {
+    const line = getRandomFromArray(pool);
+    const prose = await readChatTopicText(line);
+    if (prose) {
+      const speakerKey = line.npcKey ?? opponentKey;
+      const firstName =
+        (gs.characters[speakerKey]?.name ?? speakerKey).split(/\s+/)[0] ?? speakerKey;
+      narrateText(prose.replaceAll('your companion', firstName), {
+        title,
+        characterKey: speakerKey,
+      });
+      return;
+    }
+  }
+
+  narrateText(won ? 'Victory!' : 'Defeat...', { title, characterKey: opponentKey });
 }
 
 export function narrateCraftingKnowledgeGain(gain: CraftingKnowledgeGain) {

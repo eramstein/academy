@@ -13,13 +13,12 @@ export function getAllGraveyardsUnits(): UnitCard[] {
   return bs.players.flatMap((p) => p.graveyard.filter(isUnitCard) as UnitCard[]);
 }
 
-export function reanimate(card: UnitCard, position: Position, reanimatorPlayerId: number) {
+export function reanimate(card: UnitCard, position: Position) {
   const player = bs.players[card.ownerPlayerId];
   if (player) {
     player.graveyard.splice(player.graveyard.indexOf(card), 1);
     bs.units.push(makeDeployedUnit(card, position));
     const deployedUnit = bs.units[bs.units.length - 1];
-    deployedUnit.ownerPlayerId = reanimatorPlayerId;
     soundManager.playDeploySound();
     onDeployUnit(deployedUnit);
   }

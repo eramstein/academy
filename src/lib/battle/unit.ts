@@ -9,7 +9,7 @@ import { config } from '../_config';
 import { bs } from '../_state';
 import { uiState } from '../_state/state-ui.svelte';
 import { clearUnitStaticAbilities } from './ability-static';
-import { isCellFree, isOnPlayersSide } from './boards';
+import { isCellFree, isOnPlayersSide, positionPlayerId } from './boards';
 import { isPayable, payCost } from './cost';
 import { removeAllCounters } from './counter';
 import { onDamageUnit, onDeployUnit, onUnitDeath } from './listeners';
@@ -54,6 +54,7 @@ export function summonUnit(unit: UnitCard, targetPosition: Position) {
 export function makeDeployedUnit(unit: UnitCard, position: Position) {
   return {
     ...unit,
+    ownerPlayerId: positionPlayerId(position),
     position,
     health: unit.maxHealth,
     retaliate: unit.retaliate || 0,

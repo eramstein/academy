@@ -22,6 +22,7 @@ import {
   recordEventOccured,
   sceneEventForNode,
 } from './events';
+import { placeNeedsGuardian, presentGuardianEncounter } from './guardians';
 import { narrateScheduledActivity, narrateText } from './narration';
 import { updateNpcLocations } from './npc';
 import { getCurrentScheduledActivity } from './schedule';
@@ -323,6 +324,10 @@ export function nextScene() {
 }
 
 export function selectNextScene(placeKey: string) {
+  if (placeNeedsGuardian(placeKey)) {
+    presentGuardianEncounter(placeKey);
+    return;
+  }
   gs.player.placeKey = placeKey;
   gs.scene.selectingNextPlace = false;
   gs.scene.image = undefined;

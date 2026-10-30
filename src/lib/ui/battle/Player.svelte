@@ -1,8 +1,12 @@
 <script lang="ts">
   import { CardColor } from '@/lib/_model/enums-battle';
   import type { Player } from '@lib/_model';
-  import { uiState } from '@lib/_state';
-  import { getAssetPath, getCharacterImagePath } from '@lib/_utils/asset-paths';
+  import { gs, uiState } from '@lib/_state';
+  import {
+    getAssetPath,
+    getCharacterImagePath,
+    getGuardianImagePath,
+  } from '@lib/_utils/asset-paths';
   import { attackPlayer } from '@lib/battle/combat';
   import { isHumanPlayer, usePlayerColorAbility } from '@lib/battle/player';
   import { clearSelections, setUnitsTargets } from '@lib/ui/_helpers/selections';
@@ -23,8 +27,12 @@
   // Convert player name to filename format (lowercase with underscores)
   let characterImageName = $derived(player.name.toLowerCase().replace(/\s+/g, '_'));
 
-  // Create the image path
-  let characterImagePath = $derived(getCharacterImagePath(characterImageName));
+  // Create the image path (guardians live under characters/guardians/)
+  let characterImagePath = $derived(
+    !player.isPlayer && gs.ongoingBattle?.guardianPlaceKey
+      ? getGuardianImagePath(gs.ongoingBattle.opponentKey)
+      : getCharacterImagePath(characterImageName)
+  );
 
   // Helper function to get color image path
   function getColorImagePath(color: string): string {

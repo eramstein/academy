@@ -470,6 +470,9 @@ function checkEffect(where, effect) {
       checkOneOf(where, 'patternKey', parameters.patternKey, artifactPatternKeys);
       checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
       break;
+    case 'unlock_place':
+      checkOneOf(where, 'placeKey', parameters.placeKey, placeKeys);
+      break;
     case 'add_chat_topic':
       if (typeof parameters.key !== 'string' || !parameters.key.trim()) {
         errors.push(`${where}: key must be a non-empty string`);

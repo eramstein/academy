@@ -40,6 +40,7 @@ export enum EventEffectType {
   AddPossession = 'add_possession',
   AcquireArtifactPattern = 'acquire_artifact_pattern',
   GiftArtifact = 'gift_artifact',
+  UnlockPlace = 'unlock_place',
 }
 
 export enum ActionType {

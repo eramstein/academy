@@ -61,6 +61,26 @@ const PLACES: Record<string, Place> = {
     regionKey: 'academy',
     locked: true,
   },
+  ['hidden-cloister']: {
+    key: 'hidden-cloister',
+    name: 'Hidden Cloister',
+    description:
+      'The hidden cloister is a beautiful and peaceful place, hidden away from the main campus.',
+    regionKey: 'academy',
+    locked: true,
+    guardian: {
+      key: 'hidden-cloister-guardian',
+      name: 'Hidden Cloister Guardian',
+      description: 'The hidden cloister guardian is a guardian of the hidden cloister.',
+      deck: {
+        key: 'hidden-cloister-guardian',
+        name: 'Hidden Cloister Deck',
+        cards: [],
+        lands: [],
+      },
+      defeated: false,
+    },
+  },
 
   ['old-monk-inn']: {
     key: 'old-monk-inn',

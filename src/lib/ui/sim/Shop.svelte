@@ -22,6 +22,7 @@
   const parchmentPath = getAssetPath('images/ui/backgrounds/parchment.png');
 
   const stock = $derived(getShopPrices());
+  const place = $derived(gs.places[gs.player.placeKey]);
 
   let selected = $state<Partial<Record<ResourceType, number>>>({});
 

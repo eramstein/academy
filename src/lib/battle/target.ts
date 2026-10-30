@@ -14,7 +14,6 @@ import { getAllPositions, getEmptyCells, getPositionKey } from './boards';
 import { getAllDecksCards } from './deck';
 import { getAllGraveyardsCards } from './graveyard';
 import { getAllLands } from './land';
-import { getHumanPlayer } from './player';
 
 export function areAllTargetsValid(
   tentativeTargets: Card[] | UnitDeployed[] | Land[],
@@ -117,10 +116,10 @@ export function getEligibleTargets(
     eligibleTargets = getAllPositions();
   }
   if (target.type === TargetType.AllyCell) {
-    eligibleTargets = [...getEmptyCells(true)];
+    eligibleTargets = [...getEmptyCells(source.ownerPlayerId === 0)];
   }
   if (target.type === TargetType.EnemyCell) {
-    eligibleTargets = [...getEmptyCells(false)];
+    eligibleTargets = [...getEmptyCells(source.ownerPlayerId !== 0)];
   }
   if (target.type === TargetType.EmptyCell) {
     eligibleTargets = [...getEmptyCells(true), ...getEmptyCells(false)];
@@ -132,7 +131,7 @@ export function getEligibleTargets(
     eligibleTargets = bs.players;
   }
   if (target.type === TargetType.HandCard) {
-    eligibleTargets = getHumanPlayer().hand;
+    eligibleTargets = bs.players[source.ownerPlayerId]?.hand ?? [];
   }
   if (target.type === TargetType.GraveyardCard) {
     eligibleTargets = getAllGraveyardsCards();

@@ -33,6 +33,9 @@ function createDefaultNpc(): Omit<Npc, 'key' | 'name' | 'attributes' | 'gender' 
       [ResourceType.SchlupakMushrooms]: 0,
       [ResourceType.Dreamspheres]: 0,
       [ResourceType.SchlupakSpores]: 0,
+      [ResourceType.SchlupakHoney]: 0,
+      [ResourceType.Mithril]: 0,
+      [ResourceType.IthildinCrystal]: 0,
     },
     relationProgress: {
       friendship: 0,
@@ -566,6 +569,36 @@ export const npcs: Record<string, Npc> = {
       'royal-pigeon-inn': 1,
     },
     tcgSkill: 2,
+  },
+  nimbelungen: {
+    ...createDefaultNpc(),
+    key: 'nimbelungen',
+    name: 'Professor Nimbelungen',
+    placeKey: 'nimbelungen-office',
+    attributes: { dexterity: 11, intelligence: 20, vitality: 7, charisma: 7, aura: 20 },
+    personality: {
+      traits: { [CharacterTrait.Funny]: true, [CharacterTrait.Assertive]: true },
+      speechExamples: [
+        'When a student asks for a straight answer: "Straight answers are for people who have not yet discovered doors. Try the third corridor. Or the fourth. Or both."',
+        'When challenged at Hordes: "Ah! A real hand at last. Sit. Shuffle. The universe can wait."',
+        'When revealing a new hunt: "Somewhere in this Academy something wonderful is locked. Beat the guardian. Keep what you find. Do not tell Helmert."',
+      ],
+      humor:
+        'Wild and conspiratorial. Mid-sentence digressions into Hordes openings, riddles delivered as if they were ordinary instructions, laughter that arrives when no one else sees the joke.',
+      conflicts:
+        'He does not argue so much as escalate into a puzzle. Boredom and bureaucracy offend him equally; he answers both by inventing another hunt. If you refuse to play, he simply finds someone who will.',
+      habits: [
+        'Speaks in half-riddles and then looks disappointed when you take them literally',
+        'Interrupts any conversation the moment Hordes is mentioned',
+        'Leaves cryptic notes, false maps, and real guardians in unlikely corners of the Academy',
+        'Treats a treasure hunt as a more honest form of teaching than a lecture',
+      ],
+      preferredResponseDynamics: {},
+    },
+    gender: CharacterGender.Male,
+    bio: `Professor Nimbelungen is a genius the Academy has never quite decided whether to celebrate or contain. At forty-two he is brilliant, erratic, and permanently half-elsewhere—usually somewhere between a Hordes match and the next locked door. He loves the game with a devotion that borders on mania: decks stacked on his desk, openings muttered under his breath, challenges accepted before the greeting is finished. When he is not playing, he invents treasure hunts for students, scattering clues through corridors and courtyards as if the Academy itself were a board. To protect the prizes—and, he insists, to make the finding worthwhile—he places guardians at the thresholds of hidden places, living locks that yield only to those who can win. Students who follow his trails discover secrets the official maps omit. Faculty who complain find him already gone, whistling, already designing the next one.`,
+    age: 42,
+    tcgSkill: 20,
   },
   lombard: {
     ...createDefaultNpc(),

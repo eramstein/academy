@@ -78,7 +78,7 @@ export const DataEffectTemplates: Record<
         getRandomFromArray(getAllGraveyardsUnits())) as UnitCard;
       const position = (targets[1]?.[0] || getRandomFromArray(getEmptyCells(isPlayer))) as Position;
       if (reanimatedUnit && position && isUnitCard(reanimatedUnit)) {
-        reanimate(reanimatedUnit, position, playerId);
+        reanimate(reanimatedUnit, position);
       }
     },
     label: (targets: TargetDefinition[]) => {

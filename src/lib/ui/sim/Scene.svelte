@@ -1,6 +1,7 @@
 <script lang="ts">
   import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
+  import { isPlaceVisible } from '@/lib/sim/guardians';
   import { selectNextScene } from '@/lib/sim/scene';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import { tick, untrack } from 'svelte';
@@ -18,7 +19,7 @@
       .map((region) => ({
         region,
         places: Object.values(gs.places).filter(
-          (place) => place.regionKey === region.key && !place.locked
+          (place) => place.regionKey === region.key && isPlaceVisible(place)
         ),
       }))
       .filter(({ places }) => places.length > 0)

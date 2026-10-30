@@ -26,9 +26,15 @@ export const defaultBattleState: BattleState = {
   },
 };
 
-export const initBattle = (foeKey: string = 'administrator', playerDeck: Deck, foeDeck: Deck) => {
+export const initBattle = (
+  foeKey: string = 'administrator',
+  playerDeck: Deck,
+  foeDeck: Deck,
+  foeCollectionOverride?: CardTemplate[],
+  foeDisplayName?: string
+) => {
   const playerCollection = gs.player.collection;
-  const foeCollection = gs.characters[foeKey].collection;
+  const foeCollection = foeCollectionOverride ?? gs.characters[foeKey].collection;
 
   bs.turn = 1;
   bs.isPlayersTurn = Math.random() > 0.5;
@@ -50,7 +56,7 @@ export const initBattle = (foeKey: string = 'administrator', playerDeck: Deck, f
     },
     {
       id: 1,
-      name: foeKey,
+      name: foeDisplayName ?? foeKey,
       isPlayer: false,
       mana: config.initialMana,
       maxMana: config.initialMana,

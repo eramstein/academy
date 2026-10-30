@@ -6,8 +6,10 @@ import { initBattle } from '../battle/init';
 import { getHumanPlayer } from '../battle/player';
 import { setPossibleActions } from './actions';
 import { gainCraftingKnowledgeFromPlayedCards } from './cards/battle-knowledge';
+import { resolveGuardianBattle } from './guardians';
 import { recordLeagueMatchResult } from './league';
 import { narrateCraftingKnowledgeGain, narrateMatchResult } from './narration';
+import { setSceneEvents } from './scene';
 
 export function pickNpcDeck(npcKey: string): Deck {
   return getRandomFromArray(gs.characters[npcKey].decks);
@@ -37,7 +39,10 @@ export function recordBattleResult(won: boolean) {
   if (gs.ongoingBattle.isLeagueMatch) {
     recordLeagueMatchResult(won);
   }
-  narrateMatchResult(won, gs.ongoingBattle.opponentKey);
+  const isGuardian = !!gs.ongoingBattle.guardianPlaceKey;
+  if (!isGuardian) {
+    void narrateMatchResult(won, gs.ongoingBattle.opponentKey);
+  }
   if (bs.players.length > 0) {
     const gain = gainCraftingKnowledgeFromPlayedCards(
       gs.player,
@@ -55,6 +60,15 @@ export function recordBattleResult(won: boolean) {
     gs.scene.pendingFollowUpEvents = gs.ongoingBattle.resumeFollowUps;
   }
   if (gs.ongoingBattle.resume || gs.ongoingBattle.resumeFollowUps?.length) {
+    return;
+  }
+  if (isGuardian) {
+    const result = resolveGuardianBattle(won);
+    if (result === 'entered') {
+      setSceneEvents();
+    } else if (result === 'retry') {
+      setPossibleActions();
+    }
     return;
   }
   setPossibleActions();
