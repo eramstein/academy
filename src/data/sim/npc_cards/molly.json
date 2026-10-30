@@ -1,5 +1,89 @@
 [
   {
+    "id": "molly_just_a_rabbit",
+    "name": "Just a Rabbit",
+    "imageFileName": "molly_just_a_rabbit",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "poolKeys": ["molly", "event"],
+    "type": "unit",
+    "power": 0,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "unitTypes": ["beast"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Before Damage",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 4
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "molly_peaceful_cloister",
+    "name": "Peaceful Cloister",
+    "imageFileName": "molly_peaceful_cloister",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "poolKeys": ["molly", "event"],
+    "type": "unit",
+    "power": 0,
+    "maxHealth": 7,
+    "retaliate": 0,
+    "unitTypes": ["building"],
+    "keywords": {
+      "immobile": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "healUnit",
+              "args": {
+                "health": 3,
+                "range": {
+                  "adjacent": true,
+                  "allies": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "molly_halloween",
     "name": "Friendly Werewolf",
     "imageFileName": "molly_halloween",
