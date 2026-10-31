@@ -22,6 +22,7 @@ export const defaultUiState: UiState = {
     attackingUnitId: null,
     playedSpell: null,
     playedSpellTargets: null,
+    playedAbilitySourceId: null,
     colorBeingIncremented: null,
     landAbilityAnimating: null,
     graveyardModal: {

@@ -5,7 +5,6 @@
   import { clearSelectedSimPlace, selectSimPlace, uiState } from '@/lib/_state/state-ui.svelte';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import { isPlaceVisible } from '@/lib/sim/guardians';
-  import { untrack } from 'svelte';
   import CharacterPortrait from './characters/CharacterPortrait.svelte';
   import Place from './Place.svelte';
 
@@ -133,9 +132,6 @@
     };
   });
 
-  const playerRegionKey = $derived(
-    (gs.places[gs.player.placeKey] ?? PLACES[gs.player.placeKey])?.regionKey ?? null
-  );
   const selectedPlace = $derived(
     !pickMode && uiState.sim.selectedPlaceKey
       ? (gs.places[uiState.sim.selectedPlaceKey] ?? PLACES[uiState.sim.selectedPlaceKey] ?? null)
@@ -145,9 +141,7 @@
   $effect(() => {
     if (!pickMode) return;
     clearSelectedSimPlace();
-    const region = untrack(() => playerRegionKey);
-    if (region === 'academy' || region === 'town') level = region;
-    else level = 'world';
+    level = 'world';
   });
 
   $effect(() => {
@@ -196,11 +190,6 @@
     return true;
   }
 
-  function isHere(areaKey: string): boolean {
-    if (level === 'world') return gameKey(areaKey) === playerRegionKey;
-    return gameKey(areaKey) === gs.player.placeKey;
-  }
-
   function activate(areaKey: string) {
     const next = drillLevel(areaKey);
     if (next) {
@@ -247,13 +236,9 @@
               <button
                 type="button"
                 class="hotspot"
-                class:here={isHere(area.key)}
                 style="left: {area.x}%; top: {area.y}%; width: {area.width}%; height: {area.height}%;"
                 onclick={() => activate(area.key)}
               >
-                {#if isHere(area.key)}
-                  <span class="here-label">Here</span>
-                {/if}
                 {#if present.length > 0}
                   <span class="area-portraits" aria-hidden="true">
                     {#each present.slice(0, MAX_AREA_PORTRAITS) as character, i (character.key)}
@@ -270,7 +255,9 @@
                     {/if}
                   </span>
                 {/if}
-                <span class="hotspot-label">{area.name}</span>
+                {#if pickMode}
+                  <span class="hotspot-label">{area.name}</span>
+                {/if}
               </button>
             {/if}
           {/each}
@@ -378,7 +365,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    border: 2px solid transparent;
+    border: none;
     border-radius: 4px;
     background: transparent;
     color: var(--color-cream);
@@ -386,64 +373,28 @@
     cursor: pointer;
   }
 
-  .hotspot.here {
-    border-color: var(--color-golden);
-    background: color-mix(in srgb, var(--color-golden) 14%, transparent);
-  }
-
   .hotspot:hover,
   .hotspot:focus-visible {
     z-index: 2;
-    border-color: var(--color-brass);
-    background: color-mix(in srgb, var(--color-brass) 18%, transparent);
-  }
-
-  .hotspot.here:hover,
-  .hotspot.here:focus-visible {
-    border-color: var(--color-golden);
-    background: color-mix(in srgb, var(--color-golden) 22%, transparent);
-  }
-
-  .hotspot-label,
-  .here-label {
-    position: absolute;
-    pointer-events: none;
-    border-radius: 3px;
-    background: var(--color-data);
-    font-family: var(--font-narrative);
-    line-height: 1.2;
-    white-space: nowrap;
   }
 
   .hotspot-label {
+    position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    pointer-events: none;
     padding: 0.2rem 0.65rem;
     border: 1px solid var(--color-brass);
+    border-radius: 3px;
+    background: var(--color-data);
     color: var(--color-cream);
+    font-family: var(--font-narrative);
     font-size: 0.95rem;
-    opacity: 0;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
-  }
-
-  .hotspot:hover .hotspot-label,
-  .hotspot:focus-visible .hotspot-label {
-    opacity: 1;
-  }
-
-  .pick-mode .hotspot-label {
+    line-height: 1.2;
+    white-space: nowrap;
     opacity: 0.92;
-  }
-
-  .here-label {
-    top: 8px;
-    left: 8px;
-    padding: 0.12rem 0.45rem;
-    border: 1px solid var(--color-golden);
-    color: var(--color-golden);
-    font-size: 0.75rem;
-    letter-spacing: 0.04em;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
   }
 
   .area-portraits {

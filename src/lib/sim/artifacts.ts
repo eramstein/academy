@@ -111,7 +111,8 @@ export function effectiveCraftingSkills(character: Character): CardCraftingSkill
     inspiration: base.inspiration ?? 0,
   };
   if (character.key !== gs.player.key) return skills;
-  const bonuses = ensureEquippedSlots().tool?.skillBonuses;
+  // Read only. Derived previews call this; assigning a missing slot object mutates state.
+  const bonuses = gs.player.equippedArtifacts?.tool?.skillBonuses;
   if (!bonuses) return skills;
   return {
     mastery: skills.mastery + (bonuses.mastery ?? 0),

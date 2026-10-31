@@ -13,6 +13,14 @@ export function getAllGraveyardsUnits(): UnitCard[] {
   return bs.players.flatMap((p) => p.graveyard.filter(isUnitCard) as UnitCard[]);
 }
 
+/** Dead units keep board fields (`hasAttacked`, `position`); membership is the reliable check. */
+export function findGraveyardOwnerPlayerId(instanceId: string): number | null {
+  for (const player of bs.players) {
+    if (player.graveyard.some((c) => c.instanceId === instanceId)) return player.id;
+  }
+  return null;
+}
+
 export function reanimate(card: UnitCard, position: Position) {
   const player = bs.players[card.ownerPlayerId];
   if (player) {

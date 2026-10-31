@@ -24,6 +24,7 @@ export function resetBattleUiPending() {
   const battle = uiState.battle;
   battle.playedSpell = null;
   battle.playedSpellTargets = null;
+  battle.playedAbilitySourceId = null;
   battle.abilityPending = null;
   battle.spellPending = null;
   battle.triggeredAbilityPending = null;

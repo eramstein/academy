@@ -12,6 +12,7 @@ import {
   type SpellCard,
   type UnitDeployed,
 } from '@/lib/_model';
+import { config } from '@/lib/_config';
 import { bs, uiState } from '@/lib/_state';
 import { getHumanPlayer, playAbility } from '@/lib/battle';
 import { selectAiAbilityTargets } from '@/lib/battle/ai/target';
@@ -139,24 +140,43 @@ export function playTriggeredAbility(
   targets: EffectTargets[][],
   triggerParams: any
 ) {
-  // Execute each effect in the ability
-  ability.actions.forEach((actionDef, actionIndex) => {
-    const effectTargets = [...targets[actionIndex]];
-    // If any TargetType is Self, replace the corresponding targets entry with [unit]
-    if (actionDef.targets) {
-      actionDef.targets.forEach((def, i) => {
-        if (def.type === TargetType.Self) {
-          effectTargets[i] = [unit];
-        }
+  const resolve = () => {
+    ability.actions.forEach((actionDef, actionIndex) => {
+      const effectTargets = [...(targets[actionIndex] ?? [])];
+      // If any TargetType is Self, replace the corresponding targets entry with [unit]
+      if (actionDef.targets) {
+        actionDef.targets.forEach((def, i) => {
+          if (def.type === TargetType.Self) {
+            effectTargets[i] = [unit];
+          }
+        });
+      }
+      DataEffectTemplates[actionDef.effect.name](actionDef.effect.args).fn({
+        unit,
+        targets: effectTargets,
+        triggerParams,
+        player: bs.players[unit.ownerPlayerId],
       });
-    }
-    DataEffectTemplates[actionDef.effect.name](actionDef.effect.args).fn({
-      unit,
-      targets: effectTargets,
-      triggerParams,
-      player: bs.players[unit.ownerPlayerId],
     });
-  });
+  };
+
+  // Briefly show AI target arrows (incl. graveyard) before resolving
+  const hasTargets = targets.some(
+    (action) => action && action.some((group) => Array.isArray(group) && group.length > 0)
+  );
+  if (!uiState.isHeadless && unit.ownerPlayerId !== getHumanPlayer().id && hasTargets) {
+    const animationDuration = config.aiActionInterval - 250;
+    uiState.battle.playedSpellTargets = targets;
+    uiState.battle.playedAbilitySourceId = unit.instanceId;
+    setTimeout(() => {
+      uiState.battle.playedSpellTargets = null;
+      uiState.battle.playedAbilitySourceId = null;
+    }, animationDuration);
+    setTimeout(resolve, animationDuration);
+    return;
+  }
+
+  resolve();
 }
 
 function highlightEligibleTargets(eligibleTargets: EffectTargets): boolean {

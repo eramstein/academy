@@ -50,6 +50,8 @@ export type UiState = {
     attackingUnitId: string | null;
     playedSpell: SpellCardTemplate | null;
     playedSpellTargets: EffectTargets[][] | null;
+    /** Unit/land instanceId sourcing AI ability target arrows (with playedSpellTargets) */
+    playedAbilitySourceId: string | null;
     colorBeingIncremented: CardColor | null;
     /** Land instanceId currently playing its activated-ability flash */
     landAbilityAnimating: string | null;

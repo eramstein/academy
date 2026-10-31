@@ -1,14 +1,18 @@
 <script lang="ts">
   import type { EffectTargets, Land, Player, Position, UnitDeployed } from '@lib/_model';
   import { uiState } from '@lib/_state';
+  import { findGraveyardOwnerPlayerId } from '@lib/battle/graveyard';
 
-  let { sourceEl }: { sourceEl: HTMLElement | null } = $props();
+  let {
+    sourceEl,
+    sourceInstanceId = null,
+  }: { sourceEl: HTMLElement | null; sourceInstanceId?: string | null } = $props();
 
   // Flatten all targets across actions/effects into a simple array
   let flatTargets = $derived(() => {
     const t = uiState.battle.playedSpellTargets;
-    if (!t) return [] as (UnitDeployed | Land | Player | Position)[];
-    const out: (UnitDeployed | Land | Player | Position)[] = [];
+    if (!t) return [] as (UnitDeployed | Land | Player | Position | { instanceId: string })[];
+    const out: (UnitDeployed | Land | Player | Position | { instanceId: string })[] = [];
     for (const action of t) {
       for (const effectGroup of action) {
         for (const target of effectGroup as EffectTargets) {
@@ -20,14 +24,22 @@
   });
 
   function getSourceCenter() {
-    if (!sourceEl) return null;
-    const r = sourceEl.getBoundingClientRect();
-    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    if (sourceEl) {
+      const r = sourceEl.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    }
+    if (sourceInstanceId) {
+      const el = document.querySelector(
+        `[data-unit-instance-id="${sourceInstanceId}"], [data-land-instance-id="${sourceInstanceId}"]`
+      ) as HTMLElement | null;
+      if (el) return centerOf(el);
+    }
+    return null;
   }
 
   function getTargetCenter(t: any) {
-    // Priority order: unit, land, player; positions are board cells.
-    // Lands also have `position` (a number); units have Position objects.
+    // Priority: live unit/land on board, then graveyard membership, then player/cell.
+    // Dead units in GY still have hasAttacked/position — check DOM / GY, not shape alone.
     if (t && typeof t === 'object') {
       if ('instanceId' in t && 'hasAttacked' in t) {
         const el = document.querySelector(
@@ -39,12 +51,22 @@
         'instanceId' in t &&
         'ownerPlayerId' in t &&
         'position' in t &&
-        typeof (t as Land).position === 'number'
+        typeof (t as Land).position === 'number' &&
+        !('hasAttacked' in t)
       ) {
         const el = document.querySelector(
           `[data-land-instance-id="${(t as Land).instanceId}"]`
         ) as HTMLElement | null;
         if (el) return centerOf(el);
+      }
+      if ('instanceId' in t) {
+        const gyOwner = findGraveyardOwnerPlayerId((t as { instanceId: string }).instanceId);
+        if (gyOwner !== null) {
+          const el = document.querySelector(
+            `[data-graveyard-player-id="${gyOwner}"]`
+          ) as HTMLElement | null;
+          if (el) return centerOf(el);
+        }
       }
       if ('id' in t && 'hand' in t) {
         const el = document.querySelector(
@@ -108,7 +130,7 @@
   });
 </script>
 
-{#if uiState.battle.playedSpell && flatTargets().length > 0}
+{#if (uiState.battle.playedSpell || uiState.battle.playedAbilitySourceId) && flatTargets().length > 0}
   <svg
     class="spell-arrows"
     width="100%"

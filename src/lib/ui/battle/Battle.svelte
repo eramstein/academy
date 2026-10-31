@@ -129,9 +129,15 @@
   </div>
 {/if}
 
-{#if uiState.battle.playedSpell}
-  <SpellDimOverlay sourceEl={playedCardEl} />
-  <SpellTargetArrows sourceEl={playedCardEl} />
+{#if uiState.battle.playedSpell || uiState.battle.playedAbilitySourceId}
+  <SpellDimOverlay
+    sourceEl={playedCardEl}
+    sourceInstanceId={uiState.battle.playedAbilitySourceId}
+  />
+  <SpellTargetArrows
+    sourceEl={playedCardEl}
+    sourceInstanceId={uiState.battle.playedAbilitySourceId}
+  />
 {/if}
 
 <!-- CardFull overlay -->
@@ -298,12 +304,12 @@
     transform: scale(1.1);
   }
 
-  /* Played spell flash */
+  /* Played spell flash — centered so it does not cover side graveyards */
   .played-spell-flash {
     position: fixed;
-    top: 40%;
-    right: 20px;
-    transform: translateY(-40%);
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 1002;
     pointer-events: none;
   }

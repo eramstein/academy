@@ -1,3 +1,4 @@
+import { config } from '../_config';
 import {
   CardType,
   TargetType,
@@ -56,8 +57,33 @@ export function playAbility(
     }, 600);
   }
 
-  // EFFECTS
-  // ----------------------------------------------------------------------
+  const resolve = () => resolveAbilityEffects(source, ability, targets);
+
+  // Briefly show AI target arrows (incl. graveyard) before resolving
+  if (!uiState.isHeadless && !bs.isPlayersTurn && hasVisibleTargets(targets)) {
+    const animationDuration = config.aiActionInterval - 250;
+    uiState.battle.playedSpellTargets = targets;
+    uiState.battle.playedAbilitySourceId = source.instanceId;
+    setTimeout(() => {
+      uiState.battle.playedSpellTargets = null;
+      uiState.battle.playedAbilitySourceId = null;
+    }, animationDuration);
+    setTimeout(resolve, animationDuration);
+    return;
+  }
+
+  resolve();
+}
+
+function hasVisibleTargets(targets: EffectTargets[][]): boolean {
+  return targets.some((action) => action.some((group) => Array.isArray(group) && group.length > 0));
+}
+
+function resolveAbilityEffects(
+  source: UnitDeployed | Land,
+  ability: Ability,
+  targets: EffectTargets[][]
+) {
   ability.actions.forEach((actionDef, actionIndex) => {
     const effectTargets = targets[actionIndex] ? [...targets[actionIndex]] : [];
     // If TargetType is Self, replace the corresponding targets entry with [source]
