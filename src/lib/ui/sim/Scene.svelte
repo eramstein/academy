@@ -1,9 +1,6 @@
 <script lang="ts">
   import { gs } from '@/lib/_state/main.svelte';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
-  import { isPlaceVisible } from '@/lib/sim/guardians';
-  import { selectNextScene } from '@/lib/sim/scene';
-  import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import { tick, untrack } from 'svelte';
   import type { InkBeat } from './ink-beat';
   import NarrationList from './NarrationList.svelte';
@@ -14,16 +11,6 @@
 
   const selectingNextPlace = $derived(gs.scene.selectingNextPlace);
   const pendingPeriodEvent = $derived(gs.scene.pendingPeriodEvent);
-  const regionsWithPlaces = $derived(
-    Object.values(gs.regions)
-      .map((region) => ({
-        region,
-        places: Object.values(gs.places).filter(
-          (place) => place.regionKey === region.key && isPlaceVisible(place)
-        ),
-      }))
-      .filter(({ places }) => places.length > 0)
-  );
 
   let bookEl: HTMLElement | undefined = $state();
   let pageEl: HTMLDivElement | undefined = $state();
@@ -390,20 +377,7 @@
     </div>
   </article>
 
-  {#if selectingNextPlace}
-    <div class="place-picker">
-      {#each regionsWithPlaces as { region, places } (region.key)}
-        <section class="place-region">
-          <h3 class="place-region-title">{region.name}</h3>
-          <div class="place-buttons">
-            {#each places as place (place.key)}
-              <OrnateButton onclick={() => selectNextScene(place.key)}>{place.name}</OrnateButton>
-            {/each}
-          </div>
-        </section>
-      {/each}
-    </div>
-  {:else if narrationDone}
+  {#if !selectingNextPlace && narrationDone}
     <SceneActions />
   {/if}
 </div>
@@ -637,38 +611,4 @@
     color: var(--color-ink-muted);
   }
 
-  .place-picker {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    flex-shrink: 0;
-    width: 100%;
-    margin-top: auto;
-    max-height: 45%;
-    overflow-y: auto;
-  }
-
-  .place-region {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .place-region-title {
-    margin: 0;
-    font-family: var(--font-narrative);
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-muted-label);
-    text-align: center;
-  }
-
-  .place-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-  }
 </style>

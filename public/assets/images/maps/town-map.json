@@ -1,0 +1,27 @@
+{
+  "image": "town.jpg",
+  "imageWidth": 1254,
+  "imageHeight": 1254,
+  "coordinateSystem": "percentage",
+  "notes": "Rectangles are approximate clickable areas measured from the top-left of the full illustration. Coordinates are percentages of the image dimensions and include each place's ribbon label.",
+  "locations": [
+    { "key": "town-square", "name": "Town Square", "x": 6, "y": 4, "width": 63, "height": 47 },
+    {
+      "key": "royal-pigeon-inn",
+      "name": "Royal Pigeon Inn",
+      "x": 3,
+      "y": 52,
+      "width": 47,
+      "height": 44
+    },
+    { "key": "old-monk-inn", "name": "Old Monk Inn", "x": 52, "y": 54, "width": 45, "height": 42 },
+    {
+      "key": "materials-shop",
+      "name": "Materials Shop",
+      "x": 70,
+      "y": 9,
+      "width": 28,
+      "height": 42
+    }
+  ]
+}

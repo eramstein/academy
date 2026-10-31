@@ -1,3 +1,4 @@
+import { PLACES, REGIONS } from '@/data/sim/places';
 import { type BattleState, type GameState, type UiState } from '../_model';
 import { defaultBattleState } from '../battle';
 import { getManualSceneTriggers, rebuildWorkingEventTemplates } from '../sim/events';
@@ -38,6 +39,9 @@ export const loadGameStateFromLocalStorage = async (id: string) => {
         events?: { occurred?: string[]; unlocked?: string[] };
       } = savedState.gameState;
       Object.assign(gs, parsedState);
+      // Catalog places/regions added after a save was created stay available.
+      gs.places = { ...PLACES, ...gs.places };
+      gs.regions = { ...REGIONS, ...gs.regions };
       // Story tags + migration from older saves that used events.occurred / unlocked.
       const storyTags: Record<string, number> = { ...(parsedState.storyTags ?? {}) };
       for (const key of parsedState.events?.occurred ?? []) {

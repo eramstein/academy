@@ -8,7 +8,6 @@ const PLACES: Record<string, Place> = {
     description:
       'The Administration Office is the central hub of the Academy. It is here that the students and staff gather to discuss the latest news and events.',
     regionKey: 'academy',
-    locked: true,
   },
   ['barracks']: {
     key: 'barracks',
@@ -52,14 +51,12 @@ const PLACES: Record<string, Place> = {
     name: 'Artificery Class Room',
     description: 'The artificery room is a place where the students can create and modify items.',
     regionKey: 'academy',
-    locked: true,
   },
   ['enchanting-room']: {
     key: 'enchanting-room',
     name: 'Enchanting Class Room',
     description: 'The enchanting room is a place where the students can enchant items.',
     regionKey: 'academy',
-    locked: true,
   },
   ['hidden-cloister']: {
     key: 'hidden-cloister',
@@ -148,7 +145,7 @@ const PLACES: Record<string, Place> = {
     name: 'Forest of Schlupak',
     description:
       'The Forest of Schlupak is a dense forest, dark, mysterious and full of dangers, but also bountiful of magical ingredients.',
-    regionKey: 'wilderness',
+    regionKey: 'forest_of_schlupak',
     locked: true,
   },
   ['gray_mountains']: {
@@ -156,7 +153,7 @@ const PLACES: Record<string, Place> = {
     name: 'Gray Mountains',
     description:
       'The Gray Mountains are a range of beautiful high mountains, peaceful with views on lakes and forests.',
-    regionKey: 'wilderness',
+    regionKey: 'gray_mountains',
     locked: true,
   },
   ['falkenheim_school']: {
@@ -180,10 +177,16 @@ const REGIONS: Record<string, Region> = {
     name: 'Godsend Town',
     description: 'Godsend Town is a small town with a lot of people and a lot of things to do.',
   },
-  ['wilderness']: {
-    key: 'wilderness',
-    name: 'The Wilderness',
-    description: 'Natural sites around Gosend Town, most of them wild and untamed.',
+  ['gray_mountains']: {
+    key: 'gray_mountains',
+    name: 'Gray Mountains',
+    description: 'Low european mountains, with a lot of forests and lakes.',
+  },
+  ['forest_of_schlupak']: {
+    key: 'forest_of_schlupak',
+    name: 'Forest of Schlupak',
+    description:
+      'A dense forest, dark, mysterious and full of dangers, but also bountiful of magical ingredients.',
   },
   ['falkenheim']: {
     key: 'falkenheim',

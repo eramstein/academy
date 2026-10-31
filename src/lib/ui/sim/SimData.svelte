@@ -1,15 +1,19 @@
 <script lang="ts">
   import type { SimDataTab } from '@/lib/_model';
+  import { gs } from '@/lib/_state/main.svelte';
   import { uiState } from '@/lib/_state/state-ui.svelte';
   import { getAssetPath, getUiIconPath } from '@/lib/_utils/asset-paths';
+  import { isPlaceVisible } from '@/lib/sim/guardians';
+  import { selectNextScene } from '@/lib/sim/scene';
   import Characters from './sim-data/Characters.svelte';
   import Collection from './sim-data/Collection.svelte';
   import Decks from './sim-data/Decks.svelte';
-  import Places from './sim-data/Places.svelte';
+  import { placePickSession } from './place-pick-session.svelte';
   import Player from './sim-data/Player.svelte';
   import SceneData from './sim-data/SceneData.svelte';
   import Schedule from './sim-data/Schedule.svelte';
   import TimeDisplay from './TimeDisplay.svelte';
+  import WorldMap from './WorldMap.svelte';
 
   const tabs: { id: SimDataTab; label: string; icon: string }[] = [
     { id: 'scene', label: 'Scene', icon: 'compass' },
@@ -22,10 +26,33 @@
   ];
 
   const selected = $derived(uiState.sim.dataTab);
+  const scenePlacePick = $derived(!!gs.scene.selectingNextPlace);
+  const actionPlacePick = $derived(placePickSession.current);
+  const pickingPlace = $derived(scenePlacePick || !!actionPlacePick);
+  const pickAllowedKeys = $derived(
+    actionPlacePick?.allowedKeys ??
+      (scenePlacePick
+        ? Object.values(gs.places)
+            .filter(isPlaceVisible)
+            .map((place) => place.key)
+        : null)
+  );
+
+  function onMapPick(placeKey: string) {
+    if (actionPlacePick) {
+      const complete = actionPlacePick.complete;
+      placePickSession.current = null;
+      complete(placeKey);
+      return;
+    }
+    selectNextScene(placeKey);
+  }
+
   const flush = $derived(
-    selected === 'scene' ||
+    pickingPlace ||
+      selected === 'scene' ||
       selected === 'player' ||
-      (selected === 'places' && uiState.sim.selectedPlaceKey !== null) ||
+      selected === 'places' ||
       (selected === 'characters' && uiState.sim.selectedCharacterKey !== null)
   );
 
@@ -88,7 +115,9 @@
     <span class="ornament br" aria-hidden="true"></span>
 
     <div class="content" class:flush>
-      {#if selected === 'scene'}
+      {#if pickingPlace}
+        <WorldMap pickMode allowedKeys={pickAllowedKeys} onPick={onMapPick} />
+      {:else if selected === 'scene'}
         <SceneData />
       {:else if selected === 'player'}
         <Player />
@@ -97,7 +126,7 @@
       {:else if selected === 'schedule'}
         <Schedule />
       {:else if selected === 'places'}
-        <Places />
+        <WorldMap />
       {:else if selected === 'collection'}
         <Collection />
       {:else if selected === 'decks'}

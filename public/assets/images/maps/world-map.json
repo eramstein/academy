@@ -1,0 +1,27 @@
+{
+  "image": "world.jpg",
+  "imageWidth": 1254,
+  "imageHeight": 1254,
+  "coordinateSystem": "percentage",
+  "notes": "Approximate rectangular clickable regions measured from the top-left of the full illustration; x, y, width and height are percentages of image dimensions.",
+  "regions": [
+    { "key": "academy", "name": "The Academy", "x": 17, "y": 32, "width": 47, "height": 41 },
+    { "key": "town", "name": "Town", "x": 65, "y": 40, "width": 33, "height": 32 },
+    {
+      "key": "forest-of-schlupak",
+      "name": "Forest of Schlupak",
+      "x": 3,
+      "y": 3,
+      "width": 46,
+      "height": 29
+    },
+    {
+      "key": "grey-mountains",
+      "name": "Grey Mountains",
+      "x": 52,
+      "y": 3,
+      "width": 46,
+      "height": 29
+    }
+  ]
+}

@@ -25,6 +25,7 @@
   import CraftArtifact from './CraftArtifact.svelte';
   import Enchantment from './Enchantment.svelte';
   import Invoke from './Invoke.svelte';
+  import { clearPlacePickSession, placePickSession } from './place-pick-session.svelte';
   import Shop from './Shop.svelte';
 
   const event = $derived(gs.scene.event);
@@ -71,7 +72,7 @@
 
   const parameterPrompts: Record<string, string> = {
     characterKey: 'Who?',
-    placeKey: 'Where?',
+    placeKey: 'Where do you go?',
     socializeType: 'How?',
     playerDeckKey: 'Choose your deck',
     opponentKey: 'Against who?',
@@ -286,8 +287,24 @@
   }
 
   function cancelParameterPick() {
+    clearPlacePickSession();
     pendingAction = null;
   }
+
+  $effect(() => {
+    if (currentParameterKey !== 'placeKey' || !pendingAction) {
+      clearPlacePickSession();
+      return;
+    }
+    const keys = currentOptions.map(optionValue);
+    placePickSession.current = {
+      allowedKeys: keys,
+      complete: (placeKey) => pickParameter(placeKey),
+      cancel: cancelParameterPick,
+    };
+  });
+
+  $effect(() => () => clearPlacePickSession());
 </script>
 
 {#if enchantAction}
@@ -359,30 +376,32 @@
         </OrnateButton>
       {:else if pendingAction && currentParameterKey}
         {#key currentParameterKey}
-          {#each currentOptions as option, i (`${currentParameterKey}-${optionValue(option)}-${i}`)}
-            {@const thumb = optionThumb(option)}
-            {#if thumb}
-              <OrnateButton
-                variant={pendingAction.isLongAction ? 'long' : 'default'}
-                onclick={() => pickParameter(optionValue(option))}
-              >
-                {#snippet lead()}
-                  <span class="option-thumb" class:portrait={thumb.portrait} aria-hidden="true">
-                    <img src={thumb.path} alt="" draggable="false" />
-                  </span>
-                {/snippet}
-                {optionLabel(option)}
-              </OrnateButton>
-            {:else}
-              <OrnateButton
-                icon={optionIcon(option)}
-                variant={pendingAction.isLongAction ? 'long' : 'default'}
-                onclick={() => pickParameter(optionValue(option))}
-              >
-                {optionLabel(option)}
-              </OrnateButton>
-            {/if}
-          {/each}
+          {#if currentParameterKey !== 'placeKey'}
+            {#each currentOptions as option, i (`${currentParameterKey}-${optionValue(option)}-${i}`)}
+              {@const thumb = optionThumb(option)}
+              {#if thumb}
+                <OrnateButton
+                  variant={pendingAction.isLongAction ? 'long' : 'default'}
+                  onclick={() => pickParameter(optionValue(option))}
+                >
+                  {#snippet lead()}
+                    <span class="option-thumb" class:portrait={thumb.portrait} aria-hidden="true">
+                      <img src={thumb.path} alt="" draggable="false" />
+                    </span>
+                  {/snippet}
+                  {optionLabel(option)}
+                </OrnateButton>
+              {:else}
+                <OrnateButton
+                  icon={optionIcon(option)}
+                  variant={pendingAction.isLongAction ? 'long' : 'default'}
+                  onclick={() => pickParameter(optionValue(option))}
+                >
+                  {optionLabel(option)}
+                </OrnateButton>
+              {/if}
+            {/each}
+          {/if}
           <button type="button" class="cancel-btn" onclick={cancelParameterPick}>Cancel</button>
         {/key}
       {:else}
