@@ -57,7 +57,7 @@ If both are true, offense is tried first. If no script is found for either, the 
 The planner searches a short sequence of setup actions (moves, deploys into threatened or lethal rows, and at most one useful removal), restoring a snapshot between trials. Caps stay small (`MAX_SETUP` steps, a node budget) so this stays a turn-open heuristic, not a full tree search.
 
 - **Win:** after setup, append a script of real attacks in clearing order. The plan is kept only if applying that script actually kills the opponent.
-- **Block:** stop when every previously exposed row no longer deals lethal face damage under the same model. Then the live loop plays the setup and **passes**, so search cannot walk the blockers away.
+- **Block:** stop when every previously exposed row no longer deals lethal face damage under the same model. Then the live loop plays the setup and **resumes normal search**, so the AI can still attack and spend after the block is secured.
 
 Removals are not chained: if one burn does not clear a blocker, a second burn is not searched. A candidate is kept only when applying it improves the lethal math (defense threat down, or offense shortfall down).
 

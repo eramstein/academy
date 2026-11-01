@@ -66,7 +66,9 @@ async function loopSearch() {
       const plan = planObviousLethal();
       if (plan) {
         lethalPlan = plan.actions;
-        lethalPass = true;
+        // Wins script the lethal attacks then pass. Blocks only force the setup;
+        // afterward search plays the rest of the turn (attacks, spend, etc.).
+        lethalPass = plan.reason === 'win';
         bs.aiState.strategy = plan.reason === 'win' ? AiTurnStrategy.Attack : AiTurnStrategy.Defend;
         console.log('AI obvious lethal', lethalPlanLabel(plan));
       } else {
@@ -93,12 +95,12 @@ async function loopSearch() {
         lethalPass = false;
       }
       if (bs.playerIdWon !== null) return;
-      if (lethalPlan.length > 0 || lethalPass) {
-        setTimeout(() => {
-          void loopSearch();
-        }, config.aiActionInterval);
-        return;
-      }
+      // More script left, win-forced pass, or block setup done → next loop tick
+      // (block then falls into search; win hits lethalPass below).
+      setTimeout(() => {
+        void loopSearch();
+      }, config.aiActionInterval);
+      return;
     }
   }
   if (lethalPass) {

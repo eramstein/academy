@@ -57,7 +57,8 @@ interface PlanNode {
  * At the start of the AI turn, an obvious lethal is a row the opponent can already
  * kill through, or a row we can kill through with the bodies, haste, and one removal
  * we have. The normal search is one action deep, so this planner looks for a short
- * sequence that wins or blocks every such row, then the turn passes.
+ * sequence that wins or blocks every such row. Wins are scripted then the turn passes;
+ * blocks only force the setup, then search resumes for the rest of the turn.
  */
 export function planObviousLethal(): LethalPlan | null {
   const savedHeadless = uiState.isHeadless;
