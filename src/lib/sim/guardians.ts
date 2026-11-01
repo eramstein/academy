@@ -1,5 +1,5 @@
 import { ActionType, type Action, type CardTemplate, type Deck, type Place } from '@/lib/_model';
-import { gs } from '@/lib/_state';
+import { gs, saveStateToLocalStorage } from '@/lib/_state';
 import { getGuardianImagePath } from '@/lib/_utils/asset-paths';
 import { initBattle } from '@/lib/battle/init';
 import { makeUniqueId } from './deck';
@@ -114,6 +114,7 @@ export function startGuardianMatch(placeKey: string, playerDeck: Deck): string {
     opponentDisplayName: guardian.name,
   };
   initBattle(guardian.key, playerDeck, loaded.deck, loaded.collection, guardian.name);
+  saveStateToLocalStorage();
   return `You challenge ${guardian.name}.`;
 }
 

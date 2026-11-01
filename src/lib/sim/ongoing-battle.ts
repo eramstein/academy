@@ -1,5 +1,5 @@
 import type { Deck, Npc } from '../_model';
-import { bs } from '../_state';
+import { bs, saveStateToLocalStorage } from '../_state';
 import { gs } from '../_state/main.svelte';
 import { getRandomFromArray } from '../_utils/random';
 import { initBattle } from '../battle/init';
@@ -29,6 +29,9 @@ export async function initOngoingBattle(
     isLeagueMatch,
   };
   initBattle(foe.key, deck, foeDeck);
+  // Persist before any battle turns so reload does not drop back to a pre-match scene
+  // with actions already cleared.
+  saveStateToLocalStorage();
 }
 
 export function recordBattleResult(won: boolean) {
@@ -60,6 +63,7 @@ export function recordBattleResult(won: boolean) {
     gs.scene.pendingFollowUpEvents = gs.ongoingBattle.resumeFollowUps;
   }
   if (gs.ongoingBattle.resume || gs.ongoingBattle.resumeFollowUps?.length) {
+    saveStateToLocalStorage();
     return;
   }
   if (isGuardian) {
@@ -69,7 +73,9 @@ export function recordBattleResult(won: boolean) {
     } else if (result === 'retry') {
       setPossibleActions();
     }
+    saveStateToLocalStorage();
     return;
   }
   setPossibleActions();
+  saveStateToLocalStorage();
 }

@@ -95,16 +95,45 @@ export const loadGameStateFromLocalStorage = async (id: string) => {
 
     // battle state
     const savedBattleState = localStorage.getItem(LOCAL_STORAGE_KEY_BATTLE);
-    if (!savedBattleState) return {};
-    const parsedBattleState: BattleState = JSON.parse(savedBattleState);
-    Object.assign(bs, parsedBattleState);
+    if (savedBattleState) {
+      const parsedBattleState: BattleState = JSON.parse(savedBattleState);
+      Object.assign(bs, parsedBattleState);
+    }
 
     // ui state
     const saveduiState = localStorage.getItem(LOCAL_STORAGE_KEY_UI);
-    if (!saveduiState) return {};
-    const parseduiState: UiState = JSON.parse(saveduiState);
-    Object.assign(uiState, parseduiState);
-    console.log('Ui state loaded from localStorage', uiState.currentView);
+    if (saveduiState) {
+      const parseduiState: UiState = JSON.parse(saveduiState);
+      Object.assign(uiState, parseduiState);
+      console.log('Ui state loaded from localStorage', uiState.currentView);
+    }
+
+    // Older sessions could reset battle localStorage on victory/concede while leaving
+    // IndexedDB mid-match (actions cleared, ongoingBattle set). That shows Sim with
+    // no actions. Recover by finishing the match transition.
+    if (gs.ongoingBattle && bs.turn <= 0) {
+      if (gs.ongoingBattle.resume) {
+        gs.scene.pendingEventResume = gs.ongoingBattle.resume;
+      }
+      if (gs.ongoingBattle.resumeFollowUps?.length) {
+        gs.scene.pendingFollowUpEvents = gs.ongoingBattle.resumeFollowUps;
+      }
+      const hadResume =
+        !!gs.scene.pendingEventResume || (gs.scene.pendingFollowUpEvents?.length ?? 0) > 0;
+      // Dynamic import avoids a circular dependency with sim/scene.
+      const { resumeEventAfterBattle } = await import('../sim/scene');
+      resumeEventAfterBattle();
+      if (
+        !hadResume &&
+        (gs.scene.actions?.length ?? 0) === 0 &&
+        (gs.scene.event?.options?.length ?? 0) === 0 &&
+        !gs.scene.pendingPeriodEvent
+      ) {
+        const { setPossibleActions } = await import('../sim/actions');
+        setPossibleActions();
+        saveStateToLocalStorage();
+      }
+    }
   } catch (error) {
     console.error('Failed to load state from localStorage:', error);
     return null;

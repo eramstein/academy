@@ -255,9 +255,6 @@
                     {/if}
                   </span>
                 {/if}
-                {#if pickMode}
-                  <span class="hotspot-label">{area.name}</span>
-                {/if}
               </button>
             {/if}
           {/each}
@@ -376,25 +373,6 @@
   .hotspot:hover,
   .hotspot:focus-visible {
     z-index: 2;
-  }
-
-  .hotspot-label {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    padding: 0.2rem 0.65rem;
-    border: 1px solid var(--color-brass);
-    border-radius: 3px;
-    background: var(--color-data);
-    color: var(--color-cream);
-    font-family: var(--font-narrative);
-    font-size: 0.95rem;
-    line-height: 1.2;
-    white-space: nowrap;
-    opacity: 0.92;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
   }
 
   .area-portraits {

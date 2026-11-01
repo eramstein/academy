@@ -48,27 +48,13 @@
     onclick={(e) => e.stopPropagation()}
   >
     <div class="panel">
-      <header class="heading">
-        <h2 id="victory-title" class="title">
-          <span class="star" aria-hidden="true"></span>
-          Victory
-          <span class="star" aria-hidden="true"></span>
-        </h2>
-        <p class="subtitle">{winningPlayer.name} has won the game!</p>
-      </header>
-
-      <div class="winner">
-        <div
-          class="portrait"
-          style="background-image: url('{characterImagePath}')"
-          role="img"
-          aria-label={winningPlayer.name}
-        ></div>
-        <div class="details">
-          <h3 class="name">{winningPlayer.name}</h3>
-          <p class="life">Final life — {winningPlayer.life}</p>
-        </div>
-      </div>
+      <div
+        class="portrait"
+        style="background-image: url('{characterImagePath}')"
+        role="img"
+        aria-label={winningPlayer.name}
+      ></div>
+      <p id="victory-title" class="title">{winningPlayer.name} won!</p>
     </div>
 
     <footer class="actions">
@@ -93,7 +79,7 @@
 
   .frame {
     position: relative;
-    width: min(420px, 100%);
+    width: min(320px, 100%);
     display: flex;
     flex-direction: column;
     padding: 10px 10px 8px;
@@ -108,6 +94,8 @@
   .panel {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
     background: var(--color-parchment) var(--parchment) center / cover;
     background-blend-mode: multiply;
     color: var(--color-ink);
@@ -118,48 +106,6 @@
     box-shadow:
       inset 0 0 28px rgba(90, 75, 60, 0.12),
       inset 0 0 80px color-mix(in srgb, var(--color-golden) 14%, transparent);
-  }
-
-  .heading {
-    margin-bottom: 1rem;
-  }
-
-  .title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-ink);
-    text-align: center;
-  }
-
-  .star {
-    width: 10px;
-    height: 10px;
-    flex-shrink: 0;
-    background: #4a3f32;
-    clip-path: polygon(50% 0%, 65% 35%, 100% 50%, 65% 65%, 50% 100%, 35% 65%, 0% 50%, 35% 35%);
-  }
-
-  .subtitle {
-    margin: 6px 0 0;
-    text-align: center;
-    font-size: 1rem;
-    font-style: italic;
-    letter-spacing: 0.01em;
-    color: var(--color-ink-muted);
-  }
-
-  .winner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.85rem;
   }
 
   .portrait {
@@ -174,23 +120,13 @@
       inset 0 0 0 1px color-mix(in srgb, var(--color-golden) 35%, transparent);
   }
 
-  .details {
-    text-align: center;
-  }
-
-  .name {
-    margin: 0 0 0.3rem;
+  .title {
+    margin: 0;
     font-size: 1.3rem;
     font-weight: 700;
     letter-spacing: 0.03em;
+    text-align: center;
     color: var(--color-ink);
-  }
-
-  .life {
-    margin: 0;
-    font-size: 0.98rem;
-    font-style: italic;
-    color: var(--color-ink-muted);
   }
 
   .actions {

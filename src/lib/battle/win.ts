@@ -7,12 +7,12 @@ import { getAiPlayer, getHumanPlayer } from './player';
 export function checkIfPlayerLost(player: Player) {
   if (player.life <= 0) {
     bs.playerIdWon = player.id === 0 ? 1 : 0;
-    endBattle();
+    endBattle(player.id === 0);
   }
 }
 
-export function endBattle(concession: boolean = false) {
-  if (concession) {
+export function endBattle(won: boolean = false) {
+  if (won) {
     bs.playerIdWon = getAiPlayer().id;
   } else {
     bs.playerIdWon = getHumanPlayer().id;

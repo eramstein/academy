@@ -1,8 +1,13 @@
 <script lang="ts">
-  import type { ArtifactTool, ArtifactTrinket, CardCraftingSkills } from '@/lib/_model';
+  import {
+    CardColor,
+    type ArtifactTool,
+    type ArtifactTrinket,
+    type CardCraftingSkills,
+  } from '@/lib/_model';
   import { PossessionType, ResourceType, SubscriptionType } from '@/lib/_model/enums-sim';
   import { gs } from '@/lib/_state/main.svelte';
-  import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
+  import { getAssetPath, getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import { isArtifactEquipped, toggleEquippedArtifact } from '@/lib/sim/artifacts';
   import Attributes from '../Attributes.svelte';
   import CharacterIdentity from '../characters/CharacterIdentity.svelte';
@@ -143,6 +148,14 @@
     }))
   );
 
+  const colorMastery = $derived(
+    Object.values(CardColor).map((color) => ({
+      color,
+      label: titleWord(color),
+      points: player.colorMasteryPoints?.[color] ?? 0,
+    }))
+  );
+
   const previewJobs = $derived(player.jobs.slice(0, JOB_PREVIEW));
   const otherJobCount = $derived(Math.max(0, player.jobs.length - JOB_PREVIEW));
 
@@ -161,6 +174,10 @@
 
   function iconUrl(name: string) {
     return getUiIconPath(name);
+  }
+
+  function colorPath(color: CardColor): string {
+    return getAssetPath(`images/ui/icons/color_${color}.png`);
   }
 
   function bonusLabel(artifact: ArtifactTool | ArtifactTrinket): string {
@@ -340,19 +357,38 @@
             {/if}
           </section>
 
-          <section class="block">
-            {@render sectionTitle('Subscriptions', 'temple', 'subscriptions')}
-            {@render divider()}
-            <ul class="subs">
-              {#each subscriptions as sub (sub.type)}
-                <li class="sub">
-                  {@render icon(sub.icon)}
-                  <span class="sub-name">{sub.label}</span>
-                  <span class="sub-days">{sub.days} days</span>
-                </li>
-              {/each}
-            </ul>
-          </section>
+          <div class="split">
+            <section class="block">
+              {@render sectionTitle('Subscriptions', 'temple', 'subscriptions')}
+              {@render divider()}
+              <ul class="subs">
+                {#each subscriptions as sub (sub.type)}
+                  <li class="sub">
+                    {@render icon(sub.icon)}
+                    <span class="sub-name">{sub.label}</span>
+                    <span class="sub-days">{sub.days} days</span>
+                  </li>
+                {/each}
+              </ul>
+            </section>
+
+            <section class="block">
+              <h3 class="section-title">
+                {@render icon('gem')}
+                Color Mastery
+              </h3>
+              {@render divider()}
+              <ul class="subs">
+                {#each colorMastery as entry (entry.color)}
+                  <li class="sub">
+                    <img class="color-pip" src={colorPath(entry.color)} alt="" />
+                    <span class="sub-name">{entry.label}</span>
+                    <span class="sub-days">{entry.points}</span>
+                  </li>
+                {/each}
+              </ul>
+            </section>
+          </div>
 
           <section class="block">
             {@render sectionTitle('Jobs', 'handshake', 'jobs')}
@@ -495,12 +531,24 @@
     padding: 1.05rem 0;
   }
 
-  .block:first-child {
+  .ledger > .block:first-child {
     padding-top: 0.15rem;
   }
 
-  .block:last-child {
+  .ledger > .block:last-child {
     padding-bottom: 0.1rem;
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .split .block + .block {
+    margin-left: 1.15rem;
+    padding-left: 1.15rem;
+    border-left: 1px solid rgba(175, 142, 103, 0.28);
   }
 
   .block .divider {
@@ -801,9 +849,21 @@
     font-size: 0.95rem;
   }
 
-  .sub .icon {
+  .sub .icon,
+  .color-pip {
     width: 1.45rem;
     height: 1.45rem;
+  }
+
+  .color-pip {
+    display: block;
+    object-fit: contain;
+  }
+
+  .sub-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .sub-days,

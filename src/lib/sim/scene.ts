@@ -9,7 +9,7 @@ import {
   type ScheduledActivity,
 } from '../_model';
 import { EventEffectType } from '../_model/enums-sim';
-import { gs } from '../_state';
+import { gs, saveStateToLocalStorage } from '../_state';
 import { attributeCheck, skillCheckDifficulty } from './attribute-checks';
 import {
   consumeEventTemplate,
@@ -244,6 +244,8 @@ export async function selectOption(option: EventOption) {
         .filter((key): key is string => typeof key === 'string' && key.length > 0);
     }
     gs.scene.actions = [];
+    // Re-save so resume/follow-ups attached after initOngoingBattle are persisted.
+    saveStateToLocalStorage();
     return;
   }
   deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
@@ -281,13 +283,18 @@ export function resumeEventAfterBattle() {
         type: EventEffectType.FollowUpEvent,
         parameters: { eventKey },
       });
-      if (sceneWaitingOnEventChoice()) return;
+      if (sceneWaitingOnEventChoice()) {
+        // Battle chrome was reset without updating the quicksave; persist the
+        // resumed scene so reload does not restore empty pre-match actions.
+        saveStateToLocalStorage();
+        return;
+      }
     }
   }
-  if (resume || followUps?.length) {
-    if (!sceneWaitingOnEventChoice()) setSceneEvents();
-    return;
+  if ((resume || followUps?.length) && !sceneWaitingOnEventChoice()) {
+    setSceneEvents();
   }
+  saveStateToLocalStorage();
 }
 
 export function startScene() {
