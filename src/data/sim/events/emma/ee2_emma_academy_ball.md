@@ -194,6 +194,7 @@ She gives you a determined smile.
 **Outcomes:**
 
 - Emma friendship +1.
+- Add chat topic `emma_memory_ball_waltz` (memory; known by emma): "Competitive dancing is exhausting," Emma says. "I believe I warned you, before the waltz." You say you were trying to follow, not to win. "And you very nearly managed it. When you hesitated, I only had to guide you a little." Her smile is quiet. "It was rather nice, not having to win for a few minutes."
 
 ---
 
@@ -299,7 +300,7 @@ Lucien smiles.
 
 **Outcomes:**
 
-- No additional game-state effects.
+- Add chat topic `emma_memory_ball_lucien_age` (memory; known by emma): "I prepared to impress an elderly patron," Emma says. "Lucien de Varenne was scarcely thirty, and dressed like a man who has never compared two prices." You ask whether the family crest misled her. "The crest was inherited. The confidence was entirely his."
 
 ---
 
@@ -416,6 +417,7 @@ You can't help smiling.
 - Add story tag `emma_ball_senior_research`.
 - Emma respect +1.
 - Emma friendship +1.
+- Add chat topic `emma_memory_ball_armand` (memory; known by emma): "Professor Armand," Emma says, and the name still sounds slightly unreal. "You told me I would be mad to refuse a chance to learn from him." You say you were right. "Do not ruin the memory, Antonio. I am allowed to be excited without a commentary." She relents. "I intend to learn everything they will teach me."
 
 ### Option B: Negotiate a shorter commission
 
@@ -488,6 +490,7 @@ She gives you a delighted smile.
 - Add story tag `emma_ball_commission_resources`.
 - Emma respect +1.
 - Emma friendship +1.
+- Add chat topic `emma_memory_ball_commission` (memory; known by emma): "A long collaboration would have swallowed the term," Emma says. "So I asked Lucien de Varenne for a commission instead. Rare materials, one card, and my studies left intact." You say she called the result magnificent before it existed. "I was describing the ingredients. The card will have to deserve them."
 
 ### Option C: Suggest a joint research project
 
@@ -552,6 +555,7 @@ She slips her arm through yours.
 - Add story tag `emma_ball_joint_research`.
 - Emma friendship +2.
 - Emma rivalry +1.
+- Add chat topic `emma_memory_ball_joint_project` (memory; known by emma): "Sharing the glory was your idea," Emma says. "I still cannot decide whether that was genius or a lapse of judgment." You ask which she favors. "It changes whenever you look smug." She considers you. "We did tell him our methods work together. When we are not arguing over the details."
 
 ---
 

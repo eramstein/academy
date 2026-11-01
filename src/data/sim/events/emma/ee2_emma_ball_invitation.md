@@ -139,6 +139,7 @@ You have the distinct impression that you've just volunteered for considerably m
 - Add story tag `emma_ball_accepted`.
 - Schedule `emma_ball_shopping` for the following evening in town.
 - Schedule `emma_academy_ball` for next Saturday evening at the Academy ballroom.
+- Add chat topic `emma_memory_ball_accepted` (memory; known by emma): "You accepted the ball rather quickly," Emma says. "Excellent food, dancing, and the most promising artificer of our generation. I believe those were your reasons." You ask whether she wrote them down. "I had already written your name. The speech merely confirmed my judgment."
 
 ### Option B: Politely decline
 
@@ -169,3 +170,4 @@ You laugh, and she gives you a friendly little wave as the professor enters.
 **Outcomes:**
 
 - Add story tag `emma_ball_declined`.
+- Add chat topic `emma_memory_ball_declined` (memory; known by emma): "I called your dancing qualifications unproven," Emma says. "Then I wished you a pleasant Saturday while I went off to become rich and famous." You note the division of labor. "It seemed fair at the time." She is not quite repentant. "I remain curious whether the risk would have been worth it."

@@ -105,6 +105,10 @@ Elsa watches the exchange with evident satisfaction.
 
 "Oh, this is going to be such a lovely evening."
 
+**Outcomes:**
+
+- Add chat topic `emma_memory_elsa_waiter_deal` (memory; known by emma): "A deal is a deal," Emma says, far too composed. "We owed Elsa a favor, and you paid it in livery." You ask whose idea the favor was. "Ours. An excellent strategic decision, as I believe I said at the time." Her mouth twitches. "The uniform suited the strategy better than it suited you."
+
 ### Option B: Accept the offer
 
 **Only if:** Story tag `elsa_favor_owed` is absent
@@ -132,6 +136,7 @@ Elsa looks from one to the other, clearly enjoying herself.
 **Outcomes:**
 
 - Give Antonio 200 coins.
+- Add chat topic `emma_memory_bought_for_crowns` (memory; known by emma): "Two hundred crowns," Emma says. "I attended Elsa's birthday as a guest. You attended it as staff." You note that she accepted the same sum. "Yes, but I was paid to be interesting. You were paid to carry a tray. I intend to preserve that distinction."
 
 ### Option C: Politely decline
 
@@ -168,6 +173,7 @@ Elsa brightens at once, and the two young women begin discussing the guest list,
 **Outcomes:**
 
 - Emma respect +1.
+- Add chat topic `emma_memory_refused_livery` (memory; known by emma): "You refused Elsa's uniform," Emma says. "Two hundred crowns, and you still declined to spend an evening serving drinks." You say you did not come to the Academy for that. "A perfectly reasonable boundary." She looks almost proud. "I was a little disappointed. I had prepared several remarks about the fit."
 
 ---
 
@@ -260,3 +266,5 @@ And judging by the laughter still coming from the table by the window, it is cer
 **Outcomes:**
 
 - Emma friendship +1.
+- Add chat topic `emma_memory_pigeon_bowtie` (memory; known by emma): "The most distinguished gentleman ever to carry a tray," Emma says, and has to stop. "That bow tie, Antonio. And the way you were standing." You offer an imaginary glass with great dignity. She fails not to laugh. "Molly was kinder. She called you professional. I am afraid I made a toast."
+- Add chat topic `molly_memory_elsa_waiter` (memory; known by molly): "You looked so professional," Molly says, then covers a smile with her hand. "I'm sorry. Emma tried not to laugh at the bow tie, and then she toasted you anyway." She pats your arm, entirely kind. "I did mean that you looked handsome. The tray was just very shiny."

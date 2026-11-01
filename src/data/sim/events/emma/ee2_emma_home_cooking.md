@@ -46,7 +46,7 @@ She gives you a cheerful wave and heads off toward the village.
 
 **Outcomes:**
 
-- No additional game-state effects.
+- Add chat topic `emma_memory_boiled_cabbage` (memory; known by emma): "I still admire your courage," Emma says. "Very few people volunteer for the cafeteria's boiled cabbage." You say someone has to make the sacrifice. "Someone with fewer better invitations, perhaps." The jab is light. "The offer stands, should you ever prefer a meal that began the evening as itself."
 
 ---
 
@@ -187,6 +187,11 @@ She smiles over her empty plate.
 ---
 
 ## Node: card_gift
+
+
+**On enter:**
+
+- Add chat topic `emma_memory_cooking_secret` (memory; known by emma): "Not a word to Molly," Emma says, lowering her voice from habit. "If she learns I cooked, she will want the recipe, and then she will want to help." You promise discretion. "Good. I have a reputation to maintain, and it does not currently include witnesses in the kitchen."
 
 As you prepare to leave, Emma retrieves a small card case from her desk.
 

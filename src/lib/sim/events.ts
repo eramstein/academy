@@ -235,6 +235,25 @@ function isForcedPeriodEvent(template: StoredEventTemplate): boolean {
   return false;
 }
 
+/**
+ * Free periods and Class allow opportunistic story events. Any other scheduled
+ * activity (work, date, training, …) only allows events that explicitly bind to
+ * it via `scheduled_activity` or `activity_type`.
+ */
+function canTriggerDuringCurrentActivity(template: StoredEventTemplate): boolean {
+  const activity = getCurrentScheduledActivity();
+  if (!activity || activity.type === ActivityType.Class) return true;
+  return (template.triggers ?? []).some(
+    (trigger) =>
+      trigger.triggerType === EventTriggerType.ScheduledActivity ||
+      trigger.triggerType === EventTriggerType.ActivityType
+  );
+}
+
+function isSceneTriggerCandidate(template: StoredEventTemplate): boolean {
+  return triggersMatch(template) && canTriggerDuringCurrentActivity(template);
+}
+
 export function getTriggeredSceneEvent():
   | { event: SceneEvent; template: StoredEventTemplate }
   | undefined {
@@ -242,7 +261,7 @@ export function getTriggeredSceneEvent():
   const template = eventTemplates
     .filter(
       (eventTemplate) =>
-        triggersMatch(eventTemplate) &&
+        isSceneTriggerCandidate(eventTemplate) &&
         !manualTriggerLabel(eventTemplate) &&
         (isForcedPeriodEvent(eventTemplate) || periodHasRoom)
     )
@@ -259,7 +278,7 @@ export function getManualSceneTriggers(): { eventKey: string; label: string }[] 
   const offers: { eventKey: string; label: string }[] = [];
   for (const template of eventTemplates) {
     const label = manualTriggerLabel(template);
-    if (!label || !triggersMatch(template)) continue;
+    if (!label || !isSceneTriggerCandidate(template)) continue;
     offers.push({ eventKey: template.key, label });
   }
   return offers;
@@ -270,7 +289,7 @@ export function getPlayableManualTrigger(
   eventKey: string
 ): { event: SceneEvent; template: StoredEventTemplate } | undefined {
   const template = eventTemplates.find((eventTemplate) => eventTemplate.key === eventKey);
-  if (!template || !manualTriggerLabel(template) || !triggersMatch(template)) {
+  if (!template || !manualTriggerLabel(template) || !isSceneTriggerCandidate(template)) {
     return undefined;
   }
   return triggeredFromTemplate(template);

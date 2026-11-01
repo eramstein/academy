@@ -68,6 +68,7 @@ You suspect she would rather enjoy doing exactly that.
 **Outcomes:**
 
 - Add story tag `antonio_molly_interested`.
+- Add chat topic `emma_memory_matchmaking_molly` (memory; known by emma): "Two of my favorite people," Emma says, pleased with the arrangement. "I refuse to conduct the entire courtship for you. I have principles." You look unconvinced. "Flexible principles. If you require a timetable, I can be persuaded to supervise from a distance."
 
 ### Option B: An impossible quest
 
@@ -123,6 +124,7 @@ Although, when you look up a moment later, you catch her watching you with a sma
 
 - Emma love +3.
 - Add story tag `emma_knows_antonio_feelings`.
+- Add chat topic `emma_memory_hopeless_quest` (memory; known by emma): "I have been thinking about your dragon," Emma says, more quietly than usual. You pretend not to know which quest she means. "The one you called too powerful, and not Molly." Color touches her face and is mastered. "Such quests take a very long time. If the dragon ever decides to eat you, do try not to look delighted in advance."
 
 ### Option C: Remain a free adventurer
 
@@ -154,4 +156,4 @@ And with that, the subject is settled. At least until Emma discovers another opp
 
 **Outcomes:**
 
-- No additional game-state effects.
+- Add chat topic `emma_memory_free_adventurer` (memory; known by emma): "I have retired from matchmaking," Emma announces. "You preferred to make your own mistakes. A bold program of research." She considers you over an imaginary glass. "I reserve the right to say I told you so. I doubt the opportunity will be long in coming."

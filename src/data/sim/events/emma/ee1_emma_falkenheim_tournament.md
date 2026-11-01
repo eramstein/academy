@@ -29,7 +29,7 @@ Olga takes her seat without a greeting, arranges her cards with surgical precisi
 
 **Outcomes:**
 
-- No additional game-state effects.
+- Add chat topic `emma_memory_falkenheim_olga` (memory; known by emma): "Olga arranged her cards as if the table had offended her," Emma says. "I have seldom seen a greeting delivered entirely in silence." You ask whether it worked. "On the room, perhaps. On you, less than she hoped. I found that clarifying."
 
 ## Node: after-match-1
 
@@ -141,6 +141,7 @@ You leave Falkenheim empty-handed. Emma walks beside you, unusually quiet, until
 **Outcomes:**
 
 - Follow up event `emma_return_lost`.
+- Add chat topic `emma_memory_falkenheim_empty_handed` (memory; known by emma): "Next time, we should bring a trophy," Emma says. "Falkenheim seems to prefer keeping theirs at home." You say the marble was impressive. "Marble does not applaud. I would still rather have left with the cup."
 
 ### Option C: Face Franz in the final
 
@@ -156,7 +157,7 @@ Franz sits opposite you, smiling with rather too many teeth. "I trust you'll pro
 
 **Outcomes:**
 
-- No additional game-state effects.
+- Add chat topic `emma_memory_falkenheim_franz` (memory; known by emma): "Franz smiled at you with far too many teeth," Emma says. "I have decided that expression deserves study, as a hostile enchantment." You ask whether you gave him the challenge he wanted. "You gave him something. I refuse to improve his evening by calling it what he asked for."
 
 ### Option D: Watch Emma's final
 

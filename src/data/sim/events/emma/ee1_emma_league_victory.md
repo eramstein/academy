@@ -19,6 +19,7 @@ She raises her glass in your honor.
 ## Effects
 
 - Emma respect +3.
+- Add chat topic `academy_lore_league_champion` (lore; exclude emma; use once): "Antonio Fibonacci won the Academy league," your companion says. "The season, not one fortunate evening. Emma Delamain congratulated him where people could hear, then promised to take the title back." A pause. "I believed both parts."
 
 ## Options
 

@@ -79,7 +79,7 @@ With a quick wink, she strides away toward the village, leaving you with the unc
 
 **Outcomes:**
 
-- No additional game-state effects.
+- Add chat topic `emma_memory_first_help` (memory; known by emma): "You offered to carry my books, the day we met," Emma says. "A gallant impulse. Slightly delayed." You mention that you did manage an introduction. "You did. And I declined the help." She looks amused, not unkind. "I am rather stronger than I look. The offer was still noted."
 
 ### Option B: A complete failure of higher reasoning
 

@@ -35,6 +35,9 @@ Emma gives a little turn, setting the wings shimmering, and watches you with und
 Effect
 Add story tag: emma_theater_rehearsal
 
+- Add chat topic `academy_lore_neverland` (lore; exclude emma; use once): "The Academy is putting on Neverland," your companion says. "Delamain has wings, apparently, and Fibonacci is Peter. Professor Lombard requested discipline and mutual respect." A helpless smile. "I am told the request lasted less than a minute."
+- Add chat topic `emma_memory_fairy_costume` (memory; known by emma): "You stared," Emma says. "In my defense, the wings were extremely well made." You mention the silver in her hair. "A turnip with wings would have been easier to ignore, I admit." She looks pleased with the memory. "Peter is not supposed to go speechless before the rehearsal. It sets a difficult standard for the flying."
+
 Options
 
 Option A: Suggest an improvement to the script
@@ -59,6 +62,8 @@ Outcomes:
 
 Emma love +1.
 
+- Add chat topic `emma_memory_peter_rewrite` (memory; known by emma): "Your revision was very moving," Emma says. "Peter suddenly in love with the fairy, and brave enough to admit it without hiding behind the script." You call it literary courage. "It was a confession with footnotes. I have not decided whether the author would be flattered or furious."
+
 Option B: Compliment the performance
 
 Next: rehearsal_disaster
@@ -78,6 +83,8 @@ You laugh together and head inside.
 Outcomes:
 
 Emma friendship +1.
+
+- Add chat topic `emma_memory_falling_peter` (memory; known by emma): "I promised to stand well clear if you fell," Emma says. "A harness is a theory. Gravity has rather more evidence behind it." You say she valued the friendship, within limits. "Within practical limits. I can admire a performance perfectly well from several yards away."
 
 Node: rehearsal_disaster
 
@@ -191,6 +198,8 @@ Acquire artifact pattern italian_codex for Emma (acquire_artifact_pattern, recip
 
 Emma friendship +1.
 
+- Add chat topic `emma_memory_theater_pattern_kept` (memory; known by emma): "You told me to keep the pattern," Emma says. "Not because the work was easy. Because I should not give it up for being difficult." She is quiet for a beat. "That was infuriatingly thoughtful. I still have the parchment. I have not entirely forgiven you for being right."
+
 Option B: Accept the pattern
 
 Text:
@@ -210,3 +219,5 @@ You take the parchment. Emma watches you fold it safely away.
 Outcomes:
 
 Acquire artifact pattern italian_codex for Antonio (acquire_artifact_pattern).
+
+- Add chat topic `emma_memory_theater_pattern_given` (memory; known by emma): "The pattern is yours," Emma says. "Better that than another century under the floorboards." You mention that she dislikes the crafting. "I dislike the labor. I like what you might make of it. If the codex is ever finished, I expect a demonstration. A long one."

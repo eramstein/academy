@@ -87,6 +87,7 @@ Emma blushes.
 **Outcomes:**
 
 - Emma friendship +1.
+- Add chat topic `emma_memory_kiss_knight` (memory; known by emma): "Sir Antonio," Emma says, returning a fraction of your bow. "My humble knight, prepared to defend me from persistent gentlemen." You say the post remains open. "How reassuring. Next time I shall try to require a less conspicuous rescue." Her eyes are laughing. "The bow, however, was excellent."
 
 ### Option B: Question her strategy
 
@@ -111,6 +112,7 @@ Emma blushes, visibly amused, and suddenly finds something very interesting to l
 **Outcomes:**
 
 - Emma rivalry +1.
+- Add chat topic `emma_memory_kiss_excessive` (memory; known by emma): "You asked whether the tongue was excessive," Emma says, and has the grace to color. "I have reviewed the evidence. The gentlemen stopped following us." You wait. "Therefore the method succeeded. Your editorial remarks have been filed under ungrateful."
 
 ---
 

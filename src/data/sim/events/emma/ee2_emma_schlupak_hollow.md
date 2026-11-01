@@ -74,6 +74,8 @@ Her expression grows thoughtful.
 
 Outcomes: Gain 2 Dreamspheres.
 
+- Add chat topic `emma_memory_dreamspheres` (memory; known by emma): "The Dreamspheres were worth the care," Emma says. "They went into the jars like captured lanterns." You remind her the rest of the hollow went dark. "And the spores scattered. I know. One cannot have every wonder in the same afternoon." She is quiet a moment. "I would still choose the light."
+
 B — Collect the Spores
 
 You indicate the clusters of mushrooms beneath the branches.
@@ -99,3 +101,5 @@ She seals the vessels.
 "And unlike certain other specimens we've encountered in this forest, these have made no attempt whatsoever to poison us."
 
 Outcomes: Gain 2 SchlupakSpores.
+
+- Add chat topic `emma_memory_hollow_spores` (memory; known by emma): "You chose the spores," Emma says. "A bellows, sealed glass, and the spheres left pulsing without us." You ask whether she thinks it was the wrong jar. "I think it was the patient one. Not every prize has to glow to be useful."

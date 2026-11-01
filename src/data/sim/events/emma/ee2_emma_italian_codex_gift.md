@@ -63,6 +63,6 @@ Gift one crafted italian_codex artifact to Emma
 
 Gift card emma_chaos_faerie to Antonio.
 
-Add memory emma_memory_italian_codex_gift for Emma: Antonio crafted an Italian Codex for Emma from the theater pattern, and Emma gave him her handmade Chaos Faerie card in return.
+- Add chat topic `emma_memory_italian_codex_gift` (memory; known by emma): "You impossible man," Emma says, and the old teasing is not quite back yet. "I was content knowing the codex existed. You did not have to spend your materials on me." You say its owner ought to love Italian cards. She glances toward the Chaos Faerie, the tiny face unmistakably hers. "And you received a souvenir of our finest performance. Our only one. Which is the same thing." Her smile warms. "I shall treasure the codex. You may treasure looking ridiculous. I worked from life."
 
 Emma love +2

@@ -91,6 +91,7 @@ At least one member of this conversation has achieved perfect peace of mind.
 Outcomes:
 
 - Molly friendship +1.
+- Add chat topic `molly_memory_herbert_lettuce` (memory; known by molly): "Herbert was frightened by a lettuce once," Molly says. She tries to laugh, and almost manages. "So when you said he might be happier outside, with grass and other rabbits, I wanted that to be true." She is quiet for a moment. "You stayed until I stopped crying. That mattered more than the meadows."
 - End event.
   Option B: I know just the place for Herbert
   Text:
@@ -414,6 +415,7 @@ On enter
 - Molly friendship +1.
 - Molly love +1.
 - Add story tag molly_herbert_in_cloister.
+- Add chat topic `molly_memory_herbert_statue` (memory; known by molly): "I keep thinking about that statue," Molly says. "You beat it at Hordes, and then we walked Herbert straight past it." She grins. "I asked whether it plays against rabbits. You hoped not." The grin softens. "I've told Herbert not to challenge it. He would take the game much too seriously, and he already has opinions about carrots."
 - Add character discovery for Molly: Molly has a beloved pet rabbit named Herbert, whom she has raised for years. After Mrs. Mathilda forbade her from keeping him at the inn, Antonio helped her find a new home for him in the hidden cloister.
   Options
   Option A: Take Just a Rabbit

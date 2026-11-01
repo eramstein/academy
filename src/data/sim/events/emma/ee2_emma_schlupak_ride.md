@@ -195,6 +195,7 @@ She smiles, and reaches out to stroke the animal's neck. "I suppose he deserves 
 - Emma love +1.
 - Emma friendship +1.
 - Schedule `emma_horse_gift` for the following day's evening.
+- Add chat topic `emma_memory_horse_honey_mercy` (memory; known by emma): "You let the horse finish the comb," Emma says. "A fright, you called it. I called it a theft with excellent timing." She softens. "He did look happier. Some crimes are apparently solved by letting the culprit lick the evidence."
 
 ### Option B: Save the precious honey
 
@@ -213,6 +214,7 @@ While she calms the horse, you carefully collect three intact portions of the ho
 
 - Gain 3 `SchlupakHoney`.
 - Emma respect +1.
+- Add chat topic `emma_memory_horse_honey_rescue` (memory; known by emma): "Three portions of honeycomb," Emma says, "rescued from a horse who took your work as a personal betrayal." You say the rest was already gone. "The rest was a small fortune. What we saved was a principle. I have rarely seen a principle look so sticky."
 
 ### Option C: Admire the world's most expensive snack
 
@@ -234,6 +236,7 @@ By the time you reach him, the last useful drop has vanished. The horse stands a
 - Emma love +1.
 - Emma friendship +1.
 - Schedule `emma_horse_gift` for the following day's evening.
+- Add chat topic `emma_memory_horse_honey_robbery` (memory; known by emma): "We were robbed by a creature that cannot count," Emma says. "I still cannot decide whether that makes the loss better or worse." You mention the evidence on his whiskers. "Golden evidence. If I ride out again, I shall inspect the horse's mouth before I inspect the view."
 
 ## Node: emma_ride_home
 

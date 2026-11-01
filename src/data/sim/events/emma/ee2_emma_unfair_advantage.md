@@ -99,6 +99,7 @@ You have the distinct impression that this is not a concession.
 **Outcomes:**
 
 - Emma rivalry +1.
+- Add chat topic `emma_memory_wardrobe_guardian` (memory; known by emma): "My wardrobe did not require a guardian," Emma says. "You expressed concern for my health with a perfectly straight face." You maintain that a chill was a genuine risk. "In my own room." She looks more amused than cross. "I sent you into the corridor. It seemed kinder than making you admit what you were looking at."
 
 ### Option B: Concentrate on the enchantment
 
@@ -365,6 +366,7 @@ She pauses.
 - Emma love +1.
 - Emma rivalry +1.
 - Add story tag `emma_unfair_advantage_gambit`.
+- Add chat topic `emma_memory_blanket_truce` (memory; known by emma): "I have not forgotten the blanket," Emma says. "You undid two buttons and called it a matter of climate." You remind her that she declared a truce. "I declared a ceasefire, so that we might both graduate." The smile escapes anyway. "It was a ridiculous evening. I am glad we finished the enchantment."
 
 ### Option B: A strictly academic approach
 
@@ -442,6 +444,7 @@ Emma accompanies you to the door, looking altogether too pleased with herself.
 
 - Emma rivalry +1.
 - Add story tag `emma_unfair_advantage_emma_won`.
+- Add chat topic `emma_memory_simpler_tuesday` (memory; known by emma): "Perhaps we should try something simpler," Emma says, all sweetness. "I would hate to strain you." You suggest the enchantment was the easy part. "Then I shall have to invent a more challenging distraction." She looks entirely too pleased. "Do rest beforehand. You seem susceptible to fatigue."
 
 ## Node: the_confession
 
@@ -532,3 +535,4 @@ Her smile turns positively wicked.
 - Emma rivalry +2.
 - Emma gifts Antonio a card
 - Add story tag `emma_unfair_advantage_victory`.
+- Add chat topic `emma_memory_theatrical_solution` (memory; known by emma): "You knelt," Emma says, still sounding faintly outraged. "I thought some dreadful confession was coming, and you handed me a correct solution." You say the presentation was part of the proof. "It was outrageous. It was also right." She shakes her head. "You absolute scoundrel. Next time, a little less theater."

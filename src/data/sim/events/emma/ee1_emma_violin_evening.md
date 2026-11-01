@@ -90,6 +90,11 @@ When the applause finally dies away, she gives you a theatrical bow.
 **Title:** A Profitable Evening  
 **Emotion:** happy
 
+
+**On enter:**
+
+- Add chat topic `emma_memory_violin_tray` (memory; known by emma): "My manager," Emma says, testing the word. "You carried drinks, collected requests, and refused every suggestion of bagpipes." You say your qualifications were extensive. "They were improvised. That is why I was impressed."
+
 The evening proves unexpectedly entertaining. You carry drinks, collect musical requests, and persuade a particularly enthusiastic merchant that standing directly in front of the violinist to declare his admiration is not strictly necessary.
 
 Meanwhile, Emma performs with astonishing skill. She moves effortlessly between solemn melodies and lively dances, captivating the entire room. Even the innkeeper abandons his accounts to listen.
@@ -139,6 +144,7 @@ She gathers the remaining coins into her purse, looking thoroughly satisfied.
 - Gain 100 gold.
 - Emma friendship +1.
 - Add story tag `emma_violin_helped`.
+- Add chat topic `emma_memory_violin_wages` (memory; known by emma): "You took the coins," Emma says. "A sensible habit, for a man attending an Academy he can barely afford." You say she knows the affliction. "Intimately. Which is why I recognized it. You earned the hundred, mostly by keeping admirers at a survivable distance."
 
 ### Option B: Accept the card
 
@@ -167,3 +173,4 @@ She smiles.
 - Gift Antonio 1 card (pools emma and base)
 - Emma friendship +1.
 - Add story tag `emma_violin_helped`.
+- Add chat topic `emma_memory_violin_card_pay` (memory; known by emma): "You chose the card over the coins," Emma says. "Poetic, and slightly inconvenient at the bakery." You say a good enchantment lasts. "So does hunger. I was pleased anyway. It suggested you had been listening to the music, not only to the bowl."

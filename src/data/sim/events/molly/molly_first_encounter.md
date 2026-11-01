@@ -21,3 +21,6 @@ Effects
 Molly friendship +1.
 
 knownTraits: Molly is a friendly, modest fellow student who seems uncertain of her academic abilities.
+
+- Add chat topic `molly_memory_first_game` (memory; known by molly): "That first game was fun," Molly says, brightening. "You're quite good, you know. I meant it." She mimes a neat stack of cards. "All those little enchantments, just so the cardboard will follow the rules. And that was supposed to be the easy part!" She laughs. "I'm still waiting for the part that feels easy to me."
+- Add chat topic `molly_memory_talking_cards` (memory; known by molly): "My father once met an artificer whose cards could give advice," Molly tells you. "Proper conversations. Not just spells." Her eyes shine. "Imagine making something clever enough to talk back. I think I would ask it whether I was doing the lesson correctly. And then I would ask it again, just to be sure."

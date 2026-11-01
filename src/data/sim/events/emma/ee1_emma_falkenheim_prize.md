@@ -88,6 +88,7 @@ By the third, you begin to understand why the Academy employs so many administra
 **Outcomes:**
 
 - Antonio receives 1,000 coins.
+- Add chat topic `emma_memory_falkenheim_receipt` (memory; only Emma knows it): "Three signatures," Emma says, with the air of someone recounting a natural disaster. "The administrator counted out your thousand coins and then produced a receipt that required a small committee." You ask whether he was protecting the treasury. "I think he was protecting the receipt. The coins seemed perfectly willing to leave." She shakes her head. "Next time we ask whether the prize includes paperwork. I should like to budget for it."
 
 {{afterPrize}}
 
@@ -118,6 +119,7 @@ Emma looks at you with profound sympathy.
 **Outcomes:**
 
 - Unlock a 20% discount on purchases at the Academy's materials shop for one year.
+- Add chat topic `emma_memory_falkenheim_discount` (memory; only Emma knows it): "Forty-seven conditions," Emma says. "I have been trying to decide which of them offended me most." You remind her that twenty percent off crafting materials is not nothing. "No. It is merely something my banker cannot deposit." She gives you a look of profound, fond sympathy. "I do hope one of them permits you to buy a gemstone without founding a subcommittee."
 
 {{afterPrize}}
 
@@ -213,3 +215,8 @@ She gives you a bright smile.
 
 - Emma friendship +1.
 - Add story tag `emma_falkenheim_prize_received`.
+- Add chat topic `emma_memory_falkenheim_reward` (memory; only Emma knows it): "I caught myself doing something quite extraordinary yesterday," Emma says. "Looking at a purchase without first calculating which meal I'd have to skip to afford it." You ask whether the Falkenheim prize has changed her habits. "Not yet. I'm not reckless." A smile breaks through. "But I might permit myself the occasional luxury. A book, perhaps. One that isn't strictly necessary."
+- Add chat topic `emma_memory_falkenheim_cash` (memory; only Emma knows it): "I have been reviewing my performance in the administrator's office," Emma says. "He began to explain the alternatives, and I answered with a single word." You suggest that the word was cash. "Twice. I believe in thoroughness." She looks entirely unrepentant. "He stopped explaining. I consider the method a success."
+- Add chat topic `emma_memory_falkenheim_student` (memory; only Emma knows it): "The bank clerk asked me to repeat myself," Emma says. "Apparently 'I would like to repay the loan' is not a sentence he hears from students." She gives a small, wondering laugh. "The letters, the interest, all those careful calculations... one purse, and they were finished." She looks at you. "I can actually afford to be a student, Fibonacci. Do try not to let it go to my head."
+- Add chat topic `emma_memory_falkenheim_land` (memory; only Emma knows it): Emma produces the commemorative Academy card and turns it in the light. "I still can't quite believe they gave us these. A land enchantment we won't be taught for years, and they handed it over as if it were a certificate." She studies the spires. "I keep it with me. Not to play. Not yet. I should hate to discover I've been carrying a masterpiece and using it to pay for a workshop."
+- Add chat topic `academy_lore_falkenheim_prize` (lore; public; once only; Emma excluded): "The administration has been insufferable since Falkenheim," your companion says. "They paid Delamain and Fibonacci out of the Academy treasury rather than wait for the prize to clear. A thousand coins, or a discount at the materials shop, and a commemorative land card of the Academy itself." There is a short laugh. "I have never heard the Board of Governors described as pleased. I assumed the word was reserved for endowments."

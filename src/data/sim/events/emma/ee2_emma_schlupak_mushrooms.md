@@ -46,6 +46,8 @@ She glances down toward the larger cluster.
 
 Outcomes: Gain resource: 2 SchlupakMushrooms.
 
+- Add chat topic `emma_memory_thorncap_modest` (memory; known by emma): "A respectable harvest," Emma says. "Two Thorncaps, properly contained, and the larger cluster left to gloat at the bottom of the slope." You say respectable was her word. "It was. Spectacular would have required a certain amount of falling. I prefer my field assistants unbroken."
+
 B — Climb down for the larger harvest
 
 Check: Dexterity — Hard.
@@ -66,6 +68,7 @@ Emma examines the contents of your bag, plainly delighted.
 
 Outcomes: Gain 4 SchlupakMushrooms.
 
+- Add chat topic `emma_memory_thorncap_limbs` (memory; known by emma): "Four specimens," Emma says, "and all your limbs still attached. I was particularly relieved about the limbs." You mention her warning about the red ones. "The roots, Antonio. The mushrooms were supposed to be red. I refuse to let that distinction die."
 On failure:
 
 The first few steps go well. Then a loose root gives way under your boot.
@@ -85,3 +88,5 @@ She looks at your ruined trousers.
 "Rather enthusiastically, in fact."
 
 Outcomes: No resources.
+
+- Add chat topic `emma_memory_thorncap_squelch` (memory; known by emma): "We did learn something on that slope," Emma says. "Thorncaps release their toxin when crushed. Enthusiastically." You glance down, as if the stains might have returned. "Your trousers made a thorough contribution to science. Next time, we respect the loose earth."

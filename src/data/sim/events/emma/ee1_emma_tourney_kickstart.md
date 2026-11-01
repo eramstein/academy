@@ -86,3 +86,5 @@ With that, she sweeps out of the classroom, leaving you to contemplate the pecul
 - Emma friendship +1.
 - Story Tag: `emma_tourney_partner_selected`.
 - Schedule `emma_tourney_training` event for the next day's evening at Emma's room.
+- Add chat topic `academy_lore_falkenheim_invitation` (lore; use once): "The Royal College has challenged our first-years," your companion says. "Two representatives, crafting and tournament play, on the College's own ground. Professor Glützenbaum read the letter as though it had insulted the building."
+- Add chat topic `emma_memory_tourney_demands` (memory; known by emma): "I hope you rested before that first strategy evening," Emma says. "I did warn you I intended to be extremely demanding." You ask whether arriving on time counted. "It counted as a start. The Royal College will not be impressed by punctuality alone." A small smile. "I was, a little. Do not let it go to your head."

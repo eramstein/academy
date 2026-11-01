@@ -23,6 +23,9 @@ Move player and molly to library
 
 new story tag: molly_tutoring
 
+- Add chat topic `academy_lore_molly_tutoring` (lore; exclude molly; use once): "Molly Moreno holds lessons for village children in the library," your companion says. "Evenings, when the place has otherwise gone quiet. Arithmetic, a tower of books, and a goat that may have eaten someone's homework." A small smile. "She calls it a little thing. It does not look little."
+- Add chat topic `molly_memory_library_goat` (memory; known by molly): "A goat ate the homework," Molly says, entirely serious. "That's what one of the children told me, and I believed him. It seemed possible." You mention the tower of books. "Oh, that was wonderful until it fell down. They were so proud of it." She smiles. "I don't mind picking the books up. They were having such a good time."
+
 new molly knownTrait: Molly volunteers to tutor children from poor families in the nearby village. She is kind, patient, and increasingly overwhelmed by the work.
 
 Options
@@ -49,6 +52,8 @@ new job: Library Mentoring
 
 new story tag: molly_tutor_partner
 
+- Add chat topic `molly_memory_tutor_interview` (memory; known by molly): "Do you know your multiplication tables?" Molly says, and then covers a laugh. "I'm sorry. They asked you before I could stop them. They're very thorough." You say you offered to help anyway. "You did. I still get happy when I remember that." She ducks her head. "It's nice, not doing all of it alone."
+
 Option B: Suggest Emma Delamain
 
 Text:
@@ -67,6 +72,8 @@ Outcomes:
 
 Molly friendship +1
 
+- Add chat topic `molly_memory_emma_referral` (memory; known by molly): "I haven't told Emma," Molly says, lowering her voice as if Emma might hear anyway. "You said she was brilliant and would make a wonderful teacher, and then you asked me not to repeat it." She looks guilty and pleased at the same time. "I would like to ask her, though. If she says no, I'll still be glad you thought of her."
+
 Option C: Wish her luck
 
 Text:
@@ -82,3 +89,5 @@ One of the children proudly presents her with a drawing of a dragon. It has six 
 Outcomes:
 
 Molly friendship +1
+
+- Add chat topic `molly_memory_dragon_moustache` (memory; known by molly): "I kept the drawing," Molly says. "Six legs, three heads, and a moustache. A very large one." You ask whether she truly liked it. "Of course I did. Someone made it for me." Her smile softens. "You hoped I would find help. I'm managing. The children make it very hard to stop."

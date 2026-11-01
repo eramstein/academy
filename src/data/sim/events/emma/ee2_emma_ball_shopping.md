@@ -82,6 +82,7 @@ She smiles, clearly pleased with the result.
   - **Description:** A well-tailored ensemble of dark wool, with a crisp linen shirt and a modest embroidered waistcoat. Understated, practical, and entirely suitable for respectable company.
 - Add story tag `emma_ball_outfit_respectable`.
 - Emma friendship +1.
+- Add chat topic `emma_memory_ball_wool` (memory; known by emma): "Dark wool," Emma says, as if reviewing a paper. "Respectable, understated, and no attempt to outshine the room." You ask whether she had hoped for more spectacle. "I had hoped for an escort who had thought about the evening. That is rarer than velvet, and considerably more useful."
 
 ### Option B: Dress to impress — 100
 
@@ -188,6 +189,7 @@ She gives you a brilliant smile.
 - Add story tag `emma_ball_outfit_magnificent`.
 - Emma rivalry +1.
 - Emma friendship +1.
+- Add chat topic `emma_memory_ball_velvet` (memory; known by emma): "I have not recovered from the blue velvet," Emma says. "You pointed at it like a man declaring war on moderation." You remind her she looked delighted. "I was. One should not outshine a ballroom by accident. You appeared to be doing it on purpose."
 
 ---
 
@@ -266,6 +268,7 @@ You suspect Saturday evening is going to be quite an experience.
   - **Name:** Emma's Silver Cravat Pin
   - **Description:** An elegant silver cravat pin set with a small deep blue gemstone, given to Antonio by Emma during their preparations for the Academy ball. A thoughtful gift from a friend with impeccable taste.
 - Add story tag `emma_ball_gift`.
+- Add chat topic `emma_memory_ball_cravat` (memory; known by emma): "The pin was a finishing touch, not a speech," Emma says. "An unsecured cravat would have wasted an afternoon of excellent advice." You say she did not have to buy it. "I know. That was rather the point." She glances at your collar from habit. "Do try not to lose it. I have already invested in your appearance once."
 
 ### Option B: Tease her about the gift
 
@@ -306,3 +309,4 @@ She slips her arm through yours and leads you toward the door.
   - **Name:** Emma's Silver Cravat Pin
   - **Description:** An elegant silver cravat pin set with a small deep blue gemstone, given to Antonio by Emma during their preparations for the Academy ball. A thoughtful gift from a friend with impeccable taste.
 - Add story tag `emma_ball_gift`.
+- Add chat topic `emma_memory_ball_fond` (memory; known by emma): "Fond of you," Emma repeats, incredulous. "I bought a cravat pin so you would not attend the ball looking unfinished." You suggest the blue stone was a generous argument. "It was a gemstone, Fibonacci, not a declaration." She fails, slightly, to look severe. "You were welcome all the same."
