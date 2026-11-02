@@ -1,0 +1,160 @@
+[
+  {
+    "topicKey": "molly_hangout_race",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "text": "Molly spots you and waves enthusiastically. \"Antonio! Fancy a little race? Just to the end of the path!\"\n\nBefore you can properly answer, she's already bouncing on her toes. You agree, and she takes off with an enormous grin. She wins comfortably, though she looks almost apologetic about it. \"Sorry! I got carried away.\" Then her eyes brighten. \"Oh! We could try again. I'll give you a head start this time!\""
+  },
+  {
+    "topicKey": "molly_hangout_appetite",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "text": "Molly is contemplating an impressive quantity of food. She notices your expression and blushes slightly. \"What? Training makes you hungry!\"\n\nYou assure her that you're merely impressed. She laughs and offers you a piece of bread. \"You should eat more too, you know. You can't expect to get stronger on books and Hordes cards alone.\" She pauses, considering this. \"Well, I suppose your brain gets plenty of exercise. That's something!\""
+  },
+  {
+    "topicKey": "molly_hangout_pushups",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "text": "Molly challenges you to a push-up contest. She drops to the ground and begins demonstrating with effortless enthusiasm.\n\nYou manage a respectable number before your arms begin complaining. Molly keeps going for several more repetitions, then stops when she notices your expression. \"Hey, that was really good!\" she says earnestly. You point out that she barely seems tired. \"Oh, I've practiced loads!\" She grins. \"Next time we'll try something you're better at. Like... thinking!\""
+  },
+  {
+    "topicKey": "molly_hangout_lost_coin",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "text": "Molly is searching the ground with a worried expression. She explains that she's lost a small coin somewhere nearby. You help her look, eventually discovering it beneath a bench.\n\n\"Oh, thank goodness!\" she exclaims. Then she notices your questioning look. \"It's not worth much, but I promised myself I'd save it.\" She pockets the coin carefully, then brightens. \"Thanks, Antonio! I owe you one.\" You suggest that finding a coin hardly deserves a debt. \"Well, maybe not. But I'm grateful anyway!\""
+  },
+  {
+    "topicKey": "molly_hangout_cards",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "text": "Molly is sorting through her Hordes cards with a thoughtful frown. \"I keep thinking I should make a really clever deck, like Emma does. But then I see a huge creature and I just want to play that instead.\"\n\nYou point out that there's nothing wrong with a straightforward strategy. She looks relieved. \"Exactly! Why spend ten turns planning something complicated when you could have a giant bear?\" She pauses. \"Though I suppose Emma would say that's why I keep losing to her.\""
+  },
+  {
+    "topicKey": "molly_hangout_strong_girl",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "text": "You find Molly helping another student carry an enormous crate. She lifts her end without apparent difficulty while the unfortunate student struggles with the other.\n\nAfterward, she notices your amused expression. \"What? It wasn't that heavy!\" You suggest that most people might disagree. Molly glances at her arms and shrugs. \"I suppose I'm stronger than I look.\" Then she giggles. \"Though I don't know how anyone could miss it. I've got rather big arms!\""
+  },
+  {
+    "topicKey": "molly_hangout_bad_joke",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "text": "Molly announces that she's heard a wonderful joke. Unfortunately, she starts laughing before reaching the punchline.\n\n\"Wait, wait! Let me start again!\" She takes a deep breath, manages another sentence, and dissolves into giggles. By the time she finally delivers the punchline, you've almost forgotten the beginning. The joke itself is spectacularly terrible. Molly looks at you expectantly, then laughs even harder when you groan. \"I know! Isn't it awful?\""
+  },
+  {
+    "topicKey": "molly_hangout_small_kindness",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "text": "Molly has stopped to help a younger student who seems close to tears over a difficult assignment. She patiently talks through the problem, encouraging him whenever he gets something right.\n\nWhen he leaves, you remark that she's rather good at helping people. Molly blushes. \"Oh, I don't know. I just remember how horrible it feels when everyone else understands something and you don't.\" She shrugs. \"Sometimes you only need someone to tell you you're not stupid.\""
+  },
+  {
+    "topicKey": "molly_hangout_competition",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "text": "Molly proposes an arm-wrestling match. She plants her elbow on a table and gives you an encouraging smile. \"Come on! It'll be fun!\"\n\nThe contest proves considerably shorter than you expected. Molly wins with a triumphant laugh, then immediately looks concerned. \"Oh! I didn't hurt you, did I?\" You assure her that your pride suffered more than your arm. She grins. \"Well, that's good. Pride grows back, doesn't it?\""
+  },
+  {
+    "topicKey": "molly_hangout_herbert",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "text": "Molly starts telling you about Herbert, her little brown rabbit. Her face lights up as she describes his latest mischief.\n\n\"He's so tiny, but he thinks he's the king of everything!\" she says fondly. \"And he always looks terribly offended when I move something he's chewing.\" You ask whether Herbert has ever bitten her. \"Only once!\" She pauses. \"Well, twice. But the second time was definitely my fault. I was holding a carrot.\""
+  },
+  {
+    "topicKey": "molly_hangout_courtyard_stretching",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "placeKey": "courtyard",
+    "text": "Molly is stretching beneath a tree when you approach. She invites you to join her, demonstrating a few simple exercises.\n\nYou manage the first ones without difficulty, but the final stretch proves rather more demanding. Molly watches your efforts with sympathetic amusement. \"Don't force it! You're supposed to feel a little pull, not tear yourself in half!\" She helps you adjust your posture, then steps back with a satisfied nod. \"There! Much better. You'll be doing cartwheels before you know it!\""
+  },
+  {
+    "topicKey": "molly_hangout_courtyard_clouds",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "placeKey": "courtyard",
+    "text": "Molly is lying on the grass, staring up at the clouds. She waves you over and points at a particularly unusual shape.\n\n\"Look! That one's a dragon!\" You suggest it looks more like a potato. She squints thoughtfully. \"A dragon eating a potato, maybe?\" Soon you're both inventing increasingly ridiculous creatures from the drifting clouds. Eventually, Molly sighs contentedly. \"You know, I think we should do this more often. It's nice not having to be good at anything for a change.\""
+  },
+  {
+    "topicKey": "molly_hangout_cafeteria_dessert",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "placeKey": "cafeteria",
+    "text": "Molly is staring longingly at the last slice of cake on the cafeteria counter. She looks torn between buying it and exercising restraint.\n\nYou suggest that she deserves a treat after all her training. \"You're a terrible influence, Antonio!\" she declares, already reaching for her purse. She buys the cake and insists on sharing it with you. When you take a modest bite, she looks genuinely puzzled. \"That's all? Are you sure? It's really good!\""
+  },
+  {
+    "topicKey": "molly_hangout_cafeteria_elsa",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "placeKey": "cafeteria",
+    "text": "Molly watches Elsa pass through the cafeteria, looking rather uncomfortable. \"I wish she wouldn't always look at people like that,\" she murmurs.\n\nYou ask what she means. \"Like they're something unpleasant stuck to her shoe.\" Molly sighs. \"I know she's clever and important and everything, but that doesn't mean she has to make other people feel small.\" She brightens after a moment. \"Maybe she just needs a friend!\" You suggest that befriending Elsa might be rather ambitious. \"Well, someone ought to try!\""
+  },
+  {
+    "topicKey": "molly_hangout_inn_dinner",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "placeKey": "royal-pigeon-inn",
+    "text": "Molly invites you to share a meal at the Royal Pigeon Inn. She's in excellent spirits, enthusiastically recommending several dishes.\n\nWhen the food arrives, she launches into a story about a disastrous cooking attempt of her own. Apparently, she'd once managed to burn soup. You express surprise that such a thing is possible. \"So was I!\" she laughs. \"The pot was completely black! Mrs. Mathilda said she'd never seen anything like it.\" She pauses. \"She wasn't very impressed.\""
+  },
+  {
+    "topicKey": "molly_hangout_inn_dancing",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "placeKey": "royal-pigeon-inn",
+    "text": "A lively tune begins playing in the inn, and Molly immediately starts tapping her feet. \"Oh, I love this one!\"\n\nShe looks toward the little space where a few patrons are dancing, then back at you. \"Do you dance, Antonio?\" You offer a cautious answer. Molly grins. \"Neither do I! Well, not properly. But that shouldn't stop us, should it?\" Before long, you're stumbling through an enthusiastic approximation of a dance while Molly laughs every time one of you misses a step."
+  },
+  {
+    "topicKey": "molly_hangout_inn_games",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "placeKey": "royal-pigeon-inn",
+    "text": "Molly has discovered a little wooden game involving rings and pegs. She challenges you to a match, explaining the rules with great enthusiasm.\n\nUnfortunately, her first throw misses entirely. She laughs and tries again, with only slightly better results. You manage a respectable score, prompting her to applaud. \"Oh, you're good at this!\" She studies the board carefully before her next attempt. \"Right. I'm going to concentrate properly this time!\" The ring flies straight past the table. Molly bursts out laughing."
+  },
+  {
+    "topicKey": "molly_hangout_inn_quiet_evening",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "placeKey": "royal-pigeon-inn",
+    "text": "Molly seems unusually quiet as you sit together at the inn. You ask whether something's wrong.\n\n\"Oh, nothing terrible,\" she says. \"Just one of those days when everything feels a bit difficult.\" She smiles apologetically. \"Sorry. I'm not very good company tonight.\" You assure her that she doesn't have to be cheerful all the time. Molly considers this, then gives you a grateful smile. \"Thanks, Antonio. Sometimes I forget that.\""
+  },
+  {
+    "topicKey": "molly_hangout_fwb_wrestling",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "relationTags": ["MollyJustForFun"],
+    "text": "Molly challenges you to a playful wrestling match, looking entirely too confident. You barely have time to prepare before she tackles you onto a soft patch of grass.\n\nA few moments later, you're pinned beneath her, both of you laughing. \"Give up?\" she asks triumphantly. You suggest that you might need some encouragement. Molly's grin turns mischievous. \"Oh, I see. Trying to negotiate, are we?\" She leans down and kisses you. \"There. Now give up before I change my mind!\""
+  },
+  {
+    "topicKey": "molly_hangout_fwb_secret_smile",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "relationTags": ["MollyJustForFun"],
+    "text": "Molly catches your eye across the room and gives you a smile that's considerably less innocent than usual. When you approach, she greets you with perfect sweetness.\n\n\"Hello, Antonio! Lovely day, isn't it?\" You ask what she's smiling about. \"Oh, nothing!\" She leans closer, lowering her voice. \"Just remembering something rather nice.\" She blushes a little, then giggles at your expression. \"What? I'm allowed to have secrets! Even if you happen to know some of them.\""
+  },
+  {
+    "topicKey": "molly_hangout_fwb_massage",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "relationTags": ["MollyJustForFun"],
+    "text": "Molly complains that her shoulders are sore after a particularly demanding training session. You offer to help, and she accepts with a grateful smile.\n\nAs you begin massaging her shoulders, she closes her eyes and sighs contentedly. \"Oh, that's lovely. You've got surprisingly good hands, Antonio.\" A moment later, she opens one eye and glances back at you. \"Actually, I think I knew that already.\" She laughs at your expression, looking extremely pleased with herself."
+  },
+  {
+    "topicKey": "molly_hangout_fwb_cuddling",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "relationTags": ["MollyJustForFun"],
+    "text": "Molly settles beside you with a contented sigh, resting her head against your shoulder. For a while, neither of you says anything.\n\n\"You know,\" she murmurs eventually, \"I used to think this sort of thing would feel terribly awkward.\" You ask whether it does. \"Not really. It's rather nice, actually.\" She hesitates, then smiles shyly. \"I hope you don't mind. I'm not very good at pretending I don't like someone when I do.\" She snuggles a little closer."
+  },
+  {
+    "topicKey": "molly_hangout_fwb_private_joke",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "relationTags": ["MollyJustForFun"],
+    "text": "Molly makes a perfectly innocent remark about needing more practice, then suddenly catches herself and starts giggling.\n\nYou raise an eyebrow. \"Oh, don't look at me like that!\" she protests, blushing. \"I wasn't thinking anything naughty!\" Her expression makes it abundantly clear that she was. You point this out, and she hides her face in her hands. \"Oh, you're awful!\" A moment later, she peeks through her fingers with a mischievous grin. \"Though perhaps I did have something in mind.\""
+  },
+  {
+    "topicKey": "molly_hangout_fwb_no_pressure",
+    "npcKey": "molly",
+    "activityType": "hangout",
+    "relationTags": ["MollyJustForFun"],
+    "text": "Molly sits beside you, swinging her legs idly. \"Antonio? Can I ask you something?\"\n\nYou nod, and she hesitates before speaking. \"You're happy with how things are between us, aren't you?\" You reassure her, and she visibly relaxes. \"Good. I just don't want things to get complicated.\" She smiles, a little shyly. \"I like being your friend. And I like... well, the other things too.\" She laughs softly. \"I suppose I'm being rather greedy, aren't I?\""
+  }
+]

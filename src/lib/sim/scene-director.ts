@@ -5,7 +5,13 @@
   mention penalty). Tunables live in CHAT_TOPIC_WEIGHTS.
 */
 
-import { ChatTopicType, type ChatTopic } from '@/lib/_model';
+import {
+  ActivityType,
+  ChatTopicType,
+  type ChatTopic,
+  type RelationProgress,
+  type RelationTag,
+} from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getRandomFromArray, getRandomWeighted } from '@/lib/_utils/random';
 import {
@@ -15,6 +21,13 @@ import {
   type ChatTopicTextMeta,
 } from './chat-topics';
 import { getCurrentScheduledActivity } from './schedule';
+
+export interface DirectSocialSceneOptions {
+  /** Overrides the scheduled activity when matching ChatTopicText.activityType. */
+  activityType?: ActivityType;
+  /** When true with activityType, only lines tagged for that activity are eligible. */
+  requireActivityType?: boolean;
+}
 
 /**
  * Type weights drive the first-pass pick among types that have a speakable
@@ -56,11 +69,14 @@ interface RankedTopic {
 }
 
 /** Chooses the chat line this NPC should speak right now. */
-export async function directSocialScene(characterKey: string): Promise<DirectedChat | undefined> {
+export async function directSocialScene(
+  characterKey: string,
+  options: DirectSocialSceneOptions = {}
+): Promise<DirectedChat | undefined> {
   const npc = gs.characters[characterKey];
   if (!npc) return undefined;
 
-  const ranked = await rankTopics(characterKey);
+  const ranked = await rankTopics(characterKey, options);
   if (ranked.length === 0) {
     console.log('[scene-director]', { characterKey, name: npc.name, topic: null });
     return undefined;
@@ -122,10 +138,19 @@ export function recordDirectedChat(direction: DirectedChat): void {
   };
 }
 
-async function rankTopics(characterKey: string): Promise<RankedTopic[]> {
+async function rankTopics(
+  characterKey: string,
+  options: DirectSocialSceneOptions = {}
+): Promise<RankedTopic[]> {
   const today = gs.time.day;
-  const activityType = getCurrentScheduledActivity()?.type;
-  const placeKey = gs.characters[characterKey]?.placeKey;
+  const activityType = options.activityType ?? getCurrentScheduledActivity()?.type;
+  const requireActivityType = options.requireActivityType === true;
+  const npc = gs.characters[characterKey];
+  const placeKey = npc?.placeKey;
+  const relation = {
+    progress: npc?.relationProgress ?? {},
+    tags: npc?.relationTags ?? [],
+  };
   const ranked: RankedTopic[] = [];
 
   for (const topic of gs.chatTopics ?? []) {
@@ -133,7 +158,14 @@ async function rankTopics(characterKey: string): Promise<RankedTopic[]> {
     if (!npcKnowsTopic(topic, characterKey)) continue;
     const texts = await textsForTopic(topic.key);
     const dedicated = texts.some((text) => text.npcKey === characterKey);
-    const lines = speakableLines(texts, characterKey, activityType, placeKey);
+    const lines = speakableLines(
+      texts,
+      characterKey,
+      activityType,
+      placeKey,
+      relation,
+      requireActivityType
+    );
     if (lines.length === 0) continue;
     ranked.push({
       topic,
@@ -190,17 +222,25 @@ function recencyBonus(generatedOnDay: number, today: number): number {
 /**
  * NPC-specific lines replace the generic ones.
  * A line that names the current activity or place is preferred over a plain one.
+ * Relation gates drop lines the NPC has not unlocked yet.
  * The line used last is skipped when another remains.
  */
 function speakableLines(
   texts: ChatTopicTextMeta[],
   npcKey: string,
   activityType: ChatTopicTextMeta['activityType'],
-  placeKey: string | undefined
+  placeKey: string | undefined,
+  relation: { progress: Partial<RelationProgress>; tags: RelationTag[] },
+  requireActivityType = false
 ): ChatTopicTextMeta[] {
   const dedicated = texts.filter((text) => text.npcKey === npcKey);
   const pool = dedicated.length > 0 ? dedicated : texts.filter((text) => !text.npcKey);
-  const fitting = pool.filter((text) => fitsContext(text, activityType, placeKey));
+  const fitting = pool.filter((text) =>
+    fitsContext(text, activityType, placeKey, relation)
+  );
+  if (requireActivityType && activityType) {
+    return fitting.filter((text) => text.activityType === activityType);
+  }
   const contextual = fitting.filter((text) => text.activityType || text.placeKey);
   return contextual.length > 0 ? contextual : fitting;
 }
@@ -208,10 +248,49 @@ function speakableLines(
 function fitsContext(
   text: ChatTopicTextMeta,
   activityType: ChatTopicTextMeta['activityType'],
-  placeKey: string | undefined
+  placeKey: string | undefined,
+  relation: { progress: Partial<RelationProgress>; tags: RelationTag[] }
 ): boolean {
   if (text.activityType && text.activityType !== activityType) return false;
   if (text.placeKey && text.placeKey !== placeKey) return false;
+  if (!meetsRelationTags(text.relationTags, relation.tags)) return false;
+  if (!meetsRelationProgress(text.relationProgress, relation.progress)) return false;
+  if (!meetsStoryTags(text.storyTags, gs.storyTags ?? {})) return false;
+  return true;
+}
+
+/** Every required tag must already be on the NPC. */
+function meetsRelationTags(
+  required: RelationTag[] | undefined,
+  have: RelationTag[]
+): boolean {
+  if (!required || required.length === 0) return true;
+  return required.every((tag) => have.includes(tag));
+}
+
+/** NPC values must be at least each authored minimum. */
+function meetsRelationProgress(
+  required: Partial<RelationProgress> | undefined,
+  have: Partial<RelationProgress>
+): boolean {
+  if (!required) return true;
+  for (const [key, min] of Object.entries(required) as [keyof RelationProgress, number][]) {
+    if (typeof min !== 'number') continue;
+    if ((have[key] ?? 0) < min) return false;
+  }
+  return true;
+}
+
+/** `gs.storyTags` values must be at least each authored minimum. */
+function meetsStoryTags(
+  required: Record<string, number> | undefined,
+  have: Record<string, number>
+): boolean {
+  if (!required) return true;
+  for (const [tag, min] of Object.entries(required)) {
+    if (typeof min !== 'number') continue;
+    if ((have[tag] ?? 0) < min) return false;
+  }
   return true;
 }
 

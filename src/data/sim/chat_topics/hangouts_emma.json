@@ -1,0 +1,440 @@
+[
+  {
+    "topicKey": "emma_hangout_general_cards",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "text": "Emma produces a small deck of cards and starts shuffling with practiced elegance. \"Tell me something, Antonio. When you lose a match, do you blame your cards, your opponent, or your own tragic lack of talent?\"\n\nYou suggest that sometimes the opponent simply plays better. She considers this with exaggerated seriousness. \"How very mature. Personally, I prefer to blame the weather.\" She deals two hands before you can protest. Apparently, this was an invitation to play all along."
+  },
+  {
+    "topicKey": "emma_hangout_general_gossip",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "text": "Emma has acquired an interesting piece of Academy gossip: a student supposedly challenged Professor Glützenbaum to a Hordes match, lost in four turns, and then accused the professor of using forbidden magic.\n\n\"The truly scandalous part,\" she explains, lowering her voice conspiratorially, \"is that Glützenbaum apparently offered him a rematch.\" You spend the next few minutes imagining increasingly ridiculous ways the student might redeem himself. By the time you suggest challenging the professor to a cooking contest, Emma is laughing too hard to finish her tea."
+  },
+  {
+    "topicKey": "emma_hangout_general_trusted",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma spots you approaching and smiles before quickly rearranging her expression into something more dignified. \"Ah, my favorite interruption. I was beginning to think I'd have to entertain myself.\"\n\nYou spend some time discussing nothing particularly important: a ridiculous lecture, the latest Academy rumors, an improbable Hordes strategy. At one point, Emma starts telling you about an embarrassing childhood memory, catches herself, and pauses. Then she shrugs and continues. It's a small thing, perhaps, but there was a time when she would have guarded such a story like a state secret."
+  },
+  {
+    "topicKey": "emma_hangout_general_feelings",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "storyTags": {
+      "emma_knows_antonio_feelings": 1
+    },
+    "text": "You and Emma are discussing an upcoming Hordes match when she suddenly stops listening. \"Antonio,\" she says, studying your face, \"has anyone ever told you that you're rather difficult to read?\"\n\nYou point out that she seems to manage perfectly well. \"Oh, I know what you're thinking most of the time. That's not the problem.\" She looks away, an unexpected hint of color rising in her cheeks. \"Never mind. Forget I said anything.\" A moment later, she's back to explaining her brilliant tactical plan, speaking just a little faster than usual."
+  },
+  {
+    "topicKey": "emma_hangout_general_couple",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "relationTags": ["significant_other"],
+    "text": "Emma slips her arm through yours as you walk together. \"You realize,\" she remarks, \"that dating me comes with certain obligations. You must admire my intelligence, tolerate my occasional brilliance, and never, under any circumstances, deliberately lose a match to make me happy.\"\n\nYou ask whether there are any benefits. \"Naturally. You get to spend time with a remarkably charming young woman.\" She pauses, then leans over to kiss your cheek. \"And occasionally, if you behave, she might even admit she's rather fond of you.\""
+  },
+  {
+    "topicKey": "emma_hangout_library_research",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "text": "You find Emma surrounded by books, taking notes with the concentration of someone planning a military campaign. She acknowledges you with a brief nod and gestures toward an empty chair.\n\nFor a while, you sit together in companionable silence. Eventually, she slides a particularly complicated passage across the table. \"What do you make of this?\" You offer your interpretation. She considers it, corrects two minor details, and grudgingly admits that your reasoning isn't entirely terrible. Coming from Emma, that practically qualifies as a standing ovation."
+  },
+  {
+    "topicKey": "emma_hangout_library_trusted",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma is hiding behind an enormous book when you arrive. She lowers it just enough to reveal a mischievous smile. \"Perfect timing. I need an accomplice.\"\n\nHer crime, it turns out, is having discovered a collection of spectacularly bad romantic poetry in the library's neglected upper shelves. She insists on reading selected passages in a solemn, theatrical whisper while you struggle not to laugh. When the librarian shoots you both a murderous glare, Emma immediately assumes an expression of scholarly innocence. Under the table, she nudges your foot with hers, entirely unrepentant."
+  },
+  {
+    "topicKey": "emma_hangout_library_feelings",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "storyTags": {
+      "emma_knows_antonio_feelings": 1
+    },
+    "text": "Emma asks you to help retrieve a book from a particularly crowded shelf. As you lean past her, your shoulders brush. She becomes very interested in the titles directly in front of her.\n\n\"You know,\" she says eventually, \"people are going to start talking if we keep spending so much time together.\" You ask whether that bothers her. \"I didn't say that.\" She takes the book from your hands, then adds more quietly, \"I just thought you ought to know.\" The curious thing is that she looks almost disappointed when you step aside to give her room."
+  },
+  {
+    "topicKey": "emma_hangout_library_couple",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "relationTags": ["significant_other"],
+    "text": "Emma is supposedly helping you study. In practice, she has spent the last ten minutes drawing tiny, increasingly ridiculous portraits of you in the margins of her notes.\n\n\"This one captures your expression when you're losing a match,\" she whispers, showing you a particularly tragic caricature. You retaliate with a sketch of her looking unbearably smug. She examines it, announces that you've made her nose too large, and quietly rests her head against your shoulder. The librarian passes nearby and gives you both a disapproving look. Emma doesn't move an inch."
+  },
+  {
+    "topicKey": "emma_hangout_room_tea",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "text": "Emma invites you in, apologizing for the state of her room despite everything being arranged with almost military precision. She offers you tea and spends several minutes explaining why the Academy's preferred brewing method is fundamentally misguided.\n\nYou make the mistake of suggesting that tea is just tea. She stares at you as though you've confessed to a serious moral failing. \"Antonio, I had hoped you were a man of culture.\" Nevertheless, she pours you a generous cup and seems pleased when you compliment it. She even offers you another biscuit, though she insists it's only because she bought too many."
+  },
+  {
+    "topicKey": "emma_hangout_room_trusted",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "You find Emma sitting cross-legged on her bed, attempting to mend a small tear in one of her dresses. She has apparently been losing an increasingly personal argument with the needle.\n\n\"Don't look so pleased. Some of us have talents that extend beyond domestic drudgery.\" You offer to help, but she refuses on principle. A few minutes later, she reluctantly hands you the garment. While you work, she tells you stories about the elaborate costumes she used to wear for ballet performances. Her voice grows softer as she remembers them. When you finish, she thanks you with a surprisingly sincere smile."
+  },
+  {
+    "topicKey": "emma_hangout_room_feelings",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "storyTags": {
+      "emma_knows_antonio_feelings": 1
+    },
+    "text": "Emma has invited you over for tea. Nothing unusual about that, except that she's changed her outfit, arranged her hair rather carefully, and prepared an impressive selection of little cakes.\n\n\"What?\" she asks when she notices you looking around. \"Am I not allowed to make an effort for a guest?\" You assure her that everything is lovely. She seems pleased, then immediately attempts to disguise it by criticizing your choice of cake. Later, while you're laughing together over some trivial story, her hand settles briefly on yours. She withdraws it after a moment, but not before giving your fingers the gentlest squeeze."
+  },
+  {
+    "topicKey": "emma_hangout_room_couple",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "relationTags": ["significant_other"],
+    "text": "Emma has declared the afternoon a holiday from academic responsibilities. She is curled up beside you on her bed with a book, occasionally reading particularly amusing passages aloud.\n\nAfter a while, she puts the book aside and settles against your chest. \"I used to think people who spent entire afternoons doing absolutely nothing together were terribly dull,\" she murmurs. You ask whether she's changed her mind. \"Not entirely. It's still a shocking waste of time.\" She tilts her head up for a kiss. \"But I suppose there are worse ways to waste it.\""
+  },
+  {
+    "topicKey": "emma_hangout_inn_dinner",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "text": "Emma joins you for dinner at the Old Monk Inn and immediately begins conducting a merciless review of the establishment's culinary standards. The soup is acceptable, the bread commendable, and the stew apparently the victim of a tragic misunderstanding involving salt.\n\nWhen you suggest that she's being rather demanding, she raises an eyebrow. \"Standards, Antonio. Civilization depends upon them.\" Yet she eats every last bite and spends the rest of the meal cheerfully discussing Academy life. When the innkeeper asks whether everything was satisfactory, she rewards him with a gracious smile and an entirely undeserved compliment."
+  },
+  {
+    "topicKey": "emma_hangout_inn_trusted",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma is in an unusually mischievous mood tonight. She challenges you to invent elaborate backstories for the inn's other patrons. The elderly gentleman by the fireplace becomes a retired dragon hunter, while the quiet woman reading by the window is obviously an international jewel thief.\n\nYou eventually accuse Emma of being a runaway princess traveling under an assumed name. She lifts her chin. \"Naturally. And you, dear Antonio, are my rather incompetent bodyguard.\" She pauses to consider this. \"Although I suppose I've grown accustomed to having you around.\" She steals a piece of bread from your plate before you can answer."
+  },
+  {
+    "topicKey": "emma_hangout_inn_feelings",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "storyTags": {
+      "emma_knows_antonio_feelings": 1
+    },
+    "text": "A traveling musician is playing a gentle waltz in the corner of the inn. Emma listens for a moment, her fingers tapping unconsciously against the table. \"That's a rather lovely piece,\" she admits.\n\nYou ask whether she'd like to dance. She looks genuinely startled. \"Here? In front of everyone? Antonio, really.\" Her objections lose some of their force when you offer your hand, but she glances around and eventually shakes her head. \"Not tonight.\" A little later, as the musician begins another tune, she leans closer. \"For the record,\" she says softly, \"I didn't say never.\""
+  },
+  {
+    "topicKey": "emma_hangout_inn_couple",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "relationTags": ["significant_other"],
+    "text": "Emma has dressed elegantly for your evening together, though she insists it's merely because she happened to have something suitable to wear. Throughout dinner, she entertains you with a scandalously inaccurate account of how the two of you first met, in which she emerges as a brilliant heroine and you as a hopelessly smitten admirer.\n\nWhen you protest, she smiles sweetly. \"Oh, don't pretend you weren't impressed.\" Beneath the table, her foot finds yours. Later, as you leave the inn, she takes your hand without hesitation. \"For what it's worth,\" she adds, \"I was rather impressed too.\""
+  },
+  {
+    "topicKey": "emma_hangout_trusted_bad_advice",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma asks your opinion on a particularly troublesome artificery problem. You offer a sensible solution, which she considers for several seconds before shaking her head. \"Too straightforward. I was hoping for something cleverer.\"\n\nYou propose an extravagantly complicated alternative involving three enchantments and a small explosion. \"Much better,\" she says approvingly. \"Completely impractical, of course, but at least you've made an effort.\" She returns to her notes with a smile. \"For the record, your first idea was probably right.\""
+  },
+  {
+    "topicKey": "emma_hangout_trusted_molly",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma tells you that Molly has been trying to persuade her to take up running. \"Apparently, spending an hour voluntarily exhausting oneself is supposed to be invigorating.\"\n\nYou point out that ballet isn't exactly effortless. \"Ballet is an art, Antonio. Running is what one does when pursued by something unpleasant.\" She pauses. \"Though I suppose Molly has a point about exercise.\" After a moment's consideration, she smiles wickedly. \"Perhaps I'll challenge her to a race. The poor girl deserves an occasional easy victory.\""
+  },
+  {
+    "topicKey": "emma_hangout_trusted_ambition",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "You find Emma unusually thoughtful. She admits she's been wondering what she'll do after the Academy. \"Something worthwhile, obviously. Preferably something that pays well enough that I never have to calculate the price of a loaf of bread again.\"\n\nYou ask whether she ever considers simply enjoying her success when it comes. She looks at you with a faint smile. \"What an extravagant idea.\" Then, after a pause, she adds, \"Perhaps I might. For an afternoon or two.\" She nudges your shoulder. \"Someone will have to remind me.\""
+  },
+  {
+    "topicKey": "emma_hangout_trusted_competition",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma challenges you to a contest: each of you must name something the other is genuinely better at. She goes first, acknowledging one of your talents with surprising generosity.\n\nYou return the compliment. She immediately rejects it. \"That doesn't count. I already know I'm good at that.\" You try again, selecting something rather more personal. For once, she has no immediate reply. Then she clears her throat. \"Very well. That was almost touching.\" She folds her arms. \"I still win, naturally.\""
+  },
+  {
+    "topicKey": "emma_hangout_library_marginalia",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma shows you a scholarly treatise whose previous owner has filled the margins with furious objections. Some are insightful. Others are spectacularly petty.\n\n\"Look at this one,\" she whispers, pointing to a particularly venomous annotation. \"The author claims the entire theory is nonsense because the professor who proposed it couldn't distinguish a violin from a viola.\" You suggest the criticism may be unfair. Emma turns the page. \"Oh, it gets worse. Apparently they were married.\" You spend an enjoyable half hour reconstructing a decades-old academic feud from increasingly indignant footnotes."
+  },
+  {
+    "topicKey": "emma_hangout_library_memory",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma closes her book and announces a little experiment. She reads a paragraph aloud, then challenges you to reproduce its meaning from memory. You manage reasonably well, though she catches several omissions.\n\nWhen you ask her to attempt the same exercise, she delivers an almost flawless summary. \"Years of practice,\" she explains, with just a hint of pride. You accuse her of choosing a subject she already knows. She looks offended for precisely two seconds before bursting into laughter. \"All right, perhaps I did. But you must admit it was beautifully executed.\""
+  },
+  {
+    "topicKey": "emma_hangout_library_childhood",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma discovers an old mathematics primer and smiles at a familiar illustration. \"I had a copy of this when I was little. My father used to give me problems to solve after supper.\"\n\nShe turns a few pages, recalling how she once spent an entire afternoon proving that one of the answers was wrong. \"I was insufferable about it,\" she admits. You express disbelief that such a thing could be possible. Emma shoots you a look. \"Careful. I was about to tell you something rather sweet about my parents.\" She continues anyway."
+  },
+  {
+    "topicKey": "emma_hangout_library_silent_company",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma is deeply absorbed in her reading, but she moves her belongings aside to make room for you. For nearly an hour, neither of you says much. Occasionally she passes you an interesting passage or makes a small, amused noise at something in her book.\n\nWhen you finally get up to leave, she glances at the empty chair beside her. \"That was pleasant,\" she says simply. You point out that you barely spoke. \"Yes, Antonio. I noticed.\" She smiles and returns to her book. \"That's partly why it was pleasant.\""
+  },
+  {
+    "topicKey": "emma_hangout_library_argument",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "A casual remark about an artificery theory turns into a spirited debate. Emma sketches diagrams on a scrap of paper, you challenge her assumptions, and soon both of you are whispering furiously across the table.\n\nEventually, you identify a flaw she hadn't considered. She studies the diagram for a long moment. \"Damn,\" she says quietly. Then she smiles. \"That's an excellent objection.\" You ask whether this means you've won. \"Certainly not. It means you've earned the privilege of helping me find a better answer.\""
+  },
+  {
+    "topicKey": "emma_hangout_room_violin",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma is practicing her violin when you arrive. She finishes the passage, frowns, and plays it again with a subtle change in phrasing. \"Better,\" she murmurs.\n\nYou compliment her performance. \"Thank you, but that passage was dreadful.\" She notices your expression and smiles. \"Not dreadful by ordinary standards. Dreadful by mine.\" She plays a different piece for you, softer and more lyrical, then lowers the instrument. \"There. That one I rather like.\" For once, she seems content to let the music speak for itself."
+  },
+  {
+    "topicKey": "emma_hangout_room_cooking",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma announces that she's attempting to improve an inexpensive meal with a few carefully selected herbs. Her approach is suspiciously similar to an artificery experiment: measured quantities, written observations, and a theory about the optimal cooking time.\n\nYou volunteer as her official taster. The result is surprisingly good, though perhaps a little over-seasoned. Emma listens to your assessment with professional seriousness. \"Interesting. A touch less rosemary, then.\" She takes another bite. \"You know, if scholarship fails me, I could always open a restaurant.\" You suggest she might frighten the customers. \"Only the incompetent ones.\""
+  },
+  {
+    "topicKey": "emma_hangout_room_old_letters",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma is sorting through a small bundle of old letters. She picks one up and smiles. \"My mother used to send me little riddles when I was away studying. She always insisted they were terribly difficult.\"\n\nShe reads one aloud and challenges you to solve it. After a few attempts, you arrive at the answer. Emma looks genuinely delighted. \"Exactly! It took me an entire evening when I was younger.\" She folds the letter carefully and returns it to its envelope. \"Don't tell anyone I keep sentimental things, will you? I have a reputation to maintain.\""
+  },
+  {
+    "topicKey": "emma_hangout_room_ballet",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma is stretching after a long day of studying. She demonstrates a simple ballet position and invites you to try it. Your first attempt earns a thoughtful frown. \"Your posture is rather dreadful. Here, straighten your back.\"\n\nYou follow her instructions, with limited success. She circles you like an exacting instructor, making small adjustments until you begin to suspect this is revenge for some forgotten slight. \"There,\" she says at last. \"Almost graceful.\" You bow extravagantly and nearly lose your balance. Emma catches your arm, laughing. \"Perhaps we should stick to Hordes.\""
+  },
+  {
+    "topicKey": "emma_hangout_room_rainy_afternoon",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Rain patters against Emma's window while you sit together discussing books and drinking tea. She has abandoned her usual immaculate posture, sitting comfortably with her feet tucked beneath her.\n\nAt some point, the conversation drifts toward nothing in particular. Emma admits that she used to feel guilty whenever she wasn't studying or working toward something. \"An hour wasted is an hour you never get back,\" she says, then looks at the rain. \"Though I'm beginning to wonder whether some hours are worth wasting.\" She refills your cup without asking."
+  },
+  {
+    "topicKey": "emma_hangout_inn_music_criticism",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "A musician at the inn is struggling through a familiar tune. Emma listens with admirable restraint for nearly a minute before leaning toward you. \"He's playing it in the wrong key. And I believe he's invented two new notes.\"\n\nYou suggest she might offer some advice. \"Absolutely not. The poor man looks nervous enough already.\" She listens a little longer, then begins tapping the correct rhythm against her glass. When the musician finally reaches the end, she applauds warmly. \"Well,\" she says, \"at least he has courage. That's something.\""
+  },
+  {
+    "topicKey": "emma_hangout_inn_common_people",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma listens with interest as two merchants at a neighboring table discuss their latest business troubles. When they leave, she remarks that one of them has been making a rather obvious accounting mistake.\n\nYou ask why she didn't intervene. \"Because unsolicited financial advice is rarely appreciated, particularly from a young woman having supper.\" She takes a sip of her drink. \"Besides, he seemed perfectly happy blaming the weather, his suppliers, and the King.\" She smiles. \"A remarkable achievement, really. Three excuses and not a single solution.\""
+  },
+  {
+    "topicKey": "emma_hangout_inn_dessert",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Emma orders a slice of cake, then immediately declares it far too large for one person. You offer to help. \"How noble of you. Such selfless generosity.\"\n\nShe divides it into two portions with meticulous precision, examines them, and quietly claims the larger one. When you object, she raises an eyebrow. \"I did the cutting. Surely that entitles me to certain privileges.\" You threaten to appeal to the innkeeper. Emma pushes a forkful of cake toward you. \"There. A diplomatic settlement. Try not to make an international incident of it.\""
+  },
+  {
+    "topicKey": "emma_hangout_inn_future",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "storyTags": {
+      "emma_trusted_companion": 1
+    },
+    "text": "Over a quiet drink, Emma asks where you imagine yourself in ten years. She listens carefully to your answer, occasionally asking questions that are rather more perceptive than you expected.\n\nWhen you return the question, she describes an ambitious future involving research, success, and a comfortable measure of financial independence. Then she hesitates. \"And perhaps a few people worth sharing it with.\" You grin at her. She rolls her eyes, though her smile remains. \"Don't look so pleased with yourself, Antonio. I said a few people. The selection process will be rigorous.\""
+  },
+  {
+    "topicKey": "emma_hangout_general_perfection",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "text": "Emma is reviewing a set of notes, correcting small details with ruthless precision. You suggest that perfection might be overrated.\n\n\"An interesting philosophy,\" she replies without looking up. \"Very convenient for those who haven't achieved it.\" You point out that nobody is perfect. She finally raises her eyes. \"Naturally. That's why there's always more work to do.\" She considers you for a moment, then smiles. \"Though I suppose your approach leaves considerably more time for leisure.\""
+  },
+  {
+    "topicKey": "emma_hangout_general_weather",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "text": "You ask Emma whether she's enjoying the day. She considers the question with the seriousness of an examiner reviewing a thesis.\n\n\"The day itself has been perfectly adequate. Its inhabitants, somewhat less so.\" You ask whether you're included in that assessment. \"The jury is still deliberating.\" She allows herself a small smile. \"Though I must say, Antonio, you've made a rather promising opening argument.\""
+  },
+  {
+    "topicKey": "emma_hangout_general_fashion",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "text": "Emma notices you examining an elaborate outfit worn by a passing student. \"An impressive investment in buttons,\" she observes. \"One wonders whether there was any money left for books.\"\n\nYou suggest that appearances can be important. \"Of course they can. A well-chosen appearance tells people precisely what you wish them to think.\" She adjusts one of her own cuffs. \"The trick is making sure there's something worthwhile underneath.\""
+  },
+  {
+    "topicKey": "emma_hangout_general_challenge",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "text": "Emma challenges you to solve a little mathematical puzzle. You take a moment to consider it while she watches with an expression of polite anticipation.\n\nWhen you offer an answer, she nods approvingly. \"Not bad. Though there is a more elegant solution.\" Naturally, she proceeds to demonstrate it. You ask whether she ever presents a puzzle without already knowing the answer. \"Certainly,\" she says. \"But then I call it research, and it's considerably less entertaining.\""
+  },
+  {
+    "topicKey": "emma_hangout_general_reputation",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "text": "Emma mentions that another student has apparently described her as intimidating. She seems more puzzled than offended.\n\n\"I merely pointed out that his proposed enchantment violated three fundamental principles of artificery.\" You suggest that perhaps she could have been gentler. \"I was gentle. I only mentioned two of the principles aloud.\" She pauses, then laughs softly. \"Oh, very well. Perhaps I can be a little severe.\""
+  },
+  {
+    "topicKey": "emma_hangout_general_hordes",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "text": "Emma is examining a Hordes card with an expression of deep concentration. She explains a possible combination, outlining its strengths and weaknesses with impressive clarity.\n\nYou suggest a counterstrategy. She considers it carefully before shaking her head. \"That would work against an inexperienced opponent. Against someone competent, you'd be in trouble.\" You ask whether she considers herself competent. Emma looks at you in genuine surprise. \"Antonio, really. Must we waste time establishing the obvious?\""
+  },
+  {
+    "topicKey": "emma_hangout_library_seat",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "text": "You find Emma occupying a table with a considerable stack of books. She glances up as you approach. \"If you're looking for a seat, that one is free. If you're looking for conversation, I should warn you that I'm rather busy.\"\n\nYou settle down with your own reading. After a few minutes, she notices your book and makes a brief, surprisingly useful observation about its author. Before long, you've exchanged several quiet remarks. When you eventually return to your reading, Emma looks faintly annoyed with herself for having been distracted."
+  },
+  {
+    "topicKey": "emma_hangout_library_book_hunt",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "text": "Emma is searching for a particular reference book and appears increasingly irritated by the library's organization. \"Whoever designed this classification system had a remarkable talent for hiding useful information.\"\n\nYou help examine the shelves, eventually locating the volume in an unexpected section. Emma looks genuinely pleased. \"Excellent. I was beginning to suspect it had been stolen by someone with better taste than our librarian.\" She takes the book and gives you a gracious nod. \"Thank you, Antonio. You've saved me a thoroughly unpleasant afternoon.\""
+  },
+  {
+    "topicKey": "emma_hangout_library_footnotes",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "text": "Emma shows you an academic paper containing an absurdly long footnote. It occupies nearly half the page and appears to concern an argument between two scholars about the correct translation of a single word.\n\n\"This,\" she whispers, \"is why academia occasionally deserves its reputation.\" You ask whether she would ever engage in such a dispute. \"Certainly not.\" She pauses. \"Unless the translation were genuinely wrong, of course.\" A moment later, she adds, \"And unless the other scholar insisted on being an idiot about it.\""
+  },
+  {
+    "topicKey": "emma_hangout_library_examinations",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "library",
+    "text": "Emma is preparing for an upcoming examination, though her meticulous notes suggest she's already mastered most of the material. You ask whether she ever gets nervous before a test.\n\n\"Of course,\" she replies. \"Only fools are entirely confident of success.\" She closes her notebook. \"Preparation is how one makes sure the nerves are unnecessary.\" You suggest that she could probably afford to relax. Emma gives you a patient smile. \"And that, Antonio, is precisely how people become complacent.\""
+  },
+  {
+    "topicKey": "emma_hangout_room_books",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "text": "Emma allows you inside while she searches for a misplaced reference. Her room is tidy, though books occupy almost every available surface.\n\nYou remark that she seems to own a considerable collection. \"Books are an investment,\" she explains. \"Unlike fashionable hats, they generally become more useful with age.\" You point toward a particularly elegant hat resting nearby. She follows your gaze, then gives you a warning look. \"I said generally, Antonio. Even the most principled scholar is entitled to an occasional weakness.\""
+  },
+  {
+    "topicKey": "emma_hangout_room_instrument",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "text": "Emma is carefully cleaning her violin when you arrive. She explains that proper maintenance is almost as important as practice, handling the instrument with obvious affection.\n\nYou ask whether she'll play something. She considers your request, then picks up the bow. \"Very well. But only a short piece. I have work to finish.\" What follows is a beautiful performance, precise and expressive. When she finishes, she watches your reaction with a carefully neutral expression. Your sincere applause earns a small, pleased smile."
+  },
+  {
+    "topicKey": "emma_hangout_room_schedule",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "text": "Emma is arranging her schedule for the coming days, allocating time to lectures, private study, and Hordes practice. Every hour appears to have a purpose.\n\nYou ask whether she ever leaves room for unexpected pleasures. \"Naturally. I have an entire hour reserved for unforeseen circumstances.\" You laugh, assuming she's joking. She points to a blank space in her timetable. \"There. Thursday afternoon.\" After a moment, she smiles. \"Admittedly, it's usually consumed by unforeseen work.\""
+  },
+  {
+    "topicKey": "emma_hangout_room_tea_tastes",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "emma-room",
+    "text": "Emma offers you tea and asks how you prefer it. Your answer prompts a brief lecture on the merits of different preparations, delivered with the confidence of someone defending a scholarly thesis.\n\nYou suggest conducting a blind tasting to settle the matter. She considers the idea, visibly intrigued. \"An actual experiment? Now that's a civilized proposal.\" She fetches another cup before stopping herself. \"No, absolutely not. I have far too much to do.\" Nevertheless, she looks as though she's already planning the methodology."
+  },
+  {
+    "topicKey": "emma_hangout_inn_meal",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "text": "Emma is studying the inn's menu with the expression of someone evaluating a difficult financial decision. She eventually selects a modest dish, explaining that expensive meals are rarely worth their price.\n\nYou suggest treating herself occasionally. \"Oh, I do,\" she replies. \"But I prefer to know exactly what I'm paying for.\" When the food arrives, she tastes it and gives an approving nod. \"There. Perfectly good, and reasonably priced. A triumph of sound judgment.\""
+  },
+  {
+    "topicKey": "emma_hangout_inn_performance",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "text": "Emma listens attentively to a musician performing in the common room. You ask what she thinks of the piece.\n\n\"A charming melody,\" she says, \"though the interpretation is somewhat sentimental.\" You point out that she seems to be enjoying it anyway. \"Certainly. One can appreciate something without abandoning all critical faculties.\" As the music continues, she begins quietly humming along. When she notices you watching, she stops and raises an eyebrow. \"Not a word, Antonio.\""
+  },
+  {
+    "topicKey": "emma_hangout_inn_stories",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "text": "A group of travelers at a nearby table are exchanging increasingly improbable stories of their adventures. Emma listens with a faint smile, occasionally raising an eyebrow at particularly extravagant claims.\n\n\"Remarkable,\" she murmurs after one especially unlikely tale. \"Apparently that gentleman has survived three dragon attacks, discovered a lost kingdom, and personally advised the King.\" You suggest that perhaps he's telling the truth. \"Perhaps. Though I suspect the only thing he's conquered is the innkeeper's patience.\""
+  },
+  {
+    "topicKey": "emma_hangout_inn_chess",
+    "npcKey": "emma",
+    "activityType": "hangout",
+    "placeKey": "old-monk-inn",
+    "text": "Emma notices a chessboard resting on a nearby table and suggests a quick game. She plays confidently, explaining the occasional move with infuriating calm.\n\nYou manage to create a threatening position, forcing her to reconsider her strategy. For a moment, her expression becomes intensely focused. Then she smiles. \"Interesting. You're more dangerous than you look.\" She makes her next move and leans back. \"Unfortunately for you, I happen to be rather dangerous myself.\""
+  }
+]

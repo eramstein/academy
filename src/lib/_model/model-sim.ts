@@ -28,7 +28,10 @@ export interface GameState {
     period: DayPeriod;
     playedLeagueMatch: boolean;
     longActionPerformed: boolean;
-    usedActions: Partial<Record<ActionType, number>>;
+    /** Counts toward ActionsLimitByPeriod keys (e.g. hangout), not necessarily ActionType. */
+    usedActions: Partial<Record<string, number>>;
+    /** NPCs hung out with this period — socialize with them is blocked until the next period. */
+    hungOutWith: string[];
   };
   characters: Record<string, Npc>;
   player: Player;
@@ -66,6 +69,9 @@ export interface ChatTopicText {
   activityType?: ActivityType;
   placeKey?: string;
   npcKey?: string;
+  relationProgress?: Partial<RelationProgress>;
+  relationTags?: RelationTag[];
+  storyTags?: Record<string, number>;
 }
 
 /** Where to continue an event after the Battle view closes. */

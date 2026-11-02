@@ -679,6 +679,7 @@ function applySceneChange(change: SceneChange): string | null {
       if (!changed) return null;
       // Direct write: goToPeriod() restarts the scene and can fire a different event.
       gs.time.usedActions = {};
+      gs.time.hungOutWith = [];
       gs.time.longActionPerformed = false;
       return change.label;
     }

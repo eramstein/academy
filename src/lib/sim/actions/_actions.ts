@@ -18,7 +18,7 @@ import {
 } from '../scene';
 import { formatActivityShortLabel, getNextPeriodScheduledActivity } from '../schedule';
 import { getNextPeriod } from '../time';
-import { ActionsLimitByPeriod } from './_action-types';
+import { actionLimitKey, isActionUnderPeriodLimit } from './_action-types';
 import {
   conjureCard,
   invokeCard,
@@ -66,11 +66,7 @@ export function getPossibleActions(): Action[] {
   actions.push(...getLeagueMatchActions());
 
   // check if the number of actions is limited by period
-  let filteredActions = actions.filter(
-    (action) =>
-      !ActionsLimitByPeriod[action.actionType] ||
-      (gs.time.usedActions[action.actionType] ?? 0) < (ActionsLimitByPeriod[action.actionType] ?? 0)
-  );
+  let filteredActions = actions.filter((action) => isActionUnderPeriodLimit(action));
 
   // if a long action has already been performed, filter the other long ones
   if (gs.time.longActionPerformed) {
@@ -100,7 +96,10 @@ export async function performAction(action: Action) {
   // Only yield for real async actions — Promise.resolve(sync) still defers a
   // microtask and lets the UI paint a half-updated scene (book height bump).
   const resultText = result instanceof Promise ? await result : result;
-  gs.time.usedActions[action.actionType] = (gs.time.usedActions[action.actionType] ?? 0) + 1;
+  const limitKey = actionLimitKey(action);
+  if (limitKey) {
+    gs.time.usedActions[limitKey] = (gs.time.usedActions[limitKey] ?? 0) + 1;
+  }
   if (resultText) {
     narrateText(resultText);
   }

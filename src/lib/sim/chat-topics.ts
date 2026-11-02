@@ -8,7 +8,13 @@
   gs.chatTopics and must not appear in general socialize.
 */
 
-import type { ActivityType, ChatTopic, ChatTopicText } from '@/lib/_model';
+import type {
+  ActivityType,
+  ChatTopic,
+  ChatTopicText,
+  RelationProgress,
+  RelationTag,
+} from '@/lib/_model';
 import { ChatTopicType } from '@/lib/_model/enums-sim';
 import { gs } from '@/lib/_state';
 
@@ -26,6 +32,12 @@ export interface ChatTopicTextMeta {
   activityType?: ActivityType;
   placeKey?: string;
   npcKey?: string;
+  /** Minimal relation values; line is skipped if the NPC is below any of them. */
+  relationProgress?: Partial<RelationProgress>;
+  /** Line is used only when the NPC has every listed tag. */
+  relationTags?: RelationTag[];
+  /** Minimal `gs.storyTags` values; line is skipped if any tag is below. */
+  storyTags?: Record<string, number>;
   source: string;
   /** Index among valid lines in that source file (for prose lookup). */
   sourceIndex: number;
@@ -244,6 +256,11 @@ function toMeta(
     ...(text.activityType ? { activityType: text.activityType } : {}),
     ...(text.placeKey ? { placeKey: text.placeKey } : {}),
     ...(text.npcKey ? { npcKey: text.npcKey } : {}),
+    ...(text.relationProgress ? { relationProgress: text.relationProgress } : {}),
+    ...(text.relationTags && text.relationTags.length > 0
+      ? { relationTags: text.relationTags }
+      : {}),
+    ...(text.storyTags ? { storyTags: text.storyTags } : {}),
     source,
     sourceIndex,
   };

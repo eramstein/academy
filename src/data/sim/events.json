@@ -10183,13 +10183,6 @@
             }
           },
           {
-            "type": "add_relation_tag",
-            "parameters": {
-              "characterKey": "the-dude",
-              "relationTag": "You declined the Dude's invitation"
-            }
-          },
-          {
             "type": "add_chat_topic",
             "parameters": {
               "key": "the_dude_memory_invitation_declined",

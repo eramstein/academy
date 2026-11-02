@@ -59,6 +59,7 @@
 
   const socializeIcons: Record<SocializeType, string> = {
     [SocializeType.Chat]: 'handshake',
+    [SocializeType.Hangout]: 'mug',
   };
 
   let pendingAction = $state<Action | null>(null);

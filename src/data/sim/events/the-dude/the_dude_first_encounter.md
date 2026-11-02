@@ -172,6 +172,5 @@ You have the distinct impression that the Dude has devoted considerably more tho
 
 Outcomes:
 
-- Add relationship tag DudeDeclinedInvitation.
 - Add memory the_dude_memory_invitation_declined, known by the-dude: "Hey, Antonio. You ever regret skipping that little first-year gathering?" the Dude asks. You tell him you've managed to survive the consequences so far. "Good, man. Good. Never know what you're missing, but that's true of pretty much everything. Can't be everywhere at once."
 - Add lore the_dude_lore_first_year_gathering (use once): "Apparently the Dude organized a little gathering for the new first-years on their first evening," your companion remarks. "That's one thing about him. He may never graduate, but he does make an effort to welcome people. Strange fellow."

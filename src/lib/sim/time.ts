@@ -34,6 +34,7 @@ export function nextPeriod() {
     gs.time.period = PERIODS[index + 1];
   }
   gs.time.usedActions = {};
+  gs.time.hungOutWith = [];
   gs.time.longActionPerformed = false;
   gs.scene.eventsThisPeriod = 0;
   narrateNewPeriod(gs.time.day, gs.time.period);
@@ -47,6 +48,7 @@ export function goToPeriod(day: number, period: DayPeriod) {
   gs.time.day = day;
   gs.time.period = period;
   gs.time.usedActions = {};
+  gs.time.hungOutWith = [];
   gs.time.longActionPerformed = false;
   startScene();
 }

@@ -28,6 +28,7 @@
 
   const SOCIALIZE_ICONS: Record<SocializeType, string> = {
     [SocializeType.Chat]: 'handshake',
+    [SocializeType.Hangout]: 'mug',
   };
 
   const traits = $derived(
