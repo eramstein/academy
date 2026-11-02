@@ -30,13 +30,15 @@ export const actionNumericParams: Record<string, ActionNumericParam[]> = {
   stun: [{ factoryKey: 'duration', definitionKey: 'duration', label: 'Duration' }],
   root: [{ factoryKey: 'duration', definitionKey: 'duration', label: 'Duration' }],
   daze: [{ factoryKey: 'duration', definitionKey: 'duration', label: 'Duration' }],
-  bounceUnit: [],
+  bounceUnit: [{ factoryKey: 'count', definitionKey: 'count', label: 'Count' }],
   forceMoveUnit: [],
   fight: [],
-  cycleCards: [],
+  cycleCards: [{ factoryKey: 'count', definitionKey: 'count', label: 'Count' }],
   tutorCard: [],
-  regrowCard: [],
+  regrowCard: [{ factoryKey: 'count', definitionKey: 'count', label: 'Count' }],
   addMana: [{ factoryKey: 'amount', definitionKey: 'amount', label: 'Mana' }],
+  recycleCard: [{ factoryKey: 'count', definitionKey: 'count', label: 'Count' }],
+  controlUnit: [{ factoryKey: 'count', definitionKey: 'count', label: 'Count' }],
 };
 
 const randomActionArgs: Record<string, () => Record<string, unknown>> = {
@@ -60,8 +62,10 @@ const randomActionArgs: Record<string, () => Record<string, unknown>> = {
   fight: () => ({}),
   cycleCards: () => ({ count: getRandomInteger(1, 2) }),
   tutorCard: () => ({}),
-  regrowCard: () => ({}),
+  regrowCard: () => ({ count: getRandomInteger(1, 2) }),
   addMana: () => ({ amount: getRandomInteger(1, 3) }),
+  recycleCard: () => ({ count: getRandomInteger(1, 2) }),
+  controlUnit: () => ({ count: 1 }),
 };
 
 export const ACTION_TEMPLATE_KEYS = Object.keys(actionTemplates);
@@ -159,10 +163,20 @@ function factoryArgsFromDefinition(
 ): Record<string, number> {
   const params = actionNumericParams[name] ?? [];
   return Object.fromEntries(
-    params.map((param) => [
-      param.factoryKey,
-      Number(definition.effect.args[param.definitionKey]) || 0,
-    ])
+    params.map((param) => {
+      const fromArgs = Number(definition.effect.args[param.definitionKey]);
+      if (Number.isFinite(fromArgs) && fromArgs > 0) {
+        return [param.factoryKey, fromArgs];
+      }
+      // bounce / control / cycle / etc. store count on the first target
+      if (param.definitionKey === 'count') {
+        const fromTarget = Number(definition.targets?.[0]?.count);
+        if (Number.isFinite(fromTarget) && fromTarget > 0) {
+          return [param.factoryKey, fromTarget];
+        }
+      }
+      return [param.factoryKey, DEFAULT_ACTION_ARG];
+    })
   );
 }
 

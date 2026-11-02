@@ -378,7 +378,7 @@
   .area-portraits {
     position: absolute;
     left: 6px;
-    bottom: 6px;
+    bottom: -30px;
     display: flex;
     align-items: center;
     pointer-events: none;
@@ -387,8 +387,8 @@
   .area-portrait,
   .area-portrait-more {
     flex-shrink: 0;
-    width: 1.7rem;
-    height: 1.7rem;
+    width: 2.7rem;
+    height: 2.7rem;
     border-radius: 50%;
     border: 1px solid var(--color-brass);
     background: var(--color-data);

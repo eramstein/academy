@@ -423,7 +423,6 @@ export interface Personality {
   humor: string; // sense of humor, favorite style of humor, etc.
   conflicts: string; // how they react to conflict and arguments, etc.
   habits: string[]; // typical patterns of behavior, etc.
-  preferredResponseDynamics: Record<string, number>; // weights by type of response
 }
 
 export interface RelationProgress {

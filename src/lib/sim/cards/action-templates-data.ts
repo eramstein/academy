@@ -433,6 +433,6 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
         },
       ],
     },
-    budget: args.count * 45,
+    budget: (args.count ?? 1) * 45,
   }),
 };

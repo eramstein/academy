@@ -4,6 +4,8 @@
 
 Use this guide whenever asked to create, extend, edit, or review the game's **initial pre-authored chat-topic library** (world, Academy, NPC lore and routines). These are short conversations available when Antonio chats with an NPC. They are **display-ready text**, not memory summaries, LLM prompts, or instructions. This guide is for initial `ChatTopicText[]` JSON files; event-generated `add_chat_topic` effects follow the related conventions in `writing-bible.md`.
 
+**Exception:** `chat_topics_match.json` (`match-chat-on-win` / `match-chat-on-lose`) is post-match narration only. Do not treat those lines as socialize topics, and do not invent new `match-chat-*` keys for ordinary conversation.
+
 ## Read before authoring
 
 1. Read the existing target JSON and preserve its topic keys, variant structure, and established facts unless asked to revise them.

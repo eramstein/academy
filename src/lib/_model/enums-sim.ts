@@ -204,6 +204,7 @@ export enum RelationTag {
   // NPC specific tags
   EmmaSmitten = "You are under Emma's spell",
   MollyJustForFun = 'Molly is not as shy as you thought',
+  DudeDeclinedInvitation = "You declined the Dude's invitation",
 }
 
 export enum PossessionType {

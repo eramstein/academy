@@ -2,6 +2,10 @@
   Authored chat lines live in src/data/sim/chat_topics/*.json.
   Game state keeps topic metadata only. The prose is read from those files
   when a line is chosen, so the full catalog is not copied onto the save.
+
+  Match result lines (chat_topics_match.json / match-chat-*) are catalog-only:
+  narrateMatchResult looks them up by topic key. They are not seeded into
+  gs.chatTopics and must not appear in general socialize.
 */
 
 import type { ActivityType, ChatTopic, ChatTopicText } from '@/lib/_model';
@@ -41,17 +45,28 @@ const TOPIC_TYPE_BY_SEGMENT: Record<string, ChatTopicType> = {
 /** Fresh game: replace the list. Loaded save: keep usage, and add topics new files introduced. */
 export async function initChatTopics(options?: { keepExisting?: boolean }): Promise<void> {
   const catalog = await loadTextCatalog();
-  const seeded = topicKeysIn(catalog).map(topicFromKey);
+  const seeded = topicKeysIn(catalog)
+    .filter((topicKey) => !isMatchNarrationTopic(topicKey))
+    .map(topicFromKey);
   const previous = options?.keepExisting && Array.isArray(gs.chatTopics) ? gs.chatTopics : [];
-  const previousByKey = new Map(previous.map((topic) => [topic.key, topic]));
+  const previousByKey = new Map(
+    previous
+      .filter((topic) => !isMatchNarrationTopic(topic.key))
+      .map((topic) => [topic.key, topic])
+  );
   const merged = seeded.map((topic) => previousByKey.get(topic.key) ?? topic);
-  for (const topic of previous) {
+  for (const topic of previousByKey.values()) {
     if (!seeded.some((seed) => seed.key === topic.key)) merged.push(topic);
   }
   gs.chatTopics = merged;
   if (!options?.keepExisting || !Array.isArray(gs.chatTopicTexts)) {
     gs.chatTopicTexts = [];
   }
+}
+
+/** Post-match win/lose lines only — never general socialize topics. */
+export function isMatchNarrationTopic(topicKey: string): boolean {
+  return topicKey.startsWith('match-chat-');
 }
 
 export async function textsForTopic(topicKey: string): Promise<ChatTopicTextMeta[]> {

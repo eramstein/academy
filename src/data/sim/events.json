@@ -25,7 +25,15 @@
             "successText": "Somehow you talk him into a modest concession. He adjusts the figure with visible regret, and you leave the desk feeling only mostly robbed.",
             "failureText": "He hears you out, nods once, and leaves the total exactly where it was. You pay. Miracles remain expensive."
           }
-        }
+        },
+        "effects": [
+          {
+            "type": "follow_up_event",
+            "parameters": {
+              "eventKey": "the_dude_first_encounter"
+            }
+          }
+        ]
       },
       {
         "text": "Pay",
@@ -38,6 +46,12 @@
             "type": "narrate",
             "parameters": {
               "text": "You pay the full sum without protest. The stamp falls; three years of savings become a neat entry in a ledger."
+            }
+          },
+          {
+            "type": "follow_up_event",
+            "parameters": {
+              "eventKey": "the_dude_first_encounter"
             }
           }
         ]
@@ -3277,12 +3291,6 @@
     "text": "Well, that's done. First year's tuition paid.\n\nAnd you're broke again.\n\nThree years of savings, gone in the time it took an administrator to stamp a piece of paper. You'd better pass those exams. Preferably with honors. Preferably without starving in the meantime.\n\nYou make your way through the crowded Academy corridor, dodging students, luggage, and an elderly professor who appears to be arguing with his own hat.\n\nThat's when you notice her.\n\nA young woman is studying the timetable pinned to the noticeboard. First year, judging by the schedule she's examining. Like you, then.\n\nUnlike you, she seems to know exactly what she's doing.\n\nShe turns toward the village, carrying a precarious tower of books that looks as though it might require its own structural engineer.\n\nNaturally, you decide to offer your assistance.\n\nA perfectly chivalrous impulse. One that has absolutely nothing to do with the long, graceful legs visible beneath her skirt.\n\nYou catch up and call out to her.\n\nShe turns.\n\nBright green eyes settle on you, appraising you with an intelligence that would probably be intimidating if you were currently capable of rational thought.\n\nYou should introduce yourself.\n\nYes. That would be sensible.\n\nOr perhaps explain why you've stopped her.\n\nAlso sensible.\n\nYou could even try speaking. People do that, apparently.\n\n\"Take your time,\" she says at last, one eyebrow rising. \"It's not as though I'm carrying half the Academy library.\"\n\nHer expression hovers somewhere between amusement and resignation.\n\nYou have the distinct impression that this is not the first time she's had this effect on a young man.",
     "triggers": [
       {
-        "triggerType": "character_present",
-        "parameters": {
-          "characterKey": "emma"
-        }
-      },
-      {
         "triggerType": "day",
         "parameters": {
           "day": 1
@@ -3363,17 +3371,6 @@
             "characterKey": "emma",
             "title": "First impressions",
             "description": "A striking young woman with sharp green eyes, an impressive collection of books, and an equally impressive talent for making you feel foolish. Apparently a fellow first-year student."
-          }
-        }
-      },
-      {
-        "effect": {
-          "type": "move",
-          "parameters": {
-            "placeKey": "emma-room",
-            "characterKeys": [
-              "emma"
-            ]
           }
         }
       }
@@ -10122,5 +10119,219 @@
         }
       }
     ]
+  },
+  {
+    "key": "the_dude_first_encounter",
+    "text": "The administrator finishes counting your tuition money, places it carefully in a drawer, and stamps your enrollment papers with an air of solemn finality.\n\n\"Welcome to the Academy, Mister Fibonacci. Your academic career officially begins today. Now, I imagine you'll need some assistance finding your bearings,\" the administrator continues. \"Classrooms, schedules, accommodations, that sort of thing. I suggest you speak to the Dude. He's just outside my office.\"\n\nYou blink.\n\n\"The... Dude?\"\n\n\"Yes, the Dude. He'll show you around.\"\n\nThere is something deeply unsettling about hearing the word dude emerge from a man who has just insisted that you sign your name in three different places using your full legal title.\n\nNevertheless, you thank him and step outside.\n\nLeaning against the wall beside the office is a man who looks to be in his forties. His clothes are comfortable rather than fashionable, his hair rather longer than Academy regulations probably recommend, and he is contemplating a small crack in the ceiling with the serene concentration of a philosopher examining the mysteries of existence.\n\nHe notices you looking at him.\n\n\"Hey, man.\"\n\nYou hesitate. \"Are you... the Dude?\"\n\n\"That's what they call me.\"\n\n\"What's your actual name?\"\n\nHe considers the question for a moment.\n\n\"Well, that's a pretty complicated question, man. Depends who's asking.\"\n\n\"Antonio Fibonacci. First-year student.\"\n\n\"Ah, Antonio. Nice. Welcome to the great institution of learning, my friend.\" He gestures vaguely at the building. \"Lot of learning going on around here. Lot of people taking it very seriously, too.\"\n\nHe doesn't sound entirely convinced this is a good thing.\n\n\"So, you work here?\"\n\n\"Nah, man. I'm a student.\"\n\nYou look at him again.\n\n\"A student?\"\n\n\"First year.\"\n\nYou look at him again.\n\nThe Dude smiles, apparently quite accustomed to this reaction.\n\n\"Yeah, I know. Been a first-year for... twenty years? Twenty-one? Time's a funny thing, man.\"\n\n\"Twenty years?!\"\n\n\"Something like that. Never really kept count.\" He shrugs. \"They keep changing the curriculum anyway. Every time I think I've got it figured out, someone invents a new examination.\"\n\nYou struggle to imagine how a man could spend two decades at the Academy without graduating.\n\nOr being expelled.\n\nOr, for that matter, becoming a professor.\n\n\"Doesn't the administration mind?\"\n\n\"Oh, sure. Some of them get pretty worked up about it.\" He waves a hand toward the office. \"But we have an understanding. I attend enough classes, pass a few things, everybody stays reasonably happy. It's a delicate balance, man. You don't want to disturb it.\"\n\nYou begin to suspect that the Academy's administrative regulations contain loopholes of truly impressive dimensions.\n\n\"Anyway,\" he continues, pushing himself away from the wall, \"I got a little gathering planned for tonight. Cafeteria. All the new first-years. Figured you folks should get to know each other before the professors start filling your heads with complicated stuff.\"\n\nHe grins.\n\n\"Nothing fancy. Just hanging out, talking, making friends. Maybe preventing a few lifelong academic rivalries before they get started. Though those can be pretty entertaining, too.\"\n\nHe gives you an encouraging pat on the shoulder.\n\n\"So what do you say, Antonio? You coming?\"",
+    "triggers": [],
+    "optionTemplates": [
+      {
+        "text": "Sounds like a good idea",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Sure. I'd like to meet the others.\"\n\n\"Excellent, man. Excellent.\"\n\nThe Dude looks genuinely pleased.\n\n\"See, that's the spirit. Academy's a big place. Easy to get lost in all the rules and books and competitive nonsense. But you find yourself a few good people, share a meal, have a laugh...\"\n\nHe spreads his hands.\n\n\"That's the important stuff.\"\n\nYou nod. After spending three years working to afford your tuition, making a few friends sounds like a pleasant change of pace.\n\n\"Tonight, then. Cafeteria?\"\n\n\"That's the place, man. Evening. Don't worry too much about being on time. Time's more of a suggestion anyway.\"\n\nHe gives you a casual wave and resumes his inspection of the ceiling.\n\nYou leave him to it.\n\nPerhaps there's something interesting up there.\n\nOr perhaps you've just met the least ambitious man in the Academy.\n\nEither way, you suspect he might be worth knowing."
+            }
+          },
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "social",
+                "participants": [
+                  "player",
+                  "the-dude",
+                  "emma",
+                  "molly",
+                  "elsa",
+                  "vai",
+                  "henry",
+                  "farid",
+                  "ousmane"
+                ],
+                "placeKey": "cafeteria"
+              },
+              "schedule": {
+                "date": {
+                  "day": 0,
+                  "period": "evening"
+                }
+              }
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "the_dude_memory_invitation_accepted",
+              "type": "memory",
+              "text": "\"You know, Antonio, I had a good feeling about you when we first met,\" the Dude remarks. \"Some people need three weeks and a formal invitation before they'll sit down with a bunch of strangers. You just said yes. Beautiful thing, man. Gotta keep life simple.\"",
+              "knownByNpcKeys": [
+                "the-dude"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Maybe another time",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Thanks, but I think I'll pass. It's been a long day.\"\n\n\"Hey, no problem, man. No problem at all.\"\n\nHe nods with complete understanding.\n\n\"Big day. Lots of paperwork. Financial devastation. I get it.\"\n\nYou aren't sure whether he's joking about the financial devastation.\n\n\"Besides,\" he continues, \"there'll be plenty of opportunities to meet people around here. Whole place is full of them. Can't hardly avoid it, really.\"\n\nHe gives you a reassuring smile.\n\n\"You take it easy, Antonio. Don't let the place get to you.\"\n\nYou thank him and turn to leave.\n\n\"Hey, one more thing.\"\n\nYou look back.\n\n\"Don't forget to enjoy yourself a little, all right? Education's important, but so is the rest of the day.\"\n\nHe returns to contemplating the ceiling.\n\nYou have the distinct impression that the Dude has devoted considerably more thought to the second half of that advice than the first."
+            }
+          },
+          {
+            "type": "add_relation_tag",
+            "parameters": {
+              "characterKey": "the-dude",
+              "relationTag": "You declined the Dude's invitation"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "the_dude_memory_invitation_declined",
+              "type": "memory",
+              "text": "\"Hey, Antonio. You ever regret skipping that little first-year gathering?\" the Dude asks. You tell him you've managed to survive the consequences so far. \"Good, man. Good. Never know what you're missing, but that's true of pretty much everything. Can't be everywhere at once.\"",
+              "knownByNpcKeys": [
+                "the-dude"
+              ]
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "the_dude_lore_first_year_gathering",
+              "type": "lore",
+              "text": "\"Apparently the Dude organized a little gathering for the new first-years on their first evening,\" your companion remarks. \"That's one thing about him. He may never graduate, but he does make an effort to welcome people. Strange fellow.\"",
+              "useOnlyOnce": true
+            }
+          }
+        ]
+      }
+    ],
+    "title": "The Dude Abides",
+    "characterArc": "the-dude",
+    "effects": [
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "the-dude",
+            "title": "The eternal first-year",
+            "description": "A remarkably relaxed man of forty-one who has apparently been a first-year student at the Academy for roughly two decades. Nobody seems entirely sure how he manages it, and he doesn't appear particularly interested in explaining."
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "the-dude",
+            "title": "An unconventional guide",
+            "description": "Despite not being an employee, the Dude helps new students settle into Academy life. He seems friendly, approachable, and almost aggressively unconcerned with the passage of time."
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_chat_topic",
+          "parameters": {
+            "key": "the_dude_memory_first_meeting",
+            "type": "memory",
+            "text": "The Dude greets you with a lazy smile. \"Antonio, my man. Settling in all right? First few days can be a little overwhelming.\" You point out that he's had considerably more first days than most people. \"Exactly, man. Experience. That's what I bring to the table. Lots and lots of experience.\"",
+            "knownByNpcKeys": [
+              "the-dude"
+            ]
+          }
+        }
+      }
+    ],
+    "manualTrigger": "Go talk to the Dude"
+  },
+  {
+    "key": "the_dude_first_year_gathering",
+    "title": "A Gathering of Great Minds (And Others)",
+    "text": "The Academy cafeteria is considerably quieter in the evening. Most students have finished their meals, leaving behind a few scattered groups, the occasional clatter of dishes, and the comforting smell of something that might once have been a stew.\n\nYou spot the Dude immediately. He's lounging at the head of a long table, looking as though he's been sitting there since the Academy was founded. A collection of young men and women have gathered around him, engaged in various degrees of conversation.\n\n\"Antonio! My man!\" He waves you over with a broad smile. \"Glad you made it. Grab a seat, grab a drink. We're just getting started.\"\n\nYou sit down, attracting several curious glances.\n\n\"All right, everybody,\" the Dude announces, making a vague sweeping gesture. \"This here is Antonio. Good guy. Just arrived today. Antonio, these are your fellow travelers on the great journey of academic enlightenment.\"\n\nHe pauses, apparently satisfied with this description.\n\n\"Or something like that. Anyway, introductions.\"\n\nHe points toward a young woman sitting with impeccable posture at the far end of the table. Her clothes are elegant, her expression composed, and her gaze suggests she has already assessed the social standing of everyone present.\n\n\"That's Elsa.\"\n\n\"Elsa von...\" she begins, but the Dude has already moved on.\n\n\"Good to meet you, Elsa,\" he adds.\n\nShe closes her mouth. The look she gives him could probably freeze a small lake.\n\n\"Charmed,\" she says to you, in a tone that implies she has yet to reach a final decision on the matter.\n\nNext is a dark-haired young man sitting somewhat apart from the others, listening more than speaking.\n\n\"Farid,\" the Dude says. \"Quiet fellow. Seems all right.\"\n\nFarid inclines his head politely. \"Good evening, Antonio.\"\n\nHe offers nothing further, but his expression is friendly enough. You get the impression he's the sort of person who prefers to observe before deciding whether a conversation is worth joining.\n\n\"And that's Vaiana,\" the Dude continues, gesturing toward another young woman.\n\n\"Hello, Antonio!\" she says, giving you a cheerful wave. \"Welcome to the madness.\"\n\n\"See?\" the Dude remarks. \"Already getting along. Beautiful.\"\n\n{{ emmaIntroduction }}\n\n{{ mollyIntroduction }}\n\nThe Dude surveys the table with an expression of profound satisfaction.\n\n\"Look at that. Everybody getting acquainted. Civilization, man. That's how it starts.\"\n\n\"Actually,\" Elsa interrupts, \"civilization generally begins with the establishment of laws and institutions.\"\n\n\"Sure, sure,\" the Dude agrees amiably. \"Those too.\"\n\nHe takes a leisurely sip from his cup.\n\n\"Oh, right. Almost forgot. There's supposed to be another guy here. Ousmane. Had something else going on tonight, apparently. Very busy fellow.\"\n\nHe shrugs.\n\n\"Can't be everywhere at once.\"\n\n\"An astonishing observation,\" Elsa murmurs.\n\n\"Thanks, man.\"\n\nYou suspect Elsa is discovering, to her considerable frustration, that sarcasm is not particularly effective against someone who refuses to recognize it.\n\nThere is one student the Dude hasn't introduced yet. A young man with untidy red hair and a gentle, somewhat nervous expression sits near the end of the table, quietly turning his cup between his hands. He has spent most of the evening listening, occasionally smiling at something funny but rarely speaking himself.\n\nYou catch his eye, and he gives you an awkward little smile.\n\n\"Oh! Hello. I'm Henry.\"\n\n\"Antonio. Nice to meet you.\"\n\n\"Likewise.\" He hesitates, then adds, \"I think we might be roommates, actually.\"\n\nThat gets your attention.\n\n\"Roommates?\"\n\n\"In the barracks. I saw the accommodation list earlier. Antonio Fibonacci, wasn't it? We're assigned to the same room.\"\n\n\"Ah, excellent!\" the Dude exclaims. \"Roommates! Look at that. Already making connections.\"\n\nHenry smiles apologetically.\n\n\"I hope you don't mind. I'm fairly quiet, generally. And I don't have much luggage, so I shouldn't take up too much space.\"\n\nHe looks genuinely concerned that his very existence might inconvenience you.\n\nYou assure him that neither of those things is a problem.\n\n\"That's good,\" he says, visibly relaxing. \"I've never shared a room before. I was a little nervous about it.\"\n\n\"Well, you're in luck,\" the Dude declares. \"Antonio's a solid guy. I can tell.\"\n\n\"You've known him for about five minutes,\" Elsa observes.\n\n\"Exactly. First impressions, man. Very important.\"\n\nHenry chuckles softly.\n\nThe conversation eventually turns to accommodations. You learn that Henry is the only other person at the table staying in the Academy barracks. Everyone else has found lodgings at one of the inns in town, ranging from modest establishments to considerably more prestigious addresses.\n\n\"One does appreciate a certain standard of living,\" Elsa remarks, smoothing an imaginary crease from her sleeve.\n\n\"Sure,\" the Dude agrees. \"Comfort's important. Me, I find you can get comfortable pretty much anywhere if you give it enough time.\"\n\n\"Some of us,\" Elsa replies, \"have rather more exacting standards.\"\n\n\"Hey, whatever works for you.\"\n\nOnce again, Elsa finds herself without a satisfactory target.\n\nAs the evening progresses, the conversation becomes livelier. Students compare their expectations, their fears, and the alarming number of subjects listed on the first-year curriculum. Even Farid contributes the occasional dry observation, while Henry gradually grows comfortable enough to join in without being directly addressed.\n\nThe Dude mostly listens, interjecting now and then with observations of questionable relevance and surprising wisdom.\n\nEventually, he raises his cup.\n\n\"All right, folks. Here's to the first year.\"\n\n\"Your twenty-first?\" someone asks.\n\n\"Could be, man. Could be.\"\n\nHe smiles serenely.\n\n\"Here's hoping it's a good one.\"\n\nCups are raised around the table. Even Elsa participates, although she looks faintly embarrassed by the informality of the occasion.\n\nAnd there you are, surrounded by a collection of strangers who will, for better or worse, be sharing the next chapter of your life.\n\nA proud young woman with an aristocratic disdain for almost everything. A quiet, observant young man. A gentle redhead who will apparently be sleeping a few feet away from you. And several others whose personalities you're only beginning to discover.\n\nPresiding over the gathering is a forty-one-year-old first-year student who seems to have achieved a kind of enlightenment through the simple expedient of never graduating.\n\nYou came to the Academy to learn artificery, master the game of Hordes, and perhaps make something of yourself.\n\nYou have a feeling the education might extend rather further than you expected.",
+    "passages": {
+      "emmaIntroduction": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "You are under Emma's spell"
+                }
+              }
+            ],
+            "text": "\"And Emma,\" the Dude continues, gesturing toward a familiar young woman with bright green eyes.\n\n\"Oh, we've met,\" Emma says, her lips curling into a mischievous smile. \"Although I'm not entirely certain Antonio remembers. He seemed rather... distracted at the time.\"\n\nYou recognize that smile. It is the smile of someone who has discovered a particularly entertaining weakness and has no intention of forgetting it.\n\n\"Really?\" the Dude asks, intrigued.\n\n\"Let's just say our first conversation was somewhat one-sided.\"\n\nEmma gives you an innocent look.\n\n\"Delighted to see you've recovered, Antonio.\""
+          },
+          {
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "emma_first_encounter",
+                  "value": 1
+                }
+              }
+            ],
+            "text": "\"And Emma,\" the Dude continues, gesturing toward a familiar young woman with bright green eyes.\n\n\"We've already had the pleasure,\" Emma says, offering you a warm, composed smile. \"Antonio very kindly offered to help me with my books earlier.\"\n\n\"Good man,\" the Dude nods approvingly. \"Helping people out. That's what it's all about.\"\n\n\"Although,\" Emma adds, a playful glint in her eyes, \"I did manage to carry them myself.\"\n\nShe looks at you over the rim of her cup.\n\n\"Still, the gesture was appreciated.\""
+          }
+        ],
+        "fallback": "\"And this is Emma,\" the Dude continues, indicating a young woman with elegant features, bright green eyes, and a rather formidable air of intelligence.\n\n\"Emma Delamain,\" she introduces herself, offering you a pleasant smile. \"A pleasure to meet you, Antonio.\"\n\nHer gaze briefly studies you with frank curiosity.\n\n\"I imagine we'll be seeing rather a lot of each other over the next few years. Assuming we all survive the examinations, of course.\"\n\nShe delivers this last remark with such composure that you're not entirely sure whether she's joking."
+      },
+      "mollyIntroduction": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "story_tag",
+                "parameters": {
+                  "tag": "molly_first_encounter",
+                  "value": 1
+                }
+              }
+            ],
+            "text": "\"And here's Molly,\" the Dude says, gesturing toward a young woman with a strong, athletic build and a friendly face.\n\n\"Antonio!\" Molly brightens immediately. \"Hello again!\"\n\nShe shifts along the bench to make a little more room, despite the fact that you're already comfortably seated.\n\n\"How was the rest of your day? Did you manage to find everything?\"\n\nYou tell her you've survived so far.\n\n\"Oh, good!\" She laughs. \"I was hoping I'd see someone familiar tonight. Not that everyone else isn't lovely, of course!\"\n\nShe glances around the table, suddenly worried that she might have offended someone.\n\nThe Dude gives her a reassuring nod.\n\n\"All good, Molly. All good.\""
+          }
+        ],
+        "fallback": "\"And that's Molly,\" the Dude continues, gesturing toward a young woman with an athletic build and a warm, open face.\n\n\"Hello!\" she says, smiling shyly. \"I'm Molly Moreno. It's really nice to meet you.\"\n\nShe looks genuinely pleased to have another person at the table.\n\n\"Have you managed to find your way around yet? I keep getting lost. I went looking for the library earlier and somehow ended up near the kitchens.\"\n\n\"Nothing wrong with that,\" the Dude observes.\n\nMolly laughs.\n\n\"Well, no. Actually, the kitchens smelled wonderful. So perhaps it wasn't such a bad mistake.\""
+      }
+    },
+    "triggers": [
+      {
+        "triggerType": "activity_type",
+        "parameters": {
+          "activityType": "social"
+        }
+      },
+      {
+        "triggerType": "day",
+        "parameters": {
+          "day": 1
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "evening"
+        }
+      },
+      {
+        "triggerType": "place",
+        "parameters": {
+          "placeKey": "cafeteria"
+        }
+      }
+    ],
+    "optionTemplates": [],
+    "characterArc": "the-dude",
+    "image": "the_dude_first_year_gathering.jpg",
+    "imageSize": "large"
   }
 ]

@@ -12,8 +12,8 @@ import { getAbilityCost, getCardBudget } from '@/lib/sim/cards/card-budget';
 import { canSourcePlayAbility } from '../ability';
 import { isPayable } from '../cost';
 import { laneValue } from './lane';
-import { exchange, landLifeValue } from './valuations/config';
 import { AI_PLAYER_ID, WeightPreset, type ScoreBreakdown, type ScoreTerminal } from './model';
+import { exchange, landLifeValue } from './valuations/config';
 
 export interface PositionWeights {
   aiLifeWeight: number;
@@ -87,13 +87,14 @@ export function valueUnit(unit: UnitDeployed): number {
   const onDeployCost = (unit.abilities ?? [])
     .filter((ability) => ability.trigger?.type === TriggerType.OnDeploy)
     .reduce((sum, ability) => sum + getAbilityCost(ability, colors), 0);
-  const printed = getCardBudget({ ...unit, power: printedPowerStat }) - onDeployCost;
+  const printed = Math.max(0, getCardBudget({ ...unit, power: printedPowerStat }) - onDeployCost);
   const healthBudget = unit.maxHealth * 2;
   const threat = printed - healthBudget - printedPowerStat * 4 + unit.power * 4;
   const ratio = unit.maxHealth > 0 ? Math.max(0, unit.health) / unit.maxHealth : 0;
   const durability = healthBudget * Math.sqrt(ratio);
-  const value = threat + durability;
-  return Number.isFinite(value) ? value : 0;
+  const chump = unit.health > 0 ? exchange.chumpBlock : 0;
+  const value = threat + durability + chump;
+  return Number.isFinite(value) ? value : chump;
 }
 
 export function boardShare(): number {

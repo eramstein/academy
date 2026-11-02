@@ -248,16 +248,37 @@ export async function selectOption(option: EventOption) {
     saveStateToLocalStorage();
     return;
   }
-  deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
   if (nextNode && template) {
+    deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
     presentEventNode(template, nextNode);
     return;
   }
+  // Run actionTemplates (e.g. enrollment pay/negotiate) before follow-ups so
+  // payment narration and checks finish before the next event claims the scene.
   if (option.outcome.action) {
     await performAction(option.outcome.action);
-  } else if (!sceneWaitingOnEventChoice()) {
-    setSceneEvents();
+    if (sceneWaitingOnEventChoice()) {
+      return;
+    }
+    deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
+    if (sceneWaitingOnEventChoice()) {
+      gs.scene.actions = [];
+      gs.scene.manualTriggers = [];
+      return;
+    }
+    // performAction already resolved the scene when there were no follow-ups.
+    if (deferredFollowUps.length > 0) {
+      setSceneEvents();
+    }
+    return;
   }
+  deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
+  if (sceneWaitingOnEventChoice()) {
+    gs.scene.actions = [];
+    gs.scene.manualTriggers = [];
+    return;
+  }
+  setSceneEvents();
 }
 
 /**

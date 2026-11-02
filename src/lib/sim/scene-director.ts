@@ -8,7 +8,12 @@
 import { ChatTopicType, type ChatTopic } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import { getRandomFromArray, getRandomWeighted } from '@/lib/_utils/random';
-import { readChatTopicText, textsForTopic, type ChatTopicTextMeta } from './chat-topics';
+import {
+  isMatchNarrationTopic,
+  readChatTopicText,
+  textsForTopic,
+  type ChatTopicTextMeta,
+} from './chat-topics';
 import { getCurrentScheduledActivity } from './schedule';
 
 /**
@@ -124,6 +129,7 @@ async function rankTopics(characterKey: string): Promise<RankedTopic[]> {
   const ranked: RankedTopic[] = [];
 
   for (const topic of gs.chatTopics ?? []) {
+    if (isMatchNarrationTopic(topic.key)) continue;
     if (!npcKnowsTopic(topic, characterKey)) continue;
     const texts = await textsForTopic(topic.key);
     const dedicated = texts.some((text) => text.npcKey === characterKey);

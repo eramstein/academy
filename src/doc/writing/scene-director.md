@@ -36,7 +36,7 @@ Then they are added at runtime, we create associated topic and texts when:
 - a new NPC routine is defined
 - as event effects: create memory or create lore topics. Memories are by default only for the event's NPCs
 
-More can be added later (e.g. TCG matches results...).
+TCG match win/lose lines live in `chat_topics_match.json` and are spoken only by post-match narration (`narrateMatchResult`), not by Socialize / the scene director.
 
 ### Topic selection
 

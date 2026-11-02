@@ -31,6 +31,11 @@ export const exchange = {
   colorPartialFraction: 0.1,
   latentFactor: 0.85,
   /**
+   * Flat floor added to every living body: even a 0-power chump is still a block.
+   * Matches 1 maxHealth in the card budget (maxHealth * 2).
+   */
+  chumpBlock: 2,
+  /**
    * Budget points per point of power that can actually reach, and per point of
    * enemy power a body is effectively walling. Small on purpose: it breaks
    * "this square is the same as passing" ties, and it loses to a real deploy or trade.
