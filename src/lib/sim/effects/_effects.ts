@@ -54,6 +54,29 @@ export function applyEffect(effect: EventEffect) {
   }
 }
 
+/** Effects that present a player prompt (e.g. pick a gift card) rather than only mutating state. */
+export function effectRequiresPlayerChoice(effect: EventEffect): boolean {
+  return effect.type === EventEffectType.OfferCardGifts;
+}
+
+/**
+ * Apply effects with choice prompts last so narration/state updates precede the UI ask.
+ * Preserves relative order within each group.
+ */
+export function applyEffectsWithChoicesLast(effects: EventEffect[]) {
+  const choices: EventEffect[] = [];
+  for (const effect of effects) {
+    if (effectRequiresPlayerChoice(effect)) {
+      choices.push(effect);
+    } else {
+      applyEffect(effect);
+    }
+  }
+  for (const effect of choices) {
+    applyEffect(effect);
+  }
+}
+
 const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>) => string> = {
   [EventEffectType.GetDeck]: (parameters) => getDeck(parameters as GetDeckParameters),
   [EventEffectType.Subscribe]: (parameters) =>

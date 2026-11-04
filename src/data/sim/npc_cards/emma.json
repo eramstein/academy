@@ -1,5 +1,17 @@
 [
   {
+    "id": "emma_love_letter",
+    "name": "Up to you",
+    "imageFileName": "emma_love_letter",
+    "type": "spell",
+    "cost": 9,
+    "colors": [
+      { "color": "red", "count": 3 },
+      { "color": "green", "count": 3 }
+    ],
+    "actions": []
+  },
+  {
     "id": "emma_chaos_faerie",
     "name": "Chaos Faerie",
     "imageFileName": "emma_chaos_faerie",

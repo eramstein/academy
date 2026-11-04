@@ -204,6 +204,7 @@ export enum RelationTag {
   SignificantOther = 'significant_other',
   // NPC specific tags
   EmmaSmitten = "You are under Emma's spell",
+  EmmaRomanceOpen = 'emma_romance_open',
   MollyJustForFun = 'Molly is not as shy as you thought',
 }
 

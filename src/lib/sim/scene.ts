@@ -1,5 +1,9 @@
 import { performAction, setPossibleActions } from '@/lib/sim/actions';
-import { applyEffect } from '@/lib/sim/effects';
+import {
+  applyEffect,
+  applyEffectsWithChoicesLast,
+  effectRequiresPlayerChoice,
+} from '@/lib/sim/effects';
 import { appendRelationArcText } from '@/lib/sim/effects/relations';
 import {
   type EventEffect,
@@ -138,8 +142,9 @@ function continuationNode(option: EventOption, success?: boolean): string | unde
 /**
  * Show a later beat of the event already in progress.
  * Does not consume the template or stamp its story tag again.
- * On-enter effects run before passages and options are resolved, so a story tag
- * set here can gate this beat's passages and choices.
+ * On-enter effects that mutate state (e.g. story tags) run before passages and
+ * options are resolved so they can gate this beat. Choice prompts
+ * (e.g. offer_card_gifts) wait until after the node's text and image.
  */
 function presentEventNode(template: EventTemplate, nodeKey: string) {
   const node = template.nodes?.[nodeKey];
@@ -148,14 +153,18 @@ function presentEventNode(template: EventTemplate, nodeKey: string) {
     return;
   }
   let openedFollowUp = false;
+  const deferredChoiceEffects: EventEffect[] = [];
   if (node.effects) {
     for (const entry of node.effects) {
-      if (eventTemplateEffectApplies(entry, template.key)) {
-        if (entry.effect.type === EventEffectType.FollowUpEvent) {
-          openedFollowUp = true;
-        }
-        applyEffect(entry.effect);
+      if (!eventTemplateEffectApplies(entry, template.key)) continue;
+      if (effectRequiresPlayerChoice(entry.effect)) {
+        deferredChoiceEffects.push(entry.effect);
+        continue;
       }
+      if (entry.effect.type === EventEffectType.FollowUpEvent) {
+        openedFollowUp = true;
+      }
+      applyEffect(entry.effect);
     }
   }
   // A follow-up event effect may have claimed the scene (and narrated already).
@@ -179,6 +188,10 @@ function presentEventNode(template: EventTemplate, nodeKey: string) {
   if (template.characterArc && event.text.trim()) {
     appendRelationArcText(template.characterArc, event.text);
   }
+  // Choice prompts after the beat's prose/image so the ask reads as the payoff.
+  for (const effect of deferredChoiceEffects) {
+    applyEffect(effect);
+  }
   if (event.options.length > 0) {
     gs.scene.event = event;
     gs.scene.actions = [];
@@ -200,14 +213,24 @@ export async function selectOption(option: EventOption) {
   let success: boolean | undefined;
   const deferredFollowUps: EventEffect[] = [];
   const applyOptionEffects = (effects?: EventEffect[]) => {
-    effects?.forEach((effect) => {
+    if (!effects?.length) return;
+    const choices: EventEffect[] = [];
+    for (const effect of effects) {
       // With start_match, follow-ups must wait until the Battle view closes.
       if (effect.type === EventEffectType.FollowUpEvent) {
         deferredFollowUps.push(effect);
-        return;
+        continue;
+      }
+      if (effectRequiresPlayerChoice(effect)) {
+        choices.push(effect);
+        continue;
       }
       applyOptionEffect(effect, characterArc);
-    });
+    }
+    // Player prompts (gift pick, etc.) after other outcome narration/state.
+    for (const effect of choices) {
+      applyOptionEffect(effect, characterArc);
+    }
   };
   let appliedEffects: EventEffect[] | undefined;
   if (option.outcome.attributeCheck) {
@@ -381,11 +404,10 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
   gs.scene.event = sceneWaitingOnEventChoice(event) ? event : undefined;
   consumeEventTemplate(template);
   if (template.effects) {
-    for (const entry of template.effects) {
-      if (eventTemplateEffectApplies(entry, template.key)) {
-        applyEffect(entry.effect);
-      }
-    }
+    const applicable = template.effects
+      .filter((entry) => eventTemplateEffectApplies(entry, template.key))
+      .map((entry) => entry.effect);
+    applyEffectsWithChoicesLast(applicable);
   }
   recordEventOccured(template, event.text);
   // Follow-up may have claimed the scene; drop optionless leftovers so callers restore actions.
