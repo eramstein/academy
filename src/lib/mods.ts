@@ -1,7 +1,8 @@
 /**
  * Local mods live in `<repo>/mods/<modId>/` and are not part of the git repo.
- * A mod may contain `events.json`, `images/activities/`, and `images/events/`.
- * Dev and preview serve a live scan at `/api/mods`. Static builds read `mods/index.json`.
+ * A mod may contain `events.json`, `interactions.json`, `images/activities/`,
+ * and `images/events/`. Dev and preview serve a live scan at `/api/mods`.
+ * Static builds read `mods/index.json`.
  */
 
 export type ModImageKind = 'activities' | 'events';
@@ -11,6 +12,7 @@ export type ModManifestEntry = {
   activityImages: string[];
   eventImages: string[];
   events: unknown[];
+  interactions?: unknown[];
 };
 
 type ModsManifest = { mods: ModManifestEntry[] };
@@ -42,6 +44,12 @@ export function getLoadedMods(): readonly ModManifestEntry[] {
 
 export function getLoadedModEvents<T = unknown>(): T[] {
   return mods.flatMap((mod) => (Array.isArray(mod.events) ? (mod.events as T[]) : []));
+}
+
+export function getLoadedModInteractions<T = unknown>(): T[] {
+  return mods.flatMap((mod) =>
+    Array.isArray(mod.interactions) ? (mod.interactions as T[]) : []
+  );
 }
 
 export function modImageUrl(modId: string, kind: ModImageKind, fileName: string): string {

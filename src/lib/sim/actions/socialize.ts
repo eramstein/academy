@@ -2,6 +2,7 @@ import type { Action } from '@/lib/_model';
 import { ActionType, ActivityType, DayPeriod } from '@/lib/_model/enums-sim';
 import { gs } from '@/lib/_state';
 import { getCharactersAtScene } from '../characters';
+import { decodeInteractionType, runInteraction } from '../interactions';
 import { narrateText } from '../narration';
 import { directSocialScene, recordDirectedChat } from '../scene-director';
 import { getCurrentScheduledActivity } from '../schedule';
@@ -10,15 +11,44 @@ import { isLimitKeyAvailable } from './_action-types';
 export enum SocializeType {
   Chat = 'chat',
   Hangout = 'hangout',
+  /** Structured scene. Offered as one button per interaction template, not as "Interact". */
+  Interaction = 'interaction',
 }
 
 export interface SocializeParameters {
   characterKey: string;
-  socializeType: SocializeType;
+  socializeType: SocializeType | string;
+  /** Template key when socializeType is Interaction. */
+  interactionKey?: string;
+  /** Index into the active interaction's offered choices. */
+  interactionChoice?: number;
+  /** End the interaction without another model call. */
+  interactionStop?: boolean;
+}
+
+function interactionKeyOf(parameters: SocializeParameters): string | undefined {
+  if (typeof parameters.interactionKey === 'string' && parameters.interactionKey) {
+    return parameters.interactionKey;
+  }
+  if (typeof parameters.socializeType === 'string') {
+    return decodeInteractionType(parameters.socializeType);
+  }
+  return undefined;
 }
 
 /** Chat / hangout: the scene director picks a prewritten line for this NPC. */
 export async function socialize(parameters: SocializeParameters): Promise<string> {
+  const interactionKey = interactionKeyOf(parameters);
+  if (parameters.socializeType === SocializeType.Interaction || interactionKey) {
+    await runInteraction({
+      characterKey: parameters.characterKey,
+      interactionKey: interactionKey ?? '',
+      choiceIndex:
+        typeof parameters.interactionChoice === 'number' ? parameters.interactionChoice : undefined,
+      stop: parameters.interactionStop === true,
+    });
+    return '';
+  }
   const characterKey = parameters.characterKey;
   const isHangout = parameters.socializeType === SocializeType.Hangout;
   if (isHangout) {
@@ -32,9 +62,7 @@ export async function socialize(parameters: SocializeParameters): Promise<string
   }
   const direction = await directSocialScene(
     characterKey,
-    isHangout
-      ? { activityType: ActivityType.Hangout, requireActivityType: true }
-      : undefined
+    isHangout ? { activityType: ActivityType.Hangout, requireActivityType: true } : undefined
   );
   if (!direction) {
     const name = gs.characters[characterKey]?.name ?? 'them';
@@ -67,6 +95,8 @@ export function getSocializeActions(): Action[] {
   if (gs.time.period === DayPeriod.Evening && isLimitKeyAvailable(SocializeType.Hangout)) {
     socializeTypes.push(SocializeType.Hangout);
   }
+  // Interaction templates are listed per NPC (they can depend on that relation),
+  // so they are not a single SocializeType.Interaction entry here.
   return [
     {
       label: 'Socialize',

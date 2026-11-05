@@ -27,6 +27,7 @@ A mod folder looks like:
 ```
 mods/<mod-id>/
   events.json
+  interactions.json
   images/activities/
   images/events/
 ```

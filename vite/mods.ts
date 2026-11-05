@@ -15,11 +15,14 @@ export type EventRow = { key?: string; [field: string]: unknown };
 
 export type ModImageKind = 'activities' | 'events';
 
+export type InteractionRow = { key?: string; [field: string]: unknown };
+
 export type ModManifestEntry = {
   id: string;
   activityImages: string[];
   eventImages: string[];
   events: EventRow[];
+  interactions: InteractionRow[];
 };
 
 export type ModsManifest = { mods: ModManifestEntry[] };
@@ -45,7 +48,7 @@ function isSafeImageFile(name: string): boolean {
   return /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(name);
 }
 
-function readEventsArray(filePath: string): EventRow[] {
+function readJsonArray(filePath: string): Record<string, unknown>[] {
   if (!fs.existsSync(filePath)) return [];
   try {
     const parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
@@ -58,6 +61,14 @@ function readEventsArray(filePath: string): EventRow[] {
     console.error(`Failed to read ${filePath}:`, error);
     return [];
   }
+}
+
+function readEventsArray(filePath: string): EventRow[] {
+  return readJsonArray(filePath) as EventRow[];
+}
+
+function readInteractionsArray(filePath: string): InteractionRow[] {
+  return readJsonArray(filePath) as InteractionRow[];
 }
 
 function writeEventsArray(filePath: string, events: EventRow[]) {
@@ -88,6 +99,7 @@ function listMods(): ModOnDisk[] {
         activityImages: listImageFiles(path.join(dir, 'images', 'activities')),
         eventImages: listImageFiles(path.join(dir, 'images', 'events')),
         events: readEventsArray(path.join(dir, 'events.json')),
+        interactions: readInteractionsArray(path.join(dir, 'interactions.json')),
         eventsPath: path.join(dir, 'events.json'),
       };
     })
@@ -96,11 +108,12 @@ function listMods(): ModOnDisk[] {
 
 export function buildModsManifest(): ModsManifest {
   return {
-    mods: listMods().map(({ id, activityImages, eventImages, events }) => ({
+    mods: listMods().map(({ id, activityImages, eventImages, events, interactions }) => ({
       id,
       activityImages,
       eventImages,
       events,
+      interactions,
     })),
   };
 }

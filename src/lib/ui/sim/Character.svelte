@@ -4,6 +4,7 @@
   import { gs } from '@/lib/_state';
   import { getUiIconPath, isPaintedUiIcon } from '@/lib/_utils/asset-paths';
   import { performAction, SocializeType } from '@/lib/sim/actions';
+  import { listInteractions } from '@/lib/sim/interactions';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import Attributes from './Attributes.svelte';
   import CardCrafting from './characters/CardCrafting.svelte';
@@ -29,6 +30,7 @@
   const SOCIALIZE_ICONS: Record<SocializeType, string> = {
     [SocializeType.Chat]: 'handshake',
     [SocializeType.Hangout]: 'mug',
+    [SocializeType.Interaction]: 'taunt',
   };
 
   const traits = $derived(
@@ -64,24 +66,35 @@
     }))
   );
 
+  const socializeBlocked = $derived(
+    !!gs.scene.interaction || (gs.scene.event?.options.length ?? 0) > 0
+  );
+
   const socializeAction = $derived(
-    gs.scene.event?.options.length
+    socializeBlocked
       ? undefined
       : gs.scene.actions.find((action) => action.actionType === ActionType.Socialize)
   );
 
-  const socializeTypes = $derived.by(() => {
-    if (!socializeAction) return [];
+  const socializeHere = $derived.by(() => {
+    if (!socializeAction) return false;
     const characterOptions = socializeAction.missingParameters?.characterKey;
-    if (!Array.isArray(characterOptions)) return [];
-    const isPresent = characterOptions.some(
+    if (!Array.isArray(characterOptions)) return false;
+    return characterOptions.some(
       (option) => (Array.isArray(option) ? option[0] : option) === character.key
     );
-    if (!isPresent) return [];
-    const types = socializeAction.missingParameters?.socializeType;
-    if (!Array.isArray(types)) return [];
-    return types.map((type) => (Array.isArray(type) ? type[0] : type) as SocializeType);
   });
+
+  const socializeTypes = $derived.by(() => {
+    if (!socializeHere) return [];
+    const types = socializeAction?.missingParameters?.socializeType;
+    if (!Array.isArray(types)) return [];
+    return types
+      .map((type) => (Array.isArray(type) ? type[0] : type) as SocializeType)
+      .filter((type) => type !== SocializeType.Interaction);
+  });
+
+  const interactionOffers = $derived(socializeHere ? listInteractions(character.key) : []);
 
   const matchAction = $derived(
     gs.scene.event?.options.length
@@ -110,7 +123,7 @@
   let pickingMatchDeck = $state(false);
 
   const showCharacterActions = $derived(
-    socializeTypes.length > 0 || canStartMatch || pickingMatchDeck
+    socializeTypes.length > 0 || interactionOffers.length > 0 || canStartMatch || pickingMatchDeck
   );
 
   $effect(() => {
@@ -142,6 +155,21 @@
       missingParameters: {},
     };
     performAction(action);
+  }
+
+  function onInteraction(key: string) {
+    if (!socializeAction) return;
+    pickingMatchDeck = false;
+    performAction({
+      label: 'Socialize',
+      actionType: ActionType.Socialize,
+      isLongAction: false,
+      actionParameters: {
+        characterKey: character.key,
+        socializeType: SocializeType.Interaction,
+        interactionKey: key,
+      },
+    });
   }
 
   function startMatchWithDeck(deckKey: string) {
@@ -231,6 +259,11 @@
           {#each socializeTypes as type (type)}
             <OrnateButton icon={SOCIALIZE_ICONS[type]} onclick={() => onSocialize(type)}>
               {socializeLabel(type)}
+            </OrnateButton>
+          {/each}
+          {#each interactionOffers as offer (offer.key)}
+            <OrnateButton icon={offer.icon} onclick={() => onInteraction(offer.key)}>
+              {offer.label}
             </OrnateButton>
           {/each}
           {#if canStartMatch}

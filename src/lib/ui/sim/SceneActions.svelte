@@ -12,6 +12,12 @@
     type ConjurationAugury,
   } from '@/lib/sim/actions';
   import { skillCheckDifficultyLabels } from '@/lib/sim/attribute-checks';
+  import {
+    decodeInteractionType,
+    encodeInteractionType,
+    interactionIcon,
+    listInteractions,
+  } from '@/lib/sim/interactions';
   import { formatOutcomeEffectHints } from '@/lib/sim/effects/effect-hints';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
   import { isPlaceVisible } from '@/lib/sim/guardians';
@@ -60,6 +66,7 @@
   const socializeIcons: Record<SocializeType, string> = {
     [SocializeType.Chat]: 'handshake',
     [SocializeType.Hangout]: 'mug',
+    [SocializeType.Interaction]: 'taunt',
   };
 
   let pendingAction = $state<Action | null>(null);
@@ -109,6 +116,16 @@
         return place ? isPlaceVisible(place) : false;
       });
     }
+    if (currentParameterKey === 'socializeType') {
+      const characterKey = pendingAction.actionParameters.characterKey;
+      const interactions =
+        typeof characterKey === 'string'
+          ? listInteractions(characterKey).map(
+              (offer) => [encodeInteractionType(offer.key), offer.label] as [string, string]
+            )
+          : [];
+      return [...value, ...interactions];
+    }
     return value;
   });
 
@@ -155,6 +172,8 @@
   function optionIcon(option: string | [string, string]): string | undefined {
     const value = optionValue(option);
     if (currentParameterKey === 'socializeType') {
+      const interactionKey = decodeInteractionType(value);
+      if (interactionKey) return interactionIcon(interactionKey);
       return socializeIcons[value as SocializeType];
     }
     return undefined;
@@ -180,11 +199,17 @@
       filled = false;
       for (const key of Object.keys(next.missingParameters)) {
         const value = next.missingParameters[key];
-        if (Array.isArray(value) && value.length === 1) {
-          next = applyParameter(next, key, optionValue(value[0]));
-          filled = true;
-          break;
+        if (!Array.isArray(value) || value.length !== 1) continue;
+        // Chat is often the only socialize type. Filling it before the NPC is
+        // chosen, or while that NPC has interactions, skips the How? step.
+        if (key === 'socializeType') {
+          const characterKey = next.actionParameters.characterKey;
+          if (typeof characterKey !== 'string') continue;
+          if (listInteractions(characterKey).length > 0) continue;
         }
+        next = applyParameter(next, key, optionValue(value[0]));
+        filled = true;
+        break;
       }
     }
     return next;

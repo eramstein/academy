@@ -111,6 +111,30 @@ export interface ManualSceneTrigger {
   label: string;
 }
 
+/** A button the interaction model offered. `updates` are deltas, not new totals. */
+export interface InteractionChoiceState {
+  type: string;
+  text: string;
+  updates: Record<string, number>;
+}
+
+/** One resolved beat. `action` is absent on the opening beat. */
+export interface InteractionBeat {
+  scene: string;
+  values: Record<string, number>;
+  action?: InteractionChoiceState;
+}
+
+/** Live social interaction. Templates live in code; this is the part that is saved. */
+export interface InteractionSession {
+  templateKey: string;
+  characterKey: string;
+  values: Record<string, number>;
+  /** Rolling window of the last few beats. */
+  history: InteractionBeat[];
+  choices: InteractionChoiceState[];
+}
+
 export interface Scene {
   narration: Narration[];
   event: SceneEvent | undefined; // current event the player has to react to
@@ -136,6 +160,8 @@ export interface Scene {
   pendingEventResume?: OngoingBattleResume;
   /** Parked `follow_up_event` keys while the Battle modal is up. */
   pendingFollowUpEvents?: string[];
+  /** Structured social interaction in progress. Choices are the scene event options. */
+  interaction?: InteractionSession;
 }
 
 export interface SceneEvent {

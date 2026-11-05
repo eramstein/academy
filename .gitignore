@@ -31,6 +31,6 @@ chroma
 # Generated artwork
 public/assets/images/scenes
 
-# Local mods (each mod: events.json, images/activities, images/events)
+# Local mods (each mod: events.json, interactions.json, images/activities, images/events)
 /mods/*
 !/mods/.gitkeep
