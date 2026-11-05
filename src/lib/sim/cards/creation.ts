@@ -186,7 +186,7 @@ function rollUnitCandidate(
   const { power, maxHealth, retaliate } = randomCombatStats(colorList);
   const keywords = randomKeywords(colorList, discoverUnknown, character);
   const keywordIsNew = Object.keys(keywords).some(
-    (key) => !(character.craftingKnowledge.keywords?.[key as keyof UnitKeywords])
+    (key) => !character.craftingKnowledge.keywords?.[key as keyof UnitKeywords]
   );
   return {
     type: CardType.Unit,
@@ -240,8 +240,12 @@ export function randomUnitTypes(colors: CardColor[]): UnitType[] {
 }
 
 function allowedUnitTypesForColors(colors: CardColor[]): UnitType[] {
-  const restrictedTypes = new Set(Object.values(colorPie).flatMap((pie) => pie.unitTypes));
-  const typesForCardColors = new Set(colors.flatMap((color) => colorPie[color].unitTypes));
+  const restrictedTypes = new Set(
+    Object.values(colorPie).flatMap((pie) => pie.unitTypes.map((entry) => entry.type))
+  );
+  const typesForCardColors = new Set(
+    colors.flatMap((color) => colorPie[color].unitTypes.map((entry) => entry.type))
+  );
   return Object.values(UnitType).filter(
     (unitType) => !restrictedTypes.has(unitType) || typesForCardColors.has(unitType)
   );
