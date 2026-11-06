@@ -1,6 +1,7 @@
 export {
   decodeInteractionType,
   encodeInteractionType,
+  getInteractionTemplate,
   interactionIcon,
   listInteractions,
 } from './registry';

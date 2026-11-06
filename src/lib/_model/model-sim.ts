@@ -133,6 +133,8 @@ export interface InteractionSession {
   /** Rolling window of the last few beats. */
   history: InteractionBeat[];
   choices: InteractionChoiceState[];
+  /** When set, replaces the template's default situation for the whole session. */
+  situation?: string;
 }
 
 export interface Scene {

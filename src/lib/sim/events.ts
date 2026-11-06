@@ -22,6 +22,7 @@ import {
   replaceEventTemplates,
   type StoredEventTemplate,
 } from '../_state/event-templates';
+import { settings } from '../_state/settings.svelte';
 import { getLoadedModEvents, loadMods } from '../mods';
 import { SceneActionTemplates } from './actions';
 import { getActivityIllustrationRefs, probeFirstExistingImage } from './activity-image';
@@ -80,6 +81,8 @@ export interface EventTriggerParameters {
   [EventTriggerType.LastMatchLost]: Record<string, never>;
   /** Player owns a finished artifact (tool or trinket) with this `patternKey`. */
   [EventTriggerType.ArtifactOwned]: { patternKey: string };
+  /** Matches when Settings → LLM features equals `enabled`. */
+  [EventTriggerType.LlmFeatures]: { enabled: boolean };
 }
 
 export type EventTrigger = {
@@ -412,6 +415,8 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       return gs.scene.lastMatchWon === false;
     case EventTriggerType.ArtifactOwned:
       return checkArtifactOwned(trigger);
+    case EventTriggerType.LlmFeatures:
+      return settings.llmFeaturesEnabled === trigger.parameters.enabled;
     default:
       return false;
   }

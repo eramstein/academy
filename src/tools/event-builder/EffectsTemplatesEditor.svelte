@@ -150,6 +150,8 @@
         return { characterKey: '', text: '', image: '' };
       case EventEffectType.AddRelationTag:
         return { characterKey: '', relationTag: RelationTag.Friend };
+      case EventEffectType.RemoveRelationTag:
+        return { characterKey: '', relationTag: RelationTag.Friend };
       case EventEffectType.AddStoryTag:
         return { tag: '', amount: 1 };
       case EventEffectType.AddKnownTrait:
@@ -183,6 +185,8 @@
         };
       case EventEffectType.UnlockPlace:
         return { placeKey: placeKeys[0] ?? '' };
+      case EventEffectType.StartInteraction:
+        return { characterKey: '', interactionKey: '', situation: '' };
       default:
         return {};
     }
@@ -782,7 +786,7 @@
                 oninput={(e) =>
                   setParameter(i, 'image', (e.currentTarget as HTMLInputElement).value)}
               />
-            {:else if effect.type === EventEffectType.AddRelationTag}
+            {:else if effect.type === EventEffectType.AddRelationTag || effect.type === EventEffectType.RemoveRelationTag}
               <input
                 class="input arg"
                 value={effect.parameters.characterKey ?? ''}
@@ -1066,6 +1070,31 @@
                   <option value={placeKey}>{PLACES[placeKey].name}</option>
                 {/each}
               </select>
+            {:else if effect.type === EventEffectType.StartInteraction}
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? ''}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.interactionKey ?? ''}
+                placeholder="interaction key"
+                aria-label="Interaction key"
+                oninput={(e) =>
+                  setParameter(i, 'interactionKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.situation ?? ''}
+                placeholder="situation (overrides template)"
+                aria-label="Situation"
+                oninput={(e) =>
+                  setParameter(i, 'situation', (e.currentTarget as HTMLInputElement).value)}
+              />
             {:else if effect.type === EventEffectType.Move}
               <select
                 class="input arg"

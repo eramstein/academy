@@ -105,3 +105,24 @@ export function addRelationTag(parameters: AddRelationTagParameters): string {
   // Narrated above with RelationUpdate styling; avoid a second plain-text line.
   return '';
 }
+
+export type RemoveRelationTagParameters = AddRelationTagParameters;
+
+/** Removes a relation tag from an NPC if present. Silent when absent or removed. */
+export function removeRelationTag(parameters: RemoveRelationTagParameters): string {
+  const { characterKey, relationTag: rawTag } = parameters;
+  const character = gs.characters[characterKey];
+  if (!character) {
+    return `Invalid character key: ${characterKey}.`;
+  }
+  const relationTag = resolveRelationTag(String(rawTag));
+  if (!relationTag) {
+    return `Invalid relation tag: ${rawTag}.`;
+  }
+  if (!character.relationTags?.includes(relationTag)) {
+    return '';
+  }
+  character.relationTags = character.relationTags.filter((tag) => tag !== relationTag);
+  // Pending/state tags are usually cleared mid-narration; keep removal silent.
+  return '';
+}

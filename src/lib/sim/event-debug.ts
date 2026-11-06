@@ -659,6 +659,9 @@ function triggerToChange(trigger: EventTrigger): SceneChange | null {
         label: `Own artifact ${patternKey}`,
       };
     }
+    case EventTriggerType.LlmFeatures:
+      // User setting — enable or disable under Settings; not applied by debug setup.
+      return null;
     default:
       return null;
   }
@@ -876,6 +879,8 @@ function triggerSignature(trigger: EventTrigger): string {
       return 'scheduled';
     case EventTriggerType.ArtifactOwned:
       return `artifact:${trigger.parameters.patternKey}`;
+    case EventTriggerType.LlmFeatures:
+      return `llm:${trigger.parameters.enabled ? 'on' : 'off'}`;
     default:
       return 'unknown';
   }

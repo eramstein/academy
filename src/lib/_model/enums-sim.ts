@@ -29,6 +29,7 @@ export enum EventEffectType {
   ChangeRelation = 'change_relation',
   UpdateRelationArc = 'update_relation_arc',
   AddRelationTag = 'add_relation_tag',
+  RemoveRelationTag = 'remove_relation_tag',
   AddStoryTag = 'add_story_tag',
   AddKnownTrait = 'add_known_trait',
   AddChatTopic = 'add_chat_topic',
@@ -41,6 +42,8 @@ export enum EventEffectType {
   AcquireArtifactPattern = 'acquire_artifact_pattern',
   GiftArtifact = 'gift_artifact',
   UnlockPlace = 'unlock_place',
+  /** Open a structured social interaction; `situation` replaces the template default. */
+  StartInteraction = 'start_interaction',
 }
 
 export enum ActionType {
@@ -152,6 +155,11 @@ export enum EventTriggerType {
   LastMatchLost = 'last_match_lost',
   /** Player owns a finished artifact (tool or trinket) with this `patternKey`. */
   ArtifactOwned = 'artifact_owned',
+  /**
+   * User setting `llmFeaturesEnabled` matches `enabled`.
+   * Use to gate LLM-backed events (structured interactions, generated prose, etc.).
+   */
+  LlmFeatures = 'llm_features',
 }
 
 export enum ResourceType {

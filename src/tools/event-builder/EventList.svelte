@@ -91,6 +91,9 @@
     if (trigger.triggerType === EventTriggerType.ArtifactOwned) {
       return `${trigger.triggerType}: ${trigger.parameters.patternKey}`;
     }
+    if (trigger.triggerType === EventTriggerType.LlmFeatures) {
+      return `${trigger.triggerType}: ${trigger.parameters.enabled ? 'on' : 'off'}`;
+    }
     if (trigger.triggerType === EventTriggerType.DayOfWeek) {
       return `${trigger.triggerType}: ${trigger.parameters.daysOfWeek.join(',')}`;
     }

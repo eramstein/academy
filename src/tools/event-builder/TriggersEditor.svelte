@@ -63,6 +63,7 @@
       [EventTriggerType.LastMatchWon]: {},
       [EventTriggerType.LastMatchLost]: {},
       [EventTriggerType.ArtifactOwned]: { patternKey: '' },
+      [EventTriggerType.LlmFeatures]: { enabled: true },
     };
     return defaults[triggerType];
   }
@@ -374,6 +375,19 @@
               aria-label="Artifact pattern key"
               title="Player owns this pattern as a tool or trinket"
             />
+          {:else if trigger.triggerType === EventTriggerType.LlmFeatures}
+            <label class="param-hint">
+              <input
+                type="checkbox"
+                checked={trigger.parameters.enabled}
+                onchange={(e) =>
+                  replace(i, {
+                    ...trigger,
+                    parameters: { enabled: (e.currentTarget as HTMLInputElement).checked },
+                  })}
+              />
+              LLM features {trigger.parameters.enabled ? 'on' : 'off'}
+            </label>
           {/if}
 
           <button

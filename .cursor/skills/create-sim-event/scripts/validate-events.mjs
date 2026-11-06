@@ -115,6 +115,31 @@ const actionTemplateKeys = [
 ].map((m) => m[1]);
 const abilityKeys = [...keywordKeys, ...actionTemplateKeys];
 
+function readInteractionKeys() {
+  const modsRoot = path.join(root, 'mods');
+  if (!fs.existsSync(modsRoot)) return [];
+  const keys = [];
+  for (const entry of fs
+    .readdirSync(modsRoot, { withFileTypes: true })
+    .sort((a, b) => a.name.localeCompare(b.name))) {
+    if (!entry.isDirectory() || !/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(entry.name)) continue;
+    const full = path.join(modsRoot, entry.name, 'interactions.json');
+    if (!fs.existsSync(full)) continue;
+    try {
+      const parsed = JSON.parse(fs.readFileSync(full, 'utf-8'));
+      if (!Array.isArray(parsed)) continue;
+      for (const row of parsed) {
+        if (typeof row?.key === 'string' && row.key) keys.push(row.key);
+      }
+    } catch {
+      // Malformed mod interactions are ignored here; runtime load will skip them.
+    }
+  }
+  return [...new Set(keys)];
+}
+
+const interactionKeys = readInteractionKeys();
+
 let mainEvents;
 try {
   mainEvents = JSON.parse(read('src/data/sim/events.json'));
@@ -322,6 +347,11 @@ function checkTrigger(where, trigger) {
       break;
     case 'artifact_owned':
       checkOneOf(where, 'patternKey', params.patternKey, artifactPatternKeys);
+      break;
+    case 'llm_features':
+      if (typeof params.enabled !== 'boolean') {
+        errors.push(`${where}: enabled must be a boolean`);
+      }
       break;
     case 'scheduled_activity':
       // No parameters: matches when current activity.eventId === this event's key.
@@ -670,6 +700,7 @@ function checkEffect(where, effect) {
       }
       break;
     case 'add_relation_tag':
+    case 'remove_relation_tag':
       checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
       checkOneOf(where, 'relationTag', parameters.relationTag, relationTags);
       break;
@@ -710,6 +741,20 @@ function checkEffect(where, effect) {
       }
       if (parameters.isLeagueMatch !== undefined && typeof parameters.isLeagueMatch !== 'boolean') {
         errors.push(`${where}: isLeagueMatch must be a boolean`);
+      }
+      break;
+    case 'start_interaction':
+      checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
+      if (interactionKeys.length) {
+        checkOneOf(where, 'interactionKey', parameters.interactionKey, interactionKeys);
+      } else if (
+        typeof parameters.interactionKey !== 'string' ||
+        !parameters.interactionKey.trim()
+      ) {
+        errors.push(`${where}: interactionKey must be a non-empty string`);
+      }
+      if (typeof parameters.situation !== 'string' || !parameters.situation.trim()) {
+        errors.push(`${where}: situation must be a non-empty string`);
       }
       break;
     case 'new_league_season':

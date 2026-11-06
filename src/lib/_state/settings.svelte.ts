@@ -4,6 +4,8 @@ export type TextSpeed = 'instant' | 'fast' | 'normal' | 'slow';
 
 export type GameSettings = {
   textSpeed: TextSpeed;
+  /** LLM-backed content: interactions, and any event gated on `llm_features`. */
+  llmFeaturesEnabled: boolean;
 };
 
 export const TEXT_SPEED_OPTIONS: { value: TextSpeed; label: string; hint: string }[] = [
@@ -23,6 +25,7 @@ export const TEXT_SPEED_MS: Record<TextSpeed, number> = {
 
 const defaultSettings: GameSettings = {
   textSpeed: 'normal',
+  llmFeaturesEnabled: true,
 };
 
 function loadSettings(): GameSettings {
@@ -36,7 +39,11 @@ function loadSettings(): GameSettings {
     const textSpeed = TEXT_SPEED_OPTIONS.some((o) => o.value === parsed.textSpeed)
       ? (parsed.textSpeed as TextSpeed)
       : defaultSettings.textSpeed;
-    return { textSpeed };
+    const llmFeaturesEnabled =
+      typeof parsed.llmFeaturesEnabled === 'boolean'
+        ? parsed.llmFeaturesEnabled
+        : defaultSettings.llmFeaturesEnabled;
+    return { textSpeed, llmFeaturesEnabled };
   } catch (error) {
     console.error('Failed to load settings from localStorage:', error);
     return { ...defaultSettings };
@@ -55,6 +62,11 @@ export function saveSettings(): void {
 
 export function setTextSpeed(textSpeed: TextSpeed): void {
   settings.textSpeed = textSpeed;
+  saveSettings();
+}
+
+export function setLlmFeaturesEnabled(enabled: boolean): void {
+  settings.llmFeaturesEnabled = enabled;
   saveSettings();
 }
 

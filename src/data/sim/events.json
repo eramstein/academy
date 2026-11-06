@@ -9867,6 +9867,148 @@
     }
   },
   {
+    "key": "emma_perfectly_unreasonable_arrangement",
+    "title": "A Perfectly Unreasonable Arrangement",
+    "text": "Emma is speaking with another student when she catches sight of you. Her sentence falters by half a beat—an event so rare that it probably deserves to be recorded in the Academy archives. She recovers, finishes her conversation with perfect courtesy, and gives you a small, discreet nod toward the courtyard.\n\nYou follow her out past the stone arches and the flowerbeds. The courtyard is quiet at this hour. Emma walks as far as a bench beneath an old tree, turns to face you, and opens her mouth.\n\nNothing comes out.\n\nShe folds her hands. Unfolds them. Smooths a sleeve that requires no smoothing.\n\n\"Well,\" she says.\n\n\"Well,\" you agree.\n\n\"I thought perhaps we should...\"\n\n\"Yes?\"\n\n\"Discuss...\" She makes a small, impatient gesture. \"Yesterday.\"\n\nYou wait. There is a remarkable pleasure in seeing Emma Delamain, terror of oral examinations and scourge of badly defended arguments, lose a duel against the beginning of a sentence.\n\n{{silentTypeReversal}}\n\nHer eyes narrow. Then she laughs—a surprised, delighted laugh that does wonderful things for the state of your nerves.\n\n\"Very well,\" she says. \"I walked directly into that one.\"\n\n\"You did. Rather spectacularly.\"\n\n\"Enjoy it, Fibonacci. Opportunities like this are exceptionally rare.\"\n\n\"I intend to have the date engraved on a plaque.\"\n\n\"Make certain you spell my name correctly.\"\n\nThe laughter fades into a comfortable, slightly shy silence. She glances at your hands, then looks you in the eye.\n\n\"Antonio, I owe you an apology. A proper one. Yesterday I asked you to do something absurd, and then I became furious when you couldn't do it. I wanted you to produce a brilliant argument on command while I stood there explaining, in considerable detail, why you were an unsuitable candidate.\"\n\n\"It was a remarkably thorough presentation.\"\n\n\"I had prepared the evidence carefully. Unfortunately, I seem to have been arguing against my own position.\"\n\nShe gives a rueful smile.\n\n\"You weren't supposed to read my mind. I could have told you what I wanted. I should have. Instead I behaved like a dreadful examiner who hadn't bothered to give her student the questions. And then I...\" Her cheeks color. \"Well. I rather lost my composure.\"\n\n\"A little.\"\n\n\"Antonio.\"\n\n\"There may have been a few tears. And a minor physical assault.\"\n\n\"Those were _emphatic punctuation marks_.\"\n\n\"I see. I shall inform the faculty.\"\n\nShe shakes her head, smiling in spite of herself.\n\n\"I'm sorry I made you feel small. You didn't deserve that.\"\n\n\"I'm sorry I made you cry,\" you say. \"I thought I was asking you to give up a perfect future for a rather uncertain one. I didn't realize I might actually have a chance.\"\n\nEmma raises an eyebrow. \"Yes. Your powers of observation have occasionally proved rather disappointing for a man of your academic promise.\"\n\n\"In my defense, you can be quite intimidating.\"\n\n\"Good. I'd hate to discover that all my effort had been wasted.\"\n\nThen she looks away, her smile becoming smaller and softer.\n\n\"For the record, I wrote to Lucien. He was very gracious. He deserves someone who is genuinely interested in him, rather than someone who finds herself thinking about another man over dinner.\"\n\n\"I'm glad he took it well.\"\n\n\"So am I. He's an excellent man. And I am still interested in the research, if the opportunity remains available. Those things needn't be connected.\"\n\n\"Naturally.\"\n\n\"In fact, I shall probably accomplish something extraordinary in the field, become scandalously successful, and spend my fortune on books and unnecessarily expensive tea.\"\n\n\"A fine plan.\"\n\n\"There is, however, one rather serious unresolved question.\"\n\nShe regards you with an expression that almost manages to be solemn.\n\n\"What exactly did you make of my card?\"\n\n\"You mean the one with the two of us?\"\n\n\"I believe it was reasonably unambiguous. Though after yesterday, I thought perhaps I should check.\"\n\n\"I thought it was beautiful.\"\n\n\"That wasn't the question.\"\n\n\"I know.\"\n\nShe takes a breath. This time, she does not look away.\n\n\"I want to be with you, Antonio. Not because it makes the most sensible plan on paper, and certainly not because you performed adequately at yesterday's examination. You failed that rather decisively.\" Her smile returns. \"I want to be with you because life is more interesting and more joyful when you're in it. And because, against my better judgment, I seem to have fallen quite hopelessly in love with you.\"\n\nFor once, she lets the words stand without immediately rescuing them with a joke.\n\n\"There,\" she says at last. \"A clear statement of intent. Remarkably efficient. I ought to have tried it sooner.\"\n\nShe holds your gaze, hopeful and a little nervous, but no longer uncertain about what she wants.\n\n\"Now. What do _you_ want?\"",
+    "passages": {
+      "silentTypeReversal": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "You are under Emma's spell"
+                }
+              }
+            ],
+            "text": "You put on your most thoughtful expression. \"The dark, silent, mysterious type? Doesn't work on me, Delamain.\"\n\nShe stares at you. Recognition dawns, followed by the unmistakable realization that you have kept that remark in reserve since the very first day."
+          }
+        ],
+        "fallback": "You fold your arms and raise an eyebrow in a fair imitation of her own. \"Take your time, Emma. It's not as though I'm carrying half the Academy library.\"\n\nShe stares at you. Recognition dawns, followed by the unmistakable realization that you have waited an extraordinarily long time to return that particular favor."
+      }
+    },
+    "triggers": [
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      },
+      {
+        "triggerType": "relation_tag",
+        "parameters": {
+          "characterKey": "emma",
+          "relationTag": "emma_romance_open"
+        }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "emma_reasonable_choice",
+          "value": 1
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "periods": ["morning", "afternoon"]
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Kiss her",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"I think,\" you say, stepping closer, \"that we've both spent quite enough time talking.\"\n\n\"An unusual opinion from a scholar.\"\n\n\"I may have discovered a more persuasive form of argument.\"\n\n\"Oh?\"\n\nYou lean toward her slowly enough to give her every opportunity to object.\n\nShe doesn't. Instead, she catches the front of your jacket and kisses you, smiling against your lips. The second kiss is less tentative. When you finally draw apart, she is looking rather pleased with herself.\n\n\"Well,\" she says. \"That was a considerable improvement on yesterday's performance.\"\n\n\"Have I passed?\"\n\n\"Provisionally. There will be regular practical examinations.\"\n\n\"That sounds demanding.\"\n\n\"My standards are notoriously high.\"\n\nYou take her hand. This time, she doesn't need a pretext to keep hold of yours.\n\n\"Emma?\"\n\n\"Yes?\"\n\n\"I love you.\"\n\nFor a moment, all her clever replies desert her. Then she gives you a smile so open and happy that you wonder how you ever mistook her for someone cold.\n\n\"I love you too, you idiot.\"\n\nShe rests her forehead against yours before adding, in a whisper, \"And if you tell Molly how embarrassingly sentimental I've become, I shall deny every word.\"\n\n\"Molly already knows.\"\n\n\"Yes. An unfortunate complication. I may have to bribe her.\"\n\nYou leave the courtyard together, hand in hand. There are examinations to prepare for, matches to win, and a rather ambitious future to build. None of those things has changed.\n\nExcept that, for once, Emma seems perfectly content not to know precisely how every part of that future will unfold."
+            }
+          },
+          {
+            "type": "add_relation_tag",
+            "parameters": {
+              "characterKey": "emma",
+              "relationTag": "significant_other"
+            }
+          },
+          {
+            "type": "remove_relation_tag",
+            "parameters": {
+              "characterKey": "emma",
+              "relationTag": "emma_romance_open"
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "love",
+              "amount": 2
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "emma_memory_practical_examination",
+              "type": "memory",
+              "text": "Emma catches your eye and smiles. \"I have reviewed your recent performance, Fibonacci. There has been a marked improvement since our first encounter.\" You ask whether that means you've passed. \"Certainly not. This is a long-term course of study. I expect consistent effort.\" She squeezes your hand. \"Although I do intend to make the examinations enjoyable.\"",
+              "knownByNpcKeys": ["emma"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Ask to remain friends",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You look at her for a long moment. There is no easy way to say it, and she deserves better than an evasive answer.\n\n\"Emma, you mean more to me than I can put into words. Yesterday made that very clear. But I don't think I can promise you the kind of relationship you're asking for. Not honestly.\"\n\nShe is still. You can see the disappointment arrive, and how hard she works not to conceal it with an easy joke.\n\n\"I see,\" she says quietly.\n\n\"I don't want to lose what we have. The friendship, the arguments, the work—any of it. But it wouldn't be fair to say yes because I'm frightened of hurting you.\"\n\nEmma lowers her gaze to her hands. Then she nods.\n\n\"No. It wouldn't. And I have had quite enough of people making decisions on the basis of what they think I would like to hear.\"\n\nShe breathes out slowly.\n\n\"For the record, I think you're making a dreadful error of judgment.\"\n\n\"I expected nothing less.\"\n\n\"A truly spectacular error. I may write a paper on it.\"\n\n\"Peer-reviewed?\"\n\n\"Naturally. Though finding anyone who disagrees with me may prove difficult.\"\n\nThat wins a small laugh from both of you. She looks sad, but she is herself again.\n\n\"I may need a little time,\" she says. \"Not because I no longer value your friendship. Quite the opposite. I simply need a chance to arrange my thoughts without making another scene on the Academy steps.\"\n\n\"Of course.\"\n\n\"And Antonio? I don't regret the card. I meant every part of it.\"\n\n\"I'll treasure it.\"\n\n\"You'd better. It took an appalling amount of work.\"\n\nShe touches your arm briefly, then turns toward the Academy. Halfway to the arch, she looks back.\n\n\"Don't think this means I'll go easy on you in our next match.\"\n\n\"I wouldn't dream of it.\"\n\n\"Good. Some things, at least, can remain entirely unreasonable.\""
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_romance_declined"
+            }
+          },
+          {
+            "type": "remove_relation_tag",
+            "parameters": {
+              "characterKey": "emma",
+              "relationTag": "emma_romance_open"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "emma_memory_honest_answer",
+              "type": "memory",
+              "text": "Emma studies you over the top of a book. \"For what it's worth, Antonio, I appreciate that you gave me an honest answer. Even if I maintain that your judgment was catastrophically poor.\" You suggest she might eventually forgive your scholarly shortcomings. \"I might,\" she says, with a small smile. \"Provided you don't expect me to concede the argument.\"",
+              "knownByNpcKeys": ["emma"]
+            }
+          }
+        ]
+      }
+    ],
+    "characterArc": "emma",
+    "emotion": "amused",
+    "image": "emma_perfectly_unreasonable_arrangement.jpg",
+    "imageSize": "large",
+    "manualTrigger": "Emma makes a discreet sign for you to follow her in private"
+  },
+  {
     "key": "happy_little_accident",
     "text": "Your third artificery lesson is progressing remarkably well. You've arranged your ingredients, prepared your pigments, and even managed to follow most of the professor's instructions. At this rate, you might produce something almost respectable.\n\nThen your elbow catches a jar.\n\nA cascade of shimmering blue powder spills across the workbench, mixing with your carefully prepared ingredients. You grab for a cloth, knock over a second jar, and watch in horror as the entire mixture begins to glow.\n\nThere is a sharp pop, a flash of blue light, and the unmistakable smell of burnt cinnamon.\n\nWhen the smoke clears, a perfectly formed card lies in the middle of the table.\n\nYou pick it up cautiously. The enchantments woven into its surface are unlike anything you've seen before: intricate, powerful, and somehow perfectly balanced.\n\nThe professor approaches, examines your creation, and falls silent.\n\n\"Fibonacci. How exactly did you achieve this?\"\n\nAn excellent question. One you would very much like to know the answer to yourself.\n\n\"Remarkable,\" the professor murmurs. \"Quite remarkable. You must document your procedure.\"\n\nYes. Of course. Your procedure.\n\nYou glance at the empty jars, the stained workbench, and the smoking remains of your notes.\n\nThis could be difficult.",
     "triggers": [

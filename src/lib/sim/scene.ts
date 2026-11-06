@@ -255,6 +255,33 @@ export async function selectOption(option: EventOption) {
     applyOptionEffects(appliedEffects);
   }
   const nextNode = continuationNode(option, success);
+  // Run actionTemplates (e.g. enrollment pay/negotiate, interaction follow-ups)
+  // before nextNode / scene refresh. Interaction beats keep gs.scene.interaction
+  // set between choices — that must not skip this action.
+  if (option.outcome.action) {
+    await performAction(option.outcome.action);
+    if (sceneWaitingOnEventChoice() || gs.scene.interaction) {
+      return;
+    }
+    deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
+    if (sceneWaitingOnEventChoice() || gs.scene.interaction) {
+      gs.scene.actions = [];
+      gs.scene.manualTriggers = [];
+      return;
+    }
+    // performAction already resolved the scene when there were no follow-ups.
+    if (deferredFollowUps.length > 0) {
+      setSceneEvents();
+    }
+    return;
+  }
+  // start_interaction (effect) claims the scene before its LLM turn; do not open a
+  // next node or refresh actions while the interaction owns the stage.
+  if (gs.scene.interaction) {
+    gs.scene.actions = [];
+    gs.scene.manualTriggers = [];
+    return;
+  }
   // Only defer when THIS option started a match. A leftover ongoingBattle must not
   // swallow nextNode (e.g. Join the performance → after_performance).
   if (effectsIncludeStartMatch(appliedEffects) && gs.ongoingBattle) {
@@ -274,25 +301,6 @@ export async function selectOption(option: EventOption) {
   if (nextNode && template) {
     deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
     presentEventNode(template, nextNode);
-    return;
-  }
-  // Run actionTemplates (e.g. enrollment pay/negotiate) before follow-ups so
-  // payment narration and checks finish before the next event claims the scene.
-  if (option.outcome.action) {
-    await performAction(option.outcome.action);
-    if (sceneWaitingOnEventChoice()) {
-      return;
-    }
-    deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
-    if (sceneWaitingOnEventChoice()) {
-      gs.scene.actions = [];
-      gs.scene.manualTriggers = [];
-      return;
-    }
-    // performAction already resolved the scene when there were no follow-ups.
-    if (deferredFollowUps.length > 0) {
-      setSceneEvents();
-    }
     return;
   }
   deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));

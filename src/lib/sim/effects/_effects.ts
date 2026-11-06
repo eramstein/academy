@@ -19,9 +19,11 @@ import { move, type MoveParameters } from './move';
 import {
   addRelationTag,
   changeRelation,
+  removeRelationTag,
   updateRelationArc,
   type AddRelationTagParameters,
   type ChangeRelationParameters,
+  type RemoveRelationTagParameters,
   type UpdateRelationArcParameters,
 } from './relations';
 import { addResource, type AddResourceParameters } from './resources';
@@ -46,6 +48,7 @@ import {
   type GiftArtifactParameters,
 } from './artifacts';
 import { unlockPlace, type UnlockPlaceParameters } from './places';
+import { startInteraction, type StartInteractionParameters } from './interactions';
 
 export function applyEffect(effect: EventEffect) {
   const result = effectFunctions[effect.type](effect.parameters);
@@ -106,6 +109,8 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     updateRelationArc(parameters as UpdateRelationArcParameters),
   [EventEffectType.AddRelationTag]: (parameters) =>
     addRelationTag(parameters as AddRelationTagParameters),
+  [EventEffectType.RemoveRelationTag]: (parameters) =>
+    removeRelationTag(parameters as RemoveRelationTagParameters),
   [EventEffectType.AddStoryTag]: (parameters) => addStoryTag(parameters as AddStoryTagParameters),
   [EventEffectType.AddKnownTrait]: (parameters) =>
     addKnownTrait(parameters as AddKnownTraitParameters),
@@ -123,4 +128,6 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.GiftArtifact]: (parameters) =>
     giftArtifact(parameters as GiftArtifactParameters),
   [EventEffectType.UnlockPlace]: (parameters) => unlockPlace(parameters as UnlockPlaceParameters),
+  [EventEffectType.StartInteraction]: (parameters) =>
+    startInteraction(parameters as StartInteractionParameters),
 };

@@ -22,8 +22,12 @@ export interface SocializeParameters {
   interactionKey?: string;
   /** Index into the active interaction's offered choices. */
   interactionChoice?: number;
+  /** Player-authored free-text reaction for the active interaction. */
+  interactionCustomText?: string;
   /** End the interaction without another model call. */
   interactionStop?: boolean;
+  /** When opening an interaction, replaces the template's default situation. */
+  situation?: string;
 }
 
 function interactionKeyOf(parameters: SocializeParameters): string | undefined {
@@ -45,7 +49,12 @@ export async function socialize(parameters: SocializeParameters): Promise<string
       interactionKey: interactionKey ?? '',
       choiceIndex:
         typeof parameters.interactionChoice === 'number' ? parameters.interactionChoice : undefined,
+      customText:
+        typeof parameters.interactionCustomText === 'string'
+          ? parameters.interactionCustomText
+          : undefined,
       stop: parameters.interactionStop === true,
+      situation: typeof parameters.situation === 'string' ? parameters.situation : undefined,
     });
     return '';
   }

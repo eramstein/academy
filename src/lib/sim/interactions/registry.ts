@@ -1,6 +1,7 @@
 import { RelationTag, type Npc } from '@/lib/_model';
-import { getLoadedModInteractions } from '@/lib/mods';
 import { gs } from '@/lib/_state';
+import { settings } from '@/lib/_state/settings.svelte';
+import { getLoadedModInteractions } from '@/lib/mods';
 import type { InteractionTemplate, InteractionTriggers, InteractionValue } from './types';
 
 const INTERACTION_TYPE_PREFIX = 'interaction:';
@@ -36,6 +37,7 @@ export function interactionIcon(key: string): string {
 
 /** Interactions this NPC can start right now. One button each, not a single "Interact". */
 export function listInteractions(characterKey: string): InteractionOffer[] {
+  if (!settings.llmFeaturesEnabled) return [];
   const npc = gs.characters[characterKey];
   if (!npc) return [];
   return allTemplates()

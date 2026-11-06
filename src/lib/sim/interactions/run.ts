@@ -14,6 +14,7 @@ import type { InteractionTemplate } from './types';
 import {
   applyOutcomeReset,
   crossedOutcome,
+  ensureOutcomePeak,
   nearestBand,
   predictedOutcome,
   resolveNextValues,
@@ -27,15 +28,18 @@ const MECHANICS = `You simulate one beat of a structured social interaction in a
 
 Write the scene in second person, present tense, addressing the player as "you". Use the NPC's speaking name. 40–80 words. Prefer a line of dialogue and a visible reaction. Do not list choices in the prose. Do not add people, places, or events beyond this situation. Plain sentences only: no markdown, asterisks, or wrapping the scene in quotation marks.
 
-Tracked values are integers. Report each one as its new absolute total.
+Tracked values are integers. Report each one as its new absolute total after this beat.
 On the opening beat there is no chosen action. Keep each value at its current number, or shift it by at most 1 if the situation itself demands it.
-When the player has chosen an action, start from the current number plus that action's delta. You may adjust by 1. To reach a listed outcome, set the value so the comparison becomes true, and show that outcome clearly in the scene. After an outcome fires, that value resets to 0 — report 0 for it in your values.
+When the player has chosen an action, start from the current number plus that action's delta. You may adjust by 1. To reach a listed outcome, set the value so the comparison becomes true (the crossing total, not 0), and show that outcome clearly in the scene. The engine resets the value to 0 after the outcome fires — do not report 0 yourself for that.
 
 Follow-up choices:
-- At least one for every action type, and more for the types that fit this moment.
+- Offer only the options that fit this moment. Skip action types that do not make sense right now.
+- Prefer at least one option when the beat continues, and more for the types that fit best.
 - text is a specific thing the player can say or do next, at most 8 words, not a restatement of the type.
 - updates are integer deltas from the totals at the end of this beat, using only the tracked keys.
 - type is copied exactly from the action types.`;
+
+const CUSTOM_ACTION_TYPE = 'custom';
 
 const DeltaSchema = z.object({
   key: z.string().describe('Tracked value key'),
@@ -64,7 +68,11 @@ export interface RunInteractionInput {
   interactionKey: string;
   /** Index into the session's current choices. Omit to open the interaction. */
   choiceIndex?: number;
+  /** Player-authored free-text reaction for this beat. */
+  customText?: string;
   stop?: boolean;
+  /** When opening, replaces the template's default situation for this session. */
+  situation?: string;
 }
 
 let busy = false;
@@ -98,18 +106,24 @@ export async function runInteraction(input: RunInteractionInput): Promise<void> 
   }
 
   const active = gs.scene.interaction;
+  const customText = input.customText?.trim();
+  const picking =
+    input.choiceIndex !== undefined || (typeof customText === 'string' && customText.length > 0);
   const continuing =
-    input.choiceIndex !== undefined &&
-    active?.templateKey === template.key &&
-    active.characterKey === input.characterKey;
-  if (input.choiceIndex !== undefined && !continuing) {
+    picking && active?.templateKey === template.key && active.characterKey === input.characterKey;
+  if (picking && !continuing) {
     clearInteraction();
     narrateText('The moment has passed.', { characterKey: input.characterKey });
     return;
   }
 
-  const session = continuing && active ? active : openSession(template, input.characterKey);
-  const choice = continuing ? session.choices[input.choiceIndex ?? -1] : undefined;
+  const session =
+    continuing && active ? active : openSession(template, input.characterKey, input.situation);
+  const choice = customText
+    ? { type: CUSTOM_ACTION_TYPE, text: buttonText(customText), updates: {} }
+    : continuing
+      ? session.choices[input.choiceIndex ?? -1]
+      : undefined;
   if (continuing && !choice) {
     clearInteraction();
     narrateText('The moment has passed.', { characterKey: input.characterKey });
@@ -126,9 +140,17 @@ export async function runInteraction(input: RunInteractionInput): Promise<void> 
     const turn = await requestTurn(template, npc, session, choice, pendingOutcome);
     const reported = Object.fromEntries(turn.values.map((entry) => [entry.key, entry.value]));
     const previous = { ...session.values };
-    let nextValues = resolveNextValues(template, previous, reported, choice?.updates);
-    const outcome =
+    let nextValues = resolveNextValues(template, previous, reported, choice?.updates, {
+      freeform: choice?.type === CUSTOM_ACTION_TYPE,
+    });
+    let outcome =
       crossedOutcome(template.values, previous, nextValues) ?? pendingOutcome ?? undefined;
+    if (outcome) {
+      // If the model reported 0 (or otherwise missed the peak), restore a crossing total.
+      nextValues = ensureOutcomePeak(template.values, previous, nextValues, outcome);
+      outcome =
+        crossedOutcome(template.values, previous, nextValues) ?? pendingOutcome ?? outcome;
+    }
     // Mood aside shows the peak that fired; the meter itself resets afterward.
     const valuesForReport = { ...nextValues };
     if (outcome) {
@@ -163,10 +185,22 @@ export async function runInteraction(input: RunInteractionInput): Promise<void> 
   }
 }
 
-function openSession(template: InteractionTemplate, characterKey: string): InteractionSession {
+function openSession(
+  template: InteractionTemplate,
+  characterKey: string,
+  situation?: string
+): InteractionSession {
   const values: Record<string, number> = {};
   for (const value of template.values) values[value.key] = value.initial;
-  return { templateKey: template.key, characterKey, values, history: [], choices: [] };
+  const override = situation?.trim();
+  return {
+    templateKey: template.key,
+    characterKey,
+    values,
+    history: [],
+    choices: [],
+    ...(override ? { situation: override } : {}),
+  };
 }
 
 function clearInteraction() {
@@ -233,7 +267,8 @@ function userPrompt(
 ): string {
   const player = speakingName(gs.player.name);
   const other = speakingName(npc.name);
-  const situation = template.situation.replaceAll('{player}', player).replaceAll('{npc}', other);
+  const situationSource = session.situation?.trim() || template.situation;
+  const situation = situationSource.replaceAll('{player}', player).replaceAll('{npc}', other);
   const recent =
     session.history.length === 0
       ? 'None yet.'
@@ -243,9 +278,11 @@ function userPrompt(
             return `${index + 1}. ${action}${beat.scene}`;
           })
           .join('\n');
-  const chosen = choice
-    ? `type: ${choice.type}\ntext: ${choice.text}\nupdates: ${formatDeltas(choice.updates)}`
-    : 'None. This is the opening beat.';
+  const chosen = !choice
+    ? 'None. This is the opening beat.'
+    : choice.type === CUSTOM_ACTION_TYPE
+      ? `type: custom (player free text)\ntext: ${choice.text}\nupdates: none — set new totals from what they said, usually by at most a few points unless an outcome fires`
+      : `type: ${choice.type}\ntext: ${choice.text}\nupdates: ${formatDeltas(choice.updates)}`;
   const sections = [
     `Player: ${player}. Address them as "you".`,
     npcNotes(template, npc, other),
@@ -275,7 +312,7 @@ function userPrompt(
     sections.push(
       '',
       'Required outcome this beat:',
-      `${pendingOutcome.effect} (from ${pendingOutcome.key}). Make this happen in the scene. Report ${pendingOutcome.key} as 0 after it fires.`
+      `${pendingOutcome.effect} (from ${pendingOutcome.key}). Make this happen in the scene. Report ${pendingOutcome.key} as the total that crossed its threshold (not 0).`
     );
   }
   return sections.join('\n');
@@ -360,15 +397,7 @@ function normalizeChoices(
     if (!type || !text) continue;
     choices.push({ type, text, updates: deltasFor(template, type, choice.updates) });
   }
-  for (const type of template.actionTypes) {
-    if (choices.some((choice) => choice.type === type)) continue;
-    choices.push({
-      type,
-      text: sentenceCase(type),
-      updates: { ...(template.reactions[type] ?? {}) },
-    });
-  }
-  return capChoices(choices, template.actionTypes);
+  return choices.slice(0, MAX_CHOICES);
 }
 
 function deltasFor(
@@ -386,22 +415,6 @@ function deltasFor(
     return { ...(template.reactions[type] ?? {}) };
   }
   return updates;
-}
-
-function capChoices(choices: InteractionChoiceState[], types: string[]): InteractionChoiceState[] {
-  if (choices.length <= MAX_CHOICES) return choices;
-  const kept: InteractionChoiceState[] = [];
-  for (const type of types) {
-    const first = choices.find((choice) => choice.type === type);
-    if (!first) continue;
-    kept.push(first);
-  }
-  for (const choice of choices) {
-    if (kept.length >= MAX_CHOICES) break;
-    if (kept.includes(choice)) continue;
-    kept.push(choice);
-  }
-  return kept;
 }
 
 function buttonText(text: string): string {

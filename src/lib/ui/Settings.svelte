@@ -2,6 +2,7 @@
   import { UiView } from '@/lib/_model';
   import { uiState } from '@/lib/_state';
   import {
+    setLlmFeaturesEnabled,
     setTextSpeed,
     settings,
     TEXT_SPEED_OPTIONS,
@@ -11,6 +12,10 @@
 
   function onTextSpeedChange(value: TextSpeed) {
     setTextSpeed(value);
+  }
+
+  function onLlmFeaturesChange(enabled: boolean) {
+    setLlmFeaturesEnabled(enabled);
   }
 
   function goBack() {
@@ -44,6 +49,40 @@
             <span class="option-hint">{option.hint}</span>
           </button>
         {/each}
+      </div>
+    </section>
+
+    <section class="setting">
+      <div class="setting-label">
+        <h2>LLM features</h2>
+        <p>
+          Structured social interactions and other content that calls the language model. Turn off
+          to hide those options.
+        </p>
+      </div>
+      <div class="speed-options" role="radiogroup" aria-label="LLM features">
+        <button
+          type="button"
+          class="speed-option"
+          class:selected={settings.llmFeaturesEnabled}
+          role="radio"
+          aria-checked={settings.llmFeaturesEnabled}
+          onclick={() => onLlmFeaturesChange(true)}
+        >
+          <span class="option-label">On</span>
+          <span class="option-hint">Interactions and LLM-gated events</span>
+        </button>
+        <button
+          type="button"
+          class="speed-option"
+          class:selected={!settings.llmFeaturesEnabled}
+          role="radio"
+          aria-checked={!settings.llmFeaturesEnabled}
+          onclick={() => onLlmFeaturesChange(false)}
+        >
+          <span class="option-label">Off</span>
+          <span class="option-hint">Hide LLM-powered options</span>
+        </button>
       </div>
     </section>
   </div>
@@ -111,6 +150,12 @@
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
+  }
+
+  .setting + .setting {
+    margin-top: 1.35rem;
+    padding-top: 1.35rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-brass) 55%, transparent);
   }
 
   .setting-label h2 {

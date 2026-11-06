@@ -38,8 +38,19 @@
   const actions = $derived(gs.scene.actions);
   const manualTriggers = $derived(gs.scene.manualTriggers ?? []);
   const pendingPeriodEvent = $derived(gs.scene.pendingPeriodEvent);
+  const interactionSession = $derived(gs.scene.interaction);
 
   let hoveredOptionIndex = $state<number | null>(null);
+  let composingCustom = $state(false);
+  let customText = $state('');
+
+  $effect(() => {
+    // Reset the free-text composer whenever the interaction beat changes.
+    void event?.key;
+    void interactionSession?.history.length;
+    composingCustom = false;
+    customText = '';
+  });
 
   const actionIcons: Partial<Record<ActionType, string>> = {
     [ActionType.Socialize]: 'people',
@@ -317,6 +328,26 @@
     pendingAction = null;
   }
 
+  function submitCustomInteraction(eventSubmit: Event) {
+    eventSubmit.preventDefault();
+    const session = interactionSession;
+    const text = customText.trim();
+    if (!session || !text) return;
+    composingCustom = false;
+    customText = '';
+    performAction({
+      label: 'Socialize',
+      actionType: ActionType.Socialize,
+      isLongAction: false,
+      actionParameters: {
+        characterKey: session.characterKey,
+        socializeType: SocializeType.Interaction,
+        interactionKey: session.templateKey,
+        interactionCustomText: text,
+      },
+    });
+  }
+
   $effect(() => {
     if (currentParameterKey !== 'placeKey' || !pendingAction) {
       clearPlacePickSession();
@@ -396,6 +427,29 @@
             </div>
           </Tooltip>
         {/each}
+        {#if interactionSession}
+          {#if composingCustom}
+            <form class="custom-interaction" onsubmit={submitCustomInteraction}>
+              <input
+                class="custom-interaction-input"
+                type="text"
+                maxlength="120"
+                placeholder="What do you say or do?"
+                bind:value={customText}
+                aria-label="Custom reaction"
+                autofocus
+              />
+              <OrnateButton type="submit" disabled={!customText.trim()}>Say it</OrnateButton>
+              <button type="button" class="cancel-btn" onclick={() => (composingCustom = false)}>
+                Cancel
+              </button>
+            </form>
+          {:else}
+            <OrnateButton variant="muted" onclick={() => (composingCustom = true)}>
+              Say something else…
+            </OrnateButton>
+          {/if}
+        {/if}
       {:else if pendingPeriodEvent}
         <OrnateButton icon="book" onclick={() => playPendingPeriodEvent()}>
           {pendingPeriodEvent.label}
@@ -568,5 +622,36 @@
 
   .cancel-btn:active {
     background: var(--color-data-active);
+  }
+
+  .custom-interaction {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .custom-interaction-input {
+    flex: 1 1 16rem;
+    max-width: 28rem;
+    min-width: 12rem;
+    font-family: var(--font-narrative);
+    font-size: 1rem;
+    color: var(--color-cream);
+    background: color-mix(in srgb, var(--color-data) 70%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-brass) 55%, transparent);
+    border-radius: 4px;
+    padding: 0.55rem 0.8rem;
+    outline: none;
+  }
+
+  .custom-interaction-input::placeholder {
+    color: var(--color-muted-label);
+  }
+
+  .custom-interaction-input:focus {
+    border-color: var(--color-golden);
   }
 </style>
