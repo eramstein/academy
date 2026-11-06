@@ -10,7 +10,7 @@ import {
   type UnitKeywords,
 } from '@/lib/_model';
 import { gs } from '@/lib/_state';
-import { getRandomFromObjectWeights } from '@/lib/_utils/random';
+import { getRandomFromArray, getRandomFromObjectWeights } from '@/lib/_utils/random';
 import { buildAbility, getAbilityActionNames, type AbilityPick } from '../cards/ability-templates';
 import {
   getActionNumericParams,
@@ -96,6 +96,18 @@ export interface DistillParameters {
   /** Predetermined color tech gains from the seal UI. */
   learningGains?: KnowledgeGain[];
 }
+
+export interface DisenchantParameters {
+  cardId: string;
+  /** Predetermined reward; rolled on apply if omitted. */
+  resourceType?: ResourceType;
+}
+
+const DISENCHANT_REWARDS = [
+  ResourceType.MagicDust,
+  ResourceType.Silver,
+  ResourceType.Moxes,
+] as const;
 
 export interface DistillPreview {
   error: string;
@@ -466,6 +478,36 @@ export function getEnchantableCards(options: { distill?: boolean } = {}): CardTe
     if (options.distill) return card.cost > 0;
     return card.cost < 9;
   });
+}
+
+export function getDisenchantableCards(): CardTemplate[] {
+  return [...gs.player.collection];
+}
+
+export function rollDisenchantReward(): ResourceType {
+  return getRandomFromArray([...DISENCHANT_REWARDS]);
+}
+
+export function disenchantCard(parameters: DisenchantParameters): string {
+  const index = gs.player.collection.findIndex((card) => card.id === parameters.cardId);
+  if (index === -1) {
+    return `Card not found: ${parameters.cardId}.`;
+  }
+
+  const [card] = gs.player.collection.splice(index, 1);
+  for (const deck of gs.player.decks) {
+    deck.cards = deck.cards.filter((id) => id !== card.id);
+    deck.lands = deck.lands.filter((id) => id !== card.id);
+  }
+
+  const resourceType =
+    parameters.resourceType &&
+    (DISENCHANT_REWARDS as readonly ResourceType[]).includes(parameters.resourceType)
+      ? parameters.resourceType
+      : rollDisenchantReward();
+  gs.player.resources[resourceType] = (gs.player.resources[resourceType] ?? 0) + 1;
+  const resourceLabel = resourceType.replace('_', ' ').toLowerCase();
+  return `You disenchant ${card.name} and recover 1 ${resourceLabel}.`;
 }
 
 function resolveEnchantFortune(parameters: {

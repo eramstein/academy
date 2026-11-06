@@ -191,6 +191,7 @@ export function refreshUnit(unit: UnitDeployed) {
 
 export function bounceUnit(unit: UnitDeployed) {
   clearUnitStaticAbilities(unit);
+  removeAllCounters(unit);
   bs.units = bs.units.filter((u) => u.instanceId !== unit.instanceId);
   bs.players[unit.ownerPlayerId].hand.push(unit);
 }

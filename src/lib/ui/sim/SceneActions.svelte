@@ -29,6 +29,7 @@
   } from '@/lib/ui/craft-artifact-session.svelte';
   import Conjure from './Conjure.svelte';
   import CraftArtifact from './CraftArtifact.svelte';
+  import Disenchant from './Disenchant.svelte';
   import Enchantment from './Enchantment.svelte';
   import Invoke from './Invoke.svelte';
   import { clearPlacePickSession, placePickSession } from './place-pick-session.svelte';
@@ -61,6 +62,7 @@
     [ActionType.Wait]: 'arrow-left',
     [ActionType.Augment]: 'leaf',
     [ActionType.Distill]: 'moon',
+    [ActionType.Disenchant]: 'magic_dust',
     [ActionType.StartMatch]: 'trophy',
     [ActionType.Move]: 'boot',
     [ActionType.Transaction]: 'coin',
@@ -82,6 +84,7 @@
 
   let pendingAction = $state<Action | null>(null);
   let enchantAction = $state<Action | null>(null);
+  let disenchantAction = $state<Action | null>(null);
 
   let shopAction = $state<Action | null>(null);
   let cardCraftAction = $state<Action | null>(null);
@@ -247,6 +250,10 @@
       enchantAction = next;
       return;
     }
+    if (next.actionType === ActionType.Disenchant) {
+      disenchantAction = next;
+      return;
+    }
     if (
       next.actionType === ActionType.Transaction &&
       next.actionParameters.transactionType === TransactionType.Purchase
@@ -366,6 +373,9 @@
 
 {#if enchantAction}
   <Enchantment action={enchantAction} onDone={() => (enchantAction = null)} />
+{/if}
+{#if disenchantAction}
+  <Disenchant action={disenchantAction} onDone={() => (disenchantAction = null)} />
 {/if}
 {#if shopAction}
   <Shop action={shopAction} onDone={() => (shopAction = null)} />

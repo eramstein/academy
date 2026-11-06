@@ -32,8 +32,10 @@ import {
 } from './craft-artifact';
 import {
   augmentCard,
+  disenchantCard,
   distillCard,
   type AugmentParameters,
+  type DisenchantParameters,
   type DistillParameters,
 } from './enchanting';
 import { invite, type InviteParameters } from './invitation';
@@ -154,6 +156,7 @@ const actionFunctions: Record<
   [ActionType.StartMatch]: (parameters) => startMatch(parameters as StartMatchParameters),
   [ActionType.Augment]: (parameters) => augmentCard(parameters as AugmentParameters),
   [ActionType.Distill]: (parameters) => distillCard(parameters as DistillParameters),
+  [ActionType.Disenchant]: (parameters) => disenchantCard(parameters as DisenchantParameters),
   [ActionType.Conjure]: (parameters) =>
     conjureCard(parameters as CardCreationResult, parameters.characterKey ?? 'player'),
   [ActionType.Invoke]: (parameters) =>

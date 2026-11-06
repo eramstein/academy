@@ -33,6 +33,12 @@ export function getLessonActions(): Action[] {
         cardId: getEnchantableCards({ distill: true }).map((c) => [c.id, c.name]),
       },
     });
+    lessons.push({
+      label: 'Disenchant',
+      actionType: ActionType.Disenchant,
+      isLongAction: true,
+      actionParameters: {},
+    });
   }
 
   if (currentActivity.classType === ClassType.Artificery) {

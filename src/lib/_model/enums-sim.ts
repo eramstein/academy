@@ -53,6 +53,7 @@ export enum ActionType {
   CraftArtifact = 'craft_artifact',
   Augment = 'augment',
   Distill = 'distill',
+  Disenchant = 'disenchant',
   Move = 'move',
   Transaction = 'transaction',
   Negotiate = 'negotiate',
