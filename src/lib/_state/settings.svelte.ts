@@ -1,3 +1,8 @@
+import {
+  isInteractionLanguage,
+  type InteractionLanguage,
+} from '@/lib/sim/interactions/language';
+
 const LOCAL_STORAGE_KEY_SETTINGS = 'academySettings';
 
 export type TextSpeed = 'instant' | 'fast' | 'normal' | 'slow';
@@ -6,6 +11,8 @@ export type GameSettings = {
   textSpeed: TextSpeed;
   /** LLM-backed content: interactions, and any event gated on `llm_features`. */
   llmFeaturesEnabled: boolean;
+  /** Language of generated interaction scenes and choice buttons. */
+  language: InteractionLanguage;
 };
 
 export const TEXT_SPEED_OPTIONS: { value: TextSpeed; label: string; hint: string }[] = [
@@ -26,6 +33,7 @@ export const TEXT_SPEED_MS: Record<TextSpeed, number> = {
 const defaultSettings: GameSettings = {
   textSpeed: 'normal',
   llmFeaturesEnabled: true,
+  language: 'en',
 };
 
 function loadSettings(): GameSettings {
@@ -43,7 +51,10 @@ function loadSettings(): GameSettings {
       typeof parsed.llmFeaturesEnabled === 'boolean'
         ? parsed.llmFeaturesEnabled
         : defaultSettings.llmFeaturesEnabled;
-    return { textSpeed, llmFeaturesEnabled };
+    const language = isInteractionLanguage(parsed.language)
+      ? parsed.language
+      : defaultSettings.language;
+    return { textSpeed, llmFeaturesEnabled, language };
   } catch (error) {
     console.error('Failed to load settings from localStorage:', error);
     return { ...defaultSettings };
@@ -67,6 +78,11 @@ export function setTextSpeed(textSpeed: TextSpeed): void {
 
 export function setLlmFeaturesEnabled(enabled: boolean): void {
   settings.llmFeaturesEnabled = enabled;
+  saveSettings();
+}
+
+export function setInteractionLanguage(language: InteractionLanguage): void {
+  settings.language = language;
   saveSettings();
 }
 

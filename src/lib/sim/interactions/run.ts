@@ -6,9 +6,11 @@ import {
   type Npc,
 } from '@/lib/_model';
 import { gs } from '@/lib/_state';
+import { settings } from '@/lib/_state/settings.svelte';
 import { completeChat } from '@/lib/llm/llm-service';
 import { z } from 'zod';
 import { narrate, narrateText } from '../narration';
+import { interactionCopy } from './language';
 import { getInteractionTemplate } from './registry';
 import type { InteractionTemplate } from './types';
 import {
@@ -26,7 +28,7 @@ const MAX_CHOICES = 6;
 
 const MECHANICS = `You simulate one beat of a structured social interaction in a lighthearted medieval fantasy academy.
 
-Write the scene in second person, present tense, addressing the player as "you". Use the NPC's speaking name. 40–80 words. Prefer a line of dialogue and a visible reaction. Do not list choices in the prose. Do not add people, places, or events beyond this situation. Plain sentences only: no markdown, asterisks, or wrapping the scene in quotation marks.
+Write the scene in second person, present tense. Use the NPC's speaking name. 40–80 words. Prefer a line of dialogue and a visible reaction. Do not list choices in the prose. Do not add people, places, or events beyond this situation. Plain sentences only: no markdown, asterisks, or wrapping the scene in quotation marks.
 
 Tracked values are integers. Report each one as its new absolute total after this beat.
 On the opening beat there is no chosen action. Keep each value at its current number, or shift it by at most 1 if the situation itself demands it.
@@ -101,7 +103,7 @@ export async function runInteraction(input: RunInteractionInput): Promise<void> 
   }
   if (!template || !npc) {
     clearInteraction();
-    narrateText('There is no one here to do that with.', { characterKey: input.characterKey });
+    narrateText(interactionCopy(settings.language).nobody, { characterKey: input.characterKey });
     return;
   }
 
@@ -113,7 +115,7 @@ export async function runInteraction(input: RunInteractionInput): Promise<void> 
     picking && active?.templateKey === template.key && active.characterKey === input.characterKey;
   if (picking && !continuing) {
     clearInteraction();
-    narrateText('The moment has passed.', { characterKey: input.characterKey });
+    narrateText(interactionCopy(settings.language).passed, { characterKey: input.characterKey });
     return;
   }
 
@@ -126,7 +128,7 @@ export async function runInteraction(input: RunInteractionInput): Promise<void> 
       : undefined;
   if (continuing && !choice) {
     clearInteraction();
-    narrateText('The moment has passed.', { characterKey: input.characterKey });
+    narrateText(interactionCopy(settings.language).passed, { characterKey: input.characterKey });
     return;
   }
 
@@ -177,7 +179,7 @@ export async function runInteraction(input: RunInteractionInput): Promise<void> 
   } catch (error) {
     console.warn('[interaction]', error);
     clearInteraction();
-    narrateText('The conversation stalls before it can go anywhere.', {
+    narrateText(interactionCopy(settings.language).stalled, {
       characterKey: input.characterKey,
     });
   } finally {
@@ -228,7 +230,7 @@ function presentChoices(session: InteractionSession) {
         },
       })),
       {
-        text: 'Stop there',
+        text: interactionCopy(settings.language).stop,
         outcome: {
           action: {
             actionType: ActionType.Socialize,
@@ -251,7 +253,10 @@ async function requestTurn(
 ) {
   return completeChat(
     [
-      { role: 'system', content: `${template.systemPrompt}\n\n${MECHANICS}` },
+      {
+        role: 'system',
+        content: `${template.systemPrompt}\n\n${MECHANICS}\n\n${interactionCopy(settings.language).rule}`,
+      },
       { role: 'user', content: userPrompt(template, npc, session, choice, pendingOutcome) },
     ],
     { temperature: 0.8, maxTokens: 900, schema: TurnSchema, schemaName: 'interaction-turn' }
@@ -284,7 +289,7 @@ function userPrompt(
       ? `type: custom (player free text)\ntext: ${choice.text}\nupdates: none — set new totals from what they said, usually by at most a few points unless an outcome fires`
       : `type: ${choice.type}\ntext: ${choice.text}\nupdates: ${formatDeltas(choice.updates)}`;
   const sections = [
-    `Player: ${player}. Address them as "you".`,
+    `Player: ${player}. Address them as "${interactionCopy(settings.language).address}".`,
     npcNotes(template, npc, other),
     '',
     'Initial situation:',
@@ -366,7 +371,8 @@ function narrateValueReport(
     const after = next[value.key] ?? before;
     const delta = after - before;
     const band = nearestBand(value.bands, after);
-    const change = delta === 0 ? 'unchanged' : `${delta > 0 ? '+' : ''}${delta}`;
+    const unchanged = interactionCopy(settings.language).unchanged;
+    const change = delta === 0 ? unchanged : `${delta > 0 ? '+' : ''}${delta}`;
     return `${value.label}: ${band} (${after}) · ${change}`;
   });
   narrate({
@@ -374,7 +380,7 @@ function narrateValueReport(
     text: lines.join('\n'),
     type: NarrationType.RelationUpdate,
     characters: [characterKey],
-    title: 'Mood',
+    title: interactionCopy(settings.language).mood,
   });
 }
 
@@ -431,7 +437,7 @@ function cleanScene(text: string): string {
   const clean = stripMarkup(text)
     .replace(/^["']+|["']+$/g, '')
     .trim();
-  return clean || 'The argument hangs in the air between you.';
+  return clean || interactionCopy(settings.language).emptyScene;
 }
 
 function stripMarkup(text: string): string {

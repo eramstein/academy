@@ -1353,6 +1353,7 @@ const plague_spreader = {
               counterValue: 1,
               range: {
                 sameRow: true,
+                excludeSelf: true,
               },
             },
           },

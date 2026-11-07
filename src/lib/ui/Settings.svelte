@@ -2,12 +2,17 @@
   import { UiView } from '@/lib/_model';
   import { uiState } from '@/lib/_state';
   import {
+    setInteractionLanguage,
     setLlmFeaturesEnabled,
     setTextSpeed,
     settings,
     TEXT_SPEED_OPTIONS,
     type TextSpeed,
   } from '@/lib/_state/settings.svelte';
+  import {
+    INTERACTION_LANGUAGE_OPTIONS,
+    type InteractionLanguage,
+  } from '@/lib/sim/interactions/language';
   import { getDataBackgroundPath, getTableImagePath } from '@/lib/_utils/asset-paths';
 
   function onTextSpeedChange(value: TextSpeed) {
@@ -16,6 +21,10 @@
 
   function onLlmFeaturesChange(enabled: boolean) {
     setLlmFeaturesEnabled(enabled);
+  }
+
+  function onLanguageChange(language: InteractionLanguage) {
+    setInteractionLanguage(language);
   }
 
   function goBack() {
@@ -83,6 +92,28 @@
           <span class="option-label">Off</span>
           <span class="option-hint">Hide LLM-powered options</span>
         </button>
+      </div>
+    </section>
+
+    <section class="setting">
+      <div class="setting-label">
+        <h2>Language</h2>
+        <p>Language of generated social interactions: the scene and the choices you can pick.</p>
+      </div>
+      <div class="speed-options" role="radiogroup" aria-label="Language">
+        {#each INTERACTION_LANGUAGE_OPTIONS as option (option.value)}
+          <button
+            type="button"
+            class="speed-option"
+            class:selected={settings.language === option.value}
+            role="radio"
+            aria-checked={settings.language === option.value}
+            onclick={() => onLanguageChange(option.value)}
+          >
+            <span class="option-label">{option.label}</span>
+            <span class="option-hint">{option.hint}</span>
+          </button>
+        {/each}
       </div>
     </section>
   </div>

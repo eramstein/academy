@@ -9,9 +9,11 @@ import {
 } from '@/lib/_model';
 import { gs } from '@/lib/_state';
 import {
+  clamp,
   getRandomFromArray,
   getRandomFromObjectWeights,
   getRandomInteger,
+  getRandomIntegerWithVariance,
   getRandomWeighted,
 } from '@/lib/_utils/random';
 import type { CardCreationParameters } from '../actions';
@@ -209,15 +211,16 @@ function randomCombatStats(colors: CardColor[]): {
     Object.entries(preference).filter(([, weight]) => weight > 0)
   );
   const stats: StatsPreference = { power: 0, hp: 0, ret: 0 };
-  const total = getRandomInteger(4, 12);
+  const total = clamp(getRandomIntegerWithVariance(10, 16), 1, 20);
   for (let i = 0; i < total; i++) {
     const key = getRandomFromObjectWeights(allocatable) as keyof StatsPreference;
     stats[key]++;
   }
+  const maxHealth = Math.max(1, stats.hp);
   return {
     power: stats.power,
-    maxHealth: Math.max(1, stats.hp),
-    retaliate: stats.ret,
+    maxHealth,
+    retaliate: Math.min(stats.ret, maxHealth),
   };
 }
 
