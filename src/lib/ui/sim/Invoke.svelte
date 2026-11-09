@@ -22,12 +22,22 @@
   import { buildAbility, getTriggerTemplateLabel } from '@/lib/sim/cards/ability-templates';
   import {
     ACTION_TEMPLATE_KEYS,
+    actionAreaParams,
+    actionNumericParams,
     createActionTemplate,
     defaultActionFactoryArgs,
     getActionTooltip,
+    readNumericArg,
+    type ActionFactoryArgs,
   } from '@/lib/sim/cards/action-templates';
-  import { getAbilityCost, getActionBudget, getKeywordBudget } from '@/lib/sim/cards/card-budget';
-  import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
+  import {
+    getAbilityCost,
+    getActionBudget,
+    getCardBudget,
+    getKeywordBudget,
+    maxCardBudget,
+  } from '@/lib/sim/cards/card-budget';
+  import type { PartialConjuredSpell, PartialConjuredUnit } from '@/lib/sim/cards/creation';
   import { effectiveCraftingSkills } from '@/lib/sim/artifacts';
   import {
     craftProfile,
@@ -59,6 +69,7 @@
   const retaliateIcon = getAssetPath('images/ui/icons/retaliate-icon-decorated.png');
 
   const ESSENCE_COST: Record<EssenceKey, number> = { power: 4, hp: 2, retaliate: 1 };
+  const STAT_ESSENCE_MAX = 20;
 
   function countsFrom(list: { type: ResourceType; count: number }[]): Record<ResourceType, number> {
     const counts = Object.fromEntries(
@@ -86,12 +97,12 @@
   let runeAmounts = $state<Partial<Record<keyof UnitKeywords, number>>>({});
   let runeIn = $state<Partial<Record<keyof UnitKeywords, boolean>>>({});
   let stagedTriggers = $state<Record<string, string>>({});
-  let stagedArgs = $state<Record<string, Record<string, number>>>({});
+  let stagedArgs = $state<Record<string, ActionFactoryArgs>>({});
   let abilityTrigger = $state('onDeploy');
   let abilityAction = $state<string | null>(null);
-  let abilityArgs = $state<Record<string, number>>({});
+  let abilityArgs = $state<ActionFactoryArgs>({});
   let spellAction = $state<string | null>(null);
-  let spellArgs = $state<Record<string, number>>({});
+  let spellArgs = $state<ActionFactoryArgs>({});
   let landed = $state<string[]>([]);
   let sealing = $state(false);
   let draggingIngredient = $state(false);
@@ -199,14 +210,14 @@
     };
   }
 
-  function activeArgs(name: string, committed: Record<string, number>, active: boolean) {
+  function activeArgs(name: string, committed: ActionFactoryArgs, active: boolean): ActionFactoryArgs {
     if (active) {
       return Object.keys(committed).length ? committed : defaultActionFactoryArgs(name);
     }
     return stagedArgs[name] ?? defaultActionFactoryArgs(name);
   }
 
-  function argsFor(name: string): Record<string, number> {
+  function argsFor(name: string): ActionFactoryArgs {
     if (isUnit) return activeArgs(name, abilityArgs, abilityAction === name);
     return activeArgs(name, spellArgs, spellAction === name);
   }
@@ -249,11 +260,66 @@
     })
   );
 
+  const draftSpell = $derived.by((): PartialConjuredSpell | null => {
+    if (cardType !== CardType.Spell || !spellAction) return null;
+    const template = createActionTemplate(
+      spellAction,
+      activeArgs(spellAction, spellArgs, true)
+    );
+    return {
+      type: CardType.Spell,
+      colors: selectedColors.map((color) => ({ color, count: 1 })),
+      actions: [template.definition],
+    };
+  });
+
+  function trialUnit(patch: {
+    colors?: CardColor[];
+    power?: number;
+    maxHealth?: number;
+    retaliate?: number;
+    keywords?: UnitKeywords;
+    abilities?: Ability[] | undefined;
+  }): PartialConjuredUnit {
+    const colorList = patch.colors ?? selectedColors;
+    return {
+      type: CardType.Unit,
+      colors: colorList.map((color) => ({ color, count: 1 })),
+      power: patch.power ?? (essenceIn.power ? essences.power : 0),
+      maxHealth: patch.maxHealth ?? (essenceIn.hp ? essences.hp : 1),
+      retaliate: patch.retaliate ?? (essenceIn.retaliate ? essences.retaliate : 0),
+      keywords: patch.keywords ?? keywords ?? {},
+      abilities:
+        patch.abilities !== undefined
+          ? patch.abilities
+          : draftAbility
+            ? [draftAbility]
+            : undefined,
+    };
+  }
+
+  function trialSpell(
+    name: string,
+    args: ActionFactoryArgs,
+    colorList: CardColor[] = selectedColors
+  ): PartialConjuredSpell {
+    const template = createActionTemplate(name, args);
+    return {
+      type: CardType.Spell,
+      colors: colorList.map((color) => ({ color, count: 1 })),
+      actions: [template.definition],
+    };
+  }
+
+  function fitsInvokeBudget(card: PartialConjuredUnit | PartialConjuredSpell): boolean {
+    return getCardBudget(card) <= maxCardBudget;
+  }
+
   function budgetTitle(base: string, cost: number): string {
     return cost ? `${base}\nBudget cost: ${cost}` : base;
   }
 
-  function describeAction(name: string, args: Record<string, number>): string {
+  function describeAction(name: string, args: ActionFactoryArgs): string {
     const resolved = Object.keys(args).length ? args : defaultActionFactoryArgs(name);
     const template = createActionTemplate(name, resolved);
     const effect = template.definition.effect;
@@ -417,11 +483,27 @@
       return;
     }
     if (colors.includes(color)) return;
-    colors = [...colors, color];
+    const nextColors = [...colors, color];
+    if (isUnit) {
+      if (!fitsInvokeBudget(trialUnit({ colors: nextColors }))) return;
+    } else if (spellAction) {
+      if (!fitsInvokeBudget(trialSpell(spellAction, argsFor(spellAction), nextColors))) return;
+    }
+    colors = nextColors;
     playAddResourceSound();
   }
 
+  function essencePatch(
+    key: EssenceKey,
+    value: number
+  ): { power?: number; maxHealth?: number; retaliate?: number } {
+    if (key === 'power') return { power: value };
+    if (key === 'hp') return { maxHealth: value };
+    return { retaliate: value };
+  }
+
   function onEssenceDial(key: EssenceKey, value: number) {
+    if (essenceIn[key] && !fitsInvokeBudget(trialUnit(essencePatch(key, value)))) return;
     essences = { ...essences, [key]: value };
   }
 
@@ -433,11 +515,16 @@
       return;
     }
     if (essenceIn[key]) return;
+    if (!fitsInvokeBudget(trialUnit(essencePatch(key, essences[key])))) return;
     essenceIn = { ...essenceIn, [key]: true };
     playAddResourceSound();
   }
 
   function onRuneDial(key: keyof UnitKeywords, value: number) {
+    if (runeIn[key]) {
+      const nextKeywords = { ...(keywords ?? {}), [key]: value };
+      if (!fitsInvokeBudget(trialUnit({ keywords: nextKeywords }))) return;
+    }
     runeAmounts = { ...runeAmounts, [key]: value };
   }
 
@@ -451,21 +538,40 @@
       return;
     }
     if (runeIn[key]) return;
+    const amount = runeAmounts[key] ?? 1;
+    const nextKeywords = {
+      ...(keywords ?? {}),
+      [key]: NUMERIC_KEYWORDS.has(key) ? amount : true,
+    };
+    if (!fitsInvokeBudget(trialUnit({ keywords: nextKeywords }))) return;
     runeIn = { ...runeIn, [key]: true };
     if (!runeAmounts[key]) runeAmounts = { ...runeAmounts, [key]: 1 };
     playAddResourceSound();
   }
 
   function onTriggerDial(name: string, trigger: string) {
+    if (abilityAction === name) {
+      const ability = buildAbility({ trigger, action: name, args: abilityArgs });
+      if (!fitsInvokeBudget(trialUnit({ abilities: ability ? [ability] : undefined }))) return;
+      abilityTrigger = trigger;
+    }
     stagedTriggers = { ...stagedTriggers, [name]: trigger };
-    if (abilityAction === name) abilityTrigger = trigger;
   }
 
-  function onArgDial(name: string, factoryKey: string, value: number) {
-    const next = { ...argsFor(name), [factoryKey]: value };
+  function onArgDial(name: string, factoryKey: string, value: number | string | null) {
+    const next: ActionFactoryArgs = { ...argsFor(name) };
+    if (value === null || value === '') delete next[factoryKey];
+    else next[factoryKey] = value;
+    if (isUnit && abilityAction === name) {
+      const ability = buildAbility({ trigger: abilityTrigger, action: name, args: next });
+      if (!fitsInvokeBudget(trialUnit({ abilities: ability ? [ability] : undefined }))) return;
+      abilityArgs = next;
+    }
+    if (!isUnit && spellAction === name) {
+      if (!fitsInvokeBudget(trialSpell(name, next))) return;
+      spellArgs = next;
+    }
     stagedArgs = { ...stagedArgs, [name]: next };
-    if (isUnit && abilityAction === name) abilityArgs = next;
-    if (!isUnit && spellAction === name) spellArgs = next;
   }
 
   function onIncantationMix(name: string, remove: boolean) {
@@ -477,9 +583,11 @@
         return;
       }
       if (abilityAction === name) return;
-      if (abilityAction) conceal(`incantation:${abilityAction}`);
       const args = { ...argsFor(name) };
       const trigger = triggerFor(name);
+      const ability = buildAbility({ trigger, action: name, args });
+      if (!fitsInvokeBudget(trialUnit({ abilities: ability ? [ability] : undefined }))) return;
+      if (abilityAction) conceal(`incantation:${abilityAction}`);
       abilityAction = name;
       abilityTrigger = trigger;
       abilityArgs = args;
@@ -493,8 +601,9 @@
       return;
     }
     if (spellAction === name) return;
-    if (spellAction) conceal(`incantation:${spellAction}`);
     const args = { ...argsFor(name) };
+    if (!fitsInvokeBudget(trialSpell(name, args))) return;
+    if (spellAction) conceal(`incantation:${spellAction}`);
     spellAction = name;
     spellArgs = args;
     playAddResourceSound();
@@ -549,11 +658,138 @@
     return false;
   }
 
+  function canAddWithinBudget(id: string): boolean {
+    if (id.startsWith('pigment:')) {
+      const color = id.slice('pigment:'.length) as CardColor;
+      if (colors.includes(color)) return true;
+      const nextColors = [...colors, color];
+      if (isUnit) return fitsInvokeBudget(trialUnit({ colors: nextColors }));
+      if (!spellAction) return true;
+      return fitsInvokeBudget(trialSpell(spellAction, argsFor(spellAction), nextColors));
+    }
+    if (id.startsWith('essence:')) {
+      const key = id.slice('essence:'.length) as EssenceKey;
+      if (essenceIn[key]) return true;
+      return fitsInvokeBudget(trialUnit(essencePatch(key, essences[key])));
+    }
+    if (id.startsWith('rune:')) {
+      const key = id.slice('rune:'.length) as keyof UnitKeywords;
+      if (runeIn[key]) return true;
+      const amount = runeAmounts[key] ?? 1;
+      const nextKeywords = {
+        ...(keywords ?? {}),
+        [key]: NUMERIC_KEYWORDS.has(key) ? amount : true,
+      };
+      return fitsInvokeBudget(trialUnit({ keywords: nextKeywords }));
+    }
+    if (id.startsWith('incantation:')) {
+      const name = id.slice('incantation:'.length);
+      if (isUnit) {
+        if (abilityAction === name) return true;
+        const args = { ...argsFor(name) };
+        const trigger = triggerFor(name);
+        const ability = buildAbility({ trigger, action: name, args });
+        return fitsInvokeBudget(trialUnit({ abilities: ability ? [ability] : undefined }));
+      }
+      if (spellAction === name) return true;
+      return fitsInvokeBudget(trialSpell(name, { ...argsFor(name) }));
+    }
+    return true;
+  }
+
   function canAddIngredient(id: string): boolean {
     if (ingredientInMix(id)) return true;
+    if (!canAddWithinBudget(id)) return false;
     if (id.startsWith('incantation:') && (abilityAction || spellAction)) return true;
     return charms.length < ingredientCap;
   }
+
+  function maxAffordableEssence(key: EssenceKey): number {
+    const current = essences[key];
+    if (!essenceIn[key]) return STAT_ESSENCE_MAX;
+    let best = current;
+    for (let value = current + 1; value <= STAT_ESSENCE_MAX; value++) {
+      if (!fitsInvokeBudget(trialUnit(essencePatch(key, value)))) break;
+      best = value;
+    }
+    return best;
+  }
+
+  function maxAffordableRune(key: keyof UnitKeywords): number {
+    const current = runeAmounts[key] ?? 1;
+    if (!runeIn[key]) return STAT_ESSENCE_MAX;
+    let best = current;
+    for (let value = current + 1; value <= STAT_ESSENCE_MAX; value++) {
+      const nextKeywords = { ...(keywords ?? {}), [key]: value };
+      if (!fitsInvokeBudget(trialUnit({ keywords: nextKeywords }))) break;
+      best = value;
+    }
+    return best;
+  }
+
+  const essenceMaxes = $derived.by((): Record<EssenceKey, number> => ({
+    power: maxAffordableEssence('power'),
+    hp: maxAffordableEssence('hp'),
+    retaliate: maxAffordableEssence('retaliate'),
+  }));
+
+  const runeMaxes = $derived.by((): Partial<Record<keyof UnitKeywords, number>> => {
+    const maxes: Partial<Record<keyof UnitKeywords, number>> = {};
+    for (const key of availableKeywords) {
+      if (NUMERIC_KEYWORDS.has(key)) maxes[key] = maxAffordableRune(key);
+    }
+    return maxes;
+  });
+
+  function canIncreaseIngredient(id: string): boolean {
+    if (id.startsWith('essence:')) {
+      const key = id.slice('essence:'.length) as EssenceKey;
+      if (!essenceIn[key]) return canAddIngredient(id);
+      return essenceMaxes[key] > essences[key];
+    }
+    if (id.startsWith('rune:')) {
+      const key = id.slice('rune:'.length) as keyof UnitKeywords;
+      if (!NUMERIC_KEYWORDS.has(key)) return false;
+      if (!runeIn[key]) return canAddIngredient(id);
+      return (runeMaxes[key] ?? 1) > (runeAmounts[key] ?? 1);
+    }
+    if (id.startsWith('incantation:')) {
+      const name = id.slice('incantation:'.length);
+      const active = isUnit ? abilityAction === name : spellAction === name;
+      if (!active) return canAddIngredient(id);
+      const params = actionNumericParams[name] ?? [];
+      const bumps: ActionFactoryArgs[] = params.map((param) => ({
+        ...argsFor(name),
+        [param.factoryKey]: readNumericArg(argsFor(name), param.factoryKey) + 1,
+      }));
+      const targetCountKey = actionAreaParams[name]?.targetCountKey;
+      if (targetCountKey) {
+        bumps.push({
+          ...argsFor(name),
+          [targetCountKey]: readNumericArg(argsFor(name), targetCountKey) + 1,
+        });
+      }
+      if (!bumps.length) return true;
+      return bumps.some((next) => {
+        if (isUnit) {
+          const ability = buildAbility({ trigger: abilityTrigger, action: name, args: next });
+          return fitsInvokeBudget(trialUnit({ abilities: ability ? [ability] : undefined }));
+        }
+        return fitsInvokeBudget(trialSpell(name, next));
+      });
+    }
+    return false;
+  }
+
+  const spentBudget = $derived.by(() => {
+    if (cardType === CardType.Spell) {
+      return draftSpell ? getCardBudget(draftSpell) : 0;
+    }
+    if (cardType === CardType.Unit) return getCardBudget(draftUnit);
+    return 0;
+  });
+
+  const atBudgetLimit = $derived(spentBudget >= maxCardBudget);
 
   function onIngredientDrop(id: string, x: number, y: number) {
     if (sealing) return;
@@ -708,6 +944,7 @@
     bonusKind="creation"
     seal={sealing}
     shapeText={inscription}
+    atManaLimit={atBudgetLimit}
     {charmEntry}
     acceptingDrop={draggingIngredient}
     disabled={sealing}
@@ -795,8 +1032,10 @@
           {availableColors}
           {essences}
           {essenceIn}
+          {essenceMaxes}
           {runeAmounts}
           {runeIn}
+          {runeMaxes}
           {availableKeywords}
           triggers={stagedTriggers}
           {argsFor}
@@ -816,6 +1055,7 @@
           ingredientCap={ingredientCap}
           ingredientsUsed={charms.length}
           canAdd={canAddIngredient}
+          canIncrease={canIncreaseIngredient}
           onDrop={onIngredientDrop}
           onDragChange={(active) => (draggingIngredient = active)}
         />

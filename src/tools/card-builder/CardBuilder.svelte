@@ -6,6 +6,7 @@
   import AbilityList from './AbilityList.svelte';
   import ActionList from './ActionList.svelte';
   import ColorPips from './ColorPips.svelte';
+  import CostField from './CostField.svelte';
   import UnitFields from './UnitFields.svelte';
 
   let card = $state<CardDraft>(blankCard());
@@ -107,10 +108,7 @@
               <span class="cb-label">Name</span>
               <input class="cb-input" bind:value={card.name} autocomplete="off" />
             </label>
-            <label class="cb-field-inline cb-cost-field">
-              <span class="cb-label">Cost</span>
-              <input class="cb-input" type="number" bind:value={card.cost} />
-            </label>
+            <CostField {card} />
           </div>
           <div class="cb-basics-row cb-basics-meta">
             <ColorPips colors={card.colors} />

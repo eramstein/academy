@@ -125,10 +125,12 @@ export function buildSpellCard(parameters: CardCreationParameters): {
     }
   }
 
+  // Empty/invalid allowed actions leave every candidate null — retry unconstrained, then force a template.
+  const result = best ?? rollSpellCandidate(cardColors) ?? forcedSpellCandidate(cardColors);
   return {
-    card: best!.card,
-    budget: getCardBudget(best!.card),
-    actionName: [best!.actionName],
+    card: result.card,
+    budget: getCardBudget(result.card),
+    actionName: [result.actionName],
   };
 }
 
@@ -176,6 +178,22 @@ function rollSpellCandidate(
       actions: [action.definition],
     },
     actionName: action.name,
+  };
+}
+
+/** Last-resort spell when no action pool can be sampled (e.g. empty allowedActions). */
+function forcedSpellCandidate(
+  cardColors: { color: CardColor; count: number }[]
+): { card: PartialConjuredSpell; actionName: string } {
+  const name = ACTION_TEMPLATE_KEYS[0];
+  const action = createActionTemplate(name, defaultActionFactoryArgs(name));
+  return {
+    card: {
+      type: CardType.Spell,
+      colors: cardColors,
+      actions: [action.definition],
+    },
+    actionName: name,
   };
 }
 

@@ -9,12 +9,15 @@ import {
   type Ability,
   type ActionDefinition,
   type CardTemplate,
+  type SpellCardTemplate,
   type Trigger,
   type UnitCardTemplate,
   type UnitKeywords,
 } from '@/lib/_model';
 import { DynamicValue } from '@/lib/battle/effects/dynamic-values';
 import type { UnitFilterArgs } from '@/lib/battle/effects/unit-filters';
+import { getCardBudget, getCostFromBudget, maxCardBudget } from '@/lib/sim/cards/card-budget';
+import type { PartialConjuredSpell, PartialConjuredUnit } from '@/lib/sim/cards/creation';
 import { KEYWORD_KEYS } from '@/lib/sim/cards/keywords';
 
 export const NUMBER_KEYWORD_KEYS = ['armor', 'resist', 'poisonous', 'regeneration'] as const;
@@ -706,4 +709,33 @@ export function serializeCard(card: CardDraft): CardTemplate {
     };
   }
   return { ...baseFields(card), type: CardType.Unit, ...unitBody(card) };
+}
+
+export type SuggestedManaCost = {
+  cost: number;
+  /** Budget points above the max mapped mana cost (9). */
+  overBudget: number;
+};
+
+/** Mana cost suggested by card budget; lands have no budget mapping. */
+export function suggestedManaCost(source: CardDraft | UnitDraft): SuggestedManaCost | null {
+  if ('type' in source && source.type === CardType.Land) return null;
+
+  let budget: number;
+  if ('type' in source && source.type === CardType.Spell) {
+    const { id: _id, name: _name, imageFileName: _image, cost: _cost, ...rest } = serializeCard(
+      source
+    ) as SpellCardTemplate;
+    budget = getCardBudget(rest as PartialConjuredSpell);
+  } else {
+    const { id: _id, name: _name, imageFileName: _image, cost: _cost, ...rest } = serializeUnit(
+      source
+    );
+    budget = getCardBudget(rest as PartialConjuredUnit);
+  }
+
+  return {
+    cost: getCostFromBudget(budget).cost,
+    overBudget: Math.max(0, budget - maxCardBudget),
+  };
 }

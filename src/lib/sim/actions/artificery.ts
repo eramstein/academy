@@ -12,6 +12,7 @@ import {
 } from '@/lib/_model';
 import { gs, uiState } from '@/lib/_state';
 import { getAbilityActionNames, type AbilityPick } from '../cards/ability-templates';
+import type { ActionFactoryArgs } from '../cards/action-templates';
 import { getCardBudget, getCostFromBudget } from '../cards/card-budget';
 import {
   applyKnowledgeGains,
@@ -63,7 +64,7 @@ export interface CardCreationParameters {
   actions?: string[];
   unitTypes?: UnitType[];
   /** Meta (card creation options) */
-  actionArgs?: Record<string, number>;
+  actionArgs?: ActionFactoryArgs;
   source: CardCreationSource;
   resources: { type: ResourceType; count: number }[];
   /** Conjure: this option may include one unknown keyword or action. */
@@ -306,7 +307,8 @@ export async function getConjurationOtions(
   return options;
 }
 
-const MIN_SKILL_LEVEL = 3;
+/** Matches the tray: knowledge level 1 is enough to invoke a keyword or action. */
+const MIN_SKILL_LEVEL = 1;
 
 function hasSkill(
   record: Partial<Record<string, number>> | undefined,
@@ -335,8 +337,13 @@ function limitParametersToSkills(
     ability = undefined;
   }
 
+  // An explicit pick is the spell the player chose. Do not replace it with every
+  // known action — that rerolls the effect (often into Draw Cards). A unit ability
+  // is not an action list either; inventing one makes the ingredient cap drop the ability.
   let actions = parameters.actions?.filter((action) => hasSkill(knownActions, action));
-  if (!actions?.length) {
+  if (parameters.actions?.length) {
+    actions = actions?.length ? actions : undefined;
+  } else if (!parameters.ability && !actions?.length) {
     const skilled = Object.keys(knownActions ?? {}).filter((action) =>
       hasSkill(knownActions, action)
     );

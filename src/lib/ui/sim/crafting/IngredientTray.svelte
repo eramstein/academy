@@ -2,11 +2,15 @@
   import { CardColor, CardType, type UnitKeywords } from '@/lib/_model';
   import { getActionTypeIconPath, getAssetPath } from '@/lib/_utils/asset-paths';
   import {
-    getTriggerTemplateAsset,
-    TRIGGER_TEMPLATE_KEYS,
-  } from '@/lib/sim/cards/ability-templates';
-  import { actionNumericParams, getActionTemplateMeta } from '@/lib/sim/cards/action-templates';
+    actionAreaParams,
+    actionNumericParams,
+    getActionTemplateMeta,
+    readNumericArg,
+    type ActionFactoryArgs,
+  } from '@/lib/sim/cards/action-templates';
   import { formatKeywordLabel, NUMERIC_KEYWORDS } from '@/lib/sim/cards/keywords';
+  import { areaPickLabel, readRangeArg } from '@/lib/sim/cards/ranges';
+  import IncantationDetails from './IncantationDetails.svelte';
 
   export type EssenceKey = 'power' | 'hp' | 'retaliate';
 
@@ -78,7 +82,7 @@
     runeMaxes?: Partial<Record<keyof UnitKeywords, number>>;
     availableKeywords: (keyof UnitKeywords)[];
     triggers: Record<string, string>;
-    argsFor: (name: string) => Record<string, number>;
+    argsFor: (name: string) => ActionFactoryArgs;
     abilityAction: string | null;
     spellAction: string | null;
     knownActions: string[];
@@ -99,7 +103,7 @@
     onRuneDial: (key: keyof UnitKeywords, value: number) => void;
     onRuneMix: (key: keyof UnitKeywords, remove: boolean) => void;
     onTriggerDial: (name: string, trigger: string) => void;
-    onArgDial: (name: string, factoryKey: string, value: number) => void;
+    onArgDial: (name: string, factoryKey: string, value: number | string | null) => void;
     onIncantationMix: (name: string, remove: boolean) => void;
     onDrop: (id: string, clientX: number, clientY: number) => void;
     onDragChange?: (active: boolean) => void;
@@ -107,7 +111,8 @@
 
   const parchment = getAssetPath('images/ui/backgrounds/parchment.png');
   const isUnit = $derived(cardType === CardType.Unit);
-  let openTrigger = $state<string | null>(null);
+  let openDetails = $state<string | null>(null);
+  let followedAction: string | null = null;
 
   function clamp(value: number, min: number, max: number): number {
     return Math.min(max, Math.max(min, value));
@@ -218,8 +223,8 @@
   function stoneTitle(id: string, numeric: boolean, inMix: boolean): string {
     if (!inMix && !canAdd(id)) {
       return hints[id]
-        ? `${hints[id]}\nToo expensive for this enchantment`
-        : 'Too expensive for this enchantment';
+        ? `${hints[id]}\nCannot add this ingredient`
+        : 'Cannot add this ingredient';
     }
     if (inMix && numeric && !canIncrease(id)) {
       return hints[id]
@@ -243,14 +248,59 @@
     return !!increment && canIncrease(id);
   }
 
-  function incrementIncantation(name: string, event: PointerEvent) {
-    const param = (actionNumericParams[name] ?? [])[0];
-    if (!param) return;
-    const value = argsFor(name)[param.factoryKey] ?? 1;
-    const step = event.shiftKey ? 5 : 1;
-    const next = dialStep(value, 1, STAT_MAX, false, step);
-    if (next !== value) onArgDial(name, param.factoryKey, next);
+  function hasDetails(name: string): boolean {
+    return isUnit || (actionNumericParams[name]?.length ?? 0) > 0 || !!actionAreaParams[name];
   }
+
+  function incantationTitle(id: string, name: string, inMix: boolean): string {
+    const detailed = hasDetails(name);
+    const how = inMix
+      ? detailed
+        ? 'Click to edit details · Right-click to remove'
+        : 'Right-click to remove'
+      : detailed
+        ? canAdd(id)
+          ? 'Drag onto the card to add · Click to edit details'
+          : 'Click to edit details'
+        : canAdd(id)
+          ? 'Drag onto the card to add · Right-click to remove'
+          : 'Right-click to remove';
+    if (!inMix && !canAdd(id) && hints[id]) {
+      return `${hints[id]}\nCannot add this ingredient\n${how}`;
+    }
+    return hints[id] ? `${hints[id]}\n${how}` : how;
+  }
+
+  function incantationSummary(name: string, args: ActionFactoryArgs, trigger: string): string {
+    const parts: string[] = [];
+    for (const param of actionNumericParams[name] ?? []) {
+      parts.push(`${param.label} ${readNumericArg(args, param.factoryKey)}`);
+    }
+    const area = actionAreaParams[name];
+    if (area?.targetCountKey) {
+      const count = readNumericArg(args, area.targetCountKey);
+      parts.push(`${count} ${count === 1 ? 'target' : 'targets'}`);
+    }
+    if (area?.rangeKey) {
+      const range = readRangeArg(args[area.rangeKey]);
+      if (range) parts.push(areaPickLabel(range));
+    }
+    if (isUnit) parts.push(triggerLabel(trigger));
+    return parts.join(' · ');
+  }
+
+  function toggleDetails(name: string, event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    openDetails = openDetails === name ? null : name;
+  }
+
+  $effect(() => {
+    const active = isUnit ? abilityAction : spellAction;
+    if (active === followedAction) return;
+    followedAction = active;
+    if (active) openDetails = active;
+  });
 
   $effect(() => {
     if (!locked) return;
@@ -258,19 +308,6 @@
   });
 
   $effect(() => () => clearGesture());
-
-  function toggleTriggerMenu(name: string, event: MouseEvent) {
-    event.stopPropagation();
-    event.preventDefault();
-    openTrigger = openTrigger === name ? null : name;
-  }
-
-  function pickTrigger(name: string, trigger: string, event: MouseEvent) {
-    event.stopPropagation();
-    event.preventDefault();
-    onTriggerDial(name, trigger);
-    openTrigger = null;
-  }
 
   function dialStep(value: number, min: number, max: number, wrap: boolean, delta: number): number {
     const span = max - min + 1;
@@ -326,23 +363,6 @@
     };
   }
 
-  $effect(() => {
-    if (!openTrigger) return;
-    function onDoc(event: MouseEvent) {
-      const target = event.target as HTMLElement | null;
-      if (target?.closest?.('[data-trigger-pick]')) return;
-      openTrigger = null;
-    }
-    function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') openTrigger = null;
-    }
-    document.addEventListener('mousedown', onDoc);
-    window.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDoc);
-      window.removeEventListener('keydown', onKey);
-    };
-  });
 </script>
 
 {#snippet dial(
@@ -627,27 +647,41 @@
           {@const inMix = isUnit ? abilityAction === name : spellAction === name}
           {@const blocked = !inMix && !canAdd(id)}
           {@const numeric = actionNumericParams[name] ?? []}
+          {@const area = actionAreaParams[name]}
           {@const args = argsFor(name)}
           {@const trigger = triggers[name] ?? 'onDeploy'}
+          {@const detailed = hasDetails(name)}
+          {@const open = openDetails === name}
+          {@const summary = incantationSummary(name, args, trigger)}
           {@const maxed = inMix && numeric.length > 0 && !canIncrease(id)}
-          <div class="scroll" class:in-mix={inMix} class:blocked class:maxed>
-            <button
-              type="button"
-              class="scroll-main"
+          <div class="scroll" class:detailed class:open class:in-mix={inMix} class:blocked class:maxed>
+            <div
+              class="scroll-head"
+              class:toggleable={detailed}
+              role={detailed ? 'button' : undefined}
+              tabindex={detailed ? 0 : undefined}
               aria-pressed={inMix}
+              aria-expanded={detailed ? open : undefined}
               aria-disabled={blocked}
-              title={stoneTitle(id, numeric.length > 0, inMix)}
-              draggable="false"
+              title={incantationTitle(id, name, inMix)}
               onpointerdown={(event) => {
-                if (blocked) {
-                  event.preventDefault();
-                  return;
-                }
+                if (locked || event.button !== 0) return;
                 const canDrag =
-                  (!inMix && canAdd(id)) || (inMix && !maxed && numeric.length > 0);
-                startGesture(event, id, icon, canDrag, (pointer) =>
-                  incrementIncantation(name, pointer)
+                  (!blocked && !inMix && canAdd(id)) ||
+                  (inMix && !maxed && numeric.length > 0);
+                startGesture(
+                  event,
+                  id,
+                  icon,
+                  canDrag,
+                  detailed ? () => toggleDetails(name) : null
                 );
+              }}
+              onkeydown={(event) => {
+                if (!detailed) return;
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                openDetails = open ? null : name;
               }}
               oncontextmenu={(event) => {
                 event.preventDefault();
@@ -656,58 +690,32 @@
             >
               <img class="scroll-mark" data-charm-nest={id} src={icon} alt="" draggable="false" />
               <span class="token-name">{meta?.label ?? name}</span>
-            </button>
-
-            <div class="scroll-controls">
-              {#if isUnit}
-                <div class="trigger-pick" data-trigger-pick>
-                  <button
-                    type="button"
-                    class="trigger-btn"
-                    aria-label="Trigger: {triggerLabel(trigger)}"
-                    aria-expanded={openTrigger === name}
-                    aria-haspopup="listbox"
-                    title={triggerLabel(trigger)}
-                    onclick={(event) => toggleTriggerMenu(name, event)}
-                  >
-                    <img
-                      class="trigger-icon"
-                      src={getAssetPath(getTriggerTemplateAsset(trigger))}
-                      alt=""
-                    />
-                  </button>
-                  {#if openTrigger === name}
-                    <div class="trigger-menu" role="listbox" aria-label="Choose trigger">
-                      {#each TRIGGER_TEMPLATE_KEYS as key (key)}
-                        <button
-                          type="button"
-                          class="trigger-option"
-                          class:selected={key === trigger}
-                          role="option"
-                          aria-selected={key === trigger}
-                          onclick={(event) => pickTrigger(name, key, event)}
-                        >
-                          <img src={getAssetPath(getTriggerTemplateAsset(key))} alt="" />
-                          <span>{triggerLabel(key)}</span>
-                        </button>
-                      {/each}
-                    </div>
-                  {/if}
-                </div>
+              {#if detailed && !open && summary}
+                <p class="summary" title={summary}>{summary}</p>
               {/if}
-
-              {#each numeric as param (param.factoryKey)}
-                {@render dial(
-                  args[param.factoryKey] ?? 1,
-                  1,
-                  STAT_MAX,
-                  param.label,
-                  (next) => onArgDial(name, param.factoryKey, next),
-                  String(args[param.factoryKey] ?? 1),
-                  false
-                )}
-              {/each}
             </div>
+            {#if open}
+              <IncantationDetails
+                description={meta?.description ?? ''}
+                {isUnit}
+                {trigger}
+                numeric={numeric.map((param) => ({
+                  factoryKey: param.factoryKey,
+                  label: param.label,
+                  value: readNumericArg(args, param.factoryKey),
+                }))}
+                targetCount={area?.targetCountKey ? readNumericArg(args, area.targetCountKey) : null}
+                rangeKey={area?.rangeKey ? readRangeArg(args[area.rangeKey]) : null}
+                onTrigger={(next) => onTriggerDial(name, next)}
+                onNumeric={(key, value) => onArgDial(name, key, value)}
+                onTargetCount={(value) => {
+                  if (area?.targetCountKey) onArgDial(name, area.targetCountKey, value);
+                }}
+                onRange={(range) => {
+                  if (area?.rangeKey) onArgDial(name, area.rangeKey, range || null);
+                }}
+              />
+            {/if}
           </div>
         {/each}
       </div>
@@ -997,14 +1005,74 @@
   .scroll {
     position: relative;
     display: flex;
-    align-items: center;
-    gap: 4px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
     min-height: 32px;
     padding: 3px 6px;
     background: rgba(255, 248, 230, 0.28);
     border: 1px solid rgba(90, 75, 60, 0.28);
     border-radius: 3px;
     box-shadow: none;
+  }
+
+  .scroll.detailed {
+    grid-column: 1 / -1;
+  }
+
+  .scroll.open {
+    border-color: #8a6a28;
+  }
+
+  .scroll-head {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    color: var(--color-ink);
+    font-family: inherit;
+    text-align: left;
+    cursor: grab;
+    touch-action: none;
+    outline: none;
+  }
+
+  .scroll-head.toggleable {
+    cursor: pointer;
+  }
+
+  .scroll-head:focus-visible {
+    box-shadow: inset 0 0 0 1px var(--color-golden);
+  }
+
+  .scroll.in-mix .scroll-head {
+    cursor: pointer;
+  }
+
+  .scroll-head .token-name {
+    flex: 0 1 auto;
+    max-width: none;
+    text-align: left;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .summary {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+    pointer-events: none;
   }
 
   .scroll.in-mix {
@@ -1018,7 +1086,7 @@
     filter: grayscale(0.55);
   }
 
-  .scroll.blocked .scroll-main {
+  .scroll.blocked .scroll-head:not(.toggleable) {
     cursor: not-allowed;
   }
 
@@ -1031,35 +1099,6 @@
     opacity: 0.45;
   }
 
-  .scroll-main {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    flex: 1 1 auto;
-    min-width: 0;
-    padding: 0;
-    color: var(--color-ink);
-    background: transparent;
-    border: none;
-    font-family: inherit;
-    cursor: grab;
-    text-align: left;
-    touch-action: none;
-  }
-
-  .scroll.in-mix .scroll-main {
-    cursor: pointer;
-  }
-
-  .scroll-main .token-name {
-    flex: 1;
-    text-align: left;
-    font-size: 0.78rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
   .scroll-mark {
     width: 36px;
     height: 36px;
@@ -1067,87 +1106,6 @@
     object-fit: contain;
     pointer-events: none;
     filter: drop-shadow(0 1px 2px rgba(42, 24, 16, 0.35));
-  }
-
-  .scroll-controls {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    flex-shrink: 0;
-  }
-
-  .trigger-pick {
-    position: relative;
-  }
-
-  .trigger-btn {
-    display: grid;
-    place-items: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border: 1px solid transparent;
-    border-radius: 50%;
-    background: rgba(255, 248, 230, 0.35);
-    cursor: pointer;
-  }
-
-  .trigger-btn:hover,
-  .trigger-btn[aria-expanded='true'] {
-    border-color: var(--color-brass);
-    background: rgba(255, 248, 230, 0.7);
-  }
-
-  .trigger-icon {
-    width: 16px;
-    height: 16px;
-    object-fit: contain;
-    pointer-events: none;
-  }
-
-  .trigger-menu {
-    position: absolute;
-    bottom: calc(100% + 4px);
-    right: 0;
-    z-index: 20;
-    min-width: 9.5rem;
-    padding: 4px;
-    background: #efe4c8 var(--parchment) center / cover;
-    border: 1px solid #5a4b3c;
-    border-radius: 4px;
-    box-shadow: 0 6px 16px rgba(42, 24, 16, 0.35);
-  }
-
-  .trigger-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 5px 8px;
-    border: none;
-    border-radius: 3px;
-    background: transparent;
-    color: var(--color-ink);
-    font-family: inherit;
-    font-size: 0.78rem;
-    text-align: left;
-    cursor: pointer;
-  }
-
-  .trigger-option img {
-    width: 16px;
-    height: 16px;
-    object-fit: contain;
-    flex-shrink: 0;
-  }
-
-  .trigger-option:hover,
-  .trigger-option.selected {
-    background: rgba(175, 142, 103, 0.28);
-  }
-
-  .trigger-option.selected {
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-brass) 55%, transparent);
   }
 
   .dial {

@@ -24,12 +24,15 @@
   import { buildAbility, getTriggerTemplateLabel } from '@/lib/sim/cards/ability-templates';
   import {
     ACTION_TEMPLATE_KEYS,
+    actionAreaParams,
     actionNumericParams,
     defaultActionFactoryArgs,
     getActionNumericParams,
     getActionTemplateMeta,
     getActionTemplateNameForEffect,
     getActionTooltip,
+    readNumericArg,
+    type ActionFactoryArgs,
   } from '@/lib/sim/cards/action-templates';
   import { getAbilityCost, getKeywordBudget } from '@/lib/sim/cards/card-budget';
   import type { PartialConjuredUnit } from '@/lib/sim/cards/creation';
@@ -81,10 +84,10 @@
   let runeAmounts = $state<Partial<Record<keyof UnitKeywords, number>>>({});
   let runeIn = $state<Partial<Record<keyof UnitKeywords, boolean>>>({});
   let stagedTriggers = $state<Record<string, string>>({});
-  let stagedArgs = $state<Record<string, Record<string, number>>>({});
+  let stagedArgs = $state<Record<string, ActionFactoryArgs>>({});
   let abilityTrigger = $state('onDeploy');
   let abilityAction = $state<string | null>(null);
-  let abilityArgs = $state<Record<string, number>>({});
+  let abilityArgs = $state<ActionFactoryArgs>({});
   let spellArgDeltas = $state<ActionArgDeltas>({});
   let selected = $state<Record<ResourceType, number>>(
     Object.fromEntries(Object.values(ResourceType).map((type) => [type, 0])) as Record<
@@ -160,14 +163,14 @@
     });
   });
 
-  function activeArgs(name: string, committed: Record<string, number>, active: boolean) {
+  function activeArgs(name: string, committed: ActionFactoryArgs, active: boolean): ActionFactoryArgs {
     if (active) {
       return Object.keys(committed).length ? committed : defaultActionFactoryArgs(name);
     }
     return stagedArgs[name] ?? defaultActionFactoryArgs(name);
   }
 
-  function argsFor(name: string): Record<string, number> {
+  function argsFor(name: string): ActionFactoryArgs {
     return activeArgs(name, abilityArgs, abilityAction === name);
   }
 
@@ -573,8 +576,10 @@
     stagedTriggers = { ...stagedTriggers, [name]: trigger };
   }
 
-  function onArgDial(name: string, factoryKey: string, value: number) {
-    const next = { ...argsFor(name), [factoryKey]: value };
+  function onArgDial(name: string, factoryKey: string, value: number | string | null) {
+    const next: ActionFactoryArgs = { ...argsFor(name) };
+    if (value === null || value === '') delete next[factoryKey];
+    else next[factoryKey] = value;
     if (abilityAction === name && augmentParameters) {
       const trial = withAugmentPatch({
         ability: { trigger: abilityTrigger, action: name, args: next },
@@ -596,7 +601,7 @@
       const params = actionNumericParams[name] ?? [];
       const param = params[0];
       if (!param) return;
-      const current = argsFor(name)[param.factoryKey] ?? 1;
+      const current = readNumericArg(argsFor(name), param.factoryKey);
       const nextArgs = { ...argsFor(name), [param.factoryKey]: current + 1 };
       const trial = withAugmentPatch({
         ability: { trigger: abilityTrigger, action: name, args: nextArgs },
@@ -842,14 +847,24 @@
       const name = id.slice('incantation:'.length);
       if (abilityAction !== name) return canAddIngredient(id);
       const params = actionNumericParams[name] ?? [];
-      for (const param of params) {
-        const next = { ...argsFor(name), [param.factoryKey]: (argsFor(name)[param.factoryKey] ?? 1) + 1 };
+      const bumps: ActionFactoryArgs[] = params.map((param) => ({
+        ...argsFor(name),
+        [param.factoryKey]: readNumericArg(argsFor(name), param.factoryKey) + 1,
+      }));
+      const targetCountKey = actionAreaParams[name]?.targetCountKey;
+      if (targetCountKey) {
+        bumps.push({
+          ...argsFor(name),
+          [targetCountKey]: readNumericArg(argsFor(name), targetCountKey) + 1,
+        });
+      }
+      if (!bumps.length) return true;
+      return bumps.some((next) => {
         const trial = withAugmentPatch({
           ability: { trigger: abilityTrigger, action: name, args: next },
         });
-        if (trial && fitsAugment(trial)) return true;
-      }
-      return params.length === 0;
+        return !!trial && fitsAugment(trial);
+      });
     }
     return false;
   }

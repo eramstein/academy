@@ -1,5 +1,6 @@
 import { CounterType, StatusType, TargetType } from '@/lib/_model';
 import type { ActionDefinition } from '@/lib/_model/model-battle';
+import { rangeTemplates } from './ranges';
 
 export interface ActionTemplate {
   name: string;
@@ -10,25 +11,39 @@ export interface ActionTemplate {
 }
 
 export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
-  directDamage: (args: { damage: number }) => ({
-    name: 'directDamage',
-    label: 'Direct Damage',
-    description: 'Deal damage to a target unit.',
-    definition: {
-      effect: {
-        name: 'damageUnit',
-        args: {
-          damage: args.damage,
+  directDamage: (args: {
+    damage: number;
+    range?: keyof typeof rangeTemplates;
+    targetCount?: number;
+  }) => {
+    const targetCount = Math.max(1, Number(args.targetCount) || 1);
+    const range = args.range && rangeTemplates[args.range] ? args.range : undefined;
+    return {
+      name: 'directDamage',
+      label: 'Direct Damage',
+      description: 'Deal damage to a target unit.',
+      definition: {
+        effect: {
+          name: 'damageUnit',
+          args: {
+            damage: args.damage,
+            range: range ? rangeTemplates[range].args : undefined,
+          },
         },
+        targets: [
+          {
+            type: TargetType.Units,
+            count: targetCount,
+          },
+        ],
       },
-      targets: [
-        {
-          type: TargetType.Units,
-        },
-      ],
-    },
-    budget: (args.damage ?? 0) * 4,
-  }),
+      budget:
+        (args.damage ?? 0) *
+        4 *
+        (range ? rangeTemplates[range].budgetMultiplier : 1) *
+        targetCount,
+    };
+  },
   healUnit: (args: { health: number }) => ({
     name: 'healUnit',
     label: 'Heal',

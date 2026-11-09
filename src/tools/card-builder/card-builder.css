@@ -307,11 +307,29 @@
 
 .cb-cost-field {
   flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.25rem;
 }
 
 .cb-cost-field .cb-input {
   width: 3.5rem;
   flex: 0 0 3.5rem;
+}
+
+.cb-cost-auto {
+  padding: 0.15rem 0.4rem;
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
+.cb-cost-over {
+  margin: 0;
+  max-width: 7rem;
+  color: #fca5a5;
+  font-size: 0.72rem;
+  line-height: 1.25;
 }
 
 .cb-pool-field {

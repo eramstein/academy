@@ -5,19 +5,22 @@ import {
   defaultActionFactoryArgs,
   getActionTemplateNameForEffect,
   pickRandomActionTemplate,
+  type ActionFactoryArgs,
 } from './action-templates';
 import { actionTemplates } from './action-templates-data';
 
 export interface AbilityPick {
   trigger: string;
   action: string;
-  args?: Record<string, number>;
+  args?: ActionFactoryArgs;
 }
 
 // multiplier for the cost of an ability
 export const triggerTemplateCost: Record<string, number> = {
   onDeploy: 1,
   onTurnStart: 3,
+  onMove: 2,
+  onAttack: 2,
 };
 
 export const triggerTemplates: Record<string, Trigger> = {
@@ -29,6 +32,18 @@ export const triggerTemplates: Record<string, Trigger> = {
   },
   onTurnStart: {
     type: TriggerType.OnTurnStart,
+    range: {
+      self: true,
+    },
+  },
+  onMove: {
+    type: TriggerType.AfterMove,
+    range: {
+      self: true,
+    },
+  },
+  onAttack: {
+    type: TriggerType.AfterCombat,
     range: {
       self: true,
     },

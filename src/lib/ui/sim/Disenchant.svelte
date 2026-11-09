@@ -19,11 +19,12 @@
     onDone: () => void;
   } = $props();
 
-  let held = $state<CardTemplate | null>(initialHeld());
+  const startHeld = initialHeld();
+  let held = $state<CardTemplate | null>(startHeld);
   let colorFilter = $state<CardColor | null>(null);
   let costFilter = $state<number | null>(null);
   let typeFilter = $state<CardType | null>(null);
-  let phase = $state<'pick' | 'ready' | 'dissolving' | 'reward'>(held ? 'ready' : 'pick');
+  let phase = $state<'pick' | 'ready' | 'dissolving' | 'reward'>(startHeld ? 'ready' : 'pick');
   let rewardType = $state<ResourceType | null>(null);
   let committed = false;
   let dissolveTimer = 0;

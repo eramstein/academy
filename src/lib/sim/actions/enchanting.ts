@@ -17,7 +17,13 @@ import {
   getActionTemplateMeta,
   getActionTemplateNameForEffect,
 } from '../cards/action-templates';
-import { cardBudget, featureCosts, getActionBudget, getCardBudget } from '../cards/card-budget';
+import {
+  cardBudget,
+  featureCosts,
+  getActionBudget,
+  getCardBudget,
+  MAX_MANA_COST,
+} from '../cards/card-budget';
 import { colorPie, getCardDominantColor } from '../cards/color-pie';
 import {
   applyKnowledgeGains,
@@ -136,7 +142,7 @@ export function requiredCostIncrease(
   spent: number,
   maxDelta: number = 0
 ): number | null {
-  const maxIncrease = Math.min(maxDelta, 9 - baseCost);
+  const maxIncrease = Math.min(maxDelta, MAX_MANA_COST - baseCost);
   if (maxIncrease < 0) return null;
   for (let n = 0; n <= maxIncrease; n++) {
     if (cardBudget[baseCost + n] - cardBudget[baseCost] >= spent) return n;
@@ -205,7 +211,7 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
   if (!isEnchantableCard(card)) {
     return emptyPreview(`Card cannot be enchanted: ${parameters.cardId}.`);
   }
-  if (card.cost >= 9) {
+  if (card.cost >= MAX_MANA_COST) {
     return {
       error: `Card is already at max cost: ${card.cost}.`,
       card,
@@ -230,7 +236,7 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
       extraBudget: 0,
     };
   }
-  const maxCostIncrease = Math.min(maxDelta, 9 - card.cost);
+  const maxCostIncrease = Math.min(maxDelta, MAX_MANA_COST - card.cost);
   const scopeBudget = cardBudget[card.cost + maxCostIncrease] - cardBudget[card.cost];
 
   const features = makeNewCardTemplate(card, { ...parameters, costIncrease: 0 });
@@ -240,11 +246,15 @@ export function getAugmentPreview(parameters: AugmentParameters): AugmentPreview
       ? parameters.costIncrease
       : requiredCostIncrease(card.cost, spent, maxDelta);
 
-  if (costIncrease === null || costIncrease > maxDelta || card.cost + costIncrease > 9) {
+  if (
+    costIncrease === null ||
+    costIncrease > maxDelta ||
+    card.cost + costIncrease > MAX_MANA_COST
+  ) {
     return {
       error:
-        costIncrease !== null && card.cost + costIncrease > 9
-          ? 'Enchantment would raise mana cost above 9.'
+        costIncrease !== null && card.cost + costIncrease > MAX_MANA_COST
+          ? `Enchantment would raise mana cost above ${MAX_MANA_COST}.`
           : `Enchantment cannot raise mana cost by more than ${maxDelta}.`,
       card,
       costIncrease: 0,
@@ -476,7 +486,7 @@ export function getEnchantableCards(options: { distill?: boolean } = {}): CardTe
   return gs.player.collection.filter((card) => {
     if (!isEnchantableCard(card)) return false;
     if (options.distill) return card.cost > 0;
-    return card.cost < 9;
+    return card.cost < MAX_MANA_COST;
   });
 }
 

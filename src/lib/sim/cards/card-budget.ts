@@ -7,6 +7,8 @@ import type { PartialConjuredSpell, PartialConjuredUnit } from './creation';
 
 type FeatureCostKey = 'power' | 'maxHealth' | 'retaliate' | keyof UnitKeywords;
 
+export const MAX_MANA_COST = 9;
+
 export const cardBudget: Record<number, number> = {
   0: 4,
   1: 8,
@@ -17,8 +19,11 @@ export const cardBudget: Record<number, number> = {
   6: 30,
   7: 34,
   8: 38,
-  9: 42,
+  [MAX_MANA_COST]: 42,
 };
+
+/** Highest budget a card may spend; maps to {@link MAX_MANA_COST}. */
+export const maxCardBudget = cardBudget[MAX_MANA_COST];
 
 export const featureCosts: Record<FeatureCostKey, (card: PartialConjuredUnit) => number> = {
   power: () => 4,

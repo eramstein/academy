@@ -1,8 +1,10 @@
 import { CardColor } from '@/lib/_model';
 import type { ActionDefinition } from '@/lib/_model/model-battle';
 import { getRandomInteger, getRandomWeighted } from '@/lib/_utils/random';
+import type { UnitFilterArgs } from '@/lib/battle/effects';
 import { actionTemplates, type ActionTemplate } from './action-templates-data';
 import { colorPie } from './color-pie';
+import { rangeTemplateKeyFor } from './ranges';
 
 export { actionTemplates, type ActionTemplate };
 
@@ -10,6 +12,15 @@ export interface ActionNumericParam {
   factoryKey: string;
   definitionKey: string;
   label: string;
+}
+
+/** Numeric args plus an optional area key (`range` template name). */
+export type ActionFactoryArgs = Record<string, number | string>;
+
+/** Optional targeting fields an action template accepts. Absent keys stay hidden in crafting. */
+export interface ActionAreaOptions {
+  targetCountKey?: string;
+  rangeKey?: string;
 }
 
 const DEFAULT_ACTION_PREVALENCE = 3;
@@ -41,8 +52,12 @@ export const actionNumericParams: Record<string, ActionNumericParam[]> = {
   controlUnit: [{ factoryKey: 'count', definitionKey: 'count', label: 'Count' }],
 };
 
+export const actionAreaParams: Record<string, ActionAreaOptions> = {
+  directDamage: { targetCountKey: 'targetCount', rangeKey: 'range' },
+};
+
 const randomActionArgs: Record<string, () => Record<string, unknown>> = {
-  directDamage: () => ({ damage: getRandomInteger(1, 5) }),
+  directDamage: () => ({ damage: getRandomInteger(1, 5), targetCount: 1 }),
   grow: () => ({ counters: getRandomInteger(1, 3) }),
   healUnit: () => ({ health: getRandomInteger(2, 6) }),
   damageLand: () => ({ damage: getRandomInteger(1, 3) }),
@@ -72,15 +87,27 @@ export const ACTION_TEMPLATE_KEYS = Object.keys(actionTemplates);
 
 const DEFAULT_ACTION_ARG = 1;
 
-export function defaultActionFactoryArgs(name: string): Record<string, number> {
-  return Object.fromEntries(
+export function defaultActionFactoryArgs(name: string): ActionFactoryArgs {
+  const args: ActionFactoryArgs = Object.fromEntries(
     (actionNumericParams[name] ?? []).map((param) => [param.factoryKey, DEFAULT_ACTION_ARG])
   );
+  const targetCountKey = actionAreaParams[name]?.targetCountKey;
+  if (targetCountKey) args[targetCountKey] = DEFAULT_ACTION_ARG;
+  return args;
+}
+
+export function readNumericArg(
+  args: ActionFactoryArgs,
+  key: string,
+  fallback = DEFAULT_ACTION_ARG
+): number {
+  const value = Number(args[key]);
+  return Number.isFinite(value) ? value : fallback;
 }
 
 export function createActionTemplate(
   name: string,
-  factoryArgs?: Record<string, number>
+  factoryArgs?: ActionFactoryArgs
 ): ActionTemplate {
   const args = factoryArgs ?? randomActionArgs[name]?.() ?? {};
   return actionTemplates[name](args);
@@ -160,9 +187,9 @@ export function getActionParamBudgetDelta(
 function factoryArgsFromDefinition(
   name: string,
   definition: ActionDefinition
-): Record<string, number> {
+): ActionFactoryArgs {
   const params = actionNumericParams[name] ?? [];
-  return Object.fromEntries(
+  const args: ActionFactoryArgs = Object.fromEntries(
     params.map((param) => {
       const fromArgs = Number(definition.effect.args[param.definitionKey]);
       if (Number.isFinite(fromArgs) && fromArgs > 0) {
@@ -178,6 +205,17 @@ function factoryArgsFromDefinition(
       return [param.factoryKey, DEFAULT_ACTION_ARG];
     })
   );
+  const area = actionAreaParams[name];
+  if (area?.targetCountKey) {
+    const fromTarget = Number(definition.targets?.[0]?.count);
+    args[area.targetCountKey] =
+      Number.isFinite(fromTarget) && fromTarget > 0 ? fromTarget : DEFAULT_ACTION_ARG;
+  }
+  if (area?.rangeKey) {
+    const key = rangeTemplateKeyFor(definition.effect.args.range as UnitFilterArgs | undefined);
+    if (key) args[area.rangeKey] = key;
+  }
+  return args;
 }
 
 function combinedActionPreferences(colors: CardColor[]): Partial<Record<string, number>> {
