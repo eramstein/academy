@@ -26,12 +26,15 @@ export interface GameState {
   time: {
     day: number;
     period: DayPeriod;
+    year: number;
     playedLeagueMatch: boolean;
     longActionPerformed: boolean;
     /** Counts toward ActionsLimitByPeriod keys (e.g. hangout), not necessarily ActionType. */
     usedActions: Partial<Record<string, number>>;
     /** NPCs hung out with this period — socialize with them is blocked until the next period. */
     hungOutWith: string[];
+    /** One Trade Cards action per calendar day. */
+    tradedCardsToday: boolean;
   };
   characters: Record<string, Npc>;
   player: Player;

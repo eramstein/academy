@@ -5,6 +5,7 @@ import {
   EventEffectType,
   EventTriggerType,
   RelationTag,
+  type ResourceType,
 } from '../_model/enums-sim';
 import type {
   EventEffect,
@@ -81,6 +82,11 @@ export interface EventTriggerParameters {
   [EventTriggerType.LastMatchLost]: Record<string, never>;
   /** Player owns a finished artifact (tool or trinket) with this `patternKey`. */
   [EventTriggerType.ArtifactOwned]: { patternKey: string };
+  /**
+   * Player `resources[resourceType]` vs `value`.
+   * Positive `value` = at least; negative = at most.
+   */
+  [EventTriggerType.ResourceOwned]: { resourceType: ResourceType; value: number };
   /** Matches when Settings → LLM features equals `enabled`. */
   [EventTriggerType.LlmFeatures]: { enabled: boolean };
 }
@@ -415,6 +421,8 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       return gs.scene.lastMatchWon === false;
     case EventTriggerType.ArtifactOwned:
       return checkArtifactOwned(trigger);
+    case EventTriggerType.ResourceOwned:
+      return checkResourceOwned(trigger);
     case EventTriggerType.LlmFeatures:
       return settings.llmFeaturesEnabled === trigger.parameters.enabled;
     default:
@@ -522,6 +530,17 @@ function checkArtifactOwned(
   const ownsTool = (artifacts.tools ?? []).some((tool) => tool.patternKey === patternKey);
   if (ownsTool) return true;
   return (artifacts.trinkets ?? []).some((trinket) => trinket.patternKey === patternKey);
+}
+
+function checkResourceOwned(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.ResourceOwned }>
+): boolean {
+  const { resourceType, value } = trigger.parameters;
+  const current = gs.player.resources?.[resourceType] ?? 0;
+  if (value < 0) {
+    return current <= value;
+  }
+  return current >= value;
 }
 
 const PASSAGE_TOKEN = /\{\{\s*([\w-]+)\s*\}\}/g;

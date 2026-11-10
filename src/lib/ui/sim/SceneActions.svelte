@@ -34,6 +34,7 @@
   import Invoke from './Invoke.svelte';
   import { clearPlacePickSession, placePickSession } from './place-pick-session.svelte';
   import Shop from './Shop.svelte';
+  import TradeCards from './TradeCards.svelte';
 
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
@@ -70,6 +71,7 @@
     [ActionType.PerformJob]: 'coin',
     [ActionType.StudyColors]: 'book',
     [ActionType.StudyAbilities]: 'book',
+    [ActionType.TradeCards]: 'cards',
   };
 
   function actionVariant(action: Action): 'default' | 'long' | 'muted' {
@@ -87,6 +89,7 @@
   let disenchantAction = $state<Action | null>(null);
 
   let shopAction = $state<Action | null>(null);
+  let tradeAction = $state<Action | null>(null);
   let cardCraftAction = $state<Action | null>(null);
   let cardCraftStep = $state<'invoke' | 'conjure'>('invoke');
   let recipeResources = $state<{ type: ResourceType; count: number }[]>([]);
@@ -279,6 +282,10 @@
       craftArtifactSession.action = next;
       return;
     }
+    if (next.actionType === ActionType.TradeCards) {
+      tradeAction = next;
+      return;
+    }
     commitAction(next);
   }
 
@@ -382,6 +389,9 @@
 {/if}
 {#if craftArtifactSession.action}
   <CraftArtifact action={craftArtifactSession.action} onDone={closeCraftArtifactAction} />
+{/if}
+{#if tradeAction}
+  <TradeCards action={tradeAction} onDone={() => (tradeAction = null)} />
 {/if}
 {#if cardCraftAction && cardCraftStep === 'conjure'}
   <Conjure

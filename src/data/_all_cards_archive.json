@@ -13,9 +13,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "keywords": {
       "ranged": true,
       "armor": 1
@@ -87,10 +85,7 @@
       {
         "trigger": {
           "type": "Static",
-          "staticRecompute": [
-            "On Deploy",
-            "On Death"
-          ]
+          "staticRecompute": ["On Deploy", "On Death"]
         },
         "actions": [
           {
@@ -142,9 +137,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "spirit"
-    ],
+    "unitTypes": ["spirit"],
     "keywords": {
       "ranged": true,
       "retaliate": 2,
@@ -191,9 +184,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -229,9 +220,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "keywords": {
       "flying": true
     },
@@ -256,9 +245,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -296,9 +283,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -334,9 +319,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "keywords": {
       "retaliate": 1
     },
@@ -383,9 +366,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "abilities": [
       {
         "trigger": {
@@ -428,9 +409,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "retaliate": 3
     },
@@ -474,9 +453,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -521,9 +498,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true,
       "moveAndAttack": true
@@ -572,9 +547,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -619,9 +592,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "demon"
-    ],
+    "unitTypes": ["demon"],
     "keywords": {
       "resist": 2,
       "poisonous": 2
@@ -688,9 +659,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "building"
-    ],
+    "unitTypes": ["building"],
     "keywords": {
       "ranged": true
     },
@@ -736,9 +705,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "monster"
-    ],
+    "unitTypes": ["monster"],
     "keywords": {
       "retaliate": 3,
       "resist": 2
@@ -809,9 +776,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "abilities": [
       {
         "trigger": {
@@ -852,9 +817,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "keywords": {
       "retaliate": 2
     },
@@ -878,10 +841,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human",
-      "beast"
-    ],
+    "unitTypes": ["human", "beast"],
     "keywords": {
       "moveAndAttack": true,
       "trample": true
@@ -906,9 +866,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -946,17 +904,12 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
           "type": "Static",
-          "staticRecompute": [
-            "On Death",
-            "On Deploy"
-          ]
+          "staticRecompute": ["On Death", "On Deploy"]
         },
         "actions": [
           {
@@ -991,9 +944,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true,
       "cleave": true,
@@ -1055,9 +1006,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "keywords": {
       "trample": true,
       "retaliate": 3
@@ -1078,9 +1027,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "retaliate": 2,
       "armor": 2
@@ -1115,46 +1062,6 @@
     "cardSet": "alpha"
   },
   {
-    "id": "bob_the_blob",
-    "name": "Bob the Blob",
-    "rarity": "common",
-    "type": "unit",
-    "cost": 3,
-    "power": 4,
-    "maxHealth": 4,
-    "colors": [
-      {
-        "color": "blue",
-        "count": 1
-      }
-    ],
-    "unitTypes": [
-      "elemental"
-    ],
-    "abilities": [
-      {
-        "trigger": {
-          "type": "After Combat",
-          "range": {
-            "self": true
-          }
-        },
-        "actions": [
-          {
-            "effect": {
-              "name": "addCounters",
-              "args": {
-                "counterType": "decay",
-                "counterValue": 1
-              }
-            }
-          }
-        ]
-      }
-    ],
-    "cardSet": "alpha"
-  },
-  {
     "id": "boring_boar",
     "name": "Boring Boar",
     "rarity": "common",
@@ -1162,9 +1069,7 @@
     "cost": 3,
     "power": 3,
     "maxHealth": 3,
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "colors": [
       {
         "color": "green",
@@ -1191,9 +1096,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "spirit"
-    ],
+    "unitTypes": ["spirit"],
     "keywords": {
       "flying": true
     },
@@ -1235,9 +1138,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -1285,9 +1186,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "building"
-    ],
+    "unitTypes": ["building"],
     "abilities": [
       {
         "trigger": {
@@ -1326,9 +1225,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "actions": [
@@ -1496,9 +1393,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "lance": true,
       "retaliate": 1
@@ -1519,9 +1414,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "abilities": [
       {
         "trigger": {
@@ -1561,9 +1454,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "keywords": {
       "armor": 1
     },
@@ -1628,10 +1519,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "elemental",
-      "demon"
-    ],
+    "unitTypes": ["elemental", "demon"],
     "keywords": {
       "retaliate": 3
     },
@@ -1654,9 +1542,7 @@
                   "name": "Coal Demon Shard",
                   "type": "unit",
                   "rarity": "common",
-                  "unitTypes": [
-                    "demon"
-                  ],
+                  "unitTypes": ["demon"],
                   "cost": 1,
                   "power": 2,
                   "maxHealth": 3,
@@ -1697,9 +1583,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "armor": 1
     },
@@ -1746,9 +1630,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true
     },
@@ -1772,9 +1654,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -1900,9 +1780,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "spirit"
-    ],
+    "unitTypes": ["spirit"],
     "abilities": [
       {
         "trigger": {
@@ -1971,9 +1849,7 @@
     "cost": 4,
     "power": 4,
     "maxHealth": 5,
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "colors": [
       {
         "color": "green",
@@ -2000,9 +1876,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true
     },
@@ -2109,9 +1983,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -2166,9 +2038,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "spirit"
-    ],
+    "unitTypes": ["spirit"],
     "keywords": {
       "regeneration": 4
     },
@@ -2225,9 +2095,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "moveAndAttack": true
     },
@@ -2266,9 +2134,7 @@
       }
     ],
     "rarity": "common",
-    "unitTypes": [
-      "dwarf"
-    ],
+    "unitTypes": ["dwarf"],
     "keywords": {
       "zerk": true
     },
@@ -2324,9 +2190,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "dwarf"
-    ],
+    "unitTypes": ["dwarf"],
     "keywords": {
       "haste": true,
       "trample": true
@@ -2437,9 +2301,7 @@
                   "name": "Shroomy Shooty",
                   "type": "unit",
                   "rarity": "common",
-                  "unitTypes": [
-                    "mushroom"
-                  ],
+                  "unitTypes": ["mushroom"],
                   "cost": 1,
                   "power": 1,
                   "maxHealth": 1,
@@ -2480,9 +2342,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true,
       "retaliate": 2
@@ -2562,9 +2422,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "monster"
-    ],
+    "unitTypes": ["monster"],
     "keywords": {
       "retaliate": 3
     },
@@ -2649,9 +2507,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "monster"
-    ],
+    "unitTypes": ["monster"],
     "cardSet": "alpha"
   },
   {
@@ -2668,9 +2524,7 @@
         "count": 4
       }
     ],
-    "unitTypes": [
-      "spirit"
-    ],
+    "unitTypes": ["spirit"],
     "keywords": {
       "retaliate": 3,
       "armor": 4
@@ -2692,9 +2546,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "plant"
-    ],
+    "unitTypes": ["plant"],
     "abilities": [
       {
         "trigger": {
@@ -2810,9 +2662,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -2853,9 +2703,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "building"
-    ],
+    "unitTypes": ["building"],
     "abilities": [
       {
         "trigger": {
@@ -2896,9 +2744,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "moveAndAttack": true
     },
@@ -2943,9 +2789,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "retaliate": 2
     },
@@ -2993,9 +2837,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "keywords": {
       "flying": true
     },
@@ -3009,9 +2851,7 @@
     "cost": 5,
     "power": 4,
     "maxHealth": 5,
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "colors": [
       {
         "color": "green",
@@ -3065,9 +2905,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "elemental"
-    ],
+    "unitTypes": ["elemental"],
     "keywords": {
       "retaliate": 3
     },
@@ -3148,9 +2986,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "spirit"
-    ],
+    "unitTypes": ["spirit"],
     "keywords": {
       "retaliate": 3
     },
@@ -3199,9 +3035,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "lance": true
     },
@@ -3232,11 +3066,7 @@
       {
         "trigger": {
           "type": "Static",
-          "staticRecompute": [
-            "On Death",
-            "On Deploy",
-            "After Moving"
-          ]
+          "staticRecompute": ["On Death", "On Deploy", "After Moving"]
         },
         "actions": [
           {
@@ -3320,9 +3150,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "building"
-    ],
+    "unitTypes": ["building"],
     "keywords": {
       "retaliate": 5,
       "immobile": true
@@ -3370,9 +3198,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "armor": 2
     },
@@ -3495,9 +3321,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "retaliate": 4
     },
@@ -3517,9 +3341,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "cleave": true,
       "retaliate": 1
@@ -3595,9 +3417,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -3639,9 +3459,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true
     },
@@ -3702,9 +3520,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "halfing"
-    ],
+    "unitTypes": ["halfing"],
     "abilities": [
       {
         "trigger": {
@@ -3789,9 +3605,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "retaliate": 3,
       "armor": 1
@@ -3838,9 +3652,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "keywords": {
       "trample": true,
       "retaliate": 3
@@ -3885,9 +3697,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true,
       "cleave": true,
@@ -3909,9 +3719,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true
     },
@@ -3965,9 +3773,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "cleave": true
     },
@@ -4008,9 +3814,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "monster"
-    ],
+    "unitTypes": ["monster"],
     "keywords": {
       "flying": true,
       "retaliate": 3
@@ -4035,9 +3839,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "dwarf"
-    ],
+    "unitTypes": ["dwarf"],
     "keywords": {
       "moveAndAttack": true,
       "cleave": true,
@@ -4160,9 +3962,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "monster"
-    ],
+    "unitTypes": ["monster"],
     "cardSet": "alpha"
   },
   {
@@ -4179,9 +3979,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "halfing"
-    ],
+    "unitTypes": ["halfing"],
     "abilities": [
       {
         "actions": [
@@ -4203,9 +4001,7 @@
                       "count": 1
                     }
                   ],
-                  "unitTypes": [
-                    "plant"
-                  ]
+                  "unitTypes": ["plant"]
                 },
                 "isRespawn": true
               }
@@ -4236,9 +4032,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "halfing"
-    ],
+    "unitTypes": ["halfing"],
     "keywords": {
       "retaliate": 1,
       "regeneration": 1
@@ -4302,9 +4096,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -4346,9 +4138,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "cardSet": "alpha"
   },
   {
@@ -4365,9 +4155,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "monster"
-    ],
+    "unitTypes": ["monster"],
     "keywords": {
       "haste": true
     },
@@ -4437,9 +4225,7 @@
     "cost": 5,
     "power": 2,
     "maxHealth": 5,
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "colors": [
       {
         "color": "black",
@@ -4560,9 +4346,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "monster"
-    ],
+    "unitTypes": ["monster"],
     "keywords": {
       "ranged": true
     },
@@ -4661,9 +4445,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true
     },
@@ -4792,9 +4574,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "keywords": {
       "haste": true
     },
@@ -4814,9 +4594,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -4985,9 +4763,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -5054,9 +4830,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "retaliate": 1
     },
@@ -5076,9 +4850,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "retaliate": 3
     },
@@ -5219,9 +4991,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "retaliate": 1
     },
@@ -5262,9 +5032,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "plant"
-    ],
+    "unitTypes": ["plant"],
     "cardSet": "alpha"
   },
   {
@@ -5311,9 +5079,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true,
       "retaliate": 3
@@ -5524,9 +5290,7 @@
                   "name": "Shroomy Shooty",
                   "type": "unit",
                   "rarity": "common",
-                  "unitTypes": [
-                    "mushroom"
-                  ],
+                  "unitTypes": ["mushroom"],
                   "cost": 1,
                   "power": 1,
                   "maxHealth": 1,
@@ -5669,9 +5433,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "retaliate": 4
     },
@@ -5717,9 +5479,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "keywords": {
       "resist": 5
     },
@@ -5760,9 +5520,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "abilities": [
       {
         "actions": [
@@ -5805,9 +5563,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "haste": true
     },
@@ -5908,9 +5664,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "retaliate": 4
     },
@@ -5954,9 +5708,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "monster"
-    ],
+    "unitTypes": ["monster"],
     "keywords": {
       "retaliate": 1,
       "armor": 1
@@ -5978,9 +5730,7 @@
         "count": 6
       }
     ],
-    "unitTypes": [
-      "demon"
-    ],
+    "unitTypes": ["demon"],
     "abilities": [
       {
         "trigger": {
@@ -6049,9 +5799,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "keywords": {
       "regeneration": 3
     },
@@ -6092,9 +5840,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -6242,10 +5988,7 @@
         "count": 4
       }
     ],
-    "unitTypes": [
-      "human",
-      "demon"
-    ],
+    "unitTypes": ["human", "demon"],
     "abilities": [
       {
         "trigger": {
@@ -6297,9 +6040,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -6352,9 +6093,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "keywords": {
       "moveAndAttack": true,
       "trample": true,
@@ -6382,9 +6121,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "elemental"
-    ],
+    "unitTypes": ["elemental"],
     "abilities": [
       {
         "trigger": {
@@ -6425,9 +6162,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "moveAndAttack": true
     },
@@ -6571,9 +6306,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "actions": [
@@ -6646,9 +6379,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "elemental"
-    ],
+    "unitTypes": ["elemental"],
     "keywords": {
       "resist": 2
     },
@@ -6668,9 +6399,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -6713,9 +6442,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "lance": true,
       "retaliate": 4,
@@ -6821,9 +6548,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "abilities": [
       {
         "trigger": {
@@ -6913,9 +6638,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "keywords": {
       "ranged": true,
       "retaliate": 3,
@@ -7008,9 +6731,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "abilities": [
       {
         "trigger": {
@@ -7093,9 +6814,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -7136,9 +6855,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true,
       "resist": 3
@@ -7200,9 +6917,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -7231,9 +6946,7 @@
     "id": "shroomy",
     "name": "Shroomy",
     "type": "unit",
-    "unitTypes": [
-      "mushroom"
-    ],
+    "unitTypes": ["mushroom"],
     "cost": 1,
     "power": 1,
     "maxHealth": 1,
@@ -7281,9 +6994,7 @@
       }
     ],
     "rarity": "common",
-    "unitTypes": [
-      "mushroom"
-    ],
+    "unitTypes": ["mushroom"],
     "abilities": [
       {
         "actions": [
@@ -7346,9 +7057,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "abilities": [
       {
         "trigger": {
@@ -7435,9 +7144,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "monster"
-    ],
+    "unitTypes": ["monster"],
     "keywords": {
       "retaliate": 2,
       "regeneration": 2
@@ -7462,9 +7169,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "haste": true
     },
@@ -7543,10 +7248,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "construct",
-      "demon"
-    ],
+    "unitTypes": ["construct", "demon"],
     "keywords": {
       "moveAndAttack": true,
       "retaliate": 2,
@@ -7615,9 +7317,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "building"
-    ],
+    "unitTypes": ["building"],
     "abilities": [
       {
         "trigger": {
@@ -7707,9 +7407,7 @@
       }
     ],
     "rarity": "common",
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true
     },
@@ -7796,9 +7494,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "keywords": {
       "haste": true,
       "retaliate": 1
@@ -7822,9 +7518,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "ranged": true,
       "poisonous": 1
@@ -7889,9 +7583,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "keywords": {
       "ranged": true,
       "armor": 1
@@ -7938,9 +7630,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "lance": true,
       "retaliate": 2,
@@ -8001,10 +7691,7 @@
         "count": 6
       }
     ],
-    "unitTypes": [
-      "beast",
-      "demon"
-    ],
+    "unitTypes": ["beast", "demon"],
     "keywords": {
       "trample": true,
       "retaliate": 6
@@ -8029,10 +7716,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human",
-      "demon"
-    ],
+    "unitTypes": ["human", "demon"],
     "keywords": {
       "retaliate": 2,
       "regeneration": 5
@@ -8139,9 +7823,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "elemental"
-    ],
+    "unitTypes": ["elemental"],
     "keywords": {
       "moveAndAttack": true
     },
@@ -8219,11 +7901,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "demon",
-      "beast",
-      "human"
-    ],
+    "unitTypes": ["demon", "beast", "human"],
     "keywords": {
       "armor": 1,
       "resist": 3
@@ -8319,9 +7997,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "abilities": [
       {
         "trigger": {
@@ -8491,9 +8167,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "keywords": {
       "resist": 1
     }
@@ -8513,9 +8187,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "halfing"
-    ],
+    "unitTypes": ["halfing"],
     "abilities": [
       {
         "trigger": {
@@ -8557,9 +8229,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "beast"
-    ],
+    "unitTypes": ["beast"],
     "keywords": {
       "trample": true,
       "retaliate": 3,
@@ -8653,9 +8323,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "armor": 1
     },
@@ -8697,9 +8365,7 @@
         "count": 2
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "abilities": [
       {
         "trigger": {
@@ -8744,9 +8410,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "keywords": {
       "retaliate": 2
     },
@@ -8792,9 +8456,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "plant"
-    ],
+    "unitTypes": ["plant"],
     "keywords": {
       "retaliate": 2
     },
@@ -8818,9 +8480,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "building"
-    ],
+    "unitTypes": ["building"],
     "keywords": {
       "immobile": true,
       "ranged": true,
@@ -9038,9 +8698,7 @@
                   "count": 1
                 }
               ],
-              "unitTypes": [
-                "plant"
-              ],
+              "unitTypes": ["plant"],
               "keywords": {
                 "retaliate": 2
               },
@@ -9072,9 +8730,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "hobbit"
-    ],
+    "unitTypes": ["hobbit"],
     "cardSet": "alpha"
   },
   {
@@ -9095,9 +8751,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "human"
-    ],
+    "unitTypes": ["human"],
     "cardSet": "alpha"
   },
   {
@@ -9114,9 +8768,7 @@
         "count": 3
       }
     ],
-    "unitTypes": [
-      "construct"
-    ],
+    "unitTypes": ["construct"],
     "keywords": {
       "flying": true,
       "retaliate": 4
@@ -9195,9 +8847,7 @@
         "count": 1
       }
     ],
-    "unitTypes": [
-      "monster"
-    ],
+    "unitTypes": ["monster"],
     "cardSet": "alpha"
   }
 ]

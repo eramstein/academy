@@ -14,10 +14,12 @@ export const defaultGameState: GameState = {
   time: {
     day: 1,
     period: DayPeriod.Morning,
+    year: 1,
     playedLeagueMatch: false,
     usedActions: {},
     hungOutWith: [],
     longActionPerformed: false,
+    tradedCardsToday: false,
   },
   characters: npcs,
   player: {

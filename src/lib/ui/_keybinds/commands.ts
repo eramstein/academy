@@ -1,11 +1,12 @@
 import { BASE_DECK_GREEN, BASE_DECK_RED } from '@/data/base-deck';
-import { DayPeriod, ResourceType } from '../../_model';
-import type { UnitKeywords } from '../../_model/model-battle';
+import { CardType, DayPeriod, ResourceType } from '../../_model';
+import type { Card, UnitKeywords } from '../../_model/model-battle';
 import { bs, getCurrentBattleState, gs, saveStateToLocalStorage } from '../../_state';
 import { drawCard, tutorCard } from '../../battle/deck';
 import { scheduleClassesForCurrentTerm } from '../../sim/academy';
 import { ACTION_TEMPLATE_KEYS } from '../../sim/cards/action-templates';
 import { KEYWORD_KEYS } from '../../sim/cards/keywords';
+import { getLoadedCardTemplate } from '../../sim/cards/npc-card-templates';
 import { redeemBaseDeck } from '../../sim/deck';
 import { completeCraftedArtifact } from '../../sim/actions/craft-artifact';
 import { getLoadedArtifact, getLoadedArtifacts } from '../../sim/artifacts';
@@ -222,6 +223,40 @@ export async function executeCommand(input: string): Promise<CommandResult> {
       return {
         ok: true,
         message: `Granted ${added} new pattern${added === 1 ? '' : 's'} (${all.length} total); opened Craft Artifact`,
+      };
+    }
+
+    case 'test-card': {
+      // /test-card <template-id> — put authored npc card in hand; match mana/colors to cost
+      const templateId = parts[1];
+      if (!templateId) {
+        return { ok: false, message: 'Usage: /test-card <template-id>' };
+      }
+      const template = getLoadedCardTemplate(templateId);
+      if (!template) {
+        return { ok: false, message: `Card template not found: ${templateId}` };
+      }
+      if (template.type === CardType.Land) {
+        return { ok: false, message: `Cannot put land in hand: ${templateId}` };
+      }
+      const player = bs.players[0];
+      if (!player) {
+        return { ok: false, message: 'No battle in progress' };
+      }
+      const card = {
+        ...template,
+        ownerPlayerId: player.id,
+        instanceId: crypto.randomUUID(),
+      } as Card;
+      player.hand.push(card);
+      player.mana = card.cost;
+      // Raise required pips only — keep land-opened colors so lands stay clickable.
+      for (const entry of card.colors) {
+        player.colors[entry.color] = entry.count;
+      }
+      return {
+        ok: true,
+        message: `Added ${card.name} to hand; mana ${card.cost}`,
       };
     }
 

@@ -1,5 +1,259 @@
 [
   {
+    "id": "burst_of_wind",
+    "name": "Burst of Wind",
+    "imageFileName": "burst_of_wind",
+    "poolKeys": ["emma", "base"],
+    "type": "spell",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageUnit",
+          "args": {
+            "damage": 5,
+            "range": {
+              "adjacent": true
+            }
+          }
+        },
+        "targets": [
+          {
+            "type": "cell_empty",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "flood",
+    "name": "Flood",
+    "imageFileName": "flood",
+    "poolKeys": ["emma", "base"],
+    "type": "spell",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "damageUnit",
+          "args": {
+            "damage": 4,
+            "range": {
+              "sameColumn": true
+            }
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "never_ending_project",
+    "name": "Never Ending Project",
+    "imageFileName": "never_ending_project",
+    "poolKeys": ["emma", "base"],
+    "type": "unit",
+    "cost": 5,
+    "power": 1,
+    "retaliate": 5,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["construct"],
+    "keywords": {
+      "moveAndAttack": true,
+      "trample": true,
+      "cleave": true,
+      "lance": true,
+      "flying": true,
+      "armor": 3,
+      "resist": 3
+    }
+  },
+  {
+    "id": "pretty_violinist",
+    "name": "Pretty Violinist",
+    "imageFileName": "pretty_violinist",
+    "poolKeys": ["emma", "base"],
+    "type": "unit",
+    "cost": 1,
+    "power": 1,
+    "retaliate": 0,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "forceMoveUnit",
+              "args": {}
+            },
+            "targets": [
+              {
+                "type": "unit_ennemies",
+                "count": 1
+              },
+              {
+                "type": "cell_enemy",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bob_the_blob",
+    "name": "Bob the Blob",
+    "imageFileName": "bob_the_blob",
+    "poolKeys": ["emma", "base"],
+    "type": "unit",
+    "cost": 3,
+    "power": 4,
+    "retaliate": 0,
+    "maxHealth": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["elemental"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "decay",
+                "counterValue": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "arcane_spy",
+    "name": "Arcane Spy",
+    "imageFileName": "arcane_spy",
+    "poolKeys": ["emma", "base"],
+    "type": "unit",
+    "cost": 4,
+    "power": 1,
+    "retaliate": 0,
+    "maxHealth": 1,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "ennemies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "drawCard",
+              "args": {
+                "cardCount": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "master_of_chains",
+    "name": "Master of Chains",
+    "imageFileName": "master_of_chains",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["emma", "base"],
+    "type": "unit",
+    "power": 1,
+    "maxHealth": 5,
+    "retaliate": 1,
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "ennemies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "damageUnit",
+              "args": {
+                "damage": 1,
+                "fromTriggerParam": "mover"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "emma_love_letter",
     "name": "Up to you",
     "imageFileName": "emma_love_letter",
@@ -58,7 +312,7 @@
     "id": "emma_horse",
     "name": "Gourmet Horse",
     "imageFileName": "emma_horse",
-    "cost": 5,
+    "cost": 7,
     "colors": [
       {
         "color": "blue",
@@ -66,7 +320,7 @@
       },
       {
         "color": "green",
-        "count": 1
+        "count": 2
       }
     ],
     "poolKeys": ["emma", "event"],
@@ -74,29 +328,10 @@
     "power": 4,
     "maxHealth": 4,
     "retaliate": 1,
-    "abilities": [
-      {
-        "trigger": {
-          "type": "Before Moving",
-          "range": {
-            "self": true
-          }
-        },
-        "actions": [
-          {
-            "effect": {
-              "name": "forceMoveUnit",
-              "args": {
-                "range": {
-                  "adjacent": true,
-                  "enemies": true
-                }
-              }
-            }
-          }
-        ]
-      }
-    ]
+    "keywords": {
+      "moveAndAttack": true,
+      "regeneration": 1
+    }
   },
   {
     "id": "emma_halloween",
@@ -264,7 +499,7 @@
     "id": "book_worm",
     "name": "Book Worm",
     "imageFileName": "book_worm",
-    "type": "creature",
+    "type": "unit",
     "cost": 4,
     "colors": [{ "color": "blue", "count": 3 }],
     "power": 0,
@@ -297,7 +532,7 @@
     "id": "ballet_choreagrapher",
     "name": "Ballet Choreographer",
     "imageFileName": "ballet_choreagrapher",
-    "type": "creature",
+    "type": "unit",
     "cost": 3,
     "colors": [{ "color": "blue", "count": 2 }],
     "power": 1,

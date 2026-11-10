@@ -4,6 +4,7 @@
     DayPeriod,
     EventTriggerType,
     RelationTag,
+    ResourceType,
     type EventTrigger,
     type EventTriggerParameters,
   } from '@/lib/_model';
@@ -28,6 +29,7 @@
   const triggerTypes = Object.values(EventTriggerType);
   const periods = Object.values(DayPeriod);
   const activityTypes = Object.values(ActivityType);
+  const resourceTypes = Object.values(ResourceType);
   const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
   const relationTagValues = Object.values(RelationTag);
   const weekDays = WEEK_DAYS.map((name, index) => ({ name, value: index + 1 }));
@@ -63,6 +65,7 @@
       [EventTriggerType.LastMatchWon]: {},
       [EventTriggerType.LastMatchLost]: {},
       [EventTriggerType.ArtifactOwned]: { patternKey: '' },
+      [EventTriggerType.ResourceOwned]: { resourceType: ResourceType.MagicDust, value: 1 },
       [EventTriggerType.LlmFeatures]: { enabled: true },
     };
     return defaults[triggerType];
@@ -374,6 +377,23 @@
               placeholder="artifact pattern key"
               aria-label="Artifact pattern key"
               title="Player owns this pattern as a tool or trinket"
+            />
+          {:else if trigger.triggerType === EventTriggerType.ResourceOwned}
+            <select
+              class="input param-select"
+              bind:value={trigger.parameters.resourceType}
+              aria-label="Resource type"
+            >
+              {#each resourceTypes as resource (resource)}
+                <option value={resource}>{resource}</option>
+              {/each}
+            </select>
+            <input
+              class="input narrow"
+              type="number"
+              bind:value={trigger.parameters.value}
+              aria-label="Resource amount"
+              title="Positive = at least; negative = at most"
             />
           {:else if trigger.triggerType === EventTriggerType.LlmFeatures}
             <label class="param-hint">

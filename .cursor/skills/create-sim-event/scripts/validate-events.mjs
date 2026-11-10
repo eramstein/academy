@@ -348,6 +348,12 @@ function checkTrigger(where, trigger) {
     case 'artifact_owned':
       checkOneOf(where, 'patternKey', params.patternKey, artifactPatternKeys);
       break;
+    case 'resource_owned':
+      checkOneOf(where, 'resourceType', params.resourceType, resourceTypes);
+      if (typeof params.value !== 'number' || !Number.isInteger(params.value) || params.value === 0) {
+        errors.push(`${where}: value must be a non-zero integer (positive = at least, negative = at most)`);
+      }
+      break;
     case 'llm_features':
       if (typeof params.enabled !== 'boolean') {
         errors.push(`${where}: enabled must be a boolean`);

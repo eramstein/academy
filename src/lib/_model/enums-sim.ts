@@ -63,6 +63,7 @@ export enum ActionType {
   StudyColors = 'study_colors',
   StudyAbilities = 'study_abilities',
   Invite = 'invite',
+  TradeCards = 'trade_cards',
 }
 
 export enum NarrationType {
@@ -156,6 +157,11 @@ export enum EventTriggerType {
   LastMatchLost = 'last_match_lost',
   /** Player owns a finished artifact (tool or trinket) with this `patternKey`. */
   ArtifactOwned = 'artifact_owned',
+  /**
+   * Player resource stock vs `value`. Positive `value` = at least; negative = at most
+   * (same sign convention as `relation_parameter`).
+   */
+  ResourceOwned = 'resource_owned',
   /**
    * User setting `llmFeaturesEnabled` matches `enabled`.
    * Use to gate LLM-backed events (structured interactions, generated prose, etc.).

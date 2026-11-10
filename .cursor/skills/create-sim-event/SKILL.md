@@ -263,6 +263,7 @@ that label is a scene action, and choosing it plays the event. Empty or whitespa
 | `last_match_won`     | `{}`                                                               | `gs.scene.lastMatchWon === true` after a finished battle.                               |
 | `last_match_lost`    | `{}`                                                               | `gs.scene.lastMatchWon === false` after a finished battle.                              |
 | `artifact_owned`     | `{ patternKey }`                                                   | Player owns that finished artifact in `artifacts.tools` or `artifacts.trinkets`.        |
+| `resource_owned`     | `{ resourceType, value }`                                          | Player `resources[resourceType]` vs `value`. Positive = at least; negative = at most.   |
 | `llm_features`       | `{ enabled: true }` or `{ enabled: false }`                        | Matches Settings → LLM features. Gate LLM-backed events / interactions.                 |
 
 ### Mapping plain-language `**Trigger:**`
@@ -284,6 +285,7 @@ that label is a scene action, and choosing it plays the event. Empty or whitespa
 | Last / previous match was won                                      | `last_match_won` `{}`                                                   |
 | Last / previous match was lost                                     | `last_match_lost` `{}`                                                  |
 | Owns / has crafted artifact \<patternKey\>                         | `artifact_owned` `{ patternKey }`                                       |
+| Has / at least N \<resource\> (e.g. magic_dust)                    | `resource_owned` `{ resourceType, value }` (positive = at least)        |
 | LLM features on / off                                              | `llm_features` `{ enabled: true\|false }`                               |
 
 Prefer `relation_parameter` for lasting friendship / respect / love / rivalry

@@ -1,6 +1,14 @@
 <script lang="ts">
   import { npcs } from '@/data/npcs';
-  import { EventTriggerType, type EventTemplate, type EventTrigger } from '@/lib/_model';
+  import {
+    EventEffectType,
+    EventTriggerType,
+    type EventEffect,
+    type EventOptionTemplate,
+    type EventTemplate,
+    type EventTemplateEffect,
+    type EventTrigger,
+  } from '@/lib/_model';
   import CharacterArcGraph from './CharacterArcGraph.svelte';
 
   let {
@@ -19,7 +27,16 @@
     onShowPacing: () => void;
   } = $props();
 
+  type RelationGrant = 'friendship' | 'love' | 'rivalry';
+
+  const relationFilters: { key: RelationGrant; label: string }[] = [
+    { key: 'friendship', label: 'Friendship' },
+    { key: 'love', label: 'Love' },
+    { key: 'rivalry', label: 'Rivalry' },
+  ];
+
   let search = $state('');
+  let selectedRelations = $state<Set<RelationGrant>>(new Set());
 
   const arcCharacters = $derived.by(() => {
     const keys = new Set<string>();
@@ -33,16 +50,74 @@
     selectedArc ? events.filter((event) => event.characterArc === selectedArc) : events
   );
 
+  const relationScopedEvents = $derived.by(() => {
+    if (selectedRelations.size === 0) return scopedEvents;
+    return scopedEvents.filter((event) =>
+      [...selectedRelations].some((relation) => eventGrantsRelation(event, relation))
+    );
+  });
+
   const filteredEvents = $derived.by(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return scopedEvents;
-    return scopedEvents.filter((event) => matchesSearch(event, q));
+    if (!q) return relationScopedEvents;
+    return relationScopedEvents.filter((event) => matchesSearch(event, q));
   });
 
   const arcEvents = $derived(selectedArc ? filteredEvents : []);
+  const hasActiveFilters = $derived(search.trim().length > 0 || selectedRelations.size > 0);
 
   function displayName(key: string): string {
     return npcs[key]?.name ?? key;
+  }
+
+  function walkEffects(effects: EventEffect[] | undefined, visit: (effect: EventEffect) => void) {
+    for (const effect of effects ?? []) visit(effect);
+  }
+
+  function walkTemplateEffects(
+    entries: EventTemplateEffect[] | undefined,
+    visit: (effect: EventEffect) => void
+  ) {
+    for (const entry of entries ?? []) visit(entry.effect);
+  }
+
+  function walkOptions(
+    options: EventOptionTemplate[] | undefined,
+    visit: (effect: EventEffect) => void
+  ) {
+    for (const option of options ?? []) {
+      walkEffects(option.effects, visit);
+      if (option.attributeCheck) {
+        walkEffects(option.attributeCheck.successEffects, visit);
+        walkEffects(option.attributeCheck.failureEffects, visit);
+      }
+    }
+  }
+
+  function eventGrantsRelation(event: EventTemplate, relation: RelationGrant): boolean {
+    let found = false;
+    const visit = (effect: EventEffect) => {
+      if (found) return;
+      if (effect.type !== EventEffectType.ChangeRelation) return;
+      if (effect.parameters?.relationParameter !== relation) return;
+      const amount = effect.parameters?.amount;
+      if (typeof amount === 'number' ? amount > 0 : true) found = true;
+    };
+
+    walkTemplateEffects(event.effects, visit);
+    walkOptions(event.optionTemplates, visit);
+    for (const node of Object.values(event.nodes ?? {})) {
+      walkTemplateEffects(node.effects, visit);
+      walkOptions(node.optionTemplates, visit);
+    }
+    return found;
+  }
+
+  function toggleRelation(relation: RelationGrant) {
+    const next = new Set(selectedRelations);
+    if (next.has(relation)) next.delete(relation);
+    else next.add(relation);
+    selectedRelations = next;
   }
 
   function matchesSearch(event: EventTemplate, q: string): boolean {
@@ -90,6 +165,11 @@
     }
     if (trigger.triggerType === EventTriggerType.ArtifactOwned) {
       return `${trigger.triggerType}: ${trigger.parameters.patternKey}`;
+    }
+    if (trigger.triggerType === EventTriggerType.ResourceOwned) {
+      const { resourceType, value } = trigger.parameters;
+      const cmp = value < 0 ? '≤' : '≥';
+      return `${trigger.triggerType}: ${resourceType} ${cmp}${Math.abs(value)}`;
     }
     if (trigger.triggerType === EventTriggerType.LlmFeatures) {
       return `${trigger.triggerType}: ${trigger.parameters.enabled ? 'on' : 'off'}`;
@@ -140,7 +220,7 @@
         {:else}
           {filteredEvents.length} event{filteredEvents.length === 1 ? '' : 's'}
         {/if}
-        {#if search.trim()}
+        {#if hasActiveFilters}
           <span class="search-hint"> · filtered</span>
         {/if}
       </p>
@@ -153,12 +233,21 @@
 
   <label class="search">
     <span class="sr">Search events</span>
-    <input
-      type="search"
-      placeholder="Search key, text, arc, or triggers…"
-      bind:value={search}
-    />
+    <input type="search" placeholder="Search key, text, arc, or triggers…" bind:value={search} />
   </label>
+
+  <div class="arc-filters" role="toolbar" aria-label="Relation grants">
+    {#each relationFilters as filter (filter.key)}
+      <button
+        type="button"
+        class="arc-btn"
+        class:active={selectedRelations.has(filter.key)}
+        onclick={() => toggleRelation(filter.key)}
+      >
+        {filter.label}
+      </button>
+    {/each}
+  </div>
 
   {#if arcCharacters.length > 0}
     <div class="arc-filters" role="toolbar" aria-label="Character arcs">
@@ -186,12 +275,12 @@
 
   {#if selectedArc}
     {#if filteredEvents.length === 0}
-      <p class="empty">{search.trim() ? 'No events match your search.' : 'No events.'}</p>
+      <p class="empty">{hasActiveFilters ? 'No events match your filters.' : 'No events.'}</p>
     {:else}
       <CharacterArcGraph events={arcEvents} allEvents={events} {onEdit} {onCreateFollowUp} />
     {/if}
   {:else if filteredEvents.length === 0}
-    <p class="empty">{search.trim() ? 'No events match your search.' : 'No events.'}</p>
+    <p class="empty">{hasActiveFilters ? 'No events match your filters.' : 'No events.'}</p>
   {:else}
     <ul class="list">
       {#each filteredEvents as event (event.key)}

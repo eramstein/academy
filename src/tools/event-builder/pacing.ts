@@ -6,6 +6,7 @@ import {
   DayPeriod,
   EventEffectType,
   EventTriggerType,
+  ResourceType,
   SchoolName,
   SubscriptionType,
   type Action,
@@ -61,6 +62,8 @@ export interface PacingWorld {
   lastMatchWon?: boolean;
   /** Finished artifact pattern keys the player owns (tools or trinkets). */
   ownedArtifacts: Set<string>;
+  /** Player resource stocks (for `resource_owned` triggers / `add_resource` effects). */
+  resources: Partial<Record<ResourceType, number>>;
   /** Event whose outcome is being walked. Its story tag is already stamped. */
   openKey?: string;
   academyScheduled: boolean;
@@ -116,6 +119,7 @@ export function createPacingWorld(): PacingWorld {
     characters,
     leaguesWon: {},
     ownedArtifacts: new Set(),
+    resources: {},
     academyScheduled: false,
   };
 }
@@ -295,7 +299,11 @@ function enterNode(world: PacingWorld, template: EventTemplate, nodeKey: string)
   return true;
 }
 
-function enterableNode(template: EventTemplate, nodeKey: string, world: PacingWorld): string | undefined {
+function enterableNode(
+  template: EventTemplate,
+  nodeKey: string,
+  world: PacingWorld
+): string | undefined {
   return nodeEnterable(template, nodeKey, world) ? nodeKey : undefined;
 }
 
@@ -320,10 +328,16 @@ function isManualKey(templates: readonly EventTemplate[], key: string): boolean 
 
 function triggersMatch(template: EventTemplate, world: PacingWorld): boolean {
   const triggers = template.triggers ?? [];
-  return triggers.length > 0 && triggers.every((trigger) => triggerMatches(trigger, world, template.key));
+  return (
+    triggers.length > 0 && triggers.every((trigger) => triggerMatches(trigger, world, template.key))
+  );
 }
 
-function optionTriggersMatch(option: EventOptionTemplate, world: PacingWorld, eventKey: string): boolean {
+function optionTriggersMatch(
+  option: EventOptionTemplate,
+  world: PacingWorld,
+  eventKey: string
+): boolean {
   return (option.triggers ?? []).every((trigger) => triggerMatches(trigger, world, eventKey));
 }
 
@@ -435,12 +449,21 @@ function triggerMatches(trigger: EventTrigger, world: PacingWorld, eventKey: str
       return world.lastMatchWon === false;
     case EventTriggerType.ArtifactOwned:
       return world.ownedArtifacts.has(trigger.parameters.patternKey);
+    case EventTriggerType.ResourceOwned: {
+      const { resourceType, value } = trigger.parameters;
+      const current = world.resources[resourceType] ?? 0;
+      return value < 0 ? current <= value : current >= value;
+    }
     default:
       return false;
   }
 }
 
-function activityCount(world: PacingWorld, characterKey: string, activityType: ActivityType): number {
+function activityCount(
+  world: PacingWorld,
+  characterKey: string,
+  activityType: ActivityType
+): number {
   const npc = world.characters[characterKey];
   const base = npc?.activityHistory[activityType] ?? 0;
   const now = slotIndex(world.day, world.period);
@@ -473,19 +496,22 @@ function applyEffect(world: PacingWorld, effect: EventEffect) {
       const { characterKey, relationParameter, amount } = effect.parameters;
       const npc = world.characters[characterKey];
       if (!npc || typeof amount !== 'number') return;
-      npc.relationProgress[relationParameter] = (npc.relationProgress[relationParameter] ?? 0) + amount;
+      npc.relationProgress[relationParameter] =
+        (npc.relationProgress[relationParameter] ?? 0) + amount;
       return;
     }
     case EventEffectType.AddRelationTag: {
       const npc = world.characters[effect.parameters.characterKey];
       if (!npc) return;
-      const tag = resolveRelationTag(String(effect.parameters.relationTag)) ?? effect.parameters.relationTag;
+      const tag =
+        resolveRelationTag(String(effect.parameters.relationTag)) ?? effect.parameters.relationTag;
       if (tag && !npc.relationTags.includes(tag)) npc.relationTags.push(String(tag));
       return;
     }
     case EventEffectType.AddKnownTrait: {
       const npc = world.characters[effect.parameters.characterKey];
-      const title = typeof effect.parameters.title === 'string' ? effect.parameters.title.trim() : '';
+      const title =
+        typeof effect.parameters.title === 'string' ? effect.parameters.title.trim() : '';
       if (!npc || !title || npc.knownTraitTitles.includes(title)) return;
       npc.knownTraitTitles.push(title);
       return;
@@ -493,7 +519,8 @@ function applyEffect(world: PacingWorld, effect: EventEffect) {
     case EventEffectType.FollowUpEvent: {
       const eventKey = effect.parameters.eventKey;
       if (typeof eventKey !== 'string' || !eventKey) return;
-      if (isResolved(world, eventKey) || world.queued.some((queued) => queued.key === eventKey)) return;
+      if (isResolved(world, eventKey) || world.queued.some((queued) => queued.key === eventKey))
+        return;
       world.queued.push({ key: eventKey, day: world.day, period: world.period });
       return;
     }
@@ -508,13 +535,21 @@ function applyEffect(world: PacingWorld, effect: EventEffect) {
       return;
     }
     case EventEffectType.Subscribe:
-      if (effect.parameters.subscriptionType === SubscriptionType.Academy) scheduleAcademyClasses(world);
+      if (effect.parameters.subscriptionType === SubscriptionType.Academy)
+        scheduleAcademyClasses(world);
       return;
     case EventEffectType.NewLeagueSeason: {
       const winner = effect.parameters.winnerKey;
       if (typeof winner === 'string' && winner) {
         world.leaguesWon[winner] = (world.leaguesWon[winner] ?? 0) + 1;
       }
+      return;
+    }
+    case EventEffectType.AddResource: {
+      const resourceType = effect.parameters.resourceType as ResourceType | undefined;
+      const amount = effect.parameters.amount;
+      if (!resourceType || typeof amount !== 'number' || !Number.isFinite(amount)) return;
+      world.resources[resourceType] = (world.resources[resourceType] ?? 0) + amount;
       return;
     }
     default:
@@ -694,7 +729,11 @@ function matchChoice(
   };
 }
 
-function choiceNotes(effects: EventEffect[], schedulesAcademy: boolean, nextNode?: string): string[] {
+function choiceNotes(
+  effects: EventEffect[],
+  schedulesAcademy: boolean,
+  nextNode?: string
+): string[] {
   const notes: string[] = [];
   if (schedulesAcademy) notes.push('Schedules academy classes');
   for (const effect of effects) {

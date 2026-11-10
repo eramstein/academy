@@ -3,6 +3,7 @@ import {
   DayPeriod,
   EventEffectType,
   EventTriggerType,
+  type ResourceType,
 } from '../_model/enums-sim';
 import type {
   EventEffect,
@@ -62,7 +63,8 @@ export type SceneChange =
       value: number;
       label: string;
     }
-  | { kind: 'artifact'; patternKey: string; label: string };
+  | { kind: 'artifact'; patternKey: string; label: string }
+  | { kind: 'resource'; resourceType: ResourceType; value: number; label: string };
 
 export type EventDebugAction =
   | { kind: 'story_tag'; tag: string; value: number }
@@ -659,6 +661,17 @@ function triggerToChange(trigger: EventTrigger): SceneChange | null {
         label: `Own artifact ${patternKey}`,
       };
     }
+    case EventTriggerType.ResourceOwned: {
+      const { resourceType, value } = trigger.parameters;
+      if (!resourceType || value === 0) return null;
+      const cmp = value < 0 ? '≤' : '≥';
+      return {
+        kind: 'resource',
+        resourceType,
+        value,
+        label: `${resourceType.replace(/_/g, ' ')} ${cmp} ${Math.abs(value)}`,
+      };
+    }
     case EventTriggerType.LlmFeatures:
       // User setting — enable or disable under Settings; not applied by debug setup.
       return null;
@@ -671,9 +684,11 @@ function applySceneChange(change: SceneChange): string | null {
   switch (change.kind) {
     case 'time': {
       let changed = false;
+      let dayChanged = false;
       if (change.day != null && gs.time.day !== change.day) {
         gs.time.day = change.day;
         changed = true;
+        dayChanged = true;
       }
       if (change.period != null && gs.time.period !== change.period) {
         gs.time.period = change.period;
@@ -684,6 +699,9 @@ function applySceneChange(change: SceneChange): string | null {
       gs.time.usedActions = {};
       gs.time.hungOutWith = [];
       gs.time.longActionPerformed = false;
+      if (dayChanged) {
+        gs.time.tradedCardsToday = false;
+      }
       return change.label;
     }
     case 'place': {
@@ -785,6 +803,16 @@ function applySceneChange(change: SceneChange): string | null {
       }
       return change.label;
     }
+    case 'resource': {
+      const current = gs.player.resources[change.resourceType] ?? 0;
+      if (change.value < 0) {
+        if (current <= change.value) return null;
+      } else if (current >= change.value) {
+        return null;
+      }
+      gs.player.resources[change.resourceType] = Math.abs(change.value);
+      return change.label;
+    }
     default:
       return null;
   }
@@ -879,6 +907,8 @@ function triggerSignature(trigger: EventTrigger): string {
       return 'scheduled';
     case EventTriggerType.ArtifactOwned:
       return `artifact:${trigger.parameters.patternKey}`;
+    case EventTriggerType.ResourceOwned:
+      return `resource:${trigger.parameters.resourceType}:${trigger.parameters.value}`;
     case EventTriggerType.LlmFeatures:
       return `llm:${trigger.parameters.enabled ? 'on' : 'off'}`;
     default:

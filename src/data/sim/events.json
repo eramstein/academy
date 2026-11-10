@@ -10009,6 +10009,321 @@
     "manualTrigger": "Emma makes a discreet sign for you to follow her in private"
   },
   {
+    "key": "emma_weekly_training_invitation",
+    "text": "Emma approaches you after class, carrying a small stack of books and wearing an expression of calculated interest. You've come to recognize that look. It generally means she's had an idea, and there's a reasonable chance it involves making your life more difficult.\n\n\"Antonio. I've been giving some thought to our recent matches.\"\n\n\"Have you finally worked out why you keep losing?\"\n\n\"How curious. I was about to ask you precisely the same question.\"\n\nShe gives you a pleasant smile, then continues before you can mount a defense.\n\n\"The fact is, you're becoming a rather interesting opponent. You make unconventional decisions, you spot weaknesses that others overlook, and occasionally, against all reasonable expectations, you even manage to surprise me.\"\n\nYou wait. Surely there's a compliment buried in there somewhere.\n\n\"Don't look so pleased. I said occasionally.\"\n\nShe shifts the books under her arm.\n\n\"I've been looking for someone to train with regularly. Most of our classmates are either too inexperienced to offer much resistance or too intimidated to point out my mistakes. Neither is particularly useful.\"\n\n\"And you think I'd point out your mistakes?\"\n\n\"Antonio, I suspect you'd have them engraved on a commemorative plaque if you could afford it.\"\n\nShe laughs softly.\n\n\"Which is precisely why I think this could work. We both have something to gain from a proper challenge. I could help you refine your technique, and you could...\" She pauses thoughtfully. \"Well, you could provide me with the occasional interesting problem.\"\n\n\"How generous.\"\n\n\"I thought so.\"\n\nShe looks at you more directly, her teasing expression giving way to something a little more earnest.\n\n\"So, here's my proposal. Thursday evenings, at my room. We practice, compare strategies, experiment with new cards, and do our best to expose every flaw in each other's thinking. No holding back, and no wounded pride.\"\n\nA familiar spark returns to her eyes.\n\n\"Although if you insist on bringing your wounded pride, do try to keep it out of the way. My room isn't terribly large.\"",
+    "triggers": [
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "respect",
+          "value": 2
+        }
+      },
+      {
+        "triggerType": "relation_parameter",
+        "parameters": {
+          "characterKey": "emma",
+          "relationParameter": "rivalry",
+          "value": 2
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "\"Thursday evenings. It's a date.\"",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Emma raises an eyebrow.\n\n\"A training appointment, Antonio. I would hate for you to arrive with flowers and discover that I expect you to know how to counter a flying unit.\"\n\n\"Could I bring flowers and a counter?\"\n\n\"That would demonstrate admirable preparation.\"\n\nShe smiles, evidently amused despite herself.\n\n\"Excellent. Thursday evening, then. Bring a good deck, and preferably a few ideas I haven't seen before.\"\n\n\"And if I beat you?\"\n\n\"Then I shall congratulate you, study precisely how you managed it, and make absolutely certain it doesn't happen again.\"\n\nShe turns to leave, then glances back.\n\n\"Oh, and Antonio?\"\n\n\"Yes?\"\n\n\"Thank you. It's surprisingly difficult to find someone worth losing to.\"\n\nFor one fleeting moment, her smile is entirely sincere.\n\n\"Not that I intend to make a habit of it.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_weekly_training_accepted"
+            }
+          },
+          {
+            "type": "schedule_activity",
+            "parameters": {
+              "activity": {
+                "type": "training",
+                "participants": ["player", "emma"],
+                "placeKey": "emma-room"
+              },
+              "schedule": {
+                "date": {
+                  "dayOfWeek": 4,
+                  "period": "evening"
+                },
+                "recurrence": {
+                  "daysOfWeek": [4],
+                  "period": "evening"
+                }
+              }
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "emma_memory_training_partner",
+              "type": "memory",
+              "text": "\"I've been reviewing our last training session,\" Emma tells you. \"I believe I've identified a weakness in your strategy.\" You suggest that she might simply be upset about losing. \"On the contrary. Losing to you is immensely educational.\" She pauses. \"Admittedly, I would prefer a less expensive education.\"",
+              "knownByNpcKeys": ["emma"]
+            }
+          }
+        ]
+      },
+      {
+        "text": "\"I'll have to decline. I value my Thursday evenings.\"",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Emma tilts her head, studying you for a moment.\n\n\"Really? How disappointing. I'd already started planning several particularly instructive defeats for you.\"\n\n\"I'm sure you'll find someone else.\"\n\n\"Possibly. Though finding someone willing to argue with me quite so enthusiastically may prove difficult.\"\n\nShe adjusts her books and gives you a small, resigned smile.\n\n\"Very well. I suppose I shall have to continue improving without your assistance. A terrible burden, but I've overcome worse.\"\n\nShe starts to leave, then turns back.\n\n\"Do let me know if you change your mind about training together. Until then, I expect you to keep practicing. It would be terribly unsporting of you to fall behind.\""
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "emma_weekly_training_declined"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "emma_memory_training_declined",
+              "type": "memory",
+              "text": "\"Still protecting your Thursday evenings, Antonio?\" Emma asks with an innocent expression. \"I've been forced to practice against my own decks. They're formidable opponents, naturally, but their conversation leaves something to be desired.\" She smiles. \"The invitation stands, should you ever develop a taste for proper competition.\"",
+              "knownByNpcKeys": ["emma"]
+            }
+          }
+        ]
+      }
+    ],
+    "title": "A Worthy Opponent",
+    "characterArc": "emma",
+    "image": "emma_weekly_training_invitation.jpg",
+    "imageSize": "medium",
+    "manualTrigger": "Emma seems to have a proposition for you."
+  },
+  {
+    "key": "emma_unnecessary_distraction",
+    "title": "An Unnecessary Distraction",
+    "text": "You arrive at the classroom a little earlier than usual, expecting to enjoy a few minutes of peace before Professor Glützenbaum begins his daily assault on the mysteries of artificery.\n\nUnfortunately, someone has beaten you to it.\n\nEmma is sitting at her usual desk, surrounded by a carefully organized assortment of cards, notes, and small jars of magical ingredients. She's examining a half-finished enchantment with the intense concentration of someone attempting to extract a confession from a particularly stubborn criminal.\n\n\"Good morning, Emma.\"\n\n\"Morning, Antonio.\"\n\nShe doesn't look up.\n\n\"Working on something interesting?\"\n\n\"Very.\"\n\nA few seconds pass.\n\n\"Would you care to elaborate?\"\n\n\"Not especially.\"\n\nWell. A promising start.\n\nYou pull up a chair beside her. Emma finally raises her eyes, giving you a look that suggests she's noticed your arrival approximately three minutes ago and has been patiently waiting for you to take the hint.\n\n\"Antonio, much as I appreciate your boundless curiosity, I'm trying to finish this before class.\"\n\n\"Perhaps I could help?\"\n\n\"How thoughtful. Can you make the next fifteen minutes last half an hour?\"\n\nYou consider the question. Time manipulation is rather beyond your current abilities.\n\n\"Then I'm afraid you'll have to settle for admiring my work in silence.\"\n\nShe returns to her cards, though the faint smile at the corner of her mouth suggests she isn't quite as annoyed as she pretends.\n\n{{smittenThought}}\n\nThere must be _something_ you can do to justify staying a little longer.",
+    "passages": {
+      "smittenThought": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "You are under Emma's spell"
+                }
+              }
+            ],
+            "text": "You could, of course, simply leave her alone. That would be the sensible thing to do. Unfortunately, your judgment becomes somewhat unreliable whenever Emma is within conversational distance. A deeply concerning condition, particularly for someone studying a discipline that demands precision and rational thought."
+          }
+        ],
+        "fallback": "You could leave her to her work. On the other hand, you've rather enjoyed your recent conversations with Emma, even if a surprising number of them involve her pointing out your shortcomings. Surely you can invent a legitimate reason to stay."
+      }
+    },
+    "triggers": [
+      {
+        "triggerType": "activity_type",
+        "parameters": {
+          "activityType": "class"
+        }
+      },
+      {
+        "triggerType": "activity_history",
+        "parameters": {
+          "characterKey": "emma",
+          "activityType": "hangout",
+          "value": 2
+        }
+      },
+      {
+        "triggerType": "character_present",
+        "parameters": {
+          "characterKey": "emma"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "\"Here, perhaps this will help.\"",
+        "triggers": [
+          {
+            "triggerType": "resource_owned",
+            "parameters": {
+              "resourceType": "magic_dust",
+              "value": 1
+            }
+          }
+        ],
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You notice that the little jar of magic dust beside Emma is almost empty.\n\n\"Running short?\"\n\n\"A little. I'll fetch more after class.\"\n\nYou reach into your bag and produce a small pouch of your own.\n\n\"Here. Take some of mine.\"\n\nEmma looks up, surprised.\n\n\"Antonio, you don't have to—\"\n\n\"I know. I've got enough for what I'm working on.\"\n\nShe hesitates, then accepts the pouch.\n\n\"Thank you. That's genuinely helpful.\"\n\nShe tips a little dust into the enchantment and carefully completes the pattern. A faint shimmer runs across the card before settling into a stable glow.\n\n\"There. Much better.\"\n\nShe examines the result with evident satisfaction, then turns to you.\n\n\"You know, I was planning to give this one a proper trial, but I already have several similar cards. Perhaps you'd make better use of it.\"\n\nShe lays three cards before you.\n\n\"Choose one. Consider it a fair exchange.\"\n\n\"You don't need to give me anything.\"\n\n\"Of course I don't. But I prefer to repay my debts before my creditors start charging interest.\"\n\nShe smiles warmly.\n\n\"And besides, I'd rather you put that card to good use. It'll make defeating you all the more satisfying.\""
+            }
+          },
+          {
+            "type": "add_resource",
+            "parameters": {
+              "resourceType": "magic_dust",
+              "amount": -1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "offer_card_gifts",
+            "parameters": {
+              "count": 3,
+              "poolKeys": ["emma", "base"]
+            }
+          }
+        ],
+        "nextNode": "closing"
+      },
+      {
+        "text": "\"I think I see a way to improve that.\"",
+        "attributeCheck": {
+          "attribute": "intelligence",
+          "difficulty": "medium",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You lean forward to examine the unfinished enchantment.\n\n\"You're channeling the secondary effect through the same binding as the first.\"\n\n\"Yes. That is generally how bindings work.\"\n\n\"Except the second effect doesn't need the full channel. Couldn't you split it here and use the smaller circuit?\"\n\nEmma opens her mouth to reply, then stops.\n\nShe looks down at the card.\n\n\"Hmm.\"\n\nA rather encouraging sound.\n\nShe takes a quill and sketches a modification. You watch as her expression shifts from skepticism to genuine interest.\n\n\"That would reduce the strain on the primary enchantment...\" she murmurs. \"And leave enough capacity for an additional effect.\"\n\nShe considers the drawing for another moment, then looks at you.\n\n\"That's actually quite clever, Antonio.\"\n\nYou wait for the inevitable qualification.\n\nNone comes.\n\nEmma seems to notice your expression.\n\n\"What?\"\n\n\"Nothing. I'm just enjoying the moment.\"\n\n\"Good heavens. Is this the first time anyone has told you that you've had a good idea?\"\n\n\"First time you've done it without immediately explaining why yours was better.\"\n\n\"Well, don't become accustomed to it.\"\n\nShe laughs and reaches for a small collection of finished cards.\n\n\"Here. You've earned something for your contribution.\"\n\nShe spreads three cards on the desk.\n\n\"Choose one. And thank you, Antonio. I might have wasted the entire morning on that binding.\"\n\n\"You're welcome.\"\n\n\"Now, if you don't mind, I'd like to finish it before the professor arrives.\"\n\nA pause.\n\n\"Using _our_ solution, apparently.\""
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            },
+            {
+              "type": "offer_card_gifts",
+              "parameters": {
+                "count": 3,
+                "poolKeys": ["emma", "base"]
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You study the card for a moment.\n\n\"Wouldn't it work better if you moved that binding to the other side?\"\n\nEmma glances at the pattern.\n\n\"No.\"\n\n\"Are you sure?\"\n\n\"Quite.\"\n\n\"Because it seems to me—\"\n\n\"Antonio.\" She turns the card toward you and points to a series of tiny symbols. \"That binding is stabilizing the entire enchantment. Moving it would cause the secondary effect to discharge into the primary circuit.\"\n\n\"Which would be bad?\"\n\n\"Only if you consider setting fire to the desk a bad thing.\"\n\nYou look at the symbols again.\n\nAh. Yes. There they are.\n\n\"I was testing you.\"\n\n\"Naturally.\"\n\nEmma gives you a look of exaggerated admiration.\n\n\"And I passed, I hope?\"\n\n\"With distinction.\"\n\nShe smiles and returns to her work. A moment later, she seems to reconsider something.\n\n\"Although I suppose I should encourage such enthusiasm.\"\n\nShe selects three cards from her collection and lays them on the table.\n\n\"Here. Choose one. Perhaps studying a properly constructed enchantment will help you recognize one next time.\"\n\n\"A teaching aid?\"\n\n\"Precisely. I consider it an investment in the quality of my future opponents.\""
+              }
+            },
+            {
+              "type": "offer_card_gifts",
+              "parameters": {
+                "count": 3,
+                "poolKeys": ["emma", "base"]
+              }
+            }
+          ]
+        },
+        "nextNode": "closing"
+      },
+      {
+        "text": "\"Surely you can do better than that.\"",
+        "attributeCheck": {
+          "attribute": "intelligence",
+          "difficulty": "medium",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You study Emma's unfinished card with an expression of profound disappointment.\n\n\"Hmm. I expected better.\"\n\nHer quill stops moving.\n\n\"Did you?\"\n\n\"From the Academy's most promising student? Certainly.\"\n\nEmma slowly turns toward you.\n\n\"Do enlighten me, Antonio. I'm always eager to learn from the great masters.\"\n\nYou point to a small section of the enchantment.\n\n\"Well, for a start, that secondary binding is terribly inefficient. Unless, of course, you're planning to power it with an entire sack of magic dust.\"\n\nEmma looks at the card. Then at you.\n\nThen back at the card.\n\n\"That,\" she says carefully, \"is an interesting observation.\"\n\n\"Thank you. I do try.\"\n\n\"And entirely correct, unfortunately.\"\n\nShe picks up her quill and begins modifying the pattern.\n\nYou lean back, enjoying a rare and beautiful victory.\n\n\"I suppose even the great Emma Delamain has room for improvement.\"\n\n\"Naturally. Unlike you, I have never claimed to be infallible.\"\n\n\"Neither have I!\"\n\n\"No, you merely behave as though the possibility of being wrong has never occurred to you.\"\n\nShe finishes the correction, inspects the card, and gives a satisfied nod.\n\n\"Very well, Fibonacci. You've caught me out.\"\n\nShe reaches into her collection and produces three cards.\n\n\"Choose one.\"\n\n\"What's this?\"\n\n\"A reward for your extraordinary powers of observation.\"\n\n\"How generous.\"\n\n\"Don't flatter yourself. I'm giving you better cards because I'm tired of hearing excuses when I beat you.\"\n\nYou grin.\n\n\"Afraid I'll win if I have a decent deck?\"\n\nEmma's smile becomes positively dangerous.\n\n\"Thursday evenings are going to be very entertaining, aren't they?\""
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            },
+            {
+              "type": "offer_card_gifts",
+              "parameters": {
+                "count": 3,
+                "poolKeys": ["emma", "base"]
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You lean over Emma's work and shake your head gravely.\n\n\"Oh dear.\"\n\nShe doesn't look up.\n\n\"Something wrong, Antonio?\"\n\n\"I'm afraid so. That enchantment is rather... elementary, wouldn't you say?\"\n\n\"Elementary?\"\n\n\"Yes. I would have expected something more sophisticated from you.\"\n\nEmma sets down her quill.\n\n\"How interesting. What would you suggest?\"\n\nYou examine the card, searching desperately for some flaw that might justify your opening remark.\n\n\"Well, perhaps... the binding here could be improved?\"\n\n\"How?\"\n\n\"By changing its configuration.\"\n\n\"To what?\"\n\nAn excellent question. One you had rather hoped she wouldn't ask.\n\nEmma folds her hands and waits.\n\nYou begin to suspect you've made a tactical error.\n\n\"Actually, on closer inspection, it's quite good.\"\n\n\"How reassuring.\"\n\nHer expression is perfectly composed, but her eyes are sparkling with amusement.\n\n\"Antonio, if you intend to criticize my work, I expect you to come armed with something more substantial than an impressive frown.\"\n\n\"Constructive criticism is an art.\"\n\n\"Indeed. And I look forward to the day you master it.\"\n\nShe returns to her cards, then pauses.\n\n\"Come to think of it, perhaps I can help you.\"\n\nShe selects three finished cards and lays them before you.\n\n\"Choose one.\"\n\n\"You're giving me a card?\"\n\n\"Consider it remedial education. Study the enchantments carefully. Perhaps next time you'll be able to identify a genuine flaw.\"\n\n\"That's very kind of you.\"\n\n\"Oh, don't thank me. I have a selfish motive.\"\n\n\"Which is?\"\n\nShe smiles sweetly.\n\n\"I'd hate for our rivalry to become one-sided.\""
+              }
+            },
+            {
+              "type": "offer_card_gifts",
+              "parameters": {
+                "count": 3,
+                "poolKeys": ["emma", "base"]
+              }
+            }
+          ]
+        },
+        "nextNode": "closing"
+      }
+    ],
+    "nodes": {
+      "closing": {
+        "text": "The professor enters the classroom just as you finish examining your new acquisition.\n\nEmma gathers her notes and gives you a sidelong glance.\n\n\"Well, Antonio, that was certainly an interesting interruption.\"\n\n\"You're welcome.\"\n\n\"I didn't say it was a _useful_ interruption.\"\n\nShe pauses, then allows herself a small smile.\n\n\"Though I suppose it wasn't entirely unwelcome.\"\n\nShe turns toward the lectern, leaving you with a new card and the distinct impression that your morning has been rather more successful than you had any right to expect.",
+        "optionTemplates": []
+      }
+    },
+    "characterArc": "emma",
+    "image": "emma_unnecessary_distraction.jpg",
+    "imageSize": "medium"
+  },
+  {
     "key": "happy_little_accident",
     "text": "Your third artificery lesson is progressing remarkably well. You've arranged your ingredients, prepared your pigments, and even managed to follow most of the professor's instructions. At this rate, you might produce something almost respectable.\n\nThen your elbow catches a jar.\n\nA cascade of shimmering blue powder spills across the workbench, mixing with your carefully prepared ingredients. You grab for a cloth, knock over a second jar, and watch in horror as the entire mixture begins to glow.\n\nThere is a sharp pop, a flash of blue light, and the unmistakable smell of burnt cinnamon.\n\nWhen the smoke clears, a perfectly formed card lies in the middle of the table.\n\nYou pick it up cautiously. The enchantments woven into its surface are unlike anything you've seen before: intricate, powerful, and somehow perfectly balanced.\n\nThe professor approaches, examines your creation, and falls silent.\n\n\"Fibonacci. How exactly did you achieve this?\"\n\nAn excellent question. One you would very much like to know the answer to yourself.\n\n\"Remarkable,\" the professor murmurs. \"Quite remarkable. You must document your procedure.\"\n\nYes. Of course. Your procedure.\n\nYou glance at the empty jars, the stained workbench, and the smoking remains of your notes.\n\nThis could be difficult.",
     "triggers": [

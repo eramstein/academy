@@ -30,6 +30,7 @@ export function nextPeriod() {
     gs.time.period = DayPeriod.Morning;
     gs.time.day += 1;
     gs.league.playedToday = false;
+    gs.time.tradedCardsToday = false;
   } else {
     gs.time.period = PERIODS[index + 1];
   }
@@ -45,10 +46,14 @@ export function isWeekDay(day: number): boolean {
 }
 
 export function goToPeriod(day: number, period: DayPeriod) {
+  const dayChanged = day !== gs.time.day;
   gs.time.day = day;
   gs.time.period = period;
   gs.time.usedActions = {};
   gs.time.hungOutWith = [];
   gs.time.longActionPerformed = false;
+  if (dayChanged) {
+    gs.time.tradedCardsToday = false;
+  }
   startScene();
 }

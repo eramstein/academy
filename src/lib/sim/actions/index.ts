@@ -10,3 +10,4 @@ export * from './wait';
 export * from './enchanting';
 export * from './artificery';
 export * from './craft-artifact';
+export * from './trade';

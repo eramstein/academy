@@ -48,6 +48,7 @@ import {
   socialize,
   type SocializeParameters,
 } from './socialize';
+import { getTradeCardActions, tradeCards, type TradeCardsParameters } from './trade';
 import { getShopActions, transaction, type TransactionParameters } from './transaction';
 import { wait } from './wait';
 
@@ -66,6 +67,7 @@ export function getPossibleActions(): Action[] {
   actions.push(...getJobActions());
   actions.push(...getRelationalActions());
   actions.push(...getLeagueMatchActions());
+  actions.push(...getTradeCardActions());
 
   // check if the number of actions is limited by period
   let filteredActions = actions.filter((action) => isActionUnderPeriodLimit(action));
@@ -167,4 +169,5 @@ const actionFunctions: Record<
   [ActionType.Invite]: (parameters) => invite(parameters as InviteParameters),
   [ActionType.CraftArtifact]: (parameters) =>
     craftArtifact(parameters as CraftArtifactParameters),
+  [ActionType.TradeCards]: (parameters) => tradeCards(parameters as TradeCardsParameters),
 };
