@@ -12,6 +12,7 @@
     RelationTag,
     ResourceType,
     SubscriptionType,
+    type Ante,
     type EventEffect,
     type Job,
     type Schedule,
@@ -163,7 +164,7 @@
       case EventEffectType.UseFocus:
         return { amount: 1 };
       case EventEffectType.StartMatch:
-        return { opponentKey: '', playerDeckKey: '', isLeagueMatch: false };
+        return { opponentKey: '', playerDeckKey: '', isLeagueMatch: false, ante: undefined };
       case EventEffectType.NewLeagueSeason:
         return { winnerKey: null };
       case EventEffectType.AddPossession:
@@ -281,6 +282,56 @@
                 activity: next.activity,
                 schedule: withoutEmptyScheduleFlags(next.schedule),
               },
+            }
+          : effect
+      )
+    );
+  }
+
+  function parseCardIds(value: string): string[] {
+    return value
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean);
+  }
+
+  function anteArgs(effect: EventEffect): Ante {
+    const ante = effect.parameters.ante as Ante | undefined;
+    return {
+      gold: {
+        player: ante?.gold?.player ?? 0,
+        opponent: ante?.gold?.opponent ?? 0,
+      },
+      cards: {
+        player: ante?.cards?.player ?? [],
+        opponent: ante?.cards?.opponent ?? [],
+      },
+    };
+  }
+
+  function writeAnteArgs(index: number, next: Ante) {
+    const goldPlayer = next.gold?.player ?? 0;
+    const goldOpponent = next.gold?.opponent ?? 0;
+    const cardsPlayer = next.cards?.player ?? [];
+    const cardsOpponent = next.cards?.opponent ?? [];
+    const hasGold = goldPlayer > 0 || goldOpponent > 0;
+    const hasCards = cardsPlayer.length > 0 || cardsOpponent.length > 0;
+    const ante: Ante | undefined =
+      hasGold || hasCards
+        ? {
+            ...(hasGold ? { gold: { player: goldPlayer, opponent: goldOpponent } } : {}),
+            ...(hasCards ? { cards: { player: cardsPlayer, opponent: cardsOpponent } } : {}),
+          }
+        : undefined;
+    update(
+      effects.map((effect, i) =>
+        i === index
+          ? {
+              ...effect,
+              parameters: (() => {
+                const { ante: _omit, ...rest } = effect.parameters;
+                return ante ? { ...rest, ante } : rest;
+              })(),
             }
           : effect
       )
@@ -436,6 +487,7 @@
         {@const args =
           effect.type === EventEffectType.ScheduleActivity ? scheduleArgs(effect) : null}
         {@const job = effect.type === EventEffectType.GetJob ? jobArgs(effect) : null}
+        {@const ante = effect.type === EventEffectType.StartMatch ? anteArgs(effect) : null}
         <li class="effect-item">
           <div class="effect-row">
             <select
@@ -553,6 +605,68 @@
                 />
                 League match
               </label>
+              {#if ante}
+                <input
+                  class="input narrow"
+                  type="number"
+                  min="0"
+                  value={ante.gold?.player ?? 0}
+                  aria-label="Ante gold player"
+                  title="Ante gold (player)"
+                  oninput={(e) =>
+                    writeAnteArgs(i, {
+                      ...ante,
+                      gold: {
+                        player: Number((e.currentTarget as HTMLInputElement).value),
+                        opponent: ante.gold?.opponent ?? 0,
+                      },
+                    })}
+                />
+                <input
+                  class="input narrow"
+                  type="number"
+                  min="0"
+                  value={ante.gold?.opponent ?? 0}
+                  aria-label="Ante gold opponent"
+                  title="Ante gold (opponent)"
+                  oninput={(e) =>
+                    writeAnteArgs(i, {
+                      ...ante,
+                      gold: {
+                        player: ante.gold?.player ?? 0,
+                        opponent: Number((e.currentTarget as HTMLInputElement).value),
+                      },
+                    })}
+                />
+                <input
+                  class="input arg"
+                  value={(ante.cards?.player ?? []).join(', ')}
+                  placeholder="ante cards player (ids)"
+                  aria-label="Ante cards player"
+                  oninput={(e) =>
+                    writeAnteArgs(i, {
+                      ...ante,
+                      cards: {
+                        player: parseCardIds((e.currentTarget as HTMLInputElement).value),
+                        opponent: ante.cards?.opponent ?? [],
+                      },
+                    })}
+                />
+                <input
+                  class="input arg"
+                  value={(ante.cards?.opponent ?? []).join(', ')}
+                  placeholder="ante cards opponent (ids)"
+                  aria-label="Ante cards opponent"
+                  oninput={(e) =>
+                    writeAnteArgs(i, {
+                      ...ante,
+                      cards: {
+                        player: ante.cards?.player ?? [],
+                        opponent: parseCardIds((e.currentTarget as HTMLInputElement).value),
+                      },
+                    })}
+                />
+              {/if}
             {:else if effect.type === EventEffectType.NewLeagueSeason}
               <input
                 class="input arg"

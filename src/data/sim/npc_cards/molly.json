@@ -302,5 +302,152 @@
       }
     ],
     "poolKeys": ["molly", "event"]
+  },
+  {
+    "id": "hobbit_gardener",
+    "name": "Hobbit Gardener",
+    "imageFileName": "hobbit_gardener",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["halfing"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "summon",
+              "args": {
+                "summonedUnit": {
+                  "id": "shrubbery",
+                  "name": "Shrubbery",
+                  "imageFileName": "shrubbery",
+                  "type": "unit",
+                  "cost": 1,
+                  "power": 0,
+                  "maxHealth": 1,
+                  "retaliate": 0,
+                  "colors": [
+                    {
+                      "color": "green",
+                      "count": 1
+                    }
+                  ],
+                  "unitTypes": ["plant"]
+                },
+                "isRespawn": true
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "Before Moving",
+          "range": {
+            "self": true
+          }
+        }
+      }
+    ],
+    "poolKeys": ["molly", "base"]
+  },
+  {
+    "id": "well_fed_hobbit",
+    "name": "Well Fed Hobbit",
+    "imageFileName": "well_fed_hobbit",
+    "type": "unit",
+    "cost": 2,
+    "power": 0,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["halfing"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "allies": true,
+            "adjacent": true
+          }
+        }
+      }
+    ],
+    "poolKeys": ["molly", "base"]
+  },
+  {
+    "id": "baston",
+    "name": "Baston!",
+    "imageFileName": "baston",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "staticKeyword",
+          "args": {
+            "abilityName": "baston",
+            "keyword": "cleave"
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "poolKeys": ["molly", "base"]
+  },
+  {
+    "id": "stampeding_ox",
+    "name": "Stampeding Ox",
+    "imageFileName": "stampeding_ox",
+    "type": "unit",
+    "cost": 7,
+    "power": 4,
+    "maxHealth": 5,
+    "retaliate": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "cleave": true
+    },
+    "poolKeys": ["molly", "base"]
   }
 ]

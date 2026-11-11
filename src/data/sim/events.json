@@ -10750,5 +10750,129 @@
     "characterArc": "the-dude",
     "image": "the_dude_first_year_gathering.jpg",
     "imageSize": "large"
+  },
+  {
+    "key": "farid_friendly_wager",
+    "title": "A Friendly Wager",
+    "text": "\"Antonio! Just the man I was looking for.\"\n\nFarid approaches with a grin that suggests he has already decided how this conversation will end.\n\n\"I've been assessing the talent around here. Frankly, I'm beginning to understand why my old Academy had such a good reputation.\"\n\nHow tactful of him.\n\n\"Anyway, fancy a match? Let's make it interesting. If you win, I'll give you a hundred gold. If I win, you owe me a favor. Nothing scandalous, I promise.\"\n\nHe pauses.\n\n\"Well, nothing terribly scandalous.\"",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "day": 2
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "afternoon"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Accept the wager",
+        "nextNode": "wager_result",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Excellent!\" Farid produces his deck with suspicious speed. \"I knew you had some courage. Let's see if you have any talent to accompany it.\""
+            }
+          },
+          {
+            "type": "start_match",
+            "parameters": {
+              "opponentKey": "farid",
+              "ante": {
+                "gold": {
+                  "player": 0,
+                  "opponent": 100
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "text": "Decline",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Afraid of losing?\"\n\nFarid shrugs theatrically.\n\n\"Never mind. I suppose I'll have to find someone else willing to improve my afternoon.\""
+            }
+          }
+        ]
+      }
+    ],
+    "nodes": {
+      "wager_result": {
+        "text": "{{ result }}",
+        "passages": {
+          "result": {
+            "variants": [
+              {
+                "triggers": [
+                  {
+                    "triggerType": "last_match_won",
+                    "parameters": {}
+                  }
+                ],
+                "text": "Farid stares at his defeated cards, then bursts out laughing.\n\n\"Well! Perhaps this Academy isn't entirely hopeless after all.\"\n\nHe tosses you a purse of coins.\n\n\"A hundred gold, as promised. Don't spend it all celebrating. I intend to win it back.\""
+              }
+            ],
+            "fallback": "Farid leans back, looking thoroughly pleased with himself.\n\n\"Splendid! One favor owed to Farid El-Khouri. I'll think of something suitably entertaining.\"\n\nThat is precisely what worries you."
+          }
+        },
+        "optionTemplates": [
+          {
+            "text": "Take the purse",
+            "triggers": [
+              {
+                "triggerType": "last_match_won",
+                "parameters": {}
+              }
+            ],
+            "effects": [
+              {
+                "type": "add_gold",
+                "parameters": {
+                  "amount": 100
+                }
+              },
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "farid_wager_won"
+                }
+              }
+            ]
+          },
+          {
+            "text": "Accept the debt",
+            "triggers": [
+              {
+                "triggerType": "last_match_lost",
+                "parameters": {}
+              }
+            ],
+            "effects": [
+              {
+                "type": "add_story_tag",
+                "parameters": {
+                  "tag": "farid_favor_owed"
+                }
+              }
+            ]
+          }
+        ],
+        "title": "Settling the wager",
+        "emotion": "neutral"
+      }
+    },
+    "characterArc": "farid",
+    "emotion": "proud",
+    "manualTrigger": "Farid has a challenge"
   }
 ]

@@ -350,8 +350,14 @@ function checkTrigger(where, trigger) {
       break;
     case 'resource_owned':
       checkOneOf(where, 'resourceType', params.resourceType, resourceTypes);
-      if (typeof params.value !== 'number' || !Number.isInteger(params.value) || params.value === 0) {
-        errors.push(`${where}: value must be a non-zero integer (positive = at least, negative = at most)`);
+      if (
+        typeof params.value !== 'number' ||
+        !Number.isInteger(params.value) ||
+        params.value === 0
+      ) {
+        errors.push(
+          `${where}: value must be a non-zero integer (positive = at least, negative = at most)`
+        );
       }
       break;
     case 'llm_features':
@@ -747,6 +753,47 @@ function checkEffect(where, effect) {
       }
       if (parameters.isLeagueMatch !== undefined && typeof parameters.isLeagueMatch !== 'boolean') {
         errors.push(`${where}: isLeagueMatch must be a boolean`);
+      }
+      if (parameters.ante !== undefined) {
+        if (
+          !parameters.ante ||
+          typeof parameters.ante !== 'object' ||
+          Array.isArray(parameters.ante)
+        ) {
+          errors.push(`${where}: ante must be an object`);
+        } else {
+          const ante = parameters.ante;
+          if (ante.gold !== undefined) {
+            if (!ante.gold || typeof ante.gold !== 'object' || Array.isArray(ante.gold)) {
+              errors.push(`${where}: ante.gold must be an object`);
+            } else {
+              if (typeof ante.gold.player !== 'number') {
+                errors.push(`${where}: ante.gold.player must be a number`);
+              }
+              if (typeof ante.gold.opponent !== 'number') {
+                errors.push(`${where}: ante.gold.opponent must be a number`);
+              }
+            }
+          }
+          if (ante.cards !== undefined) {
+            if (!ante.cards || typeof ante.cards !== 'object' || Array.isArray(ante.cards)) {
+              errors.push(`${where}: ante.cards must be an object`);
+            } else {
+              if (
+                !Array.isArray(ante.cards.player) ||
+                ante.cards.player.some((id) => typeof id !== 'string')
+              ) {
+                errors.push(`${where}: ante.cards.player must be a string[]`);
+              }
+              if (
+                !Array.isArray(ante.cards.opponent) ||
+                ante.cards.opponent.some((id) => typeof id !== 'string')
+              ) {
+                errors.push(`${where}: ante.cards.opponent must be a string[]`);
+              }
+            }
+          }
+        }
       }
       break;
     case 'start_interaction':

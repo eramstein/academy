@@ -98,6 +98,12 @@ export interface OngoingBattle {
   opponentCollection?: CardTemplate[];
   /** Display name when the opponent is not an NPC (e.g. place guardians). */
   opponentDisplayName?: string;
+  ante?: Ante;
+}
+
+export interface Ante {
+  gold?: { player: number; opponent: number };
+  cards?: { player: string[]; opponent: string[] };
 }
 
 export interface League {

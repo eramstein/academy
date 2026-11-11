@@ -1,4 +1,4 @@
-import type { Deck, Npc } from '../_model';
+import type { Ante, Deck, Npc } from '../_model';
 import { bs, saveStateToLocalStorage } from '../_state';
 import { gs } from '../_state/main.svelte';
 import { getRandomFromArray } from '../_utils/random';
@@ -19,7 +19,8 @@ export async function initOngoingBattle(
   foe: Npc,
   deck: Deck,
   requestedFoeDeck?: Deck,
-  isLeagueMatch: boolean = false
+  isLeagueMatch: boolean = false,
+  ante?: Ante
 ) {
   const foeDeck = requestedFoeDeck || pickNpcDeck(foe.key);
   gs.ongoingBattle = {
@@ -27,6 +28,7 @@ export async function initOngoingBattle(
     playerDeck: deck,
     opponentDeck: foeDeck,
     isLeagueMatch,
+    ...(ante ? { ante } : {}),
   };
   initBattle(foe.key, deck, foeDeck);
   // Persist before any battle turns so reload does not drop back to a pre-match scene

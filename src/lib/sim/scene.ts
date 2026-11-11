@@ -298,6 +298,13 @@ export async function selectOption(option: EventOption) {
     saveStateToLocalStorage();
     return;
   }
+  // start_match was authored but did not open a battle — do not enter a post-match
+  // node with a stale lastMatchWon from an earlier fight.
+  if (effectsIncludeStartMatch(appliedEffects)) {
+    deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
+    if (!sceneWaitingOnEventChoice()) setSceneEvents();
+    return;
+  }
   if (nextNode && template) {
     deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
     presentEventNode(template, nextNode);
