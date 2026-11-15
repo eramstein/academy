@@ -4923,7 +4923,7 @@
     "cheapImage": false,
     "colors": ["blue"],
     "keywords": [],
-    "actions": ["forceMoveUnit", "drawCards"]
+    "actions": ["forceMoveUnit"]
   },
   {
     "name": "Tesla Tower",

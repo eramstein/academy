@@ -14,6 +14,7 @@
   import EventEditor from './tools/event-builder/EventEditor.svelte';
   import FlavorBrowser from './tools/flavor-templates/FlavorBrowser.svelte';
   import CardBuilder from './tools/card-builder/CardBuilder.svelte';
+  import NpcCardBrowser from './tools/npc-cards/NpcCardBrowser.svelte';
 
   let isLoading = $state(true);
 
@@ -54,6 +55,8 @@
       <FlavorBrowser />
     {:else if uiState.currentView === UiView.CardBuilder}
       <CardBuilder />
+    {:else if uiState.currentView === UiView.NpcCardBrowser}
+      <NpcCardBrowser />
     {:else if uiState.currentView === UiView.Settings}
       <Settings />
     {:else}

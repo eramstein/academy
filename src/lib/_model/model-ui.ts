@@ -111,6 +111,7 @@ export enum UiView {
   EventEditor = 'EventEditor',
   FlavorBrowser = 'FlavorBrowser',
   CardBuilder = 'CardBuilder',
+  NpcCardBrowser = 'NpcCardBrowser',
   Settings = 'Settings',
   Battle = 'Battle',
 }

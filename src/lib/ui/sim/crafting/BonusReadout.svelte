@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ResourceType } from '@/lib/_model/enums-sim';
+  import { ResourceType } from '@/lib/_model/enums-sim';
   import { percentThreshold } from '@/lib/sim/cards/crafting-skills';
   import { getAssetPath } from '@/lib/_utils/asset-paths';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
@@ -407,7 +407,12 @@
     {@render die()}
   {/if}
   {#if resourceType}
-    <span class="icon" class:badge={layout === 'plaque'}>
+    <span
+      class="icon"
+      class:badge={layout === 'plaque'}
+      class:inspiration={layout === 'plaque' && resourceType === ResourceType.MagicDust}
+      class:mastery={layout === 'plaque' && resourceType === ResourceType.Silver}
+    >
       <ResourceIcon type={resourceType} />
     </span>
   {:else if icon}
@@ -808,6 +813,14 @@
       brightness(0.9)
       contrast(0.95)
       drop-shadow(0 1px 1px rgba(42, 24, 16, 0.35));
+  }
+
+  .bonus.plaque .icon.badge.inspiration {
+    transform: translate(calc(-50% - 2px), calc(-50% - 5px));
+  }
+
+  .bonus.plaque .icon.badge.mastery {
+    transform: translate(-50%, calc(-50% - 3px));
   }
 
   .bonus.plaque .head {
