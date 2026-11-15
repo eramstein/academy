@@ -8,6 +8,7 @@
 
   const flourishPath = getAssetPath('images/ui/decorations/page-flourish.svg');
   const starPath = getAssetPath('images/ui/decorations/page-star.svg');
+  const parchmentPath = getAssetPath('images/ui/backgrounds/parchment-light.png');
 
   const selectingNextPlace = $derived(gs.scene.selectingNextPlace);
   const pendingPeriodEvent = $derived(gs.scene.pendingPeriodEvent);
@@ -333,7 +334,10 @@
   }
 </script>
 
-<div class="scene" style="--page-flourish: url('{flourishPath}'); --page-star: url('{starPath}');">
+<div
+  class="scene"
+  style="--page-flourish: url('{flourishPath}'); --page-star: url('{starPath}'); --parchment: url('{parchmentPath}');"
+>
   <article
     class="book"
     class:height-transition={heightTransition && !reduceMotion}
