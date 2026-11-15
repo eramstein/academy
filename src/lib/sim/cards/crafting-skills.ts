@@ -21,8 +21,6 @@ import { formatKeywordLabel, KEYWORD_KEYS, NUMERIC_KEYWORDS } from './keywords';
 
 export const SKILL_RATE = 0.25;
 export const CONJURE_OPTION_BASE = 2;
-export const DISCOVERY_BASE = 0.2;
-export const DISCOVERY_PER_INSPIRATION = 0.2;
 /** Invoke ingredient cap / enchant mana delta ceiling. */
 export const INSPIRATION_CAP = 10;
 
@@ -56,7 +54,7 @@ export interface CraftProfile {
   scope: number;
   /** Conjure: base 2 visions plus the inspiration formula. */
   conjureOptions: PointRoll;
-  /** Conjure: chance one option includes an unknown keyword or action. */
+  /** Conjure: one option always includes an unknown keyword or action. */
   discoveryChance: number;
 }
 
@@ -134,14 +132,6 @@ export function formatSkillSource(stack: SkillStack): string {
   return `Skill ${stack.skill}`;
 }
 
-/** How discovery chance is built from inspiration (base + per point). */
-export function discoverySource(inspiration: SkillStack): string {
-  const base = `${Math.round(DISCOVERY_BASE * 100)}% base`;
-  if (inspiration.total <= 0) return base;
-  const per = Math.round(DISCOVERY_PER_INSPIRATION * 100);
-  return `${base} · +${per}% × ${formatSkillSource(inspiration)}`;
-}
-
 export function craftProfile(
   skills: CardCraftingSkills | undefined,
   resources: { type: ResourceType; count: number }[] | undefined,
@@ -156,7 +146,6 @@ export function craftProfile(
     'magic dust',
     INSPIRATION_CAP
   );
-  const discovery = Math.min(1, DISCOVERY_BASE + DISCOVERY_PER_INSPIRATION * inspiration.total);
   return {
     mode,
     mastery,
@@ -166,7 +155,7 @@ export function craftProfile(
     knowledge: pointRoll(erudition.total * SKILL_RATE),
     scope: inspiration.total,
     conjureOptions: pointRoll(CONJURE_OPTION_BASE + inspiration.total * SKILL_RATE),
-    discoveryChance: discovery,
+    discoveryChance: 1,
   };
 }
 

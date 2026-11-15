@@ -6,7 +6,6 @@
   import { effectiveCraftingSkills } from '@/lib/sim/artifacts';
   import {
     craftProfile,
-    discoverySource,
     displayPercentRoll,
     formatPointRoll,
     formatSkillSource,
@@ -85,7 +84,6 @@
     onAuguryBeat,
     onAuguryPrepared,
     onAuguryComplete,
-    discoveredLore = null,
     knowledgeGain = null,
     charmEntry = null,
     acceptingDrop = false,
@@ -138,8 +136,6 @@
     /** Fired as soon as Learning and Fortune are rolled, before the dice finish. */
     onAuguryPrepared?: (result: ConjurationAugury) => void;
     onAuguryComplete?: (result: ConjurationAugury) => void;
-    /** Name and icon of lore revealed on the discovery card, once it is known. */
-    discoveredLore?: { label: string; icon: string } | null;
     /** Trait raised by this ritual's erudition roll, once the visions exist. */
     knowledgeGain?: { label: string; icon: string; points: number } | null;
     /** Drop point for a charm that is about to join the orbit. */
@@ -459,9 +455,6 @@
     }
     return `Guaranteed card choices, then a chance of one more. ${formatSkillSource(profile.inspiration)}.`;
   });
-  const discoveryTip = $derived(
-    `Chance one vision includes an unknown keyword or action. ${discoverySource(profile.inspiration)}.`
-  );
   const masteryTip = $derived(
     `Guaranteed bonus budget, then a chance of one more. ${formatSkillSource(profile.mastery)}.`
   );
@@ -1641,7 +1634,6 @@
         <div class="bonus-top" class:outcome={inspirationOutcome}>
           <BonusReadout
             layout="plaque"
-            frame="long"
             resourceType={ResourceType.MagicDust}
             label="Inspiration"
             singular="Card choice"
@@ -1652,9 +1644,6 @@
             phase={inspirationPhase}
             face={inspirationFace}
             need={inspirationNeed}
-            extraChance={profile.discoveryChance}
-            extraLabel="Discovery chance"
-            extraTip={discoveryTip}
             showOutcome={inspirationOutcome}
           >
             {#snippet die()}
@@ -1663,26 +1652,14 @@
             {#snippet reward()}
               {@const choices = visionCount ?? inspirationFace}
               {@const extra = Math.max(0, choices - profile.conjureOptions.sure)}
-              {@const found = (visionDiscovery ?? -1) >= 0}
-              <div class="augury-rewards">
-                <div class="augury-reward" class:hit={extra > 0}>
-                  <img class="choice-icon" src={decksIcon} alt="" draggable="false" />
-                  <span class="reward-title">
-                    {extra > 0 ? `+${extra} Choice` : `${choices} Choices`}
-                  </span>
-                  <span class="reward-note">{extra > 0 ? 'Bonus card' : 'Visions'}</span>
-                </div>
-                <div class="augury-reward" class:hit={found} class:miss={!found}>
-                  <img src={discoveredLore?.icon ?? spiralIcon} alt="" draggable="false" />
-                  {#key discoveredLore?.label ?? (found ? 'new' : 'none')}
-                    <span class="reward-name lore">
-                      {discoveredLore?.label ?? (found ? 'Discovery' : 'Sealed')}
-                    </span>
-                  {/key}
-                  <span class="reward-note">
-                    {discoveredLore ? 'Discovery' : found ? 'One vision' : 'No discovery'}
-                  </span>
-                </div>
+              {@const shown = extra > 0 ? extra : choices}
+              <div class="masterwork" class:hit={extra > 0}>
+                <span class="masterwork-value">{extra > 0 ? `+${extra}` : choices}</span>
+                <span class="masterwork-name level-trait">
+                  <img src={decksIcon} alt="" draggable="false" />
+                  {shown === 1 ? 'Choice' : 'Choices'}
+                </span>
+                <span class="masterwork-note">{extra > 0 ? 'Bonus card' : 'Visions'}</span>
               </div>
             {/snippet}
           </BonusReadout>
@@ -2030,7 +2007,7 @@
     z-index: 3;
     display: flex;
     justify-content: center;
-    width: min(100%, 28rem);
+    width: min(22rem, 100%);
     margin: 4px auto 18px;
     padding-top: 0.35rem;
     overflow: visible;
@@ -2359,8 +2336,7 @@
     transition: opacity 0.35s ease;
   }
 
-  .masterwork,
-  .augury-rewards {
+  .masterwork {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -2382,41 +2358,10 @@
     object-fit: contain;
   }
 
-  .augury-rewards {
-    flex-direction: row;
-    justify-content: center;
-    gap: 22px;
-    margin-top: 2px;
-  }
-
-  .augury-reward {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 0;
-    flex: 1 1 0;
-    gap: 0;
-  }
-
-  .augury-reward img {
-    width: 26px;
-    height: 26px;
-    object-fit: contain;
-    margin-bottom: 1px;
-    filter: drop-shadow(0 1px 1px rgba(42, 24, 16, 0.35));
-  }
-
-  .augury-reward img.choice-icon {
-    width: 39px;
-    height: 39px;
-  }
-
   .level-trait .lore {
     animation: lore-name 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .reward-name,
-  .reward-title,
   .masterwork-value,
   .masterwork-name {
     font-weight: 700;
@@ -2425,22 +2370,6 @@
     line-height: 1.05;
   }
 
-  .reward-name {
-    font-size: 0.72rem;
-  }
-
-  .reward-title {
-    font-size: 0.92rem;
-    white-space: nowrap;
-  }
-
-  .reward-name.lore {
-    letter-spacing: 0.06em;
-    text-align: center;
-    animation: lore-name 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .reward-note,
   .masterwork-note {
     margin-top: 1px;
     font-size: 0.72rem;
@@ -2450,13 +2379,10 @@
     color: var(--color-ink-muted);
   }
 
-  .augury-reward.hit .reward-name,
-  .augury-reward.hit .reward-title,
   .masterwork.hit .masterwork-value {
     color: #2a3344;
   }
 
-  .augury-reward.miss,
   .masterwork.miss {
     opacity: 0.78;
   }
@@ -2912,7 +2838,6 @@
     .materials,
     .gauge,
     .gauge-fill,
-    .reward-name.lore,
     .prep.conjure .ingredients,
     .fortune-die-slot {
       animation: none;

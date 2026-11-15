@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { CardTemplate, UnitKeywords } from '@/lib/_model';
-  import { CardColor, ResourceType, isSpellCard, isUnitCard } from '@/lib/_model';
+  import type { CardTemplate } from '@/lib/_model';
+  import { CardColor, ResourceType } from '@/lib/_model';
   import { gs } from '@/lib/_state';
-  import { getActionTypeIconPath, getAssetPath } from '@/lib/_utils/asset-paths';
+  import { getAssetPath } from '@/lib/_utils/asset-paths';
   import {
     getConjurationOptionCount,
     type CardCreationResult,
@@ -10,13 +10,7 @@
     type ConjurationAugury,
     type SummonRevealStage,
   } from '@/lib/sim/actions';
-  import { getAbilityActionNames } from '@/lib/sim/cards/ability-templates';
-  import {
-    getActionTemplateMeta,
-    getActionTemplateNameForEffect,
-  } from '@/lib/sim/cards/action-templates';
   import type { KnowledgeGain } from '@/lib/sim/cards/crafting-skills';
-  import { formatKeywordLabel } from '@/lib/sim/cards/keywords';
   import { playSimSound } from '@/lib/sim/sound';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
@@ -64,7 +58,6 @@
   let auguryBeat = $state<RitualAuguryBeat>({ stage: 'learning', learning: null, fortune: null });
   let pickedId = $state<string | null>(null);
   let rollsReady = $state(false);
-  let discoveredLore = $state<{ label: string; icon: string } | null>(null);
   let knowledgeGain = $state<{
     label: string;
     icon: string;
@@ -74,9 +67,6 @@
   let revealTimer: ReturnType<typeof setTimeout> | undefined;
   let fadeTimer: ReturnType<typeof setTimeout> | undefined;
   let pickTimer: ReturnType<typeof setTimeout> | undefined;
-  let knownKeywords = new Set<string>();
-  let knownActions = new Set<string>();
-
   /** Colors and ingredients leave before the first die spins. */
   const FADE_MS = 620;
 
@@ -225,19 +215,6 @@
     return next;
   }
 
-  function snapshotKnowledge() {
-    knownKeywords = new Set(
-      Object.entries(gs.player.craftingKnowledge.keywords ?? {})
-        .filter(([, level]) => (level ?? 0) >= 1)
-        .map(([key]) => key)
-    );
-    knownActions = new Set(
-      Object.entries(gs.player.craftingKnowledge.actions ?? {})
-        .filter(([, level]) => (level ?? 0) >= 1)
-        .map(([key]) => key)
-    );
-  }
-
   function gainIcon(gain: KnowledgeGain): string {
     return colorPath(gain.key);
   }
@@ -263,44 +240,6 @@
       null;
   }
 
-  function loreFromCard(template: CardTemplate): { label: string; icon: string } | null {
-    if (isUnitCard(template)) {
-      for (const key of Object.keys(template.keywords ?? {}) as (keyof UnitKeywords)[]) {
-        if (!template.keywords?.[key] || knownKeywords.has(key)) continue;
-        return {
-          label: formatKeywordLabel(key),
-          icon: getAssetPath(`images/keywords/${key}.png`),
-        };
-      }
-      for (const name of (template.abilities ?? []).flatMap(getAbilityActionNames)) {
-        if (!name || knownActions.has(name)) continue;
-        return {
-          label: getActionTemplateMeta(name)?.label ?? formatKeywordLabel(name),
-          icon: getActionTypeIconPath(name),
-        };
-      }
-    }
-    if (isSpellCard(template)) {
-      for (const action of template.actions) {
-        const name = getActionTemplateNameForEffect(action.effect.name);
-        if (!name || knownActions.has(name)) continue;
-        return {
-          label: getActionTemplateMeta(name)?.label ?? formatKeywordLabel(name),
-          icon: getActionTypeIconPath(name),
-        };
-      }
-    }
-    return null;
-  }
-
-  function noteDiscoveredLore(progress: CardSummonProgress) {
-    if (discoveredLore) return;
-    const index = auguryBeat.discoveryIndex;
-    if (index == null || index < 0 || progress.index !== index) return;
-    const lore = loreFromCard(progress.template);
-    if (lore) discoveredLore = lore;
-  }
-
   function onSummonProgress(progress: CardSummonProgress) {
     const next = ensureSlot(progress.index, progress.total);
     const slot = next[progress.index];
@@ -313,16 +252,13 @@
     };
     summonSlots = next;
     statusLine = statusForStage(progress.stage);
-    noteDiscoveredLore(progress);
   }
 
   function begin() {
     if (phase !== 'idle') return;
     phase = 'augury';
     rollsReady = false;
-    discoveredLore = null;
     knowledgeGain = null;
-    snapshotKnowledge();
     absorbStartedAt = performance.now();
     auguryBeat = { stage: 'learning', learning: null, fortune: null };
     playSimSound('big-swoosh');
@@ -425,7 +361,6 @@
     craft="conjure"
     rollAugury={phase === 'augury'}
     suppressCore={phase === 'conjuring' || phase === 'revealed'}
-    discoveredLore={discoveredLore}
     knowledgeGain={knowledgeGain}
     onAuguryBeat={(beat) => (auguryBeat = beat)}
     {onAuguryComplete}
