@@ -36,6 +36,8 @@ import { getWeekDay } from './time';
 export interface EventTriggerParameters {
   /** Exact `day`, and/or `minDay` (day >= minDay). At least one required. */
   [EventTriggerType.Day]: { day?: number; minDay?: number };
+  /** Exact `term`, and/or `minTerm` (term >= minTerm). At least one required. */
+  [EventTriggerType.Term]: { term?: number; minTerm?: number };
   /** Single `period` or `periods` (any match). Prefer `periods` when listing more than one. */
   [EventTriggerType.Period]: { period?: DayPeriod; periods?: DayPeriod[] };
   [EventTriggerType.ActivityType]: { activityType: ActivityType };
@@ -62,8 +64,9 @@ export interface EventTriggerParameters {
   /** Character appears at least `count` times in `league.pastWinners`. */
   [EventTriggerType.LeaguesWon]: { characterKey: string; count: number };
   /**
-   * `gs.storyTags[tag]` is at least `value` (auto-stamped event keys or `add_story_tag`).
-   * Pass `value: -1` to require the tag be absent (missing or 0).
+   * `gs.storyTags[tag]` vs `value` (auto-stamped event keys or `add_story_tag`).
+   * Positive `value` = at least; `value: -1` = absent (missing or 0);
+   * `value < -1` = inferior to `|value|` (`current < |value|`).
    */
   [EventTriggerType.StoryTag]: { tag: string; value: number };
   /**
@@ -231,13 +234,16 @@ function triggeredFromTemplate(template: StoredEventTemplate | undefined) {
 
 /**
  * Events that must fire even when the period already has several events:
- * scheduled activities, exact-day triggers (not minDay alone), or priority > 0.
+ * scheduled activities, exact-day/term triggers (not minDay/minTerm alone), or priority > 0.
  */
 function isForcedPeriodEvent(template: StoredEventTemplate): boolean {
   if ((template.priority ?? 0) > 0) return true;
   for (const trigger of template.triggers ?? []) {
     if (trigger.triggerType === EventTriggerType.ScheduledActivity) return true;
     if (trigger.triggerType === EventTriggerType.Day && trigger.parameters.day != null) {
+      return true;
+    }
+    if (trigger.triggerType === EventTriggerType.Term && trigger.parameters.term != null) {
       return true;
     }
   }
@@ -263,6 +269,23 @@ function isSceneTriggerCandidate(template: StoredEventTemplate): boolean {
   return triggersMatch(template) && canTriggerDuringCurrentActivity(template);
 }
 
+function isSilentEvent(template: StoredEventTemplate): boolean {
+  return !!template.silent;
+}
+
+/**
+ * Silent events fire for effects only: no scene text, no period-limit slot.
+ * Highest priority first. Manual-trigger labels are ignored (nothing to show).
+ */
+export function getTriggeredSilentEvent():
+  | { event: SceneEvent; template: StoredEventTemplate }
+  | undefined {
+  const template = eventTemplates
+    .filter((eventTemplate) => isSilentEvent(eventTemplate) && isSceneTriggerCandidate(eventTemplate))
+    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
+  return triggeredFromTemplate(template);
+}
+
 export function getTriggeredSceneEvent():
   | { event: SceneEvent; template: StoredEventTemplate }
   | undefined {
@@ -270,6 +293,7 @@ export function getTriggeredSceneEvent():
   const template = eventTemplates
     .filter(
       (eventTemplate) =>
+        !isSilentEvent(eventTemplate) &&
         isSceneTriggerCandidate(eventTemplate) &&
         !manualTriggerLabel(eventTemplate) &&
         (isForcedPeriodEvent(eventTemplate) || periodHasRoom)
@@ -287,7 +311,7 @@ export function getManualSceneTriggers(): { eventKey: string; label: string }[] 
   const offers: { eventKey: string; label: string }[] = [];
   for (const template of eventTemplates) {
     const label = manualTriggerLabel(template);
-    if (!label || !isSceneTriggerCandidate(template)) continue;
+    if (!label || isSilentEvent(template) || !isSceneTriggerCandidate(template)) continue;
     offers.push({ eventKey: template.key, label });
   }
   return offers;
@@ -298,7 +322,12 @@ export function getPlayableManualTrigger(
   eventKey: string
 ): { event: SceneEvent; template: StoredEventTemplate } | undefined {
   const template = eventTemplates.find((eventTemplate) => eventTemplate.key === eventKey);
-  if (!template || !manualTriggerLabel(template) || !isSceneTriggerCandidate(template)) {
+  if (
+    !template ||
+    isSilentEvent(template) ||
+    !manualTriggerLabel(template) ||
+    !isSceneTriggerCandidate(template)
+  ) {
     return undefined;
   }
   return triggeredFromTemplate(template);
@@ -326,11 +355,15 @@ export function consumeEventTemplate(template: StoredEventTemplate) {
 /** Record that an event fired (save-backed). Does not mutate catalog templates. */
 export function recordEventOccured(template: StoredEventTemplate, resolvedText?: string) {
   ensureStoryTags();
-  gs.scene.eventsThisPeriod += 1;
+  // Silent events stamp progress but do not consume the period's visible-event slot.
+  if (!template.silent) {
+    gs.scene.eventsThisPeriod += 1;
+  }
   const key = template.key;
   const text = resolvedText ?? resolveEventText(template);
   gs.storyTags[key] = (gs.storyTags[key] ?? 0) + 1;
-  if (template.characterArc) {
+  // Silent events are not shown; skip relation-arc beats that would surface them.
+  if (template.characterArc && !template.silent) {
     updateRelationArc({
       characterKey: template.characterArc,
       text,
@@ -383,6 +416,13 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       if (day == null && minDay == null) return false;
       if (minDay != null && gs.time.day < minDay) return false;
       if (day != null && gs.time.day !== day) return false;
+      return true;
+    }
+    case EventTriggerType.Term: {
+      const { term, minTerm } = trigger.parameters;
+      if (term == null && minTerm == null) return false;
+      if (minTerm != null && gs.time.term < minTerm) return false;
+      if (term != null && gs.time.term !== term) return false;
       return true;
     }
     case EventTriggerType.Period:
@@ -493,6 +533,9 @@ function checkStoryTag(
   const current = gs.storyTags?.[tag] ?? 0;
   if (value === -1) {
     return current === 0;
+  }
+  if (value < 0) {
+    return current < Math.abs(value);
   }
   return current >= value;
 }

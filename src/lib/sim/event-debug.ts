@@ -35,7 +35,7 @@ import { getWeekDay, WEEK_DAYS } from './time';
 export type EventDebugGroup = 'prerequisite' | 'scene' | 'branch';
 
 export type SceneChange =
-  | { kind: 'time'; day?: number; period?: DayPeriod; label: string }
+  | { kind: 'time'; day?: number; period?: DayPeriod; term?: number; label: string }
   | { kind: 'place'; placeKey: string; label: string }
   | { kind: 'present'; characterKeys: string[]; label: string }
   | {
@@ -138,15 +138,28 @@ export function buildEventDebugPlan(eventKey: string): EventDebugPlan | null {
   }
   for (const trigger of root) {
     if (trigger.triggerType !== EventTriggerType.StoryTag) continue;
-    if (trigger.parameters.value !== -1) continue;
-    toggles.push({
-      id: `clear:${trigger.parameters.tag}`,
-      group: 'prerequisite',
-      label: `Without ${trigger.parameters.tag}`,
-      detail: 'This event only fires when the tag is absent',
-      defaultOn: true,
-      action: { kind: 'clear_story_tag', tag: trigger.parameters.tag },
-    });
+    const { tag, value } = trigger.parameters;
+    if (value === -1) {
+      toggles.push({
+        id: `clear:${tag}`,
+        group: 'prerequisite',
+        label: `Without ${tag}`,
+        detail: 'This event only fires when the tag is absent',
+        defaultOn: true,
+        action: { kind: 'clear_story_tag', tag },
+      });
+      continue;
+    }
+    if (value < -1) {
+      toggles.push({
+        id: `clear:${tag}:lt${Math.abs(value)}`,
+        group: 'prerequisite',
+        label: `${tag} < ${Math.abs(value)}`,
+        detail: 'This event only fires while the tag is below the threshold',
+        defaultOn: true,
+        action: { kind: 'clear_story_tag', tag },
+      });
+    }
   }
   if (changes.length > 0) {
     toggles.push({
@@ -365,7 +378,7 @@ function collectBranches(
         addPrereq(prereqs, tag, value, prereqs.get(tag)!.detail);
         continue;
       }
-      if (value === -1 && prereqs.has(tag)) continue;
+      if (value <= -1 && prereqs.has(tag)) continue;
     }
     const existing = grouped.get(signature);
     if (existing) existing.where = `${existing.where} · ${located.where}`;
@@ -420,6 +433,16 @@ function branchToggle(
         id: `branch:${signature}`,
         group: 'branch',
         label: `Without ${tag}`,
+        detail,
+        defaultOn: true,
+        action: { kind: 'clear_story_tag', tag },
+      };
+    }
+    if (value < -1) {
+      return {
+        id: `branch:${signature}`,
+        group: 'branch',
+        label: `${tag} < ${Math.abs(value)}`,
         detail,
         defaultOn: true,
         action: { kind: 'clear_story_tag', tag },
@@ -494,11 +517,13 @@ function collectScene(triggers: EventTrigger[]): { changes: SceneChange[]; notic
   const notices: string[] = [];
   const day = desiredDay(triggers);
   const period = desiredPeriod(triggers);
-  if (day != null || period != null) {
+  const term = desiredTerm(triggers);
+  if (day != null || period != null || term != null) {
     const bits: string[] = [];
     if (day != null) bits.push(`day ${day} (${weekdayName(day)})`);
     if (period != null) bits.push(period);
-    changes.push({ kind: 'time', day, period, label: bits.join(', ') });
+    if (term != null) bits.push(`term ${term}`);
+    changes.push({ kind: 'time', day, period, term, label: bits.join(', ') });
   }
 
   let placeKey: string | undefined;
@@ -527,6 +552,7 @@ function collectScene(triggers: EventTrigger[]): { changes: SceneChange[]; notic
     if (trigger.triggerType === EventTriggerType.StoryTag) continue;
     if (
       trigger.triggerType === EventTriggerType.Day ||
+      trigger.triggerType === EventTriggerType.Term ||
       trigger.triggerType === EventTriggerType.Period ||
       trigger.triggerType === EventTriggerType.DayOfWeek ||
       trigger.triggerType === EventTriggerType.Place ||
@@ -557,6 +583,11 @@ function triggerToChange(trigger: EventTrigger): SceneChange | null {
       const day = desiredDay([trigger]);
       if (day == null) return null;
       return { kind: 'time', day, label: `Day ${day} (${weekdayName(day)})` };
+    }
+    case EventTriggerType.Term: {
+      const term = desiredTerm([trigger]);
+      if (term == null) return null;
+      return { kind: 'time', term, label: `Term ${term}` };
     }
     case EventTriggerType.Period: {
       const period = desiredPeriod([trigger]);
@@ -692,6 +723,10 @@ function applySceneChange(change: SceneChange): string | null {
       }
       if (change.period != null && gs.time.period !== change.period) {
         gs.time.period = change.period;
+        changed = true;
+      }
+      if (change.term != null && gs.time.term !== change.term) {
+        gs.time.term = change.term;
         changed = true;
       }
       if (!changed) return null;
@@ -845,6 +880,20 @@ function desiredDay(triggers: EventTrigger[]): number | undefined {
   return day;
 }
 
+function desiredTerm(triggers: EventTrigger[]): number | undefined {
+  let exact: number | undefined;
+  let minTerm: number | undefined;
+  for (const trigger of triggers) {
+    if (trigger.triggerType !== EventTriggerType.Term) continue;
+    if (trigger.parameters.term != null) exact = trigger.parameters.term;
+    if (trigger.parameters.minTerm != null) minTerm = trigger.parameters.minTerm;
+  }
+  if (exact == null && minTerm == null) return undefined;
+  let term = exact ?? gs.time.term;
+  if (minTerm != null) term = Math.max(term, minTerm);
+  return term;
+}
+
 function desiredPeriod(triggers: EventTrigger[]): DayPeriod | undefined {
   for (const trigger of triggers) {
     if (trigger.triggerType !== EventTriggerType.Period) continue;
@@ -861,7 +910,9 @@ function triggerSignature(trigger: EventTrigger): string {
   switch (trigger.triggerType) {
     case EventTriggerType.StoryTag: {
       const { tag, value } = trigger.parameters;
-      return value === -1 ? `story:${tag}:absent` : `story:${tag}:${value}`;
+      if (value === -1) return `story:${tag}:absent`;
+      if (value < 0) return `story:${tag}:lt${Math.abs(value)}`;
+      return `story:${tag}:${value}`;
     }
     case EventTriggerType.RelationParameter: {
       const { characterKey, relationParameter, value } = trigger.parameters;
@@ -874,6 +925,10 @@ function triggerSignature(trigger: EventTrigger): string {
     case EventTriggerType.Day: {
       const { day, minDay } = trigger.parameters;
       return `day:${day ?? ''}:${minDay ?? ''}`;
+    }
+    case EventTriggerType.Term: {
+      const { term, minTerm } = trigger.parameters;
+      return `term:${term ?? ''}:${minTerm ?? ''}`;
     }
     case EventTriggerType.Period: {
       const { period, periods } = trigger.parameters;

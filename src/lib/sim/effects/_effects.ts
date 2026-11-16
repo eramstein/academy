@@ -4,7 +4,12 @@ import { narrateText } from '../narration';
 import { levelAttribute, type LevelAttributeParameters } from './attributes';
 import { levelUpCharacter, type LevelUpCharacterParameters } from './characters';
 import { getDeck, type GetDeckParameters } from './decks';
-import { followUpEvent, type FollowUpEventParameters } from './events';
+import {
+  followUpEvent,
+  invalidateEvent,
+  type FollowUpEventParameters,
+  type InvalidateEventParameters,
+} from './events';
 import { useFocus, type UseFocusParameters } from './focus';
 import {
   giftCardToCharacter,
@@ -91,6 +96,8 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.GetJob]: (parameters) => getJob(parameters as GetJobParameters),
   [EventEffectType.FollowUpEvent]: (parameters) =>
     followUpEvent(parameters as FollowUpEventParameters),
+  [EventEffectType.InvalidateEvent]: (parameters) =>
+    invalidateEvent(parameters as InvalidateEventParameters),
   [EventEffectType.OfferCardGifts]: (parameters) =>
     offerCardGifts(parameters as OfferCardGiftsParameters),
   [EventEffectType.GiftCardToCharacter]: (parameters) =>

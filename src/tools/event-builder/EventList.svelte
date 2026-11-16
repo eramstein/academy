@@ -154,6 +154,8 @@
     }
     if (trigger.triggerType === EventTriggerType.StoryTag) {
       const { tag, value } = trigger.parameters;
+      if (value === -1) return `${trigger.triggerType}: ${tag} absent`;
+      if (value < 0) return `${trigger.triggerType}: ${tag} <${Math.abs(value)}`;
       return `${trigger.triggerType}: ${tag} ≥${value}`;
     }
     if (trigger.triggerType === EventTriggerType.RelationTag) {
@@ -191,6 +193,12 @@
       const parts: string[] = [];
       if (trigger.parameters.minDay != null) parts.push(`≥${trigger.parameters.minDay}`);
       if (trigger.parameters.day != null) parts.push(`=${trigger.parameters.day}`);
+      return parts.length ? `${trigger.triggerType}: ${parts.join(' ')}` : trigger.triggerType;
+    }
+    if (trigger.triggerType === EventTriggerType.Term) {
+      const parts: string[] = [];
+      if (trigger.parameters.minTerm != null) parts.push(`≥${trigger.parameters.minTerm}`);
+      if (trigger.parameters.term != null) parts.push(`=${trigger.parameters.term}`);
       return parts.length ? `${trigger.triggerType}: ${parts.join(' ')}` : trigger.triggerType;
     }
     const value = Object.values(trigger.parameters)[0];

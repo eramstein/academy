@@ -22,6 +22,7 @@ import {
   getPlayableManualTrigger,
   getSceneEventByKey,
   getTriggeredSceneEvent,
+  getTriggeredSilentEvent,
   nodeIsEnterable,
   recordEventOccured,
   sceneEventForNode,
@@ -62,7 +63,9 @@ export function sceneWaitingOnEventChoice(event = gs.scene.event): boolean {
 The scene first loops events until it runs out. Player has to react to each event by chosing an option.
 Once the events are done (no new events are set), the player can get proactive and choose actions.
 Events with manualTrigger are skipped here and offered as scene-action buttons instead.
-After one event has already fired this period, further matches are parked as pendingPeriodEvent
+Silent events fire for effects only: they are not narrated, never claim the scene, and do not
+count toward the period event limit (or pendingPeriodEvent parking).
+After one visible event has already fired this period, further matches are parked as pendingPeriodEvent
 (a single continue button) so narration does not chain automatically.
 A long action advances the period and ends the scene; the next scene is set based either on the next scheduled activity or the player's choice of next place.
 Optionless events resolve immediately (narrate + effects) and do not hold the scene.
@@ -87,9 +90,16 @@ export function setSceneEvents() {
   gs.scene.event = undefined;
   gs.scene.pendingPeriodEvent = undefined;
   // Keep resolving optionless events in one pass; stop when the player must choose.
-  // After one event this period, park the next match behind a continue button.
+  // Drain silent events first each pass (effects only). After one visible event this
+  // period, park the next visible match behind a continue button.
   const resolvedKeys = new Set<string>();
   while (true) {
+    const silentEvent = getTriggeredSilentEvent();
+    if (silentEvent && !resolvedKeys.has(silentEvent.event.key)) {
+      resolvedKeys.add(silentEvent.event.key);
+      setEvent(silentEvent.event, silentEvent.template);
+      continue;
+    }
     const triggeredEvent = getTriggeredSceneEvent();
     if (!triggeredEvent || resolvedKeys.has(triggeredEvent.event.key)) break;
     if (gs.scene.eventsThisPeriod >= 1) {
@@ -407,6 +417,18 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
   if (event.text === gs.scene.event?.text && sceneWaitingOnEventChoice()) {
     return;
   }
+  consumeEventTemplate(template);
+  if (template.silent) {
+    // Effects + story stamp only — no narration, scene claim, or period-limit slot.
+    if (template.effects) {
+      const applicable = template.effects
+        .filter((entry) => eventTemplateEffectApplies(entry, template.key))
+        .map((entry) => entry.effect);
+      applyEffectsWithChoicesLast(applicable);
+    }
+    recordEventOccured(template, event.text);
+    return;
+  }
   narrateText(event.text, {
     title: template.title,
     characterKey: template.characterArc,
@@ -417,7 +439,6 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
   });
   // Claim the scene only when there are choices. Effects may still install a follow-up.
   gs.scene.event = sceneWaitingOnEventChoice(event) ? event : undefined;
-  consumeEventTemplate(template);
   if (template.effects) {
     const applicable = template.effects
       .filter((entry) => eventTemplateEffectApplies(entry, template.key))

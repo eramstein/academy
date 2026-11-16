@@ -242,6 +242,18 @@ function checkTrigger(where, trigger) {
       }
       break;
     }
+    case 'term': {
+      if (params.term == null && params.minTerm == null) {
+        errors.push(`${where}: term needs term and/or minTerm`);
+      }
+      if (params.term != null && !Number.isInteger(params.term)) {
+        errors.push(`${where}: term must be an integer`);
+      }
+      if (params.minTerm != null && !Number.isInteger(params.minTerm)) {
+        errors.push(`${where}: minTerm must be an integer`);
+      }
+      break;
+    }
     case 'period': {
       const list = Array.isArray(params.periods)
         ? params.periods
@@ -316,12 +328,10 @@ function checkTrigger(where, trigger) {
       if (typeof params.tag !== 'string' || !params.tag.trim()) {
         errors.push(`${where}: tag must be a non-empty string`);
       }
-      if (
-        typeof params.value !== 'number' ||
-        !Number.isInteger(params.value) ||
-        (params.value !== -1 && params.value < 1)
-      ) {
-        errors.push(`${where}: value must be an integer ≥ 1, or -1 for tag absent`);
+      if (typeof params.value !== 'number' || !Number.isInteger(params.value) || params.value === 0) {
+        errors.push(
+          `${where}: value must be an integer ≥ 1 (at least), -1 (absent), or ≤ -2 (inferior to |value|)`
+        );
       }
       break;
     case 'relation_tag':
@@ -609,6 +619,9 @@ function checkEffect(where, effect) {
     case 'follow_up_event':
       checkOneOf(where, 'eventKey', parameters.eventKey, eventKeys);
       break;
+    case 'invalidate_event':
+      checkOneOf(where, 'eventKey', parameters.eventKey, eventKeys);
+      break;
     case 'offer_card_gifts': {
       if (typeof parameters.count !== 'number') {
         errors.push(`${where}: count must be a number`);
@@ -835,6 +848,8 @@ const allowedEventProps = new Set([
   'manualTrigger',
   'passages',
   'nodes',
+  'priority',
+  'silent',
 ]);
 
 const allowedNodeProps = new Set([
@@ -1059,8 +1074,28 @@ events.forEach((event, index) => {
   } else if (eventKeys.indexOf(event.key) !== index) {
     errors.push(`${where}: duplicate key`);
   }
-  if (typeof event?.text !== 'string' || !event.text.trim()) {
+  if (event?.silent !== undefined && typeof event.silent !== 'boolean') {
+    errors.push(`${where}: silent must be a boolean when set`);
+  }
+  if (event?.priority !== undefined && (typeof event.priority !== 'number' || !Number.isFinite(event.priority))) {
+    errors.push(`${where}: priority must be a number when set`);
+  }
+  const silent = event?.silent === true;
+  if (typeof event?.text !== 'string') {
     errors.push(`${where}: text is required`);
+  } else if (!event.text.trim() && !silent) {
+    errors.push(`${where}: text is required (empty text is only allowed when silent is true)`);
+  }
+  if (silent) {
+    if (Array.isArray(event.optionTemplates) && event.optionTemplates.length > 0) {
+      errors.push(`${where}: silent events must have optionTemplates: []`);
+    }
+    if (event.nodes && Object.keys(event.nodes).length > 0) {
+      errors.push(`${where}: silent events cannot have nodes`);
+    }
+    if (typeof event.manualTrigger === 'string' && event.manualTrigger.trim()) {
+      errors.push(`${where}: silent events cannot use manualTrigger`);
+    }
   }
   const passageKeys = checkPassages(where, event?.passages);
   checkTextPassages(where, event?.text, passageKeys);

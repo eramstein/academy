@@ -132,6 +132,8 @@
         return defaultJobArgs();
       case EventEffectType.FollowUpEvent:
         return { eventKey: '' };
+      case EventEffectType.InvalidateEvent:
+        return { eventKey: '' };
       case EventEffectType.OfferCardGifts:
         return { count: 2, poolKeys: [] };
       case EventEffectType.GiftCardToCharacter:
@@ -710,6 +712,15 @@
                 value={effect.parameters.eventKey ?? ''}
                 placeholder="event key"
                 aria-label="Follow-up event key"
+                oninput={(e) =>
+                  setParameter(i, 'eventKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+            {:else if effect.type === EventEffectType.InvalidateEvent}
+              <input
+                class="input arg"
+                value={effect.parameters.eventKey ?? ''}
+                placeholder="event key"
+                aria-label="Invalidate event key"
                 oninput={(e) =>
                   setParameter(i, 'eventKey', (e.currentTarget as HTMLInputElement).value)}
               />

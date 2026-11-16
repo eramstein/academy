@@ -19,6 +19,8 @@ export enum EventEffectType {
   ScheduleActivity = 'schedule_activity',
   GetJob = 'get_job',
   FollowUpEvent = 'follow_up_event',
+  /** Stamp an event as consumed without playing it (removes it from the pool). */
+  InvalidateEvent = 'invalidate_event',
   OfferCardGifts = 'offer_card_gifts',
   GiftCardToCharacter = 'gift_card_to_character',
   TeachColor = 'teach_color',
@@ -135,6 +137,8 @@ export enum SchoolName {
 
 export enum EventTriggerType {
   Day = 'day',
+  /** Exact `term`, and/or `minTerm` (`gs.time.term >= minTerm`). */
+  Term = 'term',
   Period = 'period',
   ActivityType = 'activity_type',
   Place = 'place',

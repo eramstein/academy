@@ -21,7 +21,7 @@ function isPlayerParticipant(key: string): boolean {
 }
 
 function seasonPools(): string[] {
-  return gs.time.year === 1 ? ['base'] : ['base', 'extended'];
+  return gs.time.term === 1 ? ['base'] : ['base', 'extended'];
 }
 
 /** A collection card that carries poolKeys and is not in any deck. */
@@ -57,9 +57,7 @@ function npcOfferPool(characterKey: string): CardTemplate[] {
 function trainingPartners(): string[] {
   const activity = getCurrentScheduledActivity();
   if (!activity || activity.type !== ActivityType.Training) return [];
-  return activity.participants.filter(
-    (key) => !isPlayerParticipant(key) && gs.characters[key]
-  );
+  return activity.participants.filter((key) => !isPlayerParticipant(key) && gs.characters[key]);
 }
 
 function pickRandom<T>(items: T[], count: number): T[] {

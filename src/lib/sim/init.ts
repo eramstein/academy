@@ -14,7 +14,7 @@ export const defaultGameState: GameState = {
   time: {
     day: 1,
     period: DayPeriod.Morning,
-    year: 1,
+    term: 1,
     playedLeagueMatch: false,
     usedActions: {},
     hungOutWith: [],

@@ -51,6 +51,7 @@ interface PacingNpc {
 export interface PacingWorld {
   day: number;
   period: DayPeriod;
+  term: number;
   storyTags: Record<string, number>;
   resolved: { key: string; day: number; period: DayPeriod }[];
   /** Follow-ups pinned to the period that created them. */
@@ -111,6 +112,7 @@ export function createPacingWorld(): PacingWorld {
   return {
     day: 1,
     period: DayPeriod.Morning,
+    term: 1,
     storyTags: {},
     resolved: [],
     queued: [],
@@ -389,6 +391,13 @@ function triggerMatches(trigger: EventTrigger, world: PacingWorld, eventKey: str
       if (day != null && world.day !== day) return false;
       return true;
     }
+    case EventTriggerType.Term: {
+      const { term, minTerm } = trigger.parameters;
+      if (term == null && minTerm == null) return false;
+      if (minTerm != null && world.term < minTerm) return false;
+      if (term != null && world.term !== term) return false;
+      return true;
+    }
     case EventTriggerType.Period: {
       const { period, periods } = trigger.parameters;
       if (periods && periods.length > 0) return periods.includes(world.period);
@@ -429,6 +438,7 @@ function triggerMatches(trigger: EventTrigger, world: PacingWorld, eventKey: str
       const { tag, value } = trigger.parameters;
       const current = world.storyTags[tag] ?? 0;
       if (value === -1) return current === 0;
+      if (value < 0) return current < Math.abs(value);
       return current >= value;
     }
     case EventTriggerType.RelationTag: {

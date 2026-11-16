@@ -26,7 +26,7 @@ export interface GameState {
   time: {
     day: number;
     period: DayPeriod;
-    year: number;
+    term: number;
     playedLeagueMatch: boolean;
     longActionPerformed: boolean;
     /** Counts toward ActionsLimitByPeriod keys (e.g. hangout), not necessarily ActionType. */
@@ -255,6 +255,7 @@ export interface EventTemplate {
    */
   nodes?: Record<string, EventNode>;
   priority?: number; // events with the highest priority number trigger first
+  silent?: boolean; // if true, the event applies its effects but isn't added to the scene, and isn't considered by the scene director
 }
 
 /** A beat inside an event. Reached only through an option `nextNode` (or a skill-check branch node). */

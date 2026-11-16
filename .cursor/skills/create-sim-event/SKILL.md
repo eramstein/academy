@@ -59,11 +59,14 @@ names). Canonical shape:
 **Image:** <filename.jpg and/or small|medium|large>. # optional
 **Emotion:** <Emotion enum value>. # optional
 **Manual trigger:** <button label>. # optional; withhold auto-play
+**Silent:** true. # optional; effects-only, never narrated (see Silent events)
+**Priority:** <number>. # optional; higher fires first among same-class candidates
 
 ## Text
 
 <verbatim event body; blank lines = paragraph breaks>
 <optional {{ passageKey }} tokens; see Conditional passages>
+# (Silent events may omit ## Text → text: "")
 
 ## Conditional passages
 
@@ -114,6 +117,8 @@ Optional sections:
   `## Text` (see Passages). Omit the section when the event text is fully static.
 - `**Next:** <node key>` on an option, and `## Node: <key>` sections — a later beat in
   the same event (see Multi-step events). Omit both when the event is a single beat.
+- `**Silent:** true` — effects-only plot resolution (see Silent events). Do not combine
+  with `**Manual trigger:**`, options, or nodes.
 
 Folder name and `**NPC:**` should agree; `characterArc` is the NPC key for arc
 events. Main-story events omit `characterArc`.
@@ -135,7 +140,11 @@ events. Main-story events omit `characterArc`.
    - `characterArc` ← `**NPC:**` when it is an NPC key.
    - `triggers` ← map `**Trigger:**` (see Triggers).
    - `manualTrigger` ← `**Manual trigger:**` label when present (omit when absent).
+   - `silent` ← `true` when `**Silent:** true` (omit when absent/false).
+   - `priority` ← number when `**Priority:**` is present (omit when absent).
    - `effects` ← map `## Effects` to `{ effect, triggers? }` couples (see Effects).
+   - For silent events: `text` is `""` when `## Text` is omitted; `optionTemplates` is
+     `[]`; do not emit `nodes` or `manualTrigger`.
    - `optionTemplates` ← each `### Option …` that belongs to the root (before any `## Node:`):
      - `text` ← the option **label** (heading after `Option A:`).
      - option body under `**Text:**` → a `narrate` effect with that prose
@@ -210,6 +219,8 @@ type strings (unknown types crash when the event fires).
   "image": "emma_first_encounter.jpg",
   "imageSize": "large",
   // optional "manualTrigger": "Speak with Emma" — scene-action label; omit to auto-play
+  // optional "priority": 1 — higher fires first among candidates
+  // optional "silent": true — effects only; text "" / optionTemplates []; no scene claim
   // optional "nodes": { "tuition_talk": { "text": "…", "optionTemplates": [] } }
 }
 ```
@@ -218,11 +229,11 @@ Every event fires at most once: showing the root beat stamps `gs.storyTags[event
 Later nodes in the same event do not stamp it again. Empty `triggers` means follow-up /
 debug only (`follow_up_event` or `/e`) — never auto-fires. Property order: `key`, `title`,
 `text`, optional `passages`, `triggers`, `effects`, `optionTemplates`, optional `nodes`,
-`characterArc`, `emotion`, `image`, `imageSize`, then optional `manualTrigger`. Options:
-`text`, optional `triggers`, then `effects` or `attributeCheck`, then optional
-`actionTemplate`, then optional `nextNode`. Node object order: `text`, optional `passages`,
-optional `triggers`, optional `effects`, `optionTemplates`, then optional `title`, `emotion`,
-`image`, `imageSize`.
+`characterArc`, `emotion`, `image`, `imageSize`, then optional `manualTrigger`,
+`priority`, `silent`. Options: `text`, optional `triggers`, then `effects` or
+`attributeCheck`, then optional `actionTemplate`, then optional `nextNode`. Node object
+order: `text`, optional `passages`, optional `triggers`, optional `effects`,
+`optionTemplates`, then optional `title`, `emotion`, `image`, `imageSize`.
 
 ## Images
 
@@ -248,6 +259,7 @@ that label is a scene action, and choosing it plays the event. Empty or whitespa
 | `relation_parameter` | `{ characterKey, relationParameter, value }`                       | Cumulative `relationProgress`. Positive `value` = at least; negative = at most.         |
 | `character_present`  | `{ characterKey }`                                                 | NPC in the player's current place.                                                      |
 | `day`                | `{ day?: 3, minDay?: 4 }`                                          | Exact day and/or `day >= minDay`. Day 1 = Monday.                                       |
+| `term`               | `{ term?: 1, minTerm?: 2 }`                                        | Exact term and/or `term >= minTerm` (`gs.time.term`).                                   |
 | `period`             | `{ period: "morning" }` or `{ periods: ["morning", "afternoon"] }` | `morning`, `afternoon`, `evening`.                                                      |
 | `day_of_week`        | `{ daysOfWeek: [6, 7] }`                                           | 1 = Monday … 7 = Sunday.                                                                |
 | `place`              | `{ placeKey }`                                                     | Player's current place.                                                                 |
@@ -256,7 +268,7 @@ that label is a scene action, and choosing it plays the event. Empty or whitespa
 | `matches_won`        | `{ characterKey, count }`                                          | Wins vs that NPC ≥ `count`.                                                             |
 | `matches_lost`       | `{ characterKey, count }`                                          | Losses vs that NPC ≥ `count`.                                                           |
 | `leagues_won`        | `{ characterKey, count }`                                          | Appearances in `league.pastWinners` ≥ `count`; `characterKey` may be `"player"`.        |
-| `story_tag`          | `{ tag: "molly-f1", value: 1 }`                                    | `gs.storyTags[tag]` ≥ `value`. `value: -1` = tag absent. Event keys auto-stamp on fire. |
+| `story_tag`          | `{ tag: "molly-f1", value: 1 }`                                    | Positive `value` → `gs.storyTags[tag]` ≥ `value`. `value: -1` = tag absent. `value ≤ -2` → tag inferior to `|value|` (`current < |value|`). Event keys auto-stamp on fire. |
 | `relation_tag`       | `{ characterKey, relationTag }`                                    | NPC has that `RelationTag` on `relationTags`. Optional `value: -1` = tag absent.        |
 | `known_traits`       | `{ characterKey, count }`                                          | NPC `knownTraits.length` ≥ `count`.                                                     |
 | `scheduled_activity` | `{}`                                                               | Current activity `eventId` equals this event's `key`.                                   |
@@ -273,11 +285,13 @@ that label is a scene action, and choosing it plays the event. Empty or whitespa
 | First time / when \<NPC\> is present                               | `character_present` (once-only is automatic via story tag on fire)      |
 | After event \<key\> / once \<key\> happened / \<tag\> has occurred | `story_tag` `{ tag: "<key>", value: 1 }`                                |
 | \<tag\> has not occurred                                           | `story_tag` `{ tag: "<tag>", value: -1 }`                               |
+| \<tag\> is less than N / inferior to N                             | `story_tag` `{ tag: "<tag>", value: -N }` (`current < N`)               |
 | Friendship / respect / … at least N                                | `relation_parameter` with positive `value`                              |
 | At the library / academy-hall / …                                  | `place`                                                                 |
 | During class / work / …                                            | `activity_type`                                                         |
 | Morning / afternoon / evening                                      | `period`                                                                |
 | Day N / on or after day N                                          | `day` with `day` and/or `minDay`                                        |
+| Term N / on or after term N                                        | `term` with `term` and/or `minTerm`                                     |
 | Weekend                                                            | `day_of_week` `[6, 7]`                                                  |
 | Follow-up only / queued by another option                          | `triggers: []`                                                          |
 | Has / lacks relation tag (e.g. EmmaSmitten)                        | `relation_tag` `{ characterKey, relationTag }` (+ optional `value: -1`) |
@@ -291,6 +305,24 @@ that label is a scene action, and choosing it plays the event. Empty or whitespa
 Prefer `relation_parameter` for lasting friendship / respect / love / rivalry
 thresholds. Scene-entry offers still need `character_present` so they cannot fire
 while the NPC is elsewhere.
+
+## Silent events
+
+`**Silent:** true` → `"silent": true`. The engine drains matching silent events each
+scene pass for **effects only**: no narration, no scene claim, no period-limit slot, and
+no relation-arc beat. Use them to resolve offscreen plot progress (story tags, invalidate
+competing events, seed chat topics) without interrupting the player.
+
+Rules when compiling:
+
+- Omit `## Text` or leave it empty → `text: ""` (validator allows empty text only when
+  `silent` is true).
+- `optionTemplates: []` — no choices; do not author `## Options` / `## Node:` /
+  `**Manual trigger:**` on a silent event.
+- Still stamp `gs.storyTags[event.key]` once, same as visible events.
+- Optional `**Priority:**` raises which silent event runs first among matches.
+- Chat-topic and story-tag effects are the usual tools; pair with `invalidate_event` when
+  closing alternate beats.
 
 ## Passages
 
@@ -379,6 +411,7 @@ Option, skill-check, and success/failure effects stay bare `EventEffect[]`
 | `schedule_activity`        | `{ activity: { type, participants, placeKey, classType?, eventId? }, schedule: { date?: { day, period, dayOfWeek? }, nextFree?: true, recurrence?: { … } } }` — `day` is days-from-now; `dayOfWeek` is 1–7 (Mon–Sun) for next matching weekday; with `nextFree`, bump to the next free slot (by day, or by week when `dayOfWeek` is set)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `get_job`                  | `{ job: { jobType, name, description, payPerActivity, employerKey, placeKey, schedule }, characterKey? }` — defaults to the player; pass an NPC key to assign that character the job and schedule their work activity                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `follow_up_event`          | `{ eventKey }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `invalidate_event`         | `{ eventKey }` — stamps that event as consumed without playing it, drops it from the working pool, and clears parked period / follow-up / manual slots for that key. Silent; pair with `narrate` if the player should notice. Prefer this over `add_story_tag` with an event key when the goal is to remove a competing event.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `offer_card_gifts`         | `{ count, poolKeys }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `gift_card_to_character`   | `{ characterKey, cardKey, fromPlayer? }` — `fromPlayer` true (default): move from player; false: mint a new copy into the NPC's collection                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `teach_color`              | `{ color?, characterKey? }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -518,6 +551,9 @@ if the target slot is booked, bump forward a day at a time — or by **full week
 `activity.type: event`, `eventId`= the scheduled event key.`Schedule study for next Tuesday evening (next free) at the library.`→`date.dayOfWeek: 2`, `date.period: evening`, `nextFree: true`.
 `follow_up_event`queues by key and bypasses that event's triggers — target should
 use`triggers: []`.
+`invalidate_event`removes a different event from the pool without firing it (story-tag
+stamp + working-set prune). Use when a choice closes an alternate beat or competing plot
+beat. Does not narrate, advance the period counter, or write a relation-arc entry.
 `gift_card_to_character`takes a template`cardKey`(e.g.`happy_little_accident`).
 With `fromPlayer`true/omitted it finds a matching instance in the player's collection
 (exact id or`cardKey-<uuid>`). With `fromPlayer: false` it mints a new copy from the
@@ -725,7 +761,7 @@ from `enums-sim.ts`. Omit when absent or unclear. Do not invent values.
 
 Same compile workflow. Keep `key` unchanged so `story_tag` references stay valid.
 If the user renames a key in markdown, update every `story_tag` / `follow_up_event`
-/ `eventId` that referenced the old key.
+/ `invalidate_event` / `eventId` that referenced the old key.
 
 When re-compiling, refresh JSON fields from the markdown; do not leave stale prose
 in JSON after the markdown changed. Drop `nodes` (and option `nextNode` /

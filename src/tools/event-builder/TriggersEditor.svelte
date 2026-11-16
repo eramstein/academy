@@ -37,6 +37,7 @@
   function defaultParams<T extends EventTriggerType>(triggerType: T): EventTriggerParameters[T] {
     const defaults: EventTriggerParameters = {
       [EventTriggerType.Day]: { day: 1 },
+      [EventTriggerType.Term]: { term: 1 },
       [EventTriggerType.Period]: { periods: [DayPeriod.Morning] },
       [EventTriggerType.ActivityType]: { activityType: ActivityType.Class },
       [EventTriggerType.Place]: { placeKey: '' },
@@ -164,6 +165,23 @@
               placeholder="minDay"
               bind:value={trigger.parameters.minDay}
               aria-label="Min day"
+            />
+          {:else if trigger.triggerType === EventTriggerType.Term}
+            <input
+              class="input narrow"
+              type="number"
+              min="0"
+              placeholder="term"
+              bind:value={trigger.parameters.term}
+              aria-label="Term (exact)"
+            />
+            <input
+              class="input narrow"
+              type="number"
+              min="0"
+              placeholder="minTerm"
+              bind:value={trigger.parameters.minTerm}
+              aria-label="Min term"
             />
           {:else if trigger.triggerType === EventTriggerType.Period}
             <div class="days" role="group" aria-label="Periods">
@@ -325,7 +343,7 @@
               type="number"
               bind:value={trigger.parameters.value}
               aria-label="Story tag value"
-              title="Requires storyTags[tag] ≥ value; -1 = tag absent"
+              title="≥1: storyTags[tag] ≥ value; -1 = absent; ≤-2: tag < |value|"
             />
           {:else if trigger.triggerType === EventTriggerType.RelationTag}
             <input
