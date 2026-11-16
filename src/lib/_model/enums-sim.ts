@@ -189,6 +189,7 @@ export enum JobType {
   Mentoring = 'mentoring',
   Coaching = 'coaching',
   Music = 'music',
+  Research = 'research',
 }
 
 export enum Emotion {

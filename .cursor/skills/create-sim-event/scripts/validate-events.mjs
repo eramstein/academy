@@ -600,6 +600,9 @@ function checkEffect(where, effect) {
       if (typeof job.payPerActivity !== 'number') {
         errors.push(`${where}: payPerActivity must be a number`);
       }
+      if (parameters.characterKey !== undefined) {
+        checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
+      }
       checkSchedule(where, job.schedule);
       break;
     }

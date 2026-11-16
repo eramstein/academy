@@ -7,6 +7,7 @@
   import EventForm from './EventForm.svelte';
   import EventList from './EventList.svelte';
   import PacingCalendar from './PacingCalendar.svelte';
+  import StoryTagGraph from './StoryTagGraph.svelte';
 
   // Bundled fallback is events.json; /api/events merges mods/<id>/events.json in dev.
   let events = $state<EventTemplate[]>(
@@ -16,7 +17,8 @@
   let showForm = $state(false);
   let loading = $state(true);
   let selectedArc = $state<string | null>(null);
-  let mode = $state<'catalog' | 'pacing'>('catalog');
+  let selectedStoryTag = $state<string | null>(null);
+  let mode = $state<'catalog' | 'pacing' | 'story'>('catalog');
 
   const existingKeys = $derived(events.map((event) => event.key));
 
@@ -95,6 +97,13 @@
   {:else}
     {#if mode === 'pacing'}
       <PacingCalendar {events} onShowCatalog={() => (mode = 'catalog')} />
+    {:else if mode === 'story'}
+      <StoryTagGraph
+        {events}
+        bind:selectedTag={selectedStoryTag}
+        onEdit={openEdit}
+        onShowCatalog={() => (mode = 'catalog')}
+      />
     {:else}
       <EventList
         {events}
@@ -103,6 +112,7 @@
         onCreateFollowUp={openCreateFollowUp}
         onEdit={openEdit}
         onShowPacing={() => (mode = 'pacing')}
+        onShowStory={() => (mode = 'story')}
       />
     {/if}
   {/if}

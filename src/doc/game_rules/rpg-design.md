@@ -150,3 +150,12 @@ Initial topics and pre-written texts can ship with the game. New topics arise fr
 A memorable or funny experience usually deserves a **memory** for the relevant NPC(s); a declined activity or an important offscreen development can produce **lore** explaining what the NPC did independently. Spectacular public achievements may produce public lore and a separate private memory. Avoid manufacturing gossip about secrets or romantic confidences that others could not know.
 
 **Effect timing matters:** root `## Effects` apply when an event starts; option `**Outcomes:**` apply only for the chosen branch; node entry effects apply on entering that node. Put choice-dependent memories and offscreen/decline lore in the corresponding outcomes. A topic is not itself a world-state mutation or quest condition: use regular state/tag/relationship effects for those consequences as well. For full writing conventions and additional syntax (including `known by`, `exclude`, and `speaker`), see `writing-bible.md`.
+
+### Plots
+
+Plots are logical groupings of events, story tags (quantified), known character traits, and chat topics. A plot can be resolved via players actions (either in RPG events or TCG sentient cards effects) or independantly by NPC actions if the player ignores these plots.
+
+Mechanics (event triggers, effects...) are mostly handled by the other game mechanics, plots are mostly a way for designers (and maybe players, TBD) to keep an overview of all the possible plots going on in the story.
+Plots can be ended via "silent" events using the usual mechanics (trigger conditions, effects).
+
+Example plot: Emma's initial money issues. This could be a simple one, tracked by a storyTag (Emma financial independance), which gets resolved at value 10. Various events and actions can contribute to this. On resolution, if the player contributed, Emma celebrates with them.

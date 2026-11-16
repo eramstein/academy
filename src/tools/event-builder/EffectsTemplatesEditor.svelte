@@ -64,7 +64,7 @@
     schedule: Schedule;
   };
 
-  type JobArgs = { job: Omit<Job, 'id'> };
+  type JobArgs = { job: Omit<Job, 'id'>; characterKey?: string };
 
   function defaultScheduleArgs(): ScheduleActivityArgs {
     return {
@@ -92,6 +92,7 @@
 
   function defaultJobArgs(): JobArgs {
     return {
+      characterKey: 'player',
       job: {
         jobType: JobType.Mentoring,
         name: '',
@@ -341,6 +342,7 @@
   function normalizeJobArgs(raw: Record<string, any>): JobArgs {
     const defaults = defaultJobArgs();
     return {
+      characterKey: typeof raw.characterKey === 'string' ? raw.characterKey : defaults.characterKey,
       job: {
         ...defaults.job,
         ...(raw.job ?? {}),
@@ -361,12 +363,25 @@
 
   function writeJobArgs(index: number, next: JobArgs) {
     const job = { ...next.job, schedule: withoutEmptyScheduleFlags(next.job.schedule) };
-    update(effects.map((effect, i) => (i === index ? { ...effect, parameters: { job } } : effect)));
+    const characterKey = next.characterKey?.trim() || 'player';
+    update(
+      effects.map((effect, i) =>
+        i === index
+          ? {
+              ...effect,
+              parameters: {
+                job,
+                ...(characterKey !== 'player' ? { characterKey } : {}),
+              },
+            }
+          : effect
+      )
+    );
   }
 
   function setJobField(index: number, key: keyof Omit<Job, 'id'>, value: unknown) {
     const current = jobArgs(effects[index]);
-    writeJobArgs(index, { job: { ...current.job, [key]: value } });
+    writeJobArgs(index, { ...current, job: { ...current.job, [key]: value } });
   }
 
   // The schedule controls are shared, so read and write it through the owning effect's parameters.
@@ -380,7 +395,8 @@
   function setSchedule(index: number, schedule: Schedule) {
     const effect = effects[index];
     if (effect.type === EventEffectType.GetJob) {
-      writeJobArgs(index, { job: { ...jobArgs(effect).job, schedule } });
+      const current = jobArgs(effect);
+      writeJobArgs(index, { ...current, job: { ...current.job, schedule } });
     } else {
       writeScheduleArgs(index, { ...scheduleArgs(effect), schedule });
     }
@@ -1312,6 +1328,19 @@
 
           {#if job}
             <div class="schedule-fields">
+              <input
+                class="input arg"
+                value={job.characterKey ?? 'player'}
+                placeholder="character key"
+                aria-label="Character key"
+                title="Who gets the job (player or NPC key)"
+                oninput={(e) =>
+                  writeJobArgs(i, {
+                    ...job,
+                    characterKey: (e.currentTarget as HTMLInputElement).value,
+                  })}
+              />
+
               <select
                 class="input"
                 value={job.job.jobType}

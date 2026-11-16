@@ -18,22 +18,37 @@ const attributePerJobType: Record<JobType, keyof Attributes & string> = {
   [JobType.Music]: 'dexterity',
 };
 
-export function acceptJob(job: Omit<Job, 'id'>, schedule: Schedule) {
+export function acceptJob(job: Omit<Job, 'id'>, schedule: Schedule, characterKey = 'player') {
+  const character =
+    characterKey === 'player' || characterKey === gs.player.key
+      ? gs.player
+      : gs.characters[characterKey];
+  if (!character) {
+    return `Invalid character key: ${characterKey}.`;
+  }
+
   const newJob: Job = {
     id: crypto.randomUUID(),
     ...job,
   };
-  gs.player.jobs.push(newJob);
+  if (!character.jobs) {
+    character.jobs = [];
+  }
+  character.jobs.push(newJob);
   scheduleActivities({
     activity: {
       type: ActivityType.Work,
-      participants: [gs.player.key, job.employerKey],
+      participants: [character.key, job.employerKey],
       placeKey: job.placeKey,
       jobId: newJob.id,
     },
     schedule,
   });
-  return `You have accepted the job ${job.name} from ${job.employerKey}.`;
+
+  if (character.key === gs.player.key) {
+    return `You have accepted the job ${job.name} from ${job.employerKey}.`;
+  }
+  return `${character.name} accepts the job ${job.name} from ${job.employerKey}.`;
 }
 
 export async function performJob(job: Job): Promise<string> {

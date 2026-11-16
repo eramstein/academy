@@ -18,6 +18,7 @@
     onCreateFollowUp,
     onEdit,
     onShowPacing,
+    onShowStory,
   }: {
     events: EventTemplate[];
     selectedArc?: string | null;
@@ -25,6 +26,7 @@
     onCreateFollowUp: (fromEvent: EventTemplate) => void;
     onEdit: (event: EventTemplate) => void;
     onShowPacing: () => void;
+    onShowStory: () => void;
   } = $props();
 
   type RelationGrant = 'friendship' | 'love' | 'rivalry';
@@ -226,6 +228,7 @@
       </p>
     </div>
     <div class="header-actions">
+      <button type="button" class="ghost-btn" onclick={onShowStory}>Story tags</button>
       <button type="button" class="ghost-btn" onclick={onShowPacing}>Pacing</button>
       <button type="button" class="create-btn" onclick={onCreate}>New event</button>
     </div>
