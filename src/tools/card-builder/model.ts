@@ -16,7 +16,13 @@ import {
 } from '@/lib/_model';
 import { DynamicValue } from '@/lib/battle/effects/dynamic-values';
 import type { UnitFilterArgs } from '@/lib/battle/effects/unit-filters';
-import { getCardBudget, getCostFromBudget, maxCardBudget } from '@/lib/sim/cards/card-budget';
+import {
+  getBudgetFromCost,
+  getCardBudget,
+  getCostFromBudget,
+  MAX_MANA_COST,
+  maxCardBudget,
+} from '@/lib/sim/cards/card-budget';
 import type { PartialConjuredSpell, PartialConjuredUnit } from '@/lib/sim/cards/creation';
 import { KEYWORD_KEYS } from '@/lib/sim/cards/keywords';
 
@@ -286,11 +292,12 @@ export const EFFECT_FIELDS = {
   recycleCard: [],
   combine: [],
   useEnergy: [],
+  cardsInHand: [],
 } satisfies Record<string, EffectField[]>;
 
 export const ALL_EFFECT_NAMES = Object.keys(EFFECT_FIELDS).sort();
 
-const COMPOSITE_EFFECTS = new Set(['combine', 'useEnergy']);
+const COMPOSITE_EFFECTS = new Set(['combine', 'useEnergy', 'cardsInHand']);
 
 export function effectNames(depth = 0): string[] {
   if (depth >= 2) return ALL_EFFECT_NAMES.filter((name) => !COMPOSITE_EFFECTS.has(name));
@@ -321,6 +328,7 @@ export const EFFECT_NOTES: Record<string, string> = {
   recycleCard: 'Targets are graveyard cards shuffled into the deck.',
   putToDeckBottom: 'Target a card, or leave targets empty to put this card on the bottom.',
   useEnergy: 'Spends energy, then runs the effect. An empty cost spends all of it.',
+  cardsInHand: 'Uses cards in hand as the value for one numeric arg, then runs the effect.',
   combine: "Runs each effect in order. They share this action's targets.",
 };
 
@@ -442,6 +450,14 @@ export function blankEffectArgs(name: string): Record<string, any> {
       otherArgs: blankEffectArgs(effectTemplate),
     };
   }
+  if (name === 'cardsInHand') {
+    const effectTemplate = 'damageUnit';
+    return {
+      effectTemplate,
+      handCountForArgs: 'damage',
+      otherArgs: blankEffectArgs(effectTemplate),
+    };
+  }
   const args: Record<string, any> = {};
   for (const field of fieldsFor(name)) args[field.key] = initialValue(field);
   return args;
@@ -555,6 +571,16 @@ export function serializeEffectArgs(
     if (fills) out.energyUsedForArgs = fills;
     const energyCost = optionalNumber(source.energyCost);
     if (energyCost !== undefined) out.energyCost = energyCost;
+    const other = serializeEffectArgs(effectTemplate, source.otherArgs, depth + 1);
+    if (fills) delete other[fills];
+    if (Object.keys(other).length) out.otherArgs = other;
+    return out;
+  }
+  if (effectName === 'cardsInHand') {
+    const effectTemplate = String(source.effectTemplate || 'damageUnit');
+    const out: Record<string, any> = { effectTemplate };
+    const fills = String(source.handCountForArgs || '').trim();
+    if (fills) out.handCountForArgs = fills;
     const other = serializeEffectArgs(effectTemplate, source.otherArgs, depth + 1);
     if (fills) delete other[fills];
     if (Object.keys(other).length) out.otherArgs = other;
@@ -713,6 +739,10 @@ export function serializeCard(card: CardDraft): CardTemplate {
 
 export type SuggestedManaCost = {
   cost: number;
+  /** Budget points used by the card's features. */
+  usedBudget: number;
+  /** Budget points left for the card's current mana cost (negative if over). */
+  spareBudget: number;
   /** Budget points above the max mapped mana cost (9). */
   overBudget: number;
 };
@@ -722,20 +752,26 @@ export function suggestedManaCost(source: CardDraft | UnitDraft): SuggestedManaC
   if ('type' in source && source.type === CardType.Land) return null;
 
   let budget: number;
+  let colors: { color: CardColor; count: number }[];
   if ('type' in source && source.type === CardType.Spell) {
-    const { id: _id, name: _name, imageFileName: _image, cost: _cost, ...rest } = serializeCard(
-      source
-    ) as SpellCardTemplate;
+    const serialized = serializeCard(source) as SpellCardTemplate;
+    const { id: _id, name: _name, imageFileName: _image, cost: _cost, ...rest } = serialized;
     budget = getCardBudget(rest as PartialConjuredSpell);
+    colors = serialized.colors;
   } else {
-    const { id: _id, name: _name, imageFileName: _image, cost: _cost, ...rest } = serializeUnit(
-      source
-    );
+    const serialized = serializeUnit(source);
+    const { id: _id, name: _name, imageFileName: _image, cost: _cost, ...rest } = serialized;
     budget = getCardBudget(rest as PartialConjuredUnit);
+    colors = serialized.colors;
   }
+
+  const manaCost = Math.min(MAX_MANA_COST, Math.max(0, asNumber(source.cost, 0)));
+  const targetBudget = getBudgetFromCost(manaCost, colors);
 
   return {
     cost: getCostFromBudget(budget).cost,
+    usedBudget: budget,
+    spareBudget: targetBudget - budget,
     overBudget: Math.max(0, budget - maxCardBudget),
   };
 }

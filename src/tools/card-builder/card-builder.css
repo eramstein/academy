@@ -302,7 +302,13 @@
 }
 
 .cb-name-field {
-  flex: 1 1 12rem;
+  flex: 0 1 9rem;
+  max-width: 11rem;
+}
+
+.cb-name-field .cb-input {
+  width: 100%;
+  min-width: 0;
 }
 
 .cb-cost-field {
@@ -311,6 +317,13 @@
   flex-direction: column;
   align-items: stretch;
   gap: 0.25rem;
+}
+
+.cb-cost-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
 }
 
 .cb-cost-field .cb-input {
@@ -324,9 +337,20 @@
   line-height: 1.2;
 }
 
+.cb-cost-spare {
+  color: #a7f3d0;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.cb-cost-spare-over {
+  color: #fca5a5;
+}
+
 .cb-cost-over {
   margin: 0;
-  max-width: 7rem;
+  max-width: 9rem;
   color: #fca5a5;
   font-size: 0.72rem;
   line-height: 1.25;

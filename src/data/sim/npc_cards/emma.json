@@ -1,5 +1,199 @@
 [
   {
+    "id": "mental_burst",
+    "name": "Mental Burst",
+    "imageFileName": "mental_burst",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      },
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["emma", "base-extended"],
+    "type": "spell",
+    "actions": [
+      {
+        "effect": {
+          "name": "cardsInHand",
+          "args": {
+            "effectTemplate": "addCounters",
+            "handCountForArgs": "counterValue",
+            "otherArgs": {
+              "counterType": "decay"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "executionner",
+    "name": "Executionner",
+    "imageFileName": "executionner",
+    "cost": 6,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["emma", "base"],
+    "type": "unit",
+    "power": 3,
+    "maxHealth": 4,
+    "retaliate": 2,
+    "keywords": {
+      "lance": true
+    },
+    "unitTypes": ["human"]
+  },
+  {
+    "id": "muse",
+    "name": "Muse",
+    "imageFileName": "muse",
+    "type": "unit",
+    "cost": 7,
+    "power": 0,
+    "maxHealth": 0,
+    "retaliate": 0,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["elemental"],
+    "poolKeys": ["emma", "base"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "cardsInHand",
+              "args": {
+                "effectTemplate": "addCounters",
+                "handCountForArgs": "counterValue",
+                "otherArgs": {
+                  "counterType": "growth"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ghost_of_wisdom",
+    "name": "Ghost of Wisdom",
+    "imageFileName": "ghost_of_wisdom",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["emma", "base"],
+    "type": "unit",
+    "power": 1,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "unitTypes": ["spirit"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Card Drawn",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "movement_elemental",
+    "name": "movement_elemental",
+    "imageFileName": "movement_elemental",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "poolKeys": ["emma", "base"],
+    "type": "unit",
+    "power": 1,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "unitTypes": ["elemental"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "ennemies": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "missiles_specialist",
+    "name": "Missiles Specialist",
+    "imageFileName": "missiles_specialist",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "blue",
+        "count": 1
+      }
+    ],
+    "poolKeys": ["emma", "base"],
+    "type": "unit",
+    "power": 2,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "keywords": {
+      "ranged": true
+    },
+    "unitTypes": ["human"]
+  },
+  {
     "id": "burst_of_wind",
     "name": "Burst of Wind",
     "imageFileName": "burst_of_wind",
