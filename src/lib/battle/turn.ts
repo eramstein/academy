@@ -30,7 +30,9 @@ export function nextTurn() {
 }
 
 function initPlayerTurn(player: Player) {
-  player.maxMana++;
+  if (player.maxMana < 10) {
+    player.maxMana++;
+  }
   player.mana = player.maxMana;
   player.abilityUsed = false;
   updateUnits(player);

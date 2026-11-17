@@ -23,7 +23,7 @@ const shroomy: UnitCardTemplate = {
   power: 1,
   maxHealth: 1,
   retaliate: 0,
-  unitTypes: [UnitType.Beast],
+  unitTypes: [UnitType.Mushroom],
   abilities: [
     {
       actions: [
@@ -317,6 +317,45 @@ const sudden_growth = {
   ],
 };
 
+const tantrum = {
+  id: 'tantrum',
+  name: 'Tantrum',
+  imageFileName: 'tantrum',
+  type: CardType.Spell,
+  cost: 5,
+  colors: [{ color: CardColor.Green, count: 3 }],
+  actions: [
+    {
+      effect: {
+        name: 'combine',
+        args: {
+          effectTemplates: [
+            {
+              name: 'staticKeyword',
+              args: {
+                abilityName: 'tantrum',
+                keyword: 'trample',
+              },
+            },
+            {
+              name: 'staticStats',
+              args: {
+                power: 3,
+              },
+            },
+          ],
+        },
+      },
+      targets: [
+        {
+          type: TargetType.Units,
+          count: 1,
+        },
+      ],
+    },
+  ],
+};
+
 const healing_balm = {
   id: 'healing_balm',
   name: 'Healing Balm',
@@ -572,6 +611,37 @@ const orc_warrior = {
   maxHealth: 4,
   retaliate: 1,
   unitTypes: [UnitType.Greenskin],
+};
+
+const orcish_artillery = {
+  id: 'orcish_artillery',
+  name: 'Orcish Artillery',
+  imageFileName: 'orcish_artillery',
+  type: CardType.Unit,
+  cost: 4,
+  colors: [{ color: CardColor.Red, count: 2 }],
+  power: 2,
+  maxHealth: 4,
+  retaliate: 1,
+  unitTypes: [UnitType.Greenskin],
+  abilities: [
+    {
+      trigger: {
+        type: TriggerType.OnTurnStart,
+        range: {
+          self: true,
+        },
+      },
+      actions: [
+        {
+          effect: {
+            name: 'damageLand',
+            args: { damage: 1, range: { sameRow: true } },
+          },
+        },
+      ],
+    },
+  ],
 };
 
 const gargoyle = {
@@ -1165,6 +1235,32 @@ const unsummon = {
   ],
 };
 
+const agility = {
+  id: 'agility',
+  name: 'Agility',
+  imageFileName: 'agility',
+  type: CardType.Spell,
+  cost: 2,
+  colors: [{ color: CardColor.Blue, count: 2 }],
+  actions: [
+    {
+      effect: {
+        name: 'staticKeyword',
+        args: {
+          abilityName: 'agility',
+          keyword: 'moveAndAttack',
+        },
+      },
+      targets: [
+        {
+          type: TargetType.Units,
+          count: 1,
+        },
+      ],
+    },
+  ],
+};
+
 const honest_work = {
   id: 'honest_work',
   name: 'Honest Work',
@@ -1532,6 +1628,36 @@ const sudden_death = {
   ],
 };
 
+const decaying_touch = {
+  id: 'decaying_touch',
+  name: 'Decaying Touch',
+  imageFileName: 'decaying_touch',
+  type: CardType.Spell,
+  cost: 6,
+  colors: [{ color: CardColor.Black, count: 2 }],
+  actions: [
+    {
+      effect: {
+        name: 'addCounters',
+        args: {
+          counterType: 'decay',
+          counterValue: 1,
+          range: {
+            sameRow: true,
+            enemies: true,
+          },
+        },
+      },
+      targets: [
+        {
+          type: TargetType.Allies,
+          count: 1,
+        },
+      ],
+    },
+  ],
+};
+
 const fortify = {
   id: 'fortify',
   name: 'Fortify',
@@ -1612,7 +1738,7 @@ const island = {
   type: CardType.Land,
   cost: 0,
   colors: [{ color: CardColor.Blue, count: 1 }],
-  health: 10,
+  health: 6,
 };
 
 const mountain = {
@@ -1622,7 +1748,7 @@ const mountain = {
   type: CardType.Land,
   cost: 0,
   colors: [{ color: CardColor.Red, count: 1 }],
-  health: 10,
+  health: 6,
 };
 
 const forest = {
@@ -1632,7 +1758,7 @@ const forest = {
   type: CardType.Land,
   cost: 0,
   colors: [{ color: CardColor.Green, count: 1 }],
-  health: 10,
+  health: 6,
 };
 
 const city = {
@@ -1642,7 +1768,7 @@ const city = {
   type: CardType.Land,
   cost: 0,
   colors: [{ color: CardColor.Black, count: 1 }],
-  health: 10,
+  health: 6,
 };
 
 const plains = {
@@ -1652,7 +1778,7 @@ const plains = {
   type: CardType.Land,
   cost: 0,
   colors: [],
-  health: 15,
+  health: 10,
 };
 
 const market = {
@@ -1662,7 +1788,7 @@ const market = {
   type: CardType.Land,
   cost: 0,
   colors: [],
-  health: 10,
+  health: 6,
   abilities: [
     {
       trigger: {
@@ -1691,7 +1817,7 @@ const enchanter_lair = {
   type: CardType.Land,
   cost: 0,
   colors: [],
-  health: 10,
+  health: 6,
   abilities: [
     {
       trigger: {
@@ -1743,6 +1869,7 @@ export const BASE_DECK_GREEN: DeckBlueprint = {
     regrowth,
     vigorous_entling,
     snek,
+    tantrum,
   ],
   lands: [forest, plains, market, enchanter_lair],
   learntKeywords: ['regeneration', 'trample'],
@@ -1773,6 +1900,7 @@ export const BASE_DECK_RED: DeckBlueprint = {
     fire_golem,
     salamander,
     earthquake,
+    orcish_artillery,
   ],
   lands: [mountain, plains, market, enchanter_lair],
   learntKeywords: ['lance', 'haste'],
@@ -1803,6 +1931,7 @@ export const BASE_DECK_BLACK: DeckBlueprint = {
     demonic_tutor,
     skeletal_archer,
     plague_spreader,
+    decaying_touch,
   ],
   lands: [city, plains, market, enchanter_lair],
   learntKeywords: ['ranged', 'immobile'],
@@ -1833,6 +1962,7 @@ export const BASE_DECK_BLUE: DeckBlueprint = {
     ancient_memories,
     unsummon,
     hurried_student,
+    agility,
   ],
   lands: [island, plains, market, enchanter_lair],
   learntKeywords: ['ranged', 'flying'],
