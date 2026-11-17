@@ -1,9 +1,19 @@
-import { ActionType, ActivityType, ClassType, SchoolName, type Action } from '../_model';
+import {
+  ActionType,
+  ActivityType,
+  ClassType,
+  SchoolName,
+  type Action,
+  type CardTemplate,
+  type Character,
+} from '../_model';
 import { isClassActivity } from '../_model/type-lookup-sim';
 import { gs } from '../_state';
 import { getRandomFromArray } from '../_utils/random';
 import { conjureCard, getConjurationOtions } from './actions/artificery';
 import { getEnchantableCards } from './actions/enchanting';
+import { getCardTemplatesByPoolKeys } from './cards/npc-card-templates';
+import { makeUniqueId } from './deck';
 import { getCurrentScheduledActivity } from './schedule';
 
 export function getLessonActions(): Action[] {
@@ -62,23 +72,47 @@ export function getLessonActions(): Action[] {
   return lessons;
 }
 
+function characterOwnsTemplate(character: Character, templateId: string): boolean {
+  return character.collection.some(
+    (card) => card.id === templateId || card.id.startsWith(`${templateId}-`)
+  );
+}
+
+/** Unused NPC catalog cards tagged with both the character key and `base`. */
+function getUnusedNpcBaseCards(character: Character): CardTemplate[] {
+  return getCardTemplatesByPoolKeys([character.key, 'base']).filter(
+    (template) => !characterOwnsTemplate(character, template.id)
+  );
+}
+
 async function makeAllNpcsConjure() {
   for (const character of Object.values(gs.characters)) {
-    if (character.school === SchoolName.Academy) {
-      const options = await getConjurationOtions(
-        {
-          source: 'conjure',
-          resources: [],
-        },
-        character.key
-      );
-      if (options.length === 0) {
-        continue;
-      }
-      const result = getRandomFromArray(options);
-      conjureCard(result, character.key);
-      character.decks[0]!.cards.push(result.template.id);
+    if (character.school !== SchoolName.Academy) {
+      continue;
     }
+
+    const baseOptions = getUnusedNpcBaseCards(character);
+    if (baseOptions.length > 0) {
+      const template = getRandomFromArray(baseOptions);
+      const card = makeUniqueId(template);
+      character.collection.push(card);
+      character.decks[0]!.cards.push(card.id);
+      continue;
+    }
+
+    const options = await getConjurationOtions(
+      {
+        source: 'conjure',
+        resources: [],
+      },
+      character.key
+    );
+    if (options.length === 0) {
+      continue;
+    }
+    const result = getRandomFromArray(options);
+    conjureCard(result, character.key);
+    character.decks[0]!.cards.push(result.template.id);
   }
 }
 

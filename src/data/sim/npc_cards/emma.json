@@ -333,6 +333,45 @@
     ]
   },
   {
+    "id": "joe_the_jelly",
+    "name": "Joe the Jelly",
+    "imageFileName": "joe_the_jelly",
+    "poolKeys": ["emma", "base"],
+    "type": "unit",
+    "cost": 3,
+    "power": 5,
+    "retaliate": 5,
+    "maxHealth": 5,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["elemental"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "excludeSelf": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "decay",
+                "counterValue": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "bob_the_blob",
     "name": "Bob the Blob",
     "imageFileName": "bob_the_blob",

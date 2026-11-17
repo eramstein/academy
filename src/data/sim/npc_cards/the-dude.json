@@ -1,0 +1,235 @@
+[
+  {
+    "id": "red_haired_bard",
+    "name": "Red Haired Bard",
+    "imageFileName": "red_haired_bard",
+    "type": "unit",
+    "cost": 5,
+    "power": 2,
+    "retaliate": 1,
+    "maxHealth": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "temporaryEffect",
+              "args": {
+                "effect": {
+                  "moveAndAttack": true
+                },
+                "range": {
+                  "allies": true,
+                  "adjacent": true,
+                  "unitType": "beast"
+                }
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "After Moving",
+          "range": {
+            "self": true
+          }
+        }
+      }
+    ],
+    "poolKeys": ["the-dude", "event"]
+  },
+  {
+    "id": "bountiful_soil",
+    "imageFileName": "bountiful_soil",
+    "name": "Bountiful Soil",
+    "type": "land",
+    "cost": 0,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "health": 8,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1,
+                "range": {
+                  "sameRow": true,
+                  "allies": true,
+                  "unitType": "beast"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "poolKeys": ["the-dude", "base-extended"]
+  },
+  {
+    "id": "hobbit_gardener",
+    "name": "Hobbit Gardener",
+    "imageFileName": "hobbit_gardener",
+    "type": "unit",
+    "cost": 3,
+    "power": 1,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["halfing"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "summon",
+              "args": {
+                "summonedUnit": {
+                  "id": "shrubbery",
+                  "name": "Shrubbery",
+                  "imageFileName": "shrubbery",
+                  "type": "unit",
+                  "cost": 1,
+                  "power": 0,
+                  "maxHealth": 1,
+                  "retaliate": 0,
+                  "colors": [
+                    {
+                      "color": "green",
+                      "count": 1
+                    }
+                  ],
+                  "unitTypes": ["plant"]
+                },
+                "isRespawn": true
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "Before Moving",
+          "range": {
+            "self": true
+          }
+        }
+      }
+    ],
+    "poolKeys": ["the-dude", "base"]
+  },
+  {
+    "id": "well_fed_hobbit",
+    "name": "Well Fed Hobbit",
+    "imageFileName": "well_fed_hobbit",
+    "type": "unit",
+    "cost": 2,
+    "power": 0,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "unitTypes": ["halfing"],
+    "abilities": [
+      {
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1
+              }
+            }
+          }
+        ],
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "allies": true,
+            "adjacent": true
+          }
+        }
+      }
+    ],
+    "poolKeys": ["the-dude", "base"]
+  },
+  {
+    "id": "baston",
+    "name": "Baston!",
+    "imageFileName": "baston",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "staticKeyword",
+          "args": {
+            "abilityName": "baston",
+            "keyword": "cleave"
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "poolKeys": ["the-dude", "base"]
+  },
+  {
+    "id": "stampeding_ox",
+    "name": "Stampeding Ox",
+    "imageFileName": "stampeding_ox",
+    "type": "unit",
+    "cost": 7,
+    "power": 4,
+    "maxHealth": 5,
+    "retaliate": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "unitTypes": ["beast"],
+    "keywords": {
+      "cleave": true
+    },
+    "poolKeys": ["the-dude", "base"]
+  }
+]
