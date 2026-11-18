@@ -32,7 +32,7 @@ export function resetBattleUiPending() {
   battle.currentEffectIndex = 0;
   battle.currentTargetIndex = 0;
   battle.targetBeingSelected = null;
-  battle.attackingUnitId = null;
+  battle.attackingUnitIds = [];
   battle.colorBeingIncremented = null;
   battle.landAbilityAnimating = null;
   battle.validTargets = null;

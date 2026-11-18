@@ -73,32 +73,4 @@ export const DataEffectPrimers: Record<
       );
     },
   }),
-  cardsInHand: ({
-    effectTemplate,
-    handCountForArgs,
-    otherArgs,
-  }: {
-    effectTemplate: keyof typeof DataEffectTemplates;
-    handCountForArgs: any;
-    otherArgs: any;
-  }) => ({
-    fn: ({ unit, player, targets, triggerParams }) => {
-      const handCount = player?.hand?.length ?? 0;
-      DataEffectTemplates[effectTemplate]({
-        ...otherArgs,
-        [handCountForArgs]: handCount,
-      }).fn({
-        unit,
-        player,
-        targets,
-        triggerParams,
-      });
-    },
-    label: (targets: TargetDefinition[]) => {
-      return DataEffectTemplates[effectTemplate]({
-        ...otherArgs,
-        [handCountForArgs]: ' equal to the number of cards in your hand',
-      }).label(targets);
-    },
-  }),
 };

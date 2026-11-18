@@ -154,6 +154,7 @@ export interface UnitStatuses {
   root?: number;
   stun?: number;
   daze?: number;
+  vulnerable?: number;
 }
 
 export interface Ability {

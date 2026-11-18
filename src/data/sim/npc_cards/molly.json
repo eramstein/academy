@@ -351,5 +351,294 @@
         ]
       }
     ]
+  },
+  {
+    "id": "vulture",
+    "name": "Vulture",
+    "imageFileName": "vulture",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "poolKeys": ["molly", "base"],
+    "type": "unit",
+    "power": 1,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "keywords": {
+      "flying": true
+    },
+    "unitTypes": ["beast"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Death",
+          "range": {
+            "unitType": "beast"
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "wild_rancher",
+    "name": "Wild Rancher",
+    "imageFileName": "wild_rancher",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "poolKeys": ["molly", "base"],
+    "type": "unit",
+    "power": 1,
+    "maxHealth": 3,
+    "retaliate": 0,
+    "keywords": {
+      "resist": 2
+    },
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1,
+                "range": {
+                  "allies": true,
+                  "unitType": "beast"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "silver_back",
+    "name": "Silver Back",
+    "imageFileName": "silver_back",
+    "cost": 7,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "poolKeys": ["molly", "base"],
+    "type": "unit",
+    "power": 5,
+    "maxHealth": 5,
+    "retaliate": 2,
+    "unitTypes": ["beast"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "fight",
+              "args": {
+                "targetInFront": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "herd_animal",
+    "name": "Herd Animal",
+    "imageFileName": "herd_animal",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["molly", "base"],
+    "type": "unit",
+    "power": 0,
+    "maxHealth": 0,
+    "retaliate": 0,
+    "keywords": {
+      "trample": true
+    },
+    "unitTypes": ["beast"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "power": 1,
+                "maxHealth": 1,
+                "dynamicValue": "allied units"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rooster",
+    "name": "Rooster",
+    "imageFileName": "rooster",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["molly", "base"],
+    "type": "unit",
+    "power": 0,
+    "maxHealth": 3,
+    "retaliate": 0,
+    "unitTypes": ["beast"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "boxing_badger",
+    "name": "Boxing Badger",
+    "imageFileName": "boxing_badger",
+    "cost": 6,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["molly", "base"],
+    "type": "unit",
+    "power": 3,
+    "maxHealth": 5,
+    "retaliate": 2,
+    "unitTypes": ["beast"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Before Damage",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "fight",
+              "args": {
+                "mutual": false,
+                "targetInFront": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "night_owl",
+    "name": "Night Owl",
+    "imageFileName": "night_owl",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "poolKeys": ["molly", "base"],
+    "type": "unit",
+    "power": 1,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "keywords": {
+      "flying": true
+    },
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "vulnerable",
+                "duration": 1,
+                "fromTriggerParam": "defender"
+              }
+            }
+          }
+        ]
+      }
+    ]
   }
 ]

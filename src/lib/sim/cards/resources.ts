@@ -38,6 +38,7 @@ const CONTROL_STATUS_TYPES = new Set<StatusType>([
   StatusType.Daze,
   StatusType.Root,
   StatusType.Stun,
+  StatusType.Vulnerable,
 ]);
 
 export function isUniqueResource(type: ResourceType): boolean {

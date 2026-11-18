@@ -36,7 +36,7 @@
   let isValidTarget = $derived(uiState.battle.validTargets?.units?.[unit.instanceId] === true);
 
   // Check if this unit is currently attacking
-  let isAttacking = $derived(uiState.battle.attackingUnitId === unit.instanceId);
+  let isAttacking = $derived(uiState.battle.attackingUnitIds?.includes(unit.instanceId) ?? false);
 
   // Check if unit should be dimmed when targetBeingSelected is a unit and this unit is not a valid target
   let isDimmed = $derived(

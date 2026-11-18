@@ -19,13 +19,11 @@
     "actions": [
       {
         "effect": {
-          "name": "cardsInHand",
+          "name": "addCounters",
           "args": {
-            "effectTemplate": "addCounters",
-            "handCountForArgs": "counterValue",
-            "otherArgs": {
-              "counterType": "decay"
-            }
+            "counterType": "decay",
+            "counterValue": 1,
+            "dynamicValue": "cards in hand"
           }
         }
       }
@@ -80,13 +78,11 @@
         "actions": [
           {
             "effect": {
-              "name": "cardsInHand",
+              "name": "staticStats",
               "args": {
-                "effectTemplate": "addCounters",
-                "handCountForArgs": "counterValue",
-                "otherArgs": {
-                  "counterType": "growth"
-                }
+                "power": 1,
+                "maxHealth": 1,
+                "dynamicValue": "cards in hand"
               }
             }
           }

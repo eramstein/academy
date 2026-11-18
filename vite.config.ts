@@ -43,6 +43,7 @@ export default defineConfig(({ command }) => ({
         '**/src/data/sim/events.json',
         '**/mods/**',
         '**/src/data/sim/card_flavor_templates.json',
+        '**/src/data/sim/npc_cards/**',
       ],
     },
     proxy: {
@@ -220,6 +221,25 @@ function devApiMiddleware(req: IncomingMessage, res: ServerResponse, next: () =>
     } catch (error) {
       console.error('Error reading events:', error);
       sendJson(500, { error: 'Failed to read events' });
+    }
+    return;
+  }
+
+  if (req.method === 'GET' && req.url === '/api/npc-cards') {
+    try {
+      const dir = path.resolve(__dirname, 'src/data/sim/npc_cards');
+      const templates = fs
+        .readdirSync(dir)
+        .filter((name) => name.endsWith('.json'))
+        .flatMap((name) => {
+          const fileContent = fs.readFileSync(path.join(dir, name), 'utf-8');
+          const parsed = JSON.parse(fileContent);
+          return Array.isArray(parsed) ? parsed : [];
+        });
+      sendJson(200, templates);
+    } catch (error) {
+      console.error('Error reading npc cards:', error);
+      sendJson(500, { error: 'Failed to read npc cards' });
     }
     return;
   }

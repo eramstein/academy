@@ -47,7 +47,7 @@ export type UiState = {
     currentEffectIndex: number;
     currentTargetIndex: number;
     targetBeingSelected: TargetDefinition | null;
-    attackingUnitId: string | null;
+    attackingUnitIds: string[];
     playedSpell: SpellCardTemplate | null;
     playedSpellTargets: EffectTargets[][] | null;
     /** Unit/land instanceId sourcing AI ability target arrows (with playedSpellTargets) */

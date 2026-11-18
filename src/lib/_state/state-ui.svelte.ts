@@ -19,7 +19,7 @@ export const defaultUiState: UiState = {
     selectedTargets: [],
     currentTargetIndex: 0,
     targetBeingSelected: null,
-    attackingUnitId: null,
+    attackingUnitIds: [],
     playedSpell: null,
     playedSpellTargets: null,
     playedAbilitySourceId: null,
@@ -77,6 +77,11 @@ export const defaultUiState: UiState = {
 };
 
 export const uiState: UiState = $state(defaultUiState);
+
+// HMR / partial state may still carry the old attackingUnitId field
+if (!Array.isArray(uiState.battle.attackingUnitIds)) {
+  uiState.battle.attackingUnitIds = [];
+}
 
 export const resetUiState = (): void => {
   Object.assign(uiState, structuredClone(defaultUiState));

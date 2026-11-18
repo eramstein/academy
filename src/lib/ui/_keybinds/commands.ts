@@ -6,7 +6,7 @@ import { drawCard, tutorCard } from '../../battle/deck';
 import { scheduleClassesForCurrentTerm } from '../../sim/academy';
 import { ACTION_TEMPLATE_KEYS } from '../../sim/cards/action-templates';
 import { KEYWORD_KEYS } from '../../sim/cards/keywords';
-import { getLoadedCardTemplate } from '../../sim/cards/npc-card-templates';
+import { getLoadedCardTemplate, reloadCardTemplates } from '../../sim/cards/npc-card-templates';
 import { redeemBaseDeck } from '../../sim/deck';
 import { completeCraftedArtifact } from '../../sim/actions/craft-artifact';
 import { getLoadedArtifact, getLoadedArtifacts } from '../../sim/artifacts';
@@ -232,6 +232,7 @@ export async function executeCommand(input: string): Promise<CommandResult> {
       if (!templateId) {
         return { ok: false, message: 'Usage: /test-card <template-id>' };
       }
+      await reloadCardTemplates();
       const template = getLoadedCardTemplate(templateId);
       if (!template) {
         return { ok: false, message: `Card template not found: ${templateId}` };

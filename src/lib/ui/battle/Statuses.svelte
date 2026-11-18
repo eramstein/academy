@@ -14,6 +14,7 @@
     root: '🌱',
     stun: '💫',
     daze: '😵',
+    vulnerable: '💀',
   };
 
   // Tooltip content for each status
@@ -26,6 +27,8 @@
     stun: (value: number) =>
       `Stunned (${value}): This unit cannot do anything for ${value} more turns.`,
     daze: (value: number) => `Dazed (${value}): This unit cannot attack for ${value} more turns.`,
+    vulnerable: (value: number) =>
+      `Vulnerable (${value}): This unit takes double damage from attacks.`,
   };
 
   function handleMouseEnter(status: string) {

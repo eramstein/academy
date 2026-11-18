@@ -91,7 +91,8 @@ export function attackUnit(unit: UnitDeployed, target: UnitDeployed) {
 
   attackedUnits.forEach((attackedUnit) => {
     const preventedDamage = (!unit.keywords?.armorPiercing && attackedUnit.keywords?.armor) || 0;
-    const dealtDamage = unit.power - preventedDamage;
+    const vulnerableModifier = attackedUnit.statuses.vulnerable ? 2 : 1;
+    const dealtDamage = unit.power * vulnerableModifier - preventedDamage;
     const excessDamage = dealtDamage - attackedUnit.health;
     if (unit.keywords?.poisonous) {
       attackedUnit.statuses.poison = (attackedUnit.statuses.poison || 0) + unit.keywords.poisonous;
@@ -150,16 +151,22 @@ function recordUnitHasAttacked(unit: UnitDeployed) {
   if (!unit.keywords?.moveAndAttack || unit.hasMoved) {
     unit.exhausted = true;
   }
-  if (!uiState.isHeadless) {
-    // Play attack sound based on unit power
-    soundManager.playAttackSound(unit.power);
-    // Trigger attack animation
-    uiState.battle.attackingUnitId = unit.instanceId;
-    // Reset animation after a short delay
-    setTimeout(() => {
-      uiState.battle.attackingUnitId = null;
-    }, 300);
+  triggerAttackAnimation(unit);
+}
+
+function triggerAttackAnimation(unit: UnitDeployed) {
+  if (uiState.isHeadless) return;
+  soundManager.playAttackSound(unit.power);
+  const id = unit.instanceId;
+  const current = uiState.battle.attackingUnitIds ?? [];
+  if (!current.includes(id)) {
+    uiState.battle.attackingUnitIds = [...current, id];
   }
+  setTimeout(() => {
+    uiState.battle.attackingUnitIds = (uiState.battle.attackingUnitIds ?? []).filter(
+      (x) => x !== id
+    );
+  }, 300);
 }
 
 export function autoAttack(unit: UnitDeployed) {
@@ -197,4 +204,5 @@ export function fightUnit(unit1: UnitDeployed, unit2: UnitDeployed) {
     damageUnit(unit1, retaliation);
   }
   damageUnit(unit2, dealtDamage);
+  triggerAttackAnimation(unit1);
 }

@@ -62,11 +62,6 @@
     effectArgs.otherArgs = blankEffectArgs(name);
   }
 
-  function setCardsInHandEffect(effectArgs: Record<string, any>, name: string) {
-    effectArgs.effectTemplate = name;
-    effectArgs.handCountForArgs = numericArgKeys(name)[0] ?? '';
-    effectArgs.otherArgs = blankEffectArgs(name);
-  }
 </script>
 
 {#snippet effectBody(
@@ -186,49 +181,6 @@
             effectArgs.otherArgs,
             nestedDepth + 1,
             String(effectArgs.energyUsedForArgs ?? ''),
-            `${scope}-other`
-          )}
-        {/key}
-      </div>
-    {:else if name === 'cardsInHand'}
-      <div class="cb-grid">
-        <label class="cb-field">
-          <span class="cb-label">Effect</span>
-          <select
-            class="cb-input"
-            value={effectArgs.effectTemplate}
-            onchange={(event) => setCardsInHandEffect(effectArgs, event.currentTarget.value)}
-          >
-            {#each effectNames(nestedDepth + 1).filter((choice) => choice !== 'cardsInHand') as choice (choice)}
-              <option value={choice}>{choice}</option>
-            {/each}
-          </select>
-        </label>
-        <label class="cb-field">
-          <span class="cb-label">Hand count fills</span>
-          <input
-            class="cb-input"
-            list={`${listId}-${scope}-hand`}
-            value={effectArgs.handCountForArgs ?? ''}
-            placeholder="damage"
-            autocomplete="off"
-            oninput={(event) => (effectArgs.handCountForArgs = event.currentTarget.value)}
-          />
-          <datalist id={`${listId}-${scope}-hand`}>
-            {#each numericArgKeys(effectArgs.effectTemplate) as key (key)}
-              <option value={key}></option>
-            {/each}
-          </datalist>
-        </label>
-      </div>
-      <div class="cb-nested">
-        <h3>Other arguments</h3>
-        {#key effectArgs.effectTemplate}
-          {@render effectBody(
-            effectArgs.effectTemplate,
-            effectArgs.otherArgs,
-            nestedDepth + 1,
-            String(effectArgs.handCountForArgs ?? ''),
             `${scope}-other`
           )}
         {/key}

@@ -47,6 +47,7 @@ export enum StatusType {
   Stun = 'stun',
   Root = 'root',
   Daze = 'daze',
+  Vulnerable = 'vulnerable',
 }
 
 export enum UnitType {

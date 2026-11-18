@@ -292,12 +292,11 @@ export const EFFECT_FIELDS = {
   recycleCard: [],
   combine: [],
   useEnergy: [],
-  cardsInHand: [],
 } satisfies Record<string, EffectField[]>;
 
 export const ALL_EFFECT_NAMES = Object.keys(EFFECT_FIELDS).sort();
 
-const COMPOSITE_EFFECTS = new Set(['combine', 'useEnergy', 'cardsInHand']);
+const COMPOSITE_EFFECTS = new Set(['combine', 'useEnergy']);
 
 export function effectNames(depth = 0): string[] {
   if (depth >= 2) return ALL_EFFECT_NAMES.filter((name) => !COMPOSITE_EFFECTS.has(name));
@@ -328,8 +327,8 @@ export const EFFECT_NOTES: Record<string, string> = {
   recycleCard: 'Targets are graveyard cards shuffled into the deck.',
   putToDeckBottom: 'Target a card, or leave targets empty to put this card on the bottom.',
   useEnergy: 'Spends energy, then runs the effect. An empty cost spends all of it.',
-  cardsInHand: 'Uses cards in hand as the value for one numeric arg, then runs the effect.',
   combine: "Runs each effect in order. They share this action's targets.",
+  makeVulnerable: 'Make a unit vulnerable. It takes double damage from attacks.',
 };
 
 let nextDraftId = 1;
@@ -447,14 +446,6 @@ export function blankEffectArgs(name: string): Record<string, any> {
       effectTemplate,
       energyUsedForArgs: 'damage',
       energyCost: undefined,
-      otherArgs: blankEffectArgs(effectTemplate),
-    };
-  }
-  if (name === 'cardsInHand') {
-    const effectTemplate = 'damageUnit';
-    return {
-      effectTemplate,
-      handCountForArgs: 'damage',
       otherArgs: blankEffectArgs(effectTemplate),
     };
   }
@@ -576,17 +567,6 @@ export function serializeEffectArgs(
     if (Object.keys(other).length) out.otherArgs = other;
     return out;
   }
-  if (effectName === 'cardsInHand') {
-    const effectTemplate = String(source.effectTemplate || 'damageUnit');
-    const out: Record<string, any> = { effectTemplate };
-    const fills = String(source.handCountForArgs || '').trim();
-    if (fills) out.handCountForArgs = fills;
-    const other = serializeEffectArgs(effectTemplate, source.otherArgs, depth + 1);
-    if (fills) delete other[fills];
-    if (Object.keys(other).length) out.otherArgs = other;
-    return out;
-  }
-
   const out: Record<string, any> = {};
   for (const field of fieldsFor(effectName)) {
     const value = source[field.key];

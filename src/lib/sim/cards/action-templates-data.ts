@@ -38,10 +38,7 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
         ],
       },
       budget:
-        (args.damage ?? 0) *
-        4 *
-        (range ? rangeTemplates[range].budgetMultiplier : 1) *
-        targetCount,
+        (args.damage ?? 0) * 4 * (range ? rangeTemplates[range].budgetMultiplier : 1) * targetCount,
     };
   },
   healUnit: (args: { health: number }) => ({
@@ -277,6 +274,26 @@ export const actionTemplates: Record<string, (args: any) => ActionTemplate> = {
         name: 'applyUnitStatus',
         args: {
           statusType: StatusType.Daze,
+          duration: args.duration,
+        },
+      },
+      targets: [
+        {
+          type: TargetType.Units,
+        },
+      ],
+    },
+    budget: (args.duration ?? 0) * 7,
+  }),
+  makeVulnerable: (args: { duration: number }) => ({
+    name: 'makeVulnerable',
+    label: 'Make Vulnerable',
+    description: 'Make a unit vulnerable. It takes 1 additional damage per attack.',
+    definition: {
+      effect: {
+        name: 'applyUnitStatus',
+        args: {
+          statusType: StatusType.Vulnerable,
           duration: args.duration,
         },
       },
