@@ -426,7 +426,7 @@
         {#each periodEventOffer.events as offered (offered.eventKey)}
           {@const character = offered.characterKey ? gs.characters[offered.characterKey] : undefined}
           {#if character}
-            <OrnateButton onclick={() => selectOfferedEvent(offered.eventKey)}>
+            <OrnateButton portrait onclick={() => selectOfferedEvent(offered.eventKey)}>
               {#snippet lead()}
                 <span class="option-thumb portrait offer-portrait" aria-hidden="true">
                   <CharacterPortrait {character} emotion={offered.emotion} />
@@ -694,18 +694,12 @@
   }
 
   .option-thumb.offer-portrait {
-    flex: 0 0 var(--offer-portrait-size, 5.5rem);
-    align-self: stretch;
     box-sizing: border-box;
-    width: var(--offer-portrait-size, 5.5rem);
-    height: var(--offer-portrait-size, 5.5rem);
-    min-width: var(--offer-portrait-size, 5.5rem);
-    max-width: var(--offer-portrait-size, 5.5rem);
-    min-height: var(--offer-portrait-size, 5.5rem);
-    max-height: 100%;
     margin: 0;
     border-radius: 0;
     overflow: hidden;
+    background: transparent;
+    box-shadow: none;
   }
 
   .offer-portrait :global(.character-portrait) {

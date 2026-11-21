@@ -9,6 +9,7 @@
     icon,
     mirrorIcon = false,
     lead,
+    portrait = false,
     children,
     type = 'button',
   }: {
@@ -18,6 +19,8 @@
     icon?: string;
     mirrorIcon?: boolean;
     lead?: Snippet;
+    /** Embed `lead` as a full-height portrait. Left corners use the flat piece. */
+    portrait?: boolean;
     children?: Snippet;
     type?: 'button' | 'submit' | 'reset';
   } = $props();
@@ -26,6 +29,7 @@
   const paintedIcon = $derived(!!icon && isPaintedUiIcon(icon));
   const borderUrl = getAssetPath('images/ui/decorations/border.png');
   const cornerUrl = getAssetPath('images/ui/decorations/corner.png');
+  const cornerFlatUrl = getAssetPath('images/ui/decorations/corner-flat.png');
 </script>
 
 <button
@@ -34,8 +38,9 @@
   class:long={variant === 'long'}
   class:muted={variant === 'muted'}
   class:has-lead={!!lead}
+  class:has-portrait={portrait}
   class:has-icon={!!iconUrl}
-  style="--border-img: url('{borderUrl}'); --corner-img: url('{cornerUrl}')"
+  style="--border-img: url('{borderUrl}'); --corner-img: url('{cornerUrl}'); --corner-flat-img: url('{cornerFlatUrl}')"
   {disabled}
   {onclick}
 >
@@ -45,14 +50,14 @@
     <span class="edge right"><span class="strip"></span></span>
     <span class="edge bottom"></span>
     <span class="edge left"><span class="strip"></span></span>
-    <span class="corner tl"></span>
+    <span class="corner tl" class:flat={portrait}></span>
     <span class="corner tr"></span>
-    <span class="corner bl"></span>
+    <span class="corner bl" class:flat={portrait}></span>
     <span class="corner br"></span>
   </span>
   <span class="content">
     {#if lead}
-      {@render lead()}
+      <span class="lead">{@render lead()}</span>
     {:else if iconUrl}
       <span
         class="icon"
@@ -215,6 +220,10 @@
     transform: rotate(180deg);
   }
 
+  .corner.flat {
+    background-image: var(--corner-flat-img);
+  }
+
   .content {
     position: relative;
     z-index: 1;
@@ -232,6 +241,48 @@
     align-items: stretch;
     padding: 0;
     gap: 0;
+  }
+
+  .lead {
+    display: contents;
+  }
+
+  /*
+    Portrait sits inside the gold frame: inset by the border thickness on the
+    top, bottom, and left, and as tall as the button allows. Left corners are
+    the flat piece so that inner edge is square.
+  */
+  .ornate-button.has-portrait {
+    --portrait-size: 5.5rem;
+  }
+
+  .ornate-button.has-portrait .content {
+    z-index: 1;
+    min-height: var(--portrait-size);
+  }
+
+  .ornate-button.has-portrait .lead {
+    display: flex;
+    flex: 0 0 auto;
+    align-self: stretch;
+    width: calc(var(--portrait-size) - 2 * var(--border-w));
+    min-height: calc(var(--portrait-size) - 2 * var(--border-w));
+    margin: var(--border-w) 0 var(--border-w) var(--border-w);
+    overflow: hidden;
+  }
+
+  .ornate-button.has-portrait .lead :global(*) {
+    flex: 1 1 auto;
+    align-self: stretch;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .icon {
