@@ -1,6 +1,7 @@
 [
   {
     "key": "enrollment",
+    "invitationText": "The Academy's towers are finally in sight.",
     "text": "You've imagined this moment often enough during the past three years. Its ancient towers rising above the Black Forest, its workshops and libraries, its illustrious professors, and the promise of learning a craft that could change your life.\nAn artificer. A proper one. Someone who can breathe intelligence into ink and parchment, and perhaps one day create something worth more than everything you've earned so far.\nBut first, a less inspiring form of magic.\nThe administrator slides a document across his desk.\n\"First-term tuition, Mr. Fibonacci. Payable in advance.\"\nYou glance at the sum.\nThree years of savings. A remarkable amount of effort, about to disappear with a single signature.\nApparently, the first lesson at the Academy is that miracles are expensive.",
     "triggers": [
       {
@@ -58,10 +59,12 @@
       }
     ],
     "image": "enrollment.jpg",
-    "imageSize": "large"
+    "imageSize": "large",
+    "priority": 3
   },
   {
     "key": "first-lesson",
+    "invitationText": "Professor Glützenbaum is opening the first class of the year.",
     "text": "Professor Glützenbaum is a small, elderly gentleman with a magnificent white moustache and spectacles that seem perpetually on the verge of sliding off his nose. He surveys the classroom with unconcealed satisfaction.\n\n\"Welcome, ladies and gentlemen! Today, you begin your journey toward becoming artificers. A noble profession, requiring intelligence, precision, patience, and a truly unreasonable tolerance for failure.\"\n\nHe produces a playing card from his pocket and places it on the lectern. The card promptly scuttles across the wood, stops at the edge, turns around, and comes back.\n\n\"Observe! A piece of cardboard that obeys instructions. Remarkable, isn't it? And this is merely a child's toy compared to the enchantments you may one day create.\"\n\nHe catches the card before it escapes again.\n\n\"But first, the foundations. All artificery draws upon four fundamental magical essences.\"\n\nHe gestures toward four colored sets of cards arranged on his desk.\n\n\"Green: life, growth, restoration, and the stubborn refusal of nature to stay properly organized.\"\n\n\"Blue: knowledge, perception, illusion, and the subtle art of knowing more than one ought.\"\n\n\"Red: energy, speed, chaos, and everything my colleagues wish I would stop demonstrating indoors.\"\n\n\"Black: structure, industry, preservation, and decay. The art of building things to last—or persuading them that they've lasted quite long enough.\"\n\nHe beams at the class.\n\n\"Each essence has its own properties, and every artificer develops particular affinities. You'll discover yours in time. For now, the Academy has kindly provided a selection of elementary decks.\"\n\nHe indicates the four sets.\n\n\"Choose whichever appeals to you. And don't fret over the decision! You'll study all four essences eventually.\"",
     "triggers": [
       {
@@ -157,6 +160,7 @@
   },
   {
     "key": "academy-first-artificery",
+    "invitationText": "Miss Lombard is waiting in the artificery workshop.",
     "text": "The morning finds you in one of the Academy's artificery workshops, a curious mixture of classroom and laboratory. Rows of heavy wooden workbenches are cluttered with pigments, delicate instruments, glass vessels and mysterious brass contraptions. At the front stands Miss Lombard, a stern-looking woman in her forties, whose immaculate appearance suggests that even the dust in this room knows better than to misbehave.\n\n\"Good morning. I am Professor Lombard, and I shall be teaching you artificery. Yesterday, you learned to play with enchanted cards. Today, you shall begin learning to make them.\"\n\nShe pauses to let the distinction sink in.\n\n\"An artificer must be able to bind magical essences into a precise, stable creation. We shall begin with Conjuration: shaping a card from raw materials through intuition and experimentation. The result may surprise you. Indeed, you may discover enchantments you do not yet understand, which you will eventually learn to reproduce deliberately.\"\n\nShe picks up a blank card and places it on her desk.\n\n\"Remember: the purpose of these exercises is not merely to produce better playing cards. Every technique you master here is a step toward creating the sophisticated magical artifacts upon which our profession is built.\"\n\nA young man sitting beside you leans over with a friendly smile. He has an easy confidence about him, and an accent you cannot quite place.\n\n\"She's quite right, you know. My family has been crafting enchanted objects for generations. Back home, a reliable magical advisor can fetch more than a merchant's entire cargo. And here we are, learning to make pieces of cardboard chase one another across a table.\"\n\nHe gives a delighted chuckle.\n\n\"Ousmane, by the way. Ousmane Tempeli. I came all this way to discover what these northern Academies know that we don't. With any luck, something worth bringing home.\"\n\nBefore you can reply, Miss Lombard clears her throat.\n\n\"Mr. Tempeli. I trust your conversation is contributing to the education of the entire class?\"\n\n\"Not yet, Professor. But I have every confidence it will.\"\n\nA few students laugh. Miss Lombard does not.\n\n\"How reassuring. Then perhaps you and Mr. Fibonacci would care to begin your work.\"\n\nOusmane gives you a cheerful wink as he turns toward his materials.\n\n\"Well, Antonio. Shall we see what wonders we can produce?\"",
     "triggers": [
       {
@@ -204,6 +208,7 @@
     "triggers": [],
     "optionTemplates": [],
     "title": "A Friendly Face",
+    "invitationText": "Molly is packing up her cards after a match.",
     "characterArc": "molly",
     "image": "molly_first_encounter.jpg",
     "imageSize": "large",
@@ -397,6 +402,7 @@
       }
     ],
     "title": "The Little Scholars",
+    "invitationText": "Molly is working with kids at the library.",
     "characterArc": "molly",
     "emotion": "happy",
     "image": "the_little_scholars.jpg",
@@ -458,6 +464,7 @@
   {
     "key": "molly_running_lesson",
     "title": "The Running Lesson",
+    "invitationText": "Students are running laps, and Molly is among them.",
     "text": "The Academy apparently believes that a sound mind requires sound legs. Today's afternoon lesson therefore takes place in the courtyard, where a physical-training instructor has ordered the students to run laps around the grounds. You join the procession, trying to decide whether this counts as education or an elaborate punishment.\n\nA few strides ahead, Molly is in magnificent spirits. She runs with an easy, springy gait, chatting to Emma as though the two of them were enjoying a leisurely walk through a garden.\n\n\"And then I told the stable boy that of course he could bring the foal indoors, just until the rain stopped—oh, Antonio! Hello! Isn't this lovely?\"\n\nShe waves enthusiastically and, without noticing, picks up the pace. Emma follows with considerably less enthusiasm. Her face is composed, but her breathing suggests that composing it is taking a heroic effort.\n\n\"Lovely,\" Emma manages. \"An inspired word for... running in circles.\"\n\nMolly laughs. \"Oh, you'll feel wonderful afterward! It's just a matter of finding your rhythm.\"\n\nEmma looks at you. It is a remarkable look: simultaneously a request for mercy and a warning not to enjoy this too much.",
     "triggers": [
       {
@@ -787,6 +794,7 @@
       }
     ],
     "title": "The Gentle Art of Wrestling",
+    "invitationText": "Molly has just finished wrestling practice in the courtyard.",
     "characterArc": "molly",
     "emotion": "happy",
     "image": "molly_gentle_art_wrestling.jpg",
@@ -1027,6 +1035,7 @@
       }
     ],
     "title": "An Invitation from Molly",
+    "invitationText": "Molly is waving from across the cafeteria, clearly with a plan.",
     "characterArc": "molly",
     "emotion": "happy",
     "image": "molly_pajama_party.jpg",
@@ -1249,6 +1258,7 @@
       }
     ],
     "title": "The Lake Above Town",
+    "invitationText": "Molly has a free morning and a walk in the hills in mind.",
     "characterArc": "molly",
     "emotion": "happy",
     "image": "molly_lake_above_town.jpg",
@@ -1479,6 +1489,7 @@
   {
     "key": "molly_noble_conduct",
     "title": "Noble Conduct",
+    "invitationText": "Molly is scrubbing ink off a corridor floor.",
     "text": "You are crossing a side corridor of the Academy when you discover Molly on her knees, scrubbing a stubborn patch of ink from the stone floor. Beside her, two cleaners are moving a heavy bucket between them. Molly's sleeves are rolled to the elbows; she has acquired a streak of soot across one cheek and looks rather pleased with the arrangement.\n\n\"Antonio!\" She waves the cloth at you. \"Did you know the workshop drains clog if you wash powdered iron into them? I didn't! But Marta showed me how to clear one. It's quite clever, really.\"\n\n\"Lady Moreno?\"\n\nThe voice comes from behind you. Elsa stands in the doorway, immaculately dressed, staring at Molly's wet sleeves. The cleaners straighten at once. Molly looks up with an open smile.\n\n\"Oh, hello, Elsa! Would you mind passing me that other rag?\"\n\nFor a moment, the corridor is very quiet.\n\n\"You are the daughter of a duke,\" Elsa says, keeping her voice controlled. \"Students here know that. So do the servants. You cannot simply kneel in the corridor and do their work for them.\"\n\n\"Why not? They had three people to clean the whole workshop, and someone spilled an entire bottle of—\"\n\n\"Because you represent your family, Molly. If people see a noblewoman working as a scullery maid, they will not say what a generous heart she has. They will say the Morenos have forgotten their station. And the next time you need the staff to follow an instruction, what authority will you have left?\"\n\nMolly lowers the rag. \"I wasn't giving anyone instructions. I was helping.\"\n\n\"Precisely.\" Elsa's glance flicks toward the cleaners. \"That is the problem.\"\n\nThe words land harder than Elsa seems to expect. Molly blinks rapidly. Her mouth trembles; she tries to answer and cannot. A tear slips down her cheek, making a clean track through the soot. The cleaners look at their shoes. Elsa, suddenly aware of her audience, draws herself a little straighter.\n\n\"I don't mean to be cruel,\" she says, with unfortunate timing. \"But someone ought to tell you.\"\n\nMolly wipes her eyes on her sleeve. \"You have. Thank you.\" Her voice is small, but quite steady by the end. She rises, sets down the cloth, and turns to the cleaners. \"Marta, you said the storeroom is short of hands on Thursdays. I can come then, too. If you'll have me.\"\n\n\"Of course, miss,\" Marta replies softly.\n\nMolly nods. She is still crying a little. Apparently, tears are not preventing her from making appointments.\n\nElsa looks between them, evidently dismayed that her lecture has produced the exact opposite of its intended effect. You have a moment to intervene.",
     "triggers": [
       {
@@ -1700,6 +1711,7 @@
   {
     "key": "molly_letter_with_seal",
     "title": "A Letter with a Seal",
+    "invitationText": "Molly is coming down the corridor with more than she can carry.",
     "text": "Molly is making her way through an Academy corridor with a basket balanced on one arm and a stack of books pressed against her chest. A loaf of sweet bread protrudes from the basket at a precarious angle. She greets you enthusiastically, which proves too much for the entire arrangement.\n\nOne book slides free. Then another. The bread makes a bid for independence. You catch the basket just as a heavy envelope flutters to the floor.\n\nThe envelope is thick cream paper, folded with almost military precision and closed by an imposing red wax seal. A coat of arms is pressed into it, surrounded by enough flourishes to suggest that the sender has never written an informal note in their life. Across the front, in impeccable calligraphy, is Molly's name—accompanied by an impressive procession of titles.\n\n\"Oh! My letter.\" Molly snatches up the envelope, then catches herself. \"Sorry, Antonio. I didn't mean to grab it from you. Thank you for saving the cakes!\"\n\nShe slips the letter between her books, but not before you notice the corner is creased from being opened and folded again. Her sunny expression falters for a moment.\n\n\"It's from home,\" she explains. \"They want to know how my studies are going. Whether I've made the proper acquaintances. Whether I'm making progress toward... well, the things I'm supposed to do afterward.\"\n\nShe looks down at her basket. \"The cakes are for some of the first-years. They looked terribly miserable after the alchemy test. I was going to cheer them up.\"\n\nApparently the first-years' spirits are an urgent matter. The weight of a family dynasty is rather less convenient to carry around in a basket.",
     "triggers": [
       {
@@ -1857,6 +1869,7 @@
   {
     "key": "molly_kitchen_volunteers",
     "title": "Kitchen Volunteers",
+    "invitationText": "The cafeteria kitchen is in an uproar, and Molly is in the middle of it.",
     "text": "The smell reaches you before the noise: onions, fresh bread, and something that may once have been soup but is currently reconsidering its place in the world.\n\nYou follow the commotion to the Academy cafeteria kitchen. A cook is trying to rescue a boiling pot, an assistant is counting plates with the expression of a defeated general, and Molly stands in the middle of it all wearing an enormous borrowed apron. Her cheeks are flushed, her sleeves rolled up, and three vegetables are balanced precariously against her elbow.\n\n\"Antonio! Thank goodness!\" she cries. One of the vegetables escapes. \"I only came to help with lunch. They were short-handed, and I thought, how difficult can chopping and stirring be?\"\n\nThere are many possible answers. The state of the kitchen suggests she has been discovering them experimentally.\n\n{{referral}}\n\nMolly points to the great pot. \"I followed the recipe! Well, most of it. I was trying to make enough for everyone, so I multiplied everything by four. Including the salt.\" She lowers her voice. \"And perhaps the pepper.\"\n\nThe head cook, a broad-shouldered woman with flour on both forearms, looks you over. \"If you're here to help, pick a station. If you're here to admire the disaster, take a number.\"\n\nMolly clasps her hands hopefully. \"Oh, Antonio, will you? I really do want to be useful.\"",
     "passages": {
       "referral": {
@@ -2054,6 +2067,7 @@
   {
     "key": "molly_worst_student_best_group",
     "title": "The Worst Student in the Best Study Group",
+    "invitationText": "Molly has taken over a library table to study for an exam.",
     "text": "Molly has commandeered a table in the Academy library and fortified it with books, practice cards, three cups of tea, and a plate of biscuits. She has also recruited Emma and you to help her prepare for the upcoming artificery examination. The biscuits, at least, suggest a sound understanding of the principles of successful collaboration.\n\n\"Thank you both so much!\" she says as you sit down. \"I really have been studying, but everything becomes muddled when the professors ask me to explain it. I thought perhaps if we worked together...\"\n\n\"Naturally,\" Emma replies. She draws a neat diagram in Molly's notebook. \"The central distinction is between essence affinity and the allocation of a card's expressive capacity. Once you've accounted for the constraints on manifestation, the rest follows.\"\n\nMolly considers this in silence. \"Yes,\" she says brightly. \"Of course.\"\n\nEmma advances to a second diagram. It has more arrows. \"Now, in the case of a composite effect—\"\n\n\"Sorry,\" Molly interrupts softly. \"Could we perhaps go back to the first arrow?\"\n\nEmma looks down at her page. \"Which first arrow?\"\n\n\"The one before all the other arrows.\"\n\nYou watch Emma take a slow breath. For a young woman capable of explaining a complex enchantment in four elegant sentences, the discovery that four sentences might not be enough is proving unexpectedly educational.\n\nMolly notices, too. Her smile thins. \"I'm sorry. You're both being so patient. I think I must be the worst student in the best study group at the Academy.\"\n\n\"That's not what I—\" Emma begins, then stops. Her expression softens. \"Molly, I know you're trying.\"\n\n\"I know.\" Molly looks at her notes. \"I just wish trying felt a little more like understanding.\"\n\nEmma sets down her pen. The three of you have an evening, a pile of practice cards, and rather more work to do than the biscuits were prepared for. You can approach the problem in several ways.",
     "triggers": [
       {
@@ -2287,6 +2301,7 @@
       }
     ],
     "title": "A Rabbit's Tale",
+    "invitationText": "The cafeteria is nearly empty, and Molly looks like she needs a hand.",
     "characterArc": "molly",
     "emotion": "sad",
     "image": "molly_herberts_new_home.jpg",
@@ -2481,6 +2496,7 @@
   },
   {
     "key": "academy-first-enchantment",
+    "invitationText": "Professor Glützenbaum has cards and instruments laid out for the afternoon class.",
     "text": "Professor Glützenbaum greets the class with his usual enthusiasm, standing behind a desk laden with enchanted cards, pigments, and an alarming assortment of delicate brass instruments.\n\n\"Good afternoon, my promising young artificers! This morning, you learned to create. This afternoon, you shall learn to improve! Or, occasionally, to make things worse in a carefully calculated and academically respectable manner.\"\n\nHe holds up a card depicting an armored knight.\n\n\"Augmentation! We strengthen an existing enchantment, making our creation more powerful, more resilient, or more capable. Naturally, greater power demands greater magical energy. A stronger card will generally cost more mana to play.\"\n\nHe sets it down and picks up another.\n\n\"Distillation! The opposite principle. We remove something from an enchantment, reducing its power but also its cost. A modest creation, efficiently designed, may prove far more useful than an extravagant masterpiece.\"\n\n\"Rather like certain students,\" someone murmurs from the back.\n\n\"Who said that?\"\n\nThe sharp voice comes from a young man a few seats away. Dark-eyed, handsome, and visibly indignant, he has turned toward his neighbor, who looks utterly bewildered.\n\n\"You were looking at me.\"\n\n\"I was looking at the professor!\"\n\n\"With that expression?\"\n\n\"What expression?\"\n\n\"That one!\"\n\nProfessor Glützenbaum clears his throat.\n\n\"Mr. Farid, I presume? An excellent demonstration of excessive energy expenditure. Perhaps we should attempt a little distillation.\"\n\nThe classroom erupts in laughter. Farid's expression darkens, but he eventually folds his arms and settles back into his seat, muttering something about disrespectful northerners.\n\nGlützenbaum returns to his cards, entirely untroubled.\n\n\"Now then! You have cards, you have tools, and you have two splendid ways to improve your decks—or ruin them beyond recognition. I suggest you begin with the former.\"",
     "triggers": [
       {
@@ -2608,6 +2624,7 @@
       }
     ],
     "title": "An Invitation to Fright",
+    "invitationText": "Professor Glützenbaum has arrived in class with a pumpkin.",
     "characterArc": "glutzenbaum",
     "emotion": "happy",
     "nodes": {
@@ -2845,6 +2862,7 @@
       }
     ],
     "title": "A Night of Masks",
+    "invitationText": "The cafeteria is dressed for a night of masks and lanterns.",
     "emotion": "happy",
     "passages": {
       "arrival": {
@@ -3188,10 +3206,12 @@
       }
     ],
     "title": "A Rather Unfortunate First Impression",
+    "invitationText": "A young woman is in the hall, just as the first day begins.",
     "characterArc": "emma",
     "emotion": "taunting",
     "image": "emma_first_encounter.jpg",
     "imageSize": "large",
+    "priority": 1,
     "effects": [
       {
         "effect": {
@@ -3203,8 +3223,7 @@
           }
         }
       }
-    ],
-    "manualTrigger": "There is a pretty girl over there!"
+    ]
   },
   {
     "key": "emma_first_match_victory",
@@ -3320,6 +3339,7 @@
       }
     ],
     "title": "A Worthy Opponent",
+    "invitationText": "Emma is still sitting across the table from a match just won.",
     "characterArc": "emma",
     "emotion": "sad",
     "image": "emma_first_match_victory.jpg",
@@ -3532,6 +3552,7 @@
       }
     ],
     "title": "Handmade Card",
+    "invitationText": "Show Emma your special card.",
     "characterArc": "emma",
     "emotion": "surprised",
     "image": "emma_handmade_card.jpg",
@@ -3557,12 +3578,12 @@
           }
         }
       }
-    ],
-    "manualTrigger": "Show Emma your remarkable card"
+    ]
   },
   {
     "key": "emma_ballet_incident",
     "title": "The Ballet Incident",
+    "invitationText": "Elsa has burst into the cafeteria, insisting everyone come and look.",
     "text": "You're enjoying a peaceful break in the cafeteria with Molly, Henry and Ousmane when Elsa bursts in, barely containing her laughter.\n\n\"You simply _must_ come and see this! It's hilarious! She thinks she's some sort of fairy!\"\n\nThe four of you exchange puzzled looks.\n\n\"Emma, that insufferable little princess! Oh, just come along!\"\n\nCuriosity gets the better of you, and you follow Elsa through the Academy corridors to a small exercise hall.\n\nInside, Emma is practicing ballet alone. Dressed in a simple dance outfit, she stands beside a wooden barre, one hand resting lightly upon it. Her other hand holds her raised foot high above her head, at the end of a perfectly straight, almost impossibly vertical leg. Her balance is flawless, her expression one of absolute concentration. She hasn't noticed you.\n\nElsa turns toward the group, positively glowing with anticipation of the sarcastic remarks to come.\n\nInstead, she finds Molly applauding very softly, her face alight with admiration, and three young men standing perfectly still, mouths hanging open, apparently hypnotized.\n\n{{emmaSmittenReaction}}\n\nElsa's triumphant smile collapses.\n\n\"Oh, for heaven's sake! You're all _hopeless!_\"\n\nShe storms off, her indignant footsteps echoing so loudly through the hall that Emma finally notices her audience.\n\nHenry and Ousmane, caught red-handed, turn scarlet and beat a hasty retreat. Molly gives Emma a delighted smile and an enthusiastic thumbs-up before following them.\n\nAnd suddenly, there's only you.\n\nEmma calmly lowers her leg, turns toward you, and raises one eyebrow. A mischievous little smile plays at the corner of her mouth, as though she's daring you to say something.",
     "passages": {
       "emmaSmittenReaction": {
@@ -3748,6 +3769,7 @@
   {
     "key": "emma_league_victory",
     "title": "League Champion",
+    "invitationText": "Emma is crossing the room with a glass after the league.",
     "text": "The applause has barely died down when Emma approaches you, a glass of sparkling wine in hand.\n\n\"Well, well. Antonio Fibonacci, league champion. I suppose I'll have to start taking you seriously.\"\n\nHer teasing smile gives way to something more sincere.\n\n\"Congratulations, Antonio. Truly. You've earned this. Winning a match is one thing, but maintaining that level of play throughout an entire season? That's quite an achievement.\"\n\nShe raises her glass in your honor.",
     "triggers": [
       {
@@ -4102,6 +4124,7 @@
       }
     ],
     "title": "An Unexpected Debt",
+    "invitationText": "Emma is by a window, folding a letter away.",
     "characterArc": "emma",
     "image": "emma_tuition_problem.jpg",
     "imageSize": "medium",
@@ -4145,6 +4168,7 @@
     ],
     "optionTemplates": [],
     "title": "The Challenge",
+    "invitationText": "Professor Glützenbaum has a letter from another school.",
     "characterArc": "emma",
     "image": "emma_tourney_kickstart.jpg",
     "imageSize": "large",
@@ -4279,6 +4303,7 @@
       }
     ],
     "title": "A Question of Strategy",
+    "invitationText": "Emma has tea poured and a pile of strategy books waiting.",
     "characterArc": "emma",
     "emotion": "happy",
     "image": "emma_tourney_training.jpg",
@@ -4857,6 +4882,7 @@
       }
     ],
     "title": "Two of a Kind",
+    "invitationText": "Emma has a workspace ready in the empty artificery room.",
     "characterArc": "emma",
     "emotion": "happy",
     "image": "emma_tourney_crafting.jpg",
@@ -5081,6 +5107,7 @@
       }
     ],
     "title": "The Falkenheim Tournament",
+    "invitationText": "Falkenheim's marble halls are receiving the Academy's delegation.",
     "characterArc": "emma",
     "emotion": "neutral",
     "image": "emma_falkenheim_tournament.jpg",
@@ -5625,6 +5652,7 @@
       }
     ],
     "title": "The Road Home",
+    "invitationText": "The carriage is leaving Falkenheim, and Emma is not done talking about it.",
     "characterArc": "emma",
     "emotion": "angry",
     "image": "emma_return_win.jpg",
@@ -5893,6 +5921,7 @@
   {
     "key": "emma_return_lost",
     "title": "The Road Home — Defeat Route",
+    "invitationText": "The ride home from Falkenheim is very quiet.",
     "text": "The carriage rolls out of Falkenheim beneath a grey afternoon sky.\n\nAt least the organizers have had the decency to provide transportation home. You and Emma sit opposite each other on comfortable upholstered benches, surrounded by a silence considerably less comfortable than the seats.\n\nEmma has been staring out of the window for the better part of twenty minutes.\n\n\"Well,\" she says at last. \"That was humiliating.\"\n\nYou consider pointing out that you made it remarkably far in a tournament filled with some of the Academy's finest players. Unfortunately, Emma has already begun a detailed reconstruction of your defeat.\n\n\"If I'd played the third turn differently... No, that wouldn't have worked either. Unless we'd changed the opening sequence. Or perhaps—\"\n\n\"Emma.\"\n\n\"—if we'd anticipated their counterspell, we could have—\"\n\n\"Emma.\"\n\nShe turns toward you.\n\n\"What?\"\n\n\"The tournament's over.\"\n\nShe gives you a look that suggests this is an exceptionally unhelpful observation.\n\n\"Yes, Fibonacci. I had noticed.\"\n\n\"And we lost.\"\n\n\"Thank you. Do go on. Your analysis is fascinating.\"\n\n\"And we're still here.\"\n\nEmma opens her mouth, then closes it.\n\nYou gesture vaguely between the two of you.\n\n\"We're both alive. We learned a few things. We even made some rather good cards. All things considered, I think we could have done worse.\"\n\nShe looks at you for a moment.\n\n\"That is a remarkably generous interpretation of events.\"\n\n\"One of my many talents.\"\n\n\"Alongside losing tournaments?\"\n\n\"Especially that one.\"\n\nDespite herself, she lets out a short laugh.\n\nIt's not much, but it's the first time she's smiled since the final match.",
     "triggers": [],
     "optionTemplates": [
@@ -6256,6 +6285,7 @@
       }
     ],
     "title": "The Spoils of Victory",
+    "invitationText": "The administrator wants a word with the Falkenheim delegation.",
     "characterArc": "emma",
     "emotion": "happy",
     "image": "emma_falkenheim_prize.jpg",
@@ -6536,6 +6566,7 @@
       }
     ],
     "title": "An Invitation of Sorts",
+    "invitationText": "Emma is at her desk before class, pleased about a letter.",
     "characterArc": "emma",
     "emotion": "amused",
     "effects": [
@@ -6609,6 +6640,7 @@
   {
     "key": "emma_ball_shopping",
     "title": "A Question of Elegance",
+    "invitationText": "Emma is waiting outside a fashionable tailor.",
     "text": "The shop Emma has chosen stands on one of the more fashionable streets of the town, its windows displaying embroidered waistcoats, elegant coats, and garments whose prices appear to have been calculated by someone with a personal grudge against students.\n\nEmma is waiting outside, looking entirely at ease.\n\n\"Antonio! Right on time. Come along, we have work to do.\"\n\nInside, a dignified tailor greets you with a polite bow. His enthusiasm increases noticeably when Emma begins examining his finest merchandise.\n\n\"Something suitable for the Academy ball,\" she explains. \"Elegant, distinguished, but not excessively ostentatious. We want to make a good impression, not declare war on the aristocracy.\"\n\nThe tailor nods gravely and disappears among the shelves.\n\nWhat follows is a rather exhausting series of fittings.\n\nThe first coat makes you look, according to Emma, \"like a provincial tax collector attending his own funeral.\" The second is apparently designed for a man of considerably greater girth. A third features so much embroidery that Emma takes one look at you and bursts into laughter.\n\n\"Oh, Antonio. You look like a prince!\"\n\n\"Excellent.\"\n\n\"A prince who has misplaced both his kingdom and his judgment. Take it off.\"\n\nEventually, after considerable discussion, the tailor produces three outfits that meet Emma's exacting standards.\n\nThe first is a handsome, understated ensemble in dark wool, well cut and entirely respectable. The second is considerably finer, with rich fabrics, careful embroidery, and the unmistakable appearance of a gentleman accustomed to good company. The third is a particularly striking creation of deep blue velvet and silver detailing, elegant enough to attract attention without quite becoming ridiculous.\n\nEmma studies all three with the concentration of someone evaluating competing designs for an exceptionally important enchantment.\n\n\"Well, Fibonacci. They all have their merits. The first is perfectly respectable, the second is rather distinguished, and the third...\"\n\nShe considers the elaborate blue coat.\n\n\"The third would certainly make an impression.\"\n\nThen she turns toward you with a mischievous smile.\n\n\"So. How much of your fortune are you prepared to sacrifice upon the altar of elegance?\"",
     "triggers": [
       {
@@ -6914,6 +6946,7 @@
       }
     ],
     "title": "The Best-Laid Plans",
+    "invitationText": "The Academy ballroom is lit, and the guests are arriving.",
     "characterArc": "emma",
     "emotion": "happy",
     "image": "emma_academy_ball.jpg",
@@ -7403,6 +7436,7 @@
       }
     ],
     "title": "An Unfair Advantage",
+    "invitationText": "The usual evening study with Emma has turned into a wager.",
     "characterArc": "emma",
     "emotion": "amused",
     "image": "emma_unfair_advantage.jpg",
@@ -7663,6 +7697,7 @@
       }
     ],
     "title": "A Matter of Taste",
+    "invitationText": "Emma has caught the cafeteria queue and is unimpressed with supper.",
     "characterArc": "emma",
     "emotion": "happy",
     "nodes": {
@@ -7762,6 +7797,7 @@
   {
     "key": "emma_molly_matchmaker",
     "title": "A Rather Promising Match",
+    "invitationText": "Dinner at the inn, just after Molly has left.",
     "text": "It's a pleasant evening at the inn. You and Emma have settled into a quiet corner for dinner, enjoying the rare luxury of having absolutely nothing important to discuss.\n\nMolly has just left after spending a cheerful half-hour with you both. Emma watches her disappear through the door, a thoughtful smile on her lips.\n\n\"You know, Antonio, I've been meaning to ask you something.\"\n\nShe sets down her glass.\n\n\"Have you ever considered courting Molly?\"\n\nWell. That came out of nowhere.\n\n\"Don't look so astonished. She's a wonderful girl. Kind, funny, pretty, and considerably more sensible than either of us.\"\n\nEmma pauses, then adds with a mischievous smile:\n\n\"Although I suspect she'd be quite happy with something less formal than a courtship, if that's more to your taste.\"\n\nYou raise an eyebrow.\n\n\"Emma Delamain. Are you trying to arrange my love life?\"\n\n\"Someone ought to. You seem to be making remarkably little progress on your own.\"\n\nShe laughs, then grows a little more serious.\n\n\"Honestly, Antonio, I think she rather likes you. I can't promise anything, of course, but I doubt she'd turn you away if you asked.\"\n\nShe takes another sip of her drink, watching you with genuine curiosity.\n\n\"Well? What do you think?\"",
     "triggers": [
       {
@@ -7888,6 +7924,7 @@
   {
     "key": "emma_diversion_kiss",
     "title": "A Tactical Diversion",
+    "invitationText": "Two well-dressed young men are following Emma through the market.",
     "text": "The market square is busy with its usual collection of merchants, shoppers, and people who appear to have nothing better to do than obstruct the passage of everyone else.\n\nYou're passing a bookstall when you spot Emma emerging from the crowd. Two young gentlemen in expensive, rather ostentatious clothes are following close behind her.\n\n\"Come now, my dear, surely you can spare us an afternoon!\"\n\n\"I assure you, gentlemen, I cannot.\"\n\n\"Just one drink! You needn't be so difficult!\"\n\nEmma turns toward them, her smile becoming distinctly less friendly.\n\n\"For the third time, no. Good day.\"\n\nShe walks away. They follow.\n\nThen she spots you.\n\nHer expression changes instantly.\n\n\"Antonio!\"\n\nBefore you can reply, she's striding toward you with a brilliant smile.\n\n\"Perfect timing,\" she whispers. \"Play along.\"\n\nShe takes your hands, draws you close, and kisses you.\n\nFor a moment, you forget entirely about the market, the bookstall, and the existence of the human race.\n\nYou become vaguely aware of two disappointed voices nearby.\n\n\"Oh. Well, she might have mentioned...\"\n\n\"Come on, let's go.\"\n\nTheir footsteps retreat.\n\nEmma doesn't seem to notice.\n\nThen, at last, she draws back.\n\nShe looks into your eyes for a brief moment before releasing your hands and turning to check that her admirers have disappeared.\n\n\"Excellent,\" she announces, recovering her usual composure. \"That worked rather well.\"\n\nYou stare at her.\n\n\"Oh, don't look so scandalized, Antonio. It was a tactical diversion. Simple, elegant, and remarkably effective.\"\n\nA small, mischievous smile appears.\n\n\"Besides, I knew I could count on your cooperation.\"",
     "triggers": [
       {
@@ -8024,6 +8061,7 @@
   {
     "key": "emma_schlupak_mushrooms",
     "title": "The Devil's Garden",
+    "invitationText": "Emma has maps and a botanical book, and a plan for the forest.",
     "text": "Emma approaches you carrying a thick botanical encyclopedia, several folded maps, and the unmistakable expression of someone who has had a very interesting idea.\n\n\"Antonio. How would you feel about a little field research?\"\n\nBefore you can answer, she unfolds a map of the Forest of Schlupak.\n\n\"I've been studying a rather remarkable species of mushroom. Schlupak's Thorncap. The flesh contains an extraordinarily potent defensive toxin. Properly distilled, it can be used to strengthen retaliatory enchantments, poisons, even direct damage spells.\"\n\nShe turns a page, revealing an illustration of a rather unpleasant-looking fungus.\n\n\"Unfortunately, it grows almost exclusively in the Forest of Schlupak. Which, as you may know, has a somewhat regrettable reputation.\"\n\nA few days later, after a long walk beneath increasingly ancient trees, you find yourselves overlooking a sunken clearing. Thick clusters of dark crimson mushrooms grow among enormous tangled roots.\n\nEmma kneels to examine the nearest specimens.\n\n\"Perfect. Exactly what we need.\"\n\nShe gestures toward a handful of mushrooms growing near the path, then toward a much larger cluster farther down the slope.\n\n\"Those near us are easily accessible. The others...\" She studies the loose earth and the steep descent. \"Well, we'd have to climb down. The ground doesn't look terribly stable.\"\n\nShe closes her notebook.\n\n\"Two specimens, safely gathered. Or four, if you're feeling ambitious. Your choice, Antonio.\"",
     "triggers": [
       {
@@ -8120,7 +8158,6 @@
     "characterArc": "emma",
     "image": "emma-forest-expedition.jpg",
     "imageSize": "large",
-    "manualTrigger": "Emma has a proposal — Forest of Schlupak",
     "effects": [
       {
         "effect": {
@@ -8138,6 +8175,7 @@
   {
     "key": "emma_schlupak_hollow",
     "title": "The Dreaming Hollow",
+    "invitationText": "Emma has found something new on her map of the Forest of Schlupak.",
     "text": "\"Antonio, do you remember our little expedition to the Forest of Schlupak?\"\n\nEmma produces a new map before you can reply.\n\n\"I've discovered something rather intriguing. There's an ancient hollow deep in the forest where two exceptionally rare magical substances can be found. I propose we investigate.\"\n\nShe looks at you with a smile.\n\n\"And this time, I've brought considerably better equipment.\"\n\nYour second expedition takes you deeper into Schlupak than before. Eventually, the trees give way to an enormous hollow oak, its interior illuminated by an eerie blue-green light.\n\nInside, enormous translucent spheres hang suspended among the branches, slowly pulsing with pale violet light. Beneath them, clusters of delicate mushrooms release clouds of iridescent spores.\n\nEmma stops dead.\n\n\"Oh, that's magnificent.\"\n\nShe approaches a floating sphere, examining it with obvious fascination.\n\n\"Schlupak Dreamspheres. Concentrated oneiric energy! Their magical properties are extraordinary. They're particularly useful for enchantments that manipulate the behavior of other spells and creatures.\"\n\nThen she notices the mushrooms.\n\n\"And below them... Schlupak Spores. Equally valuable, but with very different properties. They enhance magical circulation and displacement. Excellent for drawing cards and returning summoned creatures to their owner's hand.\"\n\nShe begins unpacking her equipment.\n\n\"There's a complication, naturally.\"\n\nShe points toward the spheres.\n\n\"Disturbing a Dreamsphere causes the surrounding spores to disperse. But harvesting the spores destabilizes the spheres, making them dissolve.\"\n\nEmma considers the problem for a moment, then shrugs.\n\n\"We can safely collect two specimens of either substance. Not both.\"\n\nShe looks at you.\n\n\"Well, Antonio? Which would be more useful for your next masterpiece?\"",
     "triggers": [
       {
@@ -8220,7 +8258,6 @@
     "characterArc": "emma",
     "image": "emma-forest-expedition.jpg",
     "imageSize": "large",
-    "manualTrigger": "Emma has another proposal — Forest of Schlupak",
     "effects": [
       {
         "effect": {
@@ -8238,6 +8275,7 @@
   {
     "key": "emma_elsa_birthday",
     "title": "The Price of High Society",
+    "invitationText": "Elsa has stopped Emma in the lane with a sealed envelope.",
     "text": "You and Emma are leaving the Academy when a familiar voice calls after you.\n\n\"Emma! Antonio! Just the two people I was hoping to find.\"\n\nElsa Falkenstein approaches, looking particularly pleased with herself. She carries an elegant envelope, sealed with crimson wax.\n\n\"I'm hosting my birthday celebration at the Royal Pigeon Inn next Saturday. A proper reception, naturally. Music, dancing, an excellent dinner, and a rather distinguished guest list.\"\n\nShe hands Emma the envelope.\n\n\"I would very much like you to attend, Emma. Your little successes at the Academy have attracted quite a bit of attention lately. I think you'll find the company interesting, and I'm sure my guests will be delighted to meet you.\"\n\nEmma studies the invitation, mildly surprised.\n\n\"How very gracious of you, Elsa.\"\n\n\"Naturally. And Antonio, I have a rather different role in mind for you.\"\n\nElsa's smile widens.\n\n\"I'm going to need an additional waiter.\"\n\nThere is a short silence.\n\n\"A waiter?\" you repeat.\n\n\"Yes, darling. You do have experience in hospitality, don't you? And I've already arranged a proper uniform for you. White gloves, a splendid black coat, the works. You'll look positively magnificent.\"\n\nEmma presses her lips together. You recognize the expression. She is making a considerable effort not to smile.\n\n{{ invitation_terms }}",
     "passages": {
       "invitation_terms": {
@@ -8447,6 +8485,7 @@
   {
     "key": "emma_violin_evening",
     "title": "An Evening's Entertainment",
+    "invitationText": "A violin is playing at the far end of the Old Monk.",
     "text": "The Old Monk Inn is unusually lively tonight. Its common room is crowded with merchants, travelers, and townsfolk enjoying their supper. Above the cheerful clatter of glasses and conversation, a violin is playing.\n\nAnd playing beautifully.\n\nYou follow the music toward the far end of the room, where a young woman stands beside the fireplace, her bow moving effortlessly across the strings. The melody is lively and intricate, drawing delighted smiles from the guests.\n\nEmma Delamain.\n\nOf course. Is there _anything_ this woman cannot do?\n\nShe finishes with a magnificent flourish, and the room bursts into applause. Several coins find their way into a little wooden bowl beside her chair.\n\nEmma accepts the appreciation with a graceful bow. Then she spots you.\n\n\"Antonio! What a pleasant surprise.\" Her eyes brighten with an idea. \"Tell me, do you have any plans for the evening?\"\n\nBefore you can answer, she gestures toward the crowded room.\n\n\"The innkeeper lets me perform here occasionally. The pay isn't magnificent, but the tips are respectable, and apparently the guests prefer my violin to his nephew's bagpipes.\"\n\nShe glances at the growing crowd.\n\n\"Unfortunately, I seem to have become rather popular tonight. Would you care to make yourself useful? I could do with someone to collect requests, carry drinks, and ensure my admirers remember where to leave their coins.\"\n\nShe offers you an innocent smile.\n\n\"Consider it an opportunity to participate in the arts.\"",
     "triggers": [
       {
@@ -8652,6 +8691,7 @@
   {
     "key": "emma_music_job_offer",
     "title": "A Standing Engagement",
+    "invitationText": "Emma is looking for someone, and she looks very pleased.",
     "text": "\"Antonio! Just the man I was looking for.\"\n\nEmma approaches you with a particularly satisfied expression. Evidently, something has gone her way.\n\n\"Remember our little musical enterprise? Well, I've received an offer from the Old Monk Inn. They want me to perform every Friday evening. Regular pay, generous tips, and apparently an audience with excellent taste.\"\n\nShe pauses, smiling.\n\n\"Naturally, I accepted. But I'd much rather concentrate on the violin than spend half the evening chasing drunken merchants for their unpaid bills.\"\n\nShe regards you thoughtfully.\n\n\"So, what do you say to making our partnership official? Every Friday evening, a few hours of honest work, and we divide the earnings. I provide the artistic talent, you provide the indispensable logistical support.\"\n\nHer smile turns mischievous.\n\n\"An exceptionally fair arrangement, wouldn't you agree?\"",
     "triggers": [
       {
@@ -8760,8 +8800,7 @@
       }
     ],
     "characterArc": "emma",
-    "emotion": "happy",
-    "manualTrigger": "Emma has a proposition"
+    "emotion": "happy"
   },
   {
     "key": "emma_schlupak_ride",
@@ -8830,6 +8869,7 @@
       }
     ],
     "title": "A Most Useful Afternoon",
+    "invitationText": "Emma has decided it is time she learned to ride.",
     "characterArc": "emma",
     "emotion": "happy",
     "nodes": {
@@ -9174,6 +9214,7 @@
     ],
     "optionTemplates": [],
     "title": "All the Academy's a Stage",
+    "invitationText": "Professor Lombard has arrived with a stack of scripts.",
     "characterArc": "lombard",
     "image": "emma_theater_announcement.jpg",
     "imageSize": "large",
@@ -9280,6 +9321,7 @@
       }
     ],
     "title": "Neverland, Briefly",
+    "invitationText": "Emma is in costume at the theater, wings included.",
     "characterArc": "emma",
     "emotion": "amused",
     "image": "emma_theater_rehearsal.jpg",
@@ -9384,6 +9426,7 @@
   {
     "key": "emma_italian_codex_gift",
     "title": "The Italian Codex",
+    "invitationText": "Emma has a book open, though she does not seem to be reading it.",
     "text": "You find Emma with a book open before her, though for once she seems to have lost interest in its contents.\n\n\"Emma, remember that Italian Codex pattern we found at the theater?\"\n\n\"How could I forget? The only thing that survived the destruction of Neverland with its dignity intact. Apart from me, obviously.\"\n\nYou present the finished codex.\n\n\"I made it. For you.\"\n\nHer teasing smile vanishes. She looks at the artifact, then at you, as though checking for some elaborate joke.\n\n\"Antonio... this is a real Italian Codex. You spent your own materials crafting this?\"\n\n\"I thought its owner ought to be someone who truly loves Italian cards.\"\n\nEmma runs her fingertips over the binding. Her eyes shine, and she takes a moment longer than usual to find her voice.\n\n\"You impossible man.\" She gives a small, unsteady laugh. \"I was perfectly happy knowing you'd have it. You didn't have to do this.\"\n\n\"I know.\"\n\nThat answer seems to touch her more than anything else. She steps forward and embraces you, tightly and without a trace of her usual theatrical composure.\n\nWhen she draws back, she clears her throat.\n\n\"Well. As it happens, I have something for you too. I was going to save it for a suitable occasion, but I suppose you've rather forced my hand.\"\n\nFrom between the pages of her book she produces a card, carefully wrapped in tissue. Its illustration shows a tiny, mischievous fairy scattering sparkling chaos across a collapsing theater, while an unfortunate boy in green struggles to keep his balance.\n\n\"I made it after our memorable theatrical career. Chaos Faerie. A souvenir of our finest performance.\"\n\n\"Our only performance.\"\n\n\"Which makes it our finest by definition.\"\n\nYou examine the card. The fairy's face is unmistakably Emma's, and the unfortunate boy bears a distressing resemblance to you.\n\n\"You made me look ridiculous.\"\n\n\"I worked from life.\"\n\nYou look up to find her smiling at you with a warmth that has nothing to do with teasing.\n\n\"Thank you, Antonio. I shall treasure it.\"\n\n\"The codex?\"\n\n\"That too.\"",
     "triggers": [
       {
@@ -9440,8 +9483,7 @@
     "optionTemplates": [],
     "characterArc": "emma",
     "image": "emma_italian_codex_gift.jpg",
-    "imageSize": "large",
-    "manualTrigger": "Gift Emma the Italian Codex"
+    "imageSize": "large"
   },
   {
     "key": "emma_reasonable_choice",
@@ -9515,6 +9557,7 @@
       }
     ],
     "title": "The Reasonable Choice",
+    "invitationText": "Emma is coming down the Academy steps in evening dress.",
     "characterArc": "emma",
     "emotion": "neutral",
     "image": "emma_reasonable_choice.jpg",
@@ -9909,6 +9952,7 @@
   {
     "key": "emma_perfectly_unreasonable_arrangement",
     "title": "A Perfectly Unreasonable Arrangement",
+    "invitationText": "Emma is in the middle of a conversation when she looks over.",
     "text": "Emma is speaking with another student when she catches sight of you. Her sentence falters by half a beat—an event so rare that it probably deserves to be recorded in the Academy archives. She recovers, finishes her conversation with perfect courtesy, and gives you a small, discreet nod toward the courtyard.\n\nYou follow her out past the stone arches and the flowerbeds. The courtyard is quiet at this hour. Emma walks as far as a bench beneath an old tree, turns to face you, and opens her mouth.\n\nNothing comes out.\n\nShe folds her hands. Unfolds them. Smooths a sleeve that requires no smoothing.\n\n\"Well,\" she says.\n\n\"Well,\" you agree.\n\n\"I thought perhaps we should...\"\n\n\"Yes?\"\n\n\"Discuss...\" She makes a small, impatient gesture. \"Yesterday.\"\n\nYou wait. There is a remarkable pleasure in seeing Emma Delamain, terror of oral examinations and scourge of badly defended arguments, lose a duel against the beginning of a sentence.\n\n{{silentTypeReversal}}\n\nHer eyes narrow. Then she laughs—a surprised, delighted laugh that does wonderful things for the state of your nerves.\n\n\"Very well,\" she says. \"I walked directly into that one.\"\n\n\"You did. Rather spectacularly.\"\n\n\"Enjoy it, Fibonacci. Opportunities like this are exceptionally rare.\"\n\n\"I intend to have the date engraved on a plaque.\"\n\n\"Make certain you spell my name correctly.\"\n\nThe laughter fades into a comfortable, slightly shy silence. She glances at your hands, then looks you in the eye.\n\n\"Antonio, I owe you an apology. A proper one. Yesterday I asked you to do something absurd, and then I became furious when you couldn't do it. I wanted you to produce a brilliant argument on command while I stood there explaining, in considerable detail, why you were an unsuitable candidate.\"\n\n\"It was a remarkably thorough presentation.\"\n\n\"I had prepared the evidence carefully. Unfortunately, I seem to have been arguing against my own position.\"\n\nShe gives a rueful smile.\n\n\"You weren't supposed to read my mind. I could have told you what I wanted. I should have. Instead I behaved like a dreadful examiner who hadn't bothered to give her student the questions. And then I...\" Her cheeks color. \"Well. I rather lost my composure.\"\n\n\"A little.\"\n\n\"Antonio.\"\n\n\"There may have been a few tears. And a minor physical assault.\"\n\n\"Those were _emphatic punctuation marks_.\"\n\n\"I see. I shall inform the faculty.\"\n\nShe shakes her head, smiling in spite of herself.\n\n\"I'm sorry I made you feel small. You didn't deserve that.\"\n\n\"I'm sorry I made you cry,\" you say. \"I thought I was asking you to give up a perfect future for a rather uncertain one. I didn't realize I might actually have a chance.\"\n\nEmma raises an eyebrow. \"Yes. Your powers of observation have occasionally proved rather disappointing for a man of your academic promise.\"\n\n\"In my defense, you can be quite intimidating.\"\n\n\"Good. I'd hate to discover that all my effort had been wasted.\"\n\nThen she looks away, her smile becoming smaller and softer.\n\n\"For the record, I wrote to Lucien. He was very gracious. He deserves someone who is genuinely interested in him, rather than someone who finds herself thinking about another man over dinner.\"\n\n\"I'm glad he took it well.\"\n\n\"So am I. He's an excellent man. And I am still interested in the research, if the opportunity remains available. Those things needn't be connected.\"\n\n\"Naturally.\"\n\n\"In fact, I shall probably accomplish something extraordinary in the field, become scandalously successful, and spend my fortune on books and unnecessarily expensive tea.\"\n\n\"A fine plan.\"\n\n\"There is, however, one rather serious unresolved question.\"\n\nShe regards you with an expression that almost manages to be solemn.\n\n\"What exactly did you make of my card?\"\n\n\"You mean the one with the two of us?\"\n\n\"I believe it was reasonably unambiguous. Though after yesterday, I thought perhaps I should check.\"\n\n\"I thought it was beautiful.\"\n\n\"That wasn't the question.\"\n\n\"I know.\"\n\nShe takes a breath. This time, she does not look away.\n\n\"I want to be with you, Antonio. Not because it makes the most sensible plan on paper, and certainly not because you performed adequately at yesterday's examination. You failed that rather decisively.\" Her smile returns. \"I want to be with you because life is more interesting and more joyful when you're in it. And because, against my better judgment, I seem to have fallen quite hopelessly in love with you.\"\n\nFor once, she lets the words stand without immediately rescuing them with a joke.\n\n\"There,\" she says at last. \"A clear statement of intent. Remarkably efficient. I ought to have tried it sooner.\"\n\nShe holds your gaze, hopeful and a little nervous, but no longer uncertain about what she wants.\n\n\"Now. What do _you_ want?\"",
     "passages": {
       "silentTypeReversal": {
@@ -10045,8 +10089,7 @@
     "characterArc": "emma",
     "emotion": "amused",
     "image": "emma_perfectly_unreasonable_arrangement.jpg",
-    "imageSize": "large",
-    "manualTrigger": "Emma makes a discreet sign for you to follow her in private"
+    "imageSize": "large"
   },
   {
     "key": "emma_weekly_training_invitation",
@@ -10166,14 +10209,15 @@
       }
     ],
     "title": "A Worthy Opponent",
+    "invitationText": "Emma is coming over after class with books and a particular look.",
     "characterArc": "emma",
     "image": "emma_weekly_training_invitation.jpg",
-    "imageSize": "medium",
-    "manualTrigger": "Emma seems to have a proposition for you."
+    "imageSize": "medium"
   },
   {
     "key": "emma_unnecessary_distraction",
     "title": "An Unnecessary Distraction",
+    "invitationText": "Emma is already at her desk before class.",
     "text": "You arrive at the classroom a little earlier than usual, expecting to enjoy a few minutes of peace before Professor Glützenbaum begins his daily assault on the mysteries of artificery.\n\nUnfortunately, someone has beaten you to it.\n\nEmma is sitting at her usual desk, surrounded by a carefully organized assortment of cards, notes, and small jars of magical ingredients. She's examining a half-finished enchantment with the intense concentration of someone attempting to extract a confession from a particularly stubborn criminal.\n\n\"Good morning, Emma.\"\n\n\"Morning, Antonio.\"\n\nShe doesn't look up.\n\n\"Working on something interesting?\"\n\n\"Very.\"\n\nA few seconds pass.\n\n\"Would you care to elaborate?\"\n\n\"Not especially.\"\n\nWell. A promising start.\n\nYou pull up a chair beside her. Emma finally raises her eyes, giving you a look that suggests she's noticed your arrival approximately three minutes ago and has been patiently waiting for you to take the hint.\n\n\"Antonio, much as I appreciate your boundless curiosity, I'm trying to finish this before class.\"\n\n\"Perhaps I could help?\"\n\n\"How thoughtful. Can you make the next fifteen minutes last half an hour?\"\n\nYou consider the question. Time manipulation is rather beyond your current abilities.\n\n\"Then I'm afraid you'll have to settle for admiring my work in silence.\"\n\nShe returns to her cards, though the faint smile at the corner of her mouth suggests she isn't quite as annoyed as she pretends.\n\n{{smittenThought}}\n\nThere must be _something_ you can do to justify staying a little longer.",
     "passages": {
       "smittenThought": {
@@ -10455,6 +10499,7 @@
       }
     ],
     "title": "A Taste of Freedom",
+    "invitationText": "Emma has someone cornered in the hall, and she looks as if she has won something.",
     "characterArc": "emma",
     "emotion": "happy",
     "effects": [
@@ -10686,6 +10731,7 @@
     ],
     "optionTemplates": [],
     "title": "Happy Little Accident",
+    "invitationText": "The artificery lesson is going smoothly, for the moment.",
     "effects": [
       {
         "effect": {
@@ -10717,6 +10763,7 @@
     ],
     "optionTemplates": [],
     "title": "The Ligue Starts",
+    "invitationText": "The administrator has walked into class with a large ledger.",
     "effects": [
       {
         "effect": {
@@ -10731,6 +10778,7 @@
   {
     "key": "frank_artifact_workshop_intro",
     "title": "An Invitation to the Workshop",
+    "invitationText": "A crash in the corridor has interrupted the artificery lesson.",
     "text": "The morning's artificery lesson has barely begun when a tremendous clatter erupts from the corridor.\n\nProfessor Lombard stops mid-sentence. A metallic crash follows, then a booming voice.\n\n\"Nothing broken! Nothing important, anyway!\"\n\nThe classroom door swings open, admitting a mountain of a man in a battered leather apron. His sleeves are rolled above enormous forearms, his thick black beard is dusted with soot, and a collection of tools jangles from his belt. He carries a curious brass contraption under one arm and wears the broad, cheerful grin of someone having an exceptionally good morning.\n\n\"Morning, Professor! Borrow your students for a minute?\"\n\nLombard regards the visitor, then the faint trail of oily footprints he has left across the floor.\n\n\"Provided you don't dismantle anything, Frank.\"\n\n\"Wouldn't dream of it!\"\n\nFrank deposits his contraption on the nearest desk. It unfolds with a series of clicks into a delicate arrangement of brass rings surrounding a blue crystal. The crystal begins to glow.\n\n\"Right, then! Name's Frank. I run the Academy workshop, down by the old foundry. Some of you have probably heard the hammering. Those who haven't should consider having their ears examined.\"\n\nA few students laugh.\n\n\"Now, you're learning to make cards in here, and fine things they are. But artificery doesn't begin and end with a bit of enchanted paper. There's a whole world of useful things you can build with your own two hands!\"\n\nHe taps the brass contraption affectionately.\n\n\"**Artifacts.** Tools, totems, trinkets. A good tool can help you craft better cards. A well-made totem can give you an advantage during a match. And a clever little trinket? Well, you'd be surprised how often the right contraption can get you out of trouble.\"\n\nHe gives the crystal a twist. The brass rings spin faster, producing a pleasant musical hum.\n\n\"Of course, making these things takes more than a strong arm and a hammer. You'll need to understand the magical colors you're working with. Pay attention in your lessons, study hard, learn from your classmates. The more you know, the more ambitious your creations can become.\"\n\nThe humming abruptly becomes a high-pitched whistle.\n\nFrank frowns at the contraption.\n\n\"Ah. That's new.\"\n\nHe gives it a firm tap. The whistling stops.\n\n\"There we are! Now, I've got a few simple patterns ready for beginners. Nothing too fancy, but enough to get you started. You can come by the workshop whenever you like, pick a pattern, and have a go at making something.\"\n\nHe raises a thick, grease-stained finger.\n\n\"**One rule, though: you bring your own materials.** I'll provide the benches, the tools, and whatever advice I can shout at you. But iron, copper, crystals, and the rest? That's your responsibility. Can't have you lot emptying my stores every time you get an idea.\"\n\n\"An eminently sensible policy,\" Lombard observes.\n\n\"Had to introduce it after the last lot,\" Frank replies darkly. \"You wouldn't believe how much brass a determined student can waste.\"\n\nHe folds the contraption back into its casing, tucks it under his arm, and heads for the door.\n\n\"Anyway, you're all welcome! Don't worry if you've never held a hammer. We'll soon put that right. And remember: the first rule of engineering is that if something doesn't work, you've learned one way not to build it!\"\n\nHe pauses in the doorway.\n\n\"Second rule: if it starts ticking and you didn't put a clock in it, come and fetch me.\"\n\nWith a hearty laugh, he disappears into the corridor.\n\nProfessor Lombard surveys the class, waits for the last of the chuckles to subside, and returns to the blackboard.\n\n\"Now, where were we? Ah, yes. The importance of precise measurements.\"\n\nYou glance at the door.\n\nThe workshop certainly sounds worth a visit.",
     "triggers": [
       {
@@ -10765,6 +10813,7 @@
   {
     "key": "frank_artifact_workshop_welcome",
     "title": "A Few Patterns to Get You Started",
+    "invitationText": "Frank is waiting among the unfinished machines in the workshop.",
     "text": "The Academy workshop smells of hot metal, sawdust, and something faintly sweet that is probably best left unidentified. Tools hang in neat rows above crowded benches. Along one wall, a collection of unfinished contraptions clicks, hums, and occasionally shudders.\n\nFrank stands at an anvil, holding a small piece of metal in a pair of tongs. He spots you, breaks into a grin, and sets it aside.\n\n\"There you are! Come in, come in. Mind the bucket.\"\n\nYou step around a bucket full of bent brass rods.\n\n\"Other bucket.\"\n\nYou narrowly avoid a second one.\n\n\"Excellent. Good awareness of your surroundings. Essential workshop skill.\"\n\nHe wipes his hands on his apron and clears a space on the nearest bench, shifting an alarming quantity of metal with one enormous forearm. From a drawer, he produces four rolled sheets of thick paper.\n\n\"Now, I promised you a few patterns. **Three tools and a trinket.** Simple enough to start with, useful enough to keep.\"\n\nHe spreads out the first sheet and holds its curling corners down with a hammer and a mug.\n\n\"**Basic Stabilisator.** Keeps the matter you're working with steady while you shape it. Helps with precision, gives you a little more mastery over the work. Black magic, a bit of silver, and a steady hand. Preferably yours.\"\n\nThe next sheet is covered in neatly ruled diagrams and cramped annotations.\n\n\"**Basic Codex.** Helps you keep track of the crafting process. What you've done, what comes next, which step you were absolutely certain you could skip. Good for your erudition. You'll need blue magic and some mox for that one.\"\n\nHe unrolls the third pattern, revealing a curious arrangement of small apertures.\n\n\"**Basic Porticuli.** Gives you glimpses of what might be possible. Handy when you're short on inspiration. Red magic and magic dust. Don't spend all afternoon peering into it, though. At some point you've got to actually make something.\"\n\nThe final sheet bears the drawing of an amulet.\n\n\"And a **Vitality Amulet**. A little something to put a bit more life in you. Green magic, magic dust. Useful outside the workshop, too. Especially if your idea of lunch is whatever you can eat while running to your next lesson.\"\n\nHe gathers the four patterns and pushes them towards you.\n\n\"These are yours. No charge for the patterns. **Materials are still your responsibility**, mind. Each one takes a hundred gold's worth of supplies, plus five of the material marked on the sheet. You'll need a proper grasp of its color, too.\"\n\nYou look over the diagrams. They seem considerably less simple now that they are in front of you.\n\nFrank notices your expression.\n\n\"Don't worry about making all four at once. Pick something you can manage and take it one step at a time. Read the pattern before you start, measure before you cut, and ask if you're unsure.\"\n\nSomething behind him gives a sharp metallic ping.\n\nWithout looking round, Frank reaches back and catches a small brass wheel.\n\n\"And keep an eye on your surroundings.\"\n\nHe drops the wheel into the first bucket and gives you a cheerful nod.\n\n\"Right, then. Let's see what you can make!\"",
     "triggers": [
       {
@@ -10823,7 +10872,6 @@
   },
   {
     "key": "nimbelungen_hidden_cloister_intro",
-    "title": "The Hidden Cloister",
     "text": "It's Monday evening, and the Academy corridors are finally growing quiet.\n\nYou're making your way back from a long day of lessons when a voice calls out behind you.\n\n\"Fibonacci! Antonio Fibonacci!\"\n\nYou turn to find a professor approaching at considerable speed, his long, oily brown hair swinging around his shoulders. His robes are slightly disheveled, and he carries a deck of Hordes cards in one hand and what appears to be a brass compass in the other.\n\nHe stops abruptly in front of you.\n\n\"Splendid! Just splendid! Congratulations!\"\n\n\"Thank you, Professor...?\"\n\n\"Nimbelungen! Professor Nimbelungen. Of course you wouldn't know me. Haven't taught your class yet. Might never. Timetables are dreadfully restrictive things.\"\n\nHe waves the compass dismissively.\n\n\"Your league victory! Excellent performance. Very promising. Though I thought your opening could have been improved. A little too cautious. But the third turn! Ha! Very clever.\"\n\nYou open your mouth to respond, but he has already moved on.\n\n\"Tell me, Fibonacci, do you enjoy treasure hunts?\"\n\n\"Treasure hunts?\"\n\n\"Yes, yes! Clues! Secrets! Hidden passages! The occasional dangerous guardian! Wonderful exercise for the mind.\"\n\nHe leans closer, lowering his voice to a conspiratorial whisper.\n\n\"You see, the Academy is a very old place. Older than most of its professors, which is saying something. And it has secrets. Rooms nobody remembers. Passages that don't appear on any map. Places the administration would very much prefer everyone forgot.\"\n\nHe straightens, looking delighted.\n\n\"So naturally, I've made a hobby of hiding treasures in them!\"\n\nYou blink.\n\n\"You're hiding treasures around the Academy?\"\n\n\"Precisely! For the most promising students. A proper education requires more than sitting in classrooms and listening to old men talk. One must explore! Deduce! Take risks!\"\n\nHe pauses thoughtfully.\n\n\"And play Hordes, of course. Everything worth having should require at least one good match.\"\n\n\"Of course.\"\n\n\"Now, there's a particularly interesting place I think you might appreciate. The hidden cloister.\"\n\n\"The Academy has a hidden cloister?\"\n\n\"Certainly! Most respectable academies do. Ours happens to be rather well hidden.\"\n\nHe gestures vaguely toward the courtyard.\n\n\"Go to the Academy courtyard. Along the eastern wall, behind the old ivy-covered fountain. There's a narrow archway, almost completely concealed by the vines. Follow the passage beyond it, and you'll find the cloister.\"\n\nHe taps the side of his nose.\n\n\"But don't expect to simply stroll in and collect your reward! I've arranged a little challenge. A guardian, you see. Quite an agreeable fellow, once you've beaten him.\"\n\n\"A guardian?\"\n\n\"Well, technically a statue. But that rather undersells him.\"\n\nYou stare at the professor.\n\nHe stares back, beaming.\n\nThen, without warning, he looks down at the deck in his hand.\n\n\"Ah! That reminds me. If I replace these two cards with a cheaper unit, the entire opening becomes—oh, that's beautiful!\"\n\nHe begins rearranging cards at a furious pace.\n\n\"Professor? About the cloister—\"\n\n\"Yes, yes! Eastern wall! Fountain! Guardian! Good luck, Fibonacci!\"\n\nAnd with that, he hurries down the corridor, muttering something about mana curves and the mathematical elegance of a perfectly timed counterattack.\n\nYou watch him disappear around a corner.\n\nWell.\n\nThat was certainly an encounter.\n\nYou're not entirely sure whether Professor Nimbelungen is a brilliant scholar, a dangerous lunatic, or simply a man who has played far too much Hordes.\n\nPossibly all three.\n\nStill, the hidden cloister sounds intriguing. And if there's one thing you've learned about this Academy, it's that the strangest rumors have an irritating tendency to turn out to be true.\n\nYou make a mental note to investigate the courtyard one of these days.\n\nPreferably before the professor decides to hide something even more dangerous.",
     "triggers": [
       {
@@ -10846,6 +10894,10 @@
         }
       }
     ],
+    "optionTemplates": [],
+    "title": "The Hidden Cloister",
+    "invitationText": "A professor is hurrying down the corridor, calling a name.",
+    "characterArc": "nimbelungen",
     "effects": [
       {
         "effect": {
@@ -10854,10 +10906,17 @@
             "placeKey": "hidden-cloister"
           }
         }
+      },
+      {
+        "effect": {
+          "type": "add_story_tag",
+          "parameters": {
+            "tag": "cloister unlocked",
+            "amount": 1
+          }
+        }
       }
-    ],
-    "optionTemplates": [],
-    "characterArc": "nimbelungen"
+    ]
   },
   {
     "key": "nimbelungen_cloister_rabbit",
@@ -10868,10 +10927,18 @@
         "parameters": {
           "placeKey": "hidden-cloister"
         }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "cloister unlocked",
+          "value": 1
+        }
       }
     ],
     "optionTemplates": [],
     "title": "Follow the Rabbit",
+    "invitationText": "The hidden cloister is ahead, and the entrance is not unguarded.",
     "characterArc": "nimbelungen",
     "effects": [
       {
@@ -10976,7 +11043,9 @@
       }
     ],
     "title": "The Dude Abides",
+    "invitationText": "The enrollment papers are stamped, and a guide is needed.",
     "characterArc": "the-dude",
+    "priority": 2,
     "effects": [
       {
         "effect": {
@@ -11009,12 +11078,12 @@
           }
         }
       }
-    ],
-    "manualTrigger": "Go talk to the Dude"
+    ]
   },
   {
     "key": "the_dude_first_year_gathering",
     "title": "A Gathering of Great Minds (And Others)",
+    "invitationText": "The Dude is holding court in the quiet evening cafeteria.",
     "text": "The Academy cafeteria is considerably quieter in the evening. Most students have finished their meals, leaving behind a few scattered groups, the occasional clatter of dishes, and the comforting smell of something that might once have been a stew.\n\nYou spot the Dude immediately. He's lounging at the head of a long table, looking as though he's been sitting there since the Academy was founded. A collection of young men and women have gathered around him, engaged in various degrees of conversation.\n\n\"Antonio! My man!\" He waves you over with a broad smile. \"Glad you made it. Grab a seat, grab a drink. We're just getting started.\"\n\nYou sit down, attracting several curious glances.\n\n\"All right, everybody,\" the Dude announces, making a vague sweeping gesture. \"This here is Antonio. Good guy. Just arrived today. Antonio, these are your fellow travelers on the great journey of academic enlightenment.\"\n\nHe pauses, apparently satisfied with this description.\n\n\"Or something like that. Anyway, introductions.\"\n\nHe points toward a young woman sitting with impeccable posture at the far end of the table. Her clothes are elegant, her expression composed, and her gaze suggests she has already assessed the social standing of everyone present.\n\n\"That's Elsa.\"\n\n\"Elsa von...\" she begins, but the Dude has already moved on.\n\n\"Good to meet you, Elsa,\" he adds.\n\nShe closes her mouth. The look she gives him could probably freeze a small lake.\n\n\"Charmed,\" she says to you, in a tone that implies she has yet to reach a final decision on the matter.\n\nNext is a dark-haired young man sitting somewhat apart from the others, listening more than speaking.\n\n\"Farid,\" the Dude says. \"Quiet fellow. Seems all right.\"\n\nFarid inclines his head politely. \"Good evening, Antonio.\"\n\nHe offers nothing further, but his expression is friendly enough. You get the impression he's the sort of person who prefers to observe before deciding whether a conversation is worth joining.\n\n\"And that's Vaiana,\" the Dude continues, gesturing toward another young woman.\n\n\"Hello, Antonio!\" she says, giving you a cheerful wave. \"Welcome to the madness.\"\n\n\"See?\" the Dude remarks. \"Already getting along. Beautiful.\"\n\n{{ emmaIntroduction }}\n\n{{ mollyIntroduction }}\n\nThe Dude surveys the table with an expression of profound satisfaction.\n\n\"Look at that. Everybody getting acquainted. Civilization, man. That's how it starts.\"\n\n\"Actually,\" Elsa interrupts, \"civilization generally begins with the establishment of laws and institutions.\"\n\n\"Sure, sure,\" the Dude agrees amiably. \"Those too.\"\n\nHe takes a leisurely sip from his cup.\n\n\"Oh, right. Almost forgot. There's supposed to be another guy here. Ousmane. Had something else going on tonight, apparently. Very busy fellow.\"\n\nHe shrugs.\n\n\"Can't be everywhere at once.\"\n\n\"An astonishing observation,\" Elsa murmurs.\n\n\"Thanks, man.\"\n\nYou suspect Elsa is discovering, to her considerable frustration, that sarcasm is not particularly effective against someone who refuses to recognize it.\n\nThere is one student the Dude hasn't introduced yet. A young man with untidy red hair and a gentle, somewhat nervous expression sits near the end of the table, quietly turning his cup between his hands. He has spent most of the evening listening, occasionally smiling at something funny but rarely speaking himself.\n\nYou catch his eye, and he gives you an awkward little smile.\n\n\"Oh! Hello. I'm Henry.\"\n\n\"Antonio. Nice to meet you.\"\n\n\"Likewise.\" He hesitates, then adds, \"I think we might be roommates, actually.\"\n\nThat gets your attention.\n\n\"Roommates?\"\n\n\"In the barracks. I saw the accommodation list earlier. Antonio Fibonacci, wasn't it? We're assigned to the same room.\"\n\n\"Ah, excellent!\" the Dude exclaims. \"Roommates! Look at that. Already making connections.\"\n\nHenry smiles apologetically.\n\n\"I hope you don't mind. I'm fairly quiet, generally. And I don't have much luggage, so I shouldn't take up too much space.\"\n\nHe looks genuinely concerned that his very existence might inconvenience you.\n\nYou assure him that neither of those things is a problem.\n\n\"That's good,\" he says, visibly relaxing. \"I've never shared a room before. I was a little nervous about it.\"\n\n\"Well, you're in luck,\" the Dude declares. \"Antonio's a solid guy. I can tell.\"\n\n\"You've known him for about five minutes,\" Elsa observes.\n\n\"Exactly. First impressions, man. Very important.\"\n\nHenry chuckles softly.\n\nThe conversation eventually turns to accommodations. You learn that Henry is the only other person at the table staying in the Academy barracks. Everyone else has found lodgings at one of the inns in town, ranging from modest establishments to considerably more prestigious addresses.\n\n\"One does appreciate a certain standard of living,\" Elsa remarks, smoothing an imaginary crease from her sleeve.\n\n\"Sure,\" the Dude agrees. \"Comfort's important. Me, I find you can get comfortable pretty much anywhere if you give it enough time.\"\n\n\"Some of us,\" Elsa replies, \"have rather more exacting standards.\"\n\n\"Hey, whatever works for you.\"\n\nOnce again, Elsa finds herself without a satisfactory target.\n\nAs the evening progresses, the conversation becomes livelier. Students compare their expectations, their fears, and the alarming number of subjects listed on the first-year curriculum. Even Farid contributes the occasional dry observation, while Henry gradually grows comfortable enough to join in without being directly addressed.\n\nThe Dude mostly listens, interjecting now and then with observations of questionable relevance and surprising wisdom.\n\nEventually, he raises his cup.\n\n\"All right, folks. Here's to the first year.\"\n\n\"Your twenty-first?\" someone asks.\n\n\"Could be, man. Could be.\"\n\nHe smiles serenely.\n\n\"Here's hoping it's a good one.\"\n\nCups are raised around the table. Even Elsa participates, although she looks faintly embarrassed by the informality of the occasion.\n\nAnd there you are, surrounded by a collection of strangers who will, for better or worse, be sharing the next chapter of your life.\n\nA proud young woman with an aristocratic disdain for almost everything. A quiet, observant young man. A gentle redhead who will apparently be sleeping a few feet away from you. And several others whose personalities you're only beginning to discover.\n\nPresiding over the gathering is a forty-one-year-old first-year student who seems to have achieved a kind of enlightenment through the simple expedient of never graduating.\n\nYou came to the Academy to learn artificery, master the game of Hordes, and perhaps make something of yourself.\n\nYou have a feeling the education might extend rather further than you expected.",
     "passages": {
       "emmaIntroduction": {
@@ -11098,6 +11167,7 @@
   {
     "key": "farid_friendly_wager",
     "title": "A Friendly Wager",
+    "invitationText": "Farid has come looking, and he is already grinning.",
     "text": "\"Antonio! Just the man I was looking for.\"\n\nFarid approaches with a grin that suggests he has already decided how this conversation will end.\n\n\"I've been assessing the talent around here. Frankly, I'm beginning to understand why my old Academy had such a good reputation.\"\n\nHow tactful of him.\n\n\"Anyway, fancy a match? Let's make it interesting. If you win, I'll give you a hundred gold. If I win, you owe me a favor. Nothing scandalous, I promise.\"\n\nHe pauses.\n\n\"Well, nothing terribly scandalous.\"",
     "triggers": [
       {
@@ -11216,7 +11286,6 @@
       }
     },
     "characterArc": "farid",
-    "emotion": "proud",
-    "manualTrigger": "Farid has a challenge"
+    "emotion": "proud"
   }
 ]

@@ -95,18 +95,23 @@ Most events have a direct effect mutating the game state, and also several optio
 
 Events are authored at design time in JSON files and loaded into a database when the application starts. As events occur, they are removed from the pool of potential events, so an event is normally encountered only once per playthrough.
 
+An event is one root beat plus an optional tree of later beats called nodes. The root is what the scheduler starts. Each node has its own text, optional entry triggers, illustration, emotion, entry effects, conditional passages, and options. Showing the root stamps the event once; moving through nodes does not stamp it again and does not advance time. A node is how a conversation continues right now. A follow-up event is still a separate event: its own key, its own once-only stamp, and it may wait for another day or place.
+
+#### Event triggers
+
 Each event defines a set of trigger conditions. These can refer to previous events having occurred, specific player choices in previous events, numeric game-state thresholds, time and location, characters currently present, and other game-state conditions. Together, these conditions allow small groups of related events (mini-arcs) to depend on earlier outcomes without requiring a single fixed story path.
 
-Each game period, the game queries events whose trigger conditions are satisfied. Events have an optional **`manualTrigger`** string attribute that controls how an eligible event starts:
+Each game period, the game queries events whose trigger conditions are satisfied. Every mandatory event plays, one after another, with a continue button between them so narration does not chain. If none played, the player may start one optional event.
 
-- **Absent `manualTrigger` (default):** the event plays automatically when eligible and selected by the event scheduling logic.
-- **Present `manualTrigger`:** the string is the player-facing label of an action added to the existing action list at the bottom of the illustrated book, alongside contextual actions such as **Craft card**. The event becomes available when its usual trigger conditions are met, but only plays when the player selects that action.
+Events can be mandatory or optional. Mandatory events are those which have a specific day trigger condition, and those whihc have a non zero "prioity" property.
 
-The same rich trigger conditions determine **eligibility** in both cases; `manualTrigger` changes only **activation**. A manual event does not execute merely because it becomes eligible. This lets authored events be proactively initiated by the player without requiring the player to guess which of the four generic socialization actions might conceal an event. It also avoids adding a separate event-specific interaction menu.
+Each new period, we check what events trigger. All mandatory events trigger one after the other. Then, if no mandatory event triggered this period, but optional events triggered, what happens depends if there was a scheduled activity this period.
 
-**How to prioritize or schedule multiple eligible automatic events remains an open design question**; the aim is to preserve variety while allowing ongoing stories to develop coherently. Presentation of multiple simultaneously available manual actions can be refined through playtesting.
+If there was a scheduled activity this period, the player is moved to this place, we check if there are opetional event triggers, and if yes the UI presents the player options (on the right side of the screen, in the sim data side - it shows the characters portraits if it's part of an arc, and the event's name) with maximum 3 of these events (randomly selected), and the option to skip them and proceed with the activity.
 
-An event is one root beat plus an optional tree of later beats called nodes. The root is what the scheduler starts. Each node has its own text, optional entry triggers, illustration, emotion, entry effects, conditional passages, and options. Showing the root stamps the event once; moving through nodes does not stamp it again and does not advance time. A node is how a conversation continues right now. A follow-up event is still a separate event: its own key, its own once-only stamp, and it may wait for another day or place.
+If there was no scheduled activity this period, we also check for optional event triggers, but ignoring trigger conditions on place. If there are, we also present max 3 events, and propose the player to for example "Go to the library", which moves the player there and starts the event. The character portrait still appears when the event belongs to an arc.
+
+#### Event resolution
 
 When an event occurs:
 

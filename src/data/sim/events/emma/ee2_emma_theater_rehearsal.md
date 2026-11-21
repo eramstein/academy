@@ -1,6 +1,7 @@
 Event 2: Neverland, Briefly
 
 Event ID: emma_theater_rehearsal
+Invitation: Emma is in costume at the theater, wings included.
 NPC: emma
 Trigger: Scheduled event;
 Emotion: amused

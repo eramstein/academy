@@ -1,6 +1,7 @@
 Event: A Friendly Face
 
 Event ID: molly_first_encounter
+Invitation: Molly is packing up her cards after a match.
 Trigger: current acitivty type is Class, period is afternoon
 Image: large
 

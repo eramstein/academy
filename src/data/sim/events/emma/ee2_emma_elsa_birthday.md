@@ -2,6 +2,7 @@
 
 **NPC:** elsa  
 **Event ID:** `emma_elsa_birthday`  
+**Invitation:** Elsa has stopped Emma in the lane with a sealed envelope.
 **Trigger:** Evening; Emma is present; `emma_trusted_companion` story tag  
 **Emotion:** neutral
 

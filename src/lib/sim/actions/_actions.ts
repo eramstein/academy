@@ -14,7 +14,6 @@ import {
   nextScene,
   sceneWaitingOnEventChoice,
   setSceneEvents,
-  syncManualSceneTriggers,
 } from '../scene';
 import { formatActivityShortLabel, getNextPeriodScheduledActivity } from '../schedule';
 import { getNextPeriod } from '../time';
@@ -135,12 +134,10 @@ export async function performAction(action: Action) {
 }
 
 export function setPossibleActions() {
-  syncManualSceneTriggers();
   gs.scene.actions = getPossibleActions();
-  console.log('setPossibleActions', gs.scene.actions, gs.scene.manualTriggers);
+  console.log('setPossibleActions', gs.scene.actions);
   // if no actions are available, end the scene
-  const manualCount = gs.scene.manualTriggers?.length ?? 0;
-  if (gs.scene.actions.length === 0 && manualCount === 0) {
+  if (gs.scene.actions.length === 0) {
     console.log('no actions available, ending scene');
     nextScene();
   }

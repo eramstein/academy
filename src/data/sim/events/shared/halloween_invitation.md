@@ -2,6 +2,7 @@
 
 **NPC:** glutzenbaum  
 **Event ID:** `academy_halloween_invitation`
+**Invitation:** Professor Glützenbaum has arrived in class with a pumpkin.
 **Trigger:** Day >= 20; afternoon; class activity
 **Emotion:** happy
 

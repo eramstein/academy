@@ -114,10 +114,33 @@ export interface League {
   pastWinners: string[];
 }
 
-/** A trigger-matching event offered as a scene-action button instead of firing on its own. */
-export interface ManualSceneTrigger {
+/** Next mandatory event, parked so narration does not chain on its own. */
+export interface PendingPeriodEvent {
   eventKey: string;
   label: string;
+}
+
+/** One optional event the player may start this period. At most one is played. */
+export interface OfferedPeriodEvent {
+  eventKey: string;
+  /** Authored event name. */
+  title: string;
+  /** Button label. A travel offer reads like "Go see Emma at the Library". */
+  label: string;
+  /** Spoiler-free hint under the label, when the template has one. */
+  invitationText?: string;
+  /** Set when the event belongs to a character arc, so the panel can show a portrait. */
+  characterKey?: string;
+  /** Portrait expression when the template names one. */
+  emotion?: Emotion;
+  /** Where a travel offer moves the player before the event starts. */
+  placeKey?: string;
+}
+
+export interface PeriodEventOffer {
+  events: OfferedPeriodEvent[];
+  /** Skip continues the scheduled activity. Otherwise skip opens the map. */
+  skipToActivity: boolean;
 }
 
 /** A button the interaction model offered. `updates` are deltas, not new totals. */
@@ -149,15 +172,29 @@ export interface InteractionSession {
 export interface Scene {
   narration: Narration[];
   event: SceneEvent | undefined; // current event the player has to react to
-  eventsThisPeriod: number; // number of events that have triggered this period
+  eventsThisPeriod: number; // number of visible events that have triggered this period
   actions: Action[]; // list of proactive actions the player can do currently
-  /** Events withheld from auto-play; each label is a scene-action button. */
-  manualTriggers?: ManualSceneTrigger[];
   /**
-   * Next auto-matched event parked after one already fired this period.
+   * Next mandatory event parked after one already fired this period.
    * Shown as a single continue button so narration does not chain automatically.
    */
-  pendingPeriodEvent?: ManualSceneTrigger;
+  pendingPeriodEvent?: PendingPeriodEvent;
+  /**
+   * Up to three optional events offered when no mandatory event fired.
+   * The player starts one, or skips.
+   */
+  periodEventOffer?: PeriodEventOffer;
+  /** A mandatory event already played; optional events stay closed for the period. */
+  mandatoryEventPlayed?: boolean;
+  /** The player started or skipped this period's optional event. */
+  optionalEventResolved?: boolean;
+  /** Travel event waiting until a guardian lets the player in. */
+  pendingOfferedEventKey?: string;
+  /**
+   * Free period with nowhere to be yet. After events, the map asks where to go.
+   * Cleared once the player picks a place or leaves for an optional event.
+   */
+  awaitingPlacePick?: boolean;
   selectingNextPlace?: boolean; // whether the player is selecting a next place
   /** Place the player tried to enter that is gated by an undefeated guardian. */
   pendingGuardianPlaceKey?: string;
@@ -246,7 +283,6 @@ export interface EventTemplate {
   emotion?: Emotion;
   image?: string;
   imageSize?: EventImageSize;
-  manualTrigger?: string;
   passages?: Record<string, EventPassage>;
   /**
    * Later beats in this same event. The template itself is the root beat.
@@ -256,6 +292,7 @@ export interface EventTemplate {
   nodes?: Record<string, EventNode>;
   priority?: number; // events with the highest priority number trigger first
   silent?: boolean; // if true, the event applies its effects but isn't added to the scene, and isn't considered by the scene director
+  invitationText?: string; // short hint of what the event is about, without spoilers
 }
 
 /** A beat inside an event. Reached only through an option `nextNode` (or a skill-check branch node). */

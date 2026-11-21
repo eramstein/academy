@@ -9,6 +9,7 @@ import {
   type EventEffect,
   type EventOption,
   type EventTemplate,
+  type OfferedPeriodEvent,
   type SceneEvent,
   type ScheduledActivity,
 } from '../_model';
@@ -17,15 +18,17 @@ import { gs, saveStateToLocalStorage } from '../_state';
 import { attributeCheck, skillCheckDifficulty } from './attribute-checks';
 import {
   consumeEventTemplate,
+  eventPlaceKey,
+  eventPresentCharacterKeys,
   eventTemplateEffectApplies,
-  getManualSceneTriggers,
-  getPlayableManualTrigger,
+  getNextMandatorySceneEvent,
   getSceneEventByKey,
-  getTriggeredSceneEvent,
   getTriggeredSilentEvent,
+  listOptionalSceneEvents,
   nodeIsEnterable,
   recordEventOccured,
   sceneEventForNode,
+  type StoredEventTemplate,
 } from './events';
 import { placeNeedsGuardian, presentGuardianEncounter } from './guardians';
 import { narrateScheduledActivity, narrateText } from './narration';
@@ -59,15 +62,16 @@ export function sceneWaitingOnEventChoice(event = gs.scene.event): boolean {
   return (event?.options?.length ?? 0) > 0;
 }
 
-/* 
-The scene first loops events until it runs out. Player has to react to each event by chosing an option.
-Once the events are done (no new events are set), the player can get proactive and choose actions.
-Events with manualTrigger are skipped here and offered as scene-action buttons instead.
-Silent events fire for effects only: they are not narrated, never claim the scene, and do not
-count toward the period event limit (or pendingPeriodEvent parking).
-After one visible event has already fired this period, further matches are parked as pendingPeriodEvent
-(a single continue button) so narration does not chain automatically.
-A long action advances the period and ends the scene; the next scene is set based either on the next scheduled activity or the player's choice of next place.
+/*
+Each period plays every matching mandatory event, one after another. After the first
+visible one, the next waits behind a continue button so narration does not chain.
+Silent events fire for effects only: they are not narrated, never claim the scene, and
+do not count toward that pacing.
+If no mandatory event played, the player may start one optional event, chosen from up
+to three random matches. With a scheduled activity, skipping it continues the activity.
+With none, matches ignore place, and skipping opens the map.
+A long action advances the period. The next scene follows the scheduled activity, or
+asks where to go once events for a free period are done.
 Optionless events resolve immediately (narrate + effects) and do not hold the scene.
 An option nextNode (or a skill-check successNode / failureNode) opens another beat of the same event
 instead of ending it. That beat does not stamp the event again.
@@ -75,23 +79,154 @@ A start_match effect defers nextNode and follow_up_event until the Battle view c
 (see resumeEventAfterBattle).
 */
 
-export function syncManualSceneTriggers() {
-  gs.scene.manualTriggers = getManualSceneTriggers();
-}
+const MAX_OPTIONAL_OFFERS = 3;
 
 function parkPendingPeriodEvent(eventKey: string, label: string) {
   gs.scene.pendingPeriodEvent = { eventKey, label };
   gs.scene.event = undefined;
   gs.scene.actions = [];
-  gs.scene.manualTriggers = [];
+}
+
+function placePhrase(name: string): string {
+  if (/^(the|a|an)\b/i.test(name) || name.includes("'")) return name;
+  return `the ${name}`;
+}
+
+function eventTitle(template: Pick<EventTemplate, 'key' | 'title'>): string {
+  const title = template.title?.trim();
+  if (title) return title;
+  return template.key.replace(/[_-]+/g, ' ');
+}
+
+function sampleEvents(events: StoredEventTemplate[], count: number): StoredEventTemplate[] {
+  const copy = [...events];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, count);
+}
+
+function offeredInvitation(template: StoredEventTemplate): string | undefined {
+  const text = template.invitationText?.trim();
+  return text || undefined;
+}
+
+function toOfferedEvent(template: StoredEventTemplate, travel: boolean): OfferedPeriodEvent {
+  const title = eventTitle(template);
+  const invitationText = offeredInvitation(template);
+  const characterKey = template.characterArc;
+  const character = characterKey ? gs.characters[characterKey] : undefined;
+  if (!travel) {
+    return {
+      eventKey: template.key,
+      title,
+      label: title,
+      ...(invitationText ? { invitationText } : {}),
+      ...(characterKey ? { characterKey } : {}),
+      ...(template.emotion ? { emotion: template.emotion } : {}),
+    };
+  }
+
+  const scriptedPlace = eventPlaceKey(template);
+  const destination =
+    scriptedPlace ??
+    (character && character.placeKey !== gs.player.placeKey ? character.placeKey : undefined);
+  const placeName = destination ? gs.places[destination]?.name : undefined;
+  const label = placeName ? `Go to ${placePhrase(placeName)}` : title;
+  return {
+    eventKey: template.key,
+    title,
+    label,
+    ...(invitationText ? { invitationText } : {}),
+    ...(characterKey ? { characterKey } : {}),
+    ...(template.emotion ? { emotion: template.emotion } : {}),
+    ...(destination ? { placeKey: destination } : {}),
+  };
+}
+
+/** Bring the player and the event's characters to the destination. */
+function moveCastForEvent(template: EventTemplate, placeKey?: string) {
+  const destination = placeKey ?? eventPlaceKey(template);
+  if (!destination || !gs.places[destination]) return;
+  if (gs.player.placeKey !== destination) {
+    gs.player.placeKey = destination;
+    gs.scene.image = undefined;
+  }
+  const keys = new Set(eventPresentCharacterKeys(template));
+  if (template.characterArc) keys.add(template.characterArc);
+  for (const key of keys) {
+    const character = gs.characters[key];
+    if (!character || character.key === gs.player.key) continue;
+    character.placeKey = destination;
+  }
+}
+
+function startEventByKey(eventKey: string, placeKey?: string): boolean {
+  const resolved = getSceneEventByKey(eventKey);
+  if (!resolved) return false;
+  if (placeKey) moveCastForEvent(resolved.template, placeKey);
+  setEvent(resolved.event, resolved.template);
+  if (sceneWaitingOnEventChoice()) {
+    gs.scene.actions = [];
+    return true;
+  }
+  return false;
+}
+
+/** No event is holding the scene: offer a place, or open ordinary actions. */
+function settleOpenScene() {
+  gs.scene.event = undefined;
+  gs.scene.pendingPeriodEvent = undefined;
+  gs.scene.periodEventOffer = undefined;
+  if (gs.scene.awaitingPlacePick) {
+    gs.scene.selectingNextPlace = true;
+    gs.scene.actions = [];
+    return;
+  }
+  gs.scene.selectingNextPlace = false;
+  console.log('no event choices, setting possible actions');
+  setPossibleActions();
+}
+
+function offerOptionalEvents() {
+  if (gs.scene.periodEventOffer) {
+    gs.scene.actions = [];
+    gs.scene.selectingNextPlace = false;
+    return;
+  }
+  const activity = getCurrentScheduledActivity();
+  const travel = !activity;
+  const matches = listOptionalSceneEvents(travel);
+  if (matches.length === 0) {
+    // Nothing to choose. Don't ask again after the player settles into the period.
+    gs.scene.optionalEventResolved = true;
+    settleOpenScene();
+    return;
+  }
+  gs.scene.periodEventOffer = {
+    events: sampleEvents(matches, MAX_OPTIONAL_OFFERS).map((template) =>
+      toOfferedEvent(template, travel)
+    ),
+    skipToActivity: !travel,
+  };
+  gs.scene.actions = [];
+  gs.scene.selectingNextPlace = false;
+  gs.scene.event = undefined;
 }
 
 export function setSceneEvents() {
   gs.scene.event = undefined;
   gs.scene.pendingPeriodEvent = undefined;
-  // Keep resolving optionless events in one pass; stop when the player must choose.
-  // Drain silent events first each pass (effects only). After one visible event this
-  // period, park the next visible match behind a continue button.
+
+  if (gs.scene.pendingOfferedEventKey) {
+    const eventKey = gs.scene.pendingOfferedEventKey;
+    gs.scene.pendingOfferedEventKey = undefined;
+    if (startEventByKey(eventKey, gs.player.placeKey)) return;
+  }
+
+  // Drain silent events (effects only), then mandatory events. After one visible
+  // event this period, park the next mandatory match behind a continue button.
   const resolvedKeys = new Set<string>();
   while (true) {
     const silentEvent = getTriggeredSilentEvent();
@@ -100,33 +235,35 @@ export function setSceneEvents() {
       setEvent(silentEvent.event, silentEvent.template);
       continue;
     }
-    const triggeredEvent = getTriggeredSceneEvent();
-    if (!triggeredEvent || resolvedKeys.has(triggeredEvent.event.key)) break;
+    const mandatory = getNextMandatorySceneEvent();
+    if (!mandatory || resolvedKeys.has(mandatory.event.key)) break;
     if (gs.scene.eventsThisPeriod >= 1) {
-      const label = triggeredEvent.template.title?.trim() || 'Continue';
-      parkPendingPeriodEvent(triggeredEvent.event.key, label);
+      const label = mandatory.template.title?.trim() || 'Continue';
+      gs.scene.periodEventOffer = undefined;
+      parkPendingPeriodEvent(mandatory.event.key, label);
       return;
     }
-    resolvedKeys.add(triggeredEvent.event.key);
-    setEvent(triggeredEvent.event, triggeredEvent.template);
-    if (sceneWaitingOnEventChoice()) break;
+    resolvedKeys.add(mandatory.event.key);
+    gs.scene.periodEventOffer = undefined;
+    setEvent(mandatory.event, mandatory.template);
+    if (sceneWaitingOnEventChoice()) return;
   }
+
   console.log('setSceneEvents', gs.scene.event);
-  if (!sceneWaitingOnEventChoice()) {
-    console.log('no event choices, setting possible actions');
-    gs.scene.event = undefined;
-    setPossibleActions();
-  } else {
-    gs.scene.manualTriggers = [];
+  if (sceneWaitingOnEventChoice()) return;
+  if (gs.scene.mandatoryEventPlayed || gs.scene.optionalEventResolved) {
+    settleOpenScene();
+    return;
   }
+  offerOptionalEvents();
 }
 
-/** Player clicked the continue button for a second (or later) event this period. */
+/** Player clicked the continue button for a later mandatory event this period. */
 export function playPendingPeriodEvent() {
   const pending = gs.scene.pendingPeriodEvent;
   if (!pending) return;
   gs.scene.pendingPeriodEvent = undefined;
-  const triggered = getTriggeredSceneEvent();
+  const triggered = getNextMandatorySceneEvent();
   if (!triggered || triggered.event.key !== pending.eventKey) {
     // Triggers may have changed; re-scan instead of forcing a stale key.
     setSceneEvents();
@@ -135,10 +272,46 @@ export function playPendingPeriodEvent() {
   setEvent(triggered.event, triggered.template);
   if (sceneWaitingOnEventChoice()) {
     gs.scene.actions = [];
-    gs.scene.manualTriggers = [];
   } else {
     setSceneEvents();
   }
+}
+
+/** Player chose one of the period's optional events. */
+export function selectOfferedEvent(eventKey: string) {
+  const offer = gs.scene.periodEventOffer;
+  const picked = offer?.events.find((event) => event.eventKey === eventKey);
+  if (!offer || !picked) return;
+  gs.scene.periodEventOffer = undefined;
+  gs.scene.optionalEventResolved = true;
+  gs.scene.selectingNextPlace = false;
+  gs.scene.awaitingPlacePick = false;
+
+  if (!offer.skipToActivity && picked.placeKey && placeNeedsGuardian(picked.placeKey)) {
+    gs.scene.pendingOfferedEventKey = picked.eventKey;
+    presentGuardianEncounter(picked.placeKey);
+    return;
+  }
+
+  const placeKey = offer.skipToActivity ? undefined : picked.placeKey;
+  if (startEventByKey(picked.eventKey, placeKey)) return;
+  setSceneEvents();
+}
+
+/** Player declined the optional events. */
+export function skipOfferedEvents() {
+  const offer = gs.scene.periodEventOffer;
+  if (!offer) return;
+  gs.scene.periodEventOffer = undefined;
+  gs.scene.optionalEventResolved = true;
+  gs.scene.event = undefined;
+  if (offer.skipToActivity) {
+    gs.scene.selectingNextPlace = false;
+    setPossibleActions();
+    return;
+  }
+  gs.scene.selectingNextPlace = true;
+  gs.scene.actions = [];
 }
 
 /** Destination chosen when this option was offered. Effects do not retarget it. */
@@ -205,7 +378,6 @@ function presentEventNode(template: EventTemplate, nodeKey: string) {
   if (event.options.length > 0) {
     gs.scene.event = event;
     gs.scene.actions = [];
-    gs.scene.manualTriggers = [];
     return;
   }
   setSceneEvents();
@@ -276,7 +448,6 @@ export async function selectOption(option: EventOption) {
     deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
     if (sceneWaitingOnEventChoice() || gs.scene.interaction) {
       gs.scene.actions = [];
-      gs.scene.manualTriggers = [];
       return;
     }
     // performAction already resolved the scene when there were no follow-ups.
@@ -289,7 +460,6 @@ export async function selectOption(option: EventOption) {
   // next node or refresh actions while the interaction owns the stage.
   if (gs.scene.interaction) {
     gs.scene.actions = [];
-    gs.scene.manualTriggers = [];
     return;
   }
   // Only defer when THIS option started a match. A leftover ongoingBattle must not
@@ -323,7 +493,6 @@ export async function selectOption(option: EventOption) {
   deferredFollowUps.forEach((effect) => applyOptionEffect(effect, characterArc));
   if (sceneWaitingOnEventChoice()) {
     gs.scene.actions = [];
-    gs.scene.manualTriggers = [];
     return;
   }
   setSceneEvents();
@@ -370,12 +539,18 @@ export function startScene() {
   updateNpcLocations();
   const currentScheduledActivity = getCurrentScheduledActivity();
   console.log('nextScene', currentScheduledActivity);
+  gs.scene.eventsThisPeriod = 0;
+  gs.scene.mandatoryEventPlayed = false;
+  gs.scene.optionalEventResolved = false;
+  gs.scene.periodEventOffer = undefined;
+  gs.scene.pendingPeriodEvent = undefined;
+  gs.scene.pendingOfferedEventKey = undefined;
+  gs.scene.selectingNextPlace = false;
+  gs.scene.awaitingPlacePick = !currentScheduledActivity;
   if (currentScheduledActivity) {
     setCurrentActivity(currentScheduledActivity);
-    setSceneEvents();
-  } else {
-    gs.scene.selectingNextPlace = true;
   }
+  setSceneEvents();
 }
 
 export function setCurrentActivity(currentScheduledActivity: ScheduledActivity) {
@@ -400,6 +575,7 @@ export function nextScene() {
 }
 
 export function selectNextScene(placeKey: string) {
+  gs.scene.awaitingPlacePick = false;
   if (placeNeedsGuardian(placeKey)) {
     presentGuardianEncounter(placeKey);
     return;
@@ -452,22 +628,6 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
   }
 }
 
-/** Play a manualTrigger event from its scene-action button. */
-export function playManualTriggerEvent(eventKey: string) {
-  const resolved = getPlayableManualTrigger(eventKey);
-  if (!resolved) {
-    syncManualSceneTriggers();
-    return;
-  }
-  setEvent(resolved.event, resolved.template);
-  if (sceneWaitingOnEventChoice()) {
-    gs.scene.actions = [];
-    gs.scene.manualTriggers = [];
-  } else {
-    setSceneEvents();
-  }
-}
-
 /** Debug/console: fire an event by key. Optionless events resolve and restore actions. */
 export function simulateEvent(templateKey: string) {
   const resolved = getSceneEventByKey(templateKey);
@@ -477,7 +637,6 @@ export function simulateEvent(templateKey: string) {
   setEvent(resolved.event, resolved.template);
   if (sceneWaitingOnEventChoice()) {
     gs.scene.actions = [];
-    gs.scene.manualTriggers = [];
   } else {
     setSceneEvents();
   }

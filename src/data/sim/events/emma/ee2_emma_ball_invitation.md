@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_ball_invitation`  
+**Invitation:** Emma is at her desk before class, pleased about a letter.
 **Trigger:** `emma_trusted_companion` and `emma_ballet_incident` have occurred; thursday; morning; Emma present  
 **Emotion:** amused
 

@@ -56,9 +56,9 @@ names). Canonical shape:
 **NPC:** <npc key>. # omit or use `main` / none for main-story
 **Event ID:** `<key>` # permanent JSON key; required
 **Trigger:** <plain-language conditions>
+**Invitation:** <one spoiler-free sentence shown with the title when the event can be started>. # optional; omit for silent events
 **Image:** <filename.jpg and/or small|medium|large>. # optional
 **Emotion:** <Emotion enum value>. # optional
-**Manual trigger:** <button label>. # optional; withhold auto-play
 **Silent:** true. # optional; effects-only, never narrated (see Silent events)
 **Priority:** <number>. # optional; higher fires first among same-class candidates
 
@@ -118,7 +118,7 @@ Optional sections:
 - `**Next:** <node key>` on an option, and `## Node: <key>` sections — a later beat in
   the same event (see Multi-step events). Omit both when the event is a single beat.
 - `**Silent:** true` — effects-only plot resolution (see Silent events). Do not combine
-  with `**Manual trigger:**`, options, or nodes.
+  with options or nodes.
 
 Folder name and `**NPC:**` should agree; `characterArc` is the NPC key for arc
 events. Main-story events omit `characterArc`.
@@ -132,6 +132,8 @@ events. Main-story events omit `characterArc`.
 3. Build the `EventTemplate`:
    - `key` ← `**Event ID:**` (keep exactly; do not rename to “fit” house style).
    - `title` ← `# Event: …` heading text (strip the `Event:` prefix).
+   - `invitationText` ← `**Invitation:**` verbatim (trim the line only). Omit when the
+     line is absent, or when the event is silent. Do not draft one during compile.
    - `text` ← `## Text` body, verbatim, paragraphs joined with `\n\n`. Keep
      `{{ passageKey }}` tokens exactly as written.
    - `passages` ← `## Conditional passages` when present (see Passages). Omit when absent.
@@ -139,12 +141,11 @@ events. Main-story events omit `characterArc`.
      `**Image:**` is only a size, still set `image` to `"<key>.jpg"`.
    - `characterArc` ← `**NPC:**` when it is an NPC key.
    - `triggers` ← map `**Trigger:**` (see Triggers).
-   - `manualTrigger` ← `**Manual trigger:**` label when present (omit when absent).
    - `silent` ← `true` when `**Silent:** true` (omit when absent/false).
    - `priority` ← number when `**Priority:**` is present (omit when absent).
    - `effects` ← map `## Effects` to `{ effect, triggers? }` couples (see Effects).
    - For silent events: `text` is `""` when `## Text` is omitted; `optionTemplates` is
-     `[]`; do not emit `nodes` or `manualTrigger`.
+     `[]`; do not emit `nodes`.
    - `optionTemplates` ← each `### Option …` that belongs to the root (before any `## Node:`):
      - `text` ← the option **label** (heading after `Option A:`).
      - option body under `**Text:**` → a `narrate` effect with that prose
@@ -175,7 +176,8 @@ type strings (unknown types crash when the event fires).
 
 ## Prose rules (non-negotiable)
 
-- Copy `## Text`, passage prose, and option `**Text:**` **exactly** (wording, punctuation, quotes).
+- Copy `## Text`, passage prose, option `**Text:**`, and `**Invitation:**` **exactly**
+  (wording, punctuation, quotes). `invitationText` is that one sentence, not a paraphrase.
 - Keep `{{ passageKey }}` tokens in `text`. Do not expand them while compiling.
 - Preserve paragraph breaks as `\n\n`; trim only a single trailing newline on the
   whole string if needed for tidy JSON.
@@ -189,6 +191,7 @@ type strings (unknown types crash when the event fires).
 {
   "key": "emma_first_encounter",
   "title": "A Rather Unfortunate First Impression",
+  "invitationText": "A young woman is in the hall, just as the first day begins.",
   "text": "Paragraph one…\n\n{{ intro }}\n\nParagraph two…",
   "passages": {
     "intro": {
@@ -218,7 +221,6 @@ type strings (unknown types crash when the event fires).
   "emotion": "neutral",
   "image": "emma_first_encounter.jpg",
   "imageSize": "large",
-  // optional "manualTrigger": "Speak with Emma" — scene-action label; omit to auto-play
   // optional "priority": 1 — higher fires first among candidates
   // optional "silent": true — effects only; text "" / optionTemplates []; no scene claim
   // optional "nodes": { "tuition_talk": { "text": "…", "optionTemplates": [] } }
@@ -228,12 +230,12 @@ type strings (unknown types crash when the event fires).
 Every event fires at most once: showing the root beat stamps `gs.storyTags[event.key]`.
 Later nodes in the same event do not stamp it again. Empty `triggers` means follow-up /
 debug only (`follow_up_event` or `/e`) — never auto-fires. Property order: `key`, `title`,
-`text`, optional `passages`, `triggers`, `effects`, `optionTemplates`, optional `nodes`,
-`characterArc`, `emotion`, `image`, `imageSize`, then optional `manualTrigger`,
-`priority`, `silent`. Options: `text`, optional `triggers`, then `effects` or
-`attributeCheck`, then optional `actionTemplate`, then optional `nextNode`. Node object
-order: `text`, optional `passages`, optional `triggers`, optional `effects`,
-`optionTemplates`, then optional `title`, `emotion`, `image`, `imageSize`.
+optional `invitationText`, `text`, optional `passages`, `triggers`, `effects`, `optionTemplates`, optional `nodes`,
+`characterArc`, `emotion`, `image`, `imageSize`, then optional `priority`, `silent`.
+Options: `text`, optional `triggers`, then `effects` or `attributeCheck`, then optional
+`actionTemplate`, then optional `nextNode`. Node object order: `text`, optional
+`passages`, optional `triggers`, optional `effects`, `optionTemplates`, then optional
+`title`, `emotion`, `image`, `imageSize`.
 
 ## Images
 
@@ -248,11 +250,8 @@ From `**Image:**`:
 
 ## Triggers
 
-Every entry in `triggers` must match (AND). The engine auto-plays the first event
-in file order whose triggers all match and that has no `manualTrigger`. An event
-with `manualTrigger` set to a button label is withheld: when its triggers match,
-that label is a scene action, and choosing it plays the event. Empty or whitespace
-`manualTrigger` is omitted (auto-play stays the default).
+Every entry in `triggers` must match (AND). The engine auto-plays the first matching
+event selected by the scene scheduler (forced/priority, then period room).
 
 | `triggerType`        | `parameters`                                                       | Notes                                                                                   |
 | -------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
@@ -317,8 +316,8 @@ Rules when compiling:
 
 - Omit `## Text` or leave it empty → `text: ""` (validator allows empty text only when
   `silent` is true).
-- `optionTemplates: []` — no choices; do not author `## Options` / `## Node:` /
-  `**Manual trigger:**` on a silent event.
+- `optionTemplates: []` — no choices; do not author `## Options` / `## Node:` on a
+  silent event.
 - Still stamp `gs.storyTags[event.key]` once, same as visible events.
 - Optional `**Priority:**` raises which silent event runs first among matches.
 - Chat-topic and story-tag effects are the usual tools; pair with `invalidate_event` when
@@ -773,6 +772,7 @@ keys stable when the prose is edited, the same way event keys stay stable.
 Source: `src/data/sim/events/emma/first_impression.md` (abbreviated mapping):
 
 - `# Event: A Rather Unfortunate First Impression` → `title`
+- `**Invitation:**` → `invitationText` (omit the property when the line is absent)
 - `**Event ID:** emma_first_encounter` → `key`
 - `**NPC:** emma` → `characterArc: "emma"`
 - `**Trigger:** First time Emma is present…` →

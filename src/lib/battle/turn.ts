@@ -83,6 +83,9 @@ function statuses(unit: UnitDeployed) {
   if (unit.statuses.daze && unit.statuses.daze > 0) {
     unit.statuses.daze--;
   }
+  if (unit.statuses.vulnerable && unit.statuses.vulnerable > 0) {
+    unit.statuses.vulnerable--;
+  }
 }
 
 function forcedActions(unit: UnitDeployed) {

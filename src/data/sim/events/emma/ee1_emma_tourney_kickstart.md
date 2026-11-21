@@ -1,6 +1,7 @@
 # Event: The Challenge
 
 **Event ID:** `emma_tourney_kickstart`  
+**Invitation:** Professor Glützenbaum has a letter from another school.
 Image: large.
 **Trigger:** Emma respect ≥ 5; activity type is class; morning;
 

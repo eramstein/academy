@@ -47,6 +47,7 @@ export function updateRelationArc(parameters: UpdateRelationArcParameters): stri
   if (image) {
     entry.image = image;
   }
+  if (!character.relationArc) character.relationArc = [];
   character.relationArc.push(entry);
   return text;
 }

@@ -165,13 +165,13 @@
                   class:planned={chip.status === 'planned'}
                   class:done={chip.status === 'done'}
                   class:open={chip.open}
-                  title={chip.manual ? `${chip.label} (manual)` : chip.label}
+                  title={chip.label}
                   onclick={(event) => {
                     event.stopPropagation();
                     openChip(chip.key, day, period, chip.status);
                   }}
                 >
-                  {#if chip.manual}<span class="manual-tag">m</span>{/if}{chip.label}
+                  {chip.label}
                 </button>
               {/each}
               {#if cell.activities.length === 0 && cell.events.length === 0}
@@ -479,21 +479,6 @@
     text-decoration: line-through;
     cursor: default;
     opacity: 0.7;
-  }
-
-  .manual-tag {
-    display: inline-block;
-    margin-right: 0.25rem;
-    padding: 0 0.2rem;
-    border: 1px solid var(--color-brass);
-    border-radius: 2px;
-    font-size: 0.65rem;
-    font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: 0.02em;
-    text-transform: lowercase;
-    color: var(--color-brass);
-    text-decoration: none;
   }
 
   .empty {

@@ -1,10 +1,9 @@
 The Devil's Garden
 Event ID: emma_schlupak_mushrooms
+Invitation: Emma has maps and a botanical book, and a plan for the forest.
 Image: emma-forest-expedition.jpg, large
 
 Trigger: Emma present; story tag emma_trusted_companion;
-
-Manual trigger: Emma has a proposal — Forest of Schlupak
 
 Reward: 2 or 4 SchlupakMushrooms (retaliation, poison, damage).
 Opening

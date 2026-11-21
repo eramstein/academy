@@ -1,6 +1,7 @@
 Event: Happy Little Accident
 
 Event ID: happy_little_accident
+Invitation: The artificery lesson is going smoothly, for the moment.
 
 Trigger: day 4, morning
 

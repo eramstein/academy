@@ -12,6 +12,7 @@
 
   const selectingNextPlace = $derived(gs.scene.selectingNextPlace);
   const pendingPeriodEvent = $derived(gs.scene.pendingPeriodEvent);
+  const periodEventOffer = $derived(gs.scene.periodEventOffer);
 
   let bookEl: HTMLElement | undefined = $state();
   let pageEl: HTMLDivElement | undefined = $state();
@@ -36,6 +37,12 @@
 
   $effect(() => {
     if (!bookEl || !pageEl || !contentEl) return;
+
+    // Bottom chrome mount/unmount does not always resize observed nodes
+    // (scene stays height:100%), so re-sync when action visibility changes.
+    void selectingNextPlace;
+    void periodEventOffer;
+    void narrationDone;
 
     const syncHeight = () => {
       if (!bookEl || !pageEl || !contentEl) return;
@@ -85,7 +92,8 @@
     const ro = new ResizeObserver(syncHeight);
     ro.observe(contentEl);
     if (bookEl.parentElement) ro.observe(bookEl.parentElement);
-    syncHeight();
+    // Wait a frame so SceneActions can mount/unmount before measuring.
+    void tick().then(syncHeight);
 
     const onKeyScroll = (event: KeyboardEvent) => {
       if (!pageEl || !untrack(() => scrollable)) return;
@@ -139,9 +147,15 @@
     if (bottomEl?.classList.contains('actions') && bottomH > 0) {
       reservedActionsHeight = bottomH;
     }
-    // While narration hides the action bar, keep reserving its space so the book
+    // The map hides the action bar. Optional events use that same bar.
+    // While narration still hides it, reserve its last height so the book
     // doesn't grow then snap shorter when actions return (e.g. after conjure).
-    const effectiveBottom = bottomEl ? bottomH : reservedActionsHeight;
+    const expectActions = !selectingNextPlace;
+    const effectiveBottom = bottomEl
+      ? bottomH
+      : expectActions
+        ? reservedActionsHeight
+        : 0;
     return Math.max(0, scene.clientHeight - padY - effectiveBottom - (effectiveBottom > 0 ? gap : 0));
   }
 
@@ -357,8 +371,10 @@
       >
         <div class="page-content" bind:this={contentEl}>
           <NarrationList bind:done={narrationDone} onProgress={onInkBeat} />
-          {#if selectingNextPlace}
-            <p class="prompt">Where do you go?</p>
+          {#if (selectingNextPlace || periodEventOffer) && narrationDone}
+            <p class="prompt">
+              {periodEventOffer?.skipToActivity ? 'Something else is afoot.' : 'Where do you go?'}
+            </p>
           {:else if pendingPeriodEvent && narrationDone}
             <p class="prompt">Something else unfolds…</p>
           {:else if narrationDone}
@@ -388,6 +404,8 @@
 
 <style>
   .scene {
+    --page-pad-left: 48px;
+    --page-pad-right: 28px;
     width: 100%;
     height: 100%;
     display: flex;
@@ -508,7 +526,7 @@
     background-position: center;
     background-blend-mode: multiply;
     color: var(--color-ink);
-    padding: 52px 28px 44px 48px;
+    padding: 52px var(--page-pad-right) 44px var(--page-pad-left);
     border: 1px solid var(--color-brown-border);
     border-radius: 3px;
     font-family: var(--font-narrative);

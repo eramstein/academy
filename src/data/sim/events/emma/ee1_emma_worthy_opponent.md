@@ -1,12 +1,12 @@
 Event: A Worthy Opponent
 Event ID: emma_weekly_training_invitation
+Invitation: Emma is coming over after class with books and a particular look.
 Image: Emma, with a mischievous smile, holding a deck of cards.
 Trigger:
 
 - Emma respect ≥ 2
 - Emma rivalry ≥ 2
 - Emma is present
-  Manual trigger: Emma seems to have a proposition for you.
 
   Text
   Emma approaches you after class, carrying a small stack of books and wearing an expression of calculated interest. You've come to recognize that look. It generally means she's had an idea, and there's a reasonable chance it involves making your life more difficult.

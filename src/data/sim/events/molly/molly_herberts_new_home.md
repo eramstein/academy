@@ -1,6 +1,7 @@
 Event: A Rabbit's Tale
 NPC: molly
 Event ID: molly_herberts_new_home
+Invitation: The cafeteria is nearly empty, and Molly looks like she needs a hand.
 Trigger: Evening; story tag nimbelungen_follow_the_rabbit exists
 Image: large
 Emotion: sad

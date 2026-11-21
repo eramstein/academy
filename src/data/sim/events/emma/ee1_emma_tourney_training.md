@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_tourney_training`  
+**Invitation:** Emma has tea poured and a pile of strategy books waiting.
 **Trigger:** emma_tourney_training event is the current acvitiy
 **Emotion:** happy
 ** Image:** large

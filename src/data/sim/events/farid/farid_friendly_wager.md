@@ -1,8 +1,8 @@
 Event: A Friendly Wager
 NPC: farid
 Event ID: farid_friendly_wager
+Invitation: Farid has come looking, and he is already grinning.
 Trigger: Day 2, afternoon
-Manual trigger: Farid has a challenge
 Emotion: proud
 Text
 "Antonio! Just the man I was looking for."

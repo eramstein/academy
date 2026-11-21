@@ -89,7 +89,6 @@ export const defaultGameState: GameState = {
     narration: [],
     event: undefined,
     actions: [],
-    manualTriggers: [],
     eventsThisPeriod: 0,
   },
   scheduledActivities: [],

@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_unfair_advantage`  
+**Invitation:** The usual evening study with Emma has turned into a wager.
 **Trigger:** `emma_trusted_companion` story tag; activit type is Study
 **Image:** `emma_unfair_advantage.jpg` large  
 **Emotion:** amused

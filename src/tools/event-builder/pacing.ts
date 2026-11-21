@@ -86,8 +86,6 @@ export interface CalendarChip {
   label: string;
   status: 'ready' | 'planned' | 'done';
   open: boolean;
-  /** Scene-button event (`manualTrigger`); playable here the same as automatic ones. */
-  manual: boolean;
 }
 
 export interface CellContents {
@@ -140,7 +138,6 @@ export function cellContents(
       label: eventLabel(templates, item.key),
       status: 'done',
       open: false,
-      manual: isManualKey(templates, item.key),
     });
   }
 
@@ -153,7 +150,6 @@ export function cellContents(
       label: eventLabel(templates, template.key),
       status: 'ready',
       open: world.openKey === template.key,
-      manual: isManual(template),
     });
   }
 
@@ -168,7 +164,6 @@ export function cellContents(
       label: eventLabel(templates, activity.eventId),
       status: 'planned',
       open: false,
-      manual: isManualKey(templates, activity.eventId),
     });
   }
 
@@ -317,15 +312,6 @@ function nodeEnterable(template: EventTemplate, nodeKey: string, world: PacingWo
 
 function isResolved(world: PacingWorld, key: string): boolean {
   return world.resolved.some((item) => item.key === key);
-}
-
-function isManual(template: EventTemplate): boolean {
-  return !!template.manualTrigger?.trim();
-}
-
-function isManualKey(templates: readonly EventTemplate[], key: string): boolean {
-  const template = templates.find((item) => item.key === key);
-  return template ? isManual(template) : false;
 }
 
 function triggersMatch(template: EventTemplate, world: PacingWorld): boolean {

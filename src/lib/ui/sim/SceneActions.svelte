@@ -1,6 +1,6 @@
 <script lang="ts">
   import { ActionType, type Action, type CardColor, type ResourceType } from '@/lib/_model';
-  import { playManualTriggerEvent, playPendingPeriodEvent, selectOption } from '@/lib/sim/scene';
+  import { playPendingPeriodEvent, selectOfferedEvent, selectOption, skipOfferedEvents } from '@/lib/sim/scene';
   import { gs } from '@/lib/_state';
   import {
     getConjurationOtions,
@@ -21,6 +21,7 @@
   import { formatOutcomeEffectHints } from '@/lib/sim/effects/effect-hints';
   import { getCardImagePath, getCharacterImagePath } from '@/lib/_utils/asset-paths';
   import { isPlaceVisible } from '@/lib/sim/guardians';
+  import CharacterPortrait from '@/lib/ui/sim/characters/CharacterPortrait.svelte';
   import OrnateButton from '@/lib/ui/OrnateButton.svelte';
   import Tooltip from '@/lib/ui/Tooltip.svelte';
   import {
@@ -38,8 +39,9 @@
 
   const event = $derived(gs.scene.event);
   const actions = $derived(gs.scene.actions);
-  const manualTriggers = $derived(gs.scene.manualTriggers ?? []);
   const pendingPeriodEvent = $derived(gs.scene.pendingPeriodEvent);
+  const periodEventOffer = $derived(gs.scene.periodEventOffer);
+
   const interactionSession = $derived(gs.scene.interaction);
 
   let hoveredOptionIndex = $state<number | null>(null);
@@ -414,13 +416,37 @@
   />
 {/if}
 
-<div class="actions">
+<div class="actions" class:offer-actions={!!periodEventOffer}>
   <div class="action-buttons-wrap">
     {#if pendingAction && currentParameterKey}
       <p class="parameter-prompt">{parameterPrompt}</p>
     {/if}
-    <div class="action-buttons">
-      {#if event && event.options.length > 0}
+    <div class="action-buttons" class:offer-grid={!!periodEventOffer}>
+      {#if periodEventOffer}
+        {#each periodEventOffer.events as offered (offered.eventKey)}
+          {@const character = offered.characterKey ? gs.characters[offered.characterKey] : undefined}
+          {#if character}
+            <OrnateButton onclick={() => selectOfferedEvent(offered.eventKey)}>
+              {#snippet lead()}
+                <span class="option-thumb portrait offer-portrait" aria-hidden="true">
+                  <CharacterPortrait {character} emotion={offered.emotion} />
+                </span>
+              {/snippet}
+              {offered.label}
+              {#if offered.invitationText}
+                <span class="offer-hint">{offered.invitationText}</span>
+              {/if}
+            </OrnateButton>
+          {:else}
+            <OrnateButton onclick={() => selectOfferedEvent(offered.eventKey)}>
+              {offered.label}
+              {#if offered.invitationText}
+                <span class="offer-hint">{offered.invitationText}</span>
+              {/if}
+            </OrnateButton>
+          {/if}
+        {/each}
+      {:else if event && event.options.length > 0}
         {#each event.options as option, i (i)}
           {@const effectHint = formatOutcomeEffectHints(option.outcome)}
           <Tooltip
@@ -505,11 +531,6 @@
           <button type="button" class="cancel-btn" onclick={cancelParameterPick}>Cancel</button>
         {/key}
       {:else}
-        {#each manualTriggers as offer (offer.eventKey)}
-          <OrnateButton icon="book" onclick={() => playManualTriggerEvent(offer.eventKey)}>
-            {offer.label}
-          </OrnateButton>
-        {/each}
         {#each actions as action (action.actionType + action.label)}
           <OrnateButton
             icon={actionIcons[action.actionType]}
@@ -522,6 +543,13 @@
         {/each}
       {/if}
     </div>
+    {#if periodEventOffer}
+      <div class="offer-skip">
+        <OrnateButton variant="muted" onclick={skipOfferedEvents}>
+          {periodEventOffer.skipToActivity ? 'Proceed with the activity' : 'Go somewhere else'}
+        </OrnateButton>
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -542,6 +570,18 @@
     flex-direction: column;
     align-items: center;
     gap: 10px;
+  }
+
+  .actions.offer-actions,
+  .actions.offer-actions .action-buttons-wrap {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .actions.offer-actions .action-buttons-wrap {
+    box-sizing: border-box;
+    padding-left: var(--page-pad-left, 48px);
+    padding-right: var(--page-pad-right, 28px);
   }
 
   .parameter-prompt {
@@ -582,6 +622,100 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: color-mix(in srgb, var(--color-cream) 65%, transparent);
+  }
+
+  .action-buttons.offer-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    width: 100%;
+    gap: 10px;
+  }
+
+  .action-buttons.offer-grid :global(.ornate-button) {
+    --offer-portrait-size: 5.5rem;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    align-self: start;
+    overflow: hidden;
+  }
+
+  .action-buttons.offer-grid :global(.ornate-button .content) {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: var(--offer-portrait-size);
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .action-buttons.offer-grid :global(.ornate-button.has-lead .content) {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    padding: 0;
+  }
+
+  .action-buttons.offer-grid :global(.ornate-button .label) {
+    max-width: 100%;
+    white-space: normal;
+    gap: 0.35em;
+  }
+
+  .action-buttons.offer-grid :global(.ornate-button:not(.has-lead) .label) {
+    padding: 0.7rem 0.65rem;
+  }
+
+  .action-buttons.offer-grid :global(.ornate-button.has-lead .label) {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    padding: 0.7rem 0.55rem 0.75rem 0.5rem;
+  }
+
+  .offer-hint {
+    display: block;
+    max-width: none;
+    width: 100%;
+    margin-top: 0.15em;
+    font-size: 0.82rem;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.4;
+    text-align: center;
+    color: var(--color-muted-label);
+    text-shadow: none;
+  }
+
+  .offer-skip {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .option-thumb.offer-portrait {
+    flex: 0 0 var(--offer-portrait-size, 5.5rem);
+    align-self: stretch;
+    box-sizing: border-box;
+    width: var(--offer-portrait-size, 5.5rem);
+    height: var(--offer-portrait-size, 5.5rem);
+    min-width: var(--offer-portrait-size, 5.5rem);
+    max-width: var(--offer-portrait-size, 5.5rem);
+    min-height: var(--offer-portrait-size, 5.5rem);
+    max-height: 100%;
+    margin: 0;
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .offer-portrait :global(.character-portrait) {
+    border-radius: 0;
+  }
+
+  .option-thumb.offer-portrait :global(img.portrait-media) {
+    transform: none;
+    filter: none;
+    object-position: center 14%;
   }
 
   .event-option {

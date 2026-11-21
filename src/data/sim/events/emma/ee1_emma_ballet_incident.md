@@ -1,6 +1,7 @@
 # Event: The Ballet Incident
 
 **Event ID:** `emma_ballet_incident`
+**Invitation:** Elsa has burst into the cafeteria, insisting everyone come and look.
 
 **Trigger:** day > 7
 

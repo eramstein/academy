@@ -1,9 +1,5 @@
 import { gs } from '@/lib/_state';
-import {
-  getManualSceneTriggers,
-  getSceneEventByKey,
-  rebuildWorkingEventTemplates,
-} from '../events';
+import { getSceneEventByKey, rebuildWorkingEventTemplates } from '../events';
 import { setEvent } from '../scene';
 
 export interface FollowUpEventParameters {
@@ -27,7 +23,7 @@ export interface InvalidateEventParameters {
 
 /**
  * Marks an event as consumed without playing it: stamps its story tag and drops
- * it from the working set (and any parked period / follow-up / manual slots).
+ * it from the working set (and any parked period / follow-up slots).
  */
 export function invalidateEvent(parameters: InvalidateEventParameters): string {
   const { eventKey } = parameters;
@@ -46,11 +42,18 @@ export function invalidateEvent(parameters: InvalidateEventParameters): string {
   if (gs.scene.pendingPeriodEvent?.eventKey === eventKey) {
     gs.scene.pendingPeriodEvent = undefined;
   }
+  if (gs.scene.pendingOfferedEventKey === eventKey) {
+    gs.scene.pendingOfferedEventKey = undefined;
+  }
+  if (gs.scene.periodEventOffer) {
+    const remaining = gs.scene.periodEventOffer.events.filter((event) => event.eventKey !== eventKey);
+    gs.scene.periodEventOffer =
+      remaining.length > 0 ? { ...gs.scene.periodEventOffer, events: remaining } : undefined;
+  }
   if (gs.scene.pendingFollowUpEvents?.length) {
     const remaining = gs.scene.pendingFollowUpEvents.filter((key) => key !== eventKey);
     gs.scene.pendingFollowUpEvents = remaining.length ? remaining : undefined;
   }
-  gs.scene.manualTriggers = getManualSceneTriggers();
 
   // Silent: author with narrate when the player should notice.
   return '';

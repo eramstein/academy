@@ -3,6 +3,7 @@
 **NPC:** emma.
 
 **Event ID:** `emma_first_encounter`
+**Invitation:** A young woman is in the hall, just as the first day begins.
 
 **Trigger:** First time Emma is present at the player's location.
 

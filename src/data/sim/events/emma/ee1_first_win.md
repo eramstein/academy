@@ -1,6 +1,7 @@
 Event: A Worthy Opponent
 
 Event ID: emma_first_match_victory
+Invitation: Emma is still sitting across the table from a match just won.
 
 Theme: Competition
 

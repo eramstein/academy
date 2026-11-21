@@ -1,8 +1,8 @@
 Event: The Dude Abides
 Event ID: the_dude_first_encounter
+Invitation: The enrollment papers are stamped, and a guide is needed.
 NPC: the-dude
 Trigger: already handled by another event, no need to add one
-Manual trigger: Go talk to the Dude
 
 Text
 The administrator finishes counting your tuition money, places it carefully in a drawer, and stamps your enrollment papers with an air of solemn finality.

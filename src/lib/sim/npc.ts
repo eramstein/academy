@@ -65,7 +65,7 @@ export function updateNpcLocations() {
     }
 
     // 2. Routine for this weekday / period
-    const routine = character.routines.find(
+    const routine = (character.routines ?? []).find(
       (r) => r.days.includes(weekDay) && r.periods.includes(gs.time.period)
     );
     if (routine) {
@@ -74,7 +74,7 @@ export function updateNpcLocations() {
     }
 
     // 3. Favorite places fallback
-    if (Object.keys(character.favoritePlaces).length > 0) {
+    if (Object.keys(character.favoritePlaces ?? {}).length > 0) {
       character.placeKey = getRandomFromObjectWeights(character.favoritePlaces);
     }
   });

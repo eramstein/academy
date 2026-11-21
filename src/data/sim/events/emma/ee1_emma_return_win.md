@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_return_win`  
+**Invitation:** The carriage is leaving Falkenheim, and Emma is not done talking about it.
 **Trigger:** Follow-up only (queued by `emma_falkenheim_tournament` victory endings).  
 **Image:** `emma_return_win.jpg` large  
 **Emotion:** angry

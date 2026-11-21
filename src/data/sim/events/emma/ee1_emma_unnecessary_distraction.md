@@ -1,6 +1,7 @@
 # Event: An Unnecessary Distraction
 
 **Event ID:** `emma_unnecessary_distraction`
+**Invitation:** Emma is already at her desk before class.
 
 **Image:** Medium. Emma working on cards at her classroom desk, looking up with a slightly amused, questioning expression.
 

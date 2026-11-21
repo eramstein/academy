@@ -1,6 +1,7 @@
 # Event: An Unexpected Debt
 
 **Event ID:** `emma_tuition_problem`  
+**Invitation:** Emma is by a window, folding a letter away.
 **Trigger:** `molly_tutoring` story tag; Emma knownTraits ≥ 2; evening
 Image: medium
 

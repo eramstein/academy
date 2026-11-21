@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_tourney_crafting`  
+**Invitation:** Emma has a workspace ready in the empty artificery room.
 **Trigger:** emma_tourney_crafting event is the current activity  
 
 **Emotion:** happy

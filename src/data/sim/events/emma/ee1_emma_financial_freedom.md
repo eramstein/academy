@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_financial_freedom`  
+**Invitation:** Emma has someone cornered in the hall, and she looks as if she has won something.
 **Trigger:** Story tag `emma_financial_independance` ≥ 8; evening; Emma is present  
 **Emotion:** happy
 

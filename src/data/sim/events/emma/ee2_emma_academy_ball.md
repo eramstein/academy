@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_academy_ball`  
+**Invitation:** The Academy ballroom is lit, and the guests are arriving.
 **Trigger:** Scheduled activity `emma_academy_ball`  
 **Image:** large  
 **Emotion:** happy

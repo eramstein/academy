@@ -54,7 +54,7 @@ Use this structure for polished event drafts (the IDE workflow handles JSON conv
 
 **Event ID:** `character_event_id`
 **Trigger:** [Conditions in prose]
-**Manual trigger:** [Optional player-facing action label; omit for automatic events]
+**Invitation:** [One sentence shown with the title when the player can choose to start this event. Omit for silent events.]
 
 ## Text
 
@@ -223,9 +223,17 @@ Emma takes her seat across from you, carefully arranging her cards.
 "Emma Delamain," she introduces herself, offering her hand. "And you must be Antonio Fibonacci. A pleasure."
 ```
 
-**Event activation convention:** Events without `manualTrigger` are automatic once eligible and selected by the event scheduler. When `manualTrigger` is provided, its string is displayed as an available action in the book UI, and the event starts only if the player chooses it. Existing trigger conditions still govern availability. Use manual activation when Antonio deliberately initiates a conversation, offer, or activity; use automatic activation for encounters, consequences, and NPC-initiated developments. The manual action label is distinct from the event title and from its internal choice labels.
+**Event activation:** Eligible events play automatically when selected by the event scheduler. Trigger conditions govern availability.
 
 Keep the **choice label** distinct from the **post-choice narration**; avoid spoiling outcomes in the label. Event IDs and tags should be stable and consistent across files. This is an editorial format, not a JSON schema.
+
+## Invitation text
+
+When a scene offers events the player may start, each choice shows the event **title** and, when present, its **invitation**. The invitation is one short sentence in the present tense: what is visibly going on if the player goes that way. Name the person, place, or activity they would notice. Do not reveal choices, rewards, secrets, or how the scene ends.
+
+Write it as an observation, not a command and not a summary of the plot. `Molly is working with kids at the library.` is the right size and the right amount of information. `Molly offers you a tutoring job and you can accept or refuse.` is a spoiler.
+
+Omit **Invitation** on silent events. Those never appear as a choice.
 
 ## Voice guidance: narrator
 

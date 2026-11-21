@@ -1,4 +1,5 @@
 Event ID: nimbelungen_hidden_cloister_intro
+Invitation: A professor is hurrying down the corridor, calling a name.
 NPC: nimbelungen
 Trigger: Monday evening; leagues won = 1
 

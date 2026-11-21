@@ -1,5 +1,6 @@
 Event: A Gathering of Great Minds (And Others)
 Event ID: the_dude_first_year_gathering
+Invitation: The Dude is holding court in the quiet evening cafeteria.
 Trigger: Scheduled Social activity, Day 1 evening, cafeteria.
 NPCs: the-dude, emma, molly, elsa, vaiana, henry, farid.
 Location: cafeteria

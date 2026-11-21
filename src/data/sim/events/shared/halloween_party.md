@@ -1,6 +1,7 @@
 # Event: A Night of Masks
 
 **Event ID:** `academy_halloween_party`
+**Invitation:** The cafeteria is dressed for a night of masks and lanterns.
 **Trigger:** Scheduled `academy_halloween_party` activity; Saturday evening
 **Emotion:** happy
 

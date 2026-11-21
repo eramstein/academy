@@ -35,12 +35,14 @@
 
   let key = $state('');
   let title = $state('');
+  let invitationText = $state('');
   let text = $state('');
   let characterArc = $state('');
   let emotion = $state('');
   let image = $state('');
   let imageSize = $state<'small' | 'medium' | 'large'>('small');
-  let manualTrigger = $state('');
+  /** Undefined/0 = omit. Non-zero makes the event mandatory and sorts higher first. */
+  let priority = $state<number | undefined>(undefined);
   let triggers = $state<EventTrigger[]>([]);
   let options = $state<EventOptionTemplate[]>([]);
   let effects = $state<EventTemplateEffect[]>([]);
@@ -108,12 +110,13 @@
     if (!source) {
       key = '';
       title = '';
+      invitationText = '';
       text = '';
       characterArc = '';
       emotion = '';
       image = '';
       imageSize = 'small';
-      manualTrigger = '';
+      priority = undefined;
       triggers = [];
       options = [];
       effects = [];
@@ -125,12 +128,13 @@
     const cloned = JSON.parse(JSON.stringify(source)) as EventTemplate;
     key = cloned.key;
     title = cloned.title ?? '';
+    invitationText = cloned.invitationText ?? '';
     text = cloned.text;
     characterArc = cloned.characterArc ?? '';
     emotion = cloned.emotion ?? '';
     image = cloned.image ?? '';
     imageSize = cloned.imageSize ?? 'small';
-    manualTrigger = cloned.manualTrigger ?? '';
+    priority = cloned.priority;
     triggers = cloned.triggers ?? [];
     options = cloned.optionTemplates ?? [];
     effects = cloned.effects ?? [];
@@ -244,6 +248,11 @@
       built.title = trimmedTitle;
     }
 
+    const invitation = invitationText.trim();
+    if (invitation) {
+      built.invitationText = invitation;
+    }
+
     const arc = characterArc.trim();
     if (arc) {
       built.characterArc = arc;
@@ -259,6 +268,10 @@
       if (imageSize !== 'small') {
         built.imageSize = imageSize;
       }
+    }
+
+    if (typeof priority === 'number' && Number.isFinite(priority) && priority !== 0) {
+      built.priority = priority;
     }
 
     if (effects.length > 0) {
@@ -277,11 +290,6 @@
         }
         return next;
       });
-    }
-
-    const triggerLabel = manualTrigger.trim();
-    if (triggerLabel) {
-      built.manualTrigger = triggerLabel;
     }
 
     const builtPassages = passagesFromDrafts(passageDrafts);
@@ -389,6 +397,17 @@
           />
         </label>
 
+        <label class="field invitation-field">
+          <span class="label">Invitation</span>
+          <input
+            class="input"
+            bind:value={invitationText}
+            placeholder="Molly is working with kids at the library"
+            title="Shown under the title when this event can be started. No spoilers."
+            autocomplete="off"
+          />
+        </label>
+
         <label class="field arc-field">
           <span class="label">Character arc</span>
           <input
@@ -407,6 +426,19 @@
               <option {value}>{value}</option>
             {/each}
           </select>
+        </label>
+
+        <label class="field priority-field">
+          <span class="label">Priority</span>
+          <input
+            class="input"
+            type="number"
+            bind:value={priority}
+            placeholder="0"
+            step="1"
+            title="Higher fires first. Any non-zero value makes the event mandatory."
+            aria-label="Priority"
+          />
         </label>
 
         <div class="field image-field">
@@ -441,16 +473,6 @@
           {/if}
         </div>
 
-        <label class="field manual-trigger-field">
-          <span class="label">Manual trigger</span>
-          <input
-            class="input"
-            bind:value={manualTrigger}
-            placeholder="Button label (optional)"
-            autocomplete="off"
-            title="When set, the event waits for this scene action instead of firing on its own"
-          />
-        </label>
       </div>
 
       <label class="field text-field">
@@ -691,6 +713,11 @@
     flex-shrink: 0;
   }
 
+  .invitation-field {
+    flex: 1 1 18rem;
+    min-width: 16rem;
+  }
+
   .arc-field {
     width: 12rem;
     flex-shrink: 0;
@@ -701,12 +728,12 @@
     flex-shrink: 0;
   }
 
-  .image-field {
-    width: 16rem;
+  .priority-field {
+    width: 6rem;
     flex-shrink: 0;
   }
 
-  .manual-trigger-field {
+  .image-field {
     width: 16rem;
     flex-shrink: 0;
   }

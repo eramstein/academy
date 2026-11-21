@@ -1,6 +1,7 @@
 # Event: The Spoils of Victory
 
 **Event ID:** `emma_falkenheim_prize`  
+**Invitation:** The administrator wants a word with the Falkenheim delegation.
 **NPC:** emma  
 **Trigger:** morning and story tag emma_tournament_win  
 **Location:** Academy administration office  

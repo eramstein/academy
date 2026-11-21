@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_diversion_kiss`  
+**Invitation:** Two well-dressed young men are following Emma through the market.
 **Trigger:** evening; Emma love ≥ 6  
 **Image:** `emma_diversion_kiss.jpg` large  
 **Emotion:** flirtatious

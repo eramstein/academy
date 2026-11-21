@@ -640,5 +640,47 @@
         ]
       }
     ]
+  },
+  {
+    "id": "manticore_egg",
+    "name": "Manticore Egg",
+    "imageFileName": "manticore_egg",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "poolKeys": ["molly", "base"],
+    "type": "unit",
+    "power": 2,
+    "maxHealth": 8,
+    "retaliate": 2,
+    "unitTypes": ["beast", "monster"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "applyUnitStatus",
+              "args": {
+                "statusType": "vulnerable",
+                "duration": 3,
+                "range": {
+                  "self": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
   }
 ]

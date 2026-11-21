@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_return_lost`  
+**Invitation:** The ride home from Falkenheim is very quiet.
 **Trigger:** Follow-up only (queued by `emma_falkenheim_tournament` defeat endings).  
 **Image:** `emma_return_lost.jpg` large  
 **Emotion:** disappointed

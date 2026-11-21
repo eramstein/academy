@@ -1,14 +1,13 @@
 # Event: Handmade Card
 
 **Event ID:** `emma_handmade_card`
+**Invitation:** Emma is studying a spread of cards.
 
 **Emotion:** suprise
 
 **Iamge**: medium
 
 **Trigger:** happy_little_accident story tag, Emma present
-
-**Manual trigger:** Show Emma your remarkable card
 
 ## Text
 

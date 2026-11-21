@@ -1,6 +1,7 @@
 Event: The Little Scholars
 
 Event ID: the_little_scholars
+Invitation: Molly is working with kids at the library.
 Trigger: molly KnownTraits 1, emma KnownTraits 1, evening
 Emotion: happy
 Image: large

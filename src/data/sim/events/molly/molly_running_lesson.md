@@ -1,6 +1,7 @@
 Event: The Running Lesson
 NPC: molly
 Event ID: molly_running_lesson
+Invitation: Students are running laps, and Molly is among them.
 Trigger: day >= 4; afternoon
 Image: large
 

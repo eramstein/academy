@@ -1,6 +1,7 @@
 # Event: A Few Patterns to Get You Started
 
 **Event ID:** `frank_artifact_workshop_welcome`  
+**Invitation:** Frank is waiting among the unfinished machines in the workshop.
 **Trigger:** First visit to `academy_workshop` after `frank_artifact_workshop_intro`. One-time event.  
 **Image:** large  
 **Emotion:** happy

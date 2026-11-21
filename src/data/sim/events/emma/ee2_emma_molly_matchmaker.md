@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_molly_matchmaker`  
+**Invitation:** Dinner at the inn, just after Molly has left.
 **Trigger:** Evening; story tag `emma_trusted_companion`; Emma friendship ≥ 3  
 **Image:** medium
 

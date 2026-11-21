@@ -2,6 +2,7 @@
 
 **NPC:** molly  
 **Event ID:** `molly_lake_above_town`  
+**Invitation:** Molly has a free morning and a walk in the hills in mind.
 **Trigger:** Molly friendship >= 3; Molly love >= 1; weekend; morning  
 **Image:** large  
 **Emotion:** happy

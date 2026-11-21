@@ -1,6 +1,7 @@
 Event: The Gentle Art of Wrestling
 NPC: molly
 Event ID: molly_gentle_art_wrestling
+Invitation: Molly has just finished wrestling practice in the courtyard.
 Trigger: day >= 10; Molly friendship >= 1
 Image: large
 Emotion: happy

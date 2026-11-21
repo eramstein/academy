@@ -2,6 +2,7 @@
 
 **NPC:** molly  
 **Event ID:** `molly_noble_conduct`  
+**Invitation:** Molly is scrubbing ink off a corridor floor.
 **Trigger:** Day >= 8; Molly friendship >= 1
 **Image:** large
 **Emotion:** sad

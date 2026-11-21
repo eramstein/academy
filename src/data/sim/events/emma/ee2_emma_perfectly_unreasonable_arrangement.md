@@ -2,8 +2,8 @@
 
 **NPC:** emma  
 **Event ID:** `emma_perfectly_unreasonable_arrangement`  
+**Invitation:** Emma is in the middle of a conversation when she looks over.
 **Trigger:** Emma present ; Emma relation tag `emma_romance_open`; after `emma_reasonable_choice`; morning or afternoon  
-**Manual trigger:** `Emma makes a discreet sign for you to follow her in private`  
 **Image:** large  
 **Emotion:** amused
 

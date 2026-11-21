@@ -2,6 +2,7 @@ Event: The Reasonable Choice
 
 NPC: emma
 Event ID: emma_reasonable_choice
+Invitation: Emma is coming down the Academy steps in evening dress.
 Trigger: Evening; Emma love ≥ 10;
 Emotion: neutral
 Image: large

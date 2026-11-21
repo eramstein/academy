@@ -2,6 +2,7 @@
 
 **NPC:** molly  
 **Event ID:** `molly_pajama_party`  
+**Invitation:** Molly is waving from across the cafeteria, clearly with a plan.
 **Trigger:** day >= 10; Molly friendship >= 2;
 **Image:** large  
 **Emotion:** happy

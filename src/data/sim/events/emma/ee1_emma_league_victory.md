@@ -1,6 +1,7 @@
 # Event: League Champion
 
 **Event ID:** `emma_league_victory`
+**Invitation:** Emma is crossing the room with a glass after the league.
 
 **Trigger:** Antonio wins a league season. Activity is LeagueCeremony.
 

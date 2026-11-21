@@ -3,6 +3,7 @@ Emma Act 2 — The Fairy, the Pirate, and the Italian Codex
 Event 1: All the Academy's a Stage
 
 Event ID: emma_theater_announcement
+Invitation: Professor Lombard has arrived with a stack of scripts.
 NPC: professor_lombard
 Trigger: from Day 22, morning
 Image: large

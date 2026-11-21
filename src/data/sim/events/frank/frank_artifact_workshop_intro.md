@@ -1,6 +1,7 @@
 # Event: An Invitation to the Workshop
 
 **Event ID:** `frank_artifact_workshop_intro`  
+**Invitation:** A crash in the corridor has interrupted the artificery lesson.
 **Trigger:** Day 5, morning
 **Emotion:** Neutral
 **Character:** frank_artifact_master

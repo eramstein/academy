@@ -1,5 +1,6 @@
 Event: Follow the Rabbit
 Event ID: nimbelungen_cloister_rabbit
+Invitation: The hidden cloister is ahead, and the entrance is not unguarded.
 NPC: nimbelungen
 Trigger: Location is hidden-cloister; first visit.
 Location: hidden-cloister

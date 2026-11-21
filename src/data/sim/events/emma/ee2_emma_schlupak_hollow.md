@@ -1,9 +1,8 @@
 The Dreaming Hollow
 Event ID: emma_schlupak_hollow
+Invitation: Emma has found something new on her map of the Forest of Schlupak.
 Image: emma-forest-expedition.jpg, large
 Trigger: Emma present; story tag emma_trusted_companion; event emma_schlupak_mushrooms completed.
-
-Manual trigger: Emma has another proposal — Forest of Schlupak
 
 Rewards (choose one):
 

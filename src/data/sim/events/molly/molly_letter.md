@@ -1,6 +1,7 @@
 Event: A Letter with a Seal
 NPC: molly
 Event ID: molly_letter_with_seal
+Invitation: Molly is coming down the corridor with more than she can carry.
 Trigger: Day >= 12; Molly friendship >= 3
 Image: medium
 Emotion: surprised

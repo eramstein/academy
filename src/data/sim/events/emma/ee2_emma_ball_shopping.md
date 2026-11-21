@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_ball_shopping`  
+**Invitation:** Emma is waiting outside a fashionable tailor.
 **Trigger:** Scheduled activity `emma_ball_shopping`  
 **Image:** large
 

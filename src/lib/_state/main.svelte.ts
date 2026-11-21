@@ -1,7 +1,7 @@
 import { PLACES, REGIONS } from '@/data/sim/places';
 import { type BattleState, type GameState, type UiState } from '../_model';
 import { defaultBattleState } from '../battle';
-import { getManualSceneTriggers, rebuildWorkingEventTemplates } from '../sim/events';
+import { rebuildWorkingEventTemplates } from '../sim/events';
 import { initChatTopics } from '../sim/chat-topics';
 import { defaultGameState, initSim } from '../sim/init';
 import { getGame, getLatestGame, saveGame, type SaveGame } from './save-games';
@@ -81,13 +81,8 @@ export const loadGameStateFromLocalStorage = async (id: string) => {
       }
       await initChatTopics({ keepExisting: true });
       rebuildWorkingEventTemplates();
-      if ((gs.scene.event?.options?.length ?? 0) > 0 || gs.scene.pendingPeriodEvent) {
-        gs.scene.manualTriggers = [];
-        if (gs.scene.pendingPeriodEvent) {
-          gs.scene.actions = [];
-        }
-      } else {
-        gs.scene.manualTriggers = getManualSceneTriggers();
+      if (gs.scene.pendingPeriodEvent || gs.scene.periodEventOffer || gs.scene.selectingNextPlace) {
+        gs.scene.actions = [];
       }
     } else {
       await initSim();

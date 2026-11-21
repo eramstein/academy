@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_falkenheim_tournament`  
+**Invitation:** Falkenheim's marble halls are receiving the Academy's delegation.
 **Trigger:** Tournament is scheduled and Antonio is eligible to participate  
 **Emotion:** neutral
 

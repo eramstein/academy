@@ -61,9 +61,9 @@ export function presentGuardianEncounter(placeKey: string): boolean {
   if (!guardian || guardian.defeated) return false;
 
   gs.scene.selectingNextPlace = false;
+  gs.scene.periodEventOffer = undefined;
   gs.scene.pendingGuardianPlaceKey = placeKey;
   gs.scene.event = undefined;
-  gs.scene.manualTriggers = [];
   gs.scene.pendingPeriodEvent = undefined;
 
   narrateText(guardian.description, {
@@ -131,6 +131,10 @@ export function resolveGuardianBattle(won: boolean): 'entered' | 'retry' | null 
   if (!guardian) return null;
 
   gs.scene.pendingGuardianPlaceKey = undefined;
+
+  if (!won) {
+    gs.scene.pendingOfferedEventKey = undefined;
+  }
 
   if (won) {
     guardian.defeated = true;

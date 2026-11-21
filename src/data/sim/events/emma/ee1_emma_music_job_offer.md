@@ -2,8 +2,8 @@
 
 **NPC:** emma  
 **Event ID:** `emma_music_job_offer`  
+**Invitation:** Emma is looking for someone, and she looks very pleased.
 **Trigger:** `emma_violin_evening` has occurred; Emma is present; friendship >= 3; respect >= 2
-**Manual trigger:** Emma has a proposition  
 **Emotion:** happy
 
 ## Text

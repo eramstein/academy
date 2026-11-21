@@ -2,6 +2,7 @@
 
 **NPC:** molly  
 **Event ID:** `molly_worst_student_best_group`  
+**Invitation:** Molly has taken over a library table to study for an exam.
 **Trigger:** Day > 8
 **Image:** large (Academy library study table with Molly, Emma, cards, and notes)  
 **Emotion:** embarrassed

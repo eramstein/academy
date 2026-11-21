@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_schlupak_ride`  
+**Invitation:** Emma has decided it is time she learned to ride.
 **Trigger:** Sunday afternoon; story tag `emma_trusted_companion` exists.  
 **Emotion:** happy
 

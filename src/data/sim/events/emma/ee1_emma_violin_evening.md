@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_violin_evening`  
+**Invitation:** A violin is playing at the far end of the Old Monk.
 **Trigger:** Emma is present at the Old Monk Inn, evening; day at least 3  
 **Image:** `emma_violin_evening.jpg` large  
 **Emotion:** amused

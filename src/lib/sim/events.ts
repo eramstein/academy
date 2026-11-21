@@ -32,6 +32,8 @@ import { resolveRelationTag, updateRelationArc } from './effects/relations';
 import { getCurrentScheduledActivity } from './schedule';
 import { getWeekDay } from './time';
 
+export type { StoredEventTemplate };
+
 /** Parameter shapes expected by each EventTriggerType (see doesTriggerMatch). */
 export interface EventTriggerParameters {
   /** Exact `day`, and/or `minDay` (day >= minDay). At least one required. */
@@ -211,16 +213,59 @@ export async function syncEventTemplates(templates: EventTemplate[]) {
   rebuildWorkingEventTemplates();
 }
 
-function manualTriggerLabel(template: StoredEventTemplate): string | undefined {
-  const label = template.manualTrigger?.trim();
-  return label ? label : undefined;
+/** Place named on the event, if it has one. Travel offers send the player here. */
+export function eventPlaceKey(template: Pick<EventTemplate, 'triggers'>): string | undefined {
+  for (const trigger of template.triggers ?? []) {
+    if (trigger.triggerType === EventTriggerType.Place) {
+      return trigger.parameters.placeKey;
+    }
+  }
+  return undefined;
+}
+
+export function eventPresentCharacterKeys(template: Pick<EventTemplate, 'triggers'>): string[] {
+  const keys: string[] = [];
+  for (const trigger of template.triggers ?? []) {
+    if (trigger.triggerType === EventTriggerType.CharacterPresent) {
+      keys.push(trigger.parameters.characterKey);
+    }
+  }
+  return keys;
+}
+
+/**
+ * Free periods offer events the player can travel to. Place is not a precondition.
+ * A character-present trigger still holds when that character is already with the
+ * player, or is at the event's place (the destination of "go see them there").
+ */
+function triggerMatchesForScene(
+  trigger: EventTrigger,
+  template: StoredEventTemplate,
+  ignorePlace: boolean
+): boolean {
+  if (!ignorePlace) return doesTriggerMatch(trigger, template.key);
+  if (trigger.triggerType === EventTriggerType.Place) return true;
+  if (trigger.triggerType === EventTriggerType.CharacterPresent) {
+    return characterAvailableForTravel(trigger.parameters.characterKey, template);
+  }
+  return doesTriggerMatch(trigger, template.key);
+}
+
+function characterAvailableForTravel(characterKey: string, template: StoredEventTemplate): boolean {
+  if (characterKey === gs.player.key) return true;
+  const character = gs.characters[characterKey];
+  if (!character) return false;
+  if (character.placeKey === gs.player.placeKey) return true;
+  const placeKey = eventPlaceKey(template);
+  return !!placeKey && character.placeKey === placeKey;
 }
 
 /** Empty triggers = follow-up / debug only; never a scene match. */
-function triggersMatch(template: StoredEventTemplate): boolean {
+function triggersMatch(template: StoredEventTemplate, ignorePlace = false): boolean {
   const triggers = template.triggers ?? [];
   return (
-    triggers.length > 0 && triggers.every((trigger) => doesTriggerMatch(trigger, template.key))
+    triggers.length > 0 &&
+    triggers.every((trigger) => triggerMatchesForScene(trigger, template, ignorePlace))
   );
 }
 
@@ -233,21 +278,14 @@ function triggeredFromTemplate(template: StoredEventTemplate | undefined) {
 }
 
 /**
- * Events that must fire even when the period already has several events:
- * scheduled activities, exact-day/term triggers (not minDay/minTerm alone), or priority > 0.
+ * Mandatory events play on their own, as many as match.
+ * An exact day (not minDay alone) or a non-zero priority makes an event mandatory.
  */
-function isForcedPeriodEvent(template: StoredEventTemplate): boolean {
-  if ((template.priority ?? 0) > 0) return true;
-  for (const trigger of template.triggers ?? []) {
-    if (trigger.triggerType === EventTriggerType.ScheduledActivity) return true;
-    if (trigger.triggerType === EventTriggerType.Day && trigger.parameters.day != null) {
-      return true;
-    }
-    if (trigger.triggerType === EventTriggerType.Term && trigger.parameters.term != null) {
-      return true;
-    }
-  }
-  return false;
+function isMandatoryEvent(template: StoredEventTemplate): boolean {
+  if ((template.priority ?? 0) !== 0) return true;
+  return (template.triggers ?? []).some(
+    (trigger) => trigger.triggerType === EventTriggerType.Day && trigger.parameters.day != null
+  );
 }
 
 /**
@@ -265,8 +303,8 @@ function canTriggerDuringCurrentActivity(template: StoredEventTemplate): boolean
   );
 }
 
-function isSceneTriggerCandidate(template: StoredEventTemplate): boolean {
-  return triggersMatch(template) && canTriggerDuringCurrentActivity(template);
+function isSceneTriggerCandidate(template: StoredEventTemplate, ignorePlace = false): boolean {
+  return triggersMatch(template, ignorePlace) && canTriggerDuringCurrentActivity(template);
 }
 
 function isSilentEvent(template: StoredEventTemplate): boolean {
@@ -275,7 +313,7 @@ function isSilentEvent(template: StoredEventTemplate): boolean {
 
 /**
  * Silent events fire for effects only: no scene text, no period-limit slot.
- * Highest priority first. Manual-trigger labels are ignored (nothing to show).
+ * Highest priority first.
  */
 export function getTriggeredSilentEvent():
   | { event: SceneEvent; template: StoredEventTemplate }
@@ -286,51 +324,36 @@ export function getTriggeredSilentEvent():
   return triggeredFromTemplate(template);
 }
 
-export function getTriggeredSceneEvent():
+/** Highest-priority mandatory event that matches right now. */
+export function getNextMandatorySceneEvent():
   | { event: SceneEvent; template: StoredEventTemplate }
   | undefined {
-  const periodHasRoom = gs.scene.eventsThisPeriod <= 1;
   const template = eventTemplates
     .filter(
       (eventTemplate) =>
         !isSilentEvent(eventTemplate) &&
-        isSceneTriggerCandidate(eventTemplate) &&
-        !manualTriggerLabel(eventTemplate) &&
-        (isForcedPeriodEvent(eventTemplate) || periodHasRoom)
+        isMandatoryEvent(eventTemplate) &&
+        isSceneTriggerCandidate(eventTemplate)
     )
-    .sort((a, b) => {
-      const forcedDiff = Number(isForcedPeriodEvent(b)) - Number(isForcedPeriodEvent(a));
-      if (forcedDiff !== 0) return forcedDiff;
-      return (b.priority ?? 0) - (a.priority ?? 0);
-    })[0];
+    .sort(
+      (a, b) => (b.priority ?? 0) - (a.priority ?? 0) || a.key.localeCompare(b.key)
+    )[0];
   return triggeredFromTemplate(template);
 }
 
-/** Matching events that wait for a scene-action button (`manualTrigger` label). */
-export function getManualSceneTriggers(): { eventKey: string; label: string }[] {
-  const offers: { eventKey: string; label: string }[] = [];
-  for (const template of eventTemplates) {
-    const label = manualTriggerLabel(template);
-    if (!label || isSilentEvent(template) || !isSceneTriggerCandidate(template)) continue;
-    offers.push({ eventKey: template.key, label });
-  }
-  return offers;
-}
-
-/** Working-set event whose manualTrigger button may be pressed right now. */
-export function getPlayableManualTrigger(
-  eventKey: string
-): { event: SceneEvent; template: StoredEventTemplate } | undefined {
-  const template = eventTemplates.find((eventTemplate) => eventTemplate.key === eventKey);
-  if (
-    !template ||
-    isSilentEvent(template) ||
-    !manualTriggerLabel(template) ||
-    !isSceneTriggerCandidate(template)
-  ) {
-    return undefined;
-  }
-  return triggeredFromTemplate(template);
+/**
+ * Optional events matching this period. `ignorePlace` is for a free period,
+ * where the player has not chosen a destination yet.
+ */
+export function listOptionalSceneEvents(ignorePlace: boolean): StoredEventTemplate[] {
+  return eventTemplates
+    .filter(
+      (eventTemplate) =>
+        !isSilentEvent(eventTemplate) &&
+        !isMandatoryEvent(eventTemplate) &&
+        isSceneTriggerCandidate(eventTemplate, ignorePlace)
+    )
+    .sort((a, b) => a.key.localeCompare(b.key));
 }
 
 export function getSceneEventByKey(
@@ -358,6 +381,9 @@ export function recordEventOccured(template: StoredEventTemplate, resolvedText?:
   // Silent events stamp progress but do not consume the period's visible-event slot.
   if (!template.silent) {
     gs.scene.eventsThisPeriod += 1;
+    if (isMandatoryEvent(template)) {
+      gs.scene.mandatoryEventPlayed = true;
+    }
   }
   const key = template.key;
   const text = resolvedText ?? resolveEventText(template);
@@ -522,7 +548,7 @@ function checkLeaguesWon(
   trigger: Extract<EventTrigger, { triggerType: EventTriggerType.LeaguesWon }>
 ): boolean {
   const { characterKey, count } = trigger.parameters;
-  const wins = gs.league.pastWinners.filter((winnerKey) => winnerKey === characterKey).length;
+  const wins = (gs.league?.pastWinners ?? []).filter((winnerKey) => winnerKey === characterKey).length;
   return wins >= count;
 }
 

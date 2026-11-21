@@ -837,6 +837,7 @@ function checkEffect(where, effect) {
 const allowedEventProps = new Set([
   'key',
   'title',
+  'invitationText',
   'text',
   'optionTemplates',
   'triggers',
@@ -845,7 +846,6 @@ const allowedEventProps = new Set([
   'emotion',
   'image',
   'imageSize',
-  'manualTrigger',
   'passages',
   'nodes',
   'priority',
@@ -1093,9 +1093,6 @@ events.forEach((event, index) => {
     if (event.nodes && Object.keys(event.nodes).length > 0) {
       errors.push(`${where}: silent events cannot have nodes`);
     }
-    if (typeof event.manualTrigger === 'string' && event.manualTrigger.trim()) {
-      errors.push(`${where}: silent events cannot use manualTrigger`);
-    }
   }
   const passageKeys = checkPassages(where, event?.passages);
   checkTextPassages(where, event?.text, passageKeys);
@@ -1103,6 +1100,14 @@ events.forEach((event, index) => {
     if (typeof event.title !== 'string' || !event.title.trim()) {
       errors.push(`${where}: title must be a non-empty string when set`);
     }
+  }
+  if (event?.invitationText !== undefined) {
+    if (typeof event.invitationText !== 'string' || !event.invitationText.trim()) {
+      errors.push(`${where}: invitationText must be a non-empty string when set`);
+    }
+  }
+  if (silent && event?.invitationText) {
+    errors.push(`${where}: silent events are not offered as choices; omit invitationText`);
   }
   for (const prop of Object.keys(event ?? {})) {
     if (!allowedEventProps.has(prop)) errors.push(`${where}: unknown property "${prop}"`);
@@ -1119,11 +1124,6 @@ events.forEach((event, index) => {
     }
   }
   checkImageSize(where, event?.imageSize);
-  if (event?.manualTrigger !== undefined) {
-    if (typeof event.manualTrigger !== 'string' || !event.manualTrigger.trim()) {
-      errors.push(`${where}: manualTrigger must be a non-empty string when set`);
-    }
-  }
 
   if (event?.triggers === undefined) {
     errors.push(`${where}: triggers is required (use [] for follow-up-only events)`);

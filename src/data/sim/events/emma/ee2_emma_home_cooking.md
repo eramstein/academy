@@ -2,6 +2,7 @@
 
 **NPC:** emma  
 **Event ID:** `emma_home_cooking`  
+**Invitation:** Emma has caught the cafeteria queue and is unimpressed with supper.
 **Trigger:** Evening; at cafeteria; story tag `emma_trusted_companion`  
 **Emotion:** happy
 Image: large

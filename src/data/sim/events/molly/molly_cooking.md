@@ -2,6 +2,7 @@
 
 **NPC:** molly  
 **Event ID:** `molly_kitchen_volunteers`  
+**Invitation:** The cafeteria kitchen is in an uproar, and Molly is in the middle of it.
 **Trigger:** Day >= 10; Molly friendship >= 1;
 **Image:** large
 **Emotion:** surprised

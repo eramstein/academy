@@ -93,7 +93,6 @@ export async function runInteraction(input: RunInteractionInput): Promise<void> 
     // A second click must not drop the scene and restore the action list
     // while the first model call is still running.
     gs.scene.actions = [];
-    gs.scene.manualTriggers = [];
     gs.scene.event = {
       key: 'interaction:pending',
       text: '',
@@ -134,7 +133,6 @@ export async function runInteraction(input: RunInteractionInput): Promise<void> 
 
   gs.scene.interaction = session;
   gs.scene.actions = [];
-  gs.scene.manualTriggers = [];
   gs.scene.event = undefined;
   busy = true;
   try {

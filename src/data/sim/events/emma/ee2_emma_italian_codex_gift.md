@@ -1,6 +1,6 @@
 Event ID: emma_italian_codex_gift
+Invitation: Emma has a book open, though she does not seem to be reading it.
 NPC: emma
-Manual Trigger: Gift Emma the Italian Codex
 Trigger: emma_theater_rehearsal story tag; Emma present; Antonio owns one crafted artifact italian_codex
 Emotion: touched
 Image: large
