@@ -24,7 +24,12 @@ import {
   type StoredEventTemplate,
 } from '../_state/event-templates';
 import { settings } from '../_state/settings.svelte';
-import { getLoadedModEvents, loadMods } from '../mods';
+import {
+  getAllModEventKeys,
+  getDisabledModEventKeys,
+  getLoadedModEvents,
+  loadMods,
+} from '../mods';
 import { SceneActionTemplates } from './actions';
 import { getActivityIllustrationRefs, probeFirstExistingImage } from './activity-image';
 import { getCharactersAtScene } from './characters';
@@ -164,19 +169,23 @@ export function normalizeEventTemplate<T extends EventTemplate>(template: T): T 
 }
 
 async function readEventTemplatesSource(): Promise<EventTemplate[]> {
+  await loadMods();
+  const enabledModEvents = getLoadedModEvents<EventTemplate>();
   try {
-    // Dev and preview merge events.json with every mods/<id>/events.json.
+    // Dev/preview merge includes every mod. Strip all mod keys, then re-add
+    // only enabled mods so settings toggles apply without a special API.
     const response = await fetch('/api/events', { cache: 'no-store' });
     if (response.ok) {
-      return ((await response.json()) as EventTemplate[]).map(normalizeEventTemplate);
+      const modKeys = getAllModEventKeys();
+      const base = ((await response.json()) as EventTemplate[]).filter(
+        (template) => !modKeys.has(template.key)
+      );
+      return [...base, ...enabledModEvents].map(normalizeEventTemplate);
     }
   } catch {
     // Static builds have no API; use the bundled catalog plus mods/index.json.
   }
-  await loadMods();
-  return [...(eventsData as EventTemplate[]), ...getLoadedModEvents<EventTemplate>()].map(
-    normalizeEventTemplate
-  );
+  return [...(eventsData as EventTemplate[]), ...enabledModEvents].map(normalizeEventTemplate);
 }
 
 export async function restoreEventTemplates() {
@@ -196,8 +205,11 @@ export async function loadEventTemplates() {
   const fromDb = (await getAllEventTemplates()).map(normalizeEventTemplate);
   const fromSource = await readEventTemplatesSource();
   const sourceKeys = new Set(fromSource.map((template) => template.key));
+  const disabledModKeys = getDisabledModEventKeys();
   const dbOnly = fromDb
-    .filter((template) => !sourceKeys.has(template.key))
+    .filter(
+      (template) => !sourceKeys.has(template.key) && !disabledModKeys.has(template.key)
+    )
     .map(({ id: _id, ...template }) => template);
   await replaceEventTemplates([...fromSource, ...dbOnly]);
   allEventTemplates = (await getAllEventTemplates()).map(normalizeEventTemplate);

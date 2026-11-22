@@ -3,7 +3,12 @@
  * A mod may contain `events.json`, `interactions.json`, `images/activities/`,
  * and `images/events/`. Dev and preview serve a live scan at `/api/mods`.
  * Static builds read `mods/index.json`.
+ *
+ * Enable/disable is persisted in settings (`disabledMods`). Content helpers
+ * below only return data from enabled mods; {@link getLoadedMods} lists all.
  */
+
+import { isModEnabled } from '@/lib/_state/settings.svelte';
 
 export type ModImageKind = 'activities' | 'events';
 
@@ -38,16 +43,55 @@ export async function loadMods(): Promise<void> {
   mods = manifest?.mods ?? [];
 }
 
+/** Every discovered mod, including ones the player has disabled. */
 export function getLoadedMods(): readonly ModManifestEntry[] {
   return mods;
 }
 
+function enabledMods(): ModManifestEntry[] {
+  return mods.filter((mod) => isModEnabled(mod.id));
+}
+
+/** Event keys contributed by any loaded mod (enabled or not). */
+export function getAllModEventKeys(): Set<string> {
+  const keys = new Set<string>();
+  for (const mod of mods) {
+    if (!Array.isArray(mod.events)) continue;
+    for (const event of mod.events) {
+      if (event && typeof event === 'object' && 'key' in event) {
+        const key = (event as { key?: unknown }).key;
+        if (typeof key === 'string' && key) keys.add(key);
+      }
+    }
+  }
+  return keys;
+}
+
+/** Event keys that belong only to currently disabled mods. */
+export function getDisabledModEventKeys(): Set<string> {
+  const enabledKeys = new Set<string>();
+  for (const mod of enabledMods()) {
+    if (!Array.isArray(mod.events)) continue;
+    for (const event of mod.events) {
+      if (event && typeof event === 'object' && 'key' in event) {
+        const key = (event as { key?: unknown }).key;
+        if (typeof key === 'string' && key) enabledKeys.add(key);
+      }
+    }
+  }
+  const disabledKeys = new Set<string>();
+  for (const key of getAllModEventKeys()) {
+    if (!enabledKeys.has(key)) disabledKeys.add(key);
+  }
+  return disabledKeys;
+}
+
 export function getLoadedModEvents<T = unknown>(): T[] {
-  return mods.flatMap((mod) => (Array.isArray(mod.events) ? (mod.events as T[]) : []));
+  return enabledMods().flatMap((mod) => (Array.isArray(mod.events) ? (mod.events as T[]) : []));
 }
 
 export function getLoadedModInteractions<T = unknown>(): T[] {
-  return mods.flatMap((mod) =>
+  return enabledMods().flatMap((mod) =>
     Array.isArray(mod.interactions) ? (mod.interactions as T[]) : []
   );
 }
@@ -63,7 +107,7 @@ export function findModImages(
 ): { modId: string; url: string }[] {
   const field = kind === 'activities' ? 'activityImages' : 'eventImages';
   const hits: { modId: string; url: string }[] = [];
-  for (const mod of mods) {
+  for (const mod of enabledMods()) {
     if (!mod[field].includes(fileName)) continue;
     hits.push({ modId: mod.id, url: modImageUrl(mod.id, kind, fileName) });
   }

@@ -13,6 +13,8 @@ export type GameSettings = {
   llmFeaturesEnabled: boolean;
   /** Language of generated interaction scenes and choice buttons. */
   language: InteractionLanguage;
+  /** Mod ids the player has turned off. Missing ids stay enabled. */
+  disabledMods: string[];
 };
 
 export const TEXT_SPEED_OPTIONS: { value: TextSpeed; label: string; hint: string }[] = [
@@ -34,15 +36,22 @@ const defaultSettings: GameSettings = {
   textSpeed: 'normal',
   llmFeaturesEnabled: true,
   language: 'en',
+  disabledMods: [],
 };
+
+function normalizeDisabledMods(value: unknown): string[] {
+  if (!Array.isArray(value)) return [...defaultSettings.disabledMods];
+  const ids = value.filter((id): id is string => typeof id === 'string' && id.length > 0);
+  return [...new Set(ids)];
+}
 
 function loadSettings(): GameSettings {
   if (typeof localStorage === 'undefined') {
-    return { ...defaultSettings };
+    return { ...defaultSettings, disabledMods: [...defaultSettings.disabledMods] };
   }
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_KEY_SETTINGS);
-    if (!raw) return { ...defaultSettings };
+    if (!raw) return { ...defaultSettings, disabledMods: [...defaultSettings.disabledMods] };
     const parsed = JSON.parse(raw) as Partial<GameSettings>;
     const textSpeed = TEXT_SPEED_OPTIONS.some((o) => o.value === parsed.textSpeed)
       ? (parsed.textSpeed as TextSpeed)
@@ -54,10 +63,11 @@ function loadSettings(): GameSettings {
     const language = isInteractionLanguage(parsed.language)
       ? parsed.language
       : defaultSettings.language;
-    return { textSpeed, llmFeaturesEnabled, language };
+    const disabledMods = normalizeDisabledMods(parsed.disabledMods);
+    return { textSpeed, llmFeaturesEnabled, language, disabledMods };
   } catch (error) {
     console.error('Failed to load settings from localStorage:', error);
-    return { ...defaultSettings };
+    return { ...defaultSettings, disabledMods: [...defaultSettings.disabledMods] };
   }
 }
 
@@ -83,6 +93,18 @@ export function setLlmFeaturesEnabled(enabled: boolean): void {
 
 export function setInteractionLanguage(language: InteractionLanguage): void {
   settings.language = language;
+  saveSettings();
+}
+
+export function isModEnabled(modId: string): boolean {
+  return !settings.disabledMods.includes(modId);
+}
+
+export function setModEnabled(modId: string, enabled: boolean): void {
+  const disabled = new Set(settings.disabledMods);
+  if (enabled) disabled.delete(modId);
+  else disabled.add(modId);
+  settings.disabledMods = [...disabled];
   saveSettings();
 }
 

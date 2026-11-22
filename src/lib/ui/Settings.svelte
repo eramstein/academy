@@ -4,16 +4,21 @@
   import {
     setInteractionLanguage,
     setLlmFeaturesEnabled,
+    setModEnabled,
     setTextSpeed,
     settings,
     TEXT_SPEED_OPTIONS,
     type TextSpeed,
   } from '@/lib/_state/settings.svelte';
+  import { getLoadedMods, type ModManifestEntry } from '@/lib/mods';
+  import { loadEventTemplates } from '@/lib/sim/events';
   import {
     INTERACTION_LANGUAGE_OPTIONS,
     type InteractionLanguage,
   } from '@/lib/sim/interactions/language';
   import { getDataBackgroundPath, getTableImagePath } from '@/lib/_utils/asset-paths';
+
+  const mods = $derived(getLoadedMods());
 
   function onTextSpeedChange(value: TextSpeed) {
     setTextSpeed(value);
@@ -25,6 +30,26 @@
 
   function onLanguageChange(language: InteractionLanguage) {
     setInteractionLanguage(language);
+  }
+
+  function modSummary(mod: ModManifestEntry): string {
+    const parts: string[] = [];
+    const events = Array.isArray(mod.events) ? mod.events.length : 0;
+    const interactions = Array.isArray(mod.interactions) ? mod.interactions.length : 0;
+    const images = mod.activityImages.length + mod.eventImages.length;
+    if (events) parts.push(`${events} event${events === 1 ? '' : 's'}`);
+    if (interactions) parts.push(`${interactions} interaction${interactions === 1 ? '' : 's'}`);
+    if (images) parts.push(`${images} image${images === 1 ? '' : 's'}`);
+    return parts.length ? parts.join(' · ') : 'Empty mod';
+  }
+
+  async function onModEnabledChange(modId: string, enabled: boolean) {
+    setModEnabled(modId, enabled);
+    try {
+      await loadEventTemplates();
+    } catch (error) {
+      console.error(`Failed to refresh events after toggling mod "${modId}":`, error);
+    }
   }
 
   function goBack() {
@@ -115,6 +140,53 @@
           </button>
         {/each}
       </div>
+    </section>
+
+    <section class="setting">
+      <div class="setting-label">
+        <h2>Mods</h2>
+        <p>
+          Local content under <code>mods/</code>. Turn a mod off to hide its events, interactions,
+          and images.
+        </p>
+      </div>
+      {#if mods.length === 0}
+        <p class="mods-empty">No mods installed.</p>
+      {:else}
+        <ul class="mod-list" aria-label="Mods">
+          {#each mods as mod (mod.id)}
+            {@const enabled = !settings.disabledMods.includes(mod.id)}
+            <li class="mod-row">
+              <div class="mod-info">
+                <span class="option-label">{mod.id}</span>
+                <span class="option-hint">{modSummary(mod)}</span>
+              </div>
+              <div class="mod-toggle" role="radiogroup" aria-label="{mod.id} enabled">
+                <button
+                  type="button"
+                  class="speed-option mod-toggle-btn"
+                  class:selected={enabled}
+                  role="radio"
+                  aria-checked={enabled}
+                  onclick={() => onModEnabledChange(mod.id, true)}
+                >
+                  <span class="option-label">On</span>
+                </button>
+                <button
+                  type="button"
+                  class="speed-option mod-toggle-btn"
+                  class:selected={!enabled}
+                  role="radio"
+                  aria-checked={!enabled}
+                  onclick={() => onModEnabledChange(mod.id, false)}
+                >
+                  <span class="option-label">Off</span>
+                </button>
+              </div>
+            </li>
+          {/each}
+        </ul>
+      {/if}
     </section>
   </div>
 </div>
@@ -242,5 +314,57 @@
   .option-hint {
     font-size: 0.85rem;
     color: var(--color-muted-label);
+  }
+
+  .setting-label code {
+    font-family: monospace;
+    font-size: 0.9em;
+    color: var(--color-cream);
+  }
+
+  .mods-empty {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--color-muted-label);
+  }
+
+  .mod-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .mod-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    background: rgba(10, 16, 24, 0.45);
+    border: 1px solid var(--color-brass);
+    border-radius: 4px;
+  }
+
+  .mod-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  .mod-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+
+  .mod-toggle-btn {
+    padding: 0.45rem 0.7rem;
+    min-width: 3.25rem;
+    align-items: center;
   }
 </style>
