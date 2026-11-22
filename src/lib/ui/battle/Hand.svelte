@@ -139,7 +139,7 @@
     margin-left: -5px !important;
   }
 
-  /* New card highlight animation */
+  /* New card highlight animation (player) */
   .hand.player-hand .card-wrapper.new-card {
     animation: newCardHighlight 0.75s ease-in;
     z-index: 20;
@@ -154,6 +154,24 @@
     100% {
       transform: scale(1) translateY(0);
       box-shadow: none;
+    }
+  }
+
+  /* Opponent draw: quieter pop into place */
+  .hand:not(.player-hand) .card-wrapper.new-card {
+    animation: opponentNewCard 0.55s ease-out;
+    z-index: 5;
+    position: relative;
+  }
+
+  @keyframes opponentNewCard {
+    0% {
+      transform: scale(1.12) translateY(-12px);
+      opacity: 0.65;
+    }
+    100% {
+      transform: scale(1) translateY(0);
+      opacity: 1;
     }
   }
 
