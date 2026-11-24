@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { PLACES } from '@/data/sim/places';
   import {
     Emotion,
     type EventImageSize,
@@ -39,6 +40,7 @@
   let text = $state('');
   let characterArc = $state('');
   let emotion = $state('');
+  let place = $state('');
   let image = $state('');
   let imageSize = $state<'small' | 'medium' | 'large'>('small');
   /** Undefined/0 = omit. Non-zero makes the event mandatory and sorts higher first. */
@@ -52,6 +54,7 @@
   let saving = $state(false);
 
   const emotions = Object.values(Emotion);
+  const placeKeys = Object.keys(PLACES);
   const nodeKeys = $derived(
     nodeDrafts.map((draft) => draft.key.trim()).filter((nodeKey) => nodeKey.length > 0)
   );
@@ -114,6 +117,7 @@
       text = '';
       characterArc = '';
       emotion = '';
+      place = '';
       image = '';
       imageSize = 'small';
       priority = undefined;
@@ -132,6 +136,7 @@
     text = cloned.text;
     characterArc = cloned.characterArc ?? '';
     emotion = cloned.emotion ?? '';
+    place = cloned.place ?? '';
     image = cloned.image ?? '';
     imageSize = cloned.imageSize ?? 'small';
     priority = cloned.priority;
@@ -260,6 +265,11 @@
 
     if (emotion) {
       built.emotion = emotion as Emotion;
+    }
+
+    const placeKey = place.trim();
+    if (placeKey) {
+      built.place = placeKey;
     }
 
     const imageName = image.trim();
@@ -424,6 +434,21 @@
             <option value="">(none)</option>
             {#each emotions as value (value)}
               <option {value}>{value}</option>
+            {/each}
+          </select>
+        </label>
+
+        <label class="field place-field">
+          <span class="label">Place</span>
+          <select
+            class="input"
+            bind:value={place}
+            title="When set, move the player and involved characters here when the event starts."
+            aria-label="Place"
+          >
+            <option value="">(none)</option>
+            {#each placeKeys as placeKey (placeKey)}
+              <option value={placeKey}>{PLACES[placeKey]?.name ?? placeKey}</option>
             {/each}
           </select>
         </label>
@@ -725,6 +750,11 @@
 
   .emotion-field {
     width: 10rem;
+    flex-shrink: 0;
+  }
+
+  .place-field {
+    width: 12rem;
     flex-shrink: 0;
   }
 

@@ -129,10 +129,16 @@
   let didOpenScroll = false;
   $effect(() => {
     if (didOpenScroll || !pageEl || !scrollable) return;
+    // Wait until the prompt/actions chrome has settled so max height is final.
+    void narrationDone;
     didOpenScroll = true;
     const el = pageEl;
     void tick().then(() => {
-      el.scrollTo({ top: el.scrollHeight, behavior: 'auto' });
+      requestAnimationFrame(() => {
+        el.scrollTo({ top: el.scrollHeight, behavior: 'auto' });
+        pinnedToTail = true;
+        refreshInkCue();
+      });
     });
   });
 

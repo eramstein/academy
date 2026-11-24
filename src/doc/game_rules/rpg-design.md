@@ -103,7 +103,7 @@ Each event defines a set of trigger conditions. These can refer to previous even
 
 Each game period, the game queries events whose trigger conditions are satisfied. Every mandatory event plays, one after another, with a continue button between them so narration does not chain. If none played, the player may start one optional event.
 
-Events can be mandatory or optional. Mandatory events are those which have a specific day trigger condition, and those whihc have a non zero "prioity" property.
+Events can be mandatory or optional. Mandatory events are those which have a non zero "prioity" property.
 
 Each new period, we check what events trigger. All mandatory events trigger one after the other. Then, if no mandatory event triggered this period, but optional events triggered, what happens depends if there was a scheduled activity this period.
 

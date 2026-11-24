@@ -518,6 +518,12 @@ function checkEffect(where, effect) {
         checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
       }
       break;
+    case 'give_artifact':
+      checkOneOf(where, 'patternKey', parameters.patternKey, artifactPatternKeys);
+      if (parameters.characterKey !== undefined) {
+        checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
+      }
+      break;
     case 'gift_artifact':
       checkOneOf(where, 'patternKey', parameters.patternKey, artifactPatternKeys);
       checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
@@ -845,6 +851,7 @@ const allowedEventProps = new Set([
   'characterArc',
   'emotion',
   'image',
+  'place',
   'imageSize',
   'passages',
   'nodes',
@@ -1117,6 +1124,9 @@ events.forEach((event, index) => {
   }
   if (event?.emotion !== undefined) {
     checkOneOf(where, 'emotion', event.emotion, emotions);
+  }
+  if (event?.place !== undefined) {
+    checkOneOf(where, 'place', event.place, placeKeys);
   }
   if (event?.image !== undefined) {
     if (typeof event.image !== 'string' || !event.image.trim()) {

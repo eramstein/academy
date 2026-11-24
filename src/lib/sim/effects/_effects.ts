@@ -48,8 +48,10 @@ import { newLeagueSeason, type NewLeagueSeasonParameters } from './league';
 import { addPossession, type AddPossessionParameters } from './possessions';
 import {
   acquireArtifactPattern,
+  giveArtifact,
   giftArtifact,
   type AcquireArtifactPatternParameters,
+  type GiveArtifactParameters,
   type GiftArtifactParameters,
 } from './artifacts';
 import { unlockPlace, type UnlockPlaceParameters } from './places';
@@ -132,6 +134,8 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
     addPossession(parameters as AddPossessionParameters),
   [EventEffectType.AcquireArtifactPattern]: (parameters) =>
     acquireArtifactPattern(parameters as AcquireArtifactPatternParameters),
+  [EventEffectType.GiveArtifact]: (parameters) =>
+    giveArtifact(parameters as GiveArtifactParameters),
   [EventEffectType.GiftArtifact]: (parameters) =>
     giftArtifact(parameters as GiftArtifactParameters),
   [EventEffectType.UnlockPlace]: (parameters) => unlockPlace(parameters as UnlockPlaceParameters),

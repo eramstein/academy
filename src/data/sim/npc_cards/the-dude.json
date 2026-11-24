@@ -147,7 +147,7 @@
     "type": "unit",
     "cost": 2,
     "power": 0,
-    "maxHealth": 1,
+    "maxHealth": 7,
     "retaliate": 0,
     "colors": [
       {
@@ -156,28 +156,6 @@
       }
     ],
     "unitTypes": ["halfing"],
-    "abilities": [
-      {
-        "actions": [
-          {
-            "effect": {
-              "name": "addCounters",
-              "args": {
-                "counterType": "growth",
-                "counterValue": 1
-              }
-            }
-          }
-        ],
-        "trigger": {
-          "type": "On Deploy",
-          "range": {
-            "allies": true,
-            "adjacent": true
-          }
-        }
-      }
-    ],
     "poolKeys": ["the-dude", "base"]
   },
   {
@@ -212,6 +190,78 @@
     "poolKeys": ["the-dude", "base"]
   },
   {
+    "id": "vegetarian",
+    "name": "Vegetarian",
+    "imageFileName": "vegetarian",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "poolKeys": ["the-dude", "base"],
+    "type": "unit",
+    "power": 1,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "unitType": "plant"
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "addCounters",
+              "args": {
+                "counterType": "growth",
+                "counterValue": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "belly_bump",
+    "name": "Belly Bump",
+    "imageFileName": "belly_bump",
+    "type": "spell",
+    "cost": 2,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "actions": [
+      {
+        "effect": {
+          "name": "temporaryEffect",
+          "args": {
+            "effect": {
+              "power": 0
+            },
+            "dynamicValue": "max health",
+            "dynamicEffectType": "power"
+          }
+        },
+        "targets": [
+          {
+            "type": "unit",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "poolKeys": ["the-dude", "base"]
+  },
+  {
     "id": "stampeding_ox",
     "name": "Stampeding Ox",
     "imageFileName": "stampeding_ox",
@@ -231,5 +281,249 @@
       "cleave": true
     },
     "poolKeys": ["the-dude", "base"]
+  },
+  {
+    "id": "grumpf",
+    "name": "Grumpf",
+    "imageFileName": "grumpf",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "poolKeys": ["the-dude", "base"],
+    "type": "unit",
+    "power": 0,
+    "maxHealth": 0,
+    "retaliate": 0,
+    "keywords": {
+      "trample": true
+    },
+    "unitTypes": ["beast"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "power": 2,
+                "maxHealth": 2,
+                "dynamicValue": {
+                  "value": "allied units",
+                  "args": {
+                    "unitType": "plant"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "effect": {
+              "name": "destroyUnit",
+              "args": {
+                "range": {
+                  "unitType": "plant"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sprout",
+    "name": "Sprout",
+    "imageFileName": "sprout",
+    "cost": 1,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "poolKeys": ["the-dude", "base"],
+    "type": "unit",
+    "power": 0,
+    "maxHealth": 1,
+    "retaliate": 0,
+    "unitTypes": ["plant"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "drawCard",
+              "args": {
+                "cardCount": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "magic_beans",
+    "name": "Magic Beans",
+    "imageFileName": "magic_beans",
+    "cost": 7,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "poolKeys": ["the-dude", "base"],
+    "type": "spell",
+    "actions": [
+      {
+        "effect": {
+          "name": "summon",
+          "args": {
+            "summonedUnit": {
+              "id": "giant_bean",
+              "name": "Giant Bean",
+              "imageFileName": "giant_bean",
+              "cost": 0,
+              "colors": [
+                {
+                  "color": "green",
+                  "count": 1
+                }
+              ],
+              "type": "unit",
+              "power": 4,
+              "maxHealth": 4,
+              "retaliate": 0,
+              "unitTypes": ["plant"]
+            },
+            "isRespawn": true,
+            "randomPositions": 3
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "angry_treant",
+    "name": "Angry Treant",
+    "imageFileName": "angry_treant",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 1
+      }
+    ],
+    "poolKeys": ["the-dude", "base"],
+    "type": "unit",
+    "power": 2,
+    "maxHealth": 5,
+    "retaliate": 0,
+    "unitTypes": ["plant"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "After Combat",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticStats",
+              "args": {
+                "retaliate": 2,
+                "range": {
+                  "self": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "evergrower",
+    "name": "Evergrower",
+    "imageFileName": "evergrower",
+    "cost": 6,
+    "colors": [
+      {
+        "color": "green",
+        "count": 3
+      }
+    ],
+    "poolKeys": ["the-dude", "base"],
+    "type": "unit",
+    "power": 3,
+    "maxHealth": 8,
+    "retaliate": 1,
+    "unitTypes": ["plant"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Turn Start",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "Everogrower",
+                "keyword": "regeneration",
+                "keyWordValue": 1,
+                "range": {
+                  "self": true
+                },
+                "reset": false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "chousse",
+    "name": "Chousse",
+    "imageFileName": "chousse",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "green",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["the-dude", "base"],
+    "type": "unit",
+    "power": 3,
+    "maxHealth": 4,
+    "retaliate": 3,
+    "keywords": {
+      "immobile": true
+    },
+    "unitTypes": ["plant"]
   }
 ]

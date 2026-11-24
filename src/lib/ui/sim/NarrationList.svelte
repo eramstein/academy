@@ -7,7 +7,7 @@
   import { acceptGiftCard } from '@/lib/sim/effects/gifts';
   import { cacheNarrationSceneImage } from '@/lib/sim/narration';
   import CardCompact from '@/lib/ui/cards/CardCompact.svelte';
-  import { untrack } from 'svelte';
+  import { tick, untrack } from 'svelte';
   import AttributeCheckEntry from './AttributeCheckEntry.svelte';
   import CharacterPortrait from './characters/CharacterPortrait.svelte';
   import CraftingKnowledgeNarration from './CraftingKnowledgeNarration.svelte';
@@ -23,6 +23,12 @@
     onProgress?: (beat?: InkBeat) => void | Promise<void>;
   } = $props();
 
+  /** How many recent entries stay mounted while the reader follows the ink. */
+  const NARRATION_WINDOW = 20;
+  const LOAD_OLDER_BATCH = 20;
+  const NEAR_TOP_PX = 80;
+  const NEAR_TAIL_PX = 48;
+
   const periodIcon: Record<DayPeriod, string> = {
     [DayPeriod.Morning]: 'sunrise',
     [DayPeriod.Afternoon]: 'sun',
@@ -30,6 +36,16 @@
   };
 
   const narration = $derived(gs.scene.narration);
+
+  let listEl: HTMLElement | undefined = $state();
+  /** First index of `narration` that is mounted. Older entries load on scroll-up. */
+  let startIndex = $state(0);
+  /** Last `narration.length` we trimmed against — only advance the window on growth. */
+  let trimmedLength = 0;
+  let loadingOlder = false;
+  /** False until the page has been pinned to the latest ink (avoids scrollTop 0 fetching history). */
+  let allowLoadOlder = false;
+  let openTailToken = $state(0);
 
   let completedIds = $state<string[]>([]);
   let cacheAskId = $state<string | null>(null);
@@ -45,6 +61,7 @@
   const textDoneSet = $derived(new Set(textDoneIds));
   const activeEntry = $derived(narration.find((entry) => !completedSet.has(entry.id)));
   const narrationDone = $derived(narration.length > 0 && completedIds.length >= narration.length);
+  const visibleNarration = $derived(narration.slice(startIndex));
 
   $effect(() => {
     done = narrationDone;
@@ -56,8 +73,105 @@
     const scene = gs.scene;
     untrack(() => {
       completedIds = scene.narration.map((entry) => entry.id);
+      startIndex = Math.max(0, scene.narration.length - NARRATION_WINDOW);
+      trimmedLength = scene.narration.length;
+      allowLoadOlder = false;
+      openTailToken += 1;
     });
   });
+
+  // New ink at the tail drops the oldest mounted entry. History stays mounted
+  // while the reader has scrolled up into it.
+  $effect(() => {
+    const len = narration.length;
+    const el = listEl;
+    untrack(() => {
+      if (startIndex >= len) {
+        startIndex = Math.max(0, len - NARRATION_WINDOW);
+        trimmedLength = len;
+        return;
+      }
+      if (len <= trimmedLength) {
+        trimmedLength = len;
+        return;
+      }
+      trimmedLength = len;
+      const scrollEl = scrollParent(el);
+      if (scrollEl && scrollEl.scrollHeight > scrollEl.clientHeight && !isNearTail(scrollEl)) {
+        return;
+      }
+      const next = Math.max(0, len - NARRATION_WINDOW);
+      if (next > startIndex) startIndex = next;
+    });
+  });
+
+  // On load / scene replace, jump to the latest entry before history fetch is armed.
+  $effect(() => {
+    const el = listEl;
+    const token = openTailToken;
+    if (!el) return;
+    const scrollEl = scrollParent(el);
+    if (!scrollEl) return;
+
+    let cancelled = false;
+    void tick().then(() => {
+      requestAnimationFrame(() => {
+        if (cancelled || token !== openTailToken) return;
+        if (scrollEl.scrollHeight > scrollEl.clientHeight) {
+          scrollEl.scrollTop = scrollEl.scrollHeight;
+        }
+        allowLoadOlder = true;
+      });
+    });
+
+    const onScroll = () => {
+      if (!allowLoadOlder) return;
+      if (isNearTop(scrollEl) && untrack(() => startIndex) > 0) {
+        void loadOlder();
+      }
+    };
+    scrollEl.addEventListener('scroll', onScroll);
+    return () => {
+      cancelled = true;
+      scrollEl.removeEventListener('scroll', onScroll);
+    };
+  });
+
+  function scrollParent(el: HTMLElement | undefined): HTMLElement | null {
+    return el?.closest('.page-scroll') ?? null;
+  }
+
+  function isNearTop(el: HTMLElement): boolean {
+    return el.scrollTop <= NEAR_TOP_PX;
+  }
+
+  function isNearTail(el: HTMLElement): boolean {
+    return el.scrollHeight - el.clientHeight - el.scrollTop <= NEAR_TAIL_PX;
+  }
+
+  async function loadOlder() {
+    if (loadingOlder) return;
+    const from = untrack(() => startIndex);
+    if (from <= 0) return;
+
+    const scrollEl = scrollParent(listEl);
+    const prevHeight = scrollEl?.scrollHeight ?? 0;
+    const prevTop = scrollEl?.scrollTop ?? 0;
+
+    loadingOlder = true;
+    startIndex = Math.max(0, from - LOAD_OLDER_BATCH);
+    await tick();
+
+    if (scrollEl) {
+      scrollEl.scrollTop = prevTop + (scrollEl.scrollHeight - prevHeight);
+    }
+    loadingOlder = false;
+
+    // Still pinned to the top after restore — keep filling until the page can scroll.
+    if (scrollEl && isNearTop(scrollEl) && untrack(() => startIndex) > 0) {
+      void loadOlder();
+    }
+  }
 
   $effect(() => {
     const ids = new Set(narration.map((entry) => entry.id));
@@ -268,8 +382,8 @@
   }
 </script>
 
-<div class="narration-list">
-  {#each narration as entry (entry.id)}
+<div class="narration-list" bind:this={listEl}>
+  {#each visibleNarration as entry (entry.id)}
     {#if completedSet.has(entry.id) || activeEntry?.id === entry.id}
       <!-- One branch so finishing the line does not remount the paragraph and collapse it. -->
       {@render narrationEntry(entry, activeEntry?.id === entry.id)}

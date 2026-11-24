@@ -59,6 +59,7 @@ names). Canonical shape:
 **Invitation:** <one spoiler-free sentence shown with the title when the event can be started>. # optional; omit for silent events
 **Image:** <filename.jpg and/or small|medium|large>. # optional
 **Emotion:** <Emotion enum value>. # optional
+**Place:** <place key>. # optional; move player + involved characters here when the event starts
 **Silent:** true. # optional; effects-only, never narrated (see Silent events)
 **Priority:** <number>. # optional; higher fires first among same-class candidates
 
@@ -139,6 +140,8 @@ events. Main-story events omit `characterArc`.
    - `passages` ← `## Conditional passages` when present (see Passages). Omit when absent.
    - `emotion` / `image` / `imageSize` ← front matter when present. If
      `**Image:**` is only a size, still set `image` to `"<key>.jpg"`.
+   - `place` ← `**Place:**` place key when present (omit when absent). Moves the
+     player, `characterArc`, and any `character_present` cast there on start.
    - `characterArc` ← `**NPC:**` when it is an NPC key.
    - `triggers` ← map `**Trigger:**` (see Triggers).
    - `silent` ← `true` when `**Silent:** true` (omit when absent/false).
@@ -231,7 +234,7 @@ Every event fires at most once: showing the root beat stamps `gs.storyTags[event
 Later nodes in the same event do not stamp it again. Empty `triggers` means follow-up /
 debug only (`follow_up_event` or `/e`) — never auto-fires. Property order: `key`, `title`,
 optional `invitationText`, `text`, optional `passages`, `triggers`, `effects`, `optionTemplates`, optional `nodes`,
-`characterArc`, `emotion`, `image`, `imageSize`, then optional `priority`, `silent`.
+`characterArc`, `emotion`, `image`, optional `place`, `imageSize`, then optional `priority`, `silent`.
 Options: `text`, optional `triggers`, then `effects` or `attributeCheck`, then optional
 `actionTemplate`, then optional `nextNode`. Node object order: `text`, optional
 `passages`, optional `triggers`, optional `effects`, `optionTemplates`, then optional
@@ -431,6 +434,7 @@ Option, skill-check, and success/failure effects stay bare `EventEffect[]`
 | `new_league_season`        | `{ winnerKey? }` — starts a fresh league season. Omit `winnerKey` (or pass `null`) for no ceremony; set to `"player"` or an NPC key to record the winner and schedule the ceremony.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `add_possession`           | `{ type: "clothing" \| …, name, description, count?, characterKey? }` — appends a possession to that character; defaults to the player                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `acquire_artifact_pattern` | `{ patternKey, characterKey? }` — adds a known artifact pattern key to that character's `artifacts.patterns`; defaults to the player. `patternKey` must match an authored artifact in `src/data/sim/artifacts/`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `give_artifact`            | `{ patternKey, characterKey? }` — grants a finished tool or trinket instance cloned from that authored pattern; defaults to the player. Does not grant the pattern itself — pair with `acquire_artifact_pattern` if they should also learn to craft it. Distinct from `gift_artifact`, which moves an owned instance from the player to an NPC.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `gift_artifact`            | `{ patternKey, characterKey }` — moves a crafted tool or trinket matching `patternKey` from the player to that NPC. Fails with narration if the player does not own one.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `unlock_place`             | `{ placeKey }` — sets `place.locked = false` so the place becomes visible. Guardians still gate entry until defeated. Markdown e.g. `Unlock place: hidden-cloister`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `start_interaction`        | `{ characterKey, interactionKey, situation }` — opens a structured social interaction with that NPC. `interactionKey` must match a loaded template (e.g. `mods/<id>/interactions.json`). `situation` replaces the template's default situation for the whole session; use `{player}` / `{npc}` as in the template. The runner narrates the opening beat. Do not pair with `**Next:**` on the same option — the interaction owns the scene. Markdown e.g. `Start interaction argument with ousmane: {player} and {npc} face off after the whistle.`                                                                                                                                                                                                                                                                                                                                                                          |
@@ -756,6 +760,14 @@ The validator lists allowed values in errors — re-run it when unsure.
 Optional. Use the markdown value if present; it must be an `Emotion` enum string
 from `enums-sim.ts`. Omit when absent or unclear. Do not invent values.
 
+## Place
+
+Optional. `**Place:** <place key>` → `place`. Must be a key from `PLACES` in
+`src/data/sim/places.ts`. When set, starting the event moves the player,
+`characterArc`, and any `character_present` characters to that place. This is a
+destination, not a trigger — use a `place` trigger separately if the event should
+only fire when the player is already there. Omit when absent.
+
 ## Editing
 
 Same compile workflow. Keep `key` unchanged so `story_tag` references stay valid.
@@ -780,6 +792,7 @@ Source: `src/data/sim/events/emma/first_impression.md` (abbreviated mapping):
 - `**Image:** large` → `imageSize: "large"`, `image: "<key>.jpg"`
   (e.g. `emma_first_encounter.jpg`)
 - `**Emotion:** neutral` → `emotion: "neutral"`
+- `**Place:** library` → `place: "library"` (omit when absent; relocates cast on start)
 - `## Text` → `text` with `\n\n` between paragraphs
 - Known trait under `## Effects` → event `effects` couple:
   `{ "effect": { "type": "add_known_trait", … } }` (no `triggers` unless a `When:` group)

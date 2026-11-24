@@ -47,7 +47,7 @@ import { getAllGraveyardsUnits, reanimate, recycleCard, regrowCard } from '../gr
 import { damageLand, fortifyLand } from '../land';
 import { forceMoveUnit } from '../move';
 import { soundManager } from '../sound';
-import { DynamicValue, DynamicValues } from './dynamic-values';
+import { type DynamicValueConfig, resolveDynamicValue } from './dynamic-values';
 import {
   affectedPhrase,
   countedCards,
@@ -143,11 +143,13 @@ export const DataEffectTemplates: Record<
     damage: number;
     range?: UnitFilterArgs;
     fromTriggerParam?: string;
-    dynamicValue?: DynamicValue;
+    dynamicValue?: DynamicValueConfig;
     randomTargets?: number;
   }) => ({
     fn: ({ targets, unit, land, player, triggerParams }) => {
-      const value = dynamicValue ? DynamicValues[dynamicValue]({ unit, player }) * damage : damage;
+      const value = dynamicValue
+        ? resolveDynamicValue(dynamicValue, { unit, player }) * damage
+        : damage;
       const sourcePermanent = unit ?? (land as UnitDeployed | Land);
       let unitsInRange = [];
       if (fromTriggerParam) {
@@ -231,12 +233,12 @@ export const DataEffectTemplates: Record<
     counterValue: number;
     range?: UnitFilterArgs;
     fromTriggerParam?: string;
-    dynamicValue?: DynamicValue;
+    dynamicValue?: DynamicValueConfig;
     valueIsMultiplier?: boolean;
   }) => ({
     fn: ({ unit, land, targets, player, triggerParams }) => {
       const value = dynamicValue
-        ? DynamicValues[dynamicValue]({ unit, player }) * counterValue
+        ? resolveDynamicValue(dynamicValue, { unit, player }) * counterValue
         : counterValue;
       const sourcePermanent = unit ?? (land as UnitDeployed | Land);
       const unitsInRange = fromTriggerParam
@@ -288,20 +290,15 @@ export const DataEffectTemplates: Record<
     maxHealth?: number;
     retaliate?: number;
     range?: UnitFilterArgs;
-    dynamicValue?: DynamicValue;
+    dynamicValue?: DynamicValueConfig;
     fromTriggerParam?: string;
   }) => ({
     fn: ({ unit, land, targets, player, triggerParams }) => {
       const sourcePermanent = unit ?? (land as UnitDeployed | Land);
-      const effectivePower = dynamicValue
-        ? DynamicValues[dynamicValue]({ unit, player }) * (power ?? 0)
-        : power;
-      const effectiveMaxHealth = dynamicValue
-        ? DynamicValues[dynamicValue]({ unit, player }) * (maxHealth ?? 0)
-        : maxHealth;
-      const effectiveRetaliate = dynamicValue
-        ? DynamicValues[dynamicValue]({ unit, player }) * (retaliate ?? 0)
-        : retaliate;
+      const scale = dynamicValue ? resolveDynamicValue(dynamicValue, { unit, player }) : 1;
+      const effectivePower = dynamicValue ? scale * (power ?? 0) : power;
+      const effectiveMaxHealth = dynamicValue ? scale * (maxHealth ?? 0) : maxHealth;
+      const effectiveRetaliate = dynamicValue ? scale * (retaliate ?? 0) : retaliate;
       const unitsInRange = fromTriggerParam
         ? getUnitFromTriggerParam(triggerParams, fromTriggerParam)
         : getUnitsInRange(targets as UnitDeployed[][], range, sourcePermanent, player);
@@ -375,9 +372,13 @@ export const DataEffectTemplates: Record<
   temporaryEffect: ({
     effect,
     range,
+    dynamicValue,
+    dynamicEffectType,
   }: {
     effect: UnitEndOfTurnEffects;
     range?: UnitFilterArgs;
+    dynamicValue?: DynamicValueConfig;
+    dynamicEffectType?: keyof UnitEndOfTurnEffects;
   }) => ({
     fn: ({ unit, land, targets, player }) => {
       const sourcePermanent = unit ?? (land as UnitDeployed | Land);
@@ -388,12 +389,17 @@ export const DataEffectTemplates: Record<
         player
       );
       unitsInRange.forEach((u) => {
+        if (dynamicValue && dynamicEffectType) {
+          Object.assign(effect, {
+            [dynamicEffectType]: resolveDynamicValue(dynamicValue, { unit: u }),
+          });
+        }
         applyTemporaryEffect(u, effect);
       });
     },
     label: (targets: TargetDefinition[]) => {
       const affected = affectedPhrase(targets, { range });
-      const bonus = describeTemporaryBonus(effect);
+      const bonus = describeTemporaryBonus(effect, dynamicValue, dynamicEffectType);
       return sentence(
         `${getsClause(affected.phrase, bonus, affected.self)} until end of turn`,
         affected.range

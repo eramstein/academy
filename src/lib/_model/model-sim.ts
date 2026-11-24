@@ -282,6 +282,8 @@ export interface EventTemplate {
   characterArc?: string; // npc key
   emotion?: Emotion;
   image?: string;
+  /** When set, move the player and involved characters here when the event starts. */
+  place?: string;
   imageSize?: EventImageSize;
   passages?: Record<string, EventPassage>;
   /**

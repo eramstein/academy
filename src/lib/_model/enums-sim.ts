@@ -42,6 +42,7 @@ export enum EventEffectType {
   NewLeagueSeason = 'new_league_season',
   AddPossession = 'add_possession',
   AcquireArtifactPattern = 'acquire_artifact_pattern',
+  GiveArtifact = 'give_artifact',
   GiftArtifact = 'gift_artifact',
   UnlockPlace = 'unlock_place',
   /** Open a structured social interaction; `situation` replaces the template default. */

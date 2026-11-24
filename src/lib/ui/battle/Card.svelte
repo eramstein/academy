@@ -7,6 +7,7 @@
   import { getAssetPath, getCardImagePath } from '@lib/_utils/asset-paths';
   import { isPayableAfterColorIncrementation } from '@lib/battle/cost';
   import { usePlayerColorAbility } from '@lib/battle/player';
+  import { finishCardDrag } from '@lib/ui/_helpers/card-drag';
   import { activateSpell, targetCard } from '@lib/ui/_helpers/targetting';
   import Abilities from './Abilities.svelte';
   import Keywords from './Keywords.svelte';
@@ -34,8 +35,7 @@
   // Color pips left of the name: keep within ~3-pip width, stack tighter beyond that
   const COLOR_PIP_SIZE = 18;
   const COLOR_PIP_OVERLAP_DEFAULT = 6;
-  const COLOR_PIPS_MAX_WIDTH =
-    COLOR_PIP_SIZE + (COLOR_PIP_SIZE - COLOR_PIP_OVERLAP_DEFAULT) * 2; // 42px
+  const COLOR_PIPS_MAX_WIDTH = COLOR_PIP_SIZE + (COLOR_PIP_SIZE - COLOR_PIP_OVERLAP_DEFAULT) * 2; // 42px
 
   let colorCount = $derived(card.colors?.reduce((sum, c) => sum + c.count, 0) ?? 0);
   let colorPipOverlap = $derived(
@@ -76,19 +76,37 @@
   let suppressClick = $state(false);
   const DRAG_THRESHOLD_PX = 8;
 
-  function canDragCard(): boolean {
+  let canDrag = $derived.by(() => {
     if (!inHand || !bs.isPlayersTurn) return false;
     const colorRequirementMet = isPayableAfterColorIncrementation(card);
-    return (isUnitCard(card) || isDraggableSpell(card)) && colorRequirementMet !== false;
-  }
+    return (isUnitCard(card) || isSpellCard(card)) && colorRequirementMet !== false;
+  });
 
   // Pointer drag — HTML5 DnD is cancelled by CSS filter/transform/style churn in Chrome.
+  // Capture the pointer so re-renders (dragging opacity / preview) don't abort the gesture.
   function handlePointerDown(event: PointerEvent) {
-    if (!canDragCard() || event.button !== 0) return;
+    if (!canDrag || event.button !== 0) return;
+
+    event.preventDefault();
+    const target = event.currentTarget as HTMLElement;
+    target.setPointerCapture?.(event.pointerId);
 
     const startX = event.clientX;
     const startY = event.clientY;
     let started = false;
+
+    const cleanup = () => {
+      target.removeEventListener('pointermove', onMove);
+      target.removeEventListener('pointerup', onUp);
+      target.removeEventListener('pointercancel', onCancel);
+      try {
+        if (target.hasPointerCapture?.(event.pointerId)) {
+          target.releasePointerCapture(event.pointerId);
+        }
+      } catch {
+        // ignore — capture may already be released
+      }
+    };
 
     const onMove = (moveEvent: PointerEvent) => {
       if (started) return;
@@ -99,20 +117,29 @@
       uiState.battle.draggingCard = card;
     };
 
-    const onUp = () => {
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      window.removeEventListener('pointercancel', onUp);
-      // Board owns drop + clearing draggingCard once a drag has started.
+    const onUp = (upEvent: PointerEvent) => {
+      cleanup();
       if (!started) return;
+      finishCardDrag(upEvent.clientX, upEvent.clientY);
       setTimeout(() => {
         suppressClick = false;
       }, 0);
     };
 
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onUp);
+    const onCancel = () => {
+      cleanup();
+      if (!started) return;
+      // DOM churn under the cursor can cancel the pointer — don't treat as a drop.
+      uiState.battle.draggingCard = null;
+      setTimeout(() => {
+        suppressClick = false;
+      }, 0);
+    };
+
+    // Listen on the capture target (not window) so moves keep firing after setPointerCapture.
+    target.addEventListener('pointermove', onMove);
+    target.addEventListener('pointerup', onUp);
+    target.addEventListener('pointercancel', onCancel);
   }
 
   // Handle card click
@@ -169,16 +196,6 @@
     return '';
   }
 
-  // Check if spell is draggable (0 or 1 target)
-  function isDraggableSpell(card: Card): boolean {
-    if (!isSpellCard(card)) return false;
-    const totalTargets = card.actions.reduce(
-      (acc, action) => acc + (action.targets?.length || 0),
-      0
-    );
-    return totalTargets <= 1;
-  }
-
   // Handle right-click to show CardFull
   function handleContextMenu(event: MouseEvent) {
     event.preventDefault();
@@ -188,9 +205,9 @@
 </script>
 
 <div
-  class="card {inHand ? 'in-hand' : ''} {isPendingSpell ? 'pending-spell' : ''} {isDragging ? 'dragging' : ''} {isPayable
-    ? 'payable'
-    : ''} {canDragCard() ? 'draggable' : ''}"
+  class="card {inHand ? 'in-hand' : ''} {isPendingSpell ? 'pending-spell' : ''} {isDragging
+    ? 'dragging'
+    : ''} {isPayable ? 'payable' : ''} {canDrag ? 'draggable' : ''}"
   style="--card-width: {CARD_WIDTH}px; --card-height: {CARD_HEIGHT +
     40}px; --name-font-size: {nameFontSize()}rem;"
   onpointerdown={handlePointerDown}

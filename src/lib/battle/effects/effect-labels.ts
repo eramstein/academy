@@ -58,6 +58,21 @@ export function countedCards(count: number | string | undefined): string {
   return n === 1 ? '1 card' : `${n} cards`;
 }
 
+function dynamicValueLabel(dynamicValue: unknown): string | undefined {
+  if (typeof dynamicValue === 'string' && dynamicValue) {
+    return dynamicValue;
+  }
+  if (
+    dynamicValue &&
+    typeof dynamicValue === 'object' &&
+    'value' in dynamicValue &&
+    typeof (dynamicValue as { value: unknown }).value === 'string'
+  ) {
+    return (dynamicValue as { value: string }).value;
+  }
+  return undefined;
+}
+
 /** Numeric args are sometimes replaced with phrases like "equal to its energy" by effect primers. */
 export function describeAmount(
   amount: Amount,
@@ -74,9 +89,10 @@ export function describeAmount(
     }
     return { equalTo: trimmed };
   }
-  if (typeof dynamicValue === 'string' && dynamicValue) {
+  const dynamicKey = dynamicValueLabel(dynamicValue);
+  if (dynamicKey) {
     const multiplier = typeof amount === 'number' ? amount : 1;
-    const dynamicLabel = dynamicValue
+    const dynamicLabel = dynamicKey
       .replaceAll('ennemies', 'enemies')
       .replaceAll('ennemy', 'enemy');
     const value =
@@ -169,10 +185,20 @@ export function statFragment(
   return `${signed} ${label}`;
 }
 
-export function describeTemporaryBonus(effect: UnitEndOfTurnEffects): string {
+export function describeTemporaryBonus(
+  effect: UnitEndOfTurnEffects,
+  dynamicValue?: unknown,
+  dynamicEffectType?: keyof UnitEndOfTurnEffects
+): string {
   const parts = Object.keys(effect).map((key) => {
-    const value = effect[key as keyof UnitEndOfTurnEffects];
     const name = words(key);
+    if (dynamicValue && dynamicEffectType === key) {
+      const described = describeAmount(1, dynamicValue);
+      if (described.equalTo) {
+        return `${name} ${described.equalTo}`;
+      }
+    }
+    const value = effect[key as keyof UnitEndOfTurnEffects];
     if (value === true || value === undefined) {
       return name;
     }

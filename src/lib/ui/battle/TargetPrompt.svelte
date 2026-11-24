@@ -2,6 +2,7 @@
   import { uiState } from '@lib/_state';
   import { getAssetPath } from '@lib/_utils/asset-paths';
   import { DataEffectTemplates } from '@lib/battle/effects/effect-templates';
+  import { isNoTargetSpell } from '@lib/ui/_helpers/card-drag';
   import OrnateButton from '@lib/ui/OrnateButton.svelte';
   import { finishTargetSelection } from '@lib/ui/_helpers/targetting';
 
@@ -9,6 +10,24 @@
 
   let targetPrompt = $derived(() => {
     const battle = uiState.battle;
+
+    // No-target spells: drop anywhere on the board to cast
+    const draggingNoTargetSpell = isNoTargetSpell(battle.draggingCard) ? battle.draggingCard : null;
+    if (draggingNoTargetSpell) {
+      let effectText = '';
+      draggingNoTargetSpell.actions.forEach((action) => {
+        effectText +=
+          DataEffectTemplates[action.effect.name](action.effect.args).label(action.targets || []) +
+          '\n';
+      });
+      return {
+        text: 'Drop anywhere on the board to cast',
+        effectText: effectText.trim(),
+        showDone: false,
+        isVisible: true,
+      };
+    }
+
     if (!battle.targetBeingSelected) return null;
 
     const targetText = `${battle.targetBeingSelected.count || ''} ${battle.targetBeingSelected.type}`;

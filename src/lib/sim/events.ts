@@ -225,8 +225,14 @@ export async function syncEventTemplates(templates: EventTemplate[]) {
   rebuildWorkingEventTemplates();
 }
 
-/** Place named on the event, if it has one. Travel offers send the player here. */
-export function eventPlaceKey(template: Pick<EventTemplate, 'triggers'>): string | undefined {
+/**
+ * Destination for the event: explicit `place`, else a Place trigger.
+ * Travel offers and start-of-event cast moves use this.
+ */
+export function eventPlaceKey(
+  template: Pick<EventTemplate, 'place' | 'triggers'>
+): string | undefined {
+  if (template.place) return template.place;
   for (const trigger of template.triggers ?? []) {
     if (trigger.triggerType === EventTriggerType.Place) {
       return trigger.parameters.placeKey;
@@ -291,13 +297,10 @@ function triggeredFromTemplate(template: StoredEventTemplate | undefined) {
 
 /**
  * Mandatory events play on their own, as many as match.
- * An exact day (not minDay alone) or a non-zero priority makes an event mandatory.
+ * A non-zero priority makes an event mandatory.
  */
 function isMandatoryEvent(template: StoredEventTemplate): boolean {
-  if ((template.priority ?? 0) !== 0) return true;
-  return (template.triggers ?? []).some(
-    (trigger) => trigger.triggerType === EventTriggerType.Day && trigger.parameters.day != null
-  );
+  return (template.priority ?? 0) !== 0;
 }
 
 /**

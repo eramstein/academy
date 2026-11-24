@@ -1,20 +1,17 @@
 <script lang="ts">
-  import { usePlayerColorAbility } from '@/lib/battle';
-  import { isPayableAfterColorIncrementation } from '@/lib/battle/cost';
   import { config } from '@lib/_config';
-  import type { Card, Position } from '@lib/_model';
-  import { isUnitCard } from '@lib/_model';
+  import type { Position } from '@lib/_model';
   import { bs, uiState } from '@lib/_state';
-  import { getPositionKey, isOnPlayersSide } from '@lib/battle/boards';
-  import { moveUnit } from '@lib/battle/move';
-  import { deployUnit } from '@lib/battle/unit';
-  import {
-    clearSelections,
-    setUnitsTargets,
-    toggleUnitSelection,
-  } from '@lib/ui/_helpers/selections';
-  import { activateSpell, targetCell, targetUnit } from '@lib/ui/_helpers/targetting';
   import { getPlaymatPath } from '@lib/_utils/asset-paths';
+  import { getPositionKey } from '@lib/battle/boards';
+  import { moveUnit } from '@lib/battle/move';
+  import {
+    findCellAtPoint,
+    isNoTargetSpell,
+    isPointOnBoard,
+  } from '@lib/ui/_helpers/card-drag';
+  import { clearSelections, setUnitsTargets } from '@lib/ui/_helpers/selections';
+  import { targetCell } from '@lib/ui/_helpers/targetting';
   import { fly } from 'svelte/transition';
   import Land from './Land.svelte';
   import UnitDeployed from './UnitDeployed.svelte';
@@ -68,110 +65,34 @@
     return rightLandsByPosition().get(position);
   }
 
-  // Track drag state for each cell
+  // Track drag hover visuals (drop itself is handled by Card → finishCardDrag).
   let dragOverCell = $state<{ row: number; column: number } | null>(null);
-  let boardEl: HTMLDivElement | null = $state(null);
+  let dragOverBoard = $state(false);
 
-  /** Resolve board cell under the cursor (works with stage transform:scale). */
-  function findCellAtPoint(clientX: number, clientY: number): { row: number; column: number } | null {
-    if (!boardEl) return null;
-    for (const el of boardEl.querySelectorAll<HTMLElement>('.board-cell')) {
-      const rect = el.getBoundingClientRect();
-      if (
-        clientX >= rect.left &&
-        clientX < rect.right &&
-        clientY >= rect.top &&
-        clientY < rect.bottom
-      ) {
-        return { row: Number(el.dataset.row), column: Number(el.dataset.column) };
-      }
-    }
-    return null;
-  }
-
-  function playCardAt(card: Card, row: number, column: number) {
-    try {
-      const position: Position = { row, column };
-      const colorRequirementMet = isPayableAfterColorIncrementation(card);
-
-      if (colorRequirementMet === false) return;
-
-      if (isUnitCard(card)) {
-        if (isOnPlayersSide(position, card.ownerPlayerId)) {
-          if (colorRequirementMet !== true) {
-            usePlayerColorAbility(bs.players[card.ownerPlayerId], colorRequirementMet);
-          }
-          deployUnit(card, position);
-          if (card.keywords?.haste) {
-            toggleUnitSelection(bs.units[bs.units.length - 1]);
-          }
-        }
-      } else if (card.type === 'spell') {
-        const spellCard = card as any;
-        if (colorRequirementMet !== true) {
-          usePlayerColorAbility(bs.players[card.ownerPlayerId], colorRequirementMet);
-        }
-
-        activateSpell(spellCard);
-
-        const hasTargets = spellCard.actions.some(
-          (action: any) => action.targets && action.targets.length > 0
-        );
-        if (hasTargets) {
-          const unitAtPosition = bs.units.find(
-            (u) => u.position.row === row && u.position.column === column
-          );
-          if (unitAtPosition) {
-            targetUnit(unitAtPosition);
-          } else {
-            targetCell(position);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error deploying unit or casting spell:', error);
-    }
-  }
-
-  function dropCardAt(row: number, column: number) {
-    dragOverCell = null;
-    const card = uiState.battle.draggingCard;
-    uiState.battle.draggingCard = null;
-    if (card && bs.isPlayersTurn) {
-      playCardAt(card, row, column);
-    }
-  }
-
-  // Pointer drag tracking (works with scaled layouts; HTML5 DnD is unreliable here).
   $effect(() => {
     if (!uiState.battle.draggingCard) {
       dragOverCell = null;
+      dragOverBoard = false;
       return;
     }
 
     const onPointerMove = (event: PointerEvent) => {
       if (!bs.isPlayersTurn) return;
+      const dragging = uiState.battle.draggingCard;
+      if (isNoTargetSpell(dragging)) {
+        dragOverBoard = isPointOnBoard(event.clientX, event.clientY);
+        dragOverCell = null;
+        return;
+      }
+      dragOverBoard = false;
       dragOverCell = findCellAtPoint(event.clientX, event.clientY);
     };
 
-    const onPointerUp = (event: PointerEvent) => {
-      const cell = findCellAtPoint(event.clientX, event.clientY);
-      if (cell) {
-        dropCardAt(cell.row, cell.column);
-      } else {
-        dragOverCell = null;
-        uiState.battle.draggingCard = null;
-      }
-    };
-
     window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('pointercancel', onPointerUp);
     return () => {
       window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointercancel', onPointerUp);
       dragOverCell = null;
+      dragOverBoard = false;
     };
   });
 
@@ -222,61 +143,61 @@
     style="background-image: url('{getPlaymatPath()}');"
     aria-hidden="true"
   ></div>
-  <div class="board-container" bind:this={boardEl}>
-  <!-- Left column -->
-  <div class="side-column left-column">
-    {#each rows as row}
-      <div class="side-cell" data-row={row} data-side="left">
-        {#if getLeftLandAtPosition(row)}
-          <Land land={getLeftLandAtPosition(row)!} />
-        {/if}
-      </div>
-    {/each}
-  </div>
-
-  <!-- Main board -->
-  <div class="board" style="--middle-column: {middleColumnIndex}">
-    {#each rows as row}
-      <div class="board-row">
-        {#each columns as column}
-          <div
-            class="board-cell"
-            class:middle-gap={column === middleColumnIndex}
-            class:drag-over={dragOverCell?.row === row && dragOverCell?.column === column}
-            class:valid-move-target={isValidMoveTarget(row, column)}
-            data-row={row}
-            data-column={column}
-            onclick={() => handleCellClick(row, column)}
-          ></div>
-        {/each}
-      </div>
-    {/each}
-  </div>
-
-  <!-- Right column -->
-  <div class="side-column right-column">
-    {#each rows as row}
-      <div class="side-cell" data-row={row} data-side="right">
-        {#if getRightLandAtPosition(row)}
-          <Land land={getRightLandAtPosition(row)!} />
-        {/if}
-      </div>
-    {/each}
-  </div>
-  {#each bs.units as unit (unit.instanceId)}
-    {@const position = getUnitPosition(unit)}
-    {@const isAiUnit = unit.ownerPlayerId === 1}
-    <div
-      class="unit-container"
-      style="left: {position.left}px; top: {position.top}px; width: {CELL}px; height: {CELL}px;"
-      class:drag-over={dragOverCell?.row === unit.position.row &&
-        dragOverCell?.column === unit.position.column}
-      in:fly={isAiUnit ? { y: 0, x: 200, duration: 600 } : undefined}
-      out:fly={{ y: 0, x: isAiUnit ? 200 : -200, duration: 350 }}
-    >
-      <UnitDeployed {unit} />
+  <div class="board-container" class:drag-over-board={dragOverBoard}>
+    <!-- Left column -->
+    <div class="side-column left-column">
+      {#each rows as row}
+        <div class="side-cell" data-row={row} data-side="left">
+          {#if getLeftLandAtPosition(row)}
+            <Land land={getLeftLandAtPosition(row)!} />
+          {/if}
+        </div>
+      {/each}
     </div>
-  {/each}
+
+    <!-- Main board -->
+    <div class="board" style="--middle-column: {middleColumnIndex}">
+      {#each rows as row}
+        <div class="board-row">
+          {#each columns as column}
+            <div
+              class="board-cell"
+              class:middle-gap={column === middleColumnIndex}
+              class:drag-over={dragOverCell?.row === row && dragOverCell?.column === column}
+              class:valid-move-target={isValidMoveTarget(row, column)}
+              data-row={row}
+              data-column={column}
+              onclick={() => handleCellClick(row, column)}
+            ></div>
+          {/each}
+        </div>
+      {/each}
+    </div>
+
+    <!-- Right column -->
+    <div class="side-column right-column">
+      {#each rows as row}
+        <div class="side-cell" data-row={row} data-side="right">
+          {#if getRightLandAtPosition(row)}
+            <Land land={getRightLandAtPosition(row)!} />
+          {/if}
+        </div>
+      {/each}
+    </div>
+    {#each bs.units as unit (unit.instanceId)}
+      {@const position = getUnitPosition(unit)}
+      {@const isAiUnit = unit.ownerPlayerId === 1}
+      <div
+        class="unit-container"
+        style="left: {position.left}px; top: {position.top}px; width: {CELL}px; height: {CELL}px;"
+        class:drag-over={dragOverCell?.row === unit.position.row &&
+          dragOverCell?.column === unit.position.column}
+        in:fly={isAiUnit ? { y: 0, x: 200, duration: 600 } : undefined}
+        out:fly={{ y: 0, x: isAiUnit ? 200 : -200, duration: 350 }}
+      >
+        <UnitDeployed {unit} />
+      </div>
+    {/each}
   </div>
 </div>
 
@@ -306,6 +227,20 @@
     z-index: 1;
     display: flex;
     gap: var(--land-gap);
+  }
+
+  .board-container.drag-over-board::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 8px;
+    border: 2px solid rgba(191, 161, 74, 0.75);
+    background: linear-gradient(180deg, rgba(191, 161, 74, 0.14), rgba(191, 161, 74, 0.04));
+    box-shadow:
+      inset 0 0 24px rgba(191, 161, 74, 0.28),
+      0 0 12px rgba(191, 161, 74, 0.3);
+    pointer-events: none;
+    z-index: 20;
   }
 
   .side-column {

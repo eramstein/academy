@@ -49,6 +49,7 @@ export function makeUnit(leaderIndex: number, core: UnitCardTemplate): UnitCard 
 export function summonUnit(unit: UnitCard, targetPosition: Position) {
   const unitDeployed = makeDeployedUnit(unit, targetPosition);
   bs.units.push(unitDeployed);
+  onDeployUnit(bs.units[bs.units.length - 1]);
 }
 
 export function makeDeployedUnit(unit: UnitCard, position: Position) {

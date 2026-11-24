@@ -84,5 +84,34 @@
     "skillBonuses": {
       "erudition": 2
     }
+  },
+  {
+    "patternKey": "artificery_for_dummies",
+    "image": "artificers-codex",
+    "name": "Artificery for Dummies",
+    "description": "An extremely old book full of tricks and tips for beginners crafter.",
+    "colorCost": [
+      { "color": "green", "cost": 3 },
+      { "color": "blue", "cost": 3 }
+    ],
+    "pieces": [
+      {
+        "name": "binding",
+        "alternativeResourcesCost": [
+          { "gold": 100, "moxes": 5 },
+          { "gold": 100, "mithril": 1 }
+        ]
+      },
+      {
+        "name": "illuminated-folio",
+        "alternativeResourcesCost": [
+          { "gold": 200, "magicDust": 5 },
+          { "gold": 100, "mithril": 1 }
+        ]
+      }
+    ],
+    "skillBonuses": {
+      "mastery": 2
+    }
   }
 ]

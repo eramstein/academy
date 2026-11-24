@@ -165,7 +165,8 @@ function moveCastForEvent(template: EventTemplate, placeKey?: string) {
 function startEventByKey(eventKey: string, placeKey?: string): boolean {
   const resolved = getSceneEventByKey(eventKey);
   if (!resolved) return false;
-  if (placeKey) moveCastForEvent(resolved.template, placeKey);
+  // Explicit destination (travel offer) or template.place / Place trigger.
+  moveCastForEvent(resolved.template, placeKey);
   setEvent(resolved.event, resolved.template);
   if (sceneWaitingOnEventChoice()) {
     gs.scene.actions = [];
@@ -593,6 +594,8 @@ export function setEvent(event: SceneEvent, template: EventTemplate) {
   if (event.text === gs.scene.event?.text && sceneWaitingOnEventChoice()) {
     return;
   }
+  // Relocate player + cast when the template names an explicit destination.
+  if (template.place) moveCastForEvent(template, template.place);
   consumeEventTemplate(template);
   if (template.silent) {
     // Effects + story stamp only — no narration, scene claim, or period-limit slot.
