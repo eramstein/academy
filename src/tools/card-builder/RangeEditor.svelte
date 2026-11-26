@@ -1,7 +1,7 @@
 <script lang="ts">
   import { UnitType } from '@/lib/_model';
   import { formatKeywordLabel, KEYWORD_KEYS } from '@/lib/sim/cards/keywords';
-  import { RANGE_FLAGS, type RangeDraft } from './model';
+  import { RANGE_FLAGS, RANGE_STATUS_OPTIONS, type RangeDraft } from './model';
 
   let { range }: { range: RangeDraft } = $props();
 
@@ -37,6 +37,17 @@
         <option value="">Any</option>
         {#each KEYWORD_KEYS as keyword (keyword)}
           <option value={keyword}>{formatKeywordLabel(keyword)}</option>
+        {/each}
+      </select>
+    </label>
+    <label class="cb-field">
+      <span class="cb-label">Has status</span>
+      <select class="cb-input" bind:value={range.hasStatus}>
+        <option value="">—</option>
+        {#each RANGE_STATUS_OPTIONS as status (status)}
+          <option value={status}
+            >{status === 'any' ? 'Any status' : formatKeywordLabel(status)}</option
+          >
         {/each}
       </select>
     </label>

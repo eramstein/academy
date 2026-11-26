@@ -1,0 +1,255 @@
+[
+  {
+    "id": "master_mason",
+    "name": "Master Mason",
+    "imageFileName": "master_mason",
+    "cost": 5,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["ousmane", "base"],
+    "type": "unit",
+    "power": 3,
+    "maxHealth": 5,
+    "retaliate": 2,
+    "keywords": {
+      "armor": 1
+    },
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "staticKeyword",
+              "args": {
+                "abilityName": "masterMason",
+                "keyword": "armor",
+                "keyWordValue": 1,
+                "range": {
+                  "allies": true,
+                  "unitType": "building"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "spiked_armors",
+    "name": "Spiked Armors",
+    "imageFileName": "spiked_armors",
+    "cost": 1,
+    "colors": [
+      {
+        "color": "black",
+        "count": 3
+      }
+    ],
+    "poolKeys": ["ousmane", "base"],
+    "type": "spell",
+    "actions": [
+      {
+        "effect": {
+          "name": "staticStats",
+          "args": {
+            "retaliate": 1,
+            "range": {
+              "hasKeyword": "armor"
+            }
+          }
+        }
+      },
+      {
+        "effect": {
+          "name": "drawCard",
+          "args": {
+            "cardCount": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "oubliette",
+    "name": "Oubliette",
+    "imageFileName": "oubliette",
+    "cost": 4,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["ousmane", "base"],
+    "type": "unit",
+    "power": 0,
+    "maxHealth": 3,
+    "retaliate": 1,
+    "keywords": {
+      "armor": 1,
+      "immobile": true
+    },
+    "unitTypes": ["building"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "On Deploy",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "destroyUnit",
+              "args": {
+                "range": {
+                  "ennemies": true,
+                  "hasStatus": "any"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "type": "On Death",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "summon",
+              "args": {
+                "summonedUnit": {
+                  "id": "prisonner",
+                  "name": "Prisonner",
+                  "imageFileName": "prisonner",
+                  "cost": 0,
+                  "colors": [
+                    {
+                      "color": "black",
+                      "count": 1
+                    }
+                  ],
+                  "type": "unit",
+                  "power": 1,
+                  "maxHealth": 1,
+                  "retaliate": 0,
+                  "unitTypes": ["human"]
+                },
+                "isRespawn": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "guard_tower",
+    "name": "Guard Tower",
+    "imageFileName": "guard_tower",
+    "cost": 3,
+    "colors": [
+      {
+        "color": "black",
+        "count": 1
+      }
+    ],
+    "poolKeys": ["ousmane", "base"],
+    "type": "unit",
+    "power": 2,
+    "maxHealth": 4,
+    "retaliate": 2,
+    "keywords": {
+      "ranged": true,
+      "immobile": true
+    },
+    "unitTypes": ["building"]
+  },
+  {
+    "id": "castle",
+    "name": "Castle",
+    "imageFileName": "castle",
+    "cost": 7,
+    "colors": [
+      {
+        "color": "black",
+        "count": 3
+      }
+    ],
+    "poolKeys": ["ousmane", "base"],
+    "type": "unit",
+    "power": 3,
+    "maxHealth": 9,
+    "retaliate": 3,
+    "keywords": {
+      "ranged": true,
+      "immobile": true,
+      "armor": 1
+    },
+    "unitTypes": ["building"]
+  },
+  {
+    "id": "repair_team",
+    "name": "Repair Team",
+    "imageFileName": "repair_team",
+    "cost": 6,
+    "colors": [
+      {
+        "color": "black",
+        "count": 2
+      }
+    ],
+    "poolKeys": ["ousmane", "base"],
+    "type": "unit",
+    "power": 2,
+    "maxHealth": 6,
+    "retaliate": 1,
+    "keywords": {
+      "ranged": true,
+      "immobile": true,
+      "armor": 0
+    },
+    "unitTypes": ["human"],
+    "abilities": [
+      {
+        "trigger": {
+          "type": "Activated",
+          "range": {
+            "self": true
+          }
+        },
+        "actions": [
+          {
+            "effect": {
+              "name": "healUnit",
+              "args": {
+                "health": 5,
+                "range": {
+                  "unitType": "building"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

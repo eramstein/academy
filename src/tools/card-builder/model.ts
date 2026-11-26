@@ -13,6 +13,7 @@ import {
   type Trigger,
   type UnitCardTemplate,
   type UnitKeywords,
+  type UnitStatuses,
 } from '@/lib/_model';
 import { DynamicValue } from '@/lib/battle/effects/dynamic-values';
 import type { UnitFilterArgs } from '@/lib/battle/effects/unit-filters';
@@ -79,9 +80,20 @@ export const RANGE_FLAGS: { key: RangeFlag; label: string }[] = [
   { key: 'inFrontOf', label: 'In front' },
 ];
 
+export const RANGE_STATUS_OPTIONS = [
+  'any',
+  'poison',
+  'mezz',
+  'root',
+  'stun',
+  'daze',
+  'vulnerable',
+] as const satisfies ReadonlyArray<keyof UnitStatuses | 'any'>;
+
 export type RangeDraft = Record<RangeFlag, boolean> & {
   unitType: UnitType | '';
   hasKeyword: keyof UnitKeywords | '';
+  hasStatus: (typeof RANGE_STATUS_OPTIONS)[number] | '';
 };
 
 export type KeywordDraft = Record<(typeof BOOLEAN_KEYWORD_KEYS)[number], boolean> &
@@ -375,6 +387,7 @@ export function blankRange(): RangeDraft {
     inFrontOf: false,
     unitType: '',
     hasKeyword: '',
+    hasStatus: '',
   };
 }
 
@@ -466,8 +479,8 @@ export function blankAbility(): AbilityDraft {
   return {
     id: uid(),
     triggerType: TriggerType.Activated,
-    useRange: false,
-    range: blankRange(),
+    useRange: true,
+    range: { ...blankRange(), self: true },
     staticRecompute: [],
     text: '',
     useCost: false,
@@ -536,6 +549,7 @@ export function serializeRange(range: RangeDraft | undefined): UnitFilterArgs | 
   }
   if (range.unitType) out.unitType = range.unitType;
   if (range.hasKeyword) out.hasKeyword = range.hasKeyword;
+  if (range.hasStatus) out.hasStatus = range.hasStatus;
   return Object.keys(out).length ? out : undefined;
 }
 

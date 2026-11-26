@@ -7,6 +7,7 @@ import {
   type Position,
   type UnitDeployed,
   type UnitKeywords,
+  type UnitStatuses,
 } from '@/lib/_model';
 import { UnitType } from '@/lib/_model/enums-battle';
 import { bs } from '@/lib/_state';
@@ -32,6 +33,7 @@ export interface UnitFilterArgs {
   // absolute
   unitType?: UnitType;
   hasKeyword?: keyof UnitKeywords;
+  hasStatus?: keyof UnitStatuses | 'any';
 }
 
 export function filterUnits(filterArgs: UnitFilterArgs): UnitDeployed[] {
@@ -84,6 +86,14 @@ export function filterUnits(filterArgs: UnitFilterArgs): UnitDeployed[] {
     if (filterArgs.hasKeyword && !u.keywords?.[filterArgs.hasKeyword]) {
       valid = false;
     }
+    if (filterArgs.hasStatus === 'any') {
+      const statuses = u.statuses;
+      if (!statuses || !Object.values(statuses).some(Boolean)) {
+        valid = false;
+      }
+    } else if (filterArgs.hasStatus && !u.statuses?.[filterArgs.hasStatus]) {
+      valid = false;
+    }
     return valid;
   });
   if (filterArgs.addSelf && filterArgs.unit) {
@@ -123,6 +133,11 @@ export function getRangeLabel(filterArgs: UnitFilterArgs) {
   }
   if (filterArgs.hasKeyword) {
     labels.push('has ' + filterArgs.hasKeyword);
+  }
+  if (filterArgs.hasStatus) {
+    labels.push(
+      filterArgs.hasStatus === 'any' ? 'has a status' : 'has ' + filterArgs.hasStatus
+    );
   }
   if (filterArgs.excludeSelf) {
     labels.push('(others)');

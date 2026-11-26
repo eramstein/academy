@@ -2918,6 +2918,279 @@
     "imageSize": "large"
   },
   {
+    "key": "molly_autumn_leaves",
+    "text": "You find Molly sitting alone at a table, surrounded by a formidable collection of textbooks and crumpled notes. Her usual cheerful expression is nowhere to be seen. She has her head in her hands, staring at a page as though it has personally insulted her.\n\n\"Oh, hello, Antonio.\" She manages a weak smile. \"I've been studying all morning, and I think I know less than when I started. Every time I understand one thing, three more things stop making sense.\"\n\nShe looks down at her notes. \"What if I'm just not clever enough for this place?\"\n\nYou could offer to help her study, but somehow you suspect another hour of artificery theory is the very last thing she needs. Outside the tall windows, the courtyard trees are shedding their golden leaves in splendid quantities.\n\nAn idea occurs to you.\n\n\"Come on, Molly. We're going outside.\"\n\n\"Outside? But I have to—\"\n\n\"Doctor's orders. Very serious condition. Acute textbook poisoning.\"\n\nThat earns you the beginnings of a smile.",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 10
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "afternoon"
+        }
+      },
+      {
+        "triggerType": "place",
+        "parameters": {
+          "placeKey": "library"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Take her outside for some fresh air",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "Molly reluctantly lets you lead her into the courtyard. The afternoon air is crisp, the sky pale blue, and the ground is covered in a thick carpet of yellow and copper leaves.\n\nYou walk together for a while, talking about nothing important. Gradually, Molly's shoulders relax, and her familiar smile returns.\n\nThen you spot a particularly magnificent pile of leaves beside an old oak tree.\n\nAn irresistible opportunity.\n\nYou scoop up a generous handful and toss them at her.\n\nMolly stares at you in astonishment as the leaves flutter down around her.\n\n\"Antonio Fibonacci!\"\n\nFor one terrible moment, you wonder whether you've misjudged the situation. Then she bends down, gathers an enormous armful, and launches a counterattack with the enthusiasm of a seasoned artillery commander.\n\nThe battle escalates rapidly. Molly has the advantage in strength, speed, and an alarming willingness to throw herself bodily into the larger piles. You are eventually overwhelmed, and the two of you collapse into the leaves, breathless with laughter.\n\nFor a while, you simply lie there, looking up through the thinning branches.\n\n\"Thank you,\" Molly says quietly. \"I really needed this.\"\n\nShe turns her head toward you, smiling. \"You know, sometimes I forget we're allowed to enjoy ourselves.\"\n\nAfter a moment, she sits up and rummages through her satchel.\n\n\"Oh! I nearly forgot. I have a few cards I made recently. Pick whichever one you like!\"\n\n\"What's the occasion?\"\n\n\"Consider it a prize for services rendered to a very distressed student.\" She grins. \"And for being such a wonderfully terrible leaf fighter.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "molly_plot_academic_struggle",
+              "amount": 1
+            }
+          },
+          {
+            "type": "offer_card_gifts",
+            "parameters": {
+              "count": 3,
+              "poolKeys": [
+                "molly",
+                "base"
+              ]
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "molly_memory_autumn_leaves",
+              "type": "memory",
+              "text": "Molly grins when she sees you. \"Watch yourself, Antonio. I've been practicing my throwing technique.\" She pauses, looking entirely too pleased with herself. \"The leaves are nearly gone, but I'm sure I can find something suitable.\"",
+              "knownByNpcKeys": [
+                "molly"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "title": "A Little Autumn Madness",
+    "invitationText": "Molly looks rather miserable, sitting alone with her books.",
+    "characterArc": "molly",
+    "place": "library",
+    "image": "molly_autumn_leaves.jpg",
+    "imageSize": "large"
+  },
+  {
+    "key": "molly_academic_struggle_resolved",
+    "title": "A Passing Grade",
+    "invitationText": "Molly comes looking for you, positively bursting with good news.",
+    "text": "\"Antonio! There you are!\"\n\nMolly comes hurrying toward you, waving a sheet of paper with such enthusiasm that you briefly wonder whether she's won the lottery.\n\n\"I passed!\"\n\nShe thrusts the paper under your nose. It's an examination report, covered in the usual scholarly annotations and a rather unremarkable collection of marks. Nothing that would trouble Emma's position at the top of the class, certainly. But there, unmistakably, is the word _Pass_.\n\n\"Not by much,\" Molly admits, laughing. \"But I passed! I was so nervous I could barely hold my pen, and I was sure I'd failed again. I must have checked the results five times.\"\n\nHer smile softens.\n\n\"You've helped me so much, Antonio. I know I still have a lot to learn, but at least now I feel like I might actually belong here.\"\n\nThen she brightens again.\n\n\"And I want to thank you properly! Will you let me treat you to dinner at the Royal Pigeon tonight? My expense, absolutely no arguments!\"",
+    "triggers": [
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "evening"
+        }
+      },
+      {
+        "triggerType": "story_tag",
+        "parameters": {
+          "tag": "molly_plot_academic_struggle",
+          "value": 4
+        }
+      }
+    ],
+    "effects": [
+      {
+        "effect": {
+          "type": "add_story_tag",
+          "parameters": {
+            "tag": "molly_plot_academic_struggle_resolved"
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "add_known_trait",
+          "parameters": {
+            "characterKey": "molly",
+            "title": "Academic confidence",
+            "description": "Molly has passed her examinations and is beginning to believe she belongs at the Academy."
+          }
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Thank her, but decline the invitation",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You thank Molly warmly, but tell her she really doesn't owe you anything. Seeing her succeed is reward enough.\n\n\"Oh, Antonio...\" She looks genuinely touched. \"That's very sweet of you.\"\n\nShe hesitates, then rummages through her satchel.\n\n\"Well, I'm not letting you get away without _something_. Here, pick one! I've been making these, and I'm rather proud of them.\"\n\nShe produces a small collection of playing cards, looking delighted at the prospect of giving you one.\n\n\"And don't think this means you've escaped dinner forever,\" she adds with a mischievous smile. \"I'll find another excuse.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "molly",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          },
+          {
+            "type": "offer_card_gifts",
+            "parameters": {
+              "count": 3,
+              "poolKeys": [
+                "molly",
+                "base"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "text": "Accept Molly's invitation",
+        "nextNode": "molly_celebration_dinner",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "\"Of course. I'd be delighted.\"\n\nMolly clasps her hands together.\n\n\"Wonderful! I've already made arrangements. Well, I was _hoping_ you'd say yes, so I made arrangements. Which is almost the same thing.\"\n\nShe takes your arm and leads you toward town with a spring in her step."
+            }
+          },
+          {
+            "type": "move",
+            "parameters": {
+              "placeKey": "royal-pigeon-inn",
+              "characterKeys": [
+                "player",
+                "molly"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "nodes": {
+      "molly_celebration_dinner": {
+        "text": "The Royal Pigeon is warm and bustling, its dining room filled with the comfortable smells of roasted meat, fresh bread, and something rich simmering in the kitchen.\n\nMrs. Mathilda greets Molly with a knowing smile and leads you to a table already laid for two.\n\nA few minutes later, a magnificent dinner arrives. Not merely a good dinner, but _your favorite dinner_, prepared with all the expensive little indulgences you've spent your student days admiring from a safe distance on other people's plates.\n\nYou stare at it.\n\n\"Molly, how did you know?\"\n\nShe looks immensely pleased with herself.\n\n\"I asked around! And I may have mentioned that I wanted something special. You've been so kind to me, Antonio. I wanted to do something nice for you.\"\n\nFor a while, the two of you enjoy the meal, with Molly happily recounting the ordeal of her examinations. Apparently, one examiner had asked a question so dreadful that she'd briefly considered climbing out of the window.\n\nEventually, she grows thoughtful.\n\n\"There's still something I need to work on, though. Hordes.\"\n\nShe makes a face.\n\n\"I can craft a decent card when I put my mind to it, but actually _playing_ the things? Half the time I don't realize I've made a terrible move until my opponent is grinning at me.\"\n\nShe leans forward, a little hopeful.\n\n\"I was thinking... would you like to train together? Wednesday evenings, in my room? We could play matches, try different decks, that sort of thing. I promise I'll be a very enthusiastic student!\"\n\nShe pauses.\n\n\"Not necessarily a _good_ student, mind you. But enthusiastic.\"",
+        "optionTemplates": [
+          {
+            "text": "Agree to train with Molly",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "\"Wednesday evenings sound good to me.\"\n\nMolly breaks into a delighted smile.\n\n\"Really? Oh, that's wonderful! I'll make sure we have everything ready. Cards, a proper table, perhaps something to eat...\"\n\nShe considers this for a moment.\n\n\"Actually, knowing me, definitely something to eat.\"\n\nThen she reaches into her satchel.\n\n\"And before I forget, there's one more thing. I made some cards recently, and I'd love you to have one. Think of it as a little celebration present.\""
+                }
+              },
+              {
+                "type": "schedule_activity",
+                "parameters": {
+                  "activity": {
+                    "type": "training",
+                    "participants": [
+                      "player",
+                      "molly"
+                    ],
+                    "placeKey": "molly-room"
+                  },
+                  "schedule": {
+                    "date": {
+                      "dayOfWeek": 3,
+                      "period": "evening"
+                    },
+                    "recurrence": {
+                      "daysOfWeek": [
+                        3
+                      ],
+                      "period": "evening"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "offer_card_gifts",
+                "parameters": {
+                  "count": 3,
+                  "poolKeys": [
+                    "molly",
+                    "base"
+                  ]
+                }
+              },
+              {
+                "type": "add_chat_topic",
+                "parameters": {
+                  "key": "molly_memory_wednesday_training",
+                  "type": "memory",
+                  "text": "Molly smiles eagerly. \"I'm looking forward to our next Hordes session! I've been working on a new deck. I think I've finally figured out how to stop losing all my good units before they can do anything.\" She pauses. \"Well, most of them.\"",
+                  "knownByNpcKeys": [
+                    "molly"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "text": "Decline the regular training",
+            "effects": [
+              {
+                "type": "narrate",
+                "parameters": {
+                  "text": "You explain that you can't commit to regular Wednesday evenings, though you'd be happy to play the occasional match.\n\n\"Oh, of course!\" Molly says, entirely understanding. \"I know you've got your own studies and everything. It was just an idea.\"\n\nHer smile returns almost immediately.\n\n\"Besides, I suppose I'll have to learn to win without someone holding my hand. Metaphorically speaking!\"\n\nShe retrieves a few playing cards from her satchel and spreads them across the table.\n\n\"Anyway, pick one of these. A little present to celebrate my glorious ascent into the ranks of the academically adequate!\""
+                }
+              },
+              {
+                "type": "offer_card_gifts",
+                "parameters": {
+                  "count": 3,
+                  "poolKeys": [
+                    "molly",
+                    "base"
+                  ]
+                }
+              },
+              {
+                "type": "add_chat_topic",
+                "parameters": {
+                  "key": "molly_memory_passing_exams",
+                  "type": "memory",
+                  "text": "Molly smiles when you ask about her studies. \"Much better, thank you! I still have to work harder than most people, but at least I'm not terrified of every examination anymore. And I haven't forgotten that lovely dinner we had at the Royal Pigeon.\"",
+                  "knownByNpcKeys": [
+                    "molly"
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "title": "Celebration Dinner",
+        "image": "molly_academic_struggle_resolved.jpg",
+        "imageSize": "large"
+      }
+    },
+    "characterArc": "molly"
+  },
+  {
     "key": "academy-first-enchantment",
     "text": "Professor Glützenbaum greets the class with his usual enthusiasm, standing behind a desk laden with enchanted cards, pigments, and an alarming assortment of delicate brass instruments.\n\n\"Good afternoon, my promising young artificers! This morning, you learned to create. This afternoon, you shall learn to improve! Or, occasionally, to make things worse in a carefully calculated and academically respectable manner.\"\n\nHe holds up a card depicting an armored knight.\n\n\"Augmentation! We strengthen an existing enchantment, making our creation more powerful, more resilient, or more capable. Naturally, greater power demands greater magical energy. A stronger card will generally cost more mana to play.\"\n\nHe sets it down and picks up another.\n\n\"Distillation! The opposite principle. We remove something from an enchantment, reducing its power but also its cost. A modest creation, efficiently designed, may prove far more useful than an extravagant masterpiece.\"\n\n\"Rather like certain students,\" someone murmurs from the back.\n\n\"Who said that?\"\n\nThe sharp voice comes from a young man a few seats away. Dark-eyed, handsome, and visibly indignant, he has turned toward his neighbor, who looks utterly bewildered.\n\n\"You were looking at me.\"\n\n\"I was looking at the professor!\"\n\n\"With that expression?\"\n\n\"What expression?\"\n\n\"That one!\"\n\nProfessor Glützenbaum clears his throat.\n\n\"Mr. Farid, I presume? An excellent demonstration of excessive energy expenditure. Perhaps we should attempt a little distillation.\"\n\nThe classroom erupts in laughter. Farid's expression darkens, but he eventually folds his arms and settles back into his seat, muttering something about disrespectful northerners.\n\nGlützenbaum returns to his cards, entirely untroubled.\n\n\"Now then! You have cards, you have tools, and you have two splendid ways to improve your decks—or ruin them beyond recognition. I suggest you begin with the former.\"",
     "triggers": [
@@ -12109,5 +12382,283 @@
     },
     "characterArc": "farid",
     "emotion": "proud"
+  },
+  {
+    "key": "ousmane_art_of_conversation",
+    "text": "You find Ousmane leaning against a column in the courtyard, looking immensely pleased with himself. As you approach, he exchanges a few words with a passing student, compliments her unusual hat, and sends her on her way laughing.\n\n\"Antonio, my young friend! Did you see that? A smile, freely given. Not even five seconds of effort.\"\n\nYou congratulate him on this remarkable achievement.\n\n\"Ah, but you miss the point! Conversation is an art. A little confidence, a little charm, and a genuine interest in the person before you. These are skills, Antonio, and skills can be learned!\" He gives you an appraising look. \"And I believe you could benefit from some instruction.\"\n\nBefore you can defend your conversational abilities, Ousmane spots Emma sitting on a nearby bench, arranging cards in neat little piles.\n\n\"Ah! An excellent opportunity for practice.\"\n\n{{emmaSmitten}}\n\nYou eye him suspiciously. Ousmane has the expression of a general who has just discovered a particularly expendable volunteer.\n\nHe claps a hand on your shoulder. \"Go on, then. Say something charming. I'll observe and provide constructive criticism.\"\n\nUnfortunately, Emma has already noticed the two of you looking at her.\n\n\"Good afternoon, gentlemen,\" she calls. \"Is there a reason you're staring at me like two conspirators who have forgotten what they're conspiring about?\"\n\nOusmane beams. \"Emma! How fortunate. Antonio was just about to demonstrate his conversational talents.\"\n\nEmma looks from him to you. Her eyebrow rises.\n\n\"Oh, this should be interesting.\"",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 4
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "afternoon"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Take a genuine interest in Emma's work",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You sit beside Emma and take a closer look at her cards.\n\n\"What are you working on?\"\n\nEmma gives you a slightly suspicious glance, as if she had expected a considerably more ridiculous opening.\n\n\"A new deck. I'm trying to solve a problem with its early-game consistency.\" She picks up two cards and shows you the interaction she's been studying.\n\nYou ask a few questions, and before long the two of you are discussing possible improvements.\n\nOusmane watches for a moment, then clears his throat.\n\n\"Well, I suppose that counts as a successful conversation.\"\n\n\"Does it?\" Emma asks, looking up. \"How disappointing for you. I imagine you were hoping for something more entertaining.\"\n\nOusmane sighs theatrically. \"My finest student, and already he has surpassed his teacher.\"\n\n\"Your finest student?\" Emma replies. \"How many do you have?\"\n\n\"One.\"\n\n\"An impressive selection process.\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "ousmane",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Attempt a dazzling compliment",
+        "attributeCheck": {
+          "attribute": "charisma",
+          "difficulty": "medium",
+          "successEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You step forward with the confidence of a man who has absolutely no intention of embarrassing himself.\n\n\"Emma, I was just telling Ousmane that you're probably the most dangerous person at the Academy.\"\n\nEmma tilts her head. \"Dangerous?\"\n\n\"Naturally. Intelligent, ambitious, terrifyingly competent. I imagine half the students are already planning to surrender.\"\n\nShe considers this for a moment, then smiles.\n\n\"Only half? I'm clearly not working hard enough.\"\n\nOusmane bursts into laughter.\n\n\"Magnificent! A compliment, a little humor, and a charming response! You see, Antonio? You're a natural!\"\n\nEmma folds her arms. \"I wouldn't go that far. But I'll admit he has potential.\"\n\nShe gives you a mischievous look.\n\n\"With a sufficiently patient teacher, perhaps.\""
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "emma",
+                "relationParameter": "rivalry",
+                "amount": 1
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "ousmane",
+                "relationParameter": "respect",
+                "amount": 1
+              }
+            }
+          ],
+          "failureEffects": [
+            {
+              "type": "narrate",
+              "parameters": {
+                "text": "You decide to follow Ousmane's advice. Confidence. Charm. A genuine compliment.\n\nUnfortunately, somewhere between deciding to speak and opening your mouth, your vocabulary abandons you.\n\n\"Emma, I just wanted to say that you're... remarkably...\"\n\nShe waits patiently.\n\n\"...remarkable.\"\n\nThere is a short silence.\n\n\"Thank you, Antonio,\" she says solemnly. \"I shall treasure that observation.\"\n\nBehind you, Ousmane makes a noise like a man desperately trying to swallow a laugh.\n\nEmma takes pity on you. Or perhaps she merely wishes to prolong the entertainment.\n\n\"Take heart. I have heard considerably worse compliments.\"\n\n\"Really?\"\n\n\"Certainly. Though not many.\""
+              }
+            },
+            {
+              "type": "change_relation",
+              "parameters": {
+                "characterKey": "ousmane",
+                "relationParameter": "friendship",
+                "amount": 1
+              }
+            },
+            {
+              "type": "add_chat_topic",
+              "parameters": {
+                "key": "ousmane_memory_remarkable_compliment",
+                "type": "memory",
+                "text": "Ousmane greets you with a broad grin. \"Antonio! I was thinking of your remarkable conversational abilities. Truly remarkable. One might even call them...\" He pauses dramatically. \"...remarkable.\" You inform him that the joke is getting old. \"Nonsense! A great compliment never loses its charm.\"",
+                "knownByNpcKeys": [
+                  "ousmane"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "text": "Turn the tables on Ousmane",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You turn toward Emma with a perfectly innocent expression.\n\n\"Actually, Emma, Ousmane has been giving me lessons in the art of charming women. He claims to be something of an expert.\"\n\nEmma's expression changes immediately. You recognize that smile. It usually means somebody is about to regret something.\n\n\"Does he indeed?\"\n\nOusmane gives you a reproachful look. \"Antonio, my friend, a gentleman does not reveal the secrets of his education.\"\n\n\"But surely,\" Emma continues, \"an expert should be happy to demonstrate his methods?\"\n\n\"Naturally!\" Ousmane straightens his jacket. \"There is nothing more satisfying than witnessing a student's enthusiasm for learning.\"\n\n\"Splendid. Then let's begin with a simple question. How many of your students have successfully charmed a woman?\"\n\nOusmane hesitates.\n\n\"Well, Antonio is my first pupil.\"\n\nEmma nods thoughtfully.\n\n\"So your method has a success rate of zero percent.\"\n\n\"Now, that is hardly a fair—\"\n\n\"And you've been teaching it for how long?\"\n\nOusmane throws up his hands. \"Antonio! You were supposed to be learning from me, not conspiring with the examiner!\"\n\nEmma laughs. \"Oh, I think he's learned something valuable.\"\n\nYou smile at your defeated instructor.\n\n\"Never underestimate the importance of choosing your allies.\"\n\nOusmane studies you for a moment, then breaks into a hearty laugh.\n\n\"Ha! Perhaps there is hope for you yet, little brother!\""
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "ousmane",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "emma",
+              "relationParameter": "rivalry",
+              "amount": 1
+            }
+          },
+          {
+            "type": "add_story_tag",
+            "parameters": {
+              "tag": "ousmane_flirting_exam"
+            }
+          },
+          {
+            "type": "add_chat_topic",
+            "parameters": {
+              "key": "ousmane_memory_flirting_exam",
+              "type": "memory",
+              "text": "Ousmane gives you a suspicious look. \"I hope you haven't been arranging any more examinations with Emma behind my back.\" You assure him that your educational ambitions remain entirely innocent. \"Good. Because next time, my young friend, I shall be the one asking the questions.\" His expression suggests that he has already started preparing them.",
+              "knownByNpcKeys": [
+                "ousmane",
+                "emma"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "title": "The Art of Conversation",
+    "invitationText": "Ousmane waves you over with a mischievous smile. He seems to have something to teach you.",
+    "characterArc": "ousmane",
+    "place": "academy-courtyard",
+    "image": "ousmane_art_of_conversation.jpg",
+    "imageSize": "large",
+    "passages": {
+      "emmaSmitten": {
+        "variants": [
+          {
+            "triggers": [
+              {
+                "triggerType": "relation_tag",
+                "parameters": {
+                  "characterKey": "emma",
+                  "relationTag": "You are under Emma's spell"
+                }
+              }
+            ],
+            "text": "Your heart performs a small, entirely unnecessary maneuver. Ousmane notices, of course. The man's powers of observation are a terrible burden to his friends.\n\n\"Particularly excellent,\" he murmurs, grinning."
+          }
+        ],
+        "fallback": "You glance at Emma, then back at Ousmane. You begin to suspect this lesson has rather more to do with his amusement than your education."
+      }
+    }
+  },
+  {
+    "key": "ousmane_gentleman_never_pays_full_price",
+    "text": "You find Ousmane at the materials shop, engaged in what appears to be a remarkably friendly conversation with the merchant. Both men are laughing heartily, although the merchant's smile becomes noticeably more strained whenever Ousmane glances at the price tags.\n\n\"Antonio! Excellent timing, my young friend. Come, come! Our esteemed merchant was just explaining why a handful of moxes costs more than a respectable horse.\"\n\n\"Quality, sir,\" the merchant insists. \"Finest quality. Imported at considerable expense.\"\n\n\"Naturally! And I would never insult such a distinguished establishment by paying the advertised price.\"\n\nOusmane turns to you with a conspiratorial grin. \"You see, Antonio, negotiation is an art. A dance between gentlemen. And like any dance, one must know when to lead.\"\n\nYou have a suspicion that the merchant would prefer to sit this particular dance out.\n\n\"Now, watch closely. You might learn something useful.\"",
+    "triggers": [
+      {
+        "triggerType": "day",
+        "parameters": {
+          "minDay": 5
+        }
+      },
+      {
+        "triggerType": "period",
+        "parameters": {
+          "period": "evening"
+        }
+      }
+    ],
+    "optionTemplates": [
+      {
+        "text": "Let the master demonstrate",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You decide to observe Ousmane's technique. There are, after all, worse ways to spend an afternoon than watching somebody else argue about money.\n\nOusmane launches into a magnificent performance. He praises the merchant's intelligence, his impeccable taste, and the extraordinary reputation of his establishment. He inquires after his family, discusses the international trade in magical ingredients, and somehow manages to get invited for tea.\n\nForty minutes later, the merchant is laughing like an old friend. He has also agreed to sell the supplies at a fraction of their original price.\n\n\"Observe, Antonio,\" Ousmane whispers as you leave. \"The secret is to make the other fellow feel he's won.\"\n\n\"Did he?\"\n\n\"Of course not! But he feels magnificent, and that is nearly as good.\"\n\nYou spend the walk back discussing his techniques. By the time you reach the Academy, you feel considerably better prepared for your next negotiation."
+            }
+          },
+          {
+            "type": "level_attribute",
+            "parameters": {
+              "attribute": "charisma",
+              "amount": 1
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "ousmane",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Find a more profitable arrangement",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "While Ousmane is busy charming the merchant, you notice a stack of expensive imported components gathering dust behind the counter.\n\nYou interrupt the conversation with a suggestion: rather than merely negotiating a discount, why not arrange a trade? The Academy has plenty of aspiring artificers, and the merchant could use someone to help him find buyers for his more specialized merchandise.\n\nThe merchant considers this. Ousmane raises an appreciative eyebrow.\n\nBetween Ousmane's persuasive charm and your practical proposal, you soon negotiate a handsome commission for arranging several sales to Academy students.\n\nOutside the shop, Ousmane counts out your share of the advance payment.\n\n\"Two hundred gold, Antonio! Not bad for an afternoon's work. I came here intending to spend money, and instead we're leaving richer.\"\n\nHe pauses thoughtfully.\n\n\"I should bring you shopping more often.\""
+            }
+          },
+          {
+            "type": "add_gold",
+            "parameters": {
+              "amount": 200
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "ousmane",
+              "relationParameter": "respect",
+              "amount": 1
+            }
+          }
+        ]
+      },
+      {
+        "text": "Forget the price. Look at the merchandise!",
+        "effects": [
+          {
+            "type": "narrate",
+            "parameters": {
+              "text": "You have been listening to Ousmane's negotiations with growing fascination, but something else has caught your eye: a small collection of magical materials in a basket behind the counter.\n\nYou ask the merchant about them. He shrugs. They're leftover stock from an old shipment, too irregular to command a proper price.\n\nOusmane examines the basket and immediately understands your interest.\n\n\"My dear fellow! You have been sitting on a treasure without knowing it!\"\n\nThe merchant looks suspicious. \"A treasure?\"\n\n\"To an artificer, certainly. To you, regrettably, a basket of things nobody wishes to buy. A tragedy for everyone involved.\"\n\nAfter a few minutes of spirited discussion, Ousmane persuades the merchant to include some of the materials free of charge as a gesture of goodwill.\n\nYou leave with five perfectly usable moxes.\n\n\"Remember, Antonio,\" Ousmane says, patting you on the shoulder. \"A good negotiator knows the price of everything. A great negotiator knows what things are worth.\""
+            }
+          },
+          {
+            "type": "add_resource",
+            "parameters": {
+              "resourceType": "moxes",
+              "amount": 5
+            }
+          },
+          {
+            "type": "change_relation",
+            "parameters": {
+              "characterKey": "ousmane",
+              "relationParameter": "friendship",
+              "amount": 1
+            }
+          }
+        ]
+      }
+    ],
+    "title": "A Gentleman Never Pays Full Price",
+    "invitationText": "Ousmane is examining some expensive artificery supplies at the materials shop.",
+    "characterArc": "ousmane",
+    "place": "metarials-shop",
+    "image": "ousmane_gentleman_never_pays_full_price.jpg",
+    "imageSize": "large"
   }
 ]
