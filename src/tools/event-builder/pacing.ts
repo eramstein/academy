@@ -65,6 +65,8 @@ export interface PacingWorld {
   ownedArtifacts: Set<string>;
   /** Player resource stocks (for `resource_owned` triggers / `add_resource` effects). */
   resources: Partial<Record<ResourceType, number>>;
+  /** Player gold (for `gold_owned` triggers / `add_gold` effects). */
+  gold: number;
   /** Event whose outcome is being walked. Its story tag is already stamped. */
   openKey?: string;
   academyScheduled: boolean;
@@ -120,6 +122,7 @@ export function createPacingWorld(): PacingWorld {
     leaguesWon: {},
     ownedArtifacts: new Set(),
     resources: {},
+    gold: 0,
     academyScheduled: false,
   };
 }
@@ -450,6 +453,11 @@ function triggerMatches(trigger: EventTrigger, world: PacingWorld, eventKey: str
       const current = world.resources[resourceType] ?? 0;
       return value < 0 ? current <= value : current >= value;
     }
+    case EventTriggerType.GoldOwned: {
+      const { value } = trigger.parameters;
+      const current = world.gold ?? 0;
+      return value < 0 ? current <= value : current >= value;
+    }
     default:
       return false;
   }
@@ -546,6 +554,12 @@ function applyEffect(world: PacingWorld, effect: EventEffect) {
       const amount = effect.parameters.amount;
       if (!resourceType || typeof amount !== 'number' || !Number.isFinite(amount)) return;
       world.resources[resourceType] = (world.resources[resourceType] ?? 0) + amount;
+      return;
+    }
+    case EventEffectType.AddGold: {
+      const amount = effect.parameters.amount;
+      if (typeof amount !== 'number' || !Number.isFinite(amount)) return;
+      world.gold = (world.gold ?? 0) + amount;
       return;
     }
     default:

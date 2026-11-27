@@ -2,6 +2,7 @@ import type { EventEffect } from '@/lib/_model';
 import { EventEffectType } from '@/lib/_model/enums-sim';
 import { narrateText } from '../narration';
 import { levelAttribute, type LevelAttributeParameters } from './attributes';
+import { levelCraftingSkill, type LevelCraftingSkillParameters } from './crafting-skills';
 import { levelUpCharacter, type LevelUpCharacterParameters } from './characters';
 import { getDeck, type GetDeckParameters } from './decks';
 import {
@@ -110,6 +111,8 @@ const effectFunctions: Record<EventEffectType, (parameters: Record<string, any>)
   [EventEffectType.Narrate]: (parameters) => narrate(parameters as NarrateParameters),
   [EventEffectType.LevelAttribute]: (parameters) =>
     levelAttribute(parameters as LevelAttributeParameters),
+  [EventEffectType.LevelCraftingSkill]: (parameters) =>
+    levelCraftingSkill(parameters as LevelCraftingSkillParameters),
   [EventEffectType.LevelUpCharacter]: (parameters) =>
     levelUpCharacter(parameters as LevelUpCharacterParameters),
   [EventEffectType.ChangeRelation]: (parameters) =>

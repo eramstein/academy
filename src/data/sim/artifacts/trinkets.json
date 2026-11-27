@@ -21,5 +21,28 @@
     "attributeBonuses": {
       "vitality": 1
     }
+  },
+  {
+    "patternKey": "dexterity-brooch",
+    "image": "silver-tongue-brooch",
+    "name": "Dexterity Brooch",
+    "description": "A brooch that increases the wearer's dexterity.",
+    "colorCost": [
+      { "color": "red", "cost": 2 },
+      { "color": "black", "cost": 3 }
+    ],
+    "pieces": [
+      {
+        "name": "chain",
+        "alternativeResourcesCost": [{ "gold": 100, "magicDust": 5 }, { "mithril": 1 }]
+      },
+      {
+        "name": "gem-setting",
+        "alternativeResourcesCost": [{ "gold": 500, "moxes": 2 }, { "ithildin_crystal": 1 }]
+      }
+    ],
+    "attributeBonuses": {
+      "dexterity": 1
+    }
   }
 ]

@@ -64,7 +64,8 @@ export type SceneChange =
       label: string;
     }
   | { kind: 'artifact'; patternKey: string; label: string }
-  | { kind: 'resource'; resourceType: ResourceType; value: number; label: string };
+  | { kind: 'resource'; resourceType: ResourceType; value: number; label: string }
+  | { kind: 'gold'; value: number; label: string };
 
 export type EventDebugAction =
   | { kind: 'story_tag'; tag: string; value: number }
@@ -703,6 +704,16 @@ function triggerToChange(trigger: EventTrigger): SceneChange | null {
         label: `${resourceType.replace(/_/g, ' ')} ${cmp} ${Math.abs(value)}`,
       };
     }
+    case EventTriggerType.GoldOwned: {
+      const { value } = trigger.parameters;
+      if (value === 0) return null;
+      const cmp = value < 0 ? '≤' : '≥';
+      return {
+        kind: 'gold',
+        value,
+        label: `gold ${cmp} ${Math.abs(value)}`,
+      };
+    }
     case EventTriggerType.LlmFeatures:
       // User setting — enable or disable under Settings; not applied by debug setup.
       return null;
@@ -848,6 +859,16 @@ function applySceneChange(change: SceneChange): string | null {
       gs.player.resources[change.resourceType] = Math.abs(change.value);
       return change.label;
     }
+    case 'gold': {
+      const current = gs.player.gold ?? 0;
+      if (change.value < 0) {
+        if (current <= change.value) return null;
+      } else if (current >= change.value) {
+        return null;
+      }
+      gs.player.gold = Math.abs(change.value);
+      return change.label;
+    }
     default:
       return null;
   }
@@ -964,6 +985,8 @@ function triggerSignature(trigger: EventTrigger): string {
       return `artifact:${trigger.parameters.patternKey}`;
     case EventTriggerType.ResourceOwned:
       return `resource:${trigger.parameters.resourceType}:${trigger.parameters.value}`;
+    case EventTriggerType.GoldOwned:
+      return `gold:${trigger.parameters.value}`;
     case EventTriggerType.LlmFeatures:
       return `llm:${trigger.parameters.enabled ? 'on' : 'off'}`;
     default:

@@ -175,6 +175,11 @@
       const cmp = value < 0 ? '≤' : '≥';
       return `${trigger.triggerType}: ${resourceType} ${cmp}${Math.abs(value)}`;
     }
+    if (trigger.triggerType === EventTriggerType.GoldOwned) {
+      const { value } = trigger.parameters;
+      const cmp = value < 0 ? '≤' : '≥';
+      return `${trigger.triggerType}: gold ${cmp}${Math.abs(value)}`;
+    }
     if (trigger.triggerType === EventTriggerType.LlmFeatures) {
       return `${trigger.triggerType}: ${trigger.parameters.enabled ? 'on' : 'off'}`;
     }

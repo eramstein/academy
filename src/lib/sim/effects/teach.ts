@@ -17,14 +17,16 @@ const BASE_DECK_KEY_BY_COLOR: Record<CardColor, string> = {
 export interface TeachColorParameters {
   color?: CardColor;
   characterKey?: string;
+  /** Mastery points to grant. Defaults to 1. */
+  amount?: number;
 }
 
 export function teachColor(parameters: TeachColorParameters): string {
-  const { color: requestedColor, characterKey } = parameters;
+  const { color: requestedColor, characterKey, amount } = parameters;
 
   // Explicit color: teach that color to the learner (characterKey, default player).
   if (requestedColor && Object.values(CardColor).includes(requestedColor)) {
-    return bumpColor(requestedColor, characterKey ?? 'player');
+    return bumpColor(requestedColor, characterKey ?? 'player', amount);
   }
 
   // No color + characterKey: study from that character (teacher) onto the player.
@@ -73,16 +75,20 @@ function pickColorFromCharacter(
   };
 }
 
-function bumpColor(color: CardColor, characterKey = 'player'): string {
+function bumpColor(color: CardColor, characterKey = 'player', amount = 1): string {
   const learner = resolveLearner(characterKey);
   if (typeof learner === 'string') {
     return learner;
   }
+  const delta = typeof amount === 'number' && Number.isFinite(amount) ? Math.trunc(amount) : 1;
+  if (delta < 1) {
+    return `Invalid teach_color amount: ${amount}.`;
+  }
   if (!learner.isPlayer) {
-    return formatKnowledgeMessage(learner, formatKeywordLabel(color), 0, 1);
+    return formatKnowledgeMessage(learner, formatKeywordLabel(color), 0, delta);
   }
   const previous = gs.player.colorMasteryPoints[color] ?? 0;
-  const level = previous + 1;
+  const level = previous + delta;
   gs.player.colorMasteryPoints[color] = level;
   return formatKnowledgeMessage(learner, formatKeywordLabel(color), previous, level);
 }

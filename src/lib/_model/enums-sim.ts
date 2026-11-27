@@ -27,6 +27,8 @@ export enum EventEffectType {
   TeachAbility = 'teach_ability',
   Narrate = 'narrate',
   LevelAttribute = 'level_attribute',
+  /** Bump a card-crafting skill (`mastery` / `erudition` / `inspiration`). */
+  LevelCraftingSkill = 'level_crafting_skill',
   LevelUpCharacter = 'level_up_character',
   ChangeRelation = 'change_relation',
   UpdateRelationArc = 'update_relation_arc',
@@ -167,6 +169,11 @@ export enum EventTriggerType {
    * (same sign convention as `relation_parameter`).
    */
   ResourceOwned = 'resource_owned',
+  /**
+   * Player `gold` vs `value`. Positive `value` = at least; negative = at most
+   * (same sign convention as `resource_owned`).
+   */
+  GoldOwned = 'gold_owned',
   /**
    * User setting `llmFeaturesEnabled` matches `enabled`.
    * Use to gate LLM-backed events (structured interactions, generated prose, etc.).

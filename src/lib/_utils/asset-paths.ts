@@ -2,7 +2,16 @@ import { Emotion, ResourceType } from '@/lib/_model/enums-sim';
 import { findModImages, modImageUrl, type ModImageKind } from '@/lib/mods';
 
 /** Characters with a 4×4 emotion spritesheet (314px cells → 1256×1256) under images/characters/sheets. */
-const CHARACTER_EMOTION_SHEETS = new Set(['molly', 'emma']);
+const CHARACTER_EMOTION_SHEETS = new Set([
+  'molly',
+  'emma',
+  'ousmane',
+  'the-dude',
+  'henry',
+  'vaiana',
+  'elsa',
+  'farid',
+]);
 
 const EMOTION_SHEET_COLS = 4;
 const EMOTION_SHEET_ROWS = 4;

@@ -370,6 +370,17 @@ function checkTrigger(where, trigger) {
         );
       }
       break;
+    case 'gold_owned':
+      if (
+        typeof params.value !== 'number' ||
+        !Number.isInteger(params.value) ||
+        params.value === 0
+      ) {
+        errors.push(
+          `${where}: value must be a non-zero integer (positive = at least, negative = at most)`
+        );
+      }
+      break;
     case 'llm_features':
       if (typeof params.enabled !== 'boolean') {
         errors.push(`${where}: enabled must be a boolean`);
@@ -681,6 +692,13 @@ function checkEffect(where, effect) {
       }
       if (hasCharacter) checkOneOf(where, 'characterKey', parameters.characterKey, npcKeys);
       if (hasColor) checkOneOf(where, 'color', parameters.color, cardColors);
+      if (parameters.amount !== undefined) {
+        if (typeof parameters.amount !== 'number' || !Number.isFinite(parameters.amount)) {
+          errors.push(`${where}: amount must be a number`);
+        } else if (parameters.amount < 1) {
+          errors.push(`${where}: amount must be at least 1`);
+        }
+      }
       break;
     }
     case 'teach_ability':
@@ -704,6 +722,15 @@ function checkEffect(where, effect) {
         'charisma',
         'aura',
       ]);
+      if (parameters.amount !== undefined && typeof parameters.amount !== 'number') {
+        errors.push(`${where}: amount must be a number`);
+      }
+      if (typeof parameters.characterKey === 'string' && parameters.characterKey) {
+        checkOneOf(where, 'characterKey', parameters.characterKey, characterKeys);
+      }
+      break;
+    case 'level_crafting_skill':
+      checkOneOf(where, 'skill', parameters.skill, ['mastery', 'erudition', 'inspiration']);
       if (parameters.amount !== undefined && typeof parameters.amount !== 'number') {
         errors.push(`${where}: amount must be a number`);
       }

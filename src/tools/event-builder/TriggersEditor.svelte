@@ -67,6 +67,7 @@
       [EventTriggerType.LastMatchLost]: {},
       [EventTriggerType.ArtifactOwned]: { patternKey: '' },
       [EventTriggerType.ResourceOwned]: { resourceType: ResourceType.MagicDust, value: 1 },
+      [EventTriggerType.GoldOwned]: { value: 1 },
       [EventTriggerType.LlmFeatures]: { enabled: true },
     };
     return defaults[triggerType];
@@ -411,6 +412,14 @@
               type="number"
               bind:value={trigger.parameters.value}
               aria-label="Resource amount"
+              title="Positive = at least; negative = at most"
+            />
+          {:else if trigger.triggerType === EventTriggerType.GoldOwned}
+            <input
+              class="input narrow"
+              type="number"
+              bind:value={trigger.parameters.value}
+              aria-label="Gold amount"
               title="Positive = at least; negative = at most"
             />
           {:else if trigger.triggerType === EventTriggerType.LlmFeatures}

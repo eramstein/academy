@@ -24,12 +24,7 @@ import {
   type StoredEventTemplate,
 } from '../_state/event-templates';
 import { settings } from '../_state/settings.svelte';
-import {
-  getAllModEventKeys,
-  getDisabledModEventKeys,
-  getLoadedModEvents,
-  loadMods,
-} from '../mods';
+import { getAllModEventKeys, getDisabledModEventKeys, getLoadedModEvents, loadMods } from '../mods';
 import { SceneActionTemplates } from './actions';
 import { getActivityIllustrationRefs, probeFirstExistingImage } from './activity-image';
 import { getCharactersAtScene } from './characters';
@@ -97,6 +92,11 @@ export interface EventTriggerParameters {
    * Positive `value` = at least; negative = at most.
    */
   [EventTriggerType.ResourceOwned]: { resourceType: ResourceType; value: number };
+  /**
+   * Player `gold` vs `value`.
+   * Positive `value` = at least; negative = at most.
+   */
+  [EventTriggerType.GoldOwned]: { value: number };
   /** Matches when Settings → LLM features equals `enabled`. */
   [EventTriggerType.LlmFeatures]: { enabled: boolean };
 }
@@ -207,9 +207,7 @@ export async function loadEventTemplates() {
   const sourceKeys = new Set(fromSource.map((template) => template.key));
   const disabledModKeys = getDisabledModEventKeys();
   const dbOnly = fromDb
-    .filter(
-      (template) => !sourceKeys.has(template.key) && !disabledModKeys.has(template.key)
-    )
+    .filter((template) => !sourceKeys.has(template.key) && !disabledModKeys.has(template.key))
     .map(({ id: _id, ...template }) => template);
   await replaceEventTemplates([...fromSource, ...dbOnly]);
   allEventTemplates = (await getAllEventTemplates()).map(normalizeEventTemplate);
@@ -334,7 +332,9 @@ export function getTriggeredSilentEvent():
   | { event: SceneEvent; template: StoredEventTemplate }
   | undefined {
   const template = eventTemplates
-    .filter((eventTemplate) => isSilentEvent(eventTemplate) && isSceneTriggerCandidate(eventTemplate))
+    .filter(
+      (eventTemplate) => isSilentEvent(eventTemplate) && isSceneTriggerCandidate(eventTemplate)
+    )
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
   return triggeredFromTemplate(template);
 }
@@ -350,9 +350,7 @@ export function getNextMandatorySceneEvent():
         isMandatoryEvent(eventTemplate) &&
         isSceneTriggerCandidate(eventTemplate)
     )
-    .sort(
-      (a, b) => (b.priority ?? 0) - (a.priority ?? 0) || a.key.localeCompare(b.key)
-    )[0];
+    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || a.key.localeCompare(b.key))[0];
   return triggeredFromTemplate(template);
 }
 
@@ -504,6 +502,8 @@ function doesTriggerMatch(trigger: EventTrigger, eventKey: string): boolean {
       return checkArtifactOwned(trigger);
     case EventTriggerType.ResourceOwned:
       return checkResourceOwned(trigger);
+    case EventTriggerType.GoldOwned:
+      return checkGoldOwned(trigger);
     case EventTriggerType.LlmFeatures:
       return settings.llmFeaturesEnabled === trigger.parameters.enabled;
     default:
@@ -563,7 +563,9 @@ function checkLeaguesWon(
   trigger: Extract<EventTrigger, { triggerType: EventTriggerType.LeaguesWon }>
 ): boolean {
   const { characterKey, count } = trigger.parameters;
-  const wins = (gs.league?.pastWinners ?? []).filter((winnerKey) => winnerKey === characterKey).length;
+  const wins = (gs.league?.pastWinners ?? []).filter(
+    (winnerKey) => winnerKey === characterKey
+  ).length;
   return wins >= count;
 }
 
@@ -621,6 +623,17 @@ function checkResourceOwned(
 ): boolean {
   const { resourceType, value } = trigger.parameters;
   const current = gs.player.resources?.[resourceType] ?? 0;
+  if (value < 0) {
+    return current <= value;
+  }
+  return current >= value;
+}
+
+function checkGoldOwned(
+  trigger: Extract<EventTrigger, { triggerType: EventTriggerType.GoldOwned }>
+): boolean {
+  const { value } = trigger.parameters;
+  const current = gs.player.gold ?? 0;
   if (value < 0) {
     return current <= value;
   }

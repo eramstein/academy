@@ -52,6 +52,7 @@
   const placeKeys = Object.keys(PLACES);
   const weekDays = WEEK_DAYS.map((name, index) => ({ name, value: index + 1 }));
   const attributeKeys = ['dexterity', 'intelligence', 'vitality', 'charisma', 'aura'] as const;
+  const craftingSkillKeys = ['mastery', 'erudition', 'inspiration'] as const;
   const relationParameters = ['friendship', 'respect', 'love', 'rivalry'] as const;
   const relationTags = Object.values(RelationTag);
   const possessionTypes = Object.values(PossessionType);
@@ -139,13 +140,15 @@
       case EventEffectType.GiftCardToCharacter:
         return { characterKey: '', cardKey: '', fromPlayer: true };
       case EventEffectType.TeachColor:
-        return { color: CardColor.Red };
+        return { color: CardColor.Red, amount: 1 };
       case EventEffectType.TeachAbility:
         return {};
       case EventEffectType.Narrate:
         return { text: '' };
       case EventEffectType.LevelAttribute:
         return { attribute: 'intelligence', amount: 1, characterKey: 'player' };
+      case EventEffectType.LevelCraftingSkill:
+        return { skill: 'erudition', amount: 1, characterKey: 'player' };
       case EventEffectType.LevelUpCharacter:
         return { characterKey: '' };
       case EventEffectType.ChangeRelation:
@@ -794,6 +797,15 @@
                 {/each}
               </select>
               <input
+                class="input narrow"
+                type="number"
+                min="1"
+                value={effect.parameters.amount ?? 1}
+                aria-label="Amount"
+                oninput={(e) =>
+                  setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+              />
+              <input
                 class="input arg"
                 value={effect.parameters.characterKey ?? ''}
                 placeholder="character key (optional)"
@@ -848,6 +860,34 @@
               >
                 {#each attributeKeys as attr (attr)}
                   <option value={attr}>{attr}</option>
+                {/each}
+              </select>
+              <input
+                class="input narrow"
+                type="number"
+                value={effect.parameters.amount ?? 1}
+                aria-label="Amount"
+                oninput={(e) =>
+                  setParameter(i, 'amount', Number((e.currentTarget as HTMLInputElement).value))}
+              />
+              <input
+                class="input arg"
+                value={effect.parameters.characterKey ?? 'player'}
+                placeholder="character key"
+                aria-label="Character key"
+                oninput={(e) =>
+                  setParameter(i, 'characterKey', (e.currentTarget as HTMLInputElement).value)}
+              />
+            {:else if effect.type === EventEffectType.LevelCraftingSkill}
+              <select
+                class="input arg"
+                value={effect.parameters.skill ?? 'erudition'}
+                aria-label="Crafting skill"
+                onchange={(e) =>
+                  setParameter(i, 'skill', (e.currentTarget as HTMLSelectElement).value)}
+              >
+                {#each craftingSkillKeys as skill (skill)}
+                  <option value={skill}>{skill}</option>
                 {/each}
               </select>
               <input
